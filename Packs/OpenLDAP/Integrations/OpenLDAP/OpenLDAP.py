@@ -199,16 +199,9 @@ class LdapClient:
         with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
             if self._ldap_server_type == 'Active Directory':
                 search_filter = '(&(objectClass=group)(objectCategory=group))'
-                ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
-                                                                            search_filter=search_filter,
-                                                                            attributes=[LdapClient.GROUPS_TOKEN],
-                                                                            paged_size=self._page_size)
 
-                referrals, entries = LdapClient._parse_ldap_group_entries_and_referrals(ldap_group_entries)
-
-                # Reverse the lists to conform Active Directory Authentication integration's output:
-                referrals.reverse()
-                entries.reverse()
+                referrals, entries = self._get_ldap_groups_entries_and_referrals_ad(ldap_conn=ldap_conn,
+                                                                                    search_filter=search_filter)
 
                 return {
                     'Controls': None,
@@ -245,6 +238,25 @@ class LdapClient:
             formatted_attributes = formatted_attributes + f'({att})'
         return formatted_attributes
 
+    def _get_ldap_groups_entries_and_referrals_ad(self, ldap_conn: Connection,
+                                                  search_filter: str) -> Tuple[List[str], List[dict]]:
+        """
+            Returns parsed ldap groups entries and referrals.
+        """
+
+        ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
+                                                                    search_filter=search_filter,
+                                                                    attributes=[LdapClient.GROUPS_TOKEN],
+                                                                    paged_size=self._page_size)
+
+        referrals, entries = LdapClient._parse_ldap_group_entries_and_referrals(ldap_group_entries)
+
+        # Reverse the lists to conform Active Directory Authentication integration's output:
+        referrals.reverse()
+        entries.reverse()
+
+        return referrals, entries
+
     def _create_search_filter(self, filter_prefix: str) -> str:
         return filter_prefix + self._get_formatted_custom_attributes()
 
@@ -254,22 +266,15 @@ class LdapClient:
         """
         dn_list = [group.strip() for group in argToList(specific_groups, separator="#")]
         with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
+
             if self._ldap_server_type == 'Active Directory':
                 dns_filter = ''
                 for dn in dn_list:
                     dns_filter += f'(distinguishedName={dn})'
                 search_filter = f'(&(objectClass=group)(objectCategory=group)(|{dns_filter}))'
 
-                ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
-                                                                            search_filter=search_filter,
-                                                                            attributes=[LdapClient.GROUPS_TOKEN],
-                                                                            paged_size=self._page_size)
-
-                referrals, entries = LdapClient._parse_ldap_group_entries_and_referrals(ldap_group_entries)
-
-                # Reverse the lists to conform Active Directory Authentication integration's output:
-                referrals.reverse()
-                entries.reverse()
+                referrals, entries = self._get_ldap_groups_entries_and_referrals_ad(ldap_conn=ldap_conn,
+                                                                                    search_filter=search_filter)
 
                 return {
                     'Controls': None,
@@ -278,9 +283,7 @@ class LdapClient:
                 }
 
             else:  # ldap server is OpenLDAP
-
                 parsed_ldap_entries = []
-
                 for dn in dn_list:
                     search_filter = f'(objectClass={self.GROUPS_OBJECT_CLASS})'
                     ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=dn,
@@ -451,6 +454,7 @@ class LdapClient:
             if not ldap_conn_entries:
                 raise Exception("LDAP Authentication - LDAP user not found")
 
+            # TODO: consider taking that block out to a separate function
             for entry in ldap_conn_entries:
                 if entry_type := entry.get('type'):
                     if entry_type == 'searchResRef':  # a referral
