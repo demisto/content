@@ -1481,15 +1481,13 @@ def authorize_security_group_ingress_command(args, aws_client):
     IpPermissions_dict = create_ip_premissions_dict(args)
     UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
-    kwargs = create_kwargs_dict(args, kwargs)
+    kwargs.update(create_policy_kwargs_dict(args))
 
-    if UserIdGroupPairs_dict is not None:
-        UserIdGroupPairs.append(UserIdGroupPairs_dict)
-        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
+    UserIdGroupPairs.append(UserIdGroupPairs_dict)
+    IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
 
-    if IpPermissions_dict is not None:
-        IpPermissions.append(IpPermissions_dict)
-        kwargs.update({'IpPermissions': IpPermissions})
+    IpPermissions.append(IpPermissions_dict)
+    kwargs.update({'IpPermissions': IpPermissions})
 
     response = client.authorize_security_group_ingress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
@@ -1510,13 +1508,10 @@ def authorize_security_group_egress_command(args, aws_client):
     IpPermissions_dict = create_ip_premissions_dict(args)
     UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
-    if UserIdGroupPairs_dict is not None:
-        UserIdGroupPairs.append(UserIdGroupPairs_dict)
-        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
-
-    if IpPermissions_dict is not None:
-        IpPermissions.append(IpPermissions_dict)
-        kwargs.update({'IpPermissions': IpPermissions})
+    UserIdGroupPairs.append(UserIdGroupPairs_dict)
+    IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
+    IpPermissions.append(IpPermissions_dict)
+    kwargs.update({'IpPermissions': IpPermissions})
 
     response = client.authorize_security_group_egress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
@@ -1552,14 +1547,15 @@ def create_ip_premissions_dict(args):
     return IpPermissions_dict
 
 
-def create_kwargs_dict(args, kwargs):
-    kwargs_keys = (('fromPort', 'FromPort'), ('cidrIp', 'CidrIp'), ('toPort', 'ToPort'), ('ipProtocol', 'IpProtocol'),
+def create_policy_kwargs_dict(args):
+    policy_kwargs_keys = (('fromPort', 'FromPort'), ('cidrIp', 'CidrIp'), ('toPort', 'ToPort'), ('ipProtocol', 'IpProtocol'),
                    ('sourceSecurityGroupName', 'SourceSecurityGroupName'),
                    ('SourceSecurityGroupOwnerId', 'SourceSecurityGroupOwnerId'))
-    for args_key, dict_key in kwargs_keys:
+    policy_kwargs = {}
+    for args_key, dict_key in policy_kwargs_keys:
         if args.get(args_key) is not None:
-            kwargs.update({dict_key: args.get(args_key)})
-    return kwargs
+            policy_kwargs.update({dict_key: args.get(args_key)})
+    return policy_kwargs
 
 
 def create_user_id_group_pairs_dict(args):
@@ -1584,7 +1580,7 @@ def revoke_security_group_ingress_command(args, aws_client):
     )
     kwargs = {'GroupId': args.get('groupId')}
 
-    kwargs = create_kwargs_dict(args, kwargs)
+    kwargs.update(create_policy_kwargs_dict(args))
 
     response = client.revoke_security_group_ingress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
@@ -1609,11 +1605,8 @@ def revoke_security_group_egress_command(args, aws_client):
     IpPermissions_dict = create_ip_premissions_dict(args)
     UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
-    if UserIdGroupPairs_dict is not None:
-        IpPermissions_dict['UserIdGroupPairs'] = [UserIdGroupPairs_dict]
-
-    if IpPermissions_dict is not None:
-        kwargs['IpPermissions'] = [IpPermissions_dict]
+    IpPermissions_dict['UserIdGroupPairs'] = [UserIdGroupPairs_dict]
+    kwargs['IpPermissions'] = [IpPermissions_dict]
 
     response = client.revoke_security_group_egress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
