@@ -1456,7 +1456,6 @@ def main():  # pragma: no cover
             return_results(replace_featured_field_command(client, args))
 
     except Exception as err:
-        demisto.error(traceback.format_exc())
         return_error(str(err))
 
 
