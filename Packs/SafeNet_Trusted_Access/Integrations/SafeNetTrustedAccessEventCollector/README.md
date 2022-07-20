@@ -43,6 +43,8 @@ Get access, authentication, and audit logs from SafeNet Trusted Access.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| BaseIntegration.Output | String | \[Enter a description of the data returned in this output.\] | 
+There is no context output for this command.
+
+#### Command Example
+```!sta-get-events should_push_events=false```
+

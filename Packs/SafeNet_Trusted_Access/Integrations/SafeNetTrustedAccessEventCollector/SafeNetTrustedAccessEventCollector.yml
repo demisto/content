@@ -83,10 +83,6 @@ script:
     description: 'Get access, authentication, and audit logs from SafeNet Trusted Access.'
     execution: false
     name: sta-get-events
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
   runonce: false
   script: '-'
   type: python
