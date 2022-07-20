@@ -71,6 +71,9 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
                 continue
             else:
                 result.append(path)
+
+            result_string = ','.join(sorted(str(r) for r in result))
+            logging.debug(f'globbed {str(path)}, result = {result_string}')
         return set(result)
 
     excluded = glob(
