@@ -174,6 +174,9 @@ class Demisto:
     def getLicenseID(self):
         return self.__do({'type': 'executeCommand', 'command': 'getLicenseID', 'args': {}})['id']
 
+    def getCurrentUser(self):
+        return self.callingContext.get(u'context',{}).get(u'User',{}).get(u'username',"")
+
     def createIncidents(self, incidents, lastRun=None, userID=None):
         self.raise_exception_if_not_implemented(INTEGRATION, 'createIncidents')
         return self.__do({'type': 'executeCommand', 'command': 'createIncidents',
