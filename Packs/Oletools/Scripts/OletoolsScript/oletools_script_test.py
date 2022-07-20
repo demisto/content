@@ -16,28 +16,23 @@ def test_oleid(caplog):
     cr = ole_client.run()
     assert cr.outputs == oleid_output
     assert cr.readable_output == read_file('test_data/oleid_readable.md')
-    caplog.clear()
-    print(5)
 
 
-def test_oleobj(caplog):
+def test_oleobj():
     ole_client = OleClient({
         'path': 'test_data/ActiveBarcode-Demo-Bind-Text.docm',
         'name': 'ActiveBarcode-Demo-Bind-Text.docm'}, 'oleobj')
-    # caplog.clear()
     cr = ole_client.run()
     assert cr.outputs == oleobj_output
     assert cr.readable_output == read_file('test_data/oleobj_readable.md')
-    caplog.clear()
 
 
 def test_olevba(caplog):
     ole_client = OleClient({
         'path': 'test_data/ActiveBarcode-Demo-Bind-Text.docm',
         'name': 'ActiveBarcode-Demo-Bind-Text.docm'}, 'olevba')
-    # caplog.clear()
-    cr = ole_client.run()
     caplog.clear()
+    cr = ole_client.run()
     assert cr.outputs == olevba_otuput
     assert cr.readable_output == read_file('test_data/olevba_readable.md')
 
@@ -50,4 +45,4 @@ def test_oleid_decrypted(caplog):
     cr = ole_client.run()
     assert cr.outputs == oleid_decrypted_output
     assert cr.readable_output == read_file('test_data/oleid_decrypted_readable.md')
-    caplog.clear()
+
