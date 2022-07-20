@@ -516,7 +516,7 @@ def main():
     finally:
         os.chdir(ROOT_PATH)
         for folder in folders_to_remove:
-            shutil.rmtree(folder)
+            shutil.rmtree(folder, ignore_errors=True)
 
 
 # python2 uses __builtin__ python3 uses builtins
