@@ -13,7 +13,8 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, build_threat_indicator_data
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, \
+    build_threat_indicator_data, DEFAULT_SOURCE
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -1349,12 +1350,13 @@ class TestHappyPath:
                 }
 
         # run
-        output = build_threat_indicator_data(args)
+        output = build_threat_indicator_data(args, source=None)
 
         # validate
 
         assert " '1.1.1.1'" in output.get('pattern')
         assert output.get('patternType') == 'ipv4-addr'
+        assert output.get('source') == DEFAULT_SOURCE
 
 
 class TestEdgeCases:
