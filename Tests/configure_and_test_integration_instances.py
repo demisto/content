@@ -1754,7 +1754,7 @@ def main():
         3. Upload all test playbooks that currently in master.
         4. In XSOAR:Install all existing packs, in XSIAM: install only requested packs.
     """
-    install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
+    install_logging('Install_Content_And_Configure_Integrations_On_Server.log')
     build = create_build_object()
     logging.info(f"Build Number: {build.ci_build_number}")
 

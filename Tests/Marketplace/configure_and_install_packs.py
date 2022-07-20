@@ -169,7 +169,7 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
 
 def main():
     try:
-        install_logging('Install_Packs.log', logger=logging)
+        install_logging('Install_Packs.log')
         options = options_handler()
         branch_name: str = options.branch
         build_number: str = options.build_number
