@@ -1,6 +1,5 @@
-id: 06ab09cf-5e6e-4aef-8156-77f4f3bf1b53
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
+id: Create Incident and get Active Tasks
+version: -1
 name: Create Incident and get Active Tasks
 starttaskid: "0"
 description: This Playbook creates a privacy Incident on the BreachRx platform, and pulls in all tasks from that created privacy Incident into the Cortex XSOAR Incident.
@@ -15,11 +14,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -51,7 +50,6 @@ tasks:
       '#none#':
       - "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -78,11 +76,11 @@ tasks:
       type: regular
       iscommand: true
       brand: BreachRx
+      description: ''
     scriptarguments:
       incident-identifier:
         simple: ${BreachRx.Incident.identifier}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -112,3 +110,6 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
