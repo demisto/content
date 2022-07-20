@@ -302,7 +302,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       alert_ids:
-        simple: ${incident.externalsystemid}
+        simple: ${inputs.SIEMincidentFieldForID}
     separatecontext: false
     skipunavailable: false
     task:
