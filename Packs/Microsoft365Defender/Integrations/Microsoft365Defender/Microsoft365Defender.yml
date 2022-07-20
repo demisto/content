@@ -203,6 +203,8 @@ script:
       - Unknown
       - FalsePositive
       - TruePositive
+    - description: Comment to be added to the incident.
+      name: comment
     - auto: PREDEFINED
       description: Determination of the incident.
       name: determination
@@ -330,7 +332,7 @@ script:
       type: string
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
-  dockerimage: demisto/crypto:1.0.0.30286
+  dockerimage: demisto/crypto:1.0.0.31715
   isfetch: true
   runonce: false
   script: ''
