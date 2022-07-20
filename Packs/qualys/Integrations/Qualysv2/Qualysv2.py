@@ -4,6 +4,9 @@ import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
 
+register_module_line('QualysV2', 'start', __line__())
+
+
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
@@ -229,6 +232,10 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
         'table_name': 'Host updated',
         'json_path': ['HOST_UPDATE_OUTPUT', 'RESPONSE'],
     },
+    'qualys-update-unix-record': {
+        'table_name': 'Update Unix Record',
+        'json_path': ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
+    },
     'qualys-asset-group-add': {
         'table_name': 'Asset Group Add',
         'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
@@ -417,6 +424,10 @@ COMMANDS_CONTEXT_DATA = {
     },
     'qualys-host-update': {
         'context_prefix': 'Qualys.Endpoint.Update',
+        'context_key': 'ID',
+    },
+    'qualys-update-unix-record': {
+        'context_prefix': 'Qualys.UnixRecord',
         'context_key': 'ID',
     },
     'qualys-asset-group-add': {
@@ -648,6 +659,11 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
     },
     'qualys-host-update': {
         'api_route': API_SUFFIX + 'asset/host/?action=update',
+        'call_method': 'POST',
+        'resp_type': 'text',
+    },
+    'qualys-update-unix-record': {
+        'api_route': API_SUFFIX + 'auth/unix/?action=update',
         'call_method': 'POST',
         'resp_type': 'text',
     },
@@ -939,6 +955,9 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
         'required_groups': [
             ['ids', 'ips', ]
         ],
+    },
+    'qualys-update-unix-record': {
+        'args': ['ids', 'add_ips'],
     },
     'qualys-asset-group-add': {
         'args': ['title', 'network_id', 'ips', 'domains', 'dns_names', 'netbios_names', 'cvss_enviro_td',
@@ -2104,6 +2123,10 @@ def main():
             'result_handler': handle_general_result,
             'output_builder': build_single_text_output,
         },
+        'qualys-update-unix-record': {
+            'result_handler': handle_general_result,
+            'output_builder': build_single_text_output,
+        },
         # *** Commands that have lists of ips as outputs ***
         'qualys-ip-list': {
             'result_handler': handle_general_result,
@@ -2167,3 +2190,5 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+register_module_line('QualysV2', 'end', __line__())
