@@ -19,7 +19,7 @@ default_tools = """
 | [Palo Alto Networks Support Portal](https://support.paloaltonetworks.com/) | Palo Alto Networks Support Portal |
 
 **To create your own list, create an XSOAR list called "+Case Management Analyst Tools+", and add a Markdown Table with your own list.**
-"""
+"""  # noqa: E501
 
 # check if the list exists, if not, display the default_tools
 if "Item not found" in tools:
