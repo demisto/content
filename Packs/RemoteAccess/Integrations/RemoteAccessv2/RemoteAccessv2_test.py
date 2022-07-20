@@ -327,7 +327,8 @@ system_not_found_with_host = (['not-0fb7ben3de5e85283'], ['11.234.1.17'], invest
 system_and_host_not_found = (['not-0fb7ben3de5e85283'], ['11.234.1.1'], investigation_data,
                              "Systems ['not-0fb7ben3de5e85283'] and Hosts ['11.234.1.1'] not found on investigation 46510. "
                              "Available systems by name are ['i-0fb7ben3de5e85283'], and by host are ['11.234.1.17'].")
-no_investigation_data = (['i-0fb7ben3de5e85283'], ['11.234.1.17'], {}, None)
+no_investigation_data = (['i-0fb7ben3de5e85283'], ['11.234.1.17'], None, None)
+no_system_data = (['i-0fb7ben3de5e85283'], ['11.234.1.17'], {'id': 46510, 'systems': []}, None)
 
 
 @pytest.mark.parametrize('given_systems, given_hosts, investigation, expected_message',
@@ -339,7 +340,8 @@ no_investigation_data = (['i-0fb7ben3de5e85283'], ['11.234.1.17'], {}, None)
                           system_not_found_no_host,
                           system_not_found_with_host,
                           system_and_host_not_found,
-                          no_investigation_data
+                          no_investigation_data,
+                          no_system_data,
                           ])
 def test_find_nonexistent_systems(mocker, given_systems, given_hosts, investigation, expected_message):
     """

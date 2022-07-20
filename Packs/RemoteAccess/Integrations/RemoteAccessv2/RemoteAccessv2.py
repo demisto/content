@@ -132,6 +132,9 @@ def create_paramiko_ssh_client(
 
 def find_nonexistent_systems(given_systems: List[str], given_hosts: List[str]):
     investigation = demisto.investigation()
+    if not investigation:
+        return
+
     systems = investigation.get('systems')
     investigation_id = investigation.get('id')
     demisto.debug(f'Available systems on investigation {investigation_id} are {systems}.')
@@ -163,7 +166,9 @@ def find_nonexistent_systems(given_systems: List[str], given_hosts: List[str]):
 def create_clients(host_name: str, user: str, password: str, ciphers: Set[str], key_algorithms: Set[str], certificate: str,
                    systems: List[str], hosts: List[str], port: int = DEFAULT_PORT) -> List[SSHClient]:
     clients = [create_paramiko_ssh_client(system, user, password, ciphers, key_algorithms, certificate, port)
-               for system in systems + hosts]
+               for system in systems]
+    clients.extend([create_paramiko_ssh_client(host, user, password, ciphers, key_algorithms, certificate, port)
+                    for host in hosts])
 
     if not clients and host_name:
         client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate)
@@ -317,7 +322,8 @@ def main() -> None:
 
     clients = []
     try:
-        nonexistent_systems_result = find_nonexistent_systems(systems, hosts)
+        if nonexistent_systems_result := find_nonexistent_systems(systems, hosts):
+            return_error(nonexistent_systems_result)
         clients = create_clients(host_name, user, password, ciphers, key_algorithms, certificate, systems, hosts, port)
 
         commands = {
@@ -339,8 +345,6 @@ def main() -> None:
                     results.append(future.result())
 
             return_results(results)
-            if nonexistent_systems_result:
-                return_error(nonexistent_systems_result)
 
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
