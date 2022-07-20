@@ -124,6 +124,10 @@
             "timeout": 500
         },
         {
+            "integrations": "FireEyeNX",
+            "playbookID": "FireEyeNX-Test"
+        },
+        {
             "integrations": "FireEyeHX v2",
             "playbookID": "FireEyeHX_v2",
             "fromversion": "6.2.0",
@@ -2150,11 +2154,6 @@
             "integrations": "LogRhythm",
             "playbookID": "LogRhythm-Test-Playbook",
             "timeout": 200
-        },
-        {
-            "integrations": "FireEye HX",
-            "playbookID": "FireEye HX Test",
-            "timeout": 800
         },
         {
             "integrations": "FireEyeFeed",
