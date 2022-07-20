@@ -189,7 +189,7 @@ Searches for connections.
             "CreationTime": "2021-04-20T03:38:56.386000",
             "Direction": "OUTGOING",
             "EndTime": "2021-04-20T03:40:04.466000",
-            "Name": "<connection_name>",
+            "Name": "<connection_ip_addresses>",
             "OwnerMachine": "siemplify-cyber",
             "OwnerProcess": "nbtscan.exe",
             "PortType": "SERVICE_WINDOWS",
@@ -208,7 +208,7 @@ Searches for connections.
 >### Cybereason Connections for: 192.168.1.103
 >|Creation Time|Direction|End Time|Name|Owner Machine|Owner Process|Port Type|Received Bytes|Remote Country|Server Address|Server Port|Transmitted Bytes|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2021-04-20T03:38:56.386000 | OUTGOING | 2021-04-20T03:40:04.466000 | connection_name | siemplify-cyber | nbtscan.exe | SERVICE_WINDOWS | 0 |  | 192.168.1.103 | 137 | 50 |
+>| 2021-04-20T03:38:56.386000 | OUTGOING | 2021-04-20T03:40:04.466000 | connection_ip_addresses | siemplify-cyber | nbtscan.exe | SERVICE_WINDOWS | 0 |  | 192.168.1.103 | 137 | 50 |
 
 ### cybereason-isolate-machine
 ***
@@ -361,7 +361,7 @@ Returns a list of all Malops and details on the Malops.
 >### Cybereason Malops
 >|GUID|Link|CreationTime|Status|LastUpdateTime|DecisionFailure|Suspects|AffectedMachine|InvolvedHash|
 >|---|---|---|---|---|---|---|---|---|
->| 11.3651150229438589171 | https:<span>//</span>integration.cybereason.net:8443/#/malop/11.3651150229438589171 | 2021-07-12T09:11:42.641000 | OPEN | 2021-08-28T23:19:12.430000 | blackListedFileHash | Process: viagra_.exe | affected_machine | 1 |
+>| 11.3651150229438589171 | https:<span>//</span>integration.cybereason.net:8443/#/malop/11.3651150229438589171 | 2021-07-12T09:11:42.641000 | OPEN | 2021-08-28T23:19:12.430000 | blackListedFileHash | Process: viagra_.exe | affected_machine_name | 1 |
 
 ### cybereason-malop-processes
 ***
@@ -413,7 +413,7 @@ Returns a list of malops
             "CompanyName": "Alexander Roshal",
             "CreationTime": "2022-03-14T13:25:56.309000",
             "EndTime": "2022-03-14T13:26:01.712000",
-            "ImageFile": "<image_file>",
+            "ImageFile": "<image_file_name>",
             "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
             "Malicious": "indifferent",
             "Name": "<file_name>",

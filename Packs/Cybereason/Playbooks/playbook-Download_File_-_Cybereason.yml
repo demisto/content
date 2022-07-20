@@ -1,8 +1,7 @@
-id: Download File - Cybereason
+id: Cybereason - Download File
 version: -1
-name: Download File - Cybereason
-description: This playbook starts the file download operation and finally give an
-  option to download the file if possible based on the Malop ID and username provided.
+name: Cybereason - Download File
+description: This playbook downloads a file from Cybereason platform, based on the Malop ID and username provided.
 starttaskid: "0"
 tasks:
   "0":
@@ -52,9 +51,9 @@ tasks:
       - "2"
     scriptarguments:
       malopGUID:
-        simple: ${incident.agentid}
+        simple: ${inputs.malopGUID}
       userName:
-        simple: ${incident.sourceusername}
+        simple: ${inputs.Username}
     separatecontext: false
     view: |-
       {
@@ -88,7 +87,7 @@ tasks:
       - "3"
     scriptarguments:
       malopGuid:
-        simple: ${incident.agentid}
+        simple: ${inputs.malopGUID}
     separatecontext: false
     view: |-
       {
@@ -122,7 +121,7 @@ tasks:
       - "4"
     scriptarguments:
       batchID:
-        simple: ${Download.progress.batchID}
+        simple: ${Cybereason.Download.Progress.batchID}
     separatecontext: false
     view: |-
       {
@@ -177,7 +176,18 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: malopGUID
+  value: {}
+  required: false
+  description: The unique ID assigned by the Cybereason platform for the Malop.
+  playbookInputQuery: null
+- key: Username
+  value: {}
+  required: false
+  description: The complete Cybereason user name string for the user performing the
+    request.
+  playbookInputQuery: null
 outputs: []
 fromversion: 6.5.0
 tests:

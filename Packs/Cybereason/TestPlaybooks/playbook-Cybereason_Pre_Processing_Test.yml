@@ -12,7 +12,7 @@ tasks:
       version: -1
       name: ''
       iscommand: false
-      brand: ''
+      brand: Cybereason
       description: ''
     nexttasks:
       '#none#':
@@ -46,7 +46,7 @@ tasks:
       scriptName: CybereasonPreProcessingExample
       type: regular
       iscommand: false
-      brand: ''
+      brand: Cybereason
     nexttasks:
       '#none#':
       - '2'
@@ -75,7 +75,7 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: Cybereason
       description: ''
     separatecontext: false
     view: |-

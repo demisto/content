@@ -61,6 +61,13 @@ PROCESS_FIELDS = [element['field'] for element in PROCESS_INFO]
 
 PROCESS_HEADERS = [element['header'] for element in PROCESS_INFO]
 
+MALOP_HEADERS=['GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachine', 'InvolvedHash']
+
+DOMAIN_HEADERS = ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 
+                    'WasEverResolvedAsASecondLevelDomain', 'Malicious', 'SuspicionsCount']
+
+USER_HEADERS = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
+
 CONNECTION_INFO = [
     {'field': 'elementDisplayName', 'header': 'Name', 'type': 'simple'},
     {'field': 'direction', 'header': 'Direction', 'type': 'simple'},
@@ -148,9 +155,9 @@ class Client(BaseClient):
         # Handle error responses gracefully
         command = demisto.command()
         if res.status_code == 500:
-            if command in 'cybereason-download-file':
+            if command == 'cybereason-download-file':
                 raise Exception('The given Batch ID has expired')
-            elif command in 'cybereason-close-file-batch-id':
+            elif command == 'cybereason-close-file-batch-id':
                 raise Exception('The given Batch ID does not exist')
 
 
@@ -533,14 +540,12 @@ def query_malops_command(client: Client, args):
             }
             outputs.append(malop_output)
 
-    headers=['GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachine', 'InvolvedHash']
-
     ec = {
         'Cybereason.Malops(val.GUID && val.GUID === obj.GUID)': outputs
     }
 
     return CommandResults(
-        readable_output=tableToMarkdown('Cybereason Malops', outputs, headers=headers) if outputs else 'No malops found',
+        readable_output=tableToMarkdown('Cybereason Malops', outputs, headers=MALOP_HEADERS) if outputs else 'No malops found',
         outputs_prefix='Cybereason.Malops',
         outputs_key_field='GUID',
         outputs=ec)
@@ -1305,15 +1310,12 @@ def query_domain_command(client: Client, args):
                     'Name': domain_input,
                 })
 
-            headers = ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 
-            'WasEverResolvedAsASecondLevelDomain', 'Malicious', 'SuspicionsCount']
-
             ec = {
                 'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs, outputPaths['domain']: domain_outputs}
 
             return CommandResults(
                 readable_output=tableToMarkdown(
-                    'Cybereason domain query results for the domain: {}'.format(domain_input), cybereason_outputs, headers=headers),
+                    'Cybereason domain query results for the domain: {}'.format(domain_input), cybereason_outputs, headers=DOMAIN_HEADERS),
                 outputs_prefix='Cybereason.Domain',
                 outputs_key_field='Name',
                 outputs=ec)
@@ -1373,15 +1375,13 @@ def query_user_command(client: Client, args):
                     'LocalSystem': local_system
                 })
 
-                headers = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
-
                 ec = {
                     'Cybereason.User(val.Username && val.Username===obj.Username)': cybereason_outputs
                 }
 
                 return CommandResults(
                     readable_output=tableToMarkdown(
-                        'Cybereason user query results for the username: {}'.format(username), cybereason_outputs, headers=headers),
+                        'Cybereason user query results for the username: {}'.format(username), cybereason_outputs, headers=USER_HEADERS),
                     outputs_prefix='Cybereason.User',
                     outputs_key_field='Username',
                     outputs=ec)
@@ -1753,16 +1753,16 @@ def fetchfile_progress_command(client: Client, args):
         message.append(new_malop_comments[item].get("message"))
     ec = {
         'Cybereason.Download.Progress(val.MalopID && val.MalopID === obj.MalopID)': {
-            'FileName': filename,
-            'Status': status,
-            'BatchID': message,
+            'fileName': filename,
+            'status': status,
+            'batchID': message,
             'MalopID': malop_id
         }
     }
     return CommandResults(
         readable_output='Filename: ' + str(filename) + ' Status: ' + str(status) + ' Batch ID: ' + str(message),
         outputs_prefix='Cybereason.Download.Progress',
-        outputs_key_field='FileName',
+        outputs_key_field='fileName',
         outputs=ec)
 
 
