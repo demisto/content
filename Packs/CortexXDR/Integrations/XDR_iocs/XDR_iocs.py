@@ -36,6 +36,7 @@ def batch(generator, batch_size=200):
         current_batch.append(indicator)
         if len(current_batch) >= batch_size:
             yield current_batch
+            current_batch = []
 
     if current_batch:
         yield current_batch
