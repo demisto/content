@@ -11,6 +11,12 @@ from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
 
+class MockedResponse:
+
+    def __init__(self, status_code):
+        self.status_code = status_code
+
+
 @pytest.mark.parametrize('params, expected_result', [
     ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '1234'}}, 'Key must be provided.'),
     ({'creds_tenant_id': {'password': '1234'}, 'credentials': {'password': '1234'}}, 'ID must be provided.'),
@@ -645,8 +651,7 @@ SEND_MAIL_COMMAND_ARGS = [
             'body': "test body",
             'subject': "test subject",
             'replyTo': ["ex2@example.com", "ex3@example.com"],
-            'from': "ex1@example.com"
-        }
+            'from': "ex1@example.com"        }
     )
 ]
 
@@ -681,6 +686,176 @@ def test_send_mail_command(mocker, client, args):
         assert message.get('subject') == args.get('subject')
         assert message.get('replyTo')[0].get('emailAddress').get("address") == args.get('replyTo')[0]
         assert message.get('replyTo')[1].get('emailAddress').get("address") == args.get('replyTo')[1]
+
+
+SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS = [
+    (
+        self_deployed_client(),
+        {
+            'to': ['ex@example.com'],
+            'htmlBody': "<b>This text is bold</b>",
+            'subject': "test subject",
+            'replyTo': ["ex2@example.com", "ex3@example.com"],
+            'from': "ex1@example.com",
+            'attachCIDs': '1'
+        },
+    ),
+    (
+        oproxy_client(),
+        {
+            'to': ['ex@example.com'],
+            'body': "test body",
+            'subject': "test subject",
+            'replyTo': ["ex2@example.com", "ex3@example.com"],
+            'from': "ex1@example.com",
+            'attachCIDs': '2'
+        }
+    ),
+    (
+        self_deployed_client(),
+        {
+            'to': ['ex@example.com'],
+            'body': "test body",
+            'subject': "test subject",
+            'replyTo': ["ex2@example.com", "ex3@example.com"],
+            'from': "ex1@example.com",
+            'attachCIDs': '1,2'
+        }
+    )
+]
+
+
+def expected_upload_headers():
+    for header in [
+        {'Content-Length': '3145728', 'Content-Range': 'bytes 0-3145727/21796912',
+         'Content-Type': 'application/octet-stream'},
+        {'Content-Length': '3145728', 'Content-Range': 'bytes 3145728-6291455/21796912',
+         'Content-Type': 'application/octet-stream'},
+        {'Content-Length': '3145728', 'Content-Range': 'bytes 6291456-9437183/21796912',
+         'Content-Type': 'application/octet-stream'},
+        {'Content-Length': '3145728', 'Content-Range': 'bytes 9437184-12582911/21796912',
+         'Content-Type': 'application/octet-stream'},
+        {'Content-Length': '3145728', 'Content-Range': 'bytes 12582912-15728639/21796912',
+         'Content-Type': 'application/octet-stream'},
+        {'Content-Length': '3145728', 'Content-Range': 'bytes 15728640-18874367/21796912',
+         'Content-Type': 'application/octet-stream'},
+        {'Content-Length': '2922544', 'Content-Range': 'bytes 18874368-21796911/21796912',
+         'Content-Type': 'application/octet-stream'}
+    ]:
+        yield header
+
+
+def get_attachment_file_details_by_attachment_id(attach_id):
+    attachment_info = {
+        '1': {
+            'path': 'test_data/world.jpg',
+            'name': 'world.jpg'
+        },
+        '2': {
+            'path': 'test_data/plant.jpg',
+            'name': 'plant.jpg'
+        }
+    }
+    return attachment_info.get(attach_id)
+
+
+def upload_response_side_effect(**kwargs):
+    headers = kwargs.get('headers')
+    if int(headers['Content-Length']) < MsGraphClient.MAX_ATTACHMENT_SIZE:
+        return MockedResponse(status_code=201)
+    return MockedResponse(status_code=200)
+
+
+@pytest.mark.parametrize('client, args', SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
+def test_send_mail_command_with_large_attachments(mocker, client, args):
+    """
+        Given:
+            - send-mail command's arguments
+
+        When:
+            - sending a mail
+
+        Then:
+            - validates that http request to send-mail was called with the correct values.
+    """
+    with requests_mock.Mocker() as request_mocker:
+        from_email = args.get('from')
+
+        mocker.patch.object(client.ms_client, 'get_access_token')
+        send_mail_mocker = request_mocker.post(
+            f'https://graph.microsoft.com/v1.0/users/{from_email}/SendMail'
+        )
+
+        send_email_command(client, args)
+
+        assert send_mail_mocker.called
+        message = send_mail_mocker.last_request.json().get('message')
+        assert message
+        assert message.get('toRecipients')[0].get('emailAddress').get("address") == args.get('to')[0]
+        assert message.get('body').get('content') == args.get('htmlBody') or args.get('body')
+        assert message.get('subject') == args.get('subject')
+        assert message.get('replyTo')[0].get('emailAddress').get("address") == args.get('replyTo')[0]
+        assert message.get('replyTo')[1].get('emailAddress').get("address") == args.get('replyTo')[1]
+
+
+@pytest.mark.parametrize('client, args', SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
+def test_create_draft_email(mocker, client, args):
+    """
+    Given:
+        Case 1: command arguments and attachment > 3mb.
+        Case 2: command arguments and attachment < 3mb.
+        Case 3: command arguments and one attachment > 3m and one attachment < 3mb.
+
+    When:
+        creating a draft mail.
+
+    Then:
+        Case1: make sure the upload session was called with the correct headers according to file size
+        Case2: make sure the upload session was not called at all and that the attachment was added through the
+            regular create draft api endpoint.
+        Case3: make sure attachment 1 was called with upload session with the corrrect headers according to file size
+            and that attachment 2 was added through the regular create draft api endpoint.
+    """
+    from MicrosoftGraphMail import create_draft_command
+    import MicrosoftGraphMail
+
+    with requests_mock.Mocker() as request_mocker:
+        from_email = args.get('from')
+
+        mocker.patch.object(client.ms_client, 'get_access_token')
+        create_draft_mail_mocker = request_mocker.post(
+            f'https://graph.microsoft.com/v1.0/users/{from_email}/messages', json={'id': '123'}
+        )
+        mocker.patch.object(demisto, 'getFilePath', side_effect=get_attachment_file_details_by_attachment_id)
+        outputs_mocker = mocker.patch.object(MicrosoftGraphMail, 'return_outputs')
+
+        create_upload_mock, upload_query_mock = None, None
+
+        # attachment 1 is an attachment bigger than 3MB
+        if '1' in args.get('attachCIDs'):  # means the attachment should be created in the upload session
+            create_upload_mock = mocker.patch.object(
+                client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
+            )
+            upload_query_mock = mocker.patch.object(requests, 'put', side_effect=upload_response_side_effect)
+
+        create_draft_command(client, args)
+
+        if create_upload_mock and upload_query_mock:
+            assert create_upload_mock.called
+            assert create_upload_mock.call_count == 1
+
+            expected_headers = iter(expected_upload_headers())
+            for i in range(upload_query_mock.call_count):
+                current_headers = next(expected_headers)
+                assert upload_query_mock.mock_calls[i].kwargs['headers'] == current_headers
+
+        assert outputs_mocker.call_args[0][1]['MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)']['ID'] == '123'
+        if '2' in args.get('attachCIDs'):
+            assert create_draft_mail_mocker.last_request.json()['attachments']
+        assert create_draft_mail_mocker.called
+        assert create_draft_mail_mocker.last_request.json()
+
+        # test only attachments < 3mb were sent to this endpoint
 
 
 @pytest.mark.parametrize('server_url, expected_endpoint', [('https://graph.microsoft.us', 'gcc-high'),

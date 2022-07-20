@@ -934,14 +934,10 @@ class MsGraphClient:
                 is_inline=attachment.get('isInline')
             )
 
-    def add_attachment_with_upload_session(self, email, draft_id, attachment_data, attachment_name, is_inline=False):
-        create_upload_suffix_endpoint = f'/users/{email}/messages/{draft_id}/attachments/createUploadSession'
-
-        attachment_size = len(attachment_data)
-        try:
-            upload_session = self.ms_client.http_request(
+    def get_upload_session(self, email, draft_id, attachment_name, attachment_size, is_inline):
+        return self.ms_client.http_request(
                 'POST',
-                create_upload_suffix_endpoint,
+                f'/users/{email}/messages/{draft_id}/attachments/createUploadSession',
                 json_data={
                     'attachmentItem': {
                         'attachmentType': 'file',
@@ -951,6 +947,32 @@ class MsGraphClient:
                     }
                 }
             )
+
+    @staticmethod
+    def upload_attachments_using_upload_session(
+        upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size
+    ):
+        chunk_size = len(chunk_data)
+        headers = {
+            "Content-Length": f'{chunk_size}',
+            "Content-Range": f"bytes {start_chunk_idx}-{end_chunk_idx - 1}/{attachment_size}",
+            "Content-Type": "application/octet-stream"
+        }
+        demisto.debug(f'uploading session headers: {headers}')
+        print(headers)
+        return requests.put(url=upload_url, data=chunk_data, headers=headers)
+
+    def add_attachment_with_upload_session(self, email, draft_id, attachment_data, attachment_name, is_inline=False):
+
+        attachment_size = len(attachment_data)
+        try:
+            upload_session = self.get_upload_session(
+                email=email,
+                draft_id=draft_id,
+                attachment_name=attachment_name,
+                attachment_size=attachment_size,
+                is_inline=is_inline
+            )
             upload_url = upload_session.get('uploadUrl')
             if not upload_url:
                 raise Exception(f'Cannot get upload URL for attachment {attachment_name}')
@@ -959,30 +981,29 @@ class MsGraphClient:
             end_chunk_index = self.MAX_ATTACHMENT_SIZE
 
             chunk_data = attachment_data[start_chunk_index: end_chunk_index]
-            chunk_size = len(chunk_data)
 
-            headers = {
-                "Content-Length": f'{chunk_size}',
-                "Content-Range": f"bytes {start_chunk_index}-{end_chunk_index - 1}/{attachment_size}",
-                "Content-Type": "application/octet-stream"
-            }
-            demisto.debug(f'uploading session headers: {headers}')
-            response = requests.put(upload_url, headers=headers, data=chunk_data)
+            response = self.upload_attachments_using_upload_session(
+                upload_url=upload_url,
+                start_chunk_idx=start_chunk_index,
+                end_chunk_idx=end_chunk_index,
+                chunk_data=chunk_data,
+                attachment_size=attachment_size
+            )
             while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
                 start_chunk_index = end_chunk_index
                 next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
                 end_chunk_index = next_chunk if next_chunk < attachment_size else attachment_size
 
                 chunk_data = attachment_data[start_chunk_index: end_chunk_index]
-                chunk_size = len(chunk_data)
-                headers = {
-                    "Content-Length": f'{chunk_size}',
-                    "Content-Range": f"bytes {start_chunk_index}-{end_chunk_index - 1}/{attachment_size}",
-                    "Content-Type": "application/octet-stream"
-                }
-                demisto.debug(f'uploading session headers: {headers}')
-                print(headers)
-                response = requests.put(upload_url, headers=headers, data=chunk_data)
+
+                response = self.upload_attachments_using_upload_session(
+                    upload_url=upload_url,
+                    start_chunk_idx=start_chunk_index,
+                    end_chunk_idx=end_chunk_index,
+                    chunk_data=chunk_data,
+                    attachment_size=attachment_size
+                )
+
                 if response.status_code not in (201, 200):
                     raise Exception(f'{response.json()}')
 
