@@ -57,5 +57,3 @@ Packs/**/report_pytest.json
 .devcontainer/certs.crt
 **/.devcontainer
 !/.devcontainer
-
-/Packs/Base/Scripts/OletoolsScript/Archive.2/
