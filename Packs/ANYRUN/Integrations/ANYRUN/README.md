@@ -251,7 +251,6 @@ Gets the report of a task created for a submitted file or URL.
 | URL.Data | String | URL data. | 
 | URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. | 
 | URL.Malicious.Description | String | For malicious URLs, the reason that the vendor made the decision. | 
-| ANYRUN.Task.Status | String | Task analysis status. | 
 
 
 #### Command Example
