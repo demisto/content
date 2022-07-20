@@ -13,7 +13,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Default Hostname or IP Address | If not provided, "host" or "system" should be provided as commands arguments. | False |
+    | Default Hostname or IP Address | If not provided, "host" or "system" should be provided the the command's arguments. | False |
     | User | For example, "root". | False |
     | Password | The password of the remote machine. | False |
     | sshKey | The private RSA key to authenticate to the remote machine, should be configured within the credentials object. | False
