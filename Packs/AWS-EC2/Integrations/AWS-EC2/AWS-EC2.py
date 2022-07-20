@@ -1549,8 +1549,8 @@ def create_ip_premissions_dict(args):
 
 def create_policy_kwargs_dict(args):
     policy_kwargs_keys = (('fromPort', 'FromPort'), ('cidrIp', 'CidrIp'), ('toPort', 'ToPort'), ('ipProtocol', 'IpProtocol'),
-                   ('sourceSecurityGroupName', 'SourceSecurityGroupName'),
-                   ('SourceSecurityGroupOwnerId', 'SourceSecurityGroupOwnerId'))
+                          ('sourceSecurityGroupName', 'SourceSecurityGroupName'),
+                          ('SourceSecurityGroupOwnerId', 'SourceSecurityGroupOwnerId'))
     policy_kwargs = {}
     for args_key, dict_key in policy_kwargs_keys:
         if args.get(args_key) is not None:
