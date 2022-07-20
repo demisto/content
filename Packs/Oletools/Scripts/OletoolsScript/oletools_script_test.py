@@ -12,7 +12,7 @@ def test_oleid(caplog):
     ole_client = OleClient({
         'path': 'test_data/ActiveBarcode-Demo-Bind-Text.docm',
         'name': 'ActiveBarcode-Demo-Bind-Text.docm'}, 'oleid')
-    # caplog.clear()
+    caplog.clear()
     cr = ole_client.run()
     assert cr.outputs == oleid_output
     assert cr.readable_output == read_file('test_data/oleid_readable.md')
@@ -35,7 +35,7 @@ def test_olevba(caplog):
     ole_client = OleClient({
         'path': 'test_data/ActiveBarcode-Demo-Bind-Text.docm',
         'name': 'ActiveBarcode-Demo-Bind-Text.docm'}, 'olevba')
-    caplog.clear()
+    # caplog.clear()
     cr = ole_client.run()
     caplog.clear()
     assert cr.outputs == olevba_otuput
