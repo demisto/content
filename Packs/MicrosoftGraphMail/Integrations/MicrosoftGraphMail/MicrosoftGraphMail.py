@@ -966,7 +966,7 @@ class MsGraphClient:
                 "Content-Range": f"bytes {start_chunk_index}-{end_chunk_index - 1}/{attachment_size}",
                 "Content-Type": "application/octet-stream"
             }
-            print(headers)
+            demisto.debug(f'uploading session headers: {headers}')
             response = requests.put(upload_url, headers=headers, data=chunk_data)
             while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
                 start_chunk_index = end_chunk_index
@@ -980,6 +980,7 @@ class MsGraphClient:
                     "Content-Range": f"bytes {start_chunk_index}-{end_chunk_index - 1}/{attachment_size}",
                     "Content-Type": "application/octet-stream"
                 }
+                demisto.debug(f'uploading session headers: {headers}')
                 print(headers)
                 response = requests.put(upload_url, headers=headers, data=chunk_data)
                 if response.status_code not in (201, 200):
@@ -1540,14 +1541,16 @@ def divide_attachments_according_to_size(attachments):
     return less_than_3mb_attachments, more_than_3mb_attachments
 
 
-def create_draft_email(client: MsGraphClient, args):
+def create_draft_command(client: MsGraphClient, args):
+    """
+    Creates draft message in user's mailbox, in draft folder.
+    """
     prepared_args = prepare_args('create-draft', args)
     email = args.get('from')
     suffix_endpoint = f'/users/{email}/messages'
     draft = client.build_message(**prepared_args)
-
     less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
-        draft.get('attachments')
+        attachments=draft.get('attachments')
     )
 
     draft['attachments'] = less_than_3mb_attachments
@@ -1557,15 +1560,6 @@ def create_draft_email(client: MsGraphClient, args):
         client.add_attachments_via_upload_session(
             email=email, draft_id=created_draft.get('id'), attachments=more_than_3mb_attachments
         )
-
-    return created_draft
-
-
-def create_draft_command(client: MsGraphClient, args):
-    """
-    Creates draft message in user's mailbox, in draft folder.
-    """
-    created_draft = create_draft_email(client, args)
 
     parsed_draft = client.parse_item_as_dict(created_draft)
     headers = ['ID', 'From', 'Sender', 'To', 'Subject', 'Body', 'BodyType', 'Cc', 'Bcc', 'Headers', 'Importance',
@@ -1601,13 +1595,35 @@ def build_recipients_human_readable(message_content):
 
 def send_email_command(client: MsGraphClient, args):
     """
-    Sends email from user's mailbox, the sent message will appear in Sent Items folder
+    Sends email from user's mailbox, the sent message will appear in Sent Items folder.
+
+    Sending email process:
+    1) If there are attachments larger than 3MB, create a draft mail, upload > 3MB attachments via upload session,
+        and send the draft mail.
+
+    2) if there aren't any attachments larger than 3MB, just send the email as usual.
     """
     prepared_args = prepare_args('send-mail', args)
-    email = args.get('from', client._mailbox_to_fetch)
-    suffix_endpoint = f'/users/{email}/sendMail'
     message_content = MsGraphClient.build_message(**prepared_args)
-    client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content}, resp_type="text")
+    email = args.get('from', client._mailbox_to_fetch)
+
+    less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
+        attachments=message_content.get('attachments')
+    )
+
+    if more_than_3mb_attachments:  # go through process 1 (in docstring)
+        message_content['attachments'] = less_than_3mb_attachments
+        suffix_endpoint = f'/users/{email}/messages'
+        created_draft = client.ms_client.http_request('POST', suffix_endpoint, json_data=message_content)  # create the draft email
+        draft_id = created_draft.get('id')
+        client.add_attachments_via_upload_session(  # add attachments via upload session.
+            email=email, draft_id=draft_id, attachments=more_than_3mb_attachments
+        )
+        suffix_endpoint = f'/users/{email}/messages/{draft_id}/send'
+        client.ms_client.http_request('POST', suffix_endpoint, resp_type="text")  # send the draft email.
+    else:  # go through process 2 (in docstring)
+        suffix_endpoint = f'/users/{email}/sendMail'
+        client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content}, resp_type="text")
 
     message_content.pop('attachments', None)
     message_content.pop('internet_message_headers', None)
