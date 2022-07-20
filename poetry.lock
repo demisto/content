@@ -180,14 +180,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.32"
+version = "1.24.33"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.32,<1.28.0"
+botocore = ">=1.27.33,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -196,7 +196,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.32"
+version = "1.27.33"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -508,8 +508,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "0ef10616761f0eb145fb33df9e96ff8010adc8a4"
-resolved_reference = "0ef10616761f0eb145fb33df9e96ff8010adc8a4"
+reference = "66c02b078daf8c1de6fd1e2f361b9c622a482d7a"
+resolved_reference = "66c02b078daf8c1de6fd1e2f361b9c622a482d7a"
 
 [[package]]
 name = "deprecated"
@@ -2204,7 +2204,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "b97c4056a4e7e74b3666d77da396471823c0f5ddc7e218eb3cb005e98c173d24"
+content-hash = "7a1ccd8c18b9f6d2ab25f26e53a7799d345afeec638f9893ace000cf49aa0501"
 
 [metadata.files]
 aiohttp = [
