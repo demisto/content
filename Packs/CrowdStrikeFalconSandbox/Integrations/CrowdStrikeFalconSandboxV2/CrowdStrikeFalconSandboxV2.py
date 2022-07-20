@@ -3,12 +3,10 @@ from requests import Response
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 import requests
-import traceback
 from typing import Dict, Any, Callable
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-SERVER_URL = 'https://www.hybrid-analysis.com/api/v2'
 SEARCH_TERM_QUERY_ARGS = ('filename', 'filetype', 'filetype_desc', 'env_id', 'country', 'verdict', 'av_detect',
                           'vx_family', 'tag', 'date_from', 'date_to', 'port', 'host', 'domain', 'url', 'similar_to',
                           'context', 'imp_hash', 'ssdeep', 'authentihash')
@@ -464,6 +462,7 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
 
     verify_certificate = not params.get('insecure', False)
+    server_url = params.get('serverUrl', '') + '/api/v2'
 
     proxy = params.get('proxy', False)
 
@@ -476,7 +475,7 @@ def main() -> None:
         }
 
         client = Client(
-            base_url=SERVER_URL,
+            base_url=server_url,
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
@@ -513,7 +512,6 @@ def main() -> None:
         return_results(command_func(client, args))
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto_command} command_func.\nError:\n{str(e)}')
 
 
