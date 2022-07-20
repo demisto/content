@@ -9,8 +9,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: The action that will be taken if the indicator will be discovered in
-    the organization.
+  description: The action that will be taken if the indicator will be discovered in the organization.
   isArray: false
   name: action
   predefined:
@@ -30,16 +29,13 @@ args:
   secret: false
 - default: false
   defaultValue: '0'
-  description: The results offset page. Only change when the number of the results
-    exceed the limit.
+  description: The results offset page. Only change when the number of the results exceed the limit.
   isArray: false
   name: offset
   required: false
   secret: false
 - default: false
-  description: "List of host group IDs that the indicator applies to. \nCan be retrieved\
-    \ by running the cs-falcon-list-host-groups command.\nEither applied_globally\
-    \ or host_groups must be provided."
+  description: "List of host group IDs that the indicator applies to. \nCan be retrieved by running the cs-falcon-list-host-groups command.\nEither applied_globally or host_groups must be provided."
   isArray: true
   name: host_groups
   required: false
@@ -58,8 +54,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'true'
-  description: "Whether the indicator is applied globally. \nEither applied_globally\
-    \ or host_groups must be provided. Default set to True."
+  description: "Whether the indicator is applied globally. \nEither applied_globally or host_groups must be provided. Default set to True."
   isArray: false
   name: applied_globally
   predefined:
@@ -67,9 +62,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Transform a XSOAR indicator into a Crowd Strike Falcon IOC.
-  The output (found at the TransformIndicatorToCSFalconIOC.JsonOutput context path) is a JSON, which represents the indicators in CS Falcon format.
-  This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* command.
+comment: Transform a XSOAR indicator into a Crowd Strike Falcon IOC. The output (found at the TransformIndicatorToCSFalconIOC.JsonOutput context path) is a JSON, which represents the indicators in CS Falcon format. This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* command.
 commonfields:
   id: TransformIndicatorToCSFalconIOC
   version: -1
@@ -98,16 +91,13 @@ outputs:
   description: The ID of the indicator
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.type
-  description: 'Type of the indicator. Possible values are: md5, sha256, ipv4, ipv6
-    and domain.'
+  description: 'Type of the indicator. Possible values are: md5, sha256, ipv4, ipv6 and domain.'
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.severity
-  description: 'The severity of the indicator. possible values are: Informational,
-    Low, Medium, High and Critical.'
+  description: 'The severity of the indicator. possible values are: Informational, Low, Medium, High and Critical.'
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.action
-  description: The action that will be taken if the indicator will be discovered in
-    the organization.
+  description: The action that will be taken if the indicator will be discovered in the organization.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.applied_globally
   description: Whether the indicator is applied globally.
@@ -123,7 +113,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.1.26972
+dockerimage: demisto/python3:3.10.5.31928
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
