@@ -127,6 +127,7 @@ class Client:
                  for example: tag1,tag2,tag3.
             timeout (int): The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
+            comment (str): Comment to be added to the incident
        Returns( Dict): request results as dict:
                     { '@odata.context',
                       'value': updated incident,
