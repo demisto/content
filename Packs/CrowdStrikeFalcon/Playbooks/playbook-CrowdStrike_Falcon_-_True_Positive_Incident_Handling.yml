@@ -922,7 +922,7 @@ tasks:
     scriptarguments:
       description:
         complex:
-          root: inputs.Description
+          root: inputs.TicketDescription
       projectKey:
         complex:
           root: inputs.TicketProjectName
