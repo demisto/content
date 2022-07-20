@@ -11,7 +11,7 @@ if [ "$#" -lt "1" ]; then
   [-f, --force]               Whether to trigger the force upload flow.
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
-  [-oa, --override-all]       Whether to override all packs during this upload flow. Can be true or false, default is false.
+  [-oa, --override-all]       If given, will override all packs during this upload flow.
   "
   exit 1
 fi
@@ -56,7 +56,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -oa|--override-all) _override_all_pack="$2"
+  -oa|--override-all) _override_all_pack="true"
     shift
     shift;;
 
