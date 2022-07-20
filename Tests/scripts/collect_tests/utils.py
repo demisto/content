@@ -5,10 +5,16 @@ from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions, FileType
 from demisto_sdk.commands.common.tools import json, yaml
-from exceptions import (DeprecatedPackException, InvalidPackNameException,
-                        NonDictException, NonexistentPackException,
-                        NoTestsConfiguredException, NotUnderPackException,
-                        SkippedPackException, UnsupportedPackException)
+from exceptions import (
+    DeprecatedPackException,
+    InvalidPackNameException,
+    NonDictException,
+    NonexistentPackException,
+    NoTestsConfiguredException,
+    NotUnderPackException,
+    SkippedPackException,
+    UnsupportedPackException,
+)
 from logger import logger
 from packaging import version
 from packaging.version import Version
@@ -115,18 +121,18 @@ class DictBased:
 
     def _calculate_from_version(self) -> Version:
         if value := (
-                self.get('fromversion', warn_if_missing=False)
-                or self.get('fromVersion', warn_if_missing=False)
-                or self.get('fromServerVersion', warn_if_missing=False)
+            self.get('fromversion', warn_if_missing=False)
+            or self.get('fromVersion', warn_if_missing=False)
+            or self.get('fromServerVersion', warn_if_missing=False)
         ):
             return Version(value)
         return version.NegativeInfinity
 
     def _calculate_to_version(self) -> Version:
         if value := (
-                self.get('toversion', warn_if_missing=False)
-                or self.get('toVersion', warn_if_missing=False)
-                or self.get('toServerVersion', warn_if_missing=False)
+            self.get('toversion', warn_if_missing=False)
+            or self.get('toVersion', warn_if_missing=False)
+            or self.get('toServerVersion', warn_if_missing=False)
         ):
             return Version(value)
         return version.Infinity
@@ -198,7 +204,11 @@ class PackManager:
         self.pack_id_to_pack_metadata: dict[str, ContentItem] = {}  # NOTE: The ID of a pack is the name of its folder.
         self.pack_id_to_pack_name_field: dict[str, str] = {}
 
-        for pack_folder in (pack_folder for pack_folder in self.packs_path.iterdir() if pack_folder.is_dir()):
+        for pack_folder in (
+            pack_folder
+            for pack_folder in self.packs_path.iterdir()
+            if pack_folder.is_dir()
+        ):
             metadata = ContentItem(pack_folder / 'pack_metadata.json')
             self.pack_id_to_pack_metadata[pack_folder.name] = metadata
             self.pack_id_to_pack_name_field[pack_folder.name] = metadata.name
@@ -228,7 +238,7 @@ class PackManager:
         return Path(*path.parts[path.parts.index('Packs') + 1:])
 
     def validate_pack(self, pack: str) -> None:
-        """ raises InvalidPackException if the pack name is not valid."""
+        """raises InvalidPackException if the pack name is not valid."""
         if not pack:
             raise InvalidPackNameException(pack)
         if pack in PackManager.skipped_packs:
@@ -256,9 +266,11 @@ def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
 
 def find_yml_content_type(yml_path: Path):
     return {
-               'Playbooks': FileType.PLAYBOOK,
-               'TestPlaybooks': FileType.TEST_PLAYBOOK,
-           }.get(yml_path.parent.name) or {
-               'Integrations': FileType.INTEGRATION,
-               'Scripts': FileType.SCRIPT,
-           }.get(yml_path.parents[1].name)
+        'Playbooks': FileType.PLAYBOOK,
+        'TestPlaybooks': FileType.TEST_PLAYBOOK,
+    }.get(yml_path.parent.name) or {
+        'Integrations': FileType.INTEGRATION,
+        'Scripts': FileType.SCRIPT,
+    }.get(
+        yml_path.parents[1].name
+    )
