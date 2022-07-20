@@ -1,97 +1,202 @@
-import oletools.oleid
-from oletools.olevba import VBA_Parser, TYPE_OLE, TYPE_OpenXML, TYPE_Word2003_XML, TYPE_MHTML
 from CommonServerPython import *
-import os
-from oletools.oleobj import process_file
 import demistomock as demisto
+import oletools.oleid
+from oletools.olevba import VBA_Parser
+import subprocess
+from oletools import crypto
+import os
+import hashlib
 
 
-def oleid():
-    attach_id = demisto.args().get('attach_id', '')
-    file_info = demisto.getFilePath(attach_id)
-    oid = oletools.oleid.OleID(file_info['path'])
-    indicators = oid.check()
-    indicators_list = []
-    for i in indicators:
-        indicators_list.append({'Indicator': str(i.name),
-                                'Value': str(i.value),
-                                'Risk': str(i.risk),
-                                'Description': str(i.description)})
+class OleClient:
+    def __init__(self, file_info, ole_command, password=None, decoded=False):
+        self.name = file_info['name']
+        self.file_path = file_info['path']
+        self.password = password
+        self.show_decoded = decoded
+        self.decrypted_file_path = None
+        self.processed_file_path = file_info['path']
+        self.ole_command = ole_command
+        self.hash = None
 
-    # oid = oletools.oleid.OleID('Archive.2/ActiveBarcode-Demo-Bind-Text.docm')
-    # indicators = oid.check()
-    # for i in indicators:
-    #     indicators_dict = {'Indicator id' : i.id,
-    #                        'Name' : i.name,
-    #                        'Type' : i.type,
-    #                        'Value' : repr(i.value),
-    #                        'Description': i.description}
+    def __del__(self):
+        try:
+            if self.password and self.decrypted_file_path:
+                os.unlink(self.decrypted_file_path)
+        except Exception:  # e.g. file does not exist or is None
+            pass
 
-        # print('Indicator id=%s name="%s" type=%s value=%s' % (i.id, i.name, i.type, repr(i.value)))
-        # print('description:\n', i.description)
+    def decryption(self):
+        if crypto.is_encrypted(self.file_path) and self.password:
+            try:
+                passwords = self.password + crypto.DEFAULT_PASSWORDS
+                self.decrypted_file_path = crypto.decrypt(self.file_path, passwords)
+                if not self.decrypted_file_path:
+                    raise crypto.WrongEncryptionPassword(self.file_path)
+            except Exception as e:
+                raise DemistoException(f'The file decryption failed with the following message:\n {e}')
 
-    cr = CommandResults(readable_output=tableToMarkdown(file_info['name'], indicators_list,
-                                                        headers=['Indicator', 'Value', 'Risk', 'Description']), outputs=indicators_list,
-                          outputs_prefix='Oletools.Oleid')
-    return cr
+    @staticmethod
+    def calc_hash(file_path: str):
+        with open(file_path, "rb") as f:
+            b = f.read()  # read entire file as bytes
+            return hashlib.sha256(b).hexdigest()
 
+    def run(self):
 
-#
-# The file may also be provided as a bytes string containing its data. In that case, the actual filename must be provided for reference, and the file content with the data parameter. For example:
-#
+        self.decryption()
 
+        if self.decrypted_file_path:
+            self.processed_file_path = self.decrypted_file_path
 
-def olevba():
-    try:
-        # vbaparser = VBA_Parser('Archive.2/ActiveBarcode-Demo-Bind-Text.docm')
+        # calculate the file hash
+        self.hash = self.calc_hash(self.processed_file_path)
 
-        my_file = 'Archive.2/ActiveBarcode-Demo-Bind-Text.docm'
-        file_data = open(my_file, 'rb').read()
-        vbaparser = VBA_Parser(my_file, data=file_data)
-
-        if vbaparser.detect_vba_macros():
-            print('VBA Macros found')
+        if self.ole_command == 'oleid':
+            cr = self.oleid()
+        elif self.ole_command == 'oleobj':
+            cr = self.oleobj()
+        elif self.ole_command == 'olevba':
+            cr = self.olevba()
         else:
-            print('No VBA Macros found')
+            raise NotImplementedError('Command "{}" is not implemented.'.format(demisto.command()))
 
+        self.wrap_command_result(cr)
+        return cr
+
+    def wrap_command_result(self, cr: CommandResults):
+        cr.outputs = {'sha256': self.hash, 'file name': self.name, 'ole_command_result': cr.outputs}
+        cr.outputs_key_field = 'sha256'
+
+    @staticmethod
+    def replace_space_with_underscore(indicator: str):
+        return indicator.replace(' ', '_')
+
+    def oleid(self):
+        oid = oletools.oleid.OleID(self.processed_file_path)
+        indicators = oid.check()
+        indicators_list = []
+        dbot_score = None
+        indicators_dict = {}
+        for i in indicators:
+            indicators_list.append({'Indicator': str(i.name),
+                                    'Value': str(i.value),
+                                    'Ole Risk': str(i.risk),
+                                    'Description': str(i.description)})
+
+            if str(i.name):
+                indicators_dict[self.replace_space_with_underscore(str(i.name))] = {
+                    'Value': str(i.value),
+                    'Ole_Risk': str(i.risk),
+                    'Description': str(i.description)
+                }
+
+            if str(i.name) == 'VBA Macros' and str(i.risk) in ['Medium', 'High']:
+                dbot_score = Common.DBotScore(self.hash,
+                                              DBotScoreType.FILE,
+                                              'Oletools',
+                                              Common.DBotScore.SUSPICIOUS if i.risk == 'Medium' else Common.DBotScore.BAD)
+
+        indicator = Common.File(dbot_score, sha256=self.hash) if dbot_score else None
+        cr = CommandResults(readable_output=tableToMarkdown(self.name, indicators_list,
+                                                            headers=['Indicator', 'Value', 'Ole Risk',
+                                                                     'Description']) + f'\n file hash: {self.hash}',
+                            outputs=indicators_dict,
+                            outputs_prefix='Oletools.Oleid',
+                            indicator=indicator
+                            )
+        return cr
+
+    def oleobj(self):
+        import re
+
+        args = []
+        command = 'oleobj'
+        file = self.processed_file_path
+        args.append(command)
+        args.append(file)
+
+        output = subprocess.run(args, capture_output=True)
+
+        regex = r"Found relationship 'hyperlink' with external link (.*?)\n"
+        str_output = output.stdout.decode("utf-8")
+        matches = re.findall(regex, str_output, re.MULTILINE)
+        readable_md = '### Found the following relationship "hyperlink" with external links\n'
+        hyperlink_list = []
+
+        if not matches:
+            readable_md = '### No "hyperlink" with external links were found'
+        else:
+            for match in matches:
+                readable_md += f'- {match}\n'
+                hyperlink_list.append(match)
+
+        cr = CommandResults(readable_output=readable_md, outputs_prefix='Oletools.Oleobj',
+                            outputs={'hyperlinkes': hyperlink_list},
+                            raw_response=str_output)
+        return cr
+
+    def olevba(self):
+        file_data = open(self.processed_file_path, 'rb').read()
+        vbaparser = VBA_Parser(self.processed_file_path, data=file_data, disable_pcode=True)
+
+        if not vbaparser.detect_vba_macros():
+            return CommandResults(readable_output='### No VBA Macros found\n')
+
+        found = '### VBA Macros found\n'
         all_macros = vbaparser.extract_all_macros()
-        reveal = vbaparser.reveal()
-        results = vbaparser.analyze_macros()
+        macros_list = []
 
-        print(all_macros)
+        for macro in all_macros:
+            macros_list.append({
+                'VBA Macro': macro[2],
+                'Found in file': macro[0],
+                'Ole stream': macro[1]
+            })
 
-    except Exception as e:
-        return_error(e)
+        macros_list_md = tableToMarkdown('Macros found', macros_list,
+                                         headers=['VBA Macro', 'Found in file', 'Ole stream'])
+
+        macro_source_code = vbaparser.reveal()
+        readable_macro = f'\n### Macro source code\n {macro_source_code}\n'
+
+        results = vbaparser.analyze_macros(show_decoded_strings=self.show_decoded)
+        results_list = []
+        for result in results:
+            results_list.append({
+                'Type': result[0],
+                'Keyword': result[1],
+                'Description': result[2]
+            })
+
+        results_md = tableToMarkdown('Macro Analyze', results_list, headers=['Type', 'Keyword', 'Description'])
+        vbaparser.close()
+
+        readable_output = found + macros_list_md + readable_macro + results_md
+        outputs = {
+            'macro_list': macros_list,
+            'macro_src_code': macro_source_code,
+            'macro_analyze': results_list
+        }
+        cr = CommandResults(readable_output=readable_output, outputs_prefix='Oletools.Olevba', outputs=outputs)
+        return cr
 
 
-def oleobj():
-    import io
-    my_file = 'Archive.2/SuperComputer-Overview-simplified.pptm'
-    file_data = open(my_file, 'rb').read()
-    old_stdout = sys.stdout
-    new_stdout = io.StringIO()
-    sys.stdout = new_stdout
+def main():  # pragma: no cover
+    args = demisto.args()
+    ole_command = args.get('ole_command')
+    attach_id = args.get('entryID', '')
+    file_info = demisto.getFilePath(attach_id)
+    show_decoded = args.get('decode', False)
+    password = argToList(args.get('password', ''))
 
-    process_file(my_file, file_data)
-
-    sys.stdout = old_stdout
-    output = new_stdout.getvalue()
-    cr = CommandResults(readable_output=output)
-    return cr
-
-
-def main():
-    command = demisto.args().get('ole_command')
-    commands = {'oleid': oleid,
-                'oleobj': oleobj}
+    ole_client = OleClient(file_info, ole_command, password=password, decoded=show_decoded)
 
     try:
-        return_results(commands.get(command)())
+        return_results(ole_client.run())
     except Exception as e:
-        return DemistoException(e)
+        return_error(f'The script failed with the following error:\n {e}')
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
-
-

@@ -1,11 +1,49 @@
-import demistomock as demisto
 from OletoolsScript import *
+from test_data.commands_outputs import oleid_output, oleobj_output, olevba_otuput, oleid_decrypted_output
 
 
-def test_oleid(mocker, caplog):
-    mocker.patch.object(demisto, 'getFilePath', return_value={
-        'path': '/Users/okarkkatz/dev/demisto/content/Packs/Base/Scripts/OletoolsScript/'
-                'Archive.2/ActiveBarcode-Demo-Bind-Text.docm',
-        'name': 'ActiveBarcode-Demo-Bind-Text.docm'})
-    main()
+def read_file(file_path):
+    with open(file_path) as f:
+        file_data = f.read()
+        return file_data
+
+
+def test_oleid(caplog):
+    ole_client = OleClient({
+        'path': 'test_data/ActiveBarcode-Demo-Bind-Text.docm',
+        'name': 'ActiveBarcode-Demo-Bind-Text.docm'}, 'oleid')
+
+    cr = ole_client.run()
+    assert cr.outputs == oleid_output
+    assert cr.readable_output == read_file('test_data/oleid_readable.md')
+    caplog.clear()
+
+
+def test_oleobj():
+    ole_client = OleClient({
+        'path': 'test_data/ActiveBarcode-Demo-Bind-Text.docm',
+        'name': 'ActiveBarcode-Demo-Bind-Text.docm'}, 'oleobj')
+    cr = ole_client.run()
+    assert cr.outputs == oleobj_output
+    assert cr.readable_output == read_file('test_data/oleobj_readable.md')
+
+
+def test_olevba(caplog):
+    ole_client = OleClient({
+        'path': 'test_data/ActiveBarcode-Demo-Bind-Text.docm',
+        'name': 'ActiveBarcode-Demo-Bind-Text.docm'}, 'olevba')
+    cr = ole_client.run()
+    assert cr.outputs == olevba_otuput
+    assert cr.readable_output == read_file('test_data/olevba_readable.md')
+    caplog.clear()
+
+
+def test_oleid_decrypted(caplog):
+    ole_client = OleClient({
+        'path': 'test_data/protected.docm',
+        'name': 'ActiveBarcode-Demo-Bind-Text.docm'}, 'oleid', ['123123'])
+
+    cr = ole_client.run()
+    assert cr.outputs == oleid_decrypted_output
+    assert cr.readable_output == read_file('test_data/oleid_decrypted_readable.md')
     caplog.clear()
