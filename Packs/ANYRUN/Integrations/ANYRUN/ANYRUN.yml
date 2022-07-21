@@ -319,6 +319,18 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason that the vendor made the decision.
       type: String
+    - contextPath: Reports.HTML
+      description: URL for the HTML report.
+      type: String
+    - contextPath: Reports.IOC
+      description: URL for the IOC report.
+      type: String
+    - contextPath: Reports.MISP
+      description: URL for the MISP report.
+      type: String
+    - contextPath: Reports.graph
+      description: URL for the graph report.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -671,6 +683,18 @@ script:
       type: String
     - contextPath: ANYRUN.Task.Status
       description: Task analysis status.
+      type: String
+    - contextPath: Reports.HTML
+      description: URL for the HTML report.
+      type: String
+    - contextPath: Reports.IOC
+      description: URL for the IOC report.
+      type: String
+    - contextPath: Reports.MISP
+      description: URL for the MISP report.
+      type: String
+    - contextPath: Reports.graph
+      description: URL for the graph report.
       type: String
     polling: true
   dockerimage: demisto/python3:3.10.5.31928
