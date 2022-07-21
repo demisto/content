@@ -102,13 +102,13 @@ class TestGenerateDBotScore(object):
         response1, response2, response3 = get_response
         main_object = response1.get('data', {}).get('analysis', {}).get('content', {}).get('mainObject', {})
         sha_256 = main_object.get('hashes', {}).get('sha256')
-        dbot_score = generate_dbotscore(response1)[0].dbot_score
+        dbot_score = generate_dbotscore(response1)[0].indicator.dbot_score
         assert dbot_score.indicator == sha_256
         assert dbot_score.score == 3
         assert dbot_score.indicator_type == 'file'
         assert dbot_score.integration_name == 'ANYRUN'
 
-        dbot_score = generate_dbotscore(response2)[0].dbot_score
+        dbot_score = generate_dbotscore(response2)[0].indicator.dbot_score
         main_object = response2.get('data', {}).get('analysis', {}).get('content', {}).get('mainObject', {})
         sha_256 = main_object.get('hashes', {}).get('sha256')
         assert dbot_score.indicator == sha_256
@@ -116,7 +116,7 @@ class TestGenerateDBotScore(object):
         assert dbot_score.indicator_type == 'file'
         assert dbot_score.integration_name == 'ANYRUN'
 
-        dbot_score = generate_dbotscore(response3)[0].dbot_score
+        dbot_score = generate_dbotscore(response3)[0].indicator.dbot_score
         main_object = response3.get('data', {}).get('analysis', {}).get('content', {}).get('mainObject', {})
         url = main_object.get('url')
         assert dbot_score.indicator == url
