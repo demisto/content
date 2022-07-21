@@ -525,16 +525,19 @@ def convert_date(date: Optional[str]) -> Optional[str]:
         return None
 
 
-def validate_argument(type: Optional[str], value: Any) -> int:
+def validate_argument(label: Optional[str], value: Any) -> int:
     """
-    Validates an command argument based on its type
+    Validates a command argument based on its type
 
-    Raise error if bad
-    Returns value if good
+    - params:
+        - label: The argument label
+        - value: The argument value
+    - returns:
+        The value if OK or raises an Exception if not
     """
 
-    demisto.debug(f"Testing '{type}' argument value")
-    if type in ['min_id', 'max_id']:
+    demisto.debug(f"Testing '{label}' argument value")
+    if label in ['min_id', 'max_id']:
         try:
             if (value is None) or isinstance(value, float):
                 raise ValueError('Cannot be empty or a float')
@@ -545,8 +548,8 @@ def validate_argument(type: Optional[str], value: Any) -> int:
             if int(value) <= 0:
                 raise ValueError('Should be > 0')
         except ValueError:
-            raise ValueError(f'"{type}" must be an integer greater than 0')
-    elif type in ['min_threat', 'min_certainty', 'max_threat', 'max_certainty']:
+            raise ValueError(f'"{label}" must be an integer greater than 0')
+    elif label in ['min_threat', 'min_certainty', 'max_threat', 'max_certainty']:
         try:
             if (value is None) or isinstance(value, float):
                 raise ValueError('Cannot be empty or a float')
@@ -559,8 +562,8 @@ def validate_argument(type: Optional[str], value: Any) -> int:
             if int(value) > 99:
                 raise ValueError('Should be < 100')
         except ValueError:
-            raise ValueError(f'"{type}" must be an integer between 0 and 99')
-    elif type in ['min_privilege_level']:
+            raise ValueError(f'"{label}" must be an integer between 0 and 99')
+    elif label in ['min_privilege_level']:
         try:
             if (value is None) or isinstance(value, float):
                 raise ValueError('Cannot be empty or a float')
@@ -573,7 +576,7 @@ def validate_argument(type: Optional[str], value: Any) -> int:
             if int(value) > 10:
                 raise ValueError('Should be <= 10')
         except ValueError:
-            raise ValueError(f'"{type}" must be an integer between 1 and 10')
+            raise ValueError(f'"{label}" must be an integer between 1 and 10')
     else:
         raise SystemError('Unknow argument type')
     return value
