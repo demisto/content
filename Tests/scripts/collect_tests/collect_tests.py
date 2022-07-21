@@ -182,7 +182,6 @@ class TestCollector(ABC):
         if collected and collected.machines is None:
             raise EmptyMachineListException()
 
-        #  todo check TPBs that use optional dependencies, e.g EDL performance test
         self._validate_tests_in_id_set(collected.tests)
         return collected
 
@@ -205,7 +204,7 @@ class TestCollector(ABC):
 class BranchTestCollector(TestCollector):
     def __init__(
             self,
-            branch_name: str,  # todo remove
+            branch_name: str,
             marketplace: MarketplaceVersions,
             service_account: Optional[str],
             private_pack_path: Optional[Path] = None,
@@ -525,7 +524,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
     def _collect(self) -> Optional[CollectedTests]:
         return CollectedTests.union((
-            self._id_set_tests_matching_marketplace_value(only_value=True),  # todo both ?
+            self._id_set_tests_matching_marketplace_value(only_value=True),
             self._packs_matching_marketplace_value(only_value=True),
             self._packs_of_content_matching_marketplace_value(only_value=True)
         ))
