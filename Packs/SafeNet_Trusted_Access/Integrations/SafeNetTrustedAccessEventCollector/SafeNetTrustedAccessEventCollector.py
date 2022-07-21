@@ -116,7 +116,7 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> Tuple[list, Comm
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: nocover
     """main function, parses params and runs command functions
     """
     args = demisto.args()
