@@ -2142,6 +2142,11 @@
             "timeout": 200
         },
         {
+            "integrations": "FireEye HX",
+            "playbookID": "FireEye HX Test",
+            "timeout": 800
+        },
+        {
             "integrations": "FireEyeFeed",
             "playbookID": "playbook-FeedFireEye_test",
             "memory_threshold": 110
