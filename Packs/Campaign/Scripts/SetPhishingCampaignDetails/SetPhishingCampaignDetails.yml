@@ -18,16 +18,15 @@ args:
 - name: append
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
-  description: If false then the context key will be overwritten. If set to true then
-    the script will append to existing context key.
-  defaultValue: "false"
+  - 'true'
+  - 'false'
+  description: If false then the context key will be overwritten. If set to true then the script will append to existing context key.
+  defaultValue: 'false'
 outputs: []
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.5.31928
 runas: DBotRole
 fromversion: 6.0.0
 tests:
