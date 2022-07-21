@@ -9,8 +9,7 @@ from collect_tests import (BranchTestCollector, FileType, Machine,
                            XSOARNightlyTestCollector)
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 
-from Tests.scripts.collect_tests.constants import (ONLY_INSTALL_PACK,
-                                                   XSOAR_SANITY_TEST_NAMES)
+from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.utils import PackManager
 
@@ -119,11 +118,15 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, run_m
         print(f'collected pack {pack}')
 
 
-@pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs', (
-        (MockerCases.empty, XSOARNightlyTestCollector, XSOAR_SANITY_TEST_NAMES, ()),
-        (MockerCases.empty, XSIAMNightlyTestCollector, (), ()),
-        (MockerCases.empty_xsiam, XSIAMNightlyTestCollector, ('some_xsiam_test_only_mentioned_in_conf_json',), ())
-))
+NIGHTLY_EMPTY_TESTS = (
+    (MockerCases.empty, XSOARNightlyTestCollector, XSOAR_SANITY_TEST_NAMES, ()),
+    (MockerCases.empty, XSIAMNightlyTestCollector, (), ()),
+    (MockerCases.empty_xsiam, XSIAMNightlyTestCollector,
+     ('some_xsiam_test_only_mentioned_in_conf_json',), ())
+)
+
+
+@pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs', NIGHTLY_EMPTY_TESTS)
 @pytest.mark.parametrize('run_master', (True, False))
 def test_nightly_empty(monkeypatch, case_mocker, run_master: bool, collector_class: Callable,
                        expected_tests: tuple[str], expected_packs: tuple[str]):
@@ -146,29 +149,29 @@ def test_nightly_empty(monkeypatch, case_mocker, run_master: bool, collector_cla
 
 
 NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
+NIGHTLY_TESTS = ((MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
+                 (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
+                 (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
+                 (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
+
+                 (MockerCases.C, XSOARNightlyTestCollector, {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
+                  {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack'}, None),
+
+                 (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'},
+                  {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
+
+                 (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
+                  (Machine.V6_5, Machine.MASTER, Machine.NIGHTLY)),
+
+                 (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
+                  None),
+                 (MockerCases.E, XSIAMNightlyTestCollector, {}, {}, None),
+
+                 (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
+                  None),)
 
 
-@pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs,expected_machines', (
-        (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
-        (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
-        (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
-        (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
-
-        (MockerCases.C, XSOARNightlyTestCollector,
-         {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
-         {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack'}, None),
-
-        (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'},
-         {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
-
-        (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-         (Machine.V6_5, Machine.MASTER, Machine.NIGHTLY)),
-
-        (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'}, None),
-        (MockerCases.E, XSIAMNightlyTestCollector, {}, {}, None),
-
-        (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'}, None),
-))
+@pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs,expected_machines', NIGHTLY_TESTS)
 def test_nightly(monkeypatch, case_mocker, collector_class: Callable, expected_tests: set[str],
                  expected_packs: tuple[str],
                  expected_machines: Optional[tuple[Machine]]):
