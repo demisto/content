@@ -15,13 +15,13 @@ from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.utils import PackManager
 
 """
-Test Collection Unit-Test cases 
+Test Collection Unit-Test cases
 - `empty` has no packs
 - `empty_xsiam` has no packs, and only a test that is taken from conf.json (it is not saved elsewhere)
 - `A` has a single pack with an integration and two test playbooks.
 - `B` has a single pack, with only test playbooks. (they should be collected)
 - `C` has a pack supported by both marketplaces, and one only for marketplacev2 and one only for XSOAR.
-- `D` has a single pack with from_version == to_version == 6.5, for testing the version range. 
+- `D` has a single pack with from_version == to_version == 6.5, for testing the version range.
 - `E` has a single pack with a script tested using myTestPlaybook, and a Playbook used in myOtherTestPlaybook.
 - `F` has a single pack with a script set up as `no tests`, and a conf where myTestPlaybook is set as the script's test.
 - `G` has objects that trigger collection of the pack (without tests)
