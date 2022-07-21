@@ -135,10 +135,8 @@ class DictFileBased(DictBased):
         try:
             PackManager.relative_to_packs(path)
         except NotUnderPackException:
-            if is_infrastructure:
-                pass
-            else:
-                raise  # todo remove
+            if not is_infrastructure:
+                raise
 
         if path.suffix not in ('.json', '.yml'):
             raise NonDictException(path)
@@ -160,11 +158,11 @@ class ContentItem(DictFileBased):
         self.deprecated = self.get('deprecated', warn_if_missing=False)
 
     @property
-    def id_(self) -> Optional[str]:  # property as pack_metadata (for example) doesn't have this field
+    def id_(self) -> Optional[str]:  # Optional as pack_metadata (for example) doesn't have this field
         return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
 
     @property
-    def pack_folder_name_tuple(self) -> tuple[str]:
+    def pack_id_tuple(self) -> tuple[str]:
         return self.pack_path.name,
 
     @property
@@ -194,26 +192,17 @@ class PackManager:
         self.pack_id_to_pack_metadata: dict[str, ContentItem] = {}  # NOTE: The ID of a pack is the name of its folder.
         self.pack_id_to_pack_name_field: dict[str, str] = {}
 
-        for pack_folder in (
-            pack_folder
-            for pack_folder in self.packs_path.iterdir()
-            if pack_folder.is_dir()
-        ):
+        for pack_folder in (pack_folder for pack_folder in self.packs_path.iterdir() if pack_folder.is_dir()):
             metadata = ContentItem(pack_folder / 'pack_metadata.json')
             self.pack_id_to_pack_metadata[pack_folder.name] = metadata
-            self.pack_id_to_pack_name_field[pack_folder.name] = metadata.name
 
             if metadata.deprecated:
                 self.deprecated_packs.add(pack_folder)
 
         self.pack_ids: set[str] = set(self.pack_id_to_pack_metadata.keys())
-        self.pack_name_to_pack_folder_name: dict[str, str] = {v: k for k, v in self.pack_id_to_pack_name_field.items()}
 
-    def get_pack_by_path(self, path: Path) -> ContentItem:
-        return self.pack_id_to_pack_metadata[path.name]
-
-    def __getitem__(self, pack_folder_name: str) -> ContentItem:
-        return self.pack_id_to_pack_metadata[pack_folder_name]
+    def __getitem__(self, pack_id: str) -> ContentItem:
+        return self.pack_id_to_pack_metadata[pack_id]
 
     def __iter__(self):
         yield from self.pack_id_to_pack_metadata.values()
@@ -254,13 +243,6 @@ def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
     return tuple(value)
 
 
-def find_yml_content_type(yml_path: Path):
-    return {
-        'Playbooks': FileType.PLAYBOOK,
-        'TestPlaybooks': FileType.TEST_PLAYBOOK,
-    }.get(yml_path.parent.name) or {
-        'Integrations': FileType.INTEGRATION,
-        'Scripts': FileType.SCRIPT,
-    }.get(
-        yml_path.parents[1].name
-    )
+def find_yml_content_type(yml_path: Path) -> Optional[FileType]:
+    return {'Playbooks': FileType.PLAYBOOK, 'TestPlaybooks': FileType.TEST_PLAYBOOK}.get(yml_path.parent.name) or \
+           {'Integrations': FileType.INTEGRATION, 'Scripts': FileType.SCRIPT, }.get(yml_path.parents[1].name)

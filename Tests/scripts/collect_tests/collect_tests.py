@@ -185,7 +185,7 @@ class TestCollector(ABC):
         if collected and collected.machines is None:
             raise EmptyMachineListException()
 
-        #  todo check tpbs that use optional dependencies, e.g EDL performance test
+        #  todo check TPBs that use optional dependencies, e.g EDL performance test
         self._validate_tests_in_id_set(collected.tests)
         return collected
 
@@ -195,12 +195,12 @@ class TestCollector(ABC):
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
     @staticmethod
-    def _collect_pack(name: str, reason: CollectionReason, reason_description: str) -> CollectedTests:
+    def _collect_pack(pack_name: str, reason: CollectionReason, reason_description: str) -> CollectedTests:
         return CollectedTests(
             tests=None,
-            packs=(name,),
+            packs=(pack_name,),
             reason=reason,
-            version_range=PACK_MANAGER[name].version_range,
+            version_range=PACK_MANAGER[pack_name].version_range,
             reason_description=reason_description,
         )
 
@@ -304,7 +304,7 @@ class BranchTestCollector(TestCollector):
         # creating an object for each, as CollectedTests require #packs==#tests
         if tests and (collected := CollectedTests.union(
                 tuple(CollectedTests(
-                    tests=(test,), packs=yml.pack_folder_name_tuple, reason=reason, version_range=yml.version_range,
+                    tests=(test,), packs=yml.pack_id_tuple, reason=reason, version_range=yml.version_range,
                     reason_description=f'{yml.id_=} ({relative_yml_path})') for test in tests))):
             return collected
         else:
@@ -332,7 +332,7 @@ class BranchTestCollector(TestCollector):
         elif file_type in ONLY_INSTALL_PACK:
             # install pack without collecting tests.
             return self._collect_pack(
-                name=find_pack_folder(path).name,
+                pack_name=find_pack_folder(path).name,
                 reason=CollectionReason.NON_CODE_FILE_CHANGED,
                 reason_description=reason_description,
             )
@@ -366,7 +366,7 @@ class BranchTestCollector(TestCollector):
 
         return CollectedTests(
             tests=tests,
-            packs=content_item.pack_folder_name_tuple,
+            packs=content_item.pack_id_tuple,
             reason=reason,
             version_range=content_item.version_range,
             reason_description=reason_description,
@@ -483,15 +483,16 @@ class NightlyTestCollector(TestCollector, ABC):
             if self.marketplace in item_marketplaces:
                 path = PATHS.content_path / item.file_path
                 try:
-                    pack_folder = find_pack_folder(path)
-                    pack = PACK_MANAGER.get_pack_by_path(pack_folder)
+                    pack = PACK_MANAGER[find_pack_folder(path).name]
                     relative_path = PACK_MANAGER.relative_to_packs(item.file_path)
                     collected.append(
-                        CollectedTests(tests=None,
-                                       packs=(pack_folder.name,),  # pack folder name is used as id for packs
-                                       reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
-                                       version_range=item.version_range or pack.version_range,
-                                       reason_description=f'{str(relative_path)}, ({self.marketplace.value})')
+                        CollectedTests(
+                            tests=None,
+                            packs=pack.pack_id_tuple,
+                            reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
+                            version_range=item.version_range or pack.version_range,
+                            reason_description=f'{str(relative_path)}, ({self.marketplace.value})'
+                        )
                     )
 
                 except NotUnderPackException:
