@@ -1,3 +1,4 @@
+polling: true
 args:
 - description: webserver action uuid
   name: uuid
