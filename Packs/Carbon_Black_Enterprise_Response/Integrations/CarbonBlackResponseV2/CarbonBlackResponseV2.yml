@@ -1109,7 +1109,7 @@ script:
       name: id
       required: true
     - default: false
-      description: action_type specified for this watchlist. Options for action_type are syslog, email, alert.
+      description: Action type specified for the watchlist. Options for action_type are syslog, email and alert.
       name: action_type
       required: true
       auto: PREDEFINED
