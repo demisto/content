@@ -410,13 +410,12 @@ def watchlist_update_command(client: Client, id: str, search_query: str, descrip
 
 def watchlist_update_action_command(client: Client, id: str, action_type: str,
                                     enabled: bool) -> CommandResults:
-	if enabled =="True":
+    if enabled =="True":
         enabled = True
-	elif enabled == 'False':
-		enabled = False
+    elif enabled == 'False':
+        enabled = False
     params = assign_params(enabled=enabled)
     res = client.http_request(url=f'/v1/watchlist/{id}/action_type/{action_type}', method='PUT', json_data=params)
-
     # res contains whether the task successful.
     return CommandResults(readable_output=res.get('result'))
 
