@@ -167,7 +167,7 @@ def check_datetime_aware(d):
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, api_key: str, proxy: bool) -> None:
+    def __init__(self, base_url: str, api_key: str, proxy: bool, verify: bool) -> None:
         """
         Inherit the BaseClient class from the demistomock.
         :type base_url: ``str``
@@ -176,15 +176,16 @@ class Client(BaseClient):
         :param api_key: api token to access the api data.
         :type proxy: ``bool``
         :param proxy: Whether the request should use the system proxy settings.
+        :type verify: ``bool``
+        :param verify: Whether the request should verify the SSL certificate.
         :return: returns None
         :rtype: ``None``
         """
         self.base_url = base_url
         self.api_key = api_key
-        self.proxy = proxy
         self.status = None
 
-        super().__init__(base_url=base_url, proxy=proxy)
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
     def http_request(self, method: str, url_suffix: str, json_data=None, params=None, data=None) -> Any:
         """
@@ -1264,8 +1265,9 @@ def main():
         base_url = params.get(URL)
         api_key = params.get(API_TOKEN).get('password')
         proxy = params.get('proxy', False)
+        verify = not params.get('insecure', False)
 
-        client = Client(base_url, api_key, proxy)
+        client = Client(base_url, api_key, proxy, verify)
 
         command = demisto.command()
         demisto.debug(COMMAND_CALLED.format(command=command))
