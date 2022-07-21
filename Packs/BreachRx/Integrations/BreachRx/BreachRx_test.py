@@ -16,6 +16,7 @@ import io
 from CommonServerPython import json
 import requests_mock
 from graphql.language import print_ast
+import pytest
 
 
 def util_load_json(path):
@@ -98,7 +99,7 @@ def set_up_mocker(m, found_incident=True):
         json=util_load_json("test_data/get_actions_for_incident.json")
     )
 
-    return BreachRxClient("mock://base_url", "api_key", "secret_key", "org_name")
+    return BreachRxClient("mock://base_url", "api_key", "secret_key", "org_name", False)
 
 
 def test_create_incident_command():
@@ -185,62 +186,85 @@ def test_create_incident_command_no_incident_name():
 
 
 def test_get_incident_actions_command(mocker):
-    incident_id = 1
-    incident_name = "This is an incident name"
+    incident = {
+        "id": 339,
+        "name": "4 My manually set XSOAR Incident name",
+        "severity": {
+            "name": "High"
+        },
+        "types": [
+            {
+                "type": {
+                    "name": "Attempted Access"
+                }
+            }
+        ],
+        "description": "An alternative description!",
+        "identifier": "JULIETT000339"
+    }
 
     with requests_mock.Mocker() as m:
         client = set_up_mocker(m)
         mocker.patch.object(BreachRx, "demisto")
-        BreachRx.demisto.dt.side_effect = [incident_id, incident_name]
+        BreachRx.demisto.dt.return_value = incident
         results = get_incident_actions_command(client)
 
     get_actions_request = m.request_history[-1]
-    assert get_actions_request.json()['variables'].get("incidentId") == incident_id
+    assert get_actions_request.json()['variables'].get("incidentId") == incident["id"]
 
-    assert results.outputs_prefix == "BreachRx.Incident.Actions"
+    assert results.outputs_prefix == "BreachRx.Incident"
     assert results.outputs_key_field == "id"
-    assert results.outputs == [
-        {
-            'description': '<p>abc</p>',
-            'id': 1229,
-            'name': 'Another ggg',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
-        },
-        {
-            'description': '',
-            'id': 1230,
-            'name': 'conditions',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
-        },
-        {
-            'description': '',
-            'id': 1231,
-            'name': 'make another task',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
-        },
-        {
-            'description': '<p style"margin-left: 25px;">test indent</p>',
-            'id': 1232,
-            'name': 'test4',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
-        },
-    ]
+    assert results.outputs == [{
+        'description': 'An alternative description!',
+        'id': 339,
+        'identifier': 'JULIETT000339',
+        'name': '4 My manually set XSOAR Incident name',
+        'severity': {'name': 'High'},
+        'types': [{'type': {'name': 'Attempted Access'}}],
+        'actions': [
+            {
+                'description': '<p>abc</p>',
+                'id': 1229,
+                'name': 'Another ggg',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '',
+                'id': 1230,
+                'name': 'conditions',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '',
+                'id': 1231,
+                'name': 'make another task',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '<p style"margin-left: 25px;">test indent</p>',
+                'id': 1232,
+                'name': 'test4',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+        ]
+    }]
 
 
 def test_get_incident_actions_command_no_incident_context():
     with requests_mock.Mocker() as m:
         client = set_up_mocker(m)
-        results = get_incident_actions_command(client)
+        with pytest.raises(Exception) as error:
+            get_incident_actions_command(client)
 
-    assert results == (
+    assert str(error.value) == (
         "Error: No BreachRx privacy Incident associated with this Incident,"
         " and no Incident search terms provided."
     )
@@ -260,42 +284,50 @@ def test_get_incident_actions_command_incident_name(mocker):
         get_actions_request = m.request_history[-1]
         assert get_actions_request.json()['variables'].get("incidentId") == 339
 
-    assert results.outputs_prefix == "BreachRx.Incident.Actions"
+    assert results.outputs_prefix == "BreachRx.Incident"
     assert results.outputs_key_field == "id"
-    assert results.outputs == [
-        {
-            'description': '<p>abc</p>',
-            'id': 1229,
-            'name': 'Another ggg',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
-        },
-        {
-            'description': '',
-            'id': 1230,
-            'name': 'conditions',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
-        },
-        {
-            'description': '',
-            'id': 1231,
-            'name': 'make another task',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
-        },
-        {
-            'description': '<p style"margin-left: 25px;">test indent</p>',
-            'id': 1232,
-            'name': 'test4',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
-        },
-    ]
+    assert results.outputs == [{
+        'description': 'An alternative description!',
+        'id': 339,
+        'identifier': 'JULIETT000339',
+        'name': '4 My manually set XSOAR Incident name',
+        'severity': {'name': 'High'},
+        'types': [{'type': {'name': 'Attempted Access'}}],
+        'actions': [
+            {
+                'description': '<p>abc</p>',
+                'id': 1229,
+                'name': 'Another ggg',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '',
+                'id': 1230,
+                'name': 'conditions',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '',
+                'id': 1231,
+                'name': 'make another task',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '<p style"margin-left: 25px;">test indent</p>',
+                'id': 1232,
+                'name': 'test4',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+        ]
+    }]
 
 
 def test_get_incident_actions_command_incident_identifier():
@@ -312,42 +344,182 @@ def test_get_incident_actions_command_incident_identifier():
         get_actions_request = m.request_history[-1]
         assert get_actions_request.json()['variables'].get("incidentId") == 339
 
-    assert results.outputs_prefix == "BreachRx.Incident.Actions"
+    assert results.outputs_prefix == "BreachRx.Incident"
     assert results.outputs_key_field == "id"
-    assert results.outputs == [
-        {
-            'description': '<p>abc</p>',
-            'id': 1229,
-            'name': 'Another ggg',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
+    assert results.outputs == [{
+        'description': 'An alternative description!',
+        'id': 339,
+        'identifier': 'JULIETT000339',
+        'name': '4 My manually set XSOAR Incident name',
+        'severity': {'name': 'High'},
+        'types': [{'type': {'name': 'Attempted Access'}}],
+        'actions': [
+            {
+                'description': '<p>abc</p>',
+                'id': 1229,
+                'name': 'Another ggg',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '',
+                'id': 1230,
+                'name': 'conditions',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '',
+                'id': 1231,
+                'name': 'make another task',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '<p style"margin-left: 25px;">test indent</p>',
+                'id': 1232,
+                'name': 'test4',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+        ]
+    }]
+
+
+def test_get_incident_actions_command_multiple_incidents(mocker):
+    incidents = [{
+        "id": 339,
+        "name": "4 My manually set XSOAR Incident name",
+        "severity": {
+            "name": "High"
         },
-        {
-            'description': '',
-            'id': 1230,
-            'name': 'conditions',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
+        "types": [
+            {
+                "type": {
+                    "name": "Attempted Access"
+                }
+            }
+        ],
+        "description": "An alternative description!",
+        "identifier": "JULIETT000339"
+    }, {
+        "id": 369,
+        "name": "a random incident to create",
+        "severity": {
+            "name": "Unknown"
         },
-        {
-            'description': '',
-            'id': 1231,
-            'name': 'make another task',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
-        },
-        {
-            'description': '<p style"margin-left: 25px;">test indent</p>',
-            'id': 1232,
-            'name': 'test4',
-            'phase': {'id': 1, 'name': 'Ready'},
-            'phase_name': 'Ready',
-            'user': None
-        },
-    ]
+        "types": [
+            {
+                "type": {
+                    "name": "Other"
+                }
+            }
+        ],
+        "description": "This is a description.",
+        "identifier": "JULIETT000369"
+    }]
+
+    with requests_mock.Mocker() as m:
+        client = set_up_mocker(m)
+        mocker.patch.object(BreachRx, "demisto")
+        BreachRx.demisto.dt.return_value = incidents
+        results = get_incident_actions_command(client)
+
+    get_actions_request = m.request_history[-2]
+    assert get_actions_request.json()['variables'].get("incidentId") == incidents[0]["id"]
+
+    get_actions_request = m.request_history[-1]
+    assert get_actions_request.json()['variables'].get("incidentId") == incidents[1]["id"]
+
+    assert results.outputs_prefix == "BreachRx.Incident"
+    assert results.outputs_key_field == "id"
+    assert results.outputs == [{
+        'description': 'An alternative description!',
+        'id': 339,
+        'identifier': 'JULIETT000339',
+        'name': '4 My manually set XSOAR Incident name',
+        'severity': {'name': 'High'},
+        'types': [{'type': {'name': 'Attempted Access'}}],
+        'actions': [
+            {
+                'description': '<p>abc</p>',
+                'id': 1229,
+                'name': 'Another ggg',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '',
+                'id': 1230,
+                'name': 'conditions',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '',
+                'id': 1231,
+                'name': 'make another task',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '<p style"margin-left: 25px;">test indent</p>',
+                'id': 1232,
+                'name': 'test4',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+        ]
+    }, {
+        "id": 369,
+        "name": "a random incident to create",
+        "description": "This is a description.",
+        "identifier": "JULIETT000369",
+        'severity': {'name': 'Unknown'},
+        'types': [{'type': {'name': 'Other'}}],
+        'actions': [
+            {
+                'description': '<p>abc</p>',
+                'id': 1229,
+                'name': 'Another ggg',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '',
+                'id': 1230,
+                'name': 'conditions',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '',
+                'id': 1231,
+                'name': 'make another task',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+            {
+                'description': '<p style"margin-left: 25px;">test indent</p>',
+                'id': 1232,
+                'name': 'test4',
+                'phase': {'id': 1, 'name': 'Ready'},
+                'phase_name': 'Ready',
+                'user': None
+            },
+        ]
+    }]
 
 
 def test_import_incident_command():
@@ -384,17 +556,18 @@ def test_import_incident_command_no_incident():
 
     with requests_mock.Mocker() as m:
         client = set_up_mocker(m, found_incident=False)
-        results = import_incident_command(
-            client,
-            incident_name=incident_name,
-            incident_identifier=incident_identifier
-        )
+        with pytest.raises(Exception) as error:
+            import_incident_command(
+                client,
+                incident_name=incident_name,
+                incident_identifier=incident_identifier
+            )
 
         create_incident_request = m.request_history[-1]
         assert incident_name == create_incident_request.json()['variables']['name']
         assert incident_identifier == create_incident_request.json()['variables']['identifier']
 
-    assert results == "Error: No BreachRx privacy Incident found using the search terms provided."
+    assert str(error.value) == "Error: No BreachRx privacy Incident found using the search terms provided."
 
 
 def test_get_incident_command():

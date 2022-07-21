@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from collections.abc import Callable
@@ -104,7 +103,7 @@ query GetIncidentByName($name: String, $identifier: String) {
 
 
 class BreachRxClient:
-    def __init__(self, base_url: str, api_key: str, secret_key: str, org_name: str):
+    def __init__(self, base_url: str, api_key: str, secret_key: str, org_name: str, verify: bool):
         self.api_key = api_key
         self.secret_key = secret_key
         self.org_name = org_name
@@ -115,7 +114,8 @@ class BreachRxClient:
             url=base_url,
             auth=auth,
             headers={"orgname": org_name},
-            timeout=60
+            timeout=60,
+            verify=verify
         )
 
         self.client = Client(
@@ -165,7 +165,7 @@ def test_module(client: BreachRxClient):
         client.get_incident_severities()
         return "ok"
     except Exception:
-        return "Authorization Error: make sure your API Key and Secret Key are correctly set"
+        raise Exception("Authorization Error: make sure your API Key and Secret Key are correctly set")
 
 
 def create_incident_command(
@@ -199,39 +199,41 @@ def get_incident_actions_command(
     incident_name: str = None,
     incident_identifier: str = None
 ) -> Union[CommandResults, str]:
-    incident_id = demisto.dt(demisto.context(), 'BreachRx.Incident.id')
+    incidents = demisto.dt(demisto.context(), 'BreachRx.Incident')
 
-    if not incident_name:
-        incident_name = demisto.dt(demisto.context(), 'BreachRx.Incident.name')
-
-    if not incident_id:
+    if not incidents:
         if not incident_name and not incident_identifier:
-            return (
+            raise Exception(
                 "Error: No BreachRx privacy Incident associated with this Incident,"
                 " and no Incident search terms provided."
             )
 
-        incident = client.get_incident(incident_name, incident_identifier)
+        incidents = [client.get_incident(incident_name, incident_identifier)]
 
-        if not incident:
-            return "Error: No BreachRx privacy Incident found using the search terms provided."
+        if not incidents:
+            raise Exception("Error: No BreachRx privacy Incident found using the search terms provided.")
 
-        incident_id = incident.get("id")
-        incident_name = incident.get("name")
+    if type(incidents) is not list:
+        incidents = [incidents]
 
-    actions = client.get_actions_for_incident(incident_id)
+    for incident in incidents:
+        incident["actions"] = client.get_actions_for_incident(incident['id'])
 
-    for action in actions:
-        action["phase_name"] = action["phase"]["name"]
+        for action in incident["actions"]:
+            action["phase_name"] = action["phase"]["name"]
 
-    actions_markdown_table = tableToMarkdown("Actions", actions, headers=["name", "phase_name"])
+    readable_output = ""
+
+    for incident in incidents:
+        actions_markdown_table = tableToMarkdown("Actions", incident["actions"], headers=["name", "phase_name"])
+        readable_output += f"# {incident['name']} ({incident['id']})\n" + actions_markdown_table + "\n"
 
     return CommandResults(
-        outputs_prefix="BreachRx.Incident.Actions",
+        outputs_prefix="BreachRx.Incident",
         outputs_key_field="id",
-        outputs=actions,
-        raw_response=actions,
-        readable_output=f"# {incident_name} ({incident_id})\n" + actions_markdown_table
+        outputs=incidents,
+        raw_response=incidents,
+        readable_output=readable_output
     )
 
 
@@ -243,7 +245,7 @@ def import_incident_command(
     incident = client.get_incident(incident_name, incident_identifier)
 
     if not incident:
-        return "Error: No BreachRx privacy Incident found using the search terms provided."
+        raise Exception("Error: No BreachRx privacy Incident found using the search terms provided.")
 
     return CommandResults(
         outputs_prefix="BreachRx.Incident",
@@ -285,13 +287,16 @@ def main() -> None:  # pragma: no cover
         org_name = demisto.params()["url"].split(".")[0].replace("https://", "")
         api_key = demisto.params().get("api_key", {}).get("password")
         secret_key = demisto.params().get("secret_key", {}).get("password")
+        verify = demisto.params().get("insecure", False)
 
-        client = BreachRxClient(base_url, api_key, secret_key, org_name)
+        client = BreachRxClient(base_url, api_key, secret_key, org_name, verify)
 
         command_func: Any[Callable, None] = COMMANDS.get(demisto.command())
 
-        if command_func is not None:
+        if command_func:
             return_results(command_func(client, **demisto.args()))
+        else:
+            raise NotImplementedError(f'{demisto.command()} command is not implemented.')
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
