@@ -391,7 +391,7 @@ slack-notify-nightly-build:
     - exit $EXIT_CODE
 
 
-xsiam_prod_1:
+xsiam_master_1:
   extends:
     - .test_content_on_xsiam_server_instances_base
   rules:
@@ -400,12 +400,12 @@ xsiam_prod_1:
       when: always
   variables:
     INSTANCE_ROLE: "XSIAM Master"
-    GCS_QUEUE_FILE: "queue-prod"
-    TEST_MACHINES_LIST: "test-machines-prod"
-    LOCK_MACHINE_NAME: "qa2-test-9994671965229"
+    GCS_QUEUE_FILE: "queue-master"
+    TEST_MACHINES_LIST: "test-machines-master"
+    LOCK_MACHINE_NAME: "qa2-test-9997333835008"
 
 
-xsiam_prod_2:
+xsiam_master_2:
   extends:
     - .test_content_on_xsiam_server_instances_base
   rules:
@@ -414,12 +414,12 @@ xsiam_prod_2:
       when: always
   variables:
     INSTANCE_ROLE: "XSIAM Master"
-    GCS_QUEUE_FILE: "queue-prod"
-    TEST_MACHINES_LIST: "test-machines-prod"
-    LOCK_MACHINE_NAME: "qa2-test-9991850898712"
+    GCS_QUEUE_FILE: "queue-master"
+    TEST_MACHINES_LIST: "test-machines-master"
+    LOCK_MACHINE_NAME: "qa2-test-9992101943618"
 
 
-xsiam_prod_3:
+xsiam_master_3:
   extends:
     - .test_content_on_xsiam_server_instances_base
   rules:
@@ -428,6 +428,6 @@ xsiam_prod_3:
       when: always
   variables:
     INSTANCE_ROLE: "XSIAM Master"
-    GCS_QUEUE_FILE: "queue-prod"
-    TEST_MACHINES_LIST: "test-machines-prod"
-    LOCK_MACHINE_NAME: "qa2-test-9993230017659"
+    GCS_QUEUE_FILE: "queue-master"
+    TEST_MACHINES_LIST: "test-machines-master"
+    LOCK_MACHINE_NAME: "qa2-test-9992169942140"
