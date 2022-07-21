@@ -66,7 +66,7 @@ configuration:
 - display: Entity types to fetch
   name: fetch_entity_types
   type: 16    # Mutiple select dropdown
-  required: true
+  required: false
   # For future use
   # additionalinfo: Choose what to fetch - Accounts, Hosts and/or Detections.
     # (Default - Accounts & Hosts)
@@ -540,6 +540,10 @@ script:
       description: Detection ID you want to mark/unmark as fixed
     - name: fixed
       description: The wanted detection status ("true", "false"). No default value
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
     outputs: []
   - name: vectra-detection-add-tags
     description: Add tags to a Detection
