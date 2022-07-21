@@ -140,7 +140,6 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'music',
     'newly-registered-domain',
     'news',
-    'not-resolved',
     'nudity',
     'online-storage-and-backup',
     'parked',
@@ -173,6 +172,9 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'web-advertisements',
     'web-hosting',
     'web-based-email',
+    'high-risk',
+    'medium-risk',
+    'low-risk'
 }
 
 class PAN_OS_Not_Found(Exception):
@@ -2568,7 +2570,8 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
         err_readable_output = None
         try:
             categories = panorama_get_url_category(url_cmd, url, target)
-
+            max_url_dbot_score = 0
+            url_dbot_score_category = ''
             for category in categories:
                 if category in categories_dict:
                     categories_dict[category].append(url)
@@ -2579,24 +2582,29 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
                 context_urls = populate_url_filter_category_from_context(category)
                 categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-                score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
+                current_dbot_score = calculate_dbot_score(
+                    category.lower(), additional_suspicious, additional_malicious
+                )
+                if current_dbot_score > max_url_dbot_score:
+                    max_url_dbot_score = current_dbot_score
+                    url_dbot_score_category = category
 
-                dbot_score = Common.DBotScore(
-                    indicator=url,
-                    indicator_type=DBotScoreType.URL,
-                    integration_name='PAN-OS',
-                    score=score
-                )
-                url_obj = Common.URL(
-                    url=url,
-                    dbot_score=dbot_score,
-                    category=category
-                )
-                readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
-                command_results.append(CommandResults(
-                    indicator=url_obj,
-                    readable_output=readable_output
-                ))
+            dbot_score = Common.DBotScore(
+                indicator=url,
+                indicator_type=DBotScoreType.URL,
+                integration_name='PAN-OS',
+                score=max_url_dbot_score
+            )
+            url_obj = Common.URL(
+                url=url,
+                dbot_score=dbot_score,
+                category=url_dbot_score_category
+            )
+            readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
+            command_results.append(CommandResults(
+                indicator=url_obj,
+                readable_output=readable_output
+            ))
         except InvalidUrlLengthException as e:
             score = 0
             category = None
