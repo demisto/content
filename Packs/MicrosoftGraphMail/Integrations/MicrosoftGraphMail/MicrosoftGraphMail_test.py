@@ -894,7 +894,23 @@ class TestCommandsWithLargeAttachments:
 
     @pytest.mark.parametrize('client, args', REPLY_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
     def test_reply_mail_command(self, mocker, client, args):
+        """
+        Given:
+            Case 1: reply email command arguments and attachment > 3mb.
+            Case 2: reply email command arguments and attachment < 3mb.
+            Case 3: reply email command arguments and one attachment > 3m and one attachment < 3mb.
 
+        When:
+            - sending a mail
+
+        Then:
+            Case1: make sure the upload session was called with the correct headers according to file size
+            Case2: make sure the upload session was not called at all and that the attachment was added through the
+                regular reply mail api endpoint.
+            Case3: make sure attachment 1 was called with upload session with the correct headers according
+                    to file size and that attachment 2 was added through the regular create draft api endpoint.
+            - Make sure for all three cases the expected context output is and that the right api calls were called.
+        """
         with requests_mock.Mocker() as request_mocker:
             from_email = args.get('from')
             mocked_draft_id = '123'
