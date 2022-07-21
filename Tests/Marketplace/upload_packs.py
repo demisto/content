@@ -26,7 +26,6 @@ from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPCon
 from demisto_sdk.commands.common.tools import run_command, str2bool, open_id_set_file
 
 from Tests.scripts.utils.log_util import install_logging
-from Tests.scripts.utils import logging_wrapper as logging
 import traceback
 
 
@@ -1024,7 +1023,7 @@ def option_handler():
 
 
 def main():
-    install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
+    install_logging('Prepare_Content_Packs_For_Testing.log')
     option = option_handler()
     packs_artifacts_path = option.packs_artifacts_path
     id_set = open_id_set_file(option.id_set_path)
