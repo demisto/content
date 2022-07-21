@@ -127,8 +127,23 @@ def test_severity_string_to_int(input_severity, expected):
     assert severity_string_to_int(input_severity) == expected
 
 
-# def test_convert_date():
-#     pass
+@pytest.mark.parametrize(
+    "input_date,expected",
+    [
+        ('2022-10-10T14:28:56Z', '2022-10-10T14:28:56.000Z'),
+        ('2022-01-01T01:01:01Z', '2022-01-01T01:01:01.000Z'),
+        ('Vectra', None),
+        (None, None)
+    ]
+)
+def test_convert_date(input_date, expected):
+    """
+    Tests convert_Date helper function.
+    """
+    from VectraDetect import convert_date
+
+    assert convert_date(input_date) == expected
+
 
 # Compute all combinations
 validate_argument_test_data = []
