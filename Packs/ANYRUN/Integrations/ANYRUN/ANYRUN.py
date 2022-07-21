@@ -436,7 +436,6 @@ def generate_dbotscore(response: Dict) -> List:
         info = main_object.get('info', {})
         file_type = info.get('file')
         exif = info.get('exif', {})
-        exe = exif.get('exe')
         main_entity = hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5')
         main_entity_type = FeedIndicatorType.File
         dbot_score = Common.DBotScore(
@@ -515,7 +514,9 @@ def generate_dbotscore(response: Dict) -> List:
                         dbot_score=current_dbot_score,
                         relationships=relationships
                     )
-                    if current_connection.get('IP') not in [x.indicator.ip for x in returned_data if isinstance(x.indicator, Common.IP)]:
+                    if current_connection.get('IP') not in [
+                        x.indicator.ip for x in returned_data if isinstance(x.indicator, Common.IP)
+                    ]:
                         returned_data.append(CommandResults(
                             readable_output=tableToMarkdown(
                                 f"{current_connection.get('IP')}",
@@ -574,20 +575,22 @@ def generate_dbotscore(response: Dict) -> List:
                                     [{
                                         "Description": f"This IP was resovled from {current_dnsRequests.get('Domain')}"
                                     }]
-                                    )
+                                )
                             ))
                     domain_indicator = Common.Domain(
                         domain=current_dnsRequests.get('Domain'),
                         dbot_score=current_dbot_score,
                         relationships=relationships
                     )
-                    if current_dnsRequests.get('Domain') not in [x.indicator.domain for x in returned_data if isinstance(x.indicator, Common.Domain)]:
+                    if current_dnsRequests.get('Domain') not in [
+                        x.indicator.domain for x in returned_data if isinstance(x.indicator, Common.Domain)
+                    ]:
                         returned_data.append(CommandResults(
                             readable_output=tableToMarkdown(
-                                    f"{current_dnsRequests.get('Domain')}",
-                                    [{
-                                        "Description": f"This domain was observed after detonation of {main_entity} in ANYRUN"
-                                    }]
+                                f"{current_dnsRequests.get('Domain')}",
+                                [{
+                                    "Description": f"This domain was observed after detonation of {main_entity} in ANYRUN"
+                                }]
                             ),
                             indicator=domain_indicator,
                             relationships=relationships
@@ -619,7 +622,9 @@ def generate_dbotscore(response: Dict) -> List:
                         dbot_score=current_dbot_score,
                         relationships=relationships
                     )
-                    if current_httpRequests.get('URL') not in [x.indicator.url for x in returned_data if isinstance(x.indicator, Common.URL)]:
+                    if current_httpRequests.get('URL') not in [
+                        x.indicator.url for x in returned_data if isinstance(x.indicator, Common.URL)
+                    ]:
                         returned_data.append(CommandResults(
                             readable_output=tableToMarkdown(
                                 f"{current_httpRequests.get('URL')}",
