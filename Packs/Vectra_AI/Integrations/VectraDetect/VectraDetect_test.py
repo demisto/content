@@ -15,6 +15,7 @@ import os
 import pytest
 from contextlib import nullcontext as does_not_raise
 # import demistomock as demisto
+from CommonServerPython import DemistoException
 
 from VectraDetect import MAX_RESULTS  # Currently MAX_RESULTS equals 200
 from VectraDetect import UI_ACCOUNTS, UI_HOSTS, UI_DETECTIONS
@@ -401,6 +402,63 @@ def test_unify_severity(input_severity, expected):
     from VectraDetect import unify_severity
 
     assert unify_severity(input_severity) == expected
+
+
+#####
+# ## Validate functions
+#
+
+@pytest.mark.parametrize(
+    "integration_params,expected",
+    [
+        pytest.param({},
+                     'ok',
+                     id="no-fetch"),
+        pytest.param({'isFetch': True, 'first_fetch': 'vectra'},
+                     'Fetch first timestamp is invalid.',
+                     id="wrong-fetch-time"),
+        pytest.param({'isFetch': True, 'first_fetch': '7 days', 'fetch_entity_types': ['vectra']},
+                     'This entity type "vectra" is invalid.',
+                     id="wrong-entity-type"),
+        pytest.param({'isFetch': True, 'first_fetch': '7 days', 'fetch_entity_types': ['Hosts']},
+                     'ok',
+                     id="hosts-entity"),
+        pytest.param({'isFetch': True, 'first_fetch': '7 days', 'fetch_entity_types': ['Hosts'], 'max_fetch': 'vectra'},
+                     'Max incidents per fetch must be a positive integer.',
+                     id="string-max-fetch"),
+        pytest.param({'isFetch': True, 'first_fetch': '7 days', 'fetch_entity_types': ['Hosts'], 'max_fetch': '0'},
+                     'Max incidents per fetch must be a positive integer.',
+                     id="0-max-fetch"),
+        pytest.param({'isFetch': True, 'first_fetch': '7d', 'fetch_entity_types': ['Hosts', 'Detections'], 'max_fetch': '1'},
+                     "Max incidents per fetch (1) must be >= to the number of entity types you're fetching (2)",
+                     id="too-low-max-fetch"),
+        pytest.param({'isFetch': True, 'first_fetch': '7d', 'fetch_entity_types': ['Hosts', 'Detections'], 'max_fetch': '5'},
+                     'ok',
+                     id="all-good"),
+    ]
+)
+# @freeze_time("2022-07-01 11:00:00 GMT")
+def test_test_module(requests_mock, integration_params, expected):
+    """
+    Tests test_module command function.
+    """
+    from VectraDetect import Client, test_module
+
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
+                      f'?page=1&order_field=last_timestamp&page_size=1',
+                      json={'count': 1, 'results': [load_test_data('single_detection.json')]})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
+                      f'?page=1&order_field=last_timestamp&page_size=1'
+                      f'&query_string=detection.state:"active"',
+                      complete_qs=True,
+                      json={'count': 1, 'results': [load_test_data('single_detection.json')]})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    assert test_module(client=client, integration_params=integration_params) == expected
+
 
 # Test only the exceptions for now
 @pytest.mark.parametrize(

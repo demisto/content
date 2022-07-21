@@ -1002,18 +1002,24 @@ def test_module(client: Client, integration_params: Dict) -> str:
         if integration_params.get('isFetch'):
             demisto.debug('Fetching mode is enabled. Testing settings ...')
 
-            fetch_first_time = integration_params.get('first_fetch')
-            demisto.debug(f'Fetch first time : {fetch_first_time}')
-            if fetch_first_time is not None:
-                try:
-                    last_timestamp = iso_date_to_vectra_start_time(fetch_first_time)
-                except SystemError:
-                    # TODO : Redo to raise a new exception, but currently doesn't work (docker timeout)
-                    message = "Fetch first time is invalid"
-                    demisto.error(message)
+            demisto.debug('Testing Fetch first timestamp ...')
+            fetch_first_time = integration_params.get('first_fetch', DEFAULT_FIRST_FETCH)
+            demisto.debug(f'Fetch first timestamp : {fetch_first_time}')
+            try:
+                last_timestamp = iso_date_to_vectra_start_time(fetch_first_time)
+            except SystemError:
+                raise ValueError('Fetch first timestamp is invalid.')
+            demisto.debug('Testing Fetch first timestamp [done]')
 
-            fetch_entity_types = integration_params.get('fetch_entity_types', {})
+            demisto.debug('Testing Fetch entity types ...')
+            fetch_entity_types = integration_params.get('fetch_entity_types', DEFAULT_FETCH_ENTITY_TYPES)
             demisto.debug(f'Fetch entity types : {fetch_entity_types}')
+            if len(fetch_entity_types) == 0:
+                raise ValueError('You must select at least one entity type to fetch.')
+            for entity_itt in fetch_entity_types:
+                if entity_itt not in ENTITY_TYPES:
+                    raise ValueError(f'This entity type "{entity_itt}" is invalid.')
+            demisto.debug('Testing Fetch entity types [done]')
 
             accounts_fetch_query = integration_params.get('accounts_fetch_query')
             demisto.debug(f"'Accounts' fetch query : {accounts_fetch_query}")
@@ -1024,28 +1030,42 @@ def test_module(client: Client, integration_params: Dict) -> str:
             detections_fetch_query = integration_params.get('detections_fetch_query')
             demisto.debug(f"'Detections' fetch query : {detections_fetch_query}")
 
-            max_incidents_per_fetch = sanitize_max_results(integration_params.get('max_fetch'))
-            demisto.debug(f'Max incidents per fetch : {max_incidents_per_fetch}')
-            if not max_incidents_per_fetch:
-                pass
-            elif (int(max_incidents_per_fetch) // len(fetch_entity_types)) == 0:
-                raise ValueError(f"Max incidents per fetch ({max_incidents_per_fetch}) must be >= \
-                    to the number of entity types we're fetching ({len(fetch_entity_types)})")
+            demisto.debug('Testing Max incidents per fetch ...')
+            max_incidents_per_fetch = integration_params.get('max_fetch', DEFAULT_MAX_FETCH)
+            demisto.debug(f'Max incidents per fetch (initial value): {max_incidents_per_fetch}')
+            if isinstance(max_incidents_per_fetch, str):
+                try:
+                    max_incidents_per_fetch = int(max_incidents_per_fetch)
+                except ValueError:
+                    raise ValueError('Max incidents per fetch must be a positive integer.')
+            if max_incidents_per_fetch == 0:
+                raise ValueError('Max incidents per fetch must be a positive integer.')
+
+            max_incidents_per_fetch = sanitize_max_results(max_incidents_per_fetch)
+            if (max_incidents_per_fetch // len(fetch_entity_types)) == 0:
+                raise ValueError(f"Max incidents per fetch ({max_incidents_per_fetch}) must be >= "
+                                 f"to the number of entity types you're fetching ({len(fetch_entity_types)})")
+
+            demisto.debug(f'Max incidents per fetch (final value): {max_incidents_per_fetch}')
+            demisto.debug('Testing Max incidents per fetch [done]')
 
         # Client class should raise the exceptions, but if the test fails
         # the exception text is printed to the Cortex XSOAR UI.
-        if message == '':
-            client.search_detections(max_results=1, last_timestamp=last_timestamp)
-            message = 'ok'
+        client.search_detections(max_results=1, last_timestamp=last_timestamp)
+        message = 'ok'
 
+    except ValueError as e:
+        message = str(e)
+        demisto.debug(message)
     except DemistoException as e:
         if 'Invalid token' in str(e):
             message = 'Authorization Error: make sure API Token is properly set'
+            demisto.debug(message)
+        elif 'Verify that the server URL parameter is correct' in str(e):
+            message = 'Verify that the Vectra Server FQDN or IP is correct and that you have access to the server from your host'
+            demisto.debug(message)
         else:
             raise e
-    except ValueError as e:
-        demisto.error(e)
-        message = str(e)
 
     return message
 
