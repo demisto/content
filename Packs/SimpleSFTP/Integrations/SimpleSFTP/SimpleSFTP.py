@@ -1,5 +1,3 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import paramiko
 import traceback
 
@@ -8,7 +6,7 @@ def main():
     HOST = demisto.params()["host"]
     USERNAME = demisto.params()['authentication']['identifier']
     PASSWORD = demisto.params()['authentication']['password']
-    PORT = demisto.params()["port"]
+    PORT = int(demisto.params()["port"])
 
     if demisto.command() == "test-module":
         try:
@@ -69,5 +67,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
 
