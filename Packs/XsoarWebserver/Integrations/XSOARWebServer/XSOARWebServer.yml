@@ -1,0 +1,75 @@
+category: Utilities
+commonfields:
+  id: XSOAR-Web-Server
+  version: -1
+configuration:
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- additionalinfo: The port on which the integration instance will listen
+  display: Server Listening Port
+  name: longRunningPort
+  required: true
+  type: 0
+- additionalinfo: The URL on which the user should send the response to.
+  display: ""
+  name: xsoar-external-url
+  required: true
+  type: 0
+description: 'This is a simple web-server that as of now, supports handling configurable
+  user responses (like Yes/No/Maybe). What makes it different from Data collection
+  tasks is that, the URL to perform a certain action is predictable and written to
+  the incident context when an action is setup. This URL can be inserted to for eg:
+  an HTML email.  User clicks are  are recorded in the integration context and can
+  be polled by Scheduled Commands/ Generic Polling'
+display: XSOAR-Web-Server
+name: XSOAR-Web-Server
+script:
+  commands:
+  - arguments:
+    - description: comma separated possible values for each action
+      name: actions
+      required: true
+    description: setup the web server to handle URL clicks for each action specified
+    name: xsoar-ws-setup-simple-action
+    outputs:
+    - contextPath: WS-ActionDetails
+      description: The details of the URLs that are generated, along with the uuid
+    - contextPath: WS-ActionDetails.uuid
+      description: uuid of the setup actoin
+  - arguments: []
+    description: Clear the backend storage containing all session information.
+    name: xsoar-ws-clear-cache
+  - arguments: []
+    description: Show the details of all the setup actions from the backend
+    name: xsoar-ws-show-cache
+  - arguments:
+    - name: uuid
+      description: uuid of the action to remove from the backend
+    description: Remove a certain action from the backend
+    name: xsoar-ws-remove-action
+  - arguments:
+    - name: uuid
+      description: uuid of the action to fetch from the backend
+      required: true
+    description: Gets the current status of an action that was setup; Used to track
+      if the user responded to the action.
+    name: xsoar-ws-get-action-status
+    outputs:
+    - contextPath: WS-ActionStatus
+      description: The data structure holding the details of the fetched action
+  dockerimage: demisto/python-bottle:latest
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

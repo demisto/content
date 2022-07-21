@@ -1,0 +1,42 @@
+args:
+- description: webserver action uuid
+  name: uuid
+  required: true
+- defaultValue: "30"
+  description: Time between 2 polls
+  name: timebetweenruns
+- defaultValue: "86400"
+  description: Absolute timeout for the polling task
+  name: timeout
+comment: |-
+  Companion automation to XSOAR-Web-Server that polls a certain UUID for user response.
+  The automation returns a scheduledcommand if the user has not responded to the action url
+commonfields:
+  id: xsoar-ws-poll-status
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.5.31928
+enabled: true
+name: xsoar-ws-poll-status
+outputs:
+- contextPath: WS-ActionStatus
+  description: Data structure that gets the latest status information for the uuid
+    being tracked
+- contextPath: WS-ActionStatus.response_received
+  description: variable storing if a resposne has been received
+  type: boolean
+- contextPath: WS-ActionStatus.response
+  description: variable storing the actual user resposne
+polling: true
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,1 @@
+This content pack contains a long running integration that runs a simple webserver that can generate predictable URLs to share with users.The URL clicks are captured and responses are stored to the integration context. The pack also contains an automation that can be used to poll the user's response and a playbook that shows a simple use-case.

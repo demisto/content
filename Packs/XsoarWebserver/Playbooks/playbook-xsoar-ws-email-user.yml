@@ -1,0 +1,245 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: "Playbook to demonstrate the features of XSOAR-Web-Server. It sends an\
+  \ email to a certain user upto 2 times and captures the response\n\n<html>\n   \
+  \ <head>\n    </head>\n    <body>\n        <a href=${WS-ActionDetails(val.action_string==\"\
+  yes\").action_url}>Click here to acknowledge receipt of report</a><br>\n       \
+  \ <a href=${WS-ActionDetails(val.action_string==\"no\").action_url}>Click here to\
+  \ notify that the report was not received </a>\n    </body>\n</html>"
+id: xsoar-ws-email-user
+inputs: []
+name: xsoar-ws-email-user
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+      - '2'
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 8bdc6d51-4cf5-44eb-8f10-75087242cd1b
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 8bdc6d51-4cf5-44eb-8f10-75087242cd1b
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ids:
+        simple: ${incident.id}
+      name:
+        simple: Investigation Summary
+      type:
+        simple: pdf
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Generate report summaries for the passed incidents.
+      id: a982ce62-59be-46ea-885d-f55e28614800
+      iscommand: false
+      name: generate report
+      scriptName: GenerateSummaryReports
+      type: regular
+      version: -1
+    taskid: a982ce62-59be-46ea-885d-f55e28614800
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      emailsendcounter:
+        simple: '0'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 50daa72d-ad0c-48e5-8257-5e4e22f4428f
+      iscommand: true
+      name: Initializing Email Send Counter
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 50daa72d-ad0c-48e5-8257-5e4e22f4428f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      actions:
+        simple: yes,no
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: setup the web server to handle URL clicks for each action specified
+      id: 4b93a77c-5e00-4acf-8d25-0a76a202f6d0
+      iscommand: true
+      name: Setup WS Actions
+      script: '|||xsoar-ws-setup-simple-action'
+      type: regular
+      version: -1
+    taskid: 4b93a77c-5e00-4acf-8d25-0a76a202f6d0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 195\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: EmailHTML
+      listTemplate:
+        simple: Xsoar-WS-test-template
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "This script allows sending an HTML email, using a template stored\
+        \ as a list item under Lists (Settings -> Advanced -> Lists).\nPlaceholders\
+        \ are marked in DT format (i.e. ${incident.id} for incident ID).\nAvailable\
+        \ placeholders for example:\n- ${incident.labels.Email/from}\n- ${incident.name}\n\
+        - ${object.value}\nSee incident Context Data menu for available placeholders\n\
+        \nNote: Sending emails require an active  Mail Sender integration instance."
+      id: 3861095d-bc64-4b80-8ea4-a950408b1015
+      iscommand: false
+      name: Creating HTML Email
+      scriptName: CreateEmailHtmlBody
+      type: regular
+      version: -1
+    taskid: 3861095d-bc64-4b80-8ea4-a950408b1015
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      builtincondition:
+      - - left:
+            iscontext: true
+            value:
+              simple: UserResponse
+          operator: isExists
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              simple: incident.emailsendcounter
+          operator: lessThanOrEqual
+          right:
+            value:
+              simple: '2'
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ActionUUID:
+        simple: ${WS-ActionDetails.uuid}
+      EmailHTML:
+        simple: ${EmailHTML}
+      FileAttachments:
+        simple: ${InfoFile.EntryID}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c40232fa-329d-4f2d-8097-b94272954e3a
+      iscommand: false
+      name: xsoar-ws-email-loop
+      playbookId: xsoar-ws-email-loop
+      type: playbook
+      version: -1
+      description: ''
+    taskid: c40232fa-329d-4f2d-8097-b94272954e3a
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 550\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c68fd6ca-dad1-4cb1-8669-70e63b66663b
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: c68fd6ca-dad1-4cb1-8669-70e63b66663b
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 760\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 775,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

@@ -1,0 +1,301 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: xsoar-ws-email-loop
+inputs:
+- description: ""
+  key: RecipientAddress
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: FileAttachments
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: EmailHTML
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: ActionUUID
+  playbookInputQuery:
+  required: false
+  value: {}
+name: xsoar-ws-email-loop
+outputs:
+- contextPath: UserResponse
+  description: "The User's response"
+  type: string
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0ab8f3a0-6ed0-4ea9-8a19-c175ec509665
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 0ab8f3a0-6ed0-4ea9-8a19-c175ec509665
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attachIDs:
+        simple: ${inputs.FileAttachments}
+      htmlBody:
+        simple: ${inputs.EmailHTML}
+      subject:
+        simple: incident report XSOAR
+      to:
+        simple: ${inputs.RecipientAddress}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends an email using Gmail.
+      id: 3a4d2422-8d72-4c1f-8e08-a9a263d3f197
+      iscommand: true
+      name: Email User
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 3a4d2422-8d72-4c1f-8e08-a9a263d3f197
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ActionUUID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Companion automation to XSOAR-Web-Server that polls a certain UUID for user response.
+        The automation returns a scheduledcommand if the user has not responded to the action url
+      id: 74d62893-350d-4787-87e4-5593eb1e889d
+      iscommand: false
+      name: Poll Action
+      scriptName: xsoar-ws-poll-status
+      type: regular
+      version: -1
+    taskid: 74d62893-350d-4787-87e4-5593eb1e889d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dc38969f-98b9-4b6a-81ba-9ae5198bd09b
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: dc38969f-98b9-4b6a-81ba-9ae5198bd09b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1145
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: WS-ActionStatus.response_received
+          operator: isTrue
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      description: CHecks if the user has responded
+      brand: ""
+      id: c6f03afa-1aba-4e9d-815b-d99a9cfd7ce8
+      iscommand: false
+      name: Checking Response Status
+      type: condition
+      version: -1
+    taskid: c6f03afa-1aba-4e9d-815b-d99a9cfd7ce8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: UserResponse
+      value:
+        simple: ${WS-ActionStatus.response}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 3e0ed526-8af2-43ec-8d6f-dbc7c0de6a53
+      iscommand: false
+      name: Setting Response
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 3e0ed526-8af2-43ec-8d6f-dbc7c0de6a53
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      emailsendcounter:
+        complex:
+          accessor: emailsendcounter
+          root: incident
+          transformers:
+          - args:
+              by:
+                value:
+                  simple: "1"
+            operator: addition
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 32829df4-0e9f-49ac-80c1-c378e8020b5a
+      iscommand: true
+      name: IncrementCounter
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 32829df4-0e9f-49ac-80c1-c378e8020b5a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 950
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1160,
+        "width": 880,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
+description: This is a subplaybook that runs the email task a configurable number
+  of times and polls the response status by the user
