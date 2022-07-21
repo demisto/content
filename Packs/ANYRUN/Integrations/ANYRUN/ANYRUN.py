@@ -400,7 +400,8 @@ def travel_object(obj,
 
 
 def generate_dbotscore(response: Dict) -> List:
-    """Creates DBotScore object based on the contents of 'response' argument
+    """Creates CommandResult object based on the contents of 'response' argument
+        and provides DBotScore objects.
 
     Parameters
     ----------
@@ -410,7 +411,7 @@ def generate_dbotscore(response: Dict) -> List:
     Returns
     -------
     List
-        A list of Indicator objects based on the Common Class.
+        A list of CommandResults objects.
     """
     data = response.get('data', {})
     analysis = data.get('analysis', {})
@@ -419,42 +420,77 @@ def generate_dbotscore(response: Dict) -> List:
     submission_type = 'hash' if submission_type in {'file', 'download'} else submission_type
     threat_text = analysis.get('scores', {}).get('verdict', {}).get('threatLevelText', '').casefold()
     reputation_map = {
+        "shared": Common.DBotScore.NONE,
+        "unknown": Common.DBotScore.NONE,
+        "whitelisted": Common.DBotScore.GOOD,
         "malicious": Common.DBotScore.BAD,
         "suspicious": Common.DBotScore.SUSPICIOUS
     }
     returned_data = []
-    indicator: Any[Common.File, Common.IP, Common.URL, Common.Domain] = None
+    main_entity = None
+    main_entity_type = None
 
     # Add the hash or URL first
     if submission_type == 'hash':
         hashes = main_object.get('hashes', {})
-        if (hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5')) and threat_text:
-            dbot_score = Common.DBotScore(
-                indicator=hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5'),
-                indicator_type=DBotScoreType.FILE,
-                integration_name='ANYRUN',
-                score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE
-            )
-            indicator = Common.File(
+        main_entity = hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5')
+        main_entity_type = "File"
+        file_outputs = {
+            'MD5': hashes.get('md5'),
+            'SHA1': hashes.get('sha1'),
+            'sha256': hashes.get('sha256'),
+            'SSDeep': hashes.get('ssdeep'),
+            'Name': main_object.get('filename')
+        }
+        dbot_score = Common.DBotScore(
+            indicator=hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5'),
+            indicator_type=DBotScoreType.FILE,
+            integration_name='ANYRUN',
+            score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE
+        )
+        if dbot_score.score >= 2:
+            file_outputs['Malicious'] = {
+                'Vendor': 'ANYRUN',
+                'Description': threat_text
+            }
+        returned_data.append(CommandResults(
+            outputs_prefix='File',
+            outputs_key_field=['MD5', 'SHA1', 'SHA256'],
+            outputs=file_outputs,
+            indicator=Common.File(
                 dbot_score=dbot_score,
                 md5=hashes.get('md5'),
                 sha1=hashes.get('sha1'),
                 sha256=hashes.get('sha256')
             )
+        ))
+
     else:
-        if main_object.get('url') and threat_text:
-            dbot_score = Common.DBotScore(
-                indicator=main_object.get('url'),
-                indicator_type=DBotScoreType.URL,
-                integration_name='ANYRUN',
-                score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE
-            )
-            indicator = Common.URL(
+        main_entity = main_object.get('url')
+        main_entity_type = "URL"
+        url_outputs = {
+            'Data': main_object.get('url')
+        }
+        dbot_score = Common.DBotScore(
+            indicator=main_object.get('url'),
+            indicator_type=DBotScoreType.URL,
+            integration_name='ANYRUN',
+            score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE
+        )
+        if dbot_score.score >= 2:
+            url_outputs['Malicious'] = {
+                'Vendor': 'ANYRUN',
+                'Description': threat_text
+            }
+        returned_data.append(CommandResults(
+            outputs_prefix='URL',
+            outputs_key_field=['Data'],
+            outputs=url_outputs,
+            indicator=Common.URL(
                 url=main_object.get('url'),
-                dbot_score=dbot_score
+                dbot_score=dbot_score,
             )
-    if indicator:
-        returned_data.append(indicator)
+        ))
 
     # Check if network information is available in the report
     if 'network' in data:
@@ -472,11 +508,34 @@ def generate_dbotscore(response: Dict) -> List:
                         integration_name='ANYRUN',
                         score=reputation_map[reputation]
                     )
+                    relationships = [EntityRelationship(
+                        name=EntityRelationship.Relationships.RELATED_TO,
+                        entity_a=current_connection.get('IP'),
+                        entity_a_type="IP",
+                        entity_b=main_entity,
+                        entity_b_type=main_entity_type,
+                        brand="ANYRUN"
+                    )]
                     ip_indicator = Common.IP(
                         ip=current_connection.get('IP'),
-                        dbot_score=current_dbot_score
+                        dbot_score=current_dbot_score,
+                        relationships=relationships
                     )
-                    returned_data.append(ip_indicator)
+                    ip_outputs = {
+                        'Address': current_connection.get('IP'),
+                        'ASN': current_connection.get('ASN'),
+                        'Port': current_connection.get('Port'),
+                        'Geo': {
+                            'Country': current_connection.get('Country')
+                        }
+                    }
+                    returned_data.append(CommandResults(
+                        outputs_prefix='IP',
+                        outputs_key_field='Address',
+                        outputs=ip_outputs,
+                        indicator=ip_indicator,
+                        readable_output="",
+                    ))
 
         # Then add all the network-related indicators - 'dnsRequests'
         if 'dnsRequests' in network_data:
@@ -489,11 +548,28 @@ def generate_dbotscore(response: Dict) -> List:
                         integration_name='ANYRUN',
                         score=reputation_map[reputation]
                     )
+                    relationships = [EntityRelationship(
+                        name='related-to',
+                        entity_a=current_dnsRequests.get('Domain'),
+                        entity_a_type="Domain",
+                        entity_b=main_entity,
+                        entity_b_type=main_entity_type,
+                        brand="ANYRUN"
+                    )]
                     domain_indicator = Common.Domain(
-                        domain=current_dnsRequests.get('domain'),
-                        dbot_score=current_dbot_score
+                        domain=current_dnsRequests.get('Domain'),
+                        dbot_score=current_dbot_score,
+                        relationships=relationships
                     )
-                    returned_data.append(domain_indicator)
+                    domain_outputs = {
+                        'Name': current_dnsRequests.get('Domain'),
+                    }
+                    returned_data.append(CommandResults(
+                        outputs_prefix='Domain',
+                        outputs_key_field=['Name'],
+                        outputs=domain_outputs,
+                        indicator=domain_indicator
+                    ))
 
         # Then add all the network-related indicators - 'httpRequests'
         if 'httpRequests' in network_data:
@@ -507,12 +583,33 @@ def generate_dbotscore(response: Dict) -> List:
                         score=reputation_map[reputation]
 
                     )
+                    relationships = [EntityRelationship(
+                        name=EntityRelationship.Relationships.RELATED_TO,
+                        entity_a=current_httpRequests.get('URL'),
+                        entity_a_type="URL",
+                        entity_b=main_entity,
+                        entity_b_type=main_entity_type,
+                        brand="ANYRUN"
+                    )]
                     url_indicator = Common.URL(
                         url=current_httpRequests.get('URL'),
                         geo_country=current_httpRequests.get('Country'),
-                        dbot_score=current_dbot_score
+                        dbot_score=current_dbot_score,
+                        relationships=relationships
                     )
-                    returned_data.append(url_indicator)
+                    url_outputs = {
+                        'Data': current_httpRequests.get('URL'),
+                        'Port': current_httpRequests.get('Port'),
+                        'Geo': {
+                            'Country': current_httpRequests.get('Country')
+                        }
+                    }
+                    returned_data.append(CommandResults(
+                        outputs_prefix='URL',
+                        outputs_key_field=['Data'],
+                        outputs=url_outputs,
+                        indicator=url_indicator
+                    ))
 
     return returned_data
 
@@ -947,11 +1044,10 @@ def get_report_command(client: Client, args: Dict):
 
     dbot_scores: List = generate_dbotscore(response)
     returned_results = []
-    returned_results.append(CommandResults(
+    returned_results.append(CommandResults(     # noqa: E9007
         outputs_prefix='ANYRUN.Task',
         outputs_key_field='ID',
         outputs=formatted_contents,
-        indicators=dbot_scores,
         readable_output=tableToMarkdown(
             f'Report for Task {task_id}',
             humanreadable_from_report_contents(formatted_contents),
@@ -959,6 +1055,8 @@ def get_report_command(client: Client, args: Dict):
         ),
         raw_response=response
     ))
+    for indicator in dbot_scores:
+        returned_results.append(indicator)
     for image in images:
         returned_results.append(image)
     return returned_results
@@ -1030,11 +1128,12 @@ def run_analysis_command(client: Client, args: Dict):
                 readable_output=tableToMarkdown(
                     f"Report for Task {task_id}:",
                     humanreadable_from_report_contents(formatted_contents)
-                ),
-                indicators=generate_dbotscore(response)
+                )
             )
         )
-
+        indicators = generate_dbotscore(response)
+        for indicator in indicators:
+            submit_output.append(indicator)
         images = client.get_images_from_report(response)
         for image in images:
             submit_output.append(image)
