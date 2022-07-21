@@ -319,16 +319,16 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason that the vendor made the decision.
       type: String
-    - contextPath: Reports.HTML
+    - contextPath: ANYRUN.Task.Reports.HTML
       description: URL for the HTML report.
       type: String
-    - contextPath: Reports.IOC
+    - contextPath: ANYRUN.Task.Reports.IOC
       description: URL for the IOC report.
       type: String
-    - contextPath: Reports.MISP
+    - contextPath: ANYRUN.Task.Reports.MISP
       description: URL for the MISP report.
       type: String
-    - contextPath: Reports.graph
+    - contextPath: ANYRUN.Task.Reports.graph
       description: URL for the graph report.
       type: String
   - arguments:
@@ -684,16 +684,16 @@ script:
     - contextPath: ANYRUN.Task.Status
       description: Task analysis status.
       type: String
-    - contextPath: Reports.HTML
+    - contextPath: ANYRUN.Task.Reports.HTML
       description: URL for the HTML report.
       type: String
-    - contextPath: Reports.IOC
+    - contextPath: ANYRUN.Task.Reports.IOC
       description: URL for the IOC report.
       type: String
-    - contextPath: Reports.MISP
+    - contextPath: ANYRUN.Task.Reports.MISP
       description: URL for the MISP report.
       type: String
-    - contextPath: Reports.graph
+    - contextPath: ANYRUN.Task.Reports.graph
       description: URL for the graph report.
       type: String
     polling: true
