@@ -925,6 +925,15 @@ class MsGraphClient:
         return next_run, incidents
 
     def add_attachments_via_upload_session(self, email, draft_id, attachments):
+        """
+        Add attachments using an upload session by dividing the file bytes into chunks and sent each chunk each time.
+        more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
+
+        Args:
+            email (str): email to create the upload session.
+            draft_id (str): draft ID to add the attachments to.
+            attachments (list[dict]) : attachments to add to the draft message.
+        """
         for attachment in attachments:
             self.add_attachment_with_upload_session(
                 email=email,
@@ -935,6 +944,16 @@ class MsGraphClient:
             )
 
     def get_upload_session(self, email, draft_id, attachment_name, attachment_size, is_inline):
+        """
+        Create an upload session for a specific draft ID.
+
+        Args:
+            email (str): email to create the upload session.
+            draft_id (str): draft ID to add the attachments to.
+            attachment_size (int) : attachment size (in bytes).
+            attachment_name (str): attachment name.
+            is_inline (bool): is the attachment inline, True if yes, False if not.
+        """
         return self.ms_client.http_request(
                 'POST',
                 f'/users/{email}/messages/{draft_id}/attachments/createUploadSession',
@@ -949,9 +968,23 @@ class MsGraphClient:
             )
 
     @staticmethod
-    def upload_attachments_using_upload_session(
+    def upload_attachment(
         upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size
     ):
+        """
+        Upload an attachment to the upload URL.
+
+        Args:
+            upload_url (str): upload URL provided when running 'get_upload_session'
+            start_chunk_idx (int): the start of the chunk file data.
+            end_chunk_idx (int): the end of the chunk file data.
+            chunk_data (bytes): the chunk data in bytes from start_chunk_idx to end_chunk_idx
+            attachment_size (int): the entire attachment size in bytes.
+
+        Returns:
+            Response: response indicating whether the operation succeeded. 200 if a chunk was added successfully,
+                201 (created) if the file was uploaded completely. 400 in case of errors.
+        """
         chunk_size = len(chunk_data)
         headers = {
             "Content-Length": f'{chunk_size}',
@@ -959,10 +992,20 @@ class MsGraphClient:
             "Content-Type": "application/octet-stream"
         }
         demisto.debug(f'uploading session headers: {headers}')
-        print(headers)
         return requests.put(url=upload_url, data=chunk_data, headers=headers)
 
     def add_attachment_with_upload_session(self, email, draft_id, attachment_data, attachment_name, is_inline=False):
+        """
+        Add an attachment using an upload session by dividing the file bytes into chunks and sent each chunk each time.
+        more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
+
+        Args:
+            email (str): email to create the upload session.
+            draft_id (str): draft ID to add the attachments to.
+            attachment_data (bytes) : attachment data in bytes.
+            attachment_name (str): attachment name.
+            is_inline (bool): is the attachment inline, True if yes, False if not.
+        """
 
         attachment_size = len(attachment_data)
         try:
@@ -982,7 +1025,7 @@ class MsGraphClient:
 
             chunk_data = attachment_data[start_chunk_index: end_chunk_index]
 
-            response = self.upload_attachments_using_upload_session(
+            response = self.upload_attachment(
                 upload_url=upload_url,
                 start_chunk_idx=start_chunk_index,
                 end_chunk_idx=end_chunk_index,
@@ -996,7 +1039,7 @@ class MsGraphClient:
 
                 chunk_data = attachment_data[start_chunk_index: end_chunk_index]
 
-                response = self.upload_attachments_using_upload_session(
+                response = self.upload_attachment(
                     upload_url=upload_url,
                     start_chunk_idx=start_chunk_index,
                     end_chunk_idx=end_chunk_index,
@@ -1011,6 +1054,56 @@ class MsGraphClient:
         except Exception as e:
             demisto.error(f'{e}')
             raise e
+
+    def create_draft(self, email, json_data, message_id=None):
+        """
+        Create a draft message for either a new message or as a reply to an existing message.
+
+        Args:
+            email (str): email to create the draft from.
+            json_data (dict): data to create the message with.
+            message_id (str): message ID in case creating a draft to an existing message
+
+        Returns:
+            dict: api response information about the draft.
+        """
+        if message_id:
+            suffix = f'/users/{email}/messages/{message_id}/createReply'  # create draft for a reply to an existing message
+        else:
+            suffix = f'/users/{email}/messages'  # create draft for a new message
+        return self.ms_client.http_request('POST', suffix, json_data=json_data)
+
+    def send_draft(self, email, draft_id):
+        """
+        Sends a draft message.
+
+        Args:
+            email (str): email to send the draft from.
+            draft_id (str): the ID of the draft to send.
+        """
+        self.ms_client.http_request('POST', f'/users/{email}/messages/{draft_id}/send', resp_type='text')
+
+    def send_mail_with_upload_session_flow(self, email, json_data, attachments_more_than_3mb, message_id=None):
+        """
+        Sends an email with the upload session flow, this is used only when there is one attachment that is larger
+        than 3 MB.
+
+        1) creates a draft message
+        2) upload the attachment using an upload session which uploads file chunks by chunks.
+        3) send the draft message
+
+        Args:
+            email (str): email to send from.
+            json_data (dict): data to send the message with.
+            attachments_more_than_3mb (list[dict]): data information about the large attachments.
+            message_id (str): message ID in case sending a reply to an existing message.
+        """
+        created_draft = self.create_draft(email=email, json_data=json_data, message_id=message_id)  # create the draft email
+        draft_id = created_draft.get('id')
+        self.add_attachments_via_upload_session(  # add attachments via upload session.
+            email=email, draft_id=draft_id, attachments=attachments_more_than_3mb
+        )
+        self.send_draft(email=email, draft_id=draft_id)  # send the draft email
 
 
 ''' HELPER FUNCTIONS '''
@@ -1551,8 +1644,7 @@ def prepare_args(command, args):
 
 def divide_attachments_according_to_size(attachments):
 
-    less_than_3mb_attachments = []
-    more_than_3mb_attachments = []
+    less_than_3mb_attachments, more_than_3mb_attachments = [], []
 
     for attachment in attachments:
         if attachment.get('requires_upload'):  # if the attachment is bigger than 3mb, it requires upload session.
@@ -1634,14 +1726,9 @@ def send_email_command(client: MsGraphClient, args):
 
     if more_than_3mb_attachments:  # go through process 1 (in docstring)
         message_content['attachments'] = less_than_3mb_attachments
-        suffix_endpoint = f'/users/{email}/messages'
-        created_draft = client.ms_client.http_request('POST', suffix_endpoint, json_data=message_content)  # create the draft email
-        draft_id = created_draft.get('id')
-        client.add_attachments_via_upload_session(  # add attachments via upload session.
-            email=email, draft_id=draft_id, attachments=more_than_3mb_attachments
+        client.send_mail_with_upload_session_flow(
+            email=email, json_data=message_content, attachments_more_than_3mb=more_than_3mb_attachments
         )
-        suffix_endpoint = f'/users/{email}/messages/{draft_id}/send'
-        client.ms_client.http_request('POST', suffix_endpoint, resp_type="text")  # send the draft email.
     else:  # go through process 2 (in docstring)
         suffix_endpoint = f'/users/{email}/sendMail'
         client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content}, resp_type="text")
@@ -1700,11 +1787,26 @@ def reply_email_command(client: MsGraphClient, args):
     attach_cids = argToList(args.get('attachCIDs'))
     message_body = html_body or email_body
 
-    suffix_endpoint = f'/users/{email_from}/messages/{message_id}/reply'
     reply = client.build_message_to_reply(email_to, email_cc, email_bcc, email_subject, message_body, attach_ids,
                                           attach_names, attach_cids)
-    client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': reply, 'comment': message_body},
-                                  resp_type="text")
+
+    less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
+        attachments=reply.get('attachments')
+    )
+
+    if more_than_3mb_attachments:
+        reply['attachments'] = less_than_3mb_attachments
+        client.send_mail_with_upload_session_flow(
+            email=email_from,
+            json_data={'message': reply, 'comment': message_body},
+            attachments_more_than_3mb=more_than_3mb_attachments,
+            message_id=message_id
+        )
+    else:
+        suffix_endpoint = f'/users/{email_from}/messages/{message_id}/reply'
+        client.ms_client.http_request(
+            'POST', suffix_endpoint, json_data={'message': reply, 'comment': message_body}, resp_type="text"
+        )
 
     return prepare_outputs_for_reply_mail_command(reply, email_to, message_id)
 
@@ -1720,9 +1822,23 @@ def reply_to_command(client: MsGraphClient, args):
     attach_cids = prepared_args.get('attach_cids')
     email = args.get('from')
 
-    suffix_endpoint = f'/users/{email}/messages/{message_id}/reply'
     reply = client.build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids)
-    client.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
+
+    less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
+        attachments=reply.get('message').get('attachments')
+    )
+
+    if more_than_3mb_attachments:
+        reply['message']['attachments'] = less_than_3mb_attachments
+        client.send_mail_with_upload_session_flow(
+            email=email,
+            json_data=reply,
+            attachments_more_than_3mb=more_than_3mb_attachments,
+            message_id=message_id
+        )
+    else:
+        suffix_endpoint = f'/users/{email}/messages/{message_id}/reply'
+        client.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
 
     return_outputs(f'### Replied to: {", ".join(to_recipients)} with comment: {comment}')
 

@@ -767,21 +767,42 @@ class TestCommandsWithLargeAttachments:
             return MockedResponse(status_code=201)
         return MockedResponse(status_code=200)
 
+    def validate_upload_attachments_flow(self, create_upload_mock, upload_query_mock):
+        """
+        Validates that the upload flow is working as expected, each piece of headers is sent as expected.
+        """
+        if not create_upload_mock.called:
+            return False
+
+        if create_upload_mock.call_count != 1:
+            return False
+
+        expected_headers = iter(self.expected_upload_headers())
+        for i in range(upload_query_mock.call_count):
+            current_headers = next(expected_headers)
+            if upload_query_mock.mock_calls[i].kwargs['headers'] != current_headers:
+                return False
+        return True
+
     @pytest.mark.parametrize('client, args', SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
     def test_send_mail_command_with_large_attachments(self, mocker, client, args):
         """
-            Given:
-                Case 1: send email command arguments and attachment > 3mb.
-                Case 2: send email command arguments and attachment < 3mb.
-                Case 3: send email command arguments and one attachment > 3m and one attachment < 3mb.
+        Given:
+            Case 1: send email command arguments and attachment > 3mb.
+            Case 2: send email command arguments and attachment < 3mb.
+            Case 3: send email command arguments and one attachment > 3m and one attachment < 3mb.
 
-            When:
-                - sending a mail
+        When:
+            - sending a mail
 
-            Then:
-                - validates that http request to send-mail was called with the correct values.
+        Then:
+            Case1: make sure the upload session was called with the correct headers according to file size
+            Case2: make sure the upload session was not called at all and that the attachment was added through the
+                regular create draft api endpoint.
+            Case3: make sure attachment 1 was called with upload session with the corrrect headers according
+                    to file size and that attachment 2 was added through the regular create draft api endpoint.
+            - Make sure for all three cases the expected context output is and that the right api calls were called.
         """
-
         with requests_mock.Mocker() as request_mocker:
             from_email = args.get('from')
             mocked_draft_id = '123'
@@ -826,21 +847,6 @@ class TestCommandsWithLargeAttachments:
                 assert message.get('replyTo')[0].get('emailAddress').get("address") == args.get('replyTo')[0]
                 assert message.get('replyTo')[1].get('emailAddress').get("address") == args.get('replyTo')[1]
                 assert message.get('attachments')
-
-    def validate_upload_attachments_flow(self, create_upload_mock, upload_query_mock):
-
-        if not create_upload_mock.called:
-            return False
-
-        if create_upload_mock.call_count != 1:
-            return False
-
-        expected_headers = iter(self.expected_upload_headers())
-        for i in range(upload_query_mock.call_count):
-            current_headers = next(expected_headers)
-            if upload_query_mock.mock_calls[i].kwargs['headers'] != current_headers:
-                return False
-        return True
 
     @pytest.mark.parametrize('client, args', SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
     def test_create_draft_email(self, mocker, client, args):
