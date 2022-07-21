@@ -184,43 +184,42 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
 
 @pytest.mark.parametrize(
     'case_mocker,expected_tests,expected_packs,expected_machines,collector_class_args,mocked_changed_files',
-    (
-            (MockerCases.empty, XSOAR_SANITY_TEST_NAMES, (), None, XSOAR_BRANCH_ARGS, ()),
+    ((MockerCases.empty, XSOAR_SANITY_TEST_NAMES, (), None, XSOAR_BRANCH_ARGS, ()),
 
-            (MockerCases.empty, (), (), None, XSIAM_BRANCH_ARGS, ()),
+     (MockerCases.empty, (), (), None, XSIAM_BRANCH_ARGS, ()),
 
-            (MockerCases.empty_xsiam, ('some_xsiam_test_only_mentioned_in_conf_json',), (), None, XSIAM_BRANCH_ARGS,
-             ()),
+     (MockerCases.empty_xsiam, ('some_xsiam_test_only_mentioned_in_conf_json',), (), None, XSIAM_BRANCH_ARGS,
+      ()),
 
-            (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
-             ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',)),
+     (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',)),
 
-            (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
-             ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',)),
+     (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
-            (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
-             ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.yml',)),
+     (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
+      ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.yml',)),
 
-            (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
-             ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',)),
+     (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
+      ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
-            (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS, (
-                    'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
-            )),
-            (MockerCases.B_xsoar, ('myOtherTestPlaybook', 'myTestPlaybook'), ('myXSOAROnlyPack',), None,
-             XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',
-                                 'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
+     (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS, (
+             'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
+     )),
+     (MockerCases.B_xsoar, ('myOtherTestPlaybook', 'myTestPlaybook'), ('myXSOAROnlyPack',), None,
+      XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',
+                          'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
 
-            (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
-                    'Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml',
-            )),
-            (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
-                    'Packs/myPack/Playbooks/myPlaybook.yml',
-            )),
-            (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
-                    'Packs/myPack/Scripts/myScript/myScript.yml',
-            )),
-    ))
+     (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
+             'Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml',
+     )),
+     (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
+             'Packs/myPack/Playbooks/myPlaybook.yml',
+     )),
+     (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
+             'Packs/myPack/Scripts/myScript/myScript.yml',
+     )),
+     ))
 def test_branch(
         monkeypatch,
         mocker,
