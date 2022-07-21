@@ -54,7 +54,7 @@ ENTITY_TYPES = ('Accounts', 'Hosts', 'Detections')
 
 
 ''' GLOBALS '''
-integration_params: Dict[str, Any] = dict()
+global_UI_URL: Optional[str] = None
 
 # DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
@@ -559,9 +559,6 @@ def forge_entity_url(type: str, id: Optional[str]) -> str:
     - returns:
         The pivot URL using server FQDN
     """
-    server_fqdn = integration_params.get('server_fqdn')
-    base_url = urljoin('https://', server_fqdn)
-
     if type == 'account':
         url_suffix = f'{UI_ACCOUNTS}/'
     elif type == 'detection':
@@ -574,7 +571,7 @@ def forge_entity_url(type: str, id: Optional[str]) -> str:
     if not id:
         raise Exception("Missing ID")
 
-    return urljoin(urljoin(base_url, url_suffix), str(id))
+    return urljoin(urljoin(global_UI_URL, url_suffix), str(id))
 
 
 def common_extract_data(entity: Dict[str, Any]) -> Dict[str, Any]:
@@ -768,7 +765,7 @@ def account_to_incident(account: Dict):
     return incident, incident_last_run
 
 
-def get_last_run_details():
+def get_last_run_details(integration_params: Dict):
     # Get the config settings
     fetch_first_time = integration_params.get('first_fetch')
     fetch_entity_types = integration_params.get('fetch_entity_types', {})
@@ -840,8 +837,9 @@ class VectraException(Exception):
 #                         #
 
 
-def test_module(client: Client, server_fqdn: str, api_token: str, **kwargs) -> str:
-    """Tests API connectivity and authentication'
+def test_module(client: Client, integration_params: Dict) -> str:
+    """
+    Tests API connectivity and authentication.
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -856,13 +854,6 @@ def test_module(client: Client, server_fqdn: str, api_token: str, **kwargs) -> s
 
     message: str = ''
     try:
-        if not server_fqdn:
-            raise ValueError("The Server FQDN setting cannot be empty")
-        # if server_fqdn is not an IP or domain
-        #    raise ValueError("The Server FQDN setting is invalid")
-        if not api_token:
-            raise ValueError("The API Token setting cannot be empty")
-
         last_timestamp = None
 
         if integration_params.get('isFetch'):
@@ -916,13 +907,13 @@ def test_module(client: Client, server_fqdn: str, api_token: str, **kwargs) -> s
     return message
 
 
-def fetch_incidents(client: Client):
+def fetch_incidents(client: Client, integration_params: Dict):
 
     fetch_entity_types = integration_params.get('fetch_entity_types', {})
     api_response: Dict = dict()
 
     # Get the last run and the last fetched value
-    previous_last_run = get_last_run_details()
+    previous_last_run = get_last_run_details(integration_params)
 
     incidents = []
     new_last_run: Dict = {}
@@ -1445,11 +1436,11 @@ def del_tags_command(client: Client, type: str, id: str, tags: str):
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
-    # Set integration settings as global (to use they inside functions)
-    global integration_params
-    integration_params = demisto.params()
+def main() -> None:  # pragma: no cover
+    # Set some settings as global (to use them inside some functions)
+    global global_UI_URL
 
+    integration_params = demisto.params()
     command = demisto.command()
     kwargs = demisto.args()
 
@@ -1468,6 +1459,7 @@ def main() -> None:
     verify_certificate: bool = not integration_params.get('insecure', False)
     use_proxy: bool = integration_params.get('use_proxy', False)
 
+    global_UI_URL = urljoin('https://', server_fqdn)
     api_base_url = urljoin('https://', urljoin(server_fqdn, API_VERSION_URL))
 
     demisto.info(f'Command being called is {command}')
@@ -1485,12 +1477,12 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            results = test_module(client, server_fqdn, api_token)
+            results = test_module(client, integration_params)
             return_results(results)
 
         elif command == 'fetch-incidents':
             # Get new incidents to create if any from Vectra API
-            next_run, incidents = fetch_incidents(client)
+            next_run, incidents = fetch_incidents(client, integration_params)
 
             # Add incidents in the SOAR platform
             demisto.incidents(incidents)
@@ -1547,5 +1539,5 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

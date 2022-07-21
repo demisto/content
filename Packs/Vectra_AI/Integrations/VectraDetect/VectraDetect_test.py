@@ -256,7 +256,7 @@ def test_forge_entity_url(object_type, id, expected, exception):
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
-    VectraDetect.integration_params = DEMISTO_PARAMS_MOCK
+    VectraDetect.global_UI_URL = SERVER_URL
 
     with exception:
         assert VectraDetect.forge_entity_url(object_type, id) == expected
@@ -301,7 +301,7 @@ def test_extract_account_data(api_entry, expected):
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
-    VectraDetect.integration_params = DEMISTO_PARAMS_MOCK
+    VectraDetect.global_UI_URL = SERVER_URL
 
     from VectraDetect import extract_account_data
 
@@ -324,7 +324,7 @@ def test_extract_detection_data(api_entry, expected):
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
-    VectraDetect.integration_params = DEMISTO_PARAMS_MOCK
+    VectraDetect.global_UI_URL = SERVER_URL
 
     from VectraDetect import extract_detection_data
 
@@ -347,7 +347,7 @@ def test_extract_host_data(api_entry, expected):
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
-    VectraDetect.integration_params = DEMISTO_PARAMS_MOCK
+    VectraDetect.global_UI_URL = SERVER_URL
 
     from VectraDetect import extract_host_data
 
