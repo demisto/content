@@ -10,7 +10,7 @@
         "Vectra Account": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Certainty Score": {
+                "Vectra Certainty Score": {
                     "simple": "certainty"
                 },
                 "External Severity": {
@@ -19,7 +19,7 @@
                 "Is Active": {
                     "simple": "state"
                 },
-                "Threat Score": {
+                "Vectra Threat Score": {
                     "simple": "threat"
                 }
             }
@@ -47,7 +47,7 @@
         "Vectra Host": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Certainty Score": {
+                "Vectra Certainty Score": {
                     "simple": "certainty"
                 },
                 "Device Id": {
@@ -93,7 +93,7 @@
                 "Is Active": {
                     "simple": "state"
                 },
-                "Threat Score": {
+                "Vectra Threat Score": {
                     "simple": "threat"
                 }
             }

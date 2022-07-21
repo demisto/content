@@ -31,5 +31,6 @@
     "url": "https://support.vectra.ai",
     "useCases": [
         "Network Security"
-    ]
+    ],
+    "itemPrefix": "Vectra"
 }
