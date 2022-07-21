@@ -53,7 +53,7 @@ def run_clear_integration_cache():
 
 def run_show_integration_cache():
     ic = get_integration_context()
-    demisto.log(json.dumps(ic))
+    return_results(json.dumps(ic))
 
 
 def run_remove_action():
