@@ -3,8 +3,8 @@ from typing import Callable, Iterable, Optional
 
 import collect_tests
 import pytest
-# importing Machine from collect_tests (rather than utils) to compare class member values
-from collect_tests import (BranchTestCollector, Machine,
+# importing Machine,FileType from collect_tests (rather than utils) to compare class member values
+from collect_tests import (BranchTestCollector, FileType, Machine,
                            XSIAMNightlyTestCollector,
                            XSOARNightlyTestCollector)
 from demisto_sdk.commands.common.constants import MarketplaceVersions
@@ -120,9 +120,9 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, run_m
 
 
 @pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs', (
-    (MockerCases.empty, XSOARNightlyTestCollector, XSOAR_SANITY_TEST_NAMES, ()),
-    (MockerCases.empty, XSIAMNightlyTestCollector, (), ()),
-    (MockerCases.empty_xsiam, XSIAMNightlyTestCollector, ('some_xsiam_test_only_mentioned_in_conf_json',), ())
+        (MockerCases.empty, XSOARNightlyTestCollector, XSOAR_SANITY_TEST_NAMES, ()),
+        (MockerCases.empty, XSIAMNightlyTestCollector, (), ()),
+        (MockerCases.empty_xsiam, XSIAMNightlyTestCollector, ('some_xsiam_test_only_mentioned_in_conf_json',), ())
 ))
 @pytest.mark.parametrize('run_master', (True, False))
 def test_nightly_empty(monkeypatch, case_mocker, run_master: bool, collector_class: Callable,
@@ -149,25 +149,25 @@ NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
 
 
 @pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs,expected_machines', (
-    (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
-    (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
-    (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
-    (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
+        (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
+        (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
+        (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
+        (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
 
-    (MockerCases.C, XSOARNightlyTestCollector,
-     {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
-     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack'}, None),
+        (MockerCases.C, XSOARNightlyTestCollector,
+         {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
+         {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack'}, None),
 
-    (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'},
-     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
+        (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'},
+         {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
 
-    (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-     (Machine.V6_5, Machine.MASTER, Machine.NIGHTLY)),
+        (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
+         (Machine.V6_5, Machine.MASTER, Machine.NIGHTLY)),
 
-    (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'}, None),
-    (MockerCases.E, XSIAMNightlyTestCollector, {}, {}, None),
+        (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'}, None),
+        (MockerCases.E, XSIAMNightlyTestCollector, {}, {}, None),
 
-    (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'}, None),
+        (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'}, None),
 ))
 def test_nightly(monkeypatch, case_mocker, collector_class: Callable, expected_tests: set[str],
                  expected_packs: tuple[str],
@@ -197,41 +197,41 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
 @pytest.mark.parametrize(
     'case_mocker,expected_tests,expected_packs,expected_machines,collector_class_args,mocked_changed_files',
     (
-        (MockerCases.empty, XSOAR_SANITY_TEST_NAMES, (), None, XSOAR_BRANCH_ARGS, ()),
+            (MockerCases.empty, XSOAR_SANITY_TEST_NAMES, (), None, XSOAR_BRANCH_ARGS, ()),
 
-        (MockerCases.empty, (), (), None, XSIAM_BRANCH_ARGS, ()),
+            (MockerCases.empty, (), (), None, XSIAM_BRANCH_ARGS, ()),
 
-        (MockerCases.empty_xsiam, ('some_xsiam_test_only_mentioned_in_conf_json',), (), None, XSIAM_BRANCH_ARGS,
-         ()),
+            (MockerCases.empty_xsiam, ('some_xsiam_test_only_mentioned_in_conf_json',), (), None, XSIAM_BRANCH_ARGS,
+             ()),
 
-        (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
-         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',)),
+            (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+             ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',)),
 
-        (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
-         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',)),
+            (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+             ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
-        (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
-         ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.yml',)),
+            (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
+             ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.yml',)),
 
-        (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
-         ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',)),
+            (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
+             ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
-        (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS, (
-            'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
-        )),
-        (MockerCases.B_xsoar, ('myOtherTestPlaybook', 'myTestPlaybook'), ('myXSOAROnlyPack',), None,
-         XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',
-                             'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
+            (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS, (
+                    'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
+            )),
+            (MockerCases.B_xsoar, ('myOtherTestPlaybook', 'myTestPlaybook'), ('myXSOAROnlyPack',), None,
+             XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',
+                                 'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
 
-        (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
-            'Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml',
-        )),
-        (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
-            'Packs/myPack/Playbooks/myPlaybook.yml',
-        )),
-        (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
-            'Packs/myPack/Scripts/myScript/myScript.yml',
-        )),
+            (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
+                    'Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml',
+            )),
+            (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
+                    'Packs/myPack/Playbooks/myPlaybook.yml',
+            )),
+            (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
+                    'Packs/myPack/Scripts/myScript/myScript.yml',
+            )),
     ))
 def test_branch(
         monkeypatch,
@@ -258,7 +258,33 @@ def test_branch(
     )
 
 
-@pytest.mark.parametrize('file_type', ONLY_INSTALL_PACK)
+@pytest.mark.parametrize('file_type', (
+        FileType.RELEASE_NOTES_CONFIG,
+        FileType.RELEASE_NOTES,
+        FileType.IMAGE,
+        FileType.DESCRIPTION,
+        FileType.METADATA,
+        FileType.INCIDENT_TYPE,
+        FileType.INCIDENT_FIELD,
+        FileType.INDICATOR_FIELD,
+        FileType.LAYOUT,
+        FileType.WIDGET,
+        FileType.DASHBOARD,
+        FileType.PARSING_RULE,
+        FileType.MODELING_RULE,
+        FileType.CORRELATION_RULE,
+        FileType.XSIAM_DASHBOARD,
+        FileType.XSIAM_REPORT,
+        FileType.REPORT,
+        FileType.GENERIC_TYPE,
+        FileType.GENERIC_FIELD,
+        FileType.GENERIC_MODULE,
+        FileType.GENERIC_DEFINITION,
+        FileType.PRE_PROCESS_RULES,
+        FileType.JOB,
+        FileType.CONNECTION,
+        FileType.XSOAR_CONFIG,
+))
 def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileType):
     """
     give    a content item type for which no tests should be collected

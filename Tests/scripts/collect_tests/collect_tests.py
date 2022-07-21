@@ -1,4 +1,3 @@
-import logging
 import os
 import sys
 from abc import ABC, abstractmethod
@@ -8,7 +7,6 @@ from functools import reduce
 from pathlib import Path
 from typing import Iterable, Optional
 
-from Tests.scripts.collect_tests.utils import find_yml_content_type
 from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
                        DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
                        SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
@@ -26,6 +24,7 @@ from test_conf import TestConf
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.path_manager import PathManager
+from Tests.scripts.collect_tests.utils import find_yml_content_type
 from utils import (ContentItem, Machine, PackManager, VersionRange,
                    find_pack_folder)
 
@@ -50,6 +49,7 @@ class CollectionReason(Enum):
     MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
+    COMBINING_COLLECTED_TESTS = 'combining CollectedTest object'  # NOTE: using this reason changes CollectedTests init!
 
 
 class CollectedTests:
@@ -67,6 +67,12 @@ class CollectedTests:
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: Optional[Iterable[Machine]] = None
 
+        if reason == CollectionReason.COMBINING_COLLECTED_TESTS:
+            # when combining two existing CollectedTests objects, there is no need for logs or logic.
+            self.tests = set(tests)
+            self.packs = set(packs)
+            return
+
         if tests and packs:
             if len(tests) != len(packs):
                 raise ValueError(f'when both are not empty, {len(tests)=} must be equal to {len(packs)=}')
@@ -83,14 +89,14 @@ class CollectedTests:
             for i in range(len(tests)):
                 self._add_single(tests[i], packs[i], reason, reason_description)
 
-    def __or__(self, other: 'CollectedTests') -> 'CollectedTests':
-        self.tests.update(other.tests)
-        self.packs.update(other.packs)
-        if self.version_range:
-            self.version_range |= other.version_range
-        else:
-            self.version_range = other.version_range
-        return self
+    def __add__(self, other: 'CollectedTests') -> 'CollectedTests':
+        return CollectedTests(
+            tests=tuple(set(self.tests).union(other.tests)),
+            packs=tuple(set(self.packs).union(other.packs)),
+            version_range=self.version_range | other.version_range if self.version_range else other.version_range,
+            reason=CollectionReason.COMBINING_COLLECTED_TESTS,
+            reason_description='',
+        )
 
     @classmethod
     def union(cls, collected_tests: Optional[tuple[Optional['CollectedTests'], ...]]) -> Optional['CollectedTests']:
@@ -100,7 +106,7 @@ class CollectedTests:
             logger.warning('no tests to union')
             return None
 
-        return reduce(lambda a, b: a | b, collected_tests)  # todo replace | with +, remove classmethod
+        return reduce(lambda a, b: a + b, collected_tests)
 
     def _add_single(
             self,
@@ -115,7 +121,8 @@ class CollectedTests:
 
         if test:
             self.tests.add(test)
-            logger.info(f'collected {test:}, {reason.value} {description}')
+            if reason != CollectionReason.COMBINING_COLLECTED_TESTS:  # to avoid excessive logs
+                logger.info(f'collected {test:}, {reason.value} {description}')
 
         if pack:
             try:
@@ -126,7 +133,8 @@ class CollectedTests:
             #     logger.critical(e.message)
 
             self.packs.add(pack)
-            logger.info(f'collected {pack=}, {reason.value} {description}')
+            if reason != CollectionReason.COMBINING_COLLECTED_TESTS:  # to avoid excessive logs
+                logger.info(f'collected {pack=}, {reason.value} {description}')
 
     def __repr__(self):
         return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'

@@ -3,18 +3,12 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
 
-from demisto_sdk.commands.common.constants import MarketplaceVersions, FileType
+from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
-from exceptions import (
-    DeprecatedPackException,
-    InvalidPackNameException,
-    NonDictException,
-    NonexistentPackException,
-    NoTestsConfiguredException,
-    NotUnderPackException,
-    SkippedPackException,
-    UnsupportedPackException,
-)
+from exceptions import (DeprecatedPackException, InvalidPackNameException,
+                        NonDictException, NonexistentPackException,
+                        NoTestsConfiguredException, NotUnderPackException,
+                        SkippedPackException, UnsupportedPackException)
 from logger import logger
 from packaging import version
 from packaging.version import Version
