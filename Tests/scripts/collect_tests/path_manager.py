@@ -12,7 +12,7 @@ class PathManager:
     ARTIFACTS_PATH = Path(getenv('ARTIFACTS_FOLDER', './artifacts'))
 
     def __init__(self, content_path: Path):
-        logging.info(f'Using content path: {content_path}, full path: {content_path.resolve()}')
+        logging.info(f'Using content path: {content_path.resolve()}')
         self.content_path = content_path
         self.excluded_files = _calculate_excluded_files(self.content_path)
 
@@ -55,13 +55,15 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
     :return: set of Paths that should be excluded from test collection
     """
 
-    excluded = _glob(
+    excluded = glob(
         content_path,
-        ('Tests',
-         '.gitlab',
-         'Documentation')
+        (
+            'Tests',
+            '.gitlab',
+            'Documentation',
+        )
     )
-    not_excluded = _glob(
+    not_excluded = glob(
         content_path,
         (
             'Tests/scripts/infrastructure_tests',
@@ -79,7 +81,7 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
     return excluded - not_excluded
 
 
-def _glob(content_path: Path, paths: Iterable[str]) -> set[Path]:
+def glob(content_path: Path, paths: Iterable[str]) -> set[Path]:
     result: list[Path] = []
     for partial_path in paths:
         path = content_path / partial_path
@@ -89,7 +91,7 @@ def _glob(content_path: Path, paths: Iterable[str]) -> set[Path]:
         elif '*' in path.name:
             result.extend((_ for _ in path.rglob(path.name) if _.is_file()))
         elif not path.exists():
-            logging.warning(f'could not find {path} for calculating excluded paths')
+            logging.error(f'could not find {path} for calculating excluded paths')
             continue
         else:  # file without *s
             result.append(path)

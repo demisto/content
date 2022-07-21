@@ -82,11 +82,10 @@ class Machine(Enum):
             -> tuple['Machine', ...]:
         result: list[Machine] = []
 
-        if version_range:
-            result.extend(filter(None,
-                                 (machine for machine in Machine.numeric_machines() if machine.value in version_range)))
-        else:
-            result.extend(Machine.numeric_machines())
+        if not version_range:
+            version_range = VersionRange(version.NegativeInfinity, version.Infinity)
+
+        result.extend(machine for machine in Machine.numeric_machines() if machine.value in version_range)
 
         if run_nightly:
             result.append(Machine.NIGHTLY)
@@ -96,7 +95,7 @@ class Machine(Enum):
         return tuple(result)
 
     def __repr__(self):
-        return str(self.value)
+        return f'Server {self.value}'
 
 
 class DictBased:

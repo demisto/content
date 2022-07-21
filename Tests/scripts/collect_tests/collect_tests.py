@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 from abc import ABC, abstractmethod
@@ -40,8 +41,6 @@ class CollectionReason(Enum):
     SANITY_TESTS = 'sanity tests by marketplace value'
     PACK_MATCHES_INTEGRATION = 'pack added as the integration is used in a playbook'  # todo is used?
     PACK_MATCHES_TEST = 'pack added as the test playbook was collected earlier'
-    NIGHTLY_ALL_TESTS__ID_SET = 'collecting all id_set test playbooks for nightly'  # todo is used?
-    NIGHTLY_ALL_TESTS__TEST_CONF = 'collecting all test_conf tests for nightly'  # todo is used?
     ALL_ID_SET_PACKS = 'collecting all id_set pack_name_to_pack_metadata'  # todo is used?
     NON_CODE_FILE_CHANGED = 'non-code pack file changed'
     INTEGRATION_CHANGED = 'integration changed, collecting all conf.json tests using it'
@@ -240,25 +239,31 @@ class BranchTestCollector(TestCollector):
         return CollectedTests.union(tuple(collected))
 
     def _collect_yml(self, content_item_path: Path) -> CollectedTests:
-        yml_path = content_item_path.with_suffix('.yml')
+        """
+        collecting a yaml-based content item (including py-based, whose names match a yaml based one)
+        """
+        yml_path = content_item_path.with_suffix('.yml') if content_item_path.suffix != '.yml' else content_item_path
         try:
             yml = ContentItem(yml_path)
         except FileNotFoundError:
-            raise FileNotFoundError(f'could not find yml matching {PackManager.relative_to_packs(content_item_path)}')
-
-        relative_path = PackManager.relative_to_packs(yml_path)
+            raise FileNotFoundError(
+                f'could not find yml matching {PackManager.relative_to_packs(content_item_path)}'
+            )
+        relative_yml_path = PackManager.relative_to_packs(yml_path)
         tests: tuple[str, ...]
 
         match actual_content_type := find_yml_content_type(yml_path):
             case None:
-                raise ValueError(f'could not detect type for {yml_path}')
+                path_description = f'{yml_path} (original item {content_item_path}' \
+                    if content_item_path != yml_path else yml_path
+                raise ValueError(f'could not detect type for {path_description}')
 
             case FileType.TEST_PLAYBOOK:
                 if (test_id := yml.id_) in self.conf.test_ids:
                     tests = test_id,
                     reason = CollectionReason.TEST_PLAYBOOK_CHANGED
                 else:
-                    raise ValueError(f'{test_id} missing from conf.test_ids')
+                    raise ValueError(f'test playbook  with id {test_id} is missing from conf.test_ids')
 
             case FileType.INTEGRATION:
                 tests = tuple(self.conf.integrations_to_tests[yml.id_])
@@ -268,34 +273,35 @@ class BranchTestCollector(TestCollector):
                 try:
                     tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
+
                 except NoTestsConfiguredException:
                     # collecting all tests that implement this script/playbook
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED_NO_TESTS
 
                     match actual_content_type:
                         case FileType.SCRIPT:
-                            tests = tuple(test.name for test in self.id_set.implemented_scripts_to_tests.get(yml.id_))
+                            tests = tuple(
+                                test.name for test in self.id_set.implemented_scripts_to_tests.get(yml.id_)
+                            )
 
                         case FileType.PLAYBOOK:
-
                             tests = tuple(
                                 test.name for test in self.id_set.implemented_playbooks_to_tests.get(yml.id_)
                             )
                         case _:
                             raise RuntimeError(f'unexpected content type folder {actual_content_type}')
-                    if not tests:
-                        original_type: str = actual_content_type.value
-                        relative_path = str(PackManager.relative_to_packs(yml.path))
-                        logger.warning(f'{original_type} {relative_path} '
+
+                    if not tests:  # no tests were found in yml nor in id_set
+                        logger.warning(f'{actual_content_type.value} {relative_yml_path} '
                                        f'has `No Tests` configured, and no tests in id_set')
             case _:
-                raise RuntimeError(f'Unexpected content type {actual_content_type} for {content_item_path}'
+                raise RuntimeError(f'Unexpected content type {actual_content_type.value} for {content_item_path}'
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
         # creating an object for each, as CollectedTests require #packs==#tests
         if tests and (collected := CollectedTests.union(
                 tuple(CollectedTests(
                     tests=(test,), packs=yml.pack_folder_name_tuple, reason=reason, version_range=yml.version_range,
-                    reason_description=f'{yml.id_=} ({relative_path})') for test in tests))):
+                    reason_description=f'{yml.id_=} ({relative_yml_path})') for test in tests))):
             return collected
         else:
             raise NothingToCollectException(yml.path, 'no tests were found')
@@ -518,6 +524,7 @@ class UploadCollector(BranchTestCollector):
     def _collect(self) -> Optional[CollectedTests]:
         # same as BranchTestCollector, but without tests.
         if collected := super()._collect():
+            logger.info('UploadCollector drops collected tests, as they are not required')
             collected.tests = set()
         return collected
 
@@ -526,7 +533,7 @@ if __name__ == '__main__':
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
-    parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')  # todo
+    parser.add_argument('-p', '--changed_pack_path', type=str, help='Path to a changed pack. Used for private content')
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version', default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     options = parser.parse_args()
