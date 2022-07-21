@@ -1,5 +1,5 @@
 """
-Vectra v3 Integration for Cortex XSOAR
+Vectra Detect Integration for Cortex XSOAR
 
 Developer Documentation: https://xsoar.pan.dev/docs/welcome
 Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
@@ -304,6 +304,11 @@ class Client(BaseClient):
     def get_pcap_by_detection_id(self, id: str):
         """
         Gets a single detection PCAP file using the detection endpoint
+
+        - params:
+            - id: The Detection ID
+        - returns:
+            PCAP file if available
         """
 
         # Execute request
@@ -316,6 +321,12 @@ class Client(BaseClient):
     def markasfixed_by_detection_id(self, id: str, fixed: bool):
         """
         Mark/Unmark a single detection as fixed
+
+        - params:
+            - id: Vectra Detection ID
+            - fixed: Targeted state
+        - returns:
+            Vectra API call result (unused)
         """
 
         json_payload = {
@@ -331,6 +342,16 @@ class Client(BaseClient):
         )
 
     def add_tags(self, id: str, type: str, tags: List[str]):
+        """
+        Adds tags from Vectra entity
+
+        - params:
+            id: The entity ID
+            type: The entity type
+            tags: Tags list
+        - returns
+            Vectra API call result (unused)
+        """
 
         # Must be done in two steps
         # 1 - get current tags
@@ -356,6 +377,16 @@ class Client(BaseClient):
         )
 
     def del_tags(self, id: str, type: str, tags: List[str]):
+        """
+        Deletes tags from Vectra entity
+
+        - params:
+            id: The entity ID
+            type: The entity type
+            tags: Tags list
+        - returns
+            Vectra API call result (unused)
+        """
 
         # Must be done in two steps
         # 1 - get current tags
@@ -409,6 +440,14 @@ def str2bool(value: Optional[str]) -> Optional[bool]:
 
 
 def sanitize_max_results(max_results=None) -> int:
+    """
+    Cleans max_results value and ensure it's always lower than the MAX
+
+    - params:
+        max_results: The max results number
+    - returns:
+        The checked/enforced max results value
+    """
     if max_results and isinstance(max_results, str):
         max_results = int(max_results)
 
@@ -419,6 +458,15 @@ def sanitize_max_results(max_results=None) -> int:
 
 
 def scores_to_severity(threat: Optional[int], certainty: Optional[int]) -> str:
+    """
+    Converts Vectra scores to a severity String
+
+    - params:
+        - threat: The Vectra threat score
+        - certainty: The Vectra certainty score
+    - returns:
+        The severity as text
+    """
     severity = 'Unknown'
     if isinstance(threat, int) and isinstance(certainty, int):
         if threat < 50 and certainty < 50:
@@ -434,6 +482,14 @@ def scores_to_severity(threat: Optional[int], certainty: Optional[int]) -> str:
 
 
 def severity_string_to_int(severity: Optional[str]) -> int:
+    """
+    Converts a severity String to XSOAR severity value
+
+    - params:
+        - severity: The severity as text
+    - returns:
+        The XSOAR severity value
+    """
     output = 0
     if severity == 'Critical':
         output = 4
@@ -524,6 +580,17 @@ def validate_argument(type: Optional[str], value: Any) -> int:
 
 
 def validate_min_max(min_label: str = None, min_value: str = None, max_label: str = None, max_value: str = None):
+    """
+    Validates min/max values for a specific search attribute and ensure max_value >= min_value
+
+    - params:
+        - min_label: The attribute label for the min value
+        - min_value: The min value
+        - max_label: The attribute label for the max value
+        - max_value: The max value
+    - returns:
+        Return True if OK or raises Exception if not
+    """
     if min_value:
         validate_argument(min_label, min_value)
 
@@ -538,6 +605,15 @@ def validate_min_max(min_label: str = None, min_value: str = None, max_label: st
 
 
 def build_search_query(object_type, params: dict) -> str:
+    """
+    Builds a Lucene syntax search query depending on the object type to search on (Account, Detection, Host)
+
+    - params:
+        - object_type: The object type we're searching (Account, Detection, Host)
+        - params: The search params
+    - returns:
+        The Lucene search query
+    """
     query = ''
 
     for key, value in params.items():
@@ -598,6 +674,14 @@ def forge_entity_url(type: str, id: Optional[str]) -> str:
 
 
 def common_extract_data(entity: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extracts common information from Vectra object renaming attributes on the fly.
+
+    - params:
+        - host: The Vectra object
+    - returns:
+        The extracted data
+    """
     return {
         'Assignee'               : entity.get('assigned_to'),                              # noqa: E203
         'AssignedDate'           : convert_date(entity.get('assigned_date')),              # noqa: E203
@@ -610,6 +694,14 @@ def common_extract_data(entity: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def extract_account_data(account: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extracts useful information from Vectra Account object renaming attributes on the fly.
+
+    - params:
+        - host: The Vectra Account object
+    - returns:
+        The Account extracted data
+    """
     return common_extract_data(account) | {
         'LastDetectionTimestamp' : convert_date(account.get('last_detection_timestamp')),  # noqa: E203
         'PrivilegeLevel'         : account.get('privilege_level'),                         # noqa: E203
@@ -622,7 +714,14 @@ def extract_account_data(account: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extracts useful information from Vectra Detection object renaming attributes on the fly.
 
+    - params:
+        - host: The Vectra Detection object
+    - returns:
+        The Detection extracted data
+    """
     # Complex values
     detection_name = detection.get('custom_detection') if detection.get('custom_detection') else detection.get('detection')
 
@@ -652,6 +751,14 @@ def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def extract_host_data(host: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extracts useful information from Vectra Host object renaming attributes on the fly.
+
+    - params:
+        - host: The Vectra Hosts object
+    - returns:
+        The Host extracted data
+    """
     return common_extract_data(host) | {
         'HasActiveTraffic'       : host.get('has_active_traffic'),                      # noqa: E203
         'Hostname'               : host.get('name'),                                    # noqa: E203
@@ -821,7 +928,14 @@ def get_last_run_details(integration_params: Dict):
 
 
 def iso_date_to_vectra_start_time(iso_date: str):
+    """
+    Converts an iso date into a Vectra timestamp used in search query
 
+    - params:
+        - iso_date: The ISO date to convert
+    - returns:
+        A Vectra date timestamp
+    """
     # This will return a relative TZaware datetime (in UTC)
     date = dateparser.parse(iso_date, settings={'TO_TIMEZONE': 'UTC'})
 
@@ -853,7 +967,9 @@ def unify_severity(severity: Optional[str]) -> str:
 
 
 class VectraException(Exception):
-    pass
+    """
+    Custome Vectra Exception in case of Vectra API issue
+    """
 
 # ####               #### #
 # ## COMMAND FUNCTIONS ## #
@@ -868,14 +984,12 @@ def test_module(client: Client, integration_params: Dict) -> str:
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    - params:
+        - client: The API Client
+        - integration_params: All additional integration settings
+    - returns:
+        'ok' if test passed, anything else if at least one test failed.
     """
-
-    message: str = ''
     try:
         last_timestamp = None
 
@@ -1061,14 +1175,14 @@ def fetch_incidents(client: Client, integration_params: Dict):
 
 def vectra_search_accounts_command(client: Client, **kwargs) -> CommandResults:
     """
-    Get several accounts objects maching the search criterias passed as arguments
+    Returns several Account objects maching the search criterias passed as arguments
 
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains Accounts
-    :rtype: ``CommandResults``
+    - params:
+        - client: Vectra Client
+        - kwargs: The different possible search query arguments
+    - returns
+        CommandResults to be used in War Room
     """
-
     api_response = client.search_accounts(**kwargs)
 
     count = api_response.get('count')
@@ -1106,14 +1220,14 @@ def vectra_search_accounts_command(client: Client, **kwargs) -> CommandResults:
 
 def vectra_search_detections_command(client: Client, **kwargs) -> CommandResults:
     """
+    Returns several Detection objects maching the search criterias passed as arguments
 
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains Detections
-
-    :rtype: ``CommandResults``
+    - params:
+        - client: Vectra Client
+        - kwargs: The different possible search query arguments
+    - returns
+        CommandResults to be used in War Room
     """
-
     api_response = client.search_detections(**kwargs)
 
     count = api_response.get('count')
@@ -1161,13 +1275,14 @@ def vectra_search_detections_command(client: Client, **kwargs) -> CommandResults
 
 def vectra_search_hosts_command(client: Client, **kwargs) -> CommandResults:
     """
+    Returns several Host objects maching the search criterias passed as arguments
 
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains Accounts
-    :rtype: ``CommandResults``
+    - params:
+        - client: Vectra Client
+        - kwargs: The different possible search query arguments
+    - returns
+        CommandResults to be used in War Room
     """
-
     api_response = client.search_hosts(**kwargs)
 
     count = api_response.get('count')
@@ -1211,8 +1326,9 @@ def vectra_get_account_by_id_command(client: Client, id: str) -> CommandResults:
     - params:
         - client: Vectra Client
         - id: The Account ID
+    - returns
+        CommandResults to be used in War Room
     """
-
     # Check args
     if not id:
         VectraException('"id" not specified')
@@ -1259,8 +1375,9 @@ def vectra_get_detection_by_id_command(client: Client, id: str) -> CommandResult
     - params:
         - client: Vectra Client
         - id: The Detection ID
+    - returns
+        CommandResults to be used in War Room
     """
-
     # Check args
     if not id:
         VectraException('"id" not specified')
@@ -1313,8 +1430,9 @@ def vectra_get_host_by_id_command(client: Client, id: str) -> CommandResults:
     - params:
         - client: Vectra Client
         - id: The Host ID
+    - returns
+        CommandResults to be used in War Room
     """
-
     # Check args
     if not id:
         VectraException('"id" not specified')
@@ -1362,8 +1480,9 @@ def get_detection_pcap_file_command(client: Client, id: str) -> CommandResults:
     - params:
         - client: Vectra Client
         - id: The Detection ID
+    - returns:
+        A commandResult to use in the War Room
     """
-
     if not id:
         VectraException('"id" not specified')
 
