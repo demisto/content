@@ -124,8 +124,6 @@ class CollectedTests:
                 PACK_MANAGER.validate_pack(pack)
             except (SkippedPackException, DeprecatedPackException, UnsupportedPackException) as e:
                 logger.info(e.message)
-            # except NonexistentPackException as e:
-            #     logger.critical(e.message)
 
             self.packs.add(pack)
             if reason != CollectionReason.COMBINING_COLLECTED_TESTS:  # to avoid excessive logs
@@ -141,8 +139,8 @@ class CollectedTests:
 class TestCollector(ABC):
     def __init__(self, marketplace: MarketplaceVersions):
         self.marketplace = marketplace
-        self.id_set = IdSet(marketplace, PATHS.id_set_path)  # todo change
-        self.conf = TestConf(PATHS.conf_path)  # todo change
+        self.id_set = IdSet(marketplace, PATHS.id_set_path)
+        self.conf = TestConf(PATHS.conf_path)
 
     @property
     def sanity_tests(self) -> CollectedTests:
@@ -261,11 +259,11 @@ class BranchTestCollector(TestCollector):
                 raise ValueError(f'could not detect type for {path_description}')
 
             case FileType.TEST_PLAYBOOK:
-                if (test_id := yml.id_) in self.conf.test_ids:
-                    tests = test_id,
+                if yml.id_ in self.conf.test_ids:
+                    tests = yml.id_,
                     reason = CollectionReason.TEST_PLAYBOOK_CHANGED
                 else:
-                    raise ValueError(f'test playbook  with id {test_id} is missing from conf.test_ids')
+                    raise ValueError(f'test playbook with id {yml.id_} is missing from conf.test_ids')
 
             case FileType.INTEGRATION:
                 tests = tuple(self.conf.integrations_to_tests[yml.id_])
@@ -300,11 +298,20 @@ class BranchTestCollector(TestCollector):
                 raise RuntimeError(f'Unexpected content type {actual_content_type.value} for {content_item_path}'
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
         # creating an object for each, as CollectedTests require #packs==#tests
-        if tests and (collected := CollectedTests.union(
-                tuple(CollectedTests(
-                    tests=(test,), packs=yml.pack_id_tuple, reason=reason, version_range=yml.version_range,
-                    reason_description=f'{yml.id_=} ({relative_yml_path})') for test in tests))):
-            return collected
+        if tests:
+            collected = CollectedTests.union(
+                tuple(
+                    CollectedTests(
+                        tests=(test,),
+                        packs=yml.pack_id_tuple,
+                        reason=reason,
+                        version_range=yml.version_range,
+                        reason_description=f'{yml.id_=} ({relative_yml_path})'
+                    )
+                    for test in tests
+                ))
+            if collected:
+                return collected
         else:
             raise NothingToCollectException(yml.path, 'no tests were found')
 
@@ -567,3 +574,4 @@ if __name__ == '__main__':
         logger.info(f'writing output to {str(PATHS.output_tests_file)}, {str(PATHS.output_packs_file)}')
         PATHS.output_tests_file.write_text('\n'.join(collected.tests))
         PATHS.output_packs_file.write_text('\n'.join(collected.packs))
+        PATHS.output_machines_file.write_text('\n'.join(map(str, collected.machines)))

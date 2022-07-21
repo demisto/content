@@ -30,15 +30,15 @@ class PathManager:
 
     @property
     def output_tests_file(self):
-        return PathManager.ARTIFACTS_PATH / 'filter_file_new.txt'  # todo change
+        return PathManager.ARTIFACTS_PATH / 'filter_file_new.txt'  # todo where should the output be?
 
     @property
     def output_packs_file(self):
-        return PathManager.ARTIFACTS_PATH / 'content_packs_to_install_new.txt'  # todo change
+        return PathManager.ARTIFACTS_PATH / 'content_packs_to_install_new.txt'  # todo where should the output be?
 
     @property
     def output_machines_file(self):
-        return PathManager.ARTIFACTS_PATH / 'filter_envs.json'
+        return PathManager.ARTIFACTS_PATH / 'filter_envs.json'  # todo where should the output be?
 
 
 def _calculate_excluded_files(content_path: Path) -> set[Path]:
