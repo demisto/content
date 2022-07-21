@@ -998,7 +998,7 @@ def list_users_command(client, args):
     else:
         readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
     if after_tag:
-        readable_output +=f"\n### tag: {after_tag}"
+        readable_output += f"\n### tag: {after_tag}"
 
     return(
         readable_output,
