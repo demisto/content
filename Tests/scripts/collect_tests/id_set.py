@@ -40,7 +40,7 @@ class IdSetItem(DictBased):
         return tuple(self.get('implementing_playbooks', (), warn_if_missing=False))
 
     @property
-    def pack_name_tuple(self) -> tuple[Optional[str]]:
+    def pack_id_tuple(self) -> tuple[Optional[str]]:
         return self.pack_id,
 
 

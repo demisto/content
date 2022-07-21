@@ -205,7 +205,7 @@ class TestCollector(ABC):
 class BranchTestCollector(TestCollector):
     def __init__(
             self,
-            branch_name: str,
+            branch_name: str,  # todo remove
             marketplace: MarketplaceVersions,
             service_account: Optional[str],
             private_pack_path: Optional[Path] = None,
@@ -322,14 +322,17 @@ class BranchTestCollector(TestCollector):
         file_type = find_type_by_path(path)
         try:
             reason_description = relative_path = PackManager.relative_to_packs(path)
-            content_item = ContentItem(path)
-        except NonDictException:  # for `.py`, `.md`, etc., that are not dictionary-based. Suitable logic follows.
-            content_item = None
-            relative_path = reason_description = str(path)
         except NotUnderPackException:
             if path in PATHS.excluded_files:
                 raise NothingToCollectException(path, 'not under a pack')  # infrastructure files that are ignored
             raise
+
+        try:
+            content_item = ContentItem(path)
+        except NonDictException:
+            # for `.py`, `.md`, etc., that are not dictionary-based
+            # Suitable logic follows, see collect_yml
+            content_item = None
 
         if file_type in {FileType.PACK_IGNORE, FileType.SECRET_IGNORE, FileType.DOC_FILE, FileType.README}:
             raise NothingToCollectException(path, f'ignored type {file_type}')
@@ -343,7 +346,7 @@ class BranchTestCollector(TestCollector):
             )
 
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
-            if path.name.lower().endswith(('_test.py', 'tests.ps1')):  # todo make sure we should skip them
+            if path.name.lower().endswith(('_test.py', 'tests.ps1')):
                 raise NothingToCollectException(path, 'unit tests changed')
             return self._collect_yml(path)
 
@@ -408,6 +411,15 @@ class BranchTestCollector(TestCollector):
         return tuple((value.split()[1] for value in filter(None, diff.split('\n'))))
 
 
+class UploadCollector(BranchTestCollector):
+    def _collect(self) -> Optional[CollectedTests]:
+        # same as BranchTestCollector, but without tests.
+        if collected := super()._collect():
+            logger.info('UploadCollector drops collected tests, as they are not required')
+            collected.tests = set()
+        return collected
+
+
 class NightlyTestCollector(TestCollector, ABC):
     def _id_set_tests_matching_marketplace_value(self, only_value: bool) -> Optional[CollectedTests]:
         """
@@ -429,7 +441,7 @@ class NightlyTestCollector(TestCollector, ABC):
                 continue
 
             if self.marketplace in playbook_marketplaces:
-                collected.append(CollectedTests(tests=(playbook.name,), packs=playbook.pack_name_tuple,
+                collected.append(CollectedTests(tests=(playbook.id_,), packs=playbook.pack_id_tuple,
                                                 reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
                                                 reason_description=f'({self.marketplace.value})',
                                                 version_range=VersionRange(playbook.from_version, playbook.to_version)))
@@ -528,15 +540,6 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
             self._id_set_tests_matching_marketplace_value(only_value=False),
             self._packs_matching_marketplace_value(only_value=False),
         ))
-
-
-class UploadCollector(BranchTestCollector):
-    def _collect(self) -> Optional[CollectedTests]:
-        # same as BranchTestCollector, but without tests.
-        if collected := super()._collect():
-            logger.info('UploadCollector drops collected tests, as they are not required')
-            collected.tests = set()
-        return collected
 
 
 if __name__ == '__main__':
