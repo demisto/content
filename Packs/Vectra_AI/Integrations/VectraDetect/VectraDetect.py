@@ -1189,26 +1189,29 @@ def vectra_search_accounts_command(client: Client, **kwargs) -> CommandResults:
     api_response = client.search_accounts(**kwargs)
 
     count = api_response.get('count')
-    if not count:
-        VectraException('Cannot find any account')
+    if count is None:
+        raise VectraException('API issue')
 
     accounts_data = list()
+    if count == 0:
+        readable_output = 'Cannot find any Detection.'
+    else:
+        if api_response.get('results') is None:
+            raise VectraException('API issue')
 
-    if api_response.get('results') is None:
-        raise VectraException("API issue")
+        api_results = api_response.get('results', [])
 
-    api_results = api_response.get('results', {})
-    for account in api_results:
-        accounts_data.append(extract_account_data(account))
+        for account in api_results:
+            accounts_data.append(extract_account_data(account))
 
-    readable_output_keys = ['ID', 'Username', 'Severity', 'URL']
-    readable_output = tableToMarkdown(
-        name=f'Accounts table (Showing max {MAX_RESULTS} entries)',
-        t=accounts_data,
-        headers=readable_output_keys,
-        url_keys=['URL'],
-        date_fields=['AssignedDate', 'LastDetectionTimestamp']
-    )
+        readable_output_keys = ['ID', 'Username', 'Severity', 'URL']
+        readable_output = tableToMarkdown(
+            name=f'Accounts table (Showing max {MAX_RESULTS} entries)',
+            t=accounts_data,
+            headers=readable_output_keys,
+            url_keys=['URL'],
+            date_fields=['AssignedDate', 'LastDetectionTimestamp']
+        )
 
     command_result = CommandResults(
         readable_output=readable_output,
@@ -1234,36 +1237,36 @@ def vectra_search_detections_command(client: Client, **kwargs) -> CommandResults
     api_response = client.search_detections(**kwargs)
 
     count = api_response.get('count')
-    if not count:
-        raise VectraException('Cannot find any detection')
+    if count is None:
+        raise VectraException('API issue')
 
     detections_data = list()
+    if count == 0:
+        readable_output = 'Cannot find any Detection.'
+    else:
+        if api_response.get('results') is None:
+            raise VectraException('API issue')
 
-    # Define which fields we want to exclude from the context output
-    # detection_context_excluded_fields = list()
+        api_results = api_response.get('results', [])
 
-    # Context Keys
-    # context_keys = list()
+        # Define which fields we want to exclude from the context output
+        # detection_context_excluded_fields = list()
+        # Context Keys
+        # context_keys = list()
 
-    if api_response.get('results') is None:
-        raise VectraException("API issue")
+        for detection in api_results:
+            detection_data = extract_detection_data(detection)
+            # detection_data = {k: detection_data[k] for k in detection_data if k not in detection_context_excluded_fields}
+            detections_data.append(detection_data)
 
-    api_results = api_response.get('results', {})
-    for detection in api_results:
-
-        detection_data = extract_detection_data(detection)
-
-        # detection_data = {k: detection_data[k] for k in detection_data if k not in detection_context_excluded_fields}
-        detections_data.append(detection_data)
-
-    readable_output_keys = ['ID', 'Name', 'Severity', 'LastTimestamp', 'Category', 'URL']
-    readable_output = tableToMarkdown(
-        name=f'Detections table (Showing max {MAX_RESULTS} entries)',
-        t=detections_data,
-        headers=readable_output_keys,
-        url_keys=['URL'],
-        date_fields=['AssignedDate', 'FirstTimestamp', 'LastTimestamp'],
-    )
+        readable_output_keys = ['ID', 'Name', 'Severity', 'LastTimestamp', 'Category', 'URL']
+        readable_output = tableToMarkdown(
+            name=f'Detections table (Showing max {MAX_RESULTS} entries)',
+            t=detections_data,
+            headers=readable_output_keys,
+            url_keys=['URL'],
+            date_fields=['AssignedDate', 'FirstTimestamp', 'LastTimestamp'],
+        )
 
     command_result = CommandResults(
         readable_output=readable_output,
@@ -1289,27 +1292,29 @@ def vectra_search_hosts_command(client: Client, **kwargs) -> CommandResults:
     api_response = client.search_hosts(**kwargs)
 
     count = api_response.get('count')
-    if not count:
-        VectraException('Cannot find any host')
+    if count is None:
+        raise VectraException('API issue')
 
     hosts_data = list()
+    if count == 0:
+        readable_output = 'Cannot find any Host.'
+    else:
+        if api_response.get('results') is None:
+            raise VectraException('API issue')
 
-    if api_response.get('results') is None:
-        raise VectraException("API issue")
+        api_results = api_response.get('results', [])
 
-    api_results = api_response.get('results', {})
-    for host in api_results:
+        for host in api_results:
+            hosts_data.append(extract_host_data(host))
 
-        hosts_data.append(extract_host_data(host))
-
-    readable_output_keys = ['ID', 'Hostname', 'Severity', 'LastDetectionTimestamp', 'URL']
-    readable_output = tableToMarkdown(
-        name=f'Hosts table (Showing max {MAX_RESULTS} entries)',
-        t=hosts_data,
-        headers=readable_output_keys,
-        url_keys=['URL'],
-        date_fields=['AssignedDate', 'LastDetectionTimestamp'],
-    )
+        readable_output_keys = ['ID', 'Hostname', 'Severity', 'LastDetectionTimestamp', 'URL']
+        readable_output = tableToMarkdown(
+            name=f'Hosts table (Showing max {MAX_RESULTS} entries)',
+            t=hosts_data,
+            headers=readable_output_keys,
+            url_keys=['URL'],
+            date_fields=['AssignedDate', 'LastDetectionTimestamp'],
+        )
 
     command_result = CommandResults(
         readable_output=readable_output,
@@ -1334,37 +1339,40 @@ def vectra_get_account_by_id_command(client: Client, id: str) -> CommandResults:
     """
     # Check args
     if not id:
-        VectraException('"id" not specified')
+        raise VectraException('"id" not specified')
 
     search_query: str = f"account.id:{id}"
 
     api_response = client.search_accounts(search_query_only=search_query)
 
     count = api_response.get('count')
-    if not count:
-        VectraException('Cannot find this Account')
+    if count is None:
+        raise VectraException('API issue')
+    if count > 1:
+        raise VectraException('Multiple Accounts found')
 
-    accounts_data = list()
+    account_data = None
+    if count == 0:
+        readable_output = f'Cannot find Account with ID "{id}".'
+    else:
+        if api_response.get('results') is None:
+            raise VectraException('API issue')
 
-    if api_response.get('results') is None:
-        raise VectraException("API issue")
+        api_results = api_response.get('results', [])
+        account_data = extract_account_data(api_results[0])
 
-    api_results = api_response.get('results', {})
-    for account in api_results:
-        accounts_data.append(extract_account_data(account))
-
-    readable_output = tableToMarkdown(
-        name=f'Account ID {id} details table',
-        t=accounts_data,
-        url_keys=['URL'],
-        date_fields=['LastDetectionTimestamp']
-    )
+        readable_output = tableToMarkdown(
+            name=f'Account ID {id} details table',
+            t=account_data,
+            url_keys=['URL'],
+            date_fields=['LastDetectionTimestamp']
+        )
 
     command_result = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Vectra.Account',
         outputs_key_field='ID',
-        outputs=accounts_data,
+        outputs=account_data,
         raw_response=api_response
     )
 
@@ -1383,43 +1391,40 @@ def vectra_get_detection_by_id_command(client: Client, id: str) -> CommandResult
     """
     # Check args
     if not id:
-        VectraException('"id" not specified')
+        raise VectraException('"id" not specified')
 
     search_query: str = f"detection.id:{id}"
 
     api_response = client.search_detections(search_query_only=search_query)
 
     count = api_response.get('count')
-    if not count:
-        raise VectraException('Cannot find this Detection')
+    if count is None:
+        raise VectraException('API issue')
+    if count > 1:
+        raise VectraException('Multiple Detections found')
 
-    detections_data = list()
+    detection_data = None
+    if count == 0:
+        readable_output = f'Cannot find Detection with ID "{id}".'
+    else:
+        if api_response.get('results') is None:
+            raise VectraException('API issue')
 
-    if api_response.get('results') is None:
-        raise VectraException("API issue")
+        api_results = api_response.get('results', [])
+        detection_data = extract_detection_data(api_results[0])
 
-    api_results = api_response.get('results', {})
-    for detection in api_results:
-
-        detection_data = extract_detection_data(detection)
-
-        # Define which fields we want to exclude from the readable output
-        # detection_readable_excluded_fields = ['Sensor']
-        # detection_data = {k: detection_data[k] for k in detection_data if k not in detection_context_excluded_fields}
-        detections_data.append(detection_data)
-
-    readable_output = tableToMarkdown(
-        name=f"Detection ID '{id}' details table",
-        t=detections_data,
-        url_keys=['URL'],
-        date_fields=['FirstTimestamp', 'LastTimestamp'],
-    )
+        readable_output = tableToMarkdown(
+            name=f"Detection ID '{id}' details table",
+            t=detection_data,
+            url_keys=['URL'],
+            date_fields=['FirstTimestamp', 'LastTimestamp'],
+        )
 
     command_result = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Vectra.Detection',
         outputs_key_field='ID',
-        outputs=detections_data,
+        outputs=detection_data,
         raw_response=api_response
     )
 
@@ -1438,38 +1443,40 @@ def vectra_get_host_by_id_command(client: Client, id: str) -> CommandResults:
     """
     # Check args
     if not id:
-        VectraException('"id" not specified')
+        raise VectraException('"id" not specified')
 
     search_query: str = f"host.id:{id}"
 
     api_response = client.search_hosts(search_query_only=search_query)
 
     count = api_response.get('count')
-    if not count:
-        VectraException('Cannot find this Host')
+    if count is None:
+        raise VectraException('API issue')
+    if count > 1:
+        raise VectraException('Multiple Hosts found')
 
-    hosts_data = list()
+    host_data = None
+    if count == 0:
+        readable_output = f'Cannot find Host with ID "{id}".'
+    else:
+        if api_response.get('results') is None:
+            raise VectraException('API issue')
 
-    if api_response.get('results') is None:
-        raise VectraException("API issue")
+        api_results = api_response.get('results', [])
+        host_data = extract_host_data(api_results[0])
 
-    api_results = api_response.get('results', {})
-    for host in api_results:
-
-        hosts_data.append(extract_host_data(host))
-
-    readable_output = tableToMarkdown(
-        name=f'Host ID {id} details table',
-        t=hosts_data,
-        url_keys=['URL'],
-        date_fields=['LastDetectionTimestamp'],
-    )
+        readable_output = tableToMarkdown(
+            name=f'Host ID {id} details table',
+            t=host_data,
+            url_keys=['URL'],
+            date_fields=['LastDetectionTimestamp'],
+        )
 
     command_result = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Vectra.Host',
         outputs_key_field='ID',
-        outputs=hosts_data,
+        outputs=host_data,
         raw_response=api_response
     )
 

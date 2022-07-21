@@ -24,34 +24,17 @@ SERVER_FQDN = "vectra.test"
 SERVER_URL = f"https://{SERVER_FQDN}"
 API_VERSION_URI = '/api/v2.3'
 API_URL = f'{SERVER_URL}{API_VERSION_URI}'
+API_SEARCH_ENDPOINT_ACCOUNTS = '/search/accounts'
+API_SEARCH_ENDPOINT_DETECTIONS = '/search/detections'
+API_SEARCH_ENDPOINT_HOSTS = '/search/hosts'
+API_ENDPOINT_DETECTIONS = '/detections'
 API_TAGGING = '/tagging'
 
 
 def load_test_data(json_path):
-    with open(json_path) as f:
+    relative_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_data')
+    with open(os.path.join(relative_dir, json_path)) as f:
         return json.load(f)
-
-
-# # TODO: REMOVE the following dummy unit test function
-# def test_baseintegration_dummy():
-#     """Tests helloworld-say-hello command function.
-
-#     Checks the output of the command function with the expected output.
-
-#     No mock is needed here because the say_hello_command does not call
-#     any external API.
-#     """
-#     from BaseIntegration import Client, baseintegration_dummy_command
-
-#     client = Client(base_url='some_mock_url', verify=False)
-#     args = {
-#         'dummy': 'this is a dummy response'
-#     }
-#     response = baseintegration_dummy_command(client, args)
-
-#     mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-#     assert response.outputs == mock_response
 
 
 #####
@@ -289,14 +272,14 @@ def test_forge_entity_url(object_type, id, expected, exception):
 @pytest.mark.parametrize(
     "api_entry,expected",
     [
-        pytest.param(load_test_data(os.path.join(RELATIVE_DIR, 'single_account.json')),
-                     load_test_data(os.path.join(RELATIVE_DIR, 'single_account_extracted.json')).get('common_extract'),
+        pytest.param(load_test_data('single_account.json'),
+                     load_test_data('single_account_extracted.json').get('common_extract'),
                      id="common_account_ok"),
-        pytest.param(load_test_data(os.path.join(RELATIVE_DIR, 'single_host.json')),
-                     load_test_data(os.path.join(RELATIVE_DIR, 'single_host_extracted.json')).get('common_extract'),
+        pytest.param(load_test_data('single_host.json'),
+                     load_test_data('single_host_extracted.json').get('common_extract'),
                      id="common_host_ok"),
-        pytest.param(load_test_data(os.path.join(RELATIVE_DIR, 'single_detection.json')),
-                     load_test_data(os.path.join(RELATIVE_DIR, 'single_detection_extracted.json')).get('common_extract'),
+        pytest.param(load_test_data('single_detection.json'),
+                     load_test_data('single_detection_extracted.json').get('common_extract'),
                      id="common_detection_ok"),
     ]
 )
@@ -312,8 +295,8 @@ def test_common_extract_data(api_entry, expected):
 @pytest.mark.parametrize(
     "api_entry,expected",
     [
-        pytest.param(load_test_data(os.path.join(RELATIVE_DIR, 'single_account.json')),
-                     load_test_data(os.path.join(RELATIVE_DIR, 'single_account_extracted.json')).get('account_extract'),
+        pytest.param(load_test_data('single_account.json'),
+                     load_test_data('single_account_extracted.json').get('account_extract'),
                      id="account_ok")
     ]
 )
@@ -335,8 +318,8 @@ def test_extract_account_data(api_entry, expected):
 @pytest.mark.parametrize(
     "api_entry,expected",
     [
-        pytest.param(load_test_data(os.path.join(RELATIVE_DIR, 'single_detection.json')),
-                     load_test_data(os.path.join(RELATIVE_DIR, 'single_detection_extracted.json')).get('detection_extract'),
+        pytest.param(load_test_data('single_detection.json'),
+                     load_test_data('single_detection_extracted.json').get('detection_extract'),
                      id="common_detection_ok"),
     ]
 )
@@ -358,8 +341,8 @@ def test_extract_detection_data(api_entry, expected):
 @pytest.mark.parametrize(
     "api_entry,expected",
     [
-        pytest.param(load_test_data(os.path.join(RELATIVE_DIR, 'single_host.json')),
-                     load_test_data(os.path.join(RELATIVE_DIR, 'single_host_extracted.json')).get('host_extract'),
+        pytest.param(load_test_data('single_host.json'),
+                     load_test_data('single_host_extracted.json').get('host_extract'),
                      id="common_host_ok"),
     ]
 )
@@ -418,6 +401,403 @@ def test_unify_severity(input_severity, expected):
     from VectraDetect import unify_severity
 
     assert unify_severity(input_severity) == expected
+
+# Test only the exceptions for now
+@pytest.mark.parametrize(
+    "query_args,expected_outputs,expected_readable,exception",
+    [
+        pytest.param({'search_query_only': 'no-count'}, None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-count_exception"),
+        pytest.param({'search_query': 'no-results'}, None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-results_exception")
+    ]
+)
+def test_vectra_search_accounts_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_search_accounts_command command function.
+    """
+    # Force some integration settings for testing purpose
+    # It's used inside the forge_entity_url function
+    # Need to import all module due to global variable
+    import VectraDetect
+    VectraDetect.global_UI_URL = SERVER_URL
+
+    from VectraDetect import Client, vectra_search_accounts_command
+
+    # Default answer
+    # Not implemented yet
+
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=no-count',
+                      complete_qs=True,
+                      json={'results': []})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=account.state:"active" AND no-results',
+                      complete_qs=True,
+                      json={'count': 1})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_search_accounts_command(client=client, **query_args)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+# Test only the exceptions for now
+@pytest.mark.parametrize(
+    "query_args,expected_outputs,expected_readable,exception",
+    [
+        pytest.param({'search_query_only': 'no-count'}, None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-count_exception"),
+        pytest.param({'search_query': 'no-results'}, None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-results_exception")
+    ]
+)
+def test_vectra_search_detections_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_search_detections_command command function.
+    """
+    # Force some integration settings for testing purpose
+    # It's used inside the forge_entity_url function
+    # Need to import all module due to global variable
+    import VectraDetect
+    VectraDetect.global_UI_URL = SERVER_URL
+
+    from VectraDetect import Client, vectra_search_detections_command
+
+    # Default answer
+    # Not implemented yet
+
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
+                      f'?page=1&order_field=last_timestamp&page_size=200'
+                      f'&query_string=no-count',
+                      complete_qs=True,
+                      json={'results': []})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
+                      f'?page=1&order_field=last_timestamp&page_size=200'
+                      f'&query_string=detection.state:"active" AND no-results',
+                      complete_qs=True,
+                      json={'count': 1})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_search_detections_command(client=client, **query_args)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+# Test only the exceptions for now
+@pytest.mark.parametrize(
+    "query_args,expected_outputs,expected_readable,exception",
+    [
+        pytest.param({'search_query_only': 'no-count'}, None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-count_exception"),
+        pytest.param({'search_query': 'no-results'}, None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-results_exception")
+    ]
+)
+def test_vectra_search_hosts_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_search_hosts_command command function.
+    """
+    # Force some integration settings for testing purpose
+    # It's used inside the forge_entity_url function
+    # Need to import all module due to global variable
+    import VectraDetect
+    VectraDetect.global_UI_URL = SERVER_URL
+
+    from VectraDetect import Client, vectra_search_hosts_command
+
+    # Default answer
+    # Not implemented yet
+
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=no-count',
+                      complete_qs=True,
+                      json={'results': []})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=host.state:"active" AND no-results',
+                      complete_qs=True,
+                      json={'count': 1})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_search_hosts_command(client=client, **query_args)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+@pytest.mark.parametrize(
+    "id,expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, None, None,
+                     pytest.raises(VectraException, match='"id" not specified'),
+                     id="no-id_exception"),
+        pytest.param('no-count', None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-count_exception"),
+        pytest.param('no-results', None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-results_exception"),
+        pytest.param('multiple', None, None,
+                     pytest.raises(VectraException, match='Multiple Accounts found'),
+                     id="api-multiple-results_exception"),
+        pytest.param('1', None, 'Cannot find Account with ID "1".',
+                     does_not_raise(),
+                     id="not-found_no-exception"),
+        pytest.param('36', load_test_data('single_account_extracted.json').get('account_extract'), None,
+                     does_not_raise(),
+                     id="valid-id_no-exception"),
+    ]
+)
+def test_vectra_get_account_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_get_account_by_id_command command function.
+    """
+    # Force some integration settings for testing purpose
+    # It's used inside the forge_entity_url function
+    # Need to import all module due to global variable
+    import VectraDetect
+    VectraDetect.global_UI_URL = SERVER_URL
+
+    from VectraDetect import Client, vectra_get_account_by_id_command
+
+    # Default answer
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}',
+                      json={'count': 0, 'results': []})
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=account.id:no-count',
+                      complete_qs=True,
+                      json={'results': []})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=account.id:no-results',
+                      complete_qs=True,
+                      json={'count': 1})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=account.id:multiple',
+                      complete_qs=True,
+                      json={'count': 2, 'results': []})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=account.id:36',
+                      complete_qs=True,
+                      json={'count': 1, 'results': [load_test_data('single_account.json')]})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_get_account_by_id_command(client=client, id=id)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+@pytest.mark.parametrize(
+    "id,expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, None, None,
+                     pytest.raises(VectraException, match='"id" not specified'),
+                     id="no-id_exception"),
+        pytest.param('no-count', None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-count_exception"),
+        pytest.param('no-results', None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-results_exception"),
+        pytest.param('multiple', None, None,
+                     pytest.raises(VectraException, match='Multiple Detections found'),
+                     id="api-multiple-results_exception"),
+        pytest.param('1', None, 'Cannot find Detection with ID "1".',
+                     does_not_raise(),
+                     id="not-found_no-exception"),
+        pytest.param('14', load_test_data('single_detection_extracted.json').get('detection_extract'), None,
+                     does_not_raise(),
+                     id="valid-id_no-exception"),
+    ]
+)
+def test_vectra_get_detection_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_get_detection_by_id_command command function.
+    """
+    # Force some integration settings for testing purpose
+    # It's used inside the forge_entity_url function
+    # Need to import all module due to global variable
+    import VectraDetect
+    VectraDetect.global_UI_URL = SERVER_URL
+
+    from VectraDetect import Client, vectra_get_detection_by_id_command
+
+    # Default answer
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}',
+                      json={'count': 0, 'results': []})
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
+                      f'?page=1&order_field=last_timestamp&page_size=200'
+                      f'&query_string=detection.id:no-count',
+                      complete_qs=True,
+                      json={'results': []})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
+                      f'?page=1&order_field=last_timestamp&page_size=200'
+                      f'&query_string=detection.id:no-results',
+                      complete_qs=True,
+                      json={'count': 1})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
+                      f'?page=1&order_field=last_timestamp&page_size=200'
+                      f'&query_string=detection.id:multiple',
+                      complete_qs=True,
+                      json={'count': 2, 'results': []})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
+                      f'?page=1&order_field=last_timestamp&page_size=200'
+                      f'&query_string=detection.id:14',
+                      complete_qs=True,
+                      json={'count': 1, 'results': [load_test_data('single_detection.json')]})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_get_detection_by_id_command(client=client, id=id)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+@pytest.mark.parametrize(
+    "id,expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, None, None,
+                     pytest.raises(VectraException, match='"id" not specified'),
+                     id="no-id_exception"),
+        pytest.param('no-count', None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-count_exception"),
+        pytest.param('no-results', None, None,
+                     pytest.raises(VectraException, match='API issue'),
+                     id="api-no-results_exception"),
+        pytest.param('multiple', None, None,
+                     pytest.raises(VectraException, match='Multiple Hosts found'),
+                     id="api-multiple-results_exception"),
+        pytest.param('1', None, 'Cannot find Host with ID "1".',
+                     does_not_raise(),
+                     id="not-found_no-exception"),
+        pytest.param('472', load_test_data('single_host_extracted.json').get('host_extract'), None,
+                     does_not_raise(),
+                     id="valid-id_no-exception"),
+    ]
+)
+def test_vectra_get_host_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_get_host_by_id_command command function.
+    """
+    # Force some integration settings for testing purpose
+    # It's used inside the forge_entity_url function
+    # Need to import all module due to global variable
+    import VectraDetect
+    VectraDetect.global_UI_URL = SERVER_URL
+
+    from VectraDetect import Client, vectra_get_host_by_id_command
+
+    # Default answer
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}',
+                      json={'count': 0, 'results': []})
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=host.id:no-count',
+                      complete_qs=True,
+                      json={'results': []})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=host.id:no-results',
+                      complete_qs=True,
+                      json={'count': 1})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=host.id:multiple',
+                      complete_qs=True,
+                      json={'count': 2, 'results': []})
+    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
+                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
+                      f'&query_string=host.id:472',
+                      complete_qs=True,
+                      json={'count': 1, 'results': [load_test_data('single_host.json')]})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_get_host_by_id_command(client=client, id=id)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+# Test only the exceptions for now
+@pytest.mark.parametrize(
+    "id,expected,exception",
+    [
+        pytest.param(None, None,
+                     pytest.raises(VectraException, match='"id" not specified'),
+                     id="no-id_exception"),
+        pytest.param('15', None,
+                     pytest.raises(DemistoException, match='Error in API call'),
+                     id="no-pcap_exception"),
+    ]
+)
+def test_get_detection_pcap_file_command(requests_mock, id, expected, exception):
+    """
+    Tests get_detection_pcap_file_command command function.
+    """
+    from VectraDetect import Client, get_detection_pcap_file_command
+
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_DETECTIONS}/10/pcap',
+                      complete_qs=True,
+                      content=b"0000")
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_DETECTIONS}/15/pcap',
+                      complete_qs=True,
+                      status_code=404,
+                      json={"status": 404, "reason": "File Not Found"})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        assert get_detection_pcap_file_command(client=client, id=id) == expected
+
 
 @pytest.mark.parametrize(
     "id,fixed,expected_outputs,expected_readable,exception",
