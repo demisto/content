@@ -393,7 +393,7 @@ slack-notify-nightly-build:
     - exit $EXIT_CODE
 
 
-xsiam_server_master:
+xsiam_prod_1:
   extends:
     - .test_content_on_xsiam_server_instances_base
   rules:
@@ -407,7 +407,7 @@ xsiam_server_master:
     LOCK_MACHINE_NAME: "qa2-test-9994671965229"
 
 
-xsiam_server_master2:
+xsiam_prod_2:
   extends:
     - .test_content_on_xsiam_server_instances_base
   rules:
@@ -421,7 +421,7 @@ xsiam_server_master2:
     LOCK_MACHINE_NAME: "qa2-test-9991850898712"
 
 
-xsiam_server_master3:
+xsiam_prod_3:
   extends:
     - .test_content_on_xsiam_server_instances_base
   rules:
