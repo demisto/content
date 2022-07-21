@@ -919,7 +919,6 @@ def test_module(client: Client, server_fqdn: str, api_token: str, **kwargs) -> s
 def fetch_incidents(client: Client):
 
     fetch_entity_types = integration_params.get('fetch_entity_types', {})
-    entity_type = None
     api_response: Dict = dict()
 
     # Get the last run and the last fetched value
@@ -1536,13 +1535,6 @@ def main() -> None:
         elif command == 'vectra-detection-del-tags':
             return_results(del_tags_command(client, type="detection", **kwargs))
 
-        # ## Future
-        elif command == 'vectra-add-note':
-            pass
-        elif command == 'vectra-mod-note':
-            pass
-        elif command == 'vectra-del-note':
-            pass
         else:
             raise NotImplementedError()
 
