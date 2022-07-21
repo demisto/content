@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import urlparse
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 # IMPORTS
 # Disable insecure warnings
@@ -525,7 +525,7 @@ class Client(BaseClient):
             if key == 'query':
                 key = 'q'
             query_params[key] = encode_string_results(value)
-        limit = args.get('limit')
+        limit = int(args.get('limit'))
         response = self._http_request(
             method="GET",
             url_suffix=uri,
@@ -534,13 +534,11 @@ class Client(BaseClient):
         )
         paged_results = response.json()
         if limit > 200:
-            query_params.pop('limit')
             if 'after' in query_params:
                 query_params.pop('after')
             limit -= 200
-            while (limit - 200) > 0 and "next" in response.links and len(response.json()) > 0:
-                limit -= 200
-                next_page = response.links.get("next").get("url")
+            while limit > 0 and "next" in response.links and len(response.json()) > 0:
+                next_page = self.delete_limit_param(response.links.get("next").get("url"))
                 response = self._http_request(
                     method="GET",
                     full_url=next_page,
@@ -549,23 +547,22 @@ class Client(BaseClient):
                     params=query_params
                 )
                 paged_results += response.json()
-            if limit != 0 and "next" in response.links and len(response.json()) > 0:
-                query_params['after'] = self.get_after_tag(response.links.get("next").get("url"))
-                query_params['limit'] = limit
-                response = self._http_request(
-                    method="GET",
-                    url_suffix=uri,
-                    resp_type='response',
-                    params=query_params
-                )
-                paged_results += response.json()
+                limit -= 200
         after = None
-        if limit != 0 and "next" in response.links and len(response.json()) > 0:
+        if "next" in response.links and len(response.json()) > 0:
             after = self.get_after_tag(response.links.get("next").get("url"))
+        return (paged_results, after)
 
     def get_after_tag(self, url):
-        parsed_url = urlparse.urlparse(url)
-        captured_value = urlparse.parse_qs(parsed_url.query)['after'][0]
+        parsed_url = urlparse(url)
+        captured_value = parse_qs(parsed_url.query)['after'][0]
+        return captured_value
+
+    def delete_limit_param(self, url):
+        parsed_url = urlparse(url)
+        query_dict = parse_qs(parsed_url.query)
+        query_dict.pop('limit')
+        return urlunparse(parsed_url._replace(query=urlencode(query_dict, True)))
 
     def get_limited_results(self, uri, query_param=None, limit=None):
         response = self._http_request(
@@ -1009,7 +1006,7 @@ def get_group_members_command(client, args):
 
 
 def list_users_command(client, args):
-    raw_response = client.list_users(args)
+    raw_response, after_tag = client.list_users(args)
     verbose = args.get('verbose')
     users = client.get_readable_users(raw_response, verbose)
     user_context = client.get_users_context(raw_response)
@@ -1021,6 +1018,8 @@ def list_users_command(client, args):
         readable_output = f"### Okta users found:\n {users}"
     else:
         readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
+    if after_tag:
+        readable_output +=f"\n### tag: {after_tag}"
 
     return(
         readable_output,

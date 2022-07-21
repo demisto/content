@@ -398,10 +398,14 @@ script:
     deprecated: false
     execution: false
   - arguments:
+    - description: "The cursor in which to retrive the results from and on.\
+        \ if the query didn't reach the end of results,\
+        \ the tag will be found in the readable output under the tag key."
+      name: after
     - description: The maximum number of results to return, the default is 200.
       name: limit
       default: true
-      - defaultValue: '200'
+      defaultValue: '200'
       isArray: false
       required: false
       secret: false
