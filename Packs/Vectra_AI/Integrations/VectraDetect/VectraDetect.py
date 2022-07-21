@@ -1517,18 +1517,14 @@ def get_detection_pcap_file_command(client: Client, id: str) -> CommandResults:
         A commandResult to use in the War Room
     """
     if not id:
-        VectraException('"id" not specified')
+        raise VectraException('"id" not specified')
 
     api_response = client.get_pcap_by_detection_id(id=id)
 
-    # TODO Test API error code (ID not found, no PCAP, etc ...)
-
-    try:
-        filename = f'detection-{id}.pcap'
-        file_content = api_response.content
-        pcap_file = fileResult(filename, file_content)
-    except Exception as e:
-        raise DemistoException(f"Failed to load file data. \n {e}")
+    # 404 API error will be raised by the Client class
+    filename = f'detection-{id}.pcap'
+    file_content = api_response.content
+    pcap_file = fileResult(filename, file_content)
 
     return pcap_file
 
