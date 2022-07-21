@@ -983,7 +983,7 @@ class TestCommandsWithLargeAttachments:
             create_upload_mock, upload_query_mock = None, None
 
             # attachment 1 is an attachment bigger than 3MB
-            if '1' in args.get('attachCIDs'):  # means the attachment should be created in the upload session
+            if '1' in args.get('attachIDs'):  # means the attachment should be created in the upload session
                 create_upload_mock = mocker.patch.object(
                     client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
                 )
