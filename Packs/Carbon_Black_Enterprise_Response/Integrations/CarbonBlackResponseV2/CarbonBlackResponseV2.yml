@@ -1104,6 +1104,33 @@ script:
     execution: false
     name: cb-edr-watchlist-update
   - arguments:
+    - default: true
+      description: The watchlist ID
+      name: id
+      required: true
+    - default: false
+      description: action_type specified for this watchlist. Options for action_type are syslog, email, alert.
+      auto: PREDEFINED
+      predefined:
+      - syslog
+      - email
+      - alert
+      name: action_type
+      required: true
+    - default: false
+      description: Whether the watchlist is enabled or not.
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      name: enabled
+      required: false
+    deprecated: false
+    description: |-
+      Updates a Watchlist action that is specified using ID.
+    execution: false
+    name: cb-edr-watchlist-update-action
+  - arguments:
     - default: false
       description: Name of the watchlist
       isArray: false
