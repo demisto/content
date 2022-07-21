@@ -26,6 +26,9 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT: str = '%Y-%m-%dT%H:%M:%S.000Z'
 MAX_RESULTS: int = 200
+DEFAULT_FIRST_FETCH: str = '7 days'
+DEFAULT_FETCH_ENTITY_TYPES: List = ['Hosts']
+DEFAULT_MAX_FETCH: int = 50
 
 API_VERSION_URL = '/api/v2.3'
 
@@ -1608,15 +1611,27 @@ def main() -> None:  # pragma: no cover
 
     server_fqdn: Optional[str] = integration_params.get('server_fqdn')
     if not server_fqdn:  # Should be impossible thx to UI required settings control
-        raise Exception("Missing integration setting : 'Server FQDN'")
+        raise DemistoException("Missing integration setting : 'Server FQDN'")
 
     credentials: Optional[Dict] = integration_params.get('credentials')
     if not credentials:
-        raise Exception("Missing integration setting : 'Credentials' or 'API token'")
+        raise DemistoException("Missing integration setting : 'Credentials' or 'API token'")
 
     api_token: Optional[str] = credentials.get('password')
     if (api_token is None) or (api_token == ''):
-        raise Exception("Missing integration setting : 'Credentials password' or 'API token'")
+        raise DemistoException("Missing integration setting : 'Credentials password' or 'API token'")
+
+    # Setting default settings for fetch mode
+    if integration_params.get('isFetch'):
+        if integration_params.get('first_fetch') == '':
+            integration_params['first_fetch'] = DEFAULT_FIRST_FETCH
+            demisto.debug(f"First fetch timestamp not set, setting to default '{DEFAULT_FIRST_FETCH}'")
+        if integration_params.get('fetch_entity_types') == []:
+            integration_params['fetch_entity_types'] = DEFAULT_FETCH_ENTITY_TYPES
+            demisto.debug(f"Fetch entity types not set, setting to default '{DEFAULT_FETCH_ENTITY_TYPES}'")
+        if integration_params.get('max_fetch') == '':
+            integration_params['max_fetch'] = DEFAULT_MAX_FETCH
+            demisto.debug(f"Max incidents per fetch not set, setting to default '{DEFAULT_MAX_FETCH}'")
 
     verify_certificate: bool = not integration_params.get('insecure', False)
     use_proxy: bool = integration_params.get('use_proxy', False)
