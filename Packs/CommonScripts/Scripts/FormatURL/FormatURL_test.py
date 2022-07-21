@@ -325,6 +325,28 @@ class TestFormatURL:
         assert get_redirect_url_from_query(url_, urlparse(url_), 'q') == url_
         assert demisto.error.called
 
+    @pytest.mark.parametrize('url_, expected', [
+        ('[https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$]', 'https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$'),
+        ('(https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$)', 'https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$'),
+        ('[someURL].', 'someURL'),
+        ('[another_test)', '[another_test)'),
+        ('{a}', 'a')
+    ])
+    def test_remove_special_chars_from_start_and_end_of_url(self, url_, expected):
+        """
+        Given:
+        - A URL to format.
+
+        When:
+        - executing remove_special_chars_from_start_and_end_of_url function.
+
+        Then:
+        - Ensure formatted URL is returned.
+        """
+        from FormatURL import remove_special_chars_from_start_and_end_of_url
+        assert remove_special_chars_from_start_and_end_of_url(url_) == expected
+
+
     def test_get_redirect_url_from_query_duplicate_url_query_param(self, mocker):
         """
         Given:
