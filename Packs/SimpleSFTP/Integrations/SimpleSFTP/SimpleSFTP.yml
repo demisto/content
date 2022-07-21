@@ -1,45 +1,136 @@
-category: Utilities
 commonfields:
   id: Simple SFTP
   version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Simple SFTP
+display: Simple SFTP
+category: Utilities
+image: data:image/png;base64,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TTfd5DsqKEicJ89Aiqg1A8pPnz4d+QWutM11hR6s4nGmz6mMPLnaRJWJvVhPPPnkk/xRaFS9fD0zn5XRyJEj/V1QeXITEUA6gQMW7L3xbt3/cqZs1JSnKLa8bOhCB0YcXtDEOV9kiD1yX9nXiuqT9liArlixgvBNgp8qgB9zsiyigaxFRUW846hVq1bk4PF1BjKJCID60gnkEfpxn+8kK/ckcnONfGmfLxv9aUgEV/Aa3plUUBw3h42yNkuCjehMTAA0CJJABFTG9UrpqQzbbctMi10qAqBz+RpVcUDle7TF6bH13DX8UhPAFnCqt3IQSHeuWTk2qFSLCCgBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGiDEsAi+C6oVgK44AWLNigBLILvgmolgAtesGjD/wHCiQAWzTrS4AAAAABJRU5ErkJggg==
+description: Simple SFTP Integration to copy files from SFTP Server using paramiko.
+detaileddescription: |
+  Note:
+  -------
+  This integration will need a custom docker image which includes the paramiko module as a dependency. To create the docker image on your server you can run :
+
+  /docker_image_create name=demisto/sftp base="<demisto/python3>" dependencies=paramiko
+
+  Authors:
+  -----------
+  Rahul Vijaydev
+  Vibhu A Bharadwaj
 configuration:
 - display: Host
   name: host
-  required: true
   type: 0
+  required: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Username
   name: authentication
-  required: true
   type: 9
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: f8338734-fb3e-4ad3-8608-7a345e66540b
-    propagationLabels:
-    - all
-    toServerVersion: ""
-description: Simple SFTP Integration to copy files from SFTP Server using pysftp.
-display: Simple SFTP
-name: Simple SFTP
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "22"
+  type: 0
+  required: false
+  additionalinfo: Defaults to 22
 script:
+  script: |
+    import paramiko
+    import traceback
+
+
+    def main():
+        HOST = demisto.params()["host"]
+        USERNAME = demisto.params()['authentication']['identifier']
+        PASSWORD = demisto.params()['authentication']['password']
+        PORT = demisto.params()["port"]
+
+        if demisto.command() == "test-module":
+            try:
+                client = paramiko.Transport(HOST, PORT)
+                client.connect(username=USERNAME, password=PASSWORD)
+                sftp = paramiko.SFTPClient.from_transport(client)
+                sftp.close()
+                demisto.results("ok")
+            except Exception as ex:
+                demisto.error(traceback.format_exc())  # print the traceback
+                return_error(f'Failed to connect Error: {str(ex)}')
+
+        if demisto.command() == "sftp-listdir":
+            try:
+                client = paramiko.Transport(HOST, PORT)
+                client.connect(username=USERNAME, password=PASSWORD)
+                sftp = paramiko.SFTPClient.from_transport(client)
+                directory = demisto.args()["directory"]
+                res = sftp.listdir(path=directory)
+                entry = {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': res,
+                    'ReadableContentsFormat': formats['text'],
+                    'HumanReadable': res,
+                    'EntryContext': {"SFTP.ListDir": res}
+                }
+                demisto.results(entry)
+                sftp.close()
+            except Exception as ex:
+                demisto.error(traceback.format_exc())  # print the traceback
+                return_error(f'Error occurred - Error: {str(ex)}')
+
+        elif demisto.command() == "sftp-copyfrom":
+            try:
+                client = paramiko.Transport(HOST, PORT)
+                client.connect(username=USERNAME, password=PASSWORD)
+                sftp = paramiko.SFTPClient.from_transport(client)
+                filePath = demisto.args()["filePath"]
+                res = sftp.get(filePath, "/tmp/" + filePath[filePath.rindex("/") + 1:])
+                sftp.close()
+                with open("/tmp/" + filePath[filePath.rindex("/") + 1:], "r") as f:
+                    data = f.read()
+                    if demisto.args()["returnFile"] == "True":
+                        demisto.results(fileResult(filename=filePath[filePath.rindex("/") + 1:], data=data))
+                entry = {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': data,
+                    'ReadableContentsFormat': formats['text'],
+                    'HumanReadable': res,
+                    'EntryContext': {"SFTP.File.Content": data}
+                }
+                demisto.results(entry)
+            except Exception as ex:
+                demisto.error(traceback.format_exc())  # print the traceback
+                return_error(f'Error occurred - Error: {str(ex)}')
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+  type: python
   commands:
-  - arguments:
+  - name: sftp-listdir
+    arguments:
     - name: directory
-      required: true
-    name: sftp-listdir
-  - arguments:
+      defaultValue: .
+    description: List Directories SFTP command given directory path. Defaults to current
+      directory upon sftp login.
+  - name: sftp-copyfrom
+    arguments:
     - name: filePath
       required: true
-    name: sftp-copyfrom
-  dockerimage: "demisto/pysftp\t"
+      description: Please provide file path as seen by the sftp user upon login
+    - name: returnFile
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: If specified returns file from sftp server to war room
+      defaultValue: "False"
+    description: Copies contents of file specified from the sftp server and prints
+      it to the war room
+  dockerimage: demisto/sftp
   runonce: false
-  script: ''
   subtype: python3
-  type: python
 sourcemoduleid: SFTP
