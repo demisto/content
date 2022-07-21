@@ -776,7 +776,7 @@ class Pack(object):
                             Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT),
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
-        if entry_result:
+        if entry_result and new_version:
             logging.info(f"Starting filtering entry for pack {self._pack_name} with version {version_display_name}")
             return self.filter_changelog_entries(
                 entry_result,
