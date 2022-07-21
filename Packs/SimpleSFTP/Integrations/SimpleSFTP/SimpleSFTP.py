@@ -1,43 +1,73 @@
 import demistomock as demisto  # noqa: F401
-import pysftp
 from CommonServerPython import *  # noqa: F401
+import paramiko
+import traceback
 
-cnopts = pysftp.CnOpts()
-cnopts.hostkeys = None
 
-HOST = demisto.params()["host"]
-USERNAME = demisto.params()['authentication']['identifier']
-PASSWORD = demisto.params()['authentication']['password']
+def main():
+    HOST = demisto.params()["host"]
+    USERNAME = demisto.params()['authentication']['identifier']
+    PASSWORD = demisto.params()['authentication']['password']
+    PORT = demisto.params()["port"]
 
-if demisto.command() == "test-module":
-    with pysftp.Connection(host=HOST, username=USERNAME, password=PASSWORD, cnopts=cnopts) as sftp:
-        demisto.results("ok")
-if demisto.command() == "sftp-listdir":
-    directory = demisto.args()["directory"]
-    with pysftp.Connection(host=HOST, username=USERNAME, password=PASSWORD, cnopts=cnopts) as sftp:
-        res = sftp.listdir(directory)
-    entry = {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': res,
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': res,
-        'EntryContext': {"SFTP.ListDir": res}
-    }
-    demisto.results(entry)
-elif demisto.command() == "sftp-copyfrom":
-    filePath = demisto.args()["filePath"]
-    with pysftp.Connection(host=HOST, username=USERNAME, password=PASSWORD, cnopts=cnopts) as sftp:
-        res = sftp.get(filePath, "/tmp/" + filePath[filePath.rindex("/") + 1:])
+    if demisto.command() == "test-module":
+        try:
+            client = paramiko.Transport(HOST, PORT)
+            client.connect(username=USERNAME, password=PASSWORD)
+            sftp = paramiko.SFTPClient.from_transport(client)
+            sftp.close()
+            demisto.results("ok")
+        except Exception as ex:
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(f'Failed to connect Error: {str(ex)}')
 
-    with open("/tmp/" + filePath[filePath.rindex("/") + 1:], "r") as f:
-        data = f.read()
-    entry = {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': data,
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': res,
-        'EntryContext': {"SFTP.File.Content": data}
-    }
-    demisto.results(entry)
+    if demisto.command() == "sftp-listdir":
+        try:
+            client = paramiko.Transport(HOST, PORT)
+            client.connect(username=USERNAME, password=PASSWORD)
+            sftp = paramiko.SFTPClient.from_transport(client)
+            directory = demisto.args()["directory"]
+            res = sftp.listdir(path=directory)
+            entry = {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': res,
+                'ReadableContentsFormat': formats['text'],
+                'HumanReadable': res,
+                'EntryContext': {"SFTP.ListDir": res}
+            }
+            demisto.results(entry)
+            sftp.close()
+        except Exception as ex:
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(f'Error occurred - Error: {str(ex)}')
+
+    elif demisto.command() == "sftp-copyfrom":
+        try:
+            client = paramiko.Transport(HOST, PORT)
+            client.connect(username=USERNAME, password=PASSWORD)
+            sftp = paramiko.SFTPClient.from_transport(client)
+            filePath = demisto.args()["filePath"]
+            res = sftp.get(filePath, "/tmp/" + filePath[filePath.rindex("/") + 1:])
+            sftp.close()
+            with open("/tmp/" + filePath[filePath.rindex("/") + 1:], "r") as f:
+                data = f.read()
+                if demisto.args()["returnFile"] == "True":
+                    demisto.results(fileResult(filename=filePath[filePath.rindex("/") + 1:], data=data))
+            entry = {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': data,
+                'ReadableContentsFormat': formats['text'],
+                'HumanReadable': res,
+                'EntryContext': {"SFTP.File.Content": data}
+            }
+            demisto.results(entry)
+        except Exception as ex:
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(f'Error occurred - Error: {str(ex)}')
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
+
+
