@@ -1,4 +1,4 @@
-Retrieve access, authentication, and audit logs and store them on a Security Information and Event Management (SIEM) system, local repository, or syslog file server. You can retrieve the logs only for the tenant that is associated with the API key, or for a direct or delegated child of that tenant.
+Retrieve access, authentication, and audit logs and stores them in a Security Information and Event Management (SIEM) system, local repository, or syslog file server. You can retrieve the logs only for the tenant that is associated with the API key, or for a direct or delegated child of that tenant.
 
 ## Configure SafeNetTrustedAccessEventCollector on Cortex XSOAR
 
