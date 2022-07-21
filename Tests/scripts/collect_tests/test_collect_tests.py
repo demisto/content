@@ -30,7 +30,7 @@ Test Collection Unit-Test cases
 
 class CollectTestsMocker:
     """
-    Allows testing Test Collection, by "mocking" (changing reference in memory) collect_tests.
+    Allows testing Test Collection, by injecting a custom PathManager into the imported collect_tests module in memory
     """
 
     def __init__(self, content_path: Path):
@@ -54,19 +54,22 @@ class CollectTestsMocker:
         return str(self.path_manager.content_path)
 
 
+TEST_DATA = Path('test_data')
+
+
 class MockerCases:
-    empty = CollectTestsMocker(Path('test_data/empty'))
-    empty_xsiam = CollectTestsMocker(Path('test_data/empty_xsiam'))
-    A_xsoar = CollectTestsMocker(Path('test_data/A_xsoar'))
-    A_xsiam = CollectTestsMocker(Path('test_data/A_xsiam'))
-    B_xsiam = CollectTestsMocker(Path('test_data/B_xsiam'))
-    B_xsoar = CollectTestsMocker(Path('test_data/B_xsoar'))
-    C = CollectTestsMocker(Path('test_data/C'))
-    D = CollectTestsMocker(Path('test_data/D'))
-    E = CollectTestsMocker(Path('test_data/E'))
-    F = CollectTestsMocker(Path('test_data/F'))
-    G = CollectTestsMocker(Path('test_data/G'))
-    H = CollectTestsMocker(Path('test_data/H'))
+    empty = CollectTestsMocker(TEST_DATA / 'empty')
+    empty_xsiam = CollectTestsMocker(TEST_DATA / 'empty_xsiam')
+    A_xsoar = CollectTestsMocker(TEST_DATA / 'A_xsoar')
+    A_xsiam = CollectTestsMocker(TEST_DATA / 'A_xsiam')
+    B_xsoar = CollectTestsMocker(TEST_DATA / 'B_xsoar')
+    B_xsiam = CollectTestsMocker(TEST_DATA / 'B_xsiam')
+    C = CollectTestsMocker(TEST_DATA / 'C')
+    D = CollectTestsMocker(TEST_DATA / 'D')
+    E = CollectTestsMocker(TEST_DATA / 'E')
+    F = CollectTestsMocker(TEST_DATA / 'F')
+    G = CollectTestsMocker(TEST_DATA / 'G')
+    H = CollectTestsMocker(TEST_DATA / 'H')
 
 
 def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, collector_class: Callable,
