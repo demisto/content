@@ -433,41 +433,32 @@ def generate_dbotscore(response: Dict) -> List:
     # Add the hash or URL first
     if submission_type == 'hash':
         hashes = main_object.get('hashes', {})
+        info = main_object.get('info', {})
+        file_type = info.get('file')
+        exif = info.get('exif', {})
+        exe = exif.get('exe')
         main_entity = hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5')
-        main_entity_type = "File"
-        file_outputs = {
-            'MD5': hashes.get('md5'),
-            'SHA1': hashes.get('sha1'),
-            'sha256': hashes.get('sha256'),
-            'SSDeep': hashes.get('ssdeep'),
-            'Name': main_object.get('filename')
-        }
+        main_entity_type = FeedIndicatorType.File
         dbot_score = Common.DBotScore(
             indicator=hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5'),
             indicator_type=DBotScoreType.FILE,
             integration_name='ANYRUN',
             score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE
         )
-        if dbot_score.score >= 2:
-            file_outputs['Malicious'] = {
-                'Vendor': 'ANYRUN',
-                'Description': threat_text
-            }
         returned_data.append(CommandResults(
-            outputs_prefix='File',
-            outputs_key_field=['MD5', 'SHA1', 'SHA256'],
-            outputs=file_outputs,
             indicator=Common.File(
                 dbot_score=dbot_score,
                 md5=hashes.get('md5'),
                 sha1=hashes.get('sha1'),
-                sha256=hashes.get('sha256')
+                sha256=hashes.get('sha256'),
+                file_type=file_type,
+                associated_file_names=exif.get('OriginalFileName')
             )
         ))
 
     else:
         main_entity = main_object.get('url')
-        main_entity_type = "URL"
+        main_entity_type = FeedIndicatorType.URL
         url_outputs = {
             'Data': main_object.get('url')
         }
@@ -509,33 +500,32 @@ def generate_dbotscore(response: Dict) -> List:
                         score=reputation_map[reputation]
                     )
                     relationships = [EntityRelationship(
-                        name=EntityRelationship.Relationships.RELATED_TO,
-                        entity_a=current_connection.get('IP'),
-                        entity_a_type="IP",
-                        entity_b=main_entity,
-                        entity_b_type=main_entity_type,
+                        name=EntityRelationship.Relationships.COMMUNICATED_WITH,
+                        entity_a=main_entity,
+                        entity_a_type=main_entity_type,
+                        entity_b=current_connection.get('IP'),
+                        entity_b_type=FeedIndicatorType.IP,
                         brand="ANYRUN"
                     )]
                     ip_indicator = Common.IP(
                         ip=current_connection.get('IP'),
+                        asn=current_connection.get('ASN'),
+                        port=current_connection.get('Port'),
+                        geo_country=current_connection.get('Country'),
                         dbot_score=current_dbot_score,
                         relationships=relationships
                     )
-                    ip_outputs = {
-                        'Address': current_connection.get('IP'),
-                        'ASN': current_connection.get('ASN'),
-                        'Port': current_connection.get('Port'),
-                        'Geo': {
-                            'Country': current_connection.get('Country')
-                        }
-                    }
-                    returned_data.append(CommandResults(
-                        outputs_prefix='IP',
-                        outputs_key_field='Address',
-                        outputs=ip_outputs,
-                        indicator=ip_indicator,
-                        readable_output="",
-                    ))
+                    if current_connection.get('IP') not in [x.indicator.ip for x in returned_data if isinstance(x.indicator, Common.IP)]:
+                        returned_data.append(CommandResults(
+                            readable_output=tableToMarkdown(
+                                f"{current_connection.get('IP')}",
+                                [{
+                                    "Description": f"This IP was observed after detonation of {main_entity} in ANYRUN"
+                                }]
+                            ),
+                            indicator=ip_indicator,
+                            relationships=relationships
+                        ))
 
         # Then add all the network-related indicators - 'dnsRequests'
         if 'dnsRequests' in network_data:
@@ -549,27 +539,59 @@ def generate_dbotscore(response: Dict) -> List:
                         score=reputation_map[reputation]
                     )
                     relationships = [EntityRelationship(
-                        name='related-to',
-                        entity_a=current_dnsRequests.get('Domain'),
-                        entity_a_type="Domain",
-                        entity_b=main_entity,
-                        entity_b_type=main_entity_type,
+                        name=EntityRelationship.Relationships.COMMUNICATED_WITH,
+                        entity_a=main_entity,
+                        entity_a_type=main_entity_type,
+                        entity_b=current_dnsRequests.get('Domain'),
+                        entity_b_type=FeedIndicatorType.Domain,
                         brand="ANYRUN"
                     )]
+                    if "IP" in current_dnsRequests:
+                        for ip in current_dnsRequests.get('IP', []):
+                            relationships.append(
+                                EntityRelationship(
+                                    name=EntityRelationship.Relationships.RESOLVES_TO,
+                                    entity_a=current_dnsRequests.get('Domain'),
+                                    entity_a_type=FeedIndicatorType.Domain,
+                                    entity_b=ip,
+                                    entity_b_type=FeedIndicatorType.IP
+                                )
+                            )
+                            domain_ip_dbot_score = Common.DBotScore(
+                                indicator=ip,
+                                indicator_type=DBotScoreType.IP,
+                                integration_name="ANYRUN",
+                                score=Common.DBotScore.NONE
+                            )
+                            domain_ip_indicator = Common.IP(
+                                ip=ip,
+                                dbot_score=domain_ip_dbot_score
+                            )
+                            returned_data.append(CommandResults(
+                                indicator=domain_ip_indicator,
+                                readable_output=tableToMarkdown(
+                                    f"{ip}",
+                                    [{
+                                        "Description": f"This IP was resovled from {current_dnsRequests.get('Domain')}"
+                                    }]
+                                    )
+                            ))
                     domain_indicator = Common.Domain(
                         domain=current_dnsRequests.get('Domain'),
                         dbot_score=current_dbot_score,
                         relationships=relationships
                     )
-                    domain_outputs = {
-                        'Name': current_dnsRequests.get('Domain'),
-                    }
-                    returned_data.append(CommandResults(
-                        outputs_prefix='Domain',
-                        outputs_key_field=['Name'],
-                        outputs=domain_outputs,
-                        indicator=domain_indicator
-                    ))
+                    if current_dnsRequests.get('Domain') not in [x.indicator.domain for x in returned_data if isinstance(x.indicator, Common.Domain)]:
+                        returned_data.append(CommandResults(
+                            readable_output=tableToMarkdown(
+                                    f"{current_dnsRequests.get('Domain')}",
+                                    [{
+                                        "Description": f"This domain was observed after detonation of {main_entity} in ANYRUN"
+                                    }]
+                            ),
+                            indicator=domain_indicator,
+                            relationships=relationships
+                        ))
 
         # Then add all the network-related indicators - 'httpRequests'
         if 'httpRequests' in network_data:
@@ -581,35 +603,59 @@ def generate_dbotscore(response: Dict) -> List:
                         indicator_type=DBotScoreType.URL,
                         integration_name='ANYRUN',
                         score=reputation_map[reputation]
-
                     )
                     relationships = [EntityRelationship(
-                        name=EntityRelationship.Relationships.RELATED_TO,
-                        entity_a=current_httpRequests.get('URL'),
-                        entity_a_type="URL",
-                        entity_b=main_entity,
-                        entity_b_type=main_entity_type,
+                        name=EntityRelationship.Relationships.COMMUNICATED_WITH,
+                        entity_a=main_entity,
+                        entity_a_type=main_entity_type,
+                        entity_b=current_httpRequests.get('URL'),
+                        entity_b_type=FeedIndicatorType.URL,
                         brand="ANYRUN"
                     )]
                     url_indicator = Common.URL(
                         url=current_httpRequests.get('URL'),
                         geo_country=current_httpRequests.get('Country'),
+                        port=current_httpRequests.get('Port'),
                         dbot_score=current_dbot_score,
                         relationships=relationships
                     )
-                    url_outputs = {
-                        'Data': current_httpRequests.get('URL'),
-                        'Port': current_httpRequests.get('Port'),
-                        'Geo': {
-                            'Country': current_httpRequests.get('Country')
-                        }
-                    }
-                    returned_data.append(CommandResults(
-                        outputs_prefix='URL',
-                        outputs_key_field=['Data'],
-                        outputs=url_outputs,
-                        indicator=url_indicator
-                    ))
+                    if current_httpRequests.get('URL') not in [x.indicator.url for x in returned_data if isinstance(x.indicator, Common.URL)]:
+                        returned_data.append(CommandResults(
+                            readable_output=tableToMarkdown(
+                                f"{current_httpRequests.get('URL')}",
+                                [{
+                                    "Description": f"This URL was observed after detonation of {main_entity} in ANYRUN"
+                                }]
+                            ),
+                            indicator=url_indicator,
+                            relationships=relationships
+                        ))
+
+    if 'mitre' in data:
+        mitre_data = data.get('mitre')
+        for item in mitre_data:
+            relationships = [EntityRelationship(
+                name=EntityRelationship.Relationships.RELATED_TO,
+                entity_a=main_entity,
+                entity_a_type=main_entity_type,
+                entity_b=item.get('name'),
+                entity_b_type='Attack Pattern'
+            )]
+            attack_indicator = Common.AttackPattern(
+                stix_id=None,
+                value=item.get('name'),
+                mitre_id=item.get('id')
+            )
+            returned_data.append(CommandResults(
+                readable_output=tableToMarkdown(
+                    f"{item.get('name')}",
+                    [{
+                        "Description": f"This Attack Pattern was observed after detonation of {main_entity} in ANYRUN"
+                    }]
+                ),
+                indicator=attack_indicator,
+                relationships=relationships
+            ))
 
     return returned_data
 
@@ -1039,8 +1085,10 @@ def get_report_command(client: Client, args: Dict):
 
     images = client.get_images_from_report(response)
     contents = contents_from_report(response)
+    reports = response.get('data', {}).get('analysis', {}).get('reports')
     contents['ID'] = task_id
     formatted_contents = travel_object(contents)
+    formatted_contents['Reports'] = reports
 
     dbot_scores: List = generate_dbotscore(response)
     returned_results = []
@@ -1115,6 +1163,7 @@ def run_analysis_command(client: Client, args: Dict):
         continue_to_poll = True if status != 'done' else False
         contents = contents_from_report(response)
         formatted_contents = travel_object(contents)
+        reports = response.get('data', {}).get('analysis', {}).get('reports')
 
         submit_output = []
         submit_output.append(
@@ -1123,6 +1172,7 @@ def run_analysis_command(client: Client, args: Dict):
                 outputs_key_field='ID',
                 outputs={
                     'ID': task_id,
+                    'Reports': reports,
                     **formatted_contents
                 },
                 readable_output=tableToMarkdown(
