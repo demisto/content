@@ -27,7 +27,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT: str = '%Y-%m-%dT%H:%M:%S.000Z'
 MAX_RESULTS: int = 200
 
-API_VERSION_URL = '/api/v2.2'
+API_VERSION_URL = '/api/v2.3'
 
 API_ENDPOINT_ACCOUNTS = '/accounts'
 API_ENDPOINT_DETECTIONS = '/detections'
