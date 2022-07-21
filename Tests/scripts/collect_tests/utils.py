@@ -72,9 +72,8 @@ class Machine(Enum):
         return tuple(machine for machine in Machine if isinstance(machine.value, Version))
 
     @staticmethod
-    def get_suitable_machines(version_range: Optional[VersionRange], run_nightly: bool, run_master: bool) \
-            -> tuple['Machine', ...]:
-        result: list[Machine] = []
+    def get_suitable_machines(version_range: Optional[VersionRange], run_nightly: bool) -> tuple['Machine', ...]:
+        result: list[Machine] = [Machine.MASTER]
 
         if not version_range:
             version_range = VersionRange(version.NegativeInfinity, version.Infinity)
@@ -83,8 +82,6 @@ class Machine(Enum):
 
         if run_nightly:
             result.append(Machine.NIGHTLY)
-        if run_master:
-            result.append(Machine.MASTER)
 
         return tuple(result)
 

@@ -142,8 +142,8 @@ class CollectedTests:
 class TestCollector(ABC):
     def __init__(self, marketplace: MarketplaceVersions):
         self.marketplace = marketplace
-        self.id_set = IdSet(marketplace, PATHS.debug_id_set_path)  # todo change
-        self.conf = TestConf(PATHS.debug_conf_path)  # todo change
+        self.id_set = IdSet(marketplace, PATHS.id_set_path)  # todo change
+        self.conf = TestConf(PATHS.conf_path)  # todo change
 
     @property
     def sanity_tests(self) -> CollectedTests:
@@ -173,14 +173,14 @@ class TestCollector(ABC):
         """
         pass
 
-    def collect(self, run_nightly: bool, run_master: bool) -> Optional[CollectedTests]:
+    def collect(self, run_nightly: bool) -> Optional[CollectedTests]:
         collected: Optional[CollectedTests] = self._collect()
 
         if not collected:
             logger.warning('No tests were collected, returning sanity tests only')
             collected = self.sanity_tests
 
-        collected.machines = Machine.get_suitable_machines(collected.version_range, run_nightly, run_master)
+        collected.machines = Machine.get_suitable_machines(collected.version_range, run_nightly)
 
         if collected and collected.machines is None:
             raise EmptyMachineListException()
@@ -558,7 +558,7 @@ if __name__ == '__main__':
             case _:
                 raise ValueError(f"unexpected values of (either) {marketplace=}, {options.nightly=}")
 
-    collected = collector.collect(run_nightly=options.nightly, run_master=True)
+    collected = collector.collect(run_nightly=options.nightly)
     if not collected:
         logger.error('done collecting, no tests or packs were collected.')
 

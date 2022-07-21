@@ -21,23 +21,11 @@ class PathManager:
         return self.content_path / 'Packs'
 
     @property
-    def artifacts_path(self):
-        return PathManager.ARTIFACTS_PATH
-
-    @property
     def id_set_path(self):
-        return PathManager.ARTIFACTS_PATH / 'id_set.json'
-
-    @property
-    def artifacts_conf_path(self):
-        return PathManager.ARTIFACTS_PATH / 'conf.json'
-
-    @property
-    def debug_id_set_path(self):
         return self.content_path / 'Tests' / 'id_set.json'
 
     @property
-    def debug_conf_path(self):
+    def conf_path(self):
         return self.content_path / 'Tests' / 'conf.json'
 
     @property
@@ -47,6 +35,10 @@ class PathManager:
     @property
     def output_packs_file(self):
         return PathManager.ARTIFACTS_PATH / 'content_packs_to_install_new.txt'  # todo change
+
+    @property
+    def output_machines_file(self):
+        return PathManager.ARTIFACTS_PATH / 'filter_envs.json'
 
 
 def _calculate_excluded_files(content_path: Path) -> set[Path]:

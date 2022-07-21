@@ -1,24 +1,24 @@
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 
-XSOAR_SANITY_TEST_NAMES = (
+XSOAR_SANITY_TEST_NAMES: tuple[str, ...] = (
     'Sanity Test - Playbook with integration',
     'Sanity Test - Playbook with no integration',
     'Sanity Test - Playbook with mocked integration',
     'Sanity Test - Playbook with Unmockable Integration',
 )
-DEFAULT_REPUTATION_TESTS = (
+DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
     'FormattingPerformance - Test',
     'reputations.json Test',
     'Indicators reputation-.json Test',
 )
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
 
-SKIPPED_CONTENT_ITEMS = {
+SKIPPED_CONTENT_ITEMS: set[str] = {
     # these are not under packs, and are not supported anymore.
     'playbook-Jask_Test-4.0.0.yml'
 }
 
-ONLY_INSTALL_PACK = {
+ONLY_INSTALL_PACK: set[FileType] = {
     # upon collection, no tests are collected, but the pack is installed.
     FileType.RELEASE_NOTES_CONFIG,
     FileType.RELEASE_NOTES,

@@ -69,16 +69,15 @@ class MockerCases:
     H = CollectTestsMocker(Path('test_data/H'))
 
 
-def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, collector_class: Callable,
-          expected_tests: Iterable[str], expected_packs: Iterable[str],
-          expected_machines: Optional[Iterable[Machine]], collector_class_args: tuple[str] = ()):
+def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, collector_class: Callable,
+          expected_tests: Iterable[str], expected_packs: Iterable[str], expected_machines: Optional[Iterable[Machine]],
+          collector_class_args: tuple[str] = ()):
     """
-    Instantiates the given collector class, calls collect with (run_nightly, run_master) and asserts
+    Instantiates the given collector class, calls collect with run_nightly and asserts
     that the result packs and tests are expected ones.
 
     :param case_mocker: with which to run the test
     :param run_nightly: whether to ask, and check for, a nightly machine.
-    :param run_master: whether to ask and check for a master machine.
     :param collector_class: the collector class to test.
     :param expected_tests: the expected test names. (pass None to not check)
     :param expected_packs: the expected pack names. (pass None to not check)
@@ -89,7 +88,7 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, run_m
     monkeypatch.chdir(case_mocker.path_manager.content_path)
     with case_mocker:
         collector = collector_class(*collector_class_args)
-        collected = collector.collect(run_nightly, run_master)
+        collected = collector.collect(run_nightly)
 
     if not any((expected_tests, expected_packs, expected_machines)):
         description = 'should NOT have collected '
@@ -107,8 +106,8 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, run_m
     if expected_machines is not None:
         assert set(collected.machines) == set(expected_machines)
 
-    assert run_nightly == (Machine.NIGHTLY in collected.machines)
-    assert run_master == (Machine.MASTER in collected.machines)
+    assert Machine.MASTER in collected.machines
+    assert (Machine.NIGHTLY in collected.machines) == run_nightly
 
     for test in collected.tests:
         print(f'collected test {test}')
@@ -127,25 +126,16 @@ NIGHTLY_EMPTY_TESTS = (
 
 
 @pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs', NIGHTLY_EMPTY_TESTS)
-@pytest.mark.parametrize('run_master', (True, False))
-def test_nightly_empty(monkeypatch, case_mocker, run_master: bool, collector_class: Callable,
-                       expected_tests: tuple[str], expected_packs: tuple[str]):
+def test_nightly_empty(monkeypatch, case_mocker, collector_class: Callable, expected_tests: tuple[str],
+                       expected_packs: tuple[str]):
     """
     given:  a content folder
     when:   collecting tests with a NightlyTestCollector
     then:   make sure sanity tests are collected for XSOAR, and that XSIAM tests are collected from conf.json
-            make sure master machine is added when necessary
+            make sure master machine is used
     """
-    _test(
-        monkeypatch,
-        case_mocker,
-        run_nightly=True,
-        run_master=run_master,
-        collector_class=collector_class,
-        expected_tests=expected_tests,
-        expected_packs=expected_packs,
-        expected_machines=None,
-    )
+    _test(monkeypatch, case_mocker, run_nightly=True, collector_class=collector_class, expected_tests=expected_tests,
+          expected_packs=expected_packs, expected_machines=None)
 
 
 NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
@@ -181,16 +171,8 @@ def test_nightly(monkeypatch, case_mocker, collector_class: Callable, expected_t
     then:   make sure tests are collected from integration and id_set
     """
 
-    _test(
-        monkeypatch,
-        case_mocker=case_mocker,
-        run_nightly=True,
-        run_master=True,
-        collector_class=collector_class,
-        expected_tests=expected_tests,
-        expected_packs=expected_packs,
-        expected_machines=expected_machines,
-    )
+    _test(monkeypatch, case_mocker=case_mocker, run_nightly=True, collector_class=collector_class,
+          expected_tests=expected_tests, expected_packs=expected_packs, expected_machines=expected_machines)
 
 
 XSOAR_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR, None)
@@ -248,46 +230,47 @@ def test_branch(
 ):
     mocker.patch.object(collect_tests, 'Repo', return_value=None)
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=mocked_changed_files)
-    _test(
-        monkeypatch,
-        case_mocker,
-        run_nightly=False,
-        run_master=False,
-        collector_class=BranchTestCollector,
-        expected_tests=expected_tests,
-        expected_packs=expected_packs,
-        expected_machines=expected_machines,
-        collector_class_args=collector_class_args
-    )
+    _test(monkeypatch, case_mocker, run_nightly=False, collector_class=BranchTestCollector,
+          expected_tests=expected_tests, expected_packs=expected_packs, expected_machines=expected_machines,
+          collector_class_args=collector_class_args)
 
 
-@pytest.mark.parametrize('file_type', (
-        FileType.RELEASE_NOTES_CONFIG,
-        FileType.RELEASE_NOTES,
-        FileType.IMAGE,
-        FileType.DESCRIPTION,
-        FileType.METADATA,
-        FileType.INCIDENT_TYPE,
-        FileType.INCIDENT_FIELD,
-        FileType.INDICATOR_FIELD,
-        FileType.LAYOUT,
-        FileType.WIDGET,
-        FileType.DASHBOARD,
-        FileType.PARSING_RULE,
-        FileType.MODELING_RULE,
-        FileType.CORRELATION_RULE,
-        FileType.XSIAM_DASHBOARD,
-        FileType.XSIAM_REPORT,
-        FileType.REPORT,
-        FileType.GENERIC_TYPE,
-        FileType.GENERIC_FIELD,
-        FileType.GENERIC_MODULE,
-        FileType.GENERIC_DEFINITION,
-        FileType.PRE_PROCESS_RULES,
-        FileType.JOB,
-        FileType.CONNECTION,
-        FileType.XSOAR_CONFIG,
-))
+ONLY_COLLECT_PACK_TYPES = {
+    FileType.RELEASE_NOTES_CONFIG,
+    FileType.RELEASE_NOTES,
+    FileType.IMAGE,
+    FileType.DESCRIPTION,
+    FileType.METADATA,
+    FileType.INCIDENT_TYPE,
+    FileType.INCIDENT_FIELD,
+    FileType.INDICATOR_FIELD,
+    FileType.LAYOUT,
+    FileType.WIDGET,
+    FileType.DASHBOARD,
+    FileType.PARSING_RULE,
+    FileType.MODELING_RULE,
+    FileType.CORRELATION_RULE,
+    FileType.XSIAM_DASHBOARD,
+    FileType.XSIAM_REPORT,
+    FileType.REPORT,
+    FileType.GENERIC_TYPE,
+    FileType.GENERIC_FIELD,
+    FileType.GENERIC_MODULE,
+    FileType.GENERIC_DEFINITION,
+    FileType.PRE_PROCESS_RULES,
+    FileType.JOB,
+    FileType.CONNECTION,
+    FileType.XSOAR_CONFIG,
+}
+
+
+def test_only_collect_pack_args():
+    # make sure test_only_collect_pack() only runs over the correct types, changing constants will require a change here
+    from constants import ONLY_INSTALL_PACK
+    assert ONLY_COLLECT_PACK_TYPES == ONLY_INSTALL_PACK
+
+
+@pytest.mark.parametrize('file_type', ONLY_COLLECT_PACK_TYPES)
 def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileType):
     """
     give    a content item type for which no tests should be collected
@@ -302,17 +285,8 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
     mocker.patch('collect_tests.find_type_by_path', return_value=file_type)
 
     # noinspection PyTypeChecker
-    _test(
-        monkeypatch,
-        case_mocker=MockerCases.H,
-        run_nightly=False,
-        run_master=False,
-        collector_class=BranchTestCollector,
-        expected_tests=(),
-        expected_packs=('myPack',),
-        expected_machines=None,
-        collector_class_args=XSOAR_BRANCH_ARGS
-    )
+    _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,
+          expected_tests=(), expected_packs=('myPack',), expected_machines=None, collector_class_args=XSOAR_BRANCH_ARGS)
 
 
 def test_invalid_content_item(mocker, monkeypatch):
@@ -328,15 +302,7 @@ def test_invalid_content_item(mocker, monkeypatch):
 
     with pytest.raises(ValueError) as e:
         # noinspection PyTypeChecker
-        _test(
-            monkeypatch,
-            case_mocker=MockerCases.H,
-            run_nightly=False,
-            run_master=False,
-            collector_class=BranchTestCollector,
-            expected_tests=(),
-            expected_packs=('myPack',),
-            expected_machines=None,
-            collector_class_args=XSOAR_BRANCH_ARGS
-        )
+        _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,
+              expected_tests=(), expected_packs=('myPack',), expected_machines=None,
+              collector_class_args=XSOAR_BRANCH_ARGS)
     assert 'Unexpected file_type=None' in str(e.value)
