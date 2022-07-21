@@ -18,11 +18,13 @@ from contextlib import nullcontext as does_not_raise
 
 from VectraDetect import MAX_RESULTS  # Currently MAX_RESULTS equals 200
 from VectraDetect import UI_ACCOUNTS, UI_HOSTS, UI_DETECTIONS
+from VectraDetect import VectraException
 
 SERVER_FQDN = "vectra.test"
 SERVER_URL = f"https://{SERVER_FQDN}"
-RELATIVE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_data')
-DEMISTO_PARAMS_MOCK = {'server_fqdn': SERVER_FQDN}
+API_VERSION_URI = '/api/v2.3'
+API_URL = f'{SERVER_URL}{API_VERSION_URI}'
+API_TAGGING = '/tagging'
 
 
 def load_test_data(json_path):
@@ -61,6 +63,28 @@ integration_params = None
 #####
 # ## Validate helpers
 #
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ('true', True),
+        ('True', True),
+        ('trUE', True),
+        ('YES', True),
+        ('false', False),
+        ('NO', False),
+        ('vectra', None),
+        ('', None),
+        (None, None)
+    ]
+)
+def test_str2bool(input, expected):
+    """
+    Tests the str2bool helper function.
+    """
+    from VectraDetect import str2bool
+
+    assert str2bool(input) == expected
 
 
 @pytest.mark.parametrize(
@@ -394,3 +418,131 @@ def test_unify_severity(input_severity, expected):
     from VectraDetect import unify_severity
 
     assert unify_severity(input_severity) == expected
+
+@pytest.mark.parametrize(
+    "id,fixed,expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, None, None, None,
+                     pytest.raises(VectraException, match='"id" not specified'),
+                     id="no-id_exception"),
+        pytest.param('12', None, None, None,
+                     pytest.raises(VectraException, match='"fixed" not specified'),
+                     id="no-fixed_exception"),
+        pytest.param('12', 'vectra', None, None,
+                     pytest.raises(VectraException, match='"fixed" not specified'),
+                     id="no-fixed_exception"),
+        pytest.param('12', 'true', None, 'Detection "12" successfully marked as fixed.',
+                     does_not_raise(),
+                     id="fixed_no-exception"),
+        pytest.param('12', 'no', None, 'Detection "12" successfully unmarked as fixed.',
+                     does_not_raise(),
+                     id="unfixed_no-exception"),
+    ]
+)
+def test_mark_detection_as_fixed_command(requests_mock, id, fixed, expected_outputs, expected_readable, exception):
+    """
+    Tests mark_detection_as_fixed_command command function.
+    """
+    from VectraDetect import Client, mark_detection_as_fixed_command
+
+    requests_mock.patch(f'{API_URL}{API_ENDPOINT_DETECTIONS}',
+                        complete_qs=True,
+                        json={"_meta": {"level": "Success", "message": "Successfully marked detections"}})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = mark_detection_as_fixed_command(client=client, id=id, fixed=fixed)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+@pytest.mark.parametrize(
+    "type,id,tags,expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, None, None, None, None,
+                     pytest.raises(VectraException, match='"type" not specified'),
+                     id="no-type_exception"),
+        pytest.param('accounts', None, None, None, None,
+                     pytest.raises(VectraException, match='"id" not specified'),
+                     id="no-id_exception"),
+        pytest.param('accounts', '12', None, None, None,
+                     pytest.raises(VectraException, match='"tags" not specified'),
+                     id="no-tags_exception"),
+        pytest.param('accounts', '12', 'vectra', None, 'Tags "vectra" successfully added.',
+                     does_not_raise(),
+                     id="del-account-tag_no-exception"),
+        pytest.param('accounts', '12', 'vectra-1,Vectra-2', None, 'Tags "vectra-1,Vectra-2" successfully added.',
+                     does_not_raise(),
+                     id="del-account-tags_no-exception"),
+    ]
+)
+def test_add_tags_command(requests_mock, type, id, tags, expected_outputs, expected_readable, exception):
+    """
+    Tests add_tags_command command function.
+    """
+    from VectraDetect import Client, add_tags_command
+
+    requests_mock.get(f'{API_URL}{API_TAGGING}/{type}/{id}',
+                      complete_qs=True,
+                      json={'tags': ['vectra']})
+    requests_mock.patch(f'{API_URL}{API_TAGGING}/{type}/{id}',
+                        complete_qs=True,
+                        json={'tags': ['vectra']})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = add_tags_command(client=client, type=type, id=id, tags=tags)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+@pytest.mark.parametrize(
+    "type,id,tags,expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, None, None, None, None,
+                     pytest.raises(VectraException, match='"type" not specified'),
+                     id="no-type_exception"),
+        pytest.param('accounts', None, None, None, None,
+                     pytest.raises(VectraException, match='"id" not specified'),
+                     id="no-id_exception"),
+        pytest.param('accounts', '12', None, None, None,
+                     pytest.raises(VectraException, match='"tags" not specified'),
+                     id="no-tags_exception"),
+        pytest.param('accounts', '12', 'vectra', None, 'Tags "vectra" successfully deleted.',
+                     does_not_raise(),
+                     id="del-account-tag_no-exception"),
+        pytest.param('accounts', '12', 'vectra-1,Vectra-2', None, 'Tags "vectra-1,Vectra-2" successfully deleted.',
+                     does_not_raise(),
+                     id="del-account-tags_no-exception"),
+    ]
+)
+def test_del_tags_command(requests_mock, type, id, tags, expected_outputs, expected_readable, exception):
+    """
+    Tests del_tags_command command function.
+    """
+    from VectraDetect import Client, del_tags_command
+
+    requests_mock.get(f'{API_URL}{API_TAGGING}/{type}/{id}',
+                      complete_qs=True,
+                      json={'tags': ['vectra']})
+    requests_mock.patch(f'{API_URL}{API_TAGGING}/{type}/{id}',
+                        complete_qs=True,
+                        json={'tags': ['vectra']})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = del_tags_command(client=client, type=type, id=id, tags=tags)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable

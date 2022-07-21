@@ -385,6 +385,29 @@ class Client(BaseClient):
 # ##  HELPER FUNCTIONS   ## #
 #                           #
 
+def str2bool(value: Optional[str]) -> Optional[bool]:
+    """
+    Converts a string into a boolean
+
+    - params:
+        - value: The string to convert
+    - returns:
+        True if value matchs the 'true' list
+        False if value matchs the 'false' list
+        None instead
+    """
+    if value is None:
+        output = None
+    elif value.lower() in ('true', 'yes'):
+        output = True
+    elif value.lower() in ('false', 'no'):
+        output = False
+    else:
+        output = None
+
+    return output
+
+
 def sanitize_max_results(max_results=None) -> int:
     if max_results and isinstance(max_results, str):
         max_results = int(max_results)
@@ -1358,7 +1381,7 @@ def get_detection_pcap_file_command(client: Client, id: str) -> CommandResults:
     return pcap_file
 
 
-def mark_detection_as_fixed_command(client: Client, id: str, fixed: bool):
+def mark_detection_as_fixed_command(client: Client, id: str, fixed: str) -> CommandResults:
     """
     Toggles a detection status as : fixed / Not fixed
 
@@ -1368,20 +1391,24 @@ def mark_detection_as_fixed_command(client: Client, id: str, fixed: bool):
         - fixed: The Detection future state
     """
 
-    if not id:
-        VectraException('"id" not specified')
-    if not fixed:
-        VectraException('"fixed" not specified')
+    if (id is None) or (id == ''):
+        raise VectraException('"id" not specified')
+    fixed_as_bool = str2bool(fixed)
+    if fixed_as_bool is None:
+        raise VectraException('"fixed" not specified')
 
-    api_response = client.markasfixed_by_detection_id(id=id, fixed=fixed)
+    api_response = client.markasfixed_by_detection_id(id=id, fixed=fixed_as_bool)
 
-    # TODO Test API error code (ID not found, no PCAP, etc ...)
-    demisto.debug(api_response)
+    # 404 API error will be raised by the Client class
+    command_result = CommandResults(
+        readable_output=f'Detection "{id}" successfully {"marked" if fixed_as_bool else "unmarked"} as fixed.',
+        raw_response=api_response
+    )
 
-    return 'ok'
+    return command_result
 
 
-def add_tags_command(client: Client, type: str, id: str, tags: str):
+def add_tags_command(client: Client, type: str, id: str, tags: str) -> CommandResults:
     """
     Adds several tags to an account/host/detection
 
@@ -1393,21 +1420,24 @@ def add_tags_command(client: Client, type: str, id: str, tags: str):
     """
 
     if not type:
-        VectraException('"type" not specified')
+        raise VectraException('"type" not specified')
     if not id:
-        VectraException('"id" not specified')
+        raise VectraException('"id" not specified')
     if not tags:
-        VectraException('"tags" not specified')
+        raise VectraException('"tags" not specified')
 
     api_response = client.add_tags(id=id, type=type, tags=tags.split(','))
 
-    # TODO Test API error code (ID not found, no PCAP, etc ...)
-    demisto.debug(api_response)
+    # 404 API error will be raised by the Client class
+    command_result = CommandResults(
+        readable_output=f'Tags "{tags}" successfully added.',
+        raw_response=api_response
+    )
 
-    return 'ok'
+    return command_result
 
 
-def del_tags_command(client: Client, type: str, id: str, tags: str):
+def del_tags_command(client: Client, type: str, id: str, tags: str) -> CommandResults:
     """
     Removes several tags from an account/host/detection
 
@@ -1419,18 +1449,21 @@ def del_tags_command(client: Client, type: str, id: str, tags: str):
     """
 
     if not type:
-        VectraException('"type" not specified')
+        raise VectraException('"type" not specified')
     if not id:
-        VectraException('"id" not specified')
+        raise VectraException('"id" not specified')
     if not tags:
-        VectraException('"tags" not specified')
+        raise VectraException('"tags" not specified')
 
     api_response = client.del_tags(id=id, type=type, tags=tags.split(','))
 
-    # TODO Test API error code (ID not found, no PCAP, etc ...)
-    demisto.debug(api_response)
+    # 404 API error will be raised by the Client class
+    command_result = CommandResults(
+        readable_output=f'Tags "{tags}" successfully deleted.',
+        raw_response=api_response
+    )
 
-    return 'ok'
+    return command_result
 
 
 ''' MAIN FUNCTION '''
