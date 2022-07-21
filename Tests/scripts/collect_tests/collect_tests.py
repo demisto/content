@@ -443,7 +443,7 @@ class NightlyTestCollector(TestCollector, ABC):
                 collected.append(CollectedTests(tests=(playbook.id_,), packs=playbook.pack_id_tuple,
                                                 reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
                                                 reason_description=f'({self.marketplace.value})',
-                                                version_range=VersionRange(playbook.from_version, playbook.to_version)))
+                                                version_range=playbook.version_range))
 
         if not collected:
             logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
