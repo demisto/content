@@ -138,10 +138,10 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
                                                                      aggregate_alert_id=aggregate_alert_id,
                                                                      fetch_only_current_item=True)
         # get item full content
-        content = content.get('items', None)[0]
+        content = content.get('items', None)
         if content:
-            if content.get('_id'):
-                es_items = content.get('_source')
+            if content[0].get('_id'):
+                es_items = content[0].get('_source')
                 if es_items:
                     content_item['title'] = es_items.get('title')
                     content_item['content'] = es_items.get('content')
