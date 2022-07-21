@@ -408,9 +408,10 @@ def watchlist_update_command(client: Client, id: str, search_query: str, descrip
     # res contains whether the task successful.
     return CommandResults(readable_output=res.get('result'))
 
+
 def watchlist_update_action_command(client: Client, id: str, action_type: str,
                                     enabled: bool) -> CommandResults:
-    if enabled =="True":
+    if enabled == 'True':
         enabled = True
     elif enabled == 'False':
         enabled = False
@@ -418,6 +419,7 @@ def watchlist_update_action_command(client: Client, id: str, action_type: str,
     res = client.http_request(url=f'/v1/watchlist/{id}/action_type/{action_type}', method='PUT', json_data=params)
     # res contains whether the task successful.
     return CommandResults(readable_output=res.get('result'))
+
 
 def watchlist_create_command(client: Client, name: str, search_query: str, index_type: str = 'events',
                              description: str = '') -> CommandResults:
