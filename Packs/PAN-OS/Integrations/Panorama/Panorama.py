@@ -4433,15 +4433,13 @@ def panorama_query_traffic_logs_command(args: dict):
 
 
 @logger
-def panorama_get_traffic_logs(job_id: str, target: Optional[str] = None):
+def panorama_get_traffic_logs(job_id: str):
     params = {
         'action': 'get',
         'type': 'log',
         'job-id': job_id,
         'key': API_KEY
     }
-    if target:
-        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -4885,9 +4883,8 @@ def prettify_logs(logs: Union[list, dict]):
 def panorama_get_logs_command(args: dict):
     ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
     job_ids = argToList(args.get('job_id'))
-    target = args.get('target', None)
     for job_id in job_ids:
-        result = panorama_get_traffic_logs(job_id, target)
+        result = panorama_get_traffic_logs(job_id)
         log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
         if isinstance(log_type_dt, list):
             log_type = log_type_dt[0]
@@ -11262,7 +11259,7 @@ def main():
             panorama_query_logs_command(args)
 
         elif command == 'panorama-check-logs-status' or command == 'pan-os-check-logs-status':
-            panorama_check_logs_status_command(args)
+            panorama_check_logs_status_command(args.get('job_id'))
 
         elif command == 'panorama-get-logs' or command == 'pan-os-get-logs':
             panorama_get_logs_command(args)
