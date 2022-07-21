@@ -2,7 +2,3 @@ Simple, manual process to modify external dynamic lists (EDLs) in Cortex <~XSOAR
 
 Note: This pack does not perform indicator type validation at this time. Indicators will be added to the EDL exactly as entered.
 
-## What does this pack do?
-Manually add/remove an inputted list of indicators to/from a given EDL.
-
-
