@@ -564,27 +564,6 @@ class Client(BaseClient):
         query_dict.pop('limit')
         return urlunparse(parsed_url._replace(query=urlencode(query_dict, True)))
 
-    def get_limited_results(self, uri, query_param=None, limit=None):
-        response = self._http_request(
-            method="GET",
-            url_suffix=uri,
-            resp_type='response',
-            params=query_param
-        )
-        paged_results = response.json()
-        while limit and limit > len(paged_results) and "next" in response.links and len(response.json()) > 0:
-            next_page = response.links.get("next").get("url")
-            response = self._http_request(
-                method="GET",
-                full_url=next_page,
-                url_suffix='',
-                resp_type='response',
-                params=query_param
-            )
-            paged_results += response.json()
-        return paged_results
-    
-
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
         uri = "groups"
