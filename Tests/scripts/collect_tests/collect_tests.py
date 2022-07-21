@@ -33,14 +33,10 @@ PACK_MANAGER = PackManager(PATHS)
 
 
 class CollectionReason(Enum):
-    # todo remove unused
     ID_SET_MARKETPLACE_VERSION = 'id_set marketplace version'
     PACK_MARKETPLACE_VERSION_VALUE = 'marketplace version of pack'
     CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE = 'marketplace version of contained item'
     SANITY_TESTS = 'sanity tests by marketplace value'
-    PACK_MATCHES_INTEGRATION = 'pack added as the integration is used in a playbook'  # todo is used?
-    PACK_MATCHES_TEST = 'pack added as the test playbook was collected earlier'
-    ALL_ID_SET_PACKS = 'collecting all id_set pack_name_to_pack_metadata'  # todo is used?
     NON_CODE_FILE_CHANGED = 'non-code pack file changed'
     INTEGRATION_CHANGED = 'integration changed, collecting all conf.json tests using it'
     SCRIPT_PLAYBOOK_CHANGED = 'file changed, taking tests from `tests` section in script yml'
