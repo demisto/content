@@ -31,16 +31,11 @@ name: DUO Admin
 script:
   commands:
   - arguments:
-    - default: false
-      description: The user associated with the logs.
-      isArray: false
+    - description: The user associated with the logs.
       name: username
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Fetch logs from this time until now
-      isArray: false
       name: from
       predefined:
       - 10_seconds_ago
@@ -55,17 +50,11 @@ script:
       - 5_years_ago
       - 10_years_ago
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of authentication logs to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns authentication logs associated with a user. Limited to 30 at a time
-    execution: false
+    description: Returns authentication logs associated with a user. Limited to 30
+      at a time
     name: duoadmin-get-authentication-logs-by-user
     outputs:
     - contextPath: DuoAdmin.UserDetails.auth_logs.result
@@ -117,54 +106,52 @@ script:
       description: The authentication factor
       type: string
   - arguments:
-    - default: false
-      description: user to dissociate a device from
-      isArray: false
+    - description: user to dissociate a device from
       name: username
       required: true
-      secret: false
-    - default: false
-      description: the device id to dissociate
-      isArray: false
+    - description: the device id to dissociate
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Dissociates a device from a user
-    execution: false
     name: duoadmin-dissociate-device-from-user
   - arguments:
-    - default: false
-      description: the id of the token to delete
-      isArray: false
+    - description: the id of the token to delete
       name: token_id
       required: true
-      secret: false
-    deprecated: false
     description: Delete a u2f token
-    execution: false
     name: duoadmin-delete-u2f-token
-  - deprecated: false
+  - arguments: []
     description: Return usernames and their user id
-    execution: false
     name: duoadmin-get-users
     outputs:
     - contextPath: DuoAdmin.UserDetails.username
       description: Username
-      type: Unknown
+      type: string
     - contextPath: DuoAdmin.UserDetails.user_id
       description: 'User Id '
-      type: Unknown
+      type: string
+    - contextPath: DuoAdmin.UserDetails.status
+      description: Status
+      type: string
+    - contextPath: DuoAdmin.UserDetails.is_enrolled
+      description: is_enrolled
+      type: boolean
+    - contextPath: DuoAdmin.UserDetails.last_login
+      description: Last_login
+      type: date
+    - contextPath: DuoAdmin.UserDetails.realname
+      description: Real Name
+      type: string
+    - contextPath: DuoAdmin.UserDetails.email
+      description: Email
+      type: string
+    - contextPath: DuoAdmin.UserDetails.phones
+      description: Phone numbers
   - arguments:
-    - default: false
-      description: Username
-      isArray: false
+    - description: Username
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Return devices associated with a user
-    execution: false
     name: duoadmin-get-devices-by-user
     outputs:
     - contextPath: DuoAdmin.UserDetails.phones.phone_id
@@ -180,23 +167,17 @@ script:
       description: Last time the device was used
       type: date
   - arguments:
-    - default: false
-      description: username
-      isArray: false
+    - description: username
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Returns a list of U2F tokens associated with the given username
-    execution: false
     name: duoadmin-get-u2f-tokens-by-user
     outputs:
     - contextPath: DuoAdmin.UserDetails.u2ftokens
       description: The list of  tokens
       type: Unknown
-  - deprecated: false
+  - arguments: []
     description: Returns all existing devices
-    execution: false
     name: duoadmin-get-devices
     outputs:
     - contextPath: DuoAdmin.Phones.phone_id
@@ -215,30 +196,92 @@ script:
       description: Users associated with this device
       type: Unknown
   - arguments:
-    - default: false
-      description: Username
-      isArray: false
+    - description: Username
       name: username
       required: true
-      secret: false
-    - default: false
-      description: Device Id
-      isArray: false
+    - description: Device Id
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Associates a device to a user
-    execution: false
     name: duoadmin-associate-device-to-user
+  - arguments: []
+    description: Returns administrator accounts
+    name: duoadmin-get-admins
+    outputs:
+    - contextPath: DuoAdmin.UserDetails.admin_id
+      description: Admin_id
+      type: string
+    - contextPath: DuoAdmin.UserDetails.admin_units
+      description: Admin Units
+    - contextPath: DuoAdmin.UserDetails.created
+      description: Created
+      type: date
+    - contextPath: DuoAdmin.UserDetails.email
+      description: Email
+      type: string
+    - contextPath: DuoAdmin.UserDetails.last_login
+      description: Last Login
+      type: date
+    - contextPath: DuoAdmin.UserDetails.name
+      description: Name
+      type: string
+    - contextPath: DuoAdmin.UserDetails.phone
+      description: Phone
+    - contextPath: DuoAdmin.UserDetails.role
+      description: Admin Role
+      type: string
+    - contextPath: DuoAdmin.UserDetails.status
+      description: Admin Status
+      type: string
+  - arguments: []
+    description: Retrieves the information from the bypass code table
+    name: duoadmin-get-bypass-codes
+    outputs:
+    - contextPath: DuoAdmin.UserDetails.bypass_code_id
+      description: Bypass Code Id
+      type: unknown
+    - contextPath: DuoAdmin.UserDetails.admin_email
+      description: Admin Email
+      type: string
+    - contextPath: DuoAdmin.UserDetails.created
+      description: Bypass Created
+      type: date
+    - contextPath: DuoAdmin.UserDetails.expiration
+      description: Bypass Expiration
+    - contextPath: DuoAdmin.UserDetails.reuse_count
+      description: Bypass Reuse Count
+    - contextPath: DuoAdmin.UserDetails.user.username
+      description: Username
+    - contextPath: DuoAdmin.UserDetails.user.created
+      description: Created
+    - contextPath: DuoAdmin.UserDetails.user.email
+      description: Email
+    - contextPath: DuoAdmin.UserDetails.user.last_login
+      description: Last Login
+    - contextPath: DuoAdmin.UserDetails.user.status
+      description: Status
+    - contextPath: DuoAdmin.UserDetails.user.user_id
+      description: User Id
+  - arguments:
+    - description: The user_id of the user
+      name: user_id
+    - description: the status to cahnge - Active and Disabled are only valid values
+        - and Disabled is not valid for role=owner
+      name: status
+    description: Modify the administrator user
+    name: duoadmin-modify-admin
+  - arguments:
+    - description: The user_id of the user
+      name: user_id
+    - description: The status of the user
+      name: status
+    description: Modify the user account
+    name: duoadmin-modify-user
   dockerimage: demisto/duoadmin:1.0.0.24033
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
-  type: python
+  script: ''
   subtype: python2
+  type: python
+fromversion: 5.0.0
 tests:
 - DuoAdmin API test playbook
-fromversion: 5.0.0
