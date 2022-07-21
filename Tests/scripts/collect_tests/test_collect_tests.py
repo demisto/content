@@ -266,7 +266,10 @@ ONLY_COLLECT_PACK_TYPES = {
 
 
 def test_only_collect_pack_args():
-    # make sure test_only_collect_pack() only runs over the correct types, changing constants will require a change here
+    """
+    comparing the test_only_collect_packs arguments (ONLY_COLLECT_PACK_TYPES) match constants.ONLY_COLLECT_PACK_TYPES
+    Any change there will require a change here.
+    """
     from constants import ONLY_INSTALL_PACK
     assert ONLY_COLLECT_PACK_TYPES == ONLY_INSTALL_PACK
 
