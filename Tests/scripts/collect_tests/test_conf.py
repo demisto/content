@@ -56,10 +56,6 @@ class TestConfItem(DictBased):
         return to_tuple(self.get('integrations', (), warn_if_missing=False))  # todo warn?
 
     @property
-    def is_mockable(self):
-        return self.get('is_mockable')
-
-    @property
     def classifier(self):
         return self.get('instance_configuration', {}, warn_if_missing=False).get('classifier_id')
 

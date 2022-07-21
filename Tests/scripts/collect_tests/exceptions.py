@@ -41,10 +41,6 @@ class EmptyMachineListException(Exception):
     pass
 
 
-class InvalidVersionException(Exception):
-    pass
-
-
 class NoTestsConfiguredException(Exception):
     """ raised when an integration has no tests configured """
 

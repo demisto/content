@@ -187,10 +187,8 @@ class PackManager:
 
     def __init__(self, path_manager: PathManager):
         self.packs_path = path_manager.packs_path
-
         self.deprecated_packs: set[str] = set()
         self.pack_id_to_pack_metadata: dict[str, ContentItem] = {}  # NOTE: The ID of a pack is the name of its folder.
-        self.pack_id_to_pack_name_field: dict[str, str] = {}
 
         for pack_folder in (pack_folder for pack_folder in self.packs_path.iterdir() if pack_folder.is_dir()):
             metadata = ContentItem(pack_folder / 'pack_metadata.json')

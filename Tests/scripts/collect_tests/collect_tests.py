@@ -17,7 +17,6 @@ from exceptions import (DeprecatedPackException, EmptyMachineListException,
                         NonDictException, NoTestsConfiguredException,
                         NothingToCollectException, NotUnderPackException,
                         SkippedPackException, UnsupportedPackException)
-from git import Repo
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
@@ -94,8 +93,8 @@ class CollectedTests:
             reason_description='',
         )
 
-    @classmethod
-    def union(cls, collected_tests: Optional[tuple[Optional['CollectedTests'], ...]]) -> Optional['CollectedTests']:
+    @staticmethod
+    def union(collected_tests: Optional[tuple[Optional['CollectedTests'], ...]]) -> Optional['CollectedTests']:
         collected_tests = tuple(filter(None, collected_tests or (None,)))
 
         if not collected_tests:
@@ -222,7 +221,6 @@ class BranchTestCollector(TestCollector):
         """
         super().__init__(marketplace)
         self.branch_name = branch_name
-        self.repo = Repo(PATHS.content_path)
         self.service_account = service_account
         self.private_pack_path: Optional[Path] = private_pack_path
 

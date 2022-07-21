@@ -231,7 +231,6 @@ def test_branch(
         collector_class_args: tuple[str],
         mocked_changed_files: tuple[str]
 ):
-    mocker.patch.object(collect_tests, 'Repo', return_value=None)
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=mocked_changed_files)
     _test(monkeypatch, case_mocker, run_nightly=False, collector_class=BranchTestCollector,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_machines=expected_machines,
@@ -280,9 +279,6 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
     when    collecting with a BranchTestCollector
     then    make sure the pack is collected, but tests are not
     """
-    # avoid crashing
-    mocker.patch.object(collect_tests, 'Repo', return_value=None)
-
     # test mockers
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
     mocker.patch('collect_tests.find_type_by_path', return_value=file_type)
@@ -298,8 +294,6 @@ def test_invalid_content_item(mocker, monkeypatch):
     when:   collecting tests
     then:   make sure an appropriate error is raised
     """
-    mocker.patch.object(collect_tests, 'Repo', return_value=None)
-
     # test mockers
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
 
