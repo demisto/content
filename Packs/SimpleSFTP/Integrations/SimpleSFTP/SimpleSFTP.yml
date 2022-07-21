@@ -10,9 +10,7 @@ description: Simple SFTP Integration to copy files from SFTP Server using parami
 detaileddescription: |
   Note:
   -------
-  This integration will need a custom docker image which includes the paramiko module as a dependency. To create the docker image on your server you can run :
-
-  /docker_image_create name=demisto/sftp base="<demisto/python3>" dependencies=paramiko
+  This integration will need a docker image which includes the paramiko module as a dependency. The demisto/netmiko docker image will support this integration.
 
   Authors:
   -----------
@@ -47,7 +45,7 @@ script:
         HOST = demisto.params()["host"]
         USERNAME = demisto.params()['authentication']['identifier']
         PASSWORD = demisto.params()['authentication']['password']
-        PORT = demisto.params()["port"]
+        PORT = int(demisto.params()["port"])
 
         if demisto.command() == "test-module":
             try:
@@ -130,7 +128,7 @@ script:
       defaultValue: "False"
     description: Copies contents of file specified from the sftp server and prints
       it to the war room
-  dockerimage: demisto/sftp
+  dockerimage: demisto/netmiko:1.0.0.24037
   runonce: false
   subtype: python3
 sourcemoduleid: SFTP
