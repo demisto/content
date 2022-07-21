@@ -9,9 +9,11 @@
 !docker-config-create configspec_name="test_config" configspec_data="VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="
 !docker-config-list
 !docker-config-inspect id="ud0ychozv55f7n0pzk6qo9kq9"
-!docker-container-list
 !docker-container-changes id="04be62e20d33bf299865e26b657ec5516928641558ccff6a899407ab0b6b1d94"
-!docker-container-create name="hello-docker" containerconfig_image="hello-world"
+!docker-image-create from_image="alpine:latest"
+!docker-container-create name="hello-docker" containerconfig_image="alpine:latest"
+!docker-container-list
+!docker-container-delete id="hello-docker"
 !docker-container-inspect id="7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41"
 !docker-container-stats id="04be62e20d33bf299865e26b657ec5516928641558ccff6a899407ab0b6b1d94"
 !docker-container-top id="04be62e20d33bf299865e26b657ec5516928641558ccff6a899407ab0b6b1d94"
@@ -20,6 +22,9 @@
 !docker-image-inspect name="05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e"
 !docker-image-prune
 !docker-image-search term="centos"
+!docker-image-tag name="alpine:latest" repo="example/alpine" tag="test"
+!docker-image-push name="example/alpine:test"
+!docker-image-delete name="alpine:latest"
 !docker-volume-list
 !docker-volume-prune
 !docker-volume-create volumeconfig_name="temp-volume"

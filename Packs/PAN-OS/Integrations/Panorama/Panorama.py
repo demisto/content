@@ -103,6 +103,79 @@ PAN_OS_ERROR_DICT = {
     '22': 'Session timed out - The session for this query timed out.'
 }
 
+# was taken from here: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Cm5hCAC
+PAN_DB_URL_FILTERING_CATEGORIES = {
+    'abortion',
+    'abused-drugs',
+    'adult',
+    'alcohol-and-tobacco',
+    'auctions',
+    'business-and-economy',
+    'command-and-control',
+    'computer-and-internet-info',
+    'content-delivery-networks',
+    'copyright-infringement',
+    'cryptocurrency',
+    'dating',
+    'dynamic-dns',
+    'educational-institutions',
+    'entertainment-and-arts',
+    'extremism',
+    'gambling',
+    'games',
+    'government',
+    'grayware',
+    'hacking',
+    'health-and-medicine',
+    'home-and-garden',
+    'hunting-and-fishing',
+    'insufficient-content',
+    'internet-Communications-and-telephony',
+    'internet-portals',
+    'job-search',
+    'legal',
+    'malware',
+    'military',
+    'motor-vehicles',
+    'music',
+    'newly-registered-domain',
+    'news',
+    'nudity',
+    'online-storage-and-backup',
+    'parked',
+    'peer-to-peer',
+    'personal-sites-and-blogs',
+    'philosophy-and-political-advocacy',
+    'phishing',
+    'private-ip-addresses',
+    'proxy-avoidance-and-anonymizers',
+    'questionable',
+    'real-estate',
+    'recreation-and-hobbies',
+    'reference-and-research	',
+    'religion',
+    'search-engines',
+    'sex-education',
+    'shareware-and-freeware',
+    'shopping',
+    'social-networking',
+    'society',
+    'sports',
+    'stock-advice-and-tools',
+    'streaming-media',
+    'swimsuits-and-intimate-apparel',
+    'training-and-tools',
+    'translation',
+    'travel',
+    'unknown',
+    'weapons',
+    'web-advertisements',
+    'web-hosting',
+    'web-based-email',
+    'high-risk',
+    'medium-risk',
+    'low-risk'
+}
 
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
@@ -2416,15 +2489,17 @@ def panorama_edit_custom_url_category_command(args: dict):
 
 
 @logger
-def panorama_get_url_category(url_cmd: str, url: str, target: Optional[str] = None):
+def panorama_get_url_category(url_cmd: str, url: str, target: Optional[str] = None) -> List[str]:
     params = {
         'action': 'show',
         'type': 'op',
         'key': API_KEY,
         'cmd': f'<test><{url_cmd}>{url}</{url_cmd}></test>'
     }
+
     if target:
         params['target'] = target
+
     raw_result = http_request(
         URL,
         'POST',
@@ -2433,18 +2508,9 @@ def panorama_get_url_category(url_cmd: str, url: str, target: Optional[str] = No
     result = raw_result['response']['result']
     if 'Failed to query the cloud' in result:
         raise Exception('Failed to query the cloud. Please check your URL Filtering license.')
-
-    if url_cmd == 'url-info-host':
-        # The result in this case looks like so: "Ancestors info:\nBM:\nURL.com,1,5,search-engines,, {some more info
-        # here...}" - The 4th element is the url category.
-        category = result.split(',')[3]
-    else:
-        result = result.splitlines()[1]
-        if url_cmd == 'url':
-            category = result.split(' ')[1]
-        else:  # url-info-cloud
-            category = result.split(',')[3]
-    return category
+    # result structur example: 'https://someURL.com not-resolved (Base db) expires in 4 seconds
+    # https://someURL.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db)'
+    return [url_category for url_category in PAN_DB_URL_FILTERING_CATEGORIES if url_category in result]
 
 
 def populate_url_filter_category_from_context(category: str):
@@ -2503,39 +2569,62 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
     for url in urls:
         err_readable_output = None
         try:
-            category = panorama_get_url_category(url_cmd, url, target)
-            if category in categories_dict:
-                categories_dict[category].append(url)
-                categories_dict_hr[category].append(url)
-            else:
-                categories_dict[category] = [url]
-                categories_dict_hr[category] = [url]
-            context_urls = populate_url_filter_category_from_context(category)
-            categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
+            categories = panorama_get_url_category(url_cmd, url, target)
+            max_url_dbot_score = 0
+            url_dbot_score_category = ''
+            for category in categories:
+                if category in categories_dict:
+                    categories_dict[category].append(url)
+                    categories_dict_hr[category].append(url)
+                else:
+                    categories_dict[category] = [url]
+                    categories_dict_hr[category] = [url]
+                context_urls = populate_url_filter_category_from_context(category)
+                categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-            score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
+                current_dbot_score = calculate_dbot_score(
+                    category.lower(), additional_suspicious, additional_malicious
+                )
+                if current_dbot_score > max_url_dbot_score:
+                    max_url_dbot_score = current_dbot_score
+                    url_dbot_score_category = category
 
+            dbot_score = Common.DBotScore(
+                indicator=url,
+                indicator_type=DBotScoreType.URL,
+                integration_name='PAN-OS',
+                score=max_url_dbot_score
+            )
+            url_obj = Common.URL(
+                url=url,
+                dbot_score=dbot_score,
+                category=url_dbot_score_category
+            )
+            readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
+            command_results.append(CommandResults(
+                indicator=url_obj,
+                readable_output=readable_output
+            ))
         except InvalidUrlLengthException as e:
             score = 0
             category = None
             err_readable_output = str(e)
-
-        dbot_score = Common.DBotScore(
-            indicator=url,
-            indicator_type=DBotScoreType.URL,
-            integration_name='PAN-OS',
-            score=score
-        )
-        url_obj = Common.URL(
-            url=url,
-            dbot_score=dbot_score,
-            category=category
-        )
-        readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
-        command_results.append(CommandResults(
-            indicator=url_obj,
-            readable_output=readable_output
-        ))
+            dbot_score = Common.DBotScore(
+                indicator=url,
+                indicator_type=DBotScoreType.URL,
+                integration_name='PAN-OS',
+                score=score
+            )
+            url_obj = Common.URL(
+                url=url,
+                dbot_score=dbot_score,
+                category=category
+            )
+            readable_output = err_readable_output
+            command_results.append(CommandResults(
+                indicator=url_obj,
+                readable_output=readable_output
+            ))
 
     url_category_output_hr = []
     for key, value in categories_dict_hr.items():
@@ -4307,15 +4396,13 @@ def panorama_query_traffic_logs_command(args: dict):
 
 
 @logger
-def panorama_get_traffic_logs(job_id: str, target: Optional[str] = None):
+def panorama_get_traffic_logs(job_id: str):
     params = {
         'action': 'get',
         'type': 'log',
         'job-id': job_id,
         'key': API_KEY
     }
-    if target:
-        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -4759,9 +4846,8 @@ def prettify_logs(logs: Union[list, dict]):
 def panorama_get_logs_command(args: dict):
     ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
     job_ids = argToList(args.get('job_id'))
-    target = args.get('target', None)
     for job_id in job_ids:
-        result = panorama_get_traffic_logs(job_id, target)
+        result = panorama_get_traffic_logs(job_id)
         log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
         if isinstance(log_type_dt, list):
             log_type = log_type_dt[0]
@@ -11136,7 +11222,7 @@ def main():
             panorama_query_logs_command(args)
 
         elif command == 'panorama-check-logs-status' or command == 'pan-os-check-logs-status':
-            panorama_check_logs_status_command(args)
+            panorama_check_logs_status_command(args.get('job_id'))
 
         elif command == 'panorama-get-logs' or command == 'pan-os-get-logs':
             panorama_get_logs_command(args)
