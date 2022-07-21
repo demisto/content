@@ -43,9 +43,6 @@ ignore=IF100
 [file:pack_metadata.json]
 ignore=PA129
 
-[file:1_0_3.md]
-ignore=RN107
-
 [known_words]
 fromVersion
 SLAs
