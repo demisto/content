@@ -699,7 +699,7 @@ class TestCommandsWithLargeAttachments:
                 'subject': "test subject",
                 'replyTo': ["ex2@example.com", "ex3@example.com"],
                 'from': "ex1@example.com",
-                'attachCIDs': '1'
+                'attachIDs': '1'
             },
         ),
         (
@@ -710,7 +710,7 @@ class TestCommandsWithLargeAttachments:
                 'subject': "test subject",
                 'replyTo': ["ex2@example.com", "ex3@example.com"],
                 'from': "ex1@example.com",
-                'attachCIDs': '2'
+                'attachIDs': '2'
             }
         ),
         (
@@ -721,30 +721,67 @@ class TestCommandsWithLargeAttachments:
                 'subject': "test subject",
                 'replyTo': ["ex2@example.com", "ex3@example.com"],
                 'from': "ex1@example.com",
-                'attachCIDs': '1,2'
+                'attachIDs': '1,2'
+            }
+        )
+    ]
+
+    REPLY_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS = [
+        (
+            self_deployed_client(),
+            {
+                'to': ['ex@example.com'], 'body': "test body", 'subject': "test subject", "inReplyTo": "123",
+                'from': "ex1@example.com", 'attachIDs': '3'
+            },
+        ),
+        (
+            oproxy_client(),
+            {
+                'to': ['ex@example.com'], 'body': "test body", 'subject': "test subject", "inReplyTo": "123",
+                'from': "ex1@example.com", 'attachIDs': '4'
+            }
+        ),
+        (
+            self_deployed_client(),
+            {
+                'to': ['ex@example.com'], 'body': "test body", 'subject': "test subject", "inReplyTo": "123",
+                'from': "ex1@example.com", 'attachIDs': '3,4'
             }
         )
     ]
 
     @staticmethod
-    def expected_upload_headers():
-        for header in [
-            {'Content-Length': '3145728', 'Content-Range': 'bytes 0-3145727/21796912',
-             'Content-Type': 'application/octet-stream'},
-            {'Content-Length': '3145728', 'Content-Range': 'bytes 3145728-6291455/21796912',
-             'Content-Type': 'application/octet-stream'},
-            {'Content-Length': '3145728', 'Content-Range': 'bytes 6291456-9437183/21796912',
-             'Content-Type': 'application/octet-stream'},
-            {'Content-Length': '3145728', 'Content-Range': 'bytes 9437184-12582911/21796912',
-             'Content-Type': 'application/octet-stream'},
-            {'Content-Length': '3145728', 'Content-Range': 'bytes 12582912-15728639/21796912',
-             'Content-Type': 'application/octet-stream'},
-            {'Content-Length': '3145728', 'Content-Range': 'bytes 15728640-18874367/21796912',
-             'Content-Type': 'application/octet-stream'},
-            {'Content-Length': '2922544', 'Content-Range': 'bytes 18874368-21796911/21796912',
-             'Content-Type': 'application/octet-stream'}
-        ]:
-            yield header
+    def expected_upload_headers(world_file=True):
+        if world_file:
+            for header in [  # testing on the world.jpg file.
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 0-3145727/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 3145728-6291455/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 6291456-9437183/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 9437184-12582911/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 12582912-15728639/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 15728640-18874367/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '2922544', 'Content-Range': 'bytes 18874368-21796911/21796912',
+                 'Content-Type': 'application/octet-stream'}
+            ]:
+                yield header
+        else:
+            for header in [   # testing on the computer_architecture.pdf
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 0-3145727/10520433',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 3145728-6291455/10520433',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 6291456-9437183/10520433',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '1083249', 'Content-Range': 'bytes 9437184-10520432/10520433',
+                 'Content-Type': 'application/octet-stream'},
+            ]:
+                yield header
 
     @staticmethod
     def get_attachment_file_details_by_attachment_id(attach_id):
@@ -756,6 +793,14 @@ class TestCommandsWithLargeAttachments:
             '2': {
                 'path': 'test_data/plant.jpg',  # smaller than 3mb attachment
                 'name': 'plant.jpg'
+            },
+            '3': {
+                'path': f'test_data/computer_architecture.pdf',  # bigger than 3mb attachment
+                'name': 'computer_architecture.pdf'
+            },
+            '4': {
+                'path': f'test_data/sample.pdf',  # smaller than 3mb attachment
+                'name': 'sample-pdf'
             }
         }
         return attachment_info.get(attach_id)
@@ -767,7 +812,7 @@ class TestCommandsWithLargeAttachments:
             return MockedResponse(status_code=201)
         return MockedResponse(status_code=200)
 
-    def validate_upload_attachments_flow(self, create_upload_mock, upload_query_mock):
+    def validate_upload_attachments_flow(self, create_upload_mock, upload_query_mock, world_file=True):
         """
         Validates that the upload flow is working as expected, each piece of headers is sent as expected.
         """
@@ -777,7 +822,7 @@ class TestCommandsWithLargeAttachments:
         if create_upload_mock.call_count != 1:
             return False
 
-        expected_headers = iter(self.expected_upload_headers())
+        expected_headers = iter(self.expected_upload_headers(world_file=world_file))
         for i in range(upload_query_mock.call_count):
             current_headers = next(expected_headers)
             if upload_query_mock.mock_calls[i].kwargs['headers'] != current_headers:
@@ -785,7 +830,7 @@ class TestCommandsWithLargeAttachments:
         return True
 
     @pytest.mark.parametrize('client, args', SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
-    def test_send_mail_command_with_large_attachments(self, mocker, client, args):
+    def test_send_mail_command(self, mocker, client, args):
         """
         Given:
             Case 1: send email command arguments and attachment > 3mb.
@@ -798,8 +843,8 @@ class TestCommandsWithLargeAttachments:
         Then:
             Case1: make sure the upload session was called with the correct headers according to file size
             Case2: make sure the upload session was not called at all and that the attachment was added through the
-                regular create draft api endpoint.
-            Case3: make sure attachment 1 was called with upload session with the corrrect headers according
+                regular send mail api endpoint.
+            Case3: make sure attachment 1 was called with upload session with the correct headers according
                     to file size and that attachment 2 was added through the regular create draft api endpoint.
             - Make sure for all three cases the expected context output is and that the right api calls were called.
         """
@@ -810,8 +855,7 @@ class TestCommandsWithLargeAttachments:
             mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
 
             # attachment 1 is an attachment bigger than 3MB
-            if '1' in args.get('attachCIDs'):  # means the attachment should be created in the upload session
-                mocker.patch.object(client.ms_client, 'get_access_token')
+            if '1' in args.get('attachIDs'):  # means the attachment should be created in the upload session
                 create_draft_mail_mocker = request_mocker.post(
                     f'https://graph.microsoft.com/v1.0/users/{from_email}/messages', json={'id': mocked_draft_id}
                 )
@@ -826,9 +870,9 @@ class TestCommandsWithLargeAttachments:
 
                 send_email_command(client, args)
 
-                assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock)
+                assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock, world_file=False)
 
-                if '2' in args.get('attachCIDs'):
+                if '2' in args.get('attachIDs'):
                     assert create_draft_mail_mocker.last_request.json().get('attachments')
 
             else:
@@ -848,8 +892,49 @@ class TestCommandsWithLargeAttachments:
                 assert message.get('replyTo')[1].get('emailAddress').get("address") == args.get('replyTo')[1]
                 assert message.get('attachments')
 
+    @pytest.mark.parametrize('client, args', REPLY_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
+    def test_reply_mail_command(self, mocker, client, args):
+
+        with requests_mock.Mocker() as request_mocker:
+            from_email = args.get('from')
+            mocked_draft_id = '123'
+            message_id = args.get('inReplyTo')
+            mocker.patch.object(client.ms_client, 'get_access_token')
+            mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
+
+            if '3' in args.get('attachIDs'):
+                create_draft_mail_mocker = request_mocker.post(
+                    f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{message_id}/createReply',
+                    json={'id': mocked_draft_id}
+                )
+                request_mocker.post(  # mock the endpoint to send a draft mail
+                    f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{mocked_draft_id}/send'
+                )
+
+                create_upload_mock = mocker.patch.object(
+                    client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
+                )
+                upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
+
+                reply_email_command(client, args)
+
+                assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock, world_file=False)
+
+                if '4' in args.get('attachIDs'):
+                    assert create_draft_mail_mocker.last_request.json().get('message').get('attachments')
+            else:
+                send_mail_mocker = request_mocker.post(
+                    f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{message_id}/reply'
+                )
+                command_results = reply_email_command(client, args)
+                assert send_mail_mocker.called
+                assert command_results.outputs == {
+                    'toRecipients': ['ex@example.com'], 'subject': 'Re: test subject', 'bodyPreview': 'test body',
+                    'ID': '123'
+                }
+
     @pytest.mark.parametrize('client, args', SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
-    def test_create_draft_email(self, mocker, client, args):
+    def test_create_draft_email_command(self, mocker, client, args):
         """
         Given:
             Case 1: create draft command arguments and attachment > 3mb.
@@ -894,7 +979,7 @@ class TestCommandsWithLargeAttachments:
                 assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock)
 
             assert outputs_mocker.call_args[0][1]['MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)']['ID'] == '123'
-            if '2' in args.get('attachCIDs'):
+            if '2' in args.get('attachIDs'):
                 assert create_draft_mail_mocker.last_request.json()['attachments']
             assert create_draft_mail_mocker.called
             assert create_draft_mail_mocker.last_request.json()

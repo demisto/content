@@ -992,6 +992,7 @@ class MsGraphClient:
             "Content-Type": "application/octet-stream"
         }
         demisto.debug(f'uploading session headers: {headers}')
+        print(headers)
         return requests.put(url=upload_url, data=chunk_data, headers=headers)
 
     def add_attachment_with_upload_session(self, email, draft_id, attachment_data, attachment_name, is_inline=False):
