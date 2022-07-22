@@ -28,6 +28,7 @@ def run_long_running(listen_port):
 
 
 def run_setup_action():
+    port = demisto.params().get('longRunningPort')
     inc = demisto.incident()
     integration_context = get_integration_context()
     entry_uuid = str(uuid.uuid4())
@@ -39,8 +40,10 @@ def run_setup_action():
     xsoar_external_url = demisto.params().get('xsoar-external-url').rstrip('/')
     integration_instance_name = demisto.integrationInstance()
     partial_link = f'{xsoar_external_url}/instance/execute/{integration_instance_name}/process/{entry_uuid}/'
+    partial_link_port = f'{xsoar_external_url}:{port}/instance/execute/{integration_instance_name}/process/{entry_uuid}/'
     for action in input_list:
         context_list.append({"action_url": partial_link + action,
+                             "action_url_port": partial_link_port + action,
                              "uuid": entry_uuid, "action_string": action})
     to_return = CommandResults(outputs_prefix='WS-ActionDetails', outputs=context_list)
     return_results(to_return)
