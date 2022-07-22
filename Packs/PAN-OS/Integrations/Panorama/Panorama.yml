@@ -1460,14 +1460,14 @@ script:
       name: profile_setting
     - auto: PREDEFINED
       defaultValue: bottom
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument.
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
       - after
       - top
       - bottom
-    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument.
+    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
     description: Creates a policy rule.
     execution: true
