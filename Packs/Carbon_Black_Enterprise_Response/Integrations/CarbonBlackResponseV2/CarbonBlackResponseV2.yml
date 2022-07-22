@@ -1120,7 +1120,7 @@ script:
     - default: false
       description: Whether the watchlist is enabled or not.
       name: enabled
-      required: false
+      required: true
       auto: PREDEFINED
       predefined:
       - 'True'
