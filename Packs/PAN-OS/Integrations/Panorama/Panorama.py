@@ -665,7 +665,7 @@ def panorama_commit(args):
 )
 def panorama_commit_command(args: dict):
     """
-    Commit any configuration in PAN-OS.
+    Commit any configuration in PAN-OS
     This function implements the 'pan-os-commit' command.
     Supports polling as well.
     """
