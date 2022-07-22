@@ -858,6 +858,7 @@ Creates a draft message in the specified user's mailbox.
 **The following permissions are required for this command:**
 - Mail.ReadWrite (Application)
 
+
 ##### Base Command
 
 `msgraph-mail-create-draft`
@@ -957,6 +958,7 @@ Attachments size is limited to 3 MB.
 ##### Required Permissions
 **The following permissions are required for this command:**
 - Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 
 ##### Base Command
 
@@ -1036,6 +1038,7 @@ Replies to the recipients of a message.
 ##### Required Permissions
 **The following permissions are required for this command:**
 - Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 
 ##### Base Command
 
@@ -1106,6 +1109,10 @@ There is no context output for this command.
 ***
 Replies to an email using Graph Mail.
 
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 
 #### Base Command
 
