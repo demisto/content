@@ -1,13 +1,13 @@
 {
-    "id": "indicator_vendor",
+    "id": "indicator_xivendor",
     "version": -1,
     "modified": "2022-04-26T16:03:00.22846217-04:00",
     "propagationLabels": [
         "all"
     ],
-    "name": "Vendor",
+    "name": "XI Vendor",
     "ownerOnly": false,
-    "cliName": "vendor",
+    "cliName": "xivendor",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -26,7 +26,7 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,

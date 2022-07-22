@@ -1,13 +1,13 @@
 {
-    "id": "indicator_cpes",
+    "id": "indicator_xicpes",
     "version": -1,
     "modified": "2022-04-29T11:08:49.074455322-04:00",
     "propagationLabels": [
         "all"
     ],
-    "name": "CPES",
+    "name": "XI CPES",
     "ownerOnly": false,
-    "cliName": "cpes",
+    "cliName": "xicpes",
     "type": "longText",
     "closeForm": false,
     "editForm": true,
@@ -26,7 +26,7 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,

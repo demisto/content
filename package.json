@@ -23,6 +23,7 @@
     "@mdx-js/mdx": "^2.1.2",
     "commander": "^5.1.0",
     "fs-extra": "^8.1.0",
-    "jsdoc-to-markdown": "^7.1.1"
+    "jsdoc-to-markdown": "^7.1.1",
+    "mdx": "^0.2.3"
   }
 }
