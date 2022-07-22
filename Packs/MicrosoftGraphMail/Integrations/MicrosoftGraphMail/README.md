@@ -55,6 +55,10 @@ Using a national cloud endpoint is supported by setting the *Server URL* paramet
 
 Refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
 
+## Email Attachments Limitations
+* The maximum attachment size to be sent in an email can be 150-MB. [large-attachments](https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http)
+* The larger the attachment, the longer it would take for a command that supports adding attachments to run.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
