@@ -18,5 +18,5 @@ runonce: false
 runas: DBotWeakRole
 tests:
 - Cybereason Pre Processing Test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.4.30607
+fromversion: 6.2.0
+dockerimage: demisto/python3:3.10.5.31928

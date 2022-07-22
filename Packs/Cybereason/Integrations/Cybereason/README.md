@@ -53,22 +53,22 @@ Searches for processes with various filters.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Process.Name | Unknown | The process name | 
-| Process.Malicious | Unknown | Malicious status of the process | 
-| Process.CreationTime | Unknown | The process creation time | 
-| Process.EndTime | Unknown | The process end time | 
-| Process.CommandLine | Unknown | The command line of the process | 
-| Process.SignedAndVerified | Unknown | Is the process signed and verified | 
-| Process.ProductType | Unknown | The product type | 
-| Process.Children | Unknown | Children of the process | 
-| Process.Parent | Unknown | The parent process | 
-| Process.OwnerMachine | Unknown | The machine's hostname | 
-| Process.User | Unknown | The user who ran the process | 
-| Process.ImageFile | Unknown | Image file of the process | 
-| Process.SHA1 | Unknown | SHA1 of the process file | 
-| Process.MD5 | Unknown | MD5 of the process file | 
-| Process.CompanyName | Unknown | The company's name | 
-| Process.ProductName | Unknown | The product's name | 
+| Cybereason.Process.Name | Unknown | The process name | 
+| Cybereason.Process.Malicious | Unknown | Malicious status of the process | 
+| Cybereason.Process.CreationTime | Unknown | The process creation time | 
+| Cybereason.Process.EndTime | Unknown | The process end time | 
+| Cybereason.Process.CommandLine | Unknown | The command line of the process | 
+| Cybereason.Process.SignedAndVerified | Unknown | Is the process signed and verified | 
+| Cybereason.Process.ProductType | Unknown | The product type | 
+| Cybereason.Process.Children | Unknown | Children of the process | 
+| Cybereason.Process.Parent | Unknown | The parent process | 
+| Cybereason.Process.OwnerMachine | Unknown | The machine's hostname | 
+| Cybereason.Process.User | Unknown | The user who ran the process | 
+| Cybereason.Process.ImageFile | Unknown | Image file of the process | 
+| Cybereason.Process.SHA1 | Unknown | SHA1 of the process file | 
+| Cybereason.Process.MD5 | Unknown | MD5 of the process file | 
+| Cybereason.Process.CompanyName | Unknown | The company's name | 
+| Cybereason.Process.ProductName | Unknown | The product's name | 
 
 #### Command example
 ```!cybereason-query-processes machine=desktop-vg9ke2u hasOutgoingConnection=true hasIncomingConnection=true```
@@ -166,18 +166,18 @@ Searches for connections.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Connection.Name | Unknown | The connection's name | 
-| Connection.Direction | Unknown | OUTGOING/INCOMING | 
-| Connection.ServerAddress | Unknown | Address of the Cybereason machine | 
-| Connection.ServerPort | Unknown | Port of the Cybereason machine | 
-| Connection.PortType | Unknown | Type of the connection | 
-| Connection.ReceivedBytes | Unknown | Received bytes count | 
-| Connection.TransmittedBytes | Unknown | Transmitted bytes count | 
-| Connection.RemoteCountry | Unknown | The connection's remote country | 
-| Connection.OwnerMachine | Unknown | The machine's hostname | 
-| Connection.OwnerProcess | Unknown | The process which performed the connection | 
-| Connection.CreationTime | Unknown | Creation time of the connection | 
-| Connection.EndTime | Unknown | End time of the connection | 
+| Cybereason.Connection.Name | Unknown | The connection's name | 
+| Cybereason.Connection.Direction | Unknown | OUTGOING/INCOMING | 
+| Cybereason.Connection.ServerAddress | Unknown | Address of the Cybereason machine | 
+| Cybereason.Connection.ServerPort | Unknown | Port of the Cybereason machine | 
+| Cybereason.Connection.PortType | Unknown | Type of the connection | 
+| Cybereason.Connection.ReceivedBytes | Unknown | Received bytes count | 
+| Cybereason.Connection.TransmittedBytes | Unknown | Transmitted bytes count | 
+| Cybereason.Connection.RemoteCountry | Unknown | The connection's remote country | 
+| Cybereason.Connection.OwnerMachine | Unknown | The machine's hostname | 
+| Cybereason.Connection.OwnerProcess | Unknown | The process which performed the connection | 
+| Cybereason.Connection.CreationTime | Unknown | Creation time of the connection | 
+| Cybereason.Connection.EndTime | Unknown | End time of the connection | 
 
 #### Command example
 ```!cybereason-query-connections ip=192.168.1.103```
@@ -384,22 +384,22 @@ Returns a list of malops
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Process.Name | string | The process name | 
-| Process.Malicious | Unknown | Malicious status of the process | 
-| Process.CreationTime | date | The process creation time | 
-| Process.EndTime | date | The process end time | 
-| Process.CommandLine | string | The command line of the process | 
-| Process.SignedAndVerified | Unknown | Is the process signed and verified | 
-| Process.ProductType | Unknown | The product type | 
-| Process.Children | Unknown | Children of the process | 
-| Process.Parent | Unknown | The parent process | 
-| Process.OwnerMachine | Unknown | The machine's hostname | 
-| Process.User | string | The user who ran the process | 
-| Process.ImageFile | Unknown | Image file of the process | 
-| Process.SHA1 | string | SHA1 of the process file | 
-| Process.MD5 | string | MD5 of the process file | 
-| Process.CompanyName | string | The company's name | 
-| Process.ProductName | string | The product's name | 
+| Cybereason.Process.Name | string | The process name | 
+| Cybereason.Process.Malicious | Unknown | Malicious status of the process | 
+| Cybereason.Process.CreationTime | date | The process creation time | 
+| Cybereason.Process.EndTime | date | The process end time | 
+| Cybereason.Process.CommandLine | string | The command line of the process | 
+| Cybereason.Process.SignedAndVerified | Unknown | Is the process signed and verified | 
+| Cybereason.Process.ProductType | Unknown | The product type | 
+| Cybereason.Process.Children | Unknown | Children of the process | 
+| Cybereason.Process.Parent | Unknown | The parent process | 
+| Cybereason.Process.OwnerMachine | Unknown | The machine's hostname | 
+| Cybereason.Process.User | string | The user who ran the process | 
+| Cybereason.Process.ImageFile | Unknown | Image file of the process | 
+| Cybereason.Process.SHA1 | string | SHA1 of the process file | 
+| Cybereason.Process.MD5 | string | MD5 of the process file | 
+| Cybereason.Process.CompanyName | string | The company's name | 
+| Cybereason.Process.ProductName | string | The product's name | 
 
 #### Command example
 ```!cybereason-malop-processes malopGuids=<malop_id>```
@@ -521,8 +521,8 @@ Prevent malop process file
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Process.MD5 | string | Process file MD5 | 
-| Process.Prevent | boolean | True if process file is prevented, else false | 
+| Cybereason.Process.MD5 | string | Process file MD5 | 
+| Cybereason.Process.Prevent | boolean | True if process file is prevented, else false | 
 
 #### Command example
 ```!cybereason-prevent-file md5=fc61fdcad5a9d52a01bd2d596f2c92b9```
@@ -559,8 +559,8 @@ Unprevent malop process file
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Process.MD5 | string | Process file MD5 | 
-| Process.Prevent | boolean | True if process file is prevented, else false | 
+| Cybereason.Process.MD5 | string | Process file MD5 | 
+| Cybereason.Process.Prevent | boolean | True if process file is prevented, else false | 
 
 #### Command example
 ```!cybereason-unprevent-file md5=fc61fdcad5a9d52a01bd2d596f2c92b9```
@@ -890,9 +890,9 @@ Return a batch id for files waiting for download
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Download.progress.fileName | unknown | Filename for tha given malop | 
-| Download.progress.status | unknown | Status for batch ID | 
-| Download.progress.batchID | unknown | Unique batch id | 
+| Cybereason.Download.Progress.fileName | unknown | Filename for tha given malop | 
+| Cybereason.Download.Progress.status | unknown | Status for batch ID | 
+| Cybereason.Download.Progress.batchID | unknown | Unique batch id | 
 
 #### Command example
 ```!cybereason-fetchfile-progress malopGuid=<malop_id>```

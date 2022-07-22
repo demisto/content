@@ -18,4 +18,4 @@ if malop_incident:
     incident['id'] = malop_incident['id']
     demisto.executeCommand('setIncident', incident)
 
-demisto.results(res)
+CommandResults(raw_response=res)
