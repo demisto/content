@@ -1050,7 +1050,6 @@ class MsGraphClient:
                 if response.status_code not in (201, 200):
                     raise Exception(f'{response.json()}')
 
-            print()
         except Exception as e:
             demisto.error(f'{e}')
             raise e

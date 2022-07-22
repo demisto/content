@@ -870,7 +870,7 @@ class TestCommandsWithLargeAttachments:
 
                 send_email_command(client, args)
 
-                assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock, world_file=False)
+                assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock)
 
                 if '2' in args.get('attachIDs'):
                     assert create_draft_mail_mocker.last_request.json().get('attachments')
