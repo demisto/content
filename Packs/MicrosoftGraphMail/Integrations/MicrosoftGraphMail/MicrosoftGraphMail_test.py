@@ -841,12 +841,21 @@ class TestCommandsWithLargeAttachments:
             - sending a mail
 
         Then:
-            Case1: make sure the upload session was called with the correct headers according to file size
-            Case2: make sure the upload session was not called at all and that the attachment was added through the
-                regular send mail api endpoint.
-            Case3: make sure attachment 1 was called with upload session with the correct headers according
-                    to file size and that attachment 2 was added through the regular create draft api endpoint.
-            - Make sure for all three cases the expected context output is and that the right api calls were called.
+            Case1:
+             * make sure an upload session was created and that the correct headers were sent
+             * make sure the endpoint to send an email without creating draft mail was not called.
+             * make sure the endpoint to create a draft reply mail and send a draft mail were called.
+            Case2:
+             * make sure an upload session was not created
+             * make sure the endpoints to create a draft reply and send a draft reply were not called.
+             * make sure the endpoint to send an email was called.
+            Case3:
+             * make sure an upload session was created and that the correct headers were sent.
+             * make sure the endpoint to send an email without creating draft mail was not called.
+             * make sure the endpoint to create a draft email and send the draft mail were called.
+             * make sure the the attachment < 3mb was sent when creating a draft mail not through an upload session.
+
+            - Make sure for all three cases the expected context output is returned.
         """
         with requests_mock.Mocker() as request_mocker:
             from_email = args.get('from')
@@ -854,35 +863,43 @@ class TestCommandsWithLargeAttachments:
             mocker.patch.object(client.ms_client, 'get_access_token')
             mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
 
+            create_draft_mail_mocker = request_mocker.post(
+                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages', json={'id': mocked_draft_id}
+            )
+            send_draft_mail_mocker = request_mocker.post(  # mock the endpoint to send a draft mail
+                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{mocked_draft_id}/send'
+            )
+
+            send_mail_mocker = request_mocker.post(
+                f'https://graph.microsoft.com/v1.0/users/{from_email}/SendMail'
+            )
+
+            create_upload_mock = mocker.patch.object(
+                client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
+            )
+            upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
+
+            send_email_command(client, args)
+
             # attachment 1 is an attachment bigger than 3MB
             if '1' in args.get('attachIDs'):  # means the attachment should be created in the upload session
-                create_draft_mail_mocker = request_mocker.post(
-                    f'https://graph.microsoft.com/v1.0/users/{from_email}/messages', json={'id': mocked_draft_id}
-                )
-                request_mocker.post(  # mock the endpoint to send a draft mail
-                    f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{mocked_draft_id}/send'
-                )
-
-                create_upload_mock = mocker.patch.object(
-                    client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
-                )
-                upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
-
-                send_email_command(client, args)
-
+                assert create_draft_mail_mocker.called
+                assert send_draft_mail_mocker.called
+                assert not send_mail_mocker.called
                 assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock)
 
                 if '2' in args.get('attachIDs'):
                     assert create_draft_mail_mocker.last_request.json().get('attachments')
 
+                draft_sent_json = create_draft_mail_mocker.last_request.json()
+                assert draft_sent_json
+                assert draft_sent_json.get('toRecipients')
+                assert draft_sent_json.get('subject')
             else:
-                send_mail_mocker = request_mocker.post(
-                    f'https://graph.microsoft.com/v1.0/users/{from_email}/SendMail'
-                )
-
-                send_email_command(client, args)
-
+                assert not create_draft_mail_mocker.called
+                assert not send_draft_mail_mocker.called
                 assert send_mail_mocker.called
+
                 message = send_mail_mocker.last_request.json().get('message')
                 assert message
                 assert message.get('toRecipients')[0].get('emailAddress').get("address") == args.get('to')[0]
@@ -901,15 +918,23 @@ class TestCommandsWithLargeAttachments:
             Case 3: reply email command arguments and one attachment > 3m and one attachment < 3mb.
 
         When:
-            - sending a mail
+            - sending a reply mail
 
         Then:
-            Case1: make sure the upload session was called with the correct headers according to file size
-            Case2: make sure the upload session was not called at all and that the attachment was added through the
-                regular reply mail api endpoint.
-            Case3: make sure attachment 1 was called with upload session with the correct headers according
-                    to file size and that attachment 2 was added through the regular create draft api endpoint.
-            - Make sure for all three cases the expected context output is and that the right api calls were called.
+            Case1:
+             * make sure an upload session was created and that the correct headers were sent
+             * make sure the endpoint to send a reply without creating draft mail was not called.
+             * make sure the endpoint to create a draft reply mail and send a reply draft mail were called.
+            Case2:
+             * make sure an upload session was not created
+             * make sure the endpoints to create a draft reply and send a draft reply were not called.
+            Case3:
+             * make sure an upload session was created and that the correct headers were sent.
+             * make sure the endpoint to send a reply without creating draft mail was not called.
+             * make sure the endpoint to create a draft reply mail and send a reply draft mail were called.
+             * make sure the the attachment < 3mb was sent when creating a draft reply not through an upload session.
+
+            - Make sure for all three cases the expected context output is returned.
         """
         with requests_mock.Mocker() as request_mocker:
             from_email = args.get('from')
@@ -918,36 +943,43 @@ class TestCommandsWithLargeAttachments:
             mocker.patch.object(client.ms_client, 'get_access_token')
             mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
 
+            create_draft_mail_mocker = request_mocker.post(  # mock the endpoint to create a draft for an existing message
+                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{message_id}/createReply',
+                json={'id': mocked_draft_id}
+            )
+            send_reply_draft_mail_mocker = request_mocker.post(  # mock the endpoint to reply a draft mail
+                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{mocked_draft_id}/send'
+            )
+
+            create_upload_mock = mocker.patch.object(
+                client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
+            )
+            upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
+            reply_mail_mocker = request_mocker.post(
+                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{message_id}/reply'
+            )
+
+            command_results = reply_email_command(client, args)
+
             if '3' in args.get('attachIDs'):
-                create_draft_mail_mocker = request_mocker.post(
-                    f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{message_id}/createReply',
-                    json={'id': mocked_draft_id}
-                )
-                request_mocker.post(  # mock the endpoint to send a draft mail
-                    f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{mocked_draft_id}/send'
-                )
-
-                create_upload_mock = mocker.patch.object(
-                    client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
-                )
-                upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
-
-                reply_email_command(client, args)
-
+                assert create_draft_mail_mocker.called
+                assert send_reply_draft_mail_mocker.called  # sending the draft reply email should be called
+                assert not reply_mail_mocker.called
                 assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock, world_file=False)
 
                 if '4' in args.get('attachIDs'):
+                    # make sure when creating draft to send a reply that the attachments are being added to the api
+                    # call the create a draft and not through upload session
                     assert create_draft_mail_mocker.last_request.json().get('message').get('attachments')
             else:
-                send_mail_mocker = request_mocker.post(
-                    f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{message_id}/reply'
-                )
-                command_results = reply_email_command(client, args)
-                assert send_mail_mocker.called
-                assert command_results.outputs == {
-                    'toRecipients': ['ex@example.com'], 'subject': 'Re: test subject', 'bodyPreview': 'test body',
-                    'ID': '123'
-                }
+                assert reply_mail_mocker.called
+                assert not create_draft_mail_mocker.called
+                assert not create_upload_mock.called
+                assert not send_reply_draft_mail_mocker.called
+            assert command_results.outputs == {
+                'toRecipients': ['ex@example.com'], 'subject': 'Re: test subject', 'bodyPreview': 'test body',
+                'ID': '123'
+            }
 
     @pytest.mark.parametrize('client, args', SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
     def test_create_draft_email_command(self, mocker, client, args):
@@ -961,44 +993,53 @@ class TestCommandsWithLargeAttachments:
             creating a draft mail.
 
         Then:
-            Case1: make sure the upload session was called with the correct headers according to file size
-            Case2: make sure the upload session was not called at all and that the attachment was added through the
-                regular create draft api endpoint.
-            Case3: make sure attachment 1 was called with upload session with the corrrect headers according to file size
-                and that attachment 2 was added through the regular create draft api endpoint.
+            Case1:
+             * make sure an upload session was created and that the correct headers were sent
+             * make sure the endpoint to create a draft email was called.
+            Case2:
+             * make sure an upload session was not created
+             * make sure the endpoint to create a draft mail was called with the attachment.
+            Case3:
+             * make sure an upload session was created and that the correct headers were sent.
+             * make sure the endpoint to create a draft mail was called.
+             * make sure the the attachment < 3mb was sent when creating a draft reply not through an upload session
+
+            - Make sure for all three cases the expected context output is returned.
         """
         from MicrosoftGraphMail import create_draft_command
         import MicrosoftGraphMail
 
         with requests_mock.Mocker() as request_mocker:
             from_email = args.get('from')
-
             mocker.patch.object(client.ms_client, 'get_access_token')
             create_draft_mail_mocker = request_mocker.post(
                 f'https://graph.microsoft.com/v1.0/users/{from_email}/messages', json={'id': '123'}
             )
             mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
-            outputs_mocker = mocker.patch.object(MicrosoftGraphMail, 'return_outputs')
+            return_outputs_mocker = mocker.patch.object(MicrosoftGraphMail, 'return_outputs')
 
-            create_upload_mock, upload_query_mock = None, None
-
-            # attachment 1 is an attachment bigger than 3MB
-            if '1' in args.get('attachIDs'):  # means the attachment should be created in the upload session
-                create_upload_mock = mocker.patch.object(
-                    client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
-                )
-                upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
+            create_upload_mock = mocker.patch.object(
+                client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
+            )
+            upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
 
             create_draft_command(client, args)
 
-            if create_upload_mock and upload_query_mock:
+            # attachment 1 is an attachment bigger than 3MB
+            if '1' in args.get('attachIDs'):  # means the attachment should be created in the upload session
+                assert create_upload_mock.called
+                assert upload_query_mock.called
                 assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock)
+                if '2' in args.get('attachIDs'):
+                    assert create_draft_mail_mocker.last_request.json()['attachments']
 
-            assert outputs_mocker.call_args[0][1]['MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)']['ID'] == '123'
-            if '2' in args.get('attachIDs'):
+            else:
+                assert not create_upload_mock.called
+                assert not upload_query_mock.called
                 assert create_draft_mail_mocker.last_request.json()['attachments']
-            assert create_draft_mail_mocker.called
-            assert create_draft_mail_mocker.last_request.json()
+        assert return_outputs_mocker.call_args[0][1]['MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)']['ID'] == '123'
+        assert create_draft_mail_mocker.called
+        assert create_draft_mail_mocker.last_request.json()
 
 
 @pytest.mark.parametrize('server_url, expected_endpoint', [('https://graph.microsoft.us', 'gcc-high'),
