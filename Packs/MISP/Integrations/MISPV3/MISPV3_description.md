@@ -24,3 +24,7 @@ Note:
 
 ### Configuration parameters
 **NOTE**: If using version 6.0.2 or lower, put your API Key in the **Password** field, leave the **User** field empty.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/misp-v3)

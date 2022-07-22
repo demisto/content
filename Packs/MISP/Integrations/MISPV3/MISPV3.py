@@ -1,14 +1,17 @@
-# type: ignore
-from typing import Union, List, Dict
-from urllib.parse import urlparse
-import urllib3
-
-from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute
-from pymisp.tools import GenericObjectGenerator, EMailObject
 import copy
-from pymisp.tools import FileObject
+from typing import Dict, List, Union
+from urllib.parse import urlparse
 
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
+from pymisp import (ExpandedPyMISP, MISPAttribute, MISPEvent, MISPObject,
+                    MISPSighting, PyMISPError)
+from pymisp.tools import EMailObject, FileObject, GenericObjectGenerator
+
+register_module_line('MISP V3', 'start', __line__())
+# type: ignore
+
 
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
@@ -1121,11 +1124,12 @@ def add_tag(demisto_args: dict, is_attribute=False):
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
     is_local_tag = argToBoolean(demisto_args.get('is_local', False))
+    disable_output = demisto_args.get('disable_output')
     try:
         PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
     except PyMISPError:
         raise DemistoException("Adding the required tag was failed. Please make sure the UUID exists.")
-    if is_attribute:
+    if is_attribute and not disable_output:
         response = PYMISP.search(uuid=uuid, controller='attributes')
         human_readable = f'Tag {tag} has been successfully added to attribute {uuid}'
         return CommandResults(
@@ -1657,3 +1661,5 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
+
+register_module_line('MISP V3', 'end', __line__())

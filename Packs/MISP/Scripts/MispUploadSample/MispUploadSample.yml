@@ -1,0 +1,48 @@
+commonfields:
+  id: misp_upload_sample
+  version: -1
+name: misp_upload_sample
+script: ''
+type: python
+subtype: python2
+tags: []
+comment: Deprecated. No available replacement. Upload malicious file sample to MISP.
+enabled: true
+args:
+- name: fileEntryID
+  required: true
+  default: true
+  description: the entry ID of the file to upload
+- name: event_id
+  description: The Event's ID is optional. It can be either supplied via the URL or
+    the POSTed object, but the URL has priority if both are provided. Not supplying
+    an event ID will cause MISP to create a single new event for all of the POSTed
+    malware samples. You can define the default settings for the event, otherwise
+    a set of default settings will be used.
+- name: distribution
+  description: The distribution setting used for the attributes and for the newly
+    created event, if relevant. [0-3]
+- name: to_ids
+  description: You can flag all attributes created during the transaction to be marked
+    as "to_ids" or not.
+- name: category
+  description: 'The category that will be assigned to the uploaded samples. Valid
+    options are: Payload delivery, Artifacts dropped, Payload Installation, External
+    Analysis.'
+- name: info
+  description: Used to populate the event info field if no event ID supplied. Alternatively,
+    if not set, MISP will simply generate a message showing that it's a malware sample
+    collection generated on the given day.
+- name: analysis
+  description: 'The analysis level of the newly created event, if applicable. [0-2]
+    threat_level_id: The threat level ID of the newly created event, if applicatble.
+    [0-3]'
+- name: comment
+  description: This will populate the comment field of any attribute created using
+    this API.
+scripttarget: 0
+tests:
+- MISP V2 Test
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958
