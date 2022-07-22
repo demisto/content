@@ -651,7 +651,8 @@ SEND_MAIL_COMMAND_ARGS = [
             'body': "test body",
             'subject': "test subject",
             'replyTo': ["ex2@example.com", "ex3@example.com"],
-            'from': "ex1@example.com"        }
+            'from': "ex1@example.com"
+        }
     )
 ]
 
@@ -795,11 +796,11 @@ class TestCommandsWithLargeAttachments:
                 'name': 'plant.jpg'
             },
             '3': {
-                'path': f'test_data/computer_architecture.pdf',  # bigger than 3mb attachment
+                'path': 'test_data/computer_architecture.pdf',  # bigger than 3mb attachment
                 'name': 'computer_architecture.pdf'
             },
             '4': {
-                'path': f'test_data/sample.pdf',  # smaller than 3mb attachment
+                'path': 'test_data/sample.pdf',  # smaller than 3mb attachment
                 'name': 'sample-pdf'
             }
         }

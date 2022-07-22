@@ -955,17 +955,17 @@ class MsGraphClient:
             is_inline (bool): is the attachment inline, True if yes, False if not.
         """
         return self.ms_client.http_request(
-                'POST',
-                f'/users/{email}/messages/{draft_id}/attachments/createUploadSession',
-                json_data={
-                    'attachmentItem': {
-                        'attachmentType': 'file',
-                        'name': attachment_name,
-                        'size': attachment_size,
-                        'isInline': is_inline
-                    }
+            'POST',
+            f'/users/{email}/messages/{draft_id}/attachments/createUploadSession',
+            json_data={
+                'attachmentItem': {
+                    'attachmentType': 'file',
+                    'name': attachment_name,
+                    'size': attachment_size,
+                    'isInline': is_inline
                 }
-            )
+            }
+        )
 
     @staticmethod
     def upload_attachment(
@@ -1156,7 +1156,7 @@ def read_file(attach_id):
     try:
         file_info = demisto.getFilePath(attach_id)
         with open(file_info['path'], 'rb') as file_data:
-            file_data = file_data.read()
+            file_data = file_data.read()  # type: ignore[assignment]
             file_size = os.path.getsize(file_info['path'])
             return file_data, file_size, file_info['name']
     except Exception as e:
