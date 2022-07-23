@@ -38,13 +38,17 @@ class Client(object):
         self.tlp_color = params.get('tlp_color', "")
         self.initial_interval = arg_to_number(params.get('initial_interval', '1'))
         self.limit = arg_to_number(params.get('limit', ''))
+        self.verify_certificate = not argToBoolean(params.get('insecure', False))
+        self.proxy = argToBoolean(params.get('proxy', False))
 
         self.parsed_url = urlparse(self.discovery_service)
         self.client = create_client(
             self.parsed_url.netloc,
             use_https=True,
             discovery_path=self.parsed_url.path)
-        self.client.set_auth(username=self.username, password=self.password)
+        self.client.set_auth(username=self.username, password=self.password, verify_ssl=self.verify_certificate)
+        if self.proxy:
+            self.client.set_proxies(handle_proxy())
 
     def fetch(self, begin, end, collection):
         for block in self.client.poll(collection_name=collection, begin_date=begin, end_date=end):

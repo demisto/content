@@ -30,6 +30,17 @@ configuration:
   name: credentials
   type: 9
   required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  defaultvalue: 'false'
+  type: 8
+  additionalinfo:
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  defaultvalue: 'false'
+  type: 8
 - display: First fetch time
   name: initial_interval
   defaultvalue: '1'
