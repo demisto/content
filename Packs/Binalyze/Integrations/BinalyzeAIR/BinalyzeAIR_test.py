@@ -23,7 +23,7 @@ def test_connection_success(requests_mock: Any) -> None:
 
     mocked_command_result: str = test_connection(client)
     if mocked_command_result is expected_mocked_command_result:
-        assert expected_mocked_command_result
+        assert mocked_command_result == expected_mocked_command_result
 
 
 def test_connection_fail(requests_mock: Any) -> None:
@@ -47,7 +47,7 @@ def test_connection_fail(requests_mock: Any) -> None:
     mocked_command_result: str = test_connection(client)
 
     if mocked_command_result is expected_mocked_command_result:
-        assert expected_mocked_command_result
+        assert mocked_command_result == expected_mocked_command_result
 
 
 def test_air_acquire_command(requests_mock: Any) -> None:
