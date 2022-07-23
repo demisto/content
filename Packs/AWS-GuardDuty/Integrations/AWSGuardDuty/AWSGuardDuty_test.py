@@ -22,7 +22,7 @@ class Client:
 
 class AWSClient:
     @staticmethod
-    def aws_session(service, region, role_arn, role_session_name, role_session_duration):
+    def aws_session(service, region, roleArn, roleSessionName, roleSessionDuration):
         client = Client
         return client
 
