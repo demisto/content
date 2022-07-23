@@ -1,6 +1,6 @@
 ## Binalyze AIR Integration
 This integration allows you to use the Binalyze AIR's isolation and evidence collecting features easily.
- ---
+---
 
 Collect your forensics data under 10 minutes.
 This integration was integrated and tested with version 2.6.2 of Binalyze AIR

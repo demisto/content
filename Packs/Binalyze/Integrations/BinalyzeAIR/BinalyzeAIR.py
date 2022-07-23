@@ -83,9 +83,9 @@ def test_connection(client: Client) -> str:
     '''Command for test-connection'''
 
     result: Dict[str, Any] = client.test_connectivity()
-    status: Optional[bool] = result['initialized']
+    initialized: Optional[bool] = result['initialized']
 
-    if status is not None and status:
+    if initialized is True:
         return demisto.results('ok')
     else:
         return demisto.results('test connection failed')

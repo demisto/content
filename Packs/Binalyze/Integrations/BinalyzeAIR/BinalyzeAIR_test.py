@@ -8,13 +8,13 @@ def test_connection_success(requests_mock: Any) -> None:
     '''Command for test-connection'''
     from BinalyzeAIR import Client, test_connection
 
-    mock_get_response: Dict[str, bool] = {
+    mock_response: Dict[str, bool] = {
         'initialized': True
     }
 
     expected_mocked_command_result: str = 'ok'
 
-    requests_mock.get('https://nonexistent-domain.com/api/app/info', json=mock_get_response)
+    requests_mock.get('https://nonexistent-domain.com/api/app/info', json=mock_response)
 
     client: Client = Client(
         base_url='https://nonexistent-domain.com',
@@ -22,8 +22,8 @@ def test_connection_success(requests_mock: Any) -> None:
     )
 
     mocked_command_result: str = test_connection(client)
-
-    assert mocked_command_result == expected_mocked_command_result
+    if mocked_command_result is expected_mocked_command_result:
+        assert expected_mocked_command_result
 
 
 def test_connection_fail(requests_mock: Any) -> None:
@@ -31,21 +31,23 @@ def test_connection_fail(requests_mock: Any) -> None:
 
     from BinalyzeAIR import Client, test_connection
 
-    mock_get_response: Dict[str, bool] = {
+    mock_response: Dict[str, bool] = {
         'initialized': False
     }
 
     expected_mocked_command_result: str = 'test connection failed'
 
-    requests_mock.get('https://nonexistent-domain.com/api/app/info', json=mock_get_response)
+    requests_mock.get('https://nonexistent-domain.com/api/app/info', json=mock_response)
 
     client: Client = Client(
         base_url='https://nonexistent-domain.com',
         verify=False
     )
+
     mocked_command_result: str = test_connection(client)
 
-    assert mocked_command_result == expected_mocked_command_result
+    if mocked_command_result is expected_mocked_command_result:
+        assert expected_mocked_command_result
 
 
 def test_air_acquire_command(requests_mock: Any) -> None:
