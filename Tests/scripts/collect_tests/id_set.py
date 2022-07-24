@@ -45,11 +45,8 @@ class IdSet(DictFileBased):
         super().__init__(id_set_path, is_infrastructure=True)
         self.marketplace = marketplace
 
-        # Content items mentioned in the file
-        self.id_to_script = self._parse_items('scripts')
         self.id_to_integration = self._parse_items('integrations')
         self.id_to_test_playbook = self._parse_items('TestPlaybooks')
-        self.name_to_pack = {name: IdSetItem(None, value) for name, value in self['Packs'].items()}
 
         self.implemented_scripts_to_tests: dict[str, list] = defaultdict(list)
         self.implemented_playbooks_to_tests: dict[str, list] = defaultdict(list)
@@ -81,9 +78,6 @@ class IdSet(DictFileBased):
     def test_playbooks(self) -> Iterable[IdSetItem]:
         yield from self.id_to_test_playbook.values()
 
-    @property
-    def scripts(self) -> Iterable[IdSetItem]:  # todo remove if unused
-        yield from self.id_to_script.values()
 
     def _parse_items(self, key: str) -> dict[str, IdSetItem]:
         result: dict[str, IdSetItem] = {}
