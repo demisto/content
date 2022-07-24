@@ -232,7 +232,7 @@ TICKET_TYPE_TO_DISPLAY_ID = {
 ID_QUERY_MAPPER_KEY = "IDS"
 EQUAL_QUERY_MAPPER_KEY = "EQUAL"
 LIKE_QUERY_MAPPER_KEY = "LIKE"
-DEFAULT_MAX_FETCH  = 50
+DEFAULT_MAX_FETCH = 50
 DEFAULT_LIMIT = 50
 ALL_OPTION = "All"
 TOKEN_EXPIRE_TIME = 3600
@@ -295,6 +295,7 @@ class Client(BaseClient):
     """
     BmcITSM API Client
     """
+
     def __init__(self, server_url: str, username: str, password: str, verify: str, proxy: str):
         """initializing a client instance with authentication header"""
         super().__init__(base_url=urljoin(server_url, "api"), verify=verify, proxy=proxy)
@@ -1329,8 +1330,9 @@ def list_command(
         headerTransform=pascalToSpace,
     )
     if not outputs:
-        command_results= CommandResults(readable_output="No results were found for the given arguments.")
-    
+        command_results = CommandResults(
+            readable_output="No results were found for the given arguments.")
+
     command_results = CommandResults(
         outputs_prefix=outputs_prefix,
         outputs_key_field=outputs_key_field,
@@ -2635,7 +2637,9 @@ def validate_related_arguments_provided(**related_args):
     at_least_one_is_provided = any(related_args.values())
     at_least_one_is_not_provided = not all(related_args.values())
     if at_least_one_is_not_provided and at_least_one_is_provided:
-        raise ValueError(f"The arguments: {list(related_args.keys())} either all should all have value, or none should have value.")
+        raise ValueError(
+            f"The arguments: {list(related_args.keys())} either all should all have value,\
+                         or none should have value.")
 
 
 def extract_args_from_additional_fields_arg(additional_fields: str,
@@ -3529,7 +3533,7 @@ def main() -> None:
     username = credentials.get("identifier")
     password = credentials.get("password")
 
-    max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH ))
+    max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH))
     first_fetch = params.get("first_fetch")
     ticket_types = argToList(params.get("ticket_type"))
     ticket_statuses = argToList(params.get("ticket_status"))
