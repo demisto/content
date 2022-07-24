@@ -5439,14 +5439,10 @@
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated",
-<<<<<<< HEAD
-        "Github Event Collector": "XSIAM integration"
-=======
         "Alibaba Action Trail Event Collector": "XSIAM integration",
         "Salesforce Event Collector": "XSIAM integration",
         "Github Event Collector": "XSIAM integration",
         "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration"
->>>>>>> upstream/master
     },
     "nightly_integrations": [
         "Laline v2",
