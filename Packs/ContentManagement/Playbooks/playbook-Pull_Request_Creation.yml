@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: acfd42f6-59c1-488d-83d7-824177cc9114
+    taskid: 0df0e9ef-72b3-44f2-8f19-06c3fd3c452b
     type: start
     task:
-      id: acfd42f6-59c1-488d-83d7-824177cc9114
+      id: 0df0e9ef-72b3-44f2-8f19-06c3fd3c452b
       version: -1
       name: ''
       iscommand: false
@@ -35,12 +35,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '1':
     id: '1'
-    taskid: c6472ffd-daf3-4788-8c00-d13efa505396
+    taskid: 872db285-c994-46eb-83a8-be0223435b14
     type: regular
     task:
-      id: c6472ffd-daf3-4788-8c00-d13efa505396
+      id: 872db285-c994-46eb-83a8-be0223435b14
       version: -1
-      name: unzip pack
+      name: Unzip pack
       description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
@@ -71,12 +71,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '2':
     id: '2'
-    taskid: 13aedfd7-8b8c-42c2-84e9-7f1422d64960
+    taskid: 048a20fd-23e2-405c-859d-2f1478bdcf27
     type: regular
     task:
-      id: 13aedfd7-8b8c-42c2-84e9-7f1422d64960
+      id: 048a20fd-23e2-405c-859d-2f1478bdcf27
       version: -1
-      name: get master branch
+      name: Get master branch
       description: Gets a branch
       script: '|||GitHub-get-branch'
       type: regular
@@ -105,12 +105,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '3':
     id: '3'
-    taskid: bc1b3d0c-0f3c-4a34-8e90-f39fa83b3d2c
+    taskid: 66d7a680-e463-4213-89f3-56ecdc0192d5
     type: regular
     task:
-      id: bc1b3d0c-0f3c-4a34-8e90-f39fa83b3d2c
+      id: 66d7a680-e463-4213-89f3-56ecdc0192d5
       version: -1
-      name: create new branch
+      name: Create new branch
       description: Create a new branch.
       script: '|||GitHub-create-branch'
       type: regular
@@ -144,12 +144,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '6':
     id: '6'
-    taskid: deca1902-5f7c-41bc-87fa-1fa3e5ea9daf
+    taskid: 03c9ba92-bf92-4f3b-86b9-860fa1d593ed
     type: regular
     task:
-      id: deca1902-5f7c-41bc-87fa-1fa3e5ea9daf
+      id: 03c9ba92-bf92-4f3b-86b9-860fa1d593ed
       version: -1
-      name: commit files
+      name: Commit files
       scriptName: CommitFiles
       type: regular
       iscommand: false
@@ -194,12 +194,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '7':
     id: '7'
-    taskid: fb378c3d-713e-4f3f-8de8-803d2f647585
+    taskid: 7e56aec9-fd7e-481f-8501-d651dc54ee3e
     type: regular
     task:
-      id: fb378c3d-713e-4f3f-8de8-803d2f647585
+      id: 7e56aec9-fd7e-481f-8501-d651dc54ee3e
       version: -1
-      name: create pr
+      name: Create pull request
       description: Creates a new pull request.
       script: '|||GitHub-create-pull-request'
       type: regular
@@ -240,12 +240,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '8':
     id: '8'
-    taskid: 6f39f820-c121-440e-8dd6-56dc76eab174
+    taskid: 1c82996f-9710-452b-8904-52f8da3f1248
     type: regular
     task:
-      id: 6f39f820-c121-440e-8dd6-56dc76eab174
+      id: 1c82996f-9710-452b-8904-52f8da3f1248
       version: -1
-      name: request pr review
+      name: Request pr review
       description: Requests reviews from GitHub users for a given pull request.
       script: '|||GitHub-request-review'
       type: regular
@@ -281,12 +281,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '9':
     id: '9'
-    taskid: ab277443-9e45-45e7-81f3-986dbcc08c1a
+    taskid: 36622801-19de-4670-8fad-8b38fdf2a2ae
     type: condition
     task:
-      id: ab277443-9e45-45e7-81f3-986dbcc08c1a
+      id: 36622801-19de-4670-8fad-8b38fdf2a2ae
       version: -1
-      name: add reviewer?
+      name: Add reviewer?
       type: condition
       iscommand: false
       brand: ''
@@ -305,8 +305,7 @@ tasks:
             value:
               simple: incident.cicdreviewer
             iscontext: true
-          right:
-            value: {}
+          ignorecase: true
     view: |-
       {
         "position": {
@@ -323,12 +322,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '11':
     id: '11'
-    taskid: 97009d7b-6757-4b5c-8ef9-ce024d56d49d
+    taskid: 0178c6e3-648c-45ed-84eb-4b53c8085da9
     type: regular
     task:
-      id: 97009d7b-6757-4b5c-8ef9-ce024d56d49d
+      id: 0178c6e3-648c-45ed-84eb-4b53c8085da9
       version: -1
-      name: read metadata.json
+      name: Read metadata.json
       description: Load the contents of a file into context.
       scriptName: ReadFile
       type: regular
@@ -368,12 +367,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '12':
     id: '12'
-    taskid: fea4bef4-95df-4a18-8f1d-7eca2ed763ba
+    taskid: df7240c2-9714-482f-840b-3ab19670c4b0
     type: regular
     task:
-      id: fea4bef4-95df-4a18-8f1d-7eca2ed763ba
+      id: df7240c2-9714-482f-840b-3ab19670c4b0
       version: -1
-      name: set pack name
+      name: Set pack name
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -419,12 +418,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '18':
     id: '18'
-    taskid: d7098311-0d51-4fa6-80e2-5433cf789bf6
+    taskid: 3a5a8b59-c768-4023-844d-6b2463c15205
     type: regular
     task:
-      id: d7098311-0d51-4fa6-80e2-5433cf789bf6
+      id: 3a5a8b59-c768-4023-844d-6b2463c15205
       version: -1
-      name: get branch
+      name: Get branch
       description: Gets a branch
       script: '|||GitHub-get-branch'
       type: regular
@@ -455,12 +454,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '19':
     id: '19'
-    taskid: 54a8e98b-f9c2-44f3-888c-3207476cfd39
+    taskid: 3d1a1533-ee92-42e6-855f-28722076aa6e
     type: condition
     task:
-      id: 54a8e98b-f9c2-44f3-888c-3207476cfd39
+      id: 3d1a1533-ee92-42e6-855f-28722076aa6e
       version: -1
-      name: does branch exist?
+      name: Does branch exist?
       type: condition
       iscommand: false
       brand: ''
@@ -501,12 +500,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '20':
     id: '20'
-    taskid: ff3655e1-5824-493c-8d06-10c9b69ebe61
+    taskid: fe9e51f1-ea66-4b91-8478-a774c893cb24
     type: condition
     task:
-      id: ff3655e1-5824-493c-8d06-10c9b69ebe61
+      id: fe9e51f1-ea66-4b91-8478-a774c893cb24
       version: -1
-      name: does branch exist?
+      name: Does branch exist?
       type: condition
       iscommand: false
       brand: ''
@@ -547,12 +546,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '22':
     id: '22'
-    taskid: 0b4b2a96-b5ee-425f-85c5-ea90e661caf0
+    taskid: 6d3dbb9d-3418-4cb6-8357-bfb19e79b07d
     type: regular
     task:
-      id: 0b4b2a96-b5ee-425f-85c5-ea90e661caf0
+      id: 6d3dbb9d-3418-4cb6-8357-bfb19e79b07d
       version: -1
-      name: send slack notification
+      name: Send slack notification
       description: Sends a message to a user, group, or channel.
       script: '|||send-notification'
       type: regular
@@ -587,12 +586,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '23':
     id: '23'
-    taskid: 08d47ffb-c94d-4ae3-8e7a-3295dffa3a9c
+    taskid: 55ac3ca5-7ef9-4da4-81da-324511857aff
     type: regular
     task:
-      id: 08d47ffb-c94d-4ae3-8e7a-3295dffa3a9c
+      id: 55ac3ca5-7ef9-4da4-81da-324511857aff
       version: -1
-      name: get username
+      name: Get username
       description: commands.local.cmd.get.users
       script: Builtin|||getUsers
       type: regular
@@ -623,12 +622,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '25':
     id: '25'
-    taskid: a86fed66-807a-4f0c-8d97-0a3be051fe61
+    taskid: 66ac2423-fec7-4073-88fe-091142edb5f0
     type: regular
     task:
-      id: a86fed66-807a-4f0c-8d97-0a3be051fe61
+      id: 66ac2423-fec7-4073-88fe-091142edb5f0
       version: -1
-      name: set branch name
+      name: Set branch name
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -661,12 +660,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '26':
     id: '26'
-    taskid: e7887d98-475b-4024-81d8-47391fe3a614
+    taskid: 379d2bba-9789-4d02-8ef3-08dce9d58ae2
     type: condition
     task:
-      id: e7887d98-475b-4024-81d8-47391fe3a614
+      id: 379d2bba-9789-4d02-8ef3-08dce9d58ae2
       version: -1
-      name: is branch name given
+      name: Is branch name given
       type: condition
       iscommand: false
       brand: ''
@@ -685,8 +684,7 @@ tasks:
             value:
               simple: incident.cicdbranch
             iscontext: true
-          right:
-            value: {}
+          ignorecase: true
     view: |-
       {
         "position": {
@@ -703,12 +701,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '27':
     id: '27'
-    taskid: 4a84a785-2b31-4f50-8913-b54e081cd38c
+    taskid: 98c21ce5-a9b4-4c5a-898c-e2dcb4d11728
     type: regular
     task:
-      id: 4a84a785-2b31-4f50-8913-b54e081cd38c
+      id: 98c21ce5-a9b4-4c5a-898c-e2dcb4d11728
       version: -1
-      name: suggest branch name
+      name: Suggest branch name
       scriptName: SuggestBranchName
       type: regular
       iscommand: false
@@ -738,12 +736,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '28':
     id: '28'
-    taskid: 5a59ce35-9581-428b-897e-81d219a59d56
+    taskid: 931d170a-1202-40eb-850f-469e7cf5e237
     type: regular
     task:
-      id: 5a59ce35-9581-428b-897e-81d219a59d56
+      id: 931d170a-1202-40eb-850f-469e7cf5e237
       version: -1
-      name: set branch name
+      name: Set branch name
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -775,12 +773,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '29':
     id: '29'
-    taskid: c0b5b9fe-283a-4c9a-83f1-019de22d44b2
+    taskid: 33f2fca2-939e-478d-86e1-3697ddda087c
     type: condition
     task:
-      id: c0b5b9fe-283a-4c9a-83f1-019de22d44b2
+      id: 33f2fca2-939e-478d-86e1-3697ddda087c
       version: -1
-      name: is pr branch name given
+      name: Is pr branch name given
       type: condition
       iscommand: false
       brand: ''
@@ -799,8 +797,7 @@ tasks:
             value:
               simple: incident.cicdpullrequestbranch
             iscontext: true
-          right:
-            value: {}
+          ignorecase: true
     view: |-
       {
         "position": {
@@ -817,12 +814,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '30':
     id: '30'
-    taskid: ea209453-774d-4c4c-8a57-7e0671f8ac30
+    taskid: b9ac97c9-3ad9-4a82-8a20-079e1dd2ce52
     type: regular
     task:
-      id: ea209453-774d-4c4c-8a57-7e0671f8ac30
+      id: b9ac97c9-3ad9-4a82-8a20-079e1dd2ce52
       version: -1
-      name: set branch name
+      name: Set branch name
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -855,12 +852,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '31':
     id: '31'
-    taskid: 30656f57-8783-4c58-8938-d263d055b5c8
+    taskid: a35ad56b-69bd-4dc6-8ba5-83b9c9a02195
     type: regular
     task:
-      id: 30656f57-8783-4c58-8938-d263d055b5c8
+      id: a35ad56b-69bd-4dc6-8ba5-83b9c9a02195
       version: -1
-      name: get pull request
+      name: Get pull request
       description: Gets pull requests corresponding to the given branch name.
       script: '|||GitHub-list-branch-pull-requests'
       type: regular
@@ -890,12 +887,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '32':
     id: '32'
-    taskid: e047039a-d618-4f63-8542-cc04bbecd38e
+    taskid: 0db72216-efbb-4788-8298-b5c32682fc43
     type: regular
     task:
-      id: e047039a-d618-4f63-8542-cc04bbecd38e
+      id: 0db72216-efbb-4788-8298-b5c32682fc43
       version: -1
-      name: set incident fields values
+      name: Set incident fields values
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -934,12 +931,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '33':
     id: '33'
-    taskid: 624e16a8-5a4b-4396-8c29-479f61b37b1d
+    taskid: bd97a3d0-f71c-46e4-81e4-5a40106c76bf
     type: condition
     task:
-      id: 624e16a8-5a4b-4396-8c29-479f61b37b1d
+      id: bd97a3d0-f71c-46e4-81e4-5a40106c76bf
       version: -1
-      name: is Slack v2 enabled?
+      name: Is Slack v2 enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -972,12 +969,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '35':
     id: '35'
-    taskid: f4568374-6ddf-4019-8da2-b2fa3e28f1bb
+    taskid: 74a7e027-f7c1-4441-8ee8-6432af75ff48
     type: regular
     task:
-      id: f4568374-6ddf-4019-8da2-b2fa3e28f1bb
+      id: 74a7e027-f7c1-4441-8ee8-6432af75ff48
       version: -1
-      name: set SlackMessageText for update
+      name: Set SlackMessageText for update
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1010,12 +1007,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '36':
     id: '36'
-    taskid: f979ceb7-5c43-4e32-8418-766e9df46137
+    taskid: a962986e-4eb0-4dd2-80aa-f892bcecdf11
     type: regular
     task:
-      id: f979ceb7-5c43-4e32-8418-766e9df46137
+      id: a962986e-4eb0-4dd2-80aa-f892bcecdf11
       version: -1
-      name: set SlackMessageText for new pr
+      name: Set SlackMessageText for new pr
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1048,10 +1045,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '37':
     id: '37'
-    taskid: a4eb67a4-80c0-4aef-861a-7ec4691317f5
+    taskid: 91dd3db3-cd8a-4554-8a20-d814857e1d37
     type: title
     task:
-      id: a4eb67a4-80c0-4aef-861a-7ec4691317f5
+      id: 91dd3db3-cd8a-4554-8a20-d814857e1d37
       version: -1
       name: Set the branch name
       type: title
@@ -1078,10 +1075,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '38':
     id: '38'
-    taskid: eaab811d-0578-4c67-8eb0-17bbebbd5183
+    taskid: ce265056-3e17-4587-83fc-269664fd2f71
     type: title
     task:
-      id: eaab811d-0578-4c67-8eb0-17bbebbd5183
+      id: ce265056-3e17-4587-83fc-269664fd2f71
       version: -1
       name: Check if branch exists and create it if not
       type: title
@@ -1108,10 +1105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '39':
     id: '39'
-    taskid: b9eaae71-cefe-4bcc-813f-aebb7a6782c4
+    taskid: 59fc126e-bf00-485b-8ff9-b87d4526466f
     type: title
     task:
-      id: b9eaae71-cefe-4bcc-813f-aebb7a6782c4
+      id: 59fc126e-bf00-485b-8ff9-b87d4526466f
       version: -1
       name: Commit the files
       type: title
@@ -1138,10 +1135,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '40':
     id: '40'
-    taskid: ba159e74-3bb4-4805-8334-7677c4a399e1
+    taskid: 825399f7-505b-4ede-8991-bf697f8b74bd
     type: title
     task:
-      id: ba159e74-3bb4-4805-8334-7677c4a399e1
+      id: 825399f7-505b-4ede-8991-bf697f8b74bd
       version: -1
       name: Create new pull request
       type: title
@@ -1168,10 +1165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '41':
     id: '41'
-    taskid: 5296946a-8518-4efc-82db-33c3cd87df2f
+    taskid: f0b7d4c3-09c5-42f2-83b9-3780767c1f66
     type: title
     task:
-      id: 5296946a-8518-4efc-82db-33c3cd87df2f
+      id: f0b7d4c3-09c5-42f2-83b9-3780767c1f66
       version: -1
       name: Update existing pull request
       type: title
@@ -1198,10 +1195,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '42':
     id: '42'
-    taskid: d5a11993-e7a2-4af7-82ca-6b164a9b2ac8
+    taskid: 8fd2a38c-b745-4c41-861b-10e861310143
     type: title
     task:
-      id: d5a11993-e7a2-4af7-82ca-6b164a9b2ac8
+      id: 8fd2a38c-b745-4c41-861b-10e861310143
       version: -1
       name: send notification
       type: title
@@ -1228,10 +1225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '43':
     id: '43'
-    taskid: 89c732e1-e8fd-4950-83c5-654c744e6cc2
+    taskid: 0b2bbb6f-2ae7-4097-8448-4acfc7a06dfc
     type: title
     task:
-      id: 89c732e1-e8fd-4950-83c5-654c744e6cc2
+      id: 0b2bbb6f-2ae7-4097-8448-4acfc7a06dfc
       version: -1
       name: Done
       type: title
@@ -1255,12 +1252,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '44':
     id: '44'
-    taskid: cf736d16-d037-439c-8aa3-3fb9993022f3
+    taskid: 24eb1fef-65f4-43dd-86cb-2b6ab62569a9
     type: condition
     task:
-      id: cf736d16-d037-439c-8aa3-3fb9993022f3
+      id: 24eb1fef-65f4-43dd-86cb-2b6ab62569a9
       version: -1
-      name: is slack channel given
+      name: Is slack channel given?
       type: condition
       iscommand: false
       brand: ''
@@ -1279,13 +1276,12 @@ tasks:
             value:
               simple: inputs.SlackChannel
             iscontext: true
-          right:
-            value: {}
+          ignorecase: true
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 4595
+          "x": 590,
+          "y": 4600
         }
       }
     note: false
@@ -1297,12 +1293,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '45':
     id: '45'
-    taskid: a884a2b3-696d-4ac8-8c48-82c6fc5560b1
+    taskid: fc6416a6-f144-4b54-8306-0616f17a2e35
     type: regular
     task:
-      id: a884a2b3-696d-4ac8-8c48-82c6fc5560b1
+      id: fc6416a6-f144-4b54-8306-0616f17a2e35
       version: -1
-      name: create pr
+      name: Create pull request
       description: Creates a new pull request.
       script: '|||GitHub-create-pull-request'
       type: regular
@@ -1342,10 +1338,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '46':
     id: '46'
-    taskid: c27feab7-6990-4f44-8923-67f4dc7b136b
+    taskid: 370c87b3-ddce-4e29-86ba-4ef0f72052b8
     type: condition
     task:
-      id: c27feab7-6990-4f44-8923-67f4dc7b136b
+      id: 370c87b3-ddce-4e29-86ba-4ef0f72052b8
       version: -1
       name: Is Pull Request title empty?
       type: condition
@@ -1368,6 +1364,7 @@ tasks:
                 root: incident
                 accessor: cicdpullrequesttitle
             iscontext: true
+          ignorecase: true
     view: |-
       {
         "position": {
