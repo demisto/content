@@ -8,37 +8,20 @@ class PathManager:
     """
     Used for getting paths of various files and folders during the test collection process.
     """
-
-    ARTIFACTS_PATH = Path(getenv('ARTIFACTS_FOLDER', './artifacts'))
+    ARTIFACTS_PATH = Path(getenv('ARTIFACTS_PATH', 'artifacts'))
 
     def __init__(self, content_path: Path):
-        logging.info(f'Using content path: {content_path.resolve()}')
         self.content_path = content_path
+        logging.debug(f'PathManager uses {self.content_path.resolve()=}, {PathManager.ARTIFACTS_PATH.resolve()=}')
+
+        self.packs_path = self.content_path / 'Packs'
         self.excluded_files = _calculate_excluded_files(self.content_path)
 
-    @property
-    def packs_path(self):
-        return self.content_path / 'Packs'
-
-    @property
-    def id_set_path(self):
-        return self.content_path / 'Tests' / 'id_set.json'
-
-    @property
-    def conf_path(self):
-        return self.content_path / 'Tests' / 'conf.json'
-
-    @property
-    def output_tests_file(self):
-        return PathManager.ARTIFACTS_PATH / 'filter_file_new.txt'  # todo where should the output be?
-
-    @property
-    def output_packs_file(self):
-        return PathManager.ARTIFACTS_PATH / 'content_packs_to_install_new.txt'  # todo where should the output be?
-
-    @property
-    def output_machines_file(self):
-        return PathManager.ARTIFACTS_PATH / 'filter_envs.json'  # todo where should the output be?
+        self.id_set_path = PathManager.ARTIFACTS_PATH / 'id_set.json'
+        self.conf_path = PathManager.ARTIFACTS_PATH / 'conf.json'
+        self.output_tests_file = PathManager.ARTIFACTS_PATH / 'filter_file_new.txt'
+        self.output_packs_file = PathManager.ARTIFACTS_PATH / 'content_packs_to_install_new.txt'
+        self.output_machines_file = PathManager.ARTIFACTS_PATH / 'filter_envs_new.json'
 
 
 def _calculate_excluded_files(content_path: Path) -> set[Path]:

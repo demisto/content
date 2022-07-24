@@ -34,7 +34,10 @@ class CollectTestsMocker:
     """
 
     def __init__(self, content_path: Path):
-        self.path_manager = PathManager(Path(__file__).parent / content_path)
+        content_path = Path(__file__).parent / content_path
+        self.path_manager = PathManager(content_path)
+        self.path_manager.id_set_path = content_path / 'Tests' / 'id_set.json'
+        self.path_manager.conf_path = content_path / 'Tests' / 'conf.json'
         self.previous_path_manager = None
 
     def __enter__(self):
