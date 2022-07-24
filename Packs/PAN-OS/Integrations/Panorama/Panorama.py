@@ -714,7 +714,9 @@ def panorama_commit_command(args: dict):
             args_for_next_run={
                 'commit_job_id': job_id,
                 'description': commit_description,
-                'polling': argToBoolean(args.get('polling'))
+                'polling': argToBoolean(args.get('polling')),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
+                'timeout': arg_to_number(args.get('timeout'))
             },
             partial_result=CommandResults(
                 readable_output=f'Waiting for commit "{commit_description}" with job ID {job_id} to finish...'
