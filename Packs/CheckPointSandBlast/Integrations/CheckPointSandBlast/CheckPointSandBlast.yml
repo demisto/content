@@ -48,7 +48,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: xml, summary
-      description: Comma separated list of supported report formats.Note - Requesting for PDF and summary reports simultaneously is not supported.
+      description: Comma separated list of supported report formats. Note - Requesting for PDF and summary reports simultaneously is not supported.
       isArray: true
       name: reports
       predefined:
@@ -263,7 +263,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: xml, summary
-      description: Comma separated list of supported report formats.Note - Requesting for PDF and summary reports simultaneously is not supported.
+      description: Comma separated list of supported report formats. Note - Requesting for PDF and summary reports simultaneously is not supported.
       isArray: true
       name: reports
       predefined:
