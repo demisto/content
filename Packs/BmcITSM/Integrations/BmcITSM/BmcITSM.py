@@ -1332,14 +1332,14 @@ def list_command(
     if not outputs:
         command_results = CommandResults(
             readable_output="No results were found for the given arguments.")
-
-    command_results = CommandResults(
-        outputs_prefix=outputs_prefix,
-        outputs_key_field=outputs_key_field,
-        outputs=outputs,
-        raw_response=response,
-        readable_output=readable_output,
-    )
+    else:
+        command_results = CommandResults(
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
+            outputs=outputs,
+            raw_response=response,
+            readable_output=readable_output,
+        )
 
     return command_results
 
