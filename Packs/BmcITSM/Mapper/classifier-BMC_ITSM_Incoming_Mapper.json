@@ -229,13 +229,13 @@
                     "simple": "Urgency"
                 },
                 "dbotMirrorDirection": {
-                    "simple": "miror_direction"
+                    "simple": "mirror_direction"
                 },
                 "dbotMirrorId": {
                     "simple": "RequestID"
                 },
                 "dbotMirrorInstance": {
-                    "simple": "miror_instance"
+                    "simple": "mirror_instance"
                 },
                 "details": {
                     "simple": "Details"
