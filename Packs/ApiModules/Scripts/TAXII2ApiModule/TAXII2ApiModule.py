@@ -226,6 +226,7 @@ class Taxii2FeedClient:
         """
         Initializes the api roots (used to get taxii server objects)
         """
+        demisto.debug('In init_roots')
         if not self.server:
             self.init_server()
         try:
@@ -245,7 +246,10 @@ class Taxii2FeedClient:
             logging.disable(logging.NOTSET)
 
     def set_api_root(self):
-        roots_to_api = {str(api_root.url).split('/')[-2]: api_root for api_root in self.server.api_roots}
+        roots_to_api = {str(api_root.url).split('/')[-2]: api_root
+                        for api_root in self.server.api_roots}  # type: ignore[union-attr, attr-defined]
+        demisto.debug(f'In set_api_root start: {roots_to_api=} and {self.server.api_roots=}, '
+                      f'where {self.default_api_root=} and {self.server.default=}')
 
         if self.default_api_root:
             if not roots_to_api.get(self.default_api_root):
@@ -253,14 +257,15 @@ class Taxii2FeedClient:
                                        f'Available api roots are {roots_to_api}.')
             self.api_root = roots_to_api.get(self.default_api_root)  # type: ignore[union-attr, attr-defined]
 
-        elif self.server.default:
+        elif self.server.default:  # type: ignore[union-attr, attr-defined]
             self.api_root = self.server.default  # type: ignore[union-attr, attr-defined]
 
         else:
             self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
 
+        demisto.debug(f'In set_api_root end: {self.api_root=}')
         # override _conn - api_root isn't initialized with the right _conn
-        self.api_root._conn = self._conn  # type: ignore[attr-defined]
+        self.api_root._conn = self._conn  # type: ignore[union-attr, attr-defined]
 
     def init_collections(self):
         """
