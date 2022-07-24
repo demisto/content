@@ -9,7 +9,6 @@ from pymisp import (ExpandedPyMISP, MISPAttribute, MISPEvent, MISPObject,
                     MISPSighting, PyMISPError)
 from pymisp.tools import EMailObject, FileObject, GenericObjectGenerator
 
-register_module_line('MISP V3', 'start', __line__())
 # type: ignore
 
 
