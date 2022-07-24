@@ -1328,7 +1328,9 @@ def list_command(
         headers=headers or list(context_output_mapper.values()),
         headerTransform=pascalToSpace,
     )
-
+    if not outputs:
+        command_results= CommandResults(readable_output="No results were found for the given arguments.")
+    
     command_results = CommandResults(
         outputs_prefix=outputs_prefix,
         outputs_key_field=outputs_key_field,
