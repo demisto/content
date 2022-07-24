@@ -46,6 +46,26 @@ FEATURE_BY_NAME = {
     'Threat Extraction': 'extraction',
     'All': 'all'
 }
+QUOTA_HEADERS = [
+        'RemainQuotaHour',
+        'RemainQuotaMonth',
+        'AssignedQuotaHour',
+        'AssignedQuotaMonth',
+        'HourlyQuotaNextReset',
+        'MonthlyQuotaNextReset',
+        'QuotaId',
+        'CloudMonthlyQuotaPeriodStart',
+        'CloudMonthlyQuotaUsageForThisGw',
+        'CloudHourlyQuotaUsageForThisGw',
+        'CloudMonthlyQuotaUsageForQuotaId',
+        'CloudHourlyQuotaUsageForQuotaId',
+        'MonthlyExceededQuota',
+        'HourlyExceededQuota',
+        'CloudQuotaMaxAllowToExceedPercentage',
+        'PodTimeGmt',
+        'QuotaExpiration',
+        'Action',
+    ]
 
 
 ''' CLIENT CLASS '''
@@ -455,12 +475,11 @@ def quota_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     outputs = raw_outputs.get('response')[0]  # type:ignore
 
     output = get_quota_context_output(outputs)
-    headers = get_quota_headers()
 
     readable_output = tableToMarkdown(
         'Quota Information',
         output,
-        headers=headers,
+        headers=QUOTA_HEADERS,
         headerTransform=string_to_table_header,
         removeNull=True,
     )
