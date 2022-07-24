@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: 'ThousandEyes '
+  id: 'ThousandEyes'
   version: -1
 configuration:
 - display: Fetch incidents
