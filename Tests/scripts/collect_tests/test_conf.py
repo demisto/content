@@ -19,18 +19,15 @@ class TestConf(DictFileBased):
         self.integrations_to_tests: dict[str, list[str]] = self._calculate_integration_to_tests()
 
         # Attributes
-        self.skipped_tests: dict = self['skipped_tests']
+        self.skipped_tests: dict[str, str] = self['skipped_tests']
         self.skipped_integrations_dict: dict[str, str] = self['skipped_integrations']  # todo is used?
-        self.unmockable_integrations_dict: dict[str, str] = self['unmockable_integrations']  # todo is used?
-        self.nightly_integrations: list[str] = self['nightly_integrations']  # todo is used?
-        self.parallel_integrations: list[str] = self['parallel_integrations']  # todo is used?
-        self.private_tests: set[str] = set(self['private_tests'] or ())
+        self.private_tests: set[str] = set(self['private_tests'])
 
-        self.classifier_to_test = {
+        self.classifier_to_test: dict[TestConfItem:str] = {
             test.classifier: test.playbook_id
             for test in self.tests if test.classifier
         }
-        self.incoming_mapper_to_test = {
+        self.incoming_mapper_to_test: dict[TestConfItem:str] = {
             test.incoming_mapper: test.playbook_id
             for test in self.tests if test.incoming_mapper
         }
