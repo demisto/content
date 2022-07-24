@@ -82,7 +82,6 @@ class Client(BaseClient):
                 )
 
                 response_headers = response.headers
-                # org_rate_limit = response_headers.get('x-organization-rate-limit-limit')
                 org_rate_limit_remaining = response_headers.get('x-organization-rate-limit-remaining')
                 org_rate_limit_reset = response_headers.get('x-organization-rate-limit-reset')
 
