@@ -788,9 +788,6 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents_to_create)
 
-            # print(next_run)
-            # print(demisto.getLastRun())
-            # print(incidents_to_create)
 
         else:
             raise NotImplementedError(f"{command} is not an existing ThousandEyes command")
