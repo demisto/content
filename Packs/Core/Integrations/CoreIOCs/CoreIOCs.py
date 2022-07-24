@@ -8,6 +8,7 @@ from typing import Dict, Optional, List, Tuple, Union
 from dateparser import parse
 from urllib3 import disable_warnings
 from math import ceil
+from gcloud import storage
 
 
 disable_warnings()
@@ -247,6 +248,7 @@ def sync(client: Client):
         create_file_sync(temp_file_path)
         requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
         path: str = 'sync_tim_iocs'
+        upload_file_to_bucket(temp_file_path)
         client.http_request(path, requests_kwargs)
     finally:
         os.remove(temp_file_path)
@@ -424,6 +426,19 @@ def get_sync_file():
             return_results(fileResult('core-sync-file', _tmpfile.read()))
     finally:
         os.remove(temp_file_path)
+
+
+def upload_file_to_bucket(file):
+    print("GOT TO upload_file_to_bucket")
+    print(file)
+    gcpconf_project_id = demisto.getLicenseCustomField("Core.gcpconf_project_id")
+    print(gcpconf_project_id)
+    gcpconf_papi_bucket = demisto.getLicenseCustomField("Core.gcpconf_papi_bucket")
+    print(gcpconf_papi_bucket)
+    client = storage.Client(project=gcpconf_project_id)
+    bucket = client.get_bucket(gcpconf_papi_bucket)
+    blob = bucket.blob(file)
+    blob.upload_from_filename(file)
 
 
 def main():
