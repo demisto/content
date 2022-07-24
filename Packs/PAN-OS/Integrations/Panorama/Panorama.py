@@ -140,7 +140,6 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'music',
     'newly-registered-domain',
     'news',
-    'not-resolved',
     'nudity',
     'online-storage-and-backup',
     'parked',
@@ -173,6 +172,9 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'web-advertisements',
     'web-hosting',
     'web-based-email',
+    'high-risk',
+    'medium-risk',
+    'low-risk'
 }
 
 class PAN_OS_Not_Found(Exception):
@@ -2568,7 +2570,8 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
         err_readable_output = None
         try:
             categories = panorama_get_url_category(url_cmd, url, target)
-
+            max_url_dbot_score = 0
+            url_dbot_score_category = ''
             for category in categories:
                 if category in categories_dict:
                     categories_dict[category].append(url)
@@ -2579,24 +2582,29 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
                 context_urls = populate_url_filter_category_from_context(category)
                 categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-                score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
+                current_dbot_score = calculate_dbot_score(
+                    category.lower(), additional_suspicious, additional_malicious
+                )
+                if current_dbot_score > max_url_dbot_score:
+                    max_url_dbot_score = current_dbot_score
+                    url_dbot_score_category = category
 
-                dbot_score = Common.DBotScore(
-                    indicator=url,
-                    indicator_type=DBotScoreType.URL,
-                    integration_name='PAN-OS',
-                    score=score
-                )
-                url_obj = Common.URL(
-                    url=url,
-                    dbot_score=dbot_score,
-                    category=category
-                )
-                readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
-                command_results.append(CommandResults(
-                    indicator=url_obj,
-                    readable_output=readable_output
-                ))
+            dbot_score = Common.DBotScore(
+                indicator=url,
+                indicator_type=DBotScoreType.URL,
+                integration_name='PAN-OS',
+                score=max_url_dbot_score
+            )
+            url_obj = Common.URL(
+                url=url,
+                dbot_score=dbot_score,
+                category=url_dbot_score_category
+            )
+            readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
+            command_results.append(CommandResults(
+                indicator=url_obj,
+                readable_output=readable_output
+            ))
         except InvalidUrlLengthException as e:
             score = 0
             category = None
@@ -4388,15 +4396,13 @@ def panorama_query_traffic_logs_command(args: dict):
 
 
 @logger
-def panorama_get_traffic_logs(job_id: str, target: Optional[str] = None):
+def panorama_get_traffic_logs(job_id: str):
     params = {
         'action': 'get',
         'type': 'log',
         'job-id': job_id,
         'key': API_KEY
     }
-    if target:
-        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -4840,9 +4846,8 @@ def prettify_logs(logs: Union[list, dict]):
 def panorama_get_logs_command(args: dict):
     ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
     job_ids = argToList(args.get('job_id'))
-    target = args.get('target', None)
     for job_id in job_ids:
-        result = panorama_get_traffic_logs(job_id, target)
+        result = panorama_get_traffic_logs(job_id)
         log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
         if isinstance(log_type_dt, list):
             log_type = log_type_dt[0]
@@ -11217,7 +11222,7 @@ def main():
             panorama_query_logs_command(args)
 
         elif command == 'panorama-check-logs-status' or command == 'pan-os-check-logs-status':
-            panorama_check_logs_status_command(args)
+            panorama_check_logs_status_command(args.get('job_id'))
 
         elif command == 'panorama-get-logs' or command == 'pan-os-get-logs':
             panorama_get_logs_command(args)

@@ -1136,6 +1136,7 @@ Replies to an email using Graph Mail.
 | attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional |
 | from | Email address of the sender. | Optional |
+| replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional |
 
 
 #### Context Output
@@ -1149,6 +1150,7 @@ Replies to an email using Graph Mail.
 | MicrosoftGraph.SentMail.ccRecipients | String | The CC recipients of the email. |
 | MicrosoftGraph.SentMail.bccRecipients | String | The BCC recipients of the email. |
 | MicrosoftGraph.SentMail.ID | String | The immutable ID of the message. |
+| MicrosoftGraph.SentMail.replyTo | String | The replyTo recipients of the email. |
 
 
 #### Command Example

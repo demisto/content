@@ -1207,6 +1207,12 @@ script:
       name: from
       required: false
       secret: false
+    - default: false
+      description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
+      isArray: true
+      name: replyTo
+      required: false
+      secret: false
     deprecated: false
     description: Replies to an email using Graph Mail.
     execution: false
@@ -1232,6 +1238,9 @@ script:
       type: String
     - contextPath: MicrosoftGraph.SentMail.ID
       description: The immutable ID of the message.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.replyTo
+      description: The replyTo recipients of the email.
       type: String
   dockerimage: demisto/crypto:1.0.0.31715
   feed: false
