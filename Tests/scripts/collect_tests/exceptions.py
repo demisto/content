@@ -60,3 +60,24 @@ class NothingToCollectException(Exception):
     def __init__(self, path: Path, reason: str):
         self.message = f'Not collecting tests or packs for {str(path)}, {reason=}'
         super().__init__(self.message)
+
+
+class InvalidTestException(Exception):
+    def __init__(self, test_name: str, reason: str):
+        self.message = f'invalid test {test_name}: {reason}'
+
+
+class TestMissingFromIdSetException(Exception):
+    def __init__(self, test_name: str):
+        self.message = f'Test {test_name} is missing from the id-set'
+        super().__init__(self.message)
+
+
+class SkippedTestException(InvalidTestException):
+    def __init__(self, test_name: str, skip_reason: str):
+        super().__init__(test_name, f'Test {test_name} is skipped, {skip_reason=}')
+
+
+class PrivateTestException(InvalidTestException):
+    def __init__(self, test_name: str):
+        super().__init__(test_name, f'Test {test_name} is private')

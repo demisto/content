@@ -2,6 +2,7 @@ import os
 import sys
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
+from configparser import ConfigParser, MissingSectionHeaderError
 from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional
@@ -15,7 +16,8 @@ from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
 from exceptions import (DeprecatedPackException, EmptyMachineListException,
                         NonDictException, NoTestsConfiguredException,
                         NothingToCollectException, NotUnderPackException,
-                        SkippedPackException, UnsupportedPackException)
+                        SkippedPackException, UnsupportedPackException, SkippedTestException, PrivateTestException,
+                        InvalidTestException)
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
@@ -55,6 +57,8 @@ class CollectionResult:
             version_range: Optional[VersionRange],
             reason_description: str,
             conf: Optional[TestConf],
+            id_set: Optional[IdSet],
+            is_sanity: bool = False,
     ):
         """
         Collected test playbook, and/or pack to install.
@@ -69,41 +73,90 @@ class CollectionResult:
         :param version_range: XSOAR versions on which the content should be tested, matching the from/toversion fields.
         :param reason_description: free text elaborating on the collection, e.g. path of the changed file.
         :param conf: a ConfJson object. It may be None only when reason==DUMMY_OBJECT_FOR_COMBINING.
+        :param id_set: an IdSet object. It may be None only when reason==DUMMY_OBJECT_FOR_COMBINING.
+        :param is_sanity: whether the test is a sanity test. Sanity tests do not have to be in the id_set.
         """
         self.tests: set[str] = set()
         self.packs: set[str] = set()
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: Optional[Iterable[Machine]] = None
 
-        if reason != CollectionReason.DUMMY_OBJECT_FOR_COMBINING:
-            if not conf:
-                # may be None only when reason==DUMMY_OBJECT_FOR_COMBINING
-                raise ValueError('no conf.json was provided')
+        try:
+            self._validate_args(pack, test, reason, reason_description, conf, id_set, is_sanity)  # raises if invalid
 
-            if not any((pack, test)):
-                logger.warning('neither pack nor test were provided')
+        except (InvalidTestException, SkippedPackException, DeprecatedPackException, UnsupportedPackException) as e:
+            logger.warning(str(e))
+            return
 
         if test:
-            # precedes the pack collection, as a skipped test may cause return and stop initialization.
-            if skip_reason := conf.skipped_tests.get(test):
-                logger.info(f'ignoring skipped {test=}, {skip_reason=}'
-                            f' (overriding collection {reason=} {reason_description})')
-                return
             self.tests = {test}
+            logger.info(f'collected {test=}, {reason} {reason_description}')
 
         if pack:
-            try:
-                PACK_MANAGER.validate_pack(pack)
-            except (SkippedPackException, DeprecatedPackException, UnsupportedPackException) as e:
-                logger.info(e.message)
-
             self.packs = {pack}
             logger.info(f'collected {pack=}, {reason} {reason_description}')
 
     @staticmethod
+    def _is_ignored_pack_ignore(test: str, id_set: IdSet):  # todo better place for this?
+        pack_path = find_pack_folder(Path(id_set.id_to_test_playbook[test].file_path))
+        pack_ignore_path = pack_path / '.pack_ignore'
+        _ = {}
+        try:
+            config = ConfigParser(allow_no_value=True)
+            config.read(pack_ignore_path)
+
+            for section in filter(lambda s: s.startswith('file:'), config.sections()):
+                # given section is of type file
+                file_name: str = section[5:]
+                for key in filter(lambda k: k == 'ignore', config[section]):
+                    # group ignore codes to a list
+                    _[file_name] = str(config[section][key]).split(',')
+        except MissingSectionHeaderError:
+            return False
+
+    @staticmethod
+    def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason,
+                       reason_description: str, conf: Optional[TestConf], id_set: Optional[IdSet], is_sanity: bool):
+        """
+        Validates the arguments of the constructor.
+        """
+        if reason != CollectionReason.DUMMY_OBJECT_FOR_COMBINING:
+            for (arg, arg_name) in ((conf, 'conf.json'), (id_set, 'id_set')):
+                if not arg:
+                    # may be None only when reason==DUMMY_OBJECT_FOR_COMBINING
+                    raise ValueError(f'no {arg_name} was provided')
+
+            if not any((pack, test)):
+                # may always be none, but _should_ not be none unless reason==DUMMY_OBJECT_FOR_COMBINING
+                logger.warning('neither pack nor test were provided')
+
+        if test:
+            if not is_sanity:  # sanity tests do not show in the id_set
+                if test not in id_set.id_to_test_playbook:
+                    raise InvalidTestException(test, 'missing from id-set')
+
+                if CollectionResult._is_ignored_pack_ignore(test, id_set):
+                    raise SkippedTestException(test, 'skipped in .pack_ignore')
+
+            if skip_reason := conf.skipped_tests.get(test):
+                logger.info(f'ignoring skipped {test=}, {skip_reason=}'
+                            f' (overriding collection {reason=} {reason_description})')
+                raise SkippedTestException(test, skip_reason)
+
+            if test in conf.private_tests:
+                logger.info(f'ignoring private {test=} (overriding collection {reason=} {reason_description})')
+                raise PrivateTestException(test)
+
+        if pack:
+            PACK_MANAGER.validate_pack(pack)
+
+    @staticmethod
     def __empty_result() -> 'CollectionResult':
         # used for combining two CollectionResult objects
-        return CollectionResult(None, None, CollectionReason.DUMMY_OBJECT_FOR_COMBINING, None, '', None)
+        return CollectionResult(
+            test=None, pack=None, reason=CollectionReason.DUMMY_OBJECT_FOR_COMBINING, version_range=None,
+            reason_description='', conf=None, id_set=None
+        )
 
     def __add__(self, other: 'CollectionResult') -> 'CollectionResult':
         # initial object just to add others to
@@ -144,7 +197,7 @@ class TestCollector(ABC):
         return CollectionResult.union(tuple(
             CollectionResult(test=test, pack=None, reason=CollectionReason.SANITY_TESTS,
                              version_range=None, reason_description=str(self.marketplace.value),
-                             conf=self.conf)
+                             conf=self.conf, id_set=self.id_set, is_sanity=True)
             for test in test_names)
         )
 
@@ -189,7 +242,8 @@ class TestCollector(ABC):
             reason=reason,
             version_range=PACK_MANAGER[pack_name].version_range,
             reason_description=reason_description,
-            conf=self.conf
+            conf=self.conf,
+            id_set=self.id_set,
         )
 
 
@@ -299,7 +353,8 @@ class BranchTestCollector(TestCollector):
                         reason=reason,
                         version_range=yml.version_range,
                         reason_description=f'{yml.id_=} ({relative_yml_path})',
-                        conf=self.conf
+                        conf=self.conf,
+                        id_set=self.id_set,
                     )
                     for test in tests
                 ))
@@ -370,7 +425,7 @@ class BranchTestCollector(TestCollector):
                                                              reason=reason,
                                                              version_range=content_item.version_range,
                                                              reason_description=reason_description,
-                                                             conf=self.conf) for test in
+                                                             conf=self.conf, id_set=self.id_set) for test in
                                             tests))
 
     def _get_changed_files(self) -> tuple[str, ...]:
@@ -439,7 +494,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
                     reason_description=f'({self.marketplace.value})',
                     version_range=playbook.version_range,
-                    conf=self.conf)
+                    conf=self.conf, id_set=self.id_set)
                 )
 
         if not collected:
@@ -474,7 +529,7 @@ class NightlyTestCollector(TestCollector, ABC):
         return CollectionResult.union(
             tuple(CollectionResult(test=None, pack=pack, reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
                                    version_range=None, reason_description=f'({self.marketplace.value})',
-                                   conf=self.conf)
+                                   conf=self.conf, id_set=self.id_set)
                   for pack in packs)
         )
 
@@ -509,7 +564,8 @@ class NightlyTestCollector(TestCollector, ABC):
                             reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
                             version_range=item.version_range or pack.version_range,
                             reason_description=f'{str(relative_path)}, ({self.marketplace.value})',
-                            conf=self.conf
+                            conf=self.conf,
+                            id_set=self.id_set,
                         )
                     )
 

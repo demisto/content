@@ -105,6 +105,9 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
 
         assert False, description
 
+    if collected is None:
+        assert False, 'should have collected something'
+
     if expected_tests is not None:
         assert collected.tests == set(expected_tests)
     if expected_packs is not None:

@@ -24,7 +24,7 @@ class TestConf(DictFileBased):
         self.unmockable_integrations_dict: dict[str, str] = self['unmockable_integrations']  # todo is used?
         self.nightly_integrations: list[str] = self['nightly_integrations']  # todo is used?
         self.parallel_integrations: list[str] = self['parallel_integrations']  # todo is used?
-        self.private_tests: list[str] = self['private_tests']  # todo is used?
+        self.private_tests: set[str] = set(self['private_tests'] or ())
 
         self.classifier_to_test = {
             test.classifier: test.playbook_id
