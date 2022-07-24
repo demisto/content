@@ -6,9 +6,6 @@
         "BMC Change-Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "CloseReason": {
-                    "simple": "closeNotes"
-                },
                 "Details": {
                     "simple": "details"
                 },
@@ -38,9 +35,6 @@
         "BMC Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "CloseReason": {
-                    "simple": "closeNotes"
-                },
                 "Details": {
                     "simple": "details"
                 },
@@ -67,9 +61,6 @@
         "BMC Problem Investigation incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "CloseReason": {
-                    "simple": "closeNotes"
-                },
                 "Details": {
                     "simple": "details"
                 },
@@ -96,9 +87,6 @@
         "BMC Problem – Known Error": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "CloseReason": {
-                    "simple": "closeNotes"
-                },
                 "Details": {
                     "simple": "details"
                 },
@@ -125,9 +113,6 @@
         "BMC Service Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "CloseReason": {
-                    "simple": "closeNotes"
-                },
                 "Details": {
                     "simple": "details"
                 },
@@ -151,9 +136,6 @@
         "BMC Task": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "CloseReason": {
-                    "simple": "closeNotes"
-                },
                 "Details": {
                     "simple": "details"
                 },
@@ -171,6 +153,14 @@
                 },
                 "Urgency": {
                     "simple": "sourceurgency"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CloseReason": {
+                    "simple": "closeNotes"
                 }
             }
         }
