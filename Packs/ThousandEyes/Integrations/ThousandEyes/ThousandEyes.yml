@@ -7,9 +7,10 @@ configuration:
   name: base_url
   required: true
   type: 0
-- display: ""
+- display: "API Token"
   name: credentials
   required: true
+  hiddenusername: true
   type: 9
 - display: Fetch incidents
   name: isFetch
