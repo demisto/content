@@ -16,7 +16,7 @@ from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
 from exceptions import (DeprecatedPackException, EmptyMachineListException,
                         NonDictException, NoTestsConfiguredException,
                         NothingToCollectException, NotUnderPackException,
-                        SkippedPackException, UnsupportedPackException)
+                        SkippedPackException, UnsupportedPackException, SkippedTestException)
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
@@ -31,7 +31,7 @@ PATHS = PathManager(Path(__file__).absolute().parents[3])
 PACK_MANAGER = PackManager(PATHS)
 
 
-class CollectionReason(Enum):
+class CollectionReason(str, Enum):
     ID_SET_MARKETPLACE_VERSION = 'id_set marketplace version'
     PACK_MARKETPLACE_VERSION_VALUE = 'marketplace version of pack'
     CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE = 'marketplace version of contained item'
@@ -51,14 +51,26 @@ class CollectedTests:
     def __init__(
             self,
             tests: Optional[tuple[Optional[str], ...]],
-            packs: tuple[Optional[str], ...],
+            packs: Optional[tuple[Optional[str], ...]],
             reason: CollectionReason,
             version_range: Optional[VersionRange],
             reason_description: str,
+            skipped_tests: dict[str, str]
     ):
+        """
+        Collected test playbooks, and packs to install.
+        NOTE: the packs and tests arguments must be equal in length (unless one is None).
 
+        :param tests: test playbook ids
+        :param packs: pack names to install
+        :param reason: CollectionReason explaining the collection
+        :param version_range: XSOAR versions on which the content should be tested, matching the from/toversion fields.
+        :param reason_description: free text elaborating on the collection, e.g. path of the changed file.
+        :param skipped_tests: conf.json dictionary mapping skipped tests to their skip reason.
+        """
         self.tests: set[str] = set()  # only updated on init
         self.packs: set[str] = set()  # only updated on init
+
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: Optional[Iterable[Machine]] = None
 
@@ -72,17 +84,21 @@ class CollectedTests:
             if len(tests) != len(packs):
                 raise ValueError(f'when both are not empty, {len(tests)=} must be equal to {len(packs)=}')
 
-            tests = tuple(tests)
-            packs = tuple(packs)
-
         elif tests and not packs:
             packs = (None,) * len(tests)  # so accessors get a None
         elif packs and not tests:
             tests = (None,) * len(packs)  # so accessors get a None
 
-        if tests:
-            for i in range(len(tests)):
-                self._add_single(tests[i], packs[i], reason, reason_description)
+        filtered_out_skipped = set(tests).intersection(skipped_tests)
+
+        for i, test in enumerate(tests):
+            if test and (test in filtered_out_skipped):
+                skip_reason = skipped_tests[test]
+                logger.info(f'ignoring skipped test {test}, skip reason = {reason}'
+                            f' (overriding collection reason {skip_reason} {reason_description})')
+                continue
+
+            self._add_single(tests[i], packs[i], reason, reason_description)
 
     def __add__(self, other: 'CollectedTests') -> 'CollectedTests':
         return CollectedTests(
@@ -91,6 +107,7 @@ class CollectedTests:
             version_range=self.version_range | other.version_range if self.version_range else other.version_range,
             reason=CollectionReason.COMBINING_COLLECTED_TESTS,
             reason_description='',
+            skipped_tests=dict()  # combining existing CollectedTest objects imply none of them were skipped
         )
 
     @staticmethod
@@ -117,7 +134,7 @@ class CollectedTests:
         if test:
             self.tests.add(test)
             if reason != CollectionReason.COMBINING_COLLECTED_TESTS:  # to avoid excessive logs
-                logger.info(f'collected {test:}, {reason.value} {description}')
+                logger.info(f'collected {test:}, {reason} {description}')
 
         if pack:
             try:
@@ -127,7 +144,7 @@ class CollectedTests:
 
             self.packs.add(pack)
             if reason != CollectionReason.COMBINING_COLLECTED_TESTS:  # to avoid excessive logs
-                logger.info(f'collected {pack=}, {reason.value} {description}')
+                logger.info(f'collected {pack=}, {reason} {description}')
 
     def __repr__(self):
         return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'
@@ -158,6 +175,7 @@ class TestCollector(ABC):
             reason=CollectionReason.SANITY_TESTS,
             version_range=None,
             reason_description=str(self.marketplace.value),
+            skipped_tests=self.conf.skipped_tests
         )
 
     @abstractmethod
@@ -198,7 +216,12 @@ class TestCollector(ABC):
             reason=reason,
             version_range=PACK_MANAGER[pack_name].version_range,
             reason_description=reason_description,
+            skipped_tests=dict()  # not collecting any tests anyway
         )
+
+    def _validate_not_skipped(self, id_: str):
+        if id_ in self.conf.skipped_tests:
+            raise SkippedTestException(id_)
 
 
 class BranchTestCollector(TestCollector):
@@ -305,7 +328,8 @@ class BranchTestCollector(TestCollector):
                         packs=yml.pack_id_tuple,
                         reason=reason,
                         version_range=yml.version_range,
-                        reason_description=f'{yml.id_=} ({relative_yml_path})'
+                        reason_description=f'{yml.id_=} ({relative_yml_path})',
+                        skipped_tests=self.conf.skipped_tests
                     )
                     for test in tests
                 ))
@@ -371,13 +395,22 @@ class BranchTestCollector(TestCollector):
         if not content_item:
             raise RuntimeError(f'failed collecting {path} for an unknown reason')
 
-        return CollectedTests(
-            tests=tests,
-            packs=content_item.pack_id_tuple,
-            reason=reason,
-            version_range=content_item.version_range,
-            reason_description=reason_description,
-        )
+        collected = []
+        for test in tests:
+            try:
+                self._validate_not_skipped(test)
+                collected.append(CollectedTests(
+                    tests=tests,
+                    packs=content_item.pack_id_tuple,
+                    reason=reason,
+                    version_range=content_item.version_range,
+                    reason_description=reason_description,
+                    skipped_tests=self.conf.skipped_tests
+                ))
+            except SkippedTestException:
+                logger.info(f'{test} is a skipped test')
+
+        return CollectedTests.union(tuple(collected))
 
     def _get_changed_files(self) -> tuple[str, ...]:
         contrib_diff = None  # overridden on contribution branches, added to the git diff.
@@ -406,7 +439,7 @@ class BranchTestCollector(TestCollector):
             logger.debug('adding contrib_diff to diff')
             diff = f'{diff}\n{contrib_diff}'
 
-        # diff is formatted as `M  foo.json\n A  bar.py`, turning it into ('foo.json', 'bar.py').
+        # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
         return tuple((value.split()[1] for value in filter(None, diff.split('\n'))))
 
 
@@ -440,10 +473,13 @@ class NightlyTestCollector(TestCollector, ABC):
                 continue
 
             if self.marketplace in playbook_marketplaces:
-                collected.append(CollectedTests(tests=(playbook.id_,), packs=playbook.pack_id_tuple,
-                                                reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
-                                                reason_description=f'({self.marketplace.value})',
-                                                version_range=playbook.version_range))
+                collected.append(CollectedTests(
+                    tests=(playbook.id_,), packs=playbook.pack_id_tuple,
+                    reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
+                    reason_description=f'({self.marketplace.value})',
+                    version_range=playbook.version_range,
+                    skipped_tests=self.conf.skipped_tests)
+                )
 
         if not collected:
             logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
@@ -475,7 +511,8 @@ class NightlyTestCollector(TestCollector, ABC):
             return None
 
         return CollectedTests(tests=None, packs=tuple(packs), reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
-                              version_range=None, reason_description=f'({self.marketplace.value})')
+                              version_range=None, reason_description=f'({self.marketplace.value})',
+                              skipped_tests=self.conf.skipped_tests)
 
     def _packs_of_content_matching_marketplace_value(self, only_value: bool) -> Optional[CollectedTests]:
         """
@@ -507,7 +544,8 @@ class NightlyTestCollector(TestCollector, ABC):
                             packs=pack.pack_id_tuple,
                             reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
                             version_range=item.version_range or pack.version_range,
-                            reason_description=f'{str(relative_path)}, ({self.marketplace.value})'
+                            reason_description=f'{str(relative_path)}, ({self.marketplace.value})',
+                            skipped_tests=self.conf.skipped_tests
                         )
                     )
 
