@@ -82,7 +82,7 @@ class CollectionResult:
         self.machines: Optional[Iterable[Machine]] = None
 
         try:
-            self._validate_args(pack, test, reason, reason_description, conf, id_set, is_sanity)  # raises if invalid
+            self._validate_args(pack, test, reason, conf, id_set, is_sanity)  # raises if invalid
 
         except (InvalidTestException, SkippedPackException, DeprecatedPackException, UnsupportedPackException) as e:
             logger.warning(str(e))
@@ -115,8 +115,8 @@ class CollectionResult:
             return False
 
     @staticmethod
-    def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason,
-                       reason_description: str, conf: Optional[TestConf], id_set: Optional[IdSet], is_sanity: bool):
+    def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
+                       id_set: Optional[IdSet], is_sanity: bool):
         """
         Validates the arguments of the constructor.
         """
@@ -127,8 +127,8 @@ class CollectionResult:
                     raise ValueError(f'no {arg_name} was provided')
 
             if not any((pack, test)):
-                # may always be none, but _should_ not be none unless reason==DUMMY_OBJECT_FOR_COMBINING
-                logger.warning('neither pack nor test were provided')
+                # should not be none unless reason==DUMMY_OBJECT_FOR_COMBINING
+                raise ValueError('neither pack nor test were provided')
 
         if test:
             if not is_sanity:  # sanity tests do not show in the id_set
@@ -139,12 +139,9 @@ class CollectionResult:
                     raise SkippedTestException(test, 'skipped in .pack_ignore')
 
             if skip_reason := conf.skipped_tests.get(test):
-                logger.info(f'ignoring skipped {test=}, {skip_reason=}'
-                            f' (overriding collection {reason=} {reason_description})')
                 raise SkippedTestException(test, skip_reason)
 
             if test in conf.private_tests:
-                logger.info(f'ignoring private {test=} (overriding collection {reason=} {reason_description})')
                 raise PrivateTestException(test)
 
         if pack:
