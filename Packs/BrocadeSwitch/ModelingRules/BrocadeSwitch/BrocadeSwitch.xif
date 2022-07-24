@@ -1,4 +1,4 @@
-[MODEL: dataset=brocade_raw , model=Network]
+[MODEL: dataset=brocade_switch_raw , model=Network]
 // create timestamp part
 alter timestamp_extract =  arrayindex( regextract(_raw_log , "\<\d+\>\s*(\w+\s\d+\s\d+\:\d+\:\d+)\s" ) ,0)
 | alter timestamp_format = parse_timestamp("%b %d %H:%M:%S", timestamp_extract )
