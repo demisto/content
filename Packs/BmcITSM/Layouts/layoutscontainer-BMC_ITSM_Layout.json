@@ -309,22 +309,6 @@
                         "w": 1,
                         "x": 1,
                         "y": 4
-                    },
-                    {
-                        "h": 2,
-                        "i": "caseinfoid-7c2ce110-f879-11ec-baae-3f7ed8faccc9",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Zero Hour",
-                        "query": "20eb7e70-9f6f-4ae4-8bb2-c5c011d5382d",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 3,
-                        "x": 0,
-                        "y": 0
                     }
                 ],
                 "type": "custom"
