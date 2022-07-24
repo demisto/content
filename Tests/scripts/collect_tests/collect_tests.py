@@ -44,10 +44,10 @@ class CollectionReason(str, Enum):
     MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
-    COMBINING_COLLECTED_TESTS = 'combining CollectedTest object'  # NOTE: using this reason changes CollectedTests init!
+    DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
-class CollectedTests:
+class CollectionResult:
     def __init__(
             self,
             test: Optional[str],
@@ -58,7 +58,7 @@ class CollectedTests:
             skipped_tests: dict[str, str]
     ):
         """
-        Collected test playbooks, and packs to install.
+        Collected test playbook, and/or pack to install.
 
         NOTE:   the constructor only accepts a single Optional[str] for test and pack, but they're kept as set[str].
                 This is done to require a reason for every collection, which is logged.
@@ -77,8 +77,17 @@ class CollectedTests:
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: Optional[Iterable[Machine]] = None
 
-        if not (any((pack, test))):
+        if not (any((pack, test))) and reason != CollectionReason.DUMMY_OBJECT_FOR_COMBINING:
             logger.warning('neither pack nor test were provided')
+
+        if test:
+            # precedes the pack collection, as a skipped test may cause return and stop initialization.
+            if test in skipped_tests:
+                skip_reason = skipped_tests[test]
+                logger.info(f'ignoring skipped test {test}, skip reason = {reason}'
+                            f' (overriding collection reason {skip_reason} {reason_description})')
+                return
+            self.tests = {test}
 
         if pack:
             try:
@@ -89,31 +98,23 @@ class CollectedTests:
             self.packs = {pack}
             logger.info(f'collected {pack=}, {reason} {reason_description}')
 
-        if test:
-            if test in skipped_tests:
-                skip_reason = skipped_tests[test]
-                logger.info(f'ignoring skipped test {test}, skip reason = {reason}'
-                            f' (overriding collection reason {skip_reason} {reason_description})')
-                return
-            self.tests = {test}
+    @staticmethod
+    def __empty_result() -> 'CollectionResult':
+        # used for combining two CollectionResult objects
+        return CollectionResult(None, None, CollectionReason.DUMMY_OBJECT_FOR_COMBINING, self.version_range, '', {})
 
-    def __add__(self, other: 'CollectedTests') -> 'CollectedTests':
-        result = CollectedTests(None, None, CollectionReason.COMBINING_COLLECTED_TESTS,
-                                self.version_range, '', {})
+    def __add__(self, other: 'CollectionResult') -> 'CollectionResult':
+        # initial object just to add others to
+        result = self.__empty_result()
         result.tests = self.tests | other.tests
         result.packs = self.packs | other.packs
         result.version_range = self.version_range | other.version_range if self.version_range else other.version_range
         return result
 
     @staticmethod
-    def union(collected_tests: Optional[tuple[Optional['CollectedTests'], ...]]) -> Optional['CollectedTests']:
-        collected_tests = tuple(filter(None, collected_tests or (None,)))
-
-        if not collected_tests:
-            logger.warning('no tests to union')
-            return None
-
-        return reduce(lambda a, b: a + b, collected_tests)
+    def union(collected_tests: Optional[tuple[Optional['CollectionResult'], ...]]) -> Optional['CollectionResult']:
+        non_none = filter(None, collected_tests or (None,))
+        return sum(non_none, start=CollectionResult.__empty_result())
 
     def __repr__(self):
         return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'
@@ -129,7 +130,7 @@ class TestCollector(ABC):
         self.conf = TestConf(PATHS.conf_path)
 
     @property
-    def sanity_tests(self) -> CollectedTests:
+    def sanity_tests(self) -> CollectionResult:
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
                 test_names = self.conf['test_marketplacev2']
@@ -138,15 +139,15 @@ class TestCollector(ABC):
             case _:
                 raise RuntimeError(f'unexpected marketplace value {self.marketplace.value}')
 
-        return CollectedTests.union(tuple(
-            CollectedTests(test=test, pack=None, reason=CollectionReason.SANITY_TESTS,
-                           version_range=None, reason_description=str(self.marketplace.value),
-                           skipped_tests=self.conf.skipped_tests)
+        return CollectionResult.union(tuple(
+            CollectionResult(test=test, pack=None, reason=CollectionReason.SANITY_TESTS,
+                             version_range=None, reason_description=str(self.marketplace.value),
+                             skipped_tests=self.conf.skipped_tests)
             for test in test_names)
         )
 
     @abstractmethod
-    def _collect(self) -> Optional[CollectedTests]:
+    def _collect(self) -> Optional[CollectionResult]:
         """
         Collects all relevant tests into self.collected.
         Every inheriting class implements its own methodology here.
@@ -155,8 +156,8 @@ class TestCollector(ABC):
         """
         pass
 
-    def collect(self, run_nightly: bool) -> Optional[CollectedTests]:
-        collected: Optional[CollectedTests] = self._collect()
+    def collect(self, run_nightly: bool) -> Optional[CollectionResult]:
+        collected: Optional[CollectionResult] = self._collect()
 
         if not collected:
             logger.warning('Nothing was collected, returning sanity tests only')
@@ -180,8 +181,8 @@ class TestCollector(ABC):
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
     @staticmethod
-    def _collect_pack(pack_name: str, reason: CollectionReason, reason_description: str) -> CollectedTests:
-        return CollectedTests(
+    def _collect_pack(pack_name: str, reason: CollectionReason, reason_description: str) -> CollectionResult:
+        return CollectionResult(
             test=None,
             pack=pack_name,
             reason=reason,
@@ -216,7 +217,7 @@ class BranchTestCollector(TestCollector):
             raise RuntimeError('private_pack_path cannot be empty')
         return tuple(path for path in self.private_pack_path.rglob('*') if path.is_file())
 
-    def _collect(self) -> Optional[CollectedTests]:
+    def _collect(self) -> Optional[CollectionResult]:
         collected = []
         paths = self._get_private_pack_files() if self.private_pack_path else self._get_changed_files()
         for path in paths:
@@ -225,13 +226,14 @@ class BranchTestCollector(TestCollector):
             except NothingToCollectException as e:
                 logger.warning(e.message)
 
-        return CollectedTests.union(tuple(collected))
+        return CollectionResult.union(tuple(collected))
 
-    def _collect_yml(self, content_item_path: Path) -> CollectedTests:
+    def _collect_yml(self, content_item_path: Path) -> CollectionResult:
         """
         collecting a yaml-based content item (including py-based, whose names match a yaml based one)
         """
-        yml_path = content_item_path.with_suffix('.yml') if content_item_path.suffix != '.yml' else content_item_path
+        yml_path = content_item_path.with_suffix(
+            '.yml') if content_item_path.suffix != '.yml' else content_item_path
         try:
             yml = ContentItem(yml_path)
         except FileNotFoundError:
@@ -288,9 +290,9 @@ class BranchTestCollector(TestCollector):
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
         # creating an object for each, as CollectedTests require #packs==#tests
         if tests:
-            collected = CollectedTests.union(
+            collected = CollectionResult.union(
                 tuple(
-                    CollectedTests(
+                    CollectionResult(
                         test=test,
                         pack=yml.pack_id,
                         reason=reason,
@@ -305,7 +307,7 @@ class BranchTestCollector(TestCollector):
         else:
             raise NothingToCollectException(yml.path, 'no tests were found')
 
-    def _collect_single(self, path: Path) -> CollectedTests:
+    def _collect_single(self, path: Path) -> CollectionResult:
         if not path.exists():
             raise FileNotFoundError(path)
 
@@ -362,12 +364,13 @@ class BranchTestCollector(TestCollector):
         if not content_item:
             raise RuntimeError(f'failed collecting {path} for an unknown reason')
 
-        return CollectedTests.union(tuple(CollectedTests(test=test,
-                                                         pack=content_item.pack_id,
-                                                         reason=reason,
-                                                         version_range=content_item.version_range,
-                                                         reason_description=reason_description,
-                                                         skipped_tests=self.conf.skipped_tests) for test in tests))
+        return CollectionResult.union(tuple(CollectionResult(test=test,
+                                                             pack=content_item.pack_id,
+                                                             reason=reason,
+                                                             version_range=content_item.version_range,
+                                                             reason_description=reason_description,
+                                                             skipped_tests=self.conf.skipped_tests) for test in
+                                            tests))
 
     def _get_changed_files(self) -> tuple[str, ...]:
         contrib_diff = None  # overridden on contribution branches, added to the git diff.
@@ -401,7 +404,7 @@ class BranchTestCollector(TestCollector):
 
 
 class UploadCollector(BranchTestCollector):
-    def _collect(self) -> Optional[CollectedTests]:
+    def _collect(self) -> Optional[CollectionResult]:
         # same as BranchTestCollector, but without tests.
         if collected := super()._collect():
             logger.info('UploadCollector drops collected tests, as they are not required')
@@ -410,7 +413,7 @@ class UploadCollector(BranchTestCollector):
 
 
 class NightlyTestCollector(TestCollector, ABC):
-    def _id_set_tests_matching_marketplace_value(self, only_value: bool) -> Optional[CollectedTests]:
+    def _id_set_tests_matching_marketplace_value(self, only_value: bool) -> Optional[CollectionResult]:
         """
         :param only_value: whether the value is the only one under the marketplaces field.
         :return: all tests whose marketplace field includes the collector's marketplace value
@@ -430,7 +433,7 @@ class NightlyTestCollector(TestCollector, ABC):
                 continue
 
             if self.marketplace in playbook_marketplaces:
-                collected.append(CollectedTests(
+                collected.append(CollectionResult(
                     test=playbook.id_, pack=playbook.pack_id,
                     reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
                     reason_description=f'({self.marketplace.value})',
@@ -442,9 +445,9 @@ class NightlyTestCollector(TestCollector, ABC):
             logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
             return None
 
-        return CollectedTests.union(tuple(collected))
+        return CollectionResult.union(tuple(collected))
 
-    def _packs_matching_marketplace_value(self, only_value: bool) -> Optional[CollectedTests]:
+    def _packs_matching_marketplace_value(self, only_value: bool) -> Optional[CollectionResult]:
         """
         :param only_value: whether the value is the only one under the marketplaces field.
         :return: all packs whose marketplaces field contains self.marketplaces (or is equal to, if only_value is True).
@@ -467,14 +470,14 @@ class NightlyTestCollector(TestCollector, ABC):
             logger.warning(f'no packs matching marketplace {self.marketplace.value} ({only_value=}) were found')
             return None
 
-        return CollectedTests.union(
-            tuple(CollectedTests(test=None, pack=pack, reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
-                                 version_range=None, reason_description=f'({self.marketplace.value})',
-                                 skipped_tests=self.conf.skipped_tests)
+        return CollectionResult.union(
+            tuple(CollectionResult(test=None, pack=pack, reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
+                                   version_range=None, reason_description=f'({self.marketplace.value})',
+                                   skipped_tests=self.conf.skipped_tests)
                   for pack in packs)
         )
 
-    def _packs_of_content_matching_marketplace_value(self, only_value: bool) -> Optional[CollectedTests]:
+    def _packs_of_content_matching_marketplace_value(self, only_value: bool) -> Optional[CollectionResult]:
         """
         :param only_value: whether the value is the only one under the marketplaces field.
         :return: all packs whose under which a content item marketplace field contains self.marketplaces
@@ -499,7 +502,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     pack = PACK_MANAGER[find_pack_folder(path).name]
                     relative_path = PACK_MANAGER.relative_to_packs(item.file_path)
                     collected.append(
-                        CollectedTests(
+                        CollectionResult(
                             test=None,
                             pack=pack.pack_id,
                             reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
@@ -513,15 +516,15 @@ class NightlyTestCollector(TestCollector, ABC):
                     if path.name in SKIPPED_CONTENT_ITEMS:
                         logger.info(f'skipping unsupported content item: {str(path)}, not under a pack')
                         continue
-        return CollectedTests.union(tuple(collected))
+        return CollectionResult.union(tuple(collected))
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
     def __init__(self):
         super().__init__(MarketplaceVersions.MarketplaceV2)
 
-    def _collect(self) -> Optional[CollectedTests]:
-        return CollectedTests.union((
+    def _collect(self) -> Optional[CollectionResult]:
+        return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(only_value=True),
             self._packs_matching_marketplace_value(only_value=True),
             self._packs_of_content_matching_marketplace_value(only_value=True)
@@ -532,8 +535,8 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
     def __init__(self):
         super().__init__(MarketplaceVersions.XSOAR)
 
-    def _collect(self) -> Optional[CollectedTests]:
-        return CollectedTests.union((
+    def _collect(self) -> Optional[CollectionResult]:
+        return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(only_value=False),
             self._packs_matching_marketplace_value(only_value=False),
         ))
@@ -543,8 +546,10 @@ if __name__ == '__main__':
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
-    parser.add_argument('-p', '--changed_pack_path', type=str, help='Path to a changed pack. Used for private content')
-    parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version', default='xsoar')
+    parser.add_argument('-p', '--changed_pack_path', type=str,
+                        help='Path to a changed pack. Used for private content')
+    parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
+                        default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     options = parser.parse_args()
     marketplace = MarketplaceVersions(options.marketplace)
