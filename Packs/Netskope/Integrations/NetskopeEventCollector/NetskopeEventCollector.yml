@@ -3,7 +3,7 @@ commonfields:
   id: NetskopeEventCollector
   version: -1
 configuration:
-- display: server URL
+- display: Server URL
   name: url
   required: true
   type: 0

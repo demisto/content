@@ -50,7 +50,12 @@ class Client(BaseClient):
         events = []
         url_suffix = 'events'
         for event_type in EVENT_TYPES_V1:
-            body = {'timeperiod': last_run.get(event_type), 'limit': limit, 'type': event_type}
+            body = {
+                'starttime': last_run.get(event_type),
+                'endtime': date_to_seconds_timestamp(datetime.now()),
+                'limit': limit,
+                'type': event_type
+            }
             response = self._http_request(method='GET', url_suffix=url_suffix, json_data=body)
             if response.get('status') == 'success':
                 results = response.get('data', [])
@@ -73,7 +78,11 @@ class Client(BaseClient):
         """
 
         url_suffix = 'alerts'
-        body = {'timeperiod': last_run.get('alert'), 'limit': limit}
+        body = {
+            'starttime': last_run.get('alert'),
+            'endtime': date_to_seconds_timestamp(datetime.now()),
+            'limit': limit
+        }
         response = self._http_request(method='GET', url_suffix=url_suffix, json_data=body)
         if response.get('status') == 'success':
             results = response.get('data', [])
