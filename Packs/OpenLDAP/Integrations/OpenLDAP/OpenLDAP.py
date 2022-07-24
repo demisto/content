@@ -112,13 +112,13 @@ class LdapClient:
                 # Trust any certificate = False means that the LDAP server's certificate must be valid -
                 # i.e if the server's certificate is not valid the connection will fail.
                 tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'),
-                          version=ssl.PROTOCOL_SSLv3)  # TODO: not sure that I need to specify the exact version
+                          version=ssl.PROTOCOL_SSLv2)  # TODO: not sure that I need to specify the exact version
                 return Server(host=self._host, port=self._port, use_ssl=True, tls=tls,
                               connect_timeout=LdapClient.TIMEOUT)
 
             else:  # Trust any certificate is checked
                 # Trust any certificate = True means that we do not require validation of the LDAP server's certificate.
-                tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_SSLv3)
+                tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_SSLv2)
                 return Server(host=self._host, port=self._port, use_ssl=True, tls=tls,
                               connect_timeout=LdapClient.TIMEOUT)
 
