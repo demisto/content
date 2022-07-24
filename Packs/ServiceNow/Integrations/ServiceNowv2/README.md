@@ -134,10 +134,11 @@ To set up incident mirroring you need to:
 To use ServiceNow on Cortex XSOAR, ensure your service account has the following roles required to make API calls:  
 - Rest_api_explorer
 - Snc_platform_rest_api_access
-- Itil (Needed to access the sys_journal_field to allow comments, work notes, and files to be mirrored in and out.)  
+- Itil (Needed to access the sys_journal_field to allow comments, work notes, and files to be mirrored in and out. Incoming mirroring queries sys_journal_field for comments and worknotes and therefore, access to sys_journal_table is also required.)  
 **Note:**  
 If your organization does not allow assigning the Itil role, you need to give service account elevated
-privileges to the sys_journal_field (see this ServiceNow community link for [giving elevated read access](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc) and potential risks).   
+privileges to the sys_journal_field (see this ServiceNow community link for [giving elevated read access](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc) and potential risks).
+- Read access to sys_journal_field is required for incoming mirroring.
 
 You then need to add to your user account the specific tables you want to have access to.  
 These permissions may not suffice for managing records in some tables. Make sure you
