@@ -734,8 +734,6 @@ def main():
         'Accept': 'application/json'
     }
     verify_ssl = not params.get('insecure', False)
-    first_fetch_timestamp = params.get("fetch_time", "3 days").strip()
-    minimum_severity = params.get("severity")
     proxy = params.get('proxy')
 
     # Initializing the Client Object with required configuration
@@ -763,6 +761,8 @@ def main():
 
         elif command == 'fetch-incidents' or command == 'thousandeyes-test-fetch':
             max_results = arg_to_number(arg=demisto.params().get("max_fetch"), arg_name="max_fetch", required=False)
+            first_fetch_timestamp = params.get("fetch_time", "3 days").strip()
+            minimum_severity = params.get("severity")
 
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
