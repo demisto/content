@@ -538,7 +538,7 @@ class Client(BaseClient):
                 query_params.pop('after')
             limit -= 200
             while limit > 0 and "next" in response.links and len(response.json()) > 0:
-                next_page = self.delete_limit_param(response.links.get("next").get("url"))
+                next_page = delete_limit_param(response.links.get("next").get("url"))
                 response = self._http_request(
                     method="GET",
                     full_url=next_page,
@@ -550,19 +550,8 @@ class Client(BaseClient):
                 limit -= 200
         after = None
         if "next" in response.links and len(response.json()) > 0:
-            after = self.get_after_tag(response.links.get("next").get("url"))
+            after = get_after_tag(response.links.get("next").get("url"))
         return (paged_results, after)
-
-    def get_after_tag(self, url):
-        parsed_url = urlparse(url)
-        captured_value = parse_qs(parsed_url.query)['after'][0]
-        return captured_value
-
-    def delete_limit_param(self, url):
-        parsed_url = urlparse(url)
-        query_dict = parse_qs(parsed_url.query)
-        query_dict.pop('limit')
-        return urlunparse(parsed_url._replace(query=urlencode(query_dict, True)))
 
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
@@ -1279,6 +1268,19 @@ def create_group_command(client, args):
         outputs,
         raw_response
     )
+
+
+def get_after_tag(url):
+    parsed_url = urlparse(url)
+    captured_value = parse_qs(parsed_url.query)['after'][0]
+    return captured_value
+
+
+def delete_limit_param(url):
+    parsed_url = urlparse(url)
+    query_dict = parse_qs(parsed_url.query)
+    query_dict.pop('limit')
+    return urlunparse(parsed_url._replace(query=urlencode(query_dict, True)))
 
 
 def main():
