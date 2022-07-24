@@ -239,7 +239,7 @@ def fetchIncidents(account_uuid, max_results, last_run, first_fetch_time):
 def getDetectionsInc(r_json, args):
     total_detections = r_json['total_count']
     offset = MAX_DETECTIONS
-    while total_detections > MAX_DETECTIONS and offset < total_detections:
+    while offset < total_detections:
         args['offset'] = offset
         response = sendRequest('GET', 'Detections', 'detections', None, encodeArgsToURL(args))
         for detection in response['detections']:
@@ -256,18 +256,13 @@ def addDetectionRules(r_json):
     for detection in r_json['detections']:
         for rule in r_json['rules']:
             if detection['rule_uuid'] == rule['uuid']:
-                rule_name = rule['name']
-                rule_description = rule['description']
-                rule_severity = rule['severity']
-                rule_confidence = rule['confidence']
-                rule_category = rule['category']
-                rule_signature = rule['query_signature']
-        detection.update({'rule_name': rule_name})
-        detection.update({'rule_description': rule_description})
-        detection.update({'rule_severity': rule_severity})
-        detection.update({'rule_confidence': rule_confidence})
-        detection.update({'rule_category': rule_category})
-        detection.update({'rule_signature': rule_signature})
+                detection.update({'rule_name': rule['name']})
+                detection.update({'rule_description': rule['description']})
+                detection.update({'rule_severity': rule['severity']})
+                detection.update({'rule_confidence': rule['confidence']})
+                detection.update({'rule_category': rule['category']})
+                # detection.update({'rule_signature': rule['query_signature']})
+                break
     return r_json
 
 
@@ -320,8 +315,75 @@ def responseToEntry(r_json, path, title):
                 new_item.update(new_pair)
             data.append(new_item)
             context[contextPath].append(createContext(new_item))
-    # submit results
-    demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': data, 'EntryContext': context})
+    return data, context
+
+
+def commandGetEvents(args):
+    if args['response_type'] == "metadata":
+        response_type = "metadata"
+    elif args['response_type'] == "aggregations":
+        pattern = r"^.*[Gg][Rr][Oo][Uu][Pp]\s+[Bb][Yy].*$"
+        if not re.search(pattern, args['query']):
+            demisto.results("Error: No 'group by' statement in query. Aggregation requires a 'group by' statement.")
+        else:
+            response_type = "aggregations"
+    else:
+        response_type = "events"
+    args.pop('response_type')
+    response = formatEvents(sendRequest('POST', 'Events', None, args), response_type)
+    if response_type in ("metadata", "aggregations"):
+        return responseToEntry(response, 'Events', 'Data')
+    else:
+        return responseToEntry(response, 'Events', 'Events')
+
+
+def commandGetDetections(args):
+    response = sendRequest('GET', 'Detections', 'detections', None, encodeArgsToURL(args))
+    if response['total_count'] > MAX_DETECTIONS:
+        if 'limit' not in args or int(args['limit']) > MAX_DETECTIONS:
+            # pull the remaining detections incrementally
+            response = getDetectionsInc(response, args)
+    # filter out training detections
+    detections = []
+    for detection in response['detections']:
+        if detection['account_uuid'] != TRAINING_ACC:
+            detections.append(detection)
+    response['detections'] = detections
+    if 'include' in args and args['include'] == 'rules':
+        response = addDetectionRules(response)
+    return responseToEntry(response, 'Detections', 'Detections')
+
+
+def commandGetDetectionRuleEvents(args):
+    endpoint = "rules/" + args['rule_uuid'] + "/events"
+    args.pop('rule_uuid')
+    return responseToEntry(sendRequest('GET', 'Detections', endpoint, None, encodeArgsToURL(args)),
+                           'Detections', 'Events')
+
+
+def commandCreateDetectionRule(args):
+    run_accts = [args['run_account_uuids']]
+    dev_ip_fields = [args['device_ip_fields']]
+    args.pop('run_account_uuids')
+    args.pop('device_ip_fields')
+    args['run_account_uuids'] = run_accts
+    args['device_ip_fields'] = dev_ip_fields
+    sendRequest('POST', 'Detections', 'rules', args, None)
+
+
+def commandGetTasks(args):
+    if 'task_uuid' in args:
+        return responseToEntry(sendRequest('GET', 'Sensors', 'pcaptasks/' + args['task_uuid']),
+                               'Tasks', 'PCAP Task')
+    else:
+        return responseToEntry(sendRequest('GET', 'Sensors', 'pcaptasks'), 'Tasks', 'PCAPTasks')
+
+
+def commandCreateTask(args):
+    sensor_ids = [args['sensor_ids']]
+    args.pop('sensor_ids')
+    args['sensor_ids'] = sensor_ids
+    sendRequest('POST', 'Sensors', 'pcaptasks', args)
 
 
 def main():
@@ -341,8 +403,9 @@ def main():
     # attempt command execution
     try:
         if command == 'test-module':
-            response = sendRequest('GET', 'Sensors', 'sensors')
+            sendRequest('GET', 'Sensors', 'sensors')
             demisto.results('ok')
+
         if command == 'fetch-incidents':
             # default first fetch to -7days
             first_fetch_time = datetime.now() - timedelta(days=7)
@@ -351,141 +414,114 @@ def main():
                 arg_name='max_fetch',
                 required=False
             )
-
             next_run, incidents = fetchIncidents(
                 account_uuid=account_uuid,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time
             )
-
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+
         elif command == 'insight-get-events':
-            if args['response_type'] == "metadata":
-                response_type = "metadata"
-            elif args['response_type'] == "aggregations":
-                pattern = r"^.*[Gg][Rr][Oo][Uu][Pp]\s+[Bb][Yy].*$"
-                if not re.search(pattern, args['query']):
-                    demisto.results("Error: No 'group by' statement in query. Aggregation requires a 'group by' statement.")
-                else:
-                    response_type = "aggregations"
-            else:
-                response_type = "events"
-            args.pop('response_type')
-            response = sendRequest('POST', 'Events', None, args)
-            response = formatEvents(response, response_type)
-            if response_type in ("metadata", "aggregations"):
-                responseToEntry(response, 'Events', 'Data')
-            else:
-                responseToEntry(response, 'Events', 'Events')
+            data, context = commandGetEvents(args)
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
+
         elif command == 'insight-get-history':
-            response = sendRequest('GET', 'Events', 'history')
-            responseToEntry(response, 'UserQueryHistory', 'History')
+            data, context = responseToEntry(sendRequest('GET', 'Events', 'history'), 'UserQueryHistory', 'History')
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-get-saved-searches':
-            response = sendRequest('GET', 'Events', 'saved')
-            responseToEntry(response, 'SavedSearches', 'Saved Queries')
+            data, context = responseToEntry(sendRequest('GET', 'Events', 'saved'), 'SavedSearches', 'Saved Queries')
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-get-sensors':
-            response = sendRequest('GET', 'Sensors', 'sensors')
-            responseToEntry(response, 'Sensors', 'Sensors')
+            data, context = responseToEntry(sendRequest('GET', 'Sensors', 'sensors'), 'Sensors', 'Sensors')
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-get-devices':
-            response = sendRequest('GET', 'Sensors', 'devices')
-            responseToEntry(response, 'Devices', 'Device List')
+            data, context = responseToEntry(sendRequest('GET', 'Sensors', 'devices'), 'Devices', 'Device List')
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-get-tasks':
-            if 'task_uuid' in args:
-                endpoint = 'pcaptasks/' + args['task_uuid']
-                response = sendRequest('GET', 'Sensors', endpoint)
-                responseToEntry(response, 'Tasks', 'PCAP Task')
-            else:
-                response = sendRequest('GET', 'Sensors', 'pcaptasks')
-                responseToEntry(response, 'Tasks', 'PCAPTasks')
+            data, context = commandGetTasks(args)
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-create-task':
-            sensor_ids = [args['sensor_ids']]
-            args.pop('sensor_ids')
-            args['sensor_ids'] = sensor_ids
-            response = sendRequest('POST', 'Sensors', 'pcaptasks', args)
+            commandCreateTask(args)
             demisto.results("Task created successfully")
 
         elif command == 'insight-get-detections':
-            response = sendRequest('GET', 'Detections', 'detections', None, encodeArgsToURL(args))
-            if response['total_count'] > MAX_DETECTIONS:
-                if 'limit' not in args or int(args['limit']) > MAX_DETECTIONS:
-                    # pull the remaining detections incrementally
-                    response = getDetectionsInc(response, args)
-            # filter out training detections
-            detections = []
-            for detection in response['detections']:
-                if detection['account_uuid'] != TRAINING_ACC:
-                    detections.append(detection)
-            response['detections'] = detections
-            if 'include' in args:
-                if args['include'] == 'rules':
-                    response = addDetectionRules(response)
-            responseToEntry(response, 'Detections', 'Detections')
+            data, context = commandGetDetections(args)
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-get-detection-rules':
-            response = sendRequest('GET', 'Detections', 'rules', None, encodeArgsToURL(args))
-            responseToEntry(response, 'Rules', 'Rules')
+            data, context = responseToEntry(sendRequest('GET', 'Detections', 'rules', None, encodeArgsToURL(args)),
+                                            'Rules', 'Rules')
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-get-detection-rule-events':
-            rule_uuid = args['rule_uuid']
-            endpoint = "rules/" + rule_uuid + "/events"
-            args.pop('rule_uuid')
-            response = sendRequest('GET', 'Detections', endpoint, None, encodeArgsToURL(args))
-            responseToEntry(response, 'Detections', 'Events')
+            data, context = commandGetDetectionRuleEvents(args)
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-resolve-detection':
-            endpoint = "detections/" + args['detection_uuid'] + "/resolve"
-            body = {"resolution": args['resolution'], "resolution_comment": args['resolution_comment']}
-            sendRequest('PUT', 'Detections', endpoint, body, None)
+            sendRequest('PUT', 'Detections', "detections/" + args['detection_uuid'] + "/resolve",
+                        {"resolution": args['resolution'], "resolution_comment": args['resolution_comment']}, None)
             demisto.results("Detection resolved successfully")
 
         elif command == 'insight-create-detection-rule':
-            run_accts = [args['run_account_uuids']]
-            dev_ip_fields = [args['device_ip_fields']]
-            args.pop('run_account_uuids')
-            args.pop('device_ip_fields')
-            args['run_account_uuids'] = run_accts
-            args['device_ip_fields'] = dev_ip_fields
-            sendRequest('POST', 'Detections', 'rules', args, None)
+            commandCreateDetectionRule(args)
             demisto.results("Rule created successfully")
 
         elif command == 'insight-get-entity-summary':
-            endpoint = args['entity'] + "/summary"
-            response = sendRequest('GET', 'Entity', endpoint, None, None)
-            responseToEntry(response, 'Entity.Summary', 'Summary')
+            data, context = responseToEntry(sendRequest('GET', 'Entity', args['entity'] + "/summary", None, None),
+                                            'Entity.Summary', 'Summary')
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-get-entity-pdns':
-            endpoint = args['entity'] + "/pdns"
-            response = sendRequest('GET', 'Entity', endpoint, None, None)
-            responseToEntry(response, 'Entity.PDNS', 'PassiveDNS')
+            data, context = responseToEntry(sendRequest('GET', 'Entity', args['entity'] + "/pdns", None, None),
+                                            'Entity.PDNS', 'PassiveDNS')
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-get-entity-dhcp':
-            endpoint = args['entity'] + "/dhcp"
-            response = sendRequest('GET', 'Entity', endpoint, None, None)
-            responseToEntry(response, 'Entity.DHCP', 'DHCP')
+            data, context = responseToEntry(sendRequest('GET', 'Entity', args['entity'] + "/dhcp", None, None),
+                                            'Entity.DHCP', 'DHCP')
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-get-entity-file':
-            endpoint = args['hash'] + "/file"
-            response = sendRequest('GET', 'Entity', endpoint, None, None)
-            responseToEntry(response, 'Entity.File', 'File')
+            data, context = responseToEntry(sendRequest('GET', 'Entity', args['hash'] + "/file", None, None),
+                                            'Entity.File', 'File')
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-get-telemetry-events':
-            response = sendRequest('GET', 'Sensors', 'telemetry/events', None, encodeArgsToURL(args))
-            responseToEntry(response, 'Telemetry.Events', 'Data')
+            data, context = responseToEntry(sendRequest('GET', 'Sensors', 'telemetry/events', None, encodeArgsToURL(args)),
+                                            'Telemetry.Events', 'Data')
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
 
         elif command == 'insight-get-telemetry-network':
-            response = sendRequest('GET', 'Sensors', 'telemetry/network', None, encodeArgsToURL(args))
-            responseToEntry(response, 'Telemetry.Network', 'Data')
+            data, context = responseToEntry(sendRequest('GET', 'Sensors', 'telemetry/network', None, encodeArgsToURL(args)),
+                                            'Telemetry.Network', 'Data')
 
         elif command == 'insight-get-telemetry-packetstats':
-            response = sendRequest('GET', 'Sensors', 'telemetry/packetstats', None, encodeArgsToURL(args))
-            responseToEntry(response, 'Telemetry.Packetstats', 'Data')
+            data, context = responseToEntry(sendRequest('GET', 'Sensors', 'telemetry/packetstats', None, encodeArgsToURL(args)),
+                                            'Telemetry.Packetstats', 'Data')
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
+                             'Contents': data, 'EntryContext': context})
+
     # catch exceptions
     except Exception as e:
         return_error(str(e))
