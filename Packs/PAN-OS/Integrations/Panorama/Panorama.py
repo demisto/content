@@ -103,6 +103,79 @@ PAN_OS_ERROR_DICT = {
     '22': 'Session timed out - The session for this query timed out.'
 }
 
+# was taken from here: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Cm5hCAC
+PAN_DB_URL_FILTERING_CATEGORIES = {
+    'abortion',
+    'abused-drugs',
+    'adult',
+    'alcohol-and-tobacco',
+    'auctions',
+    'business-and-economy',
+    'command-and-control',
+    'computer-and-internet-info',
+    'content-delivery-networks',
+    'copyright-infringement',
+    'cryptocurrency',
+    'dating',
+    'dynamic-dns',
+    'educational-institutions',
+    'entertainment-and-arts',
+    'extremism',
+    'gambling',
+    'games',
+    'government',
+    'grayware',
+    'hacking',
+    'health-and-medicine',
+    'home-and-garden',
+    'hunting-and-fishing',
+    'insufficient-content',
+    'internet-Communications-and-telephony',
+    'internet-portals',
+    'job-search',
+    'legal',
+    'malware',
+    'military',
+    'motor-vehicles',
+    'music',
+    'newly-registered-domain',
+    'news',
+    'nudity',
+    'online-storage-and-backup',
+    'parked',
+    'peer-to-peer',
+    'personal-sites-and-blogs',
+    'philosophy-and-political-advocacy',
+    'phishing',
+    'private-ip-addresses',
+    'proxy-avoidance-and-anonymizers',
+    'questionable',
+    'real-estate',
+    'recreation-and-hobbies',
+    'reference-and-research	',
+    'religion',
+    'search-engines',
+    'sex-education',
+    'shareware-and-freeware',
+    'shopping',
+    'social-networking',
+    'society',
+    'sports',
+    'stock-advice-and-tools',
+    'streaming-media',
+    'swimsuits-and-intimate-apparel',
+    'training-and-tools',
+    'translation',
+    'travel',
+    'unknown',
+    'weapons',
+    'web-advertisements',
+    'web-hosting',
+    'web-based-email',
+    'high-risk',
+    'medium-risk',
+    'low-risk'
+}
 
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
@@ -116,7 +189,7 @@ class InvalidUrlLengthException(Exception):
 
 
 def http_request(uri: str, method: str, headers: dict = {},
-                 body: dict = {}, params: dict = {}, files: dict = None, is_pcap: bool = False) -> Any:
+                 body: dict = {}, params: dict = {}, files: dict = None, is_pcap: bool = False, is_xml: bool = False) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -137,6 +210,8 @@ def http_request(uri: str, method: str, headers: dict = {},
     # if pcap download
     if is_pcap:
         return result
+    if is_xml:
+        return result.text
 
     json_result = json.loads(xml2json(result.text))
 
@@ -618,6 +693,10 @@ def panorama_commit_status(args: dict):
         'cmd': f'<show><jobs><id>{args.get("job_id")}</id></jobs></show>',
         'key': API_KEY
     }
+
+    if target := args.get('target'):
+        params['target'] = target
+
     result = http_request(
         URL,
         'GET',
@@ -860,12 +939,15 @@ def panorama_push_to_template_stack_command(args: dict):
         return_results(result['response']['msg']['line'])
 
 @logger
-def panorama_push_status(job_id: str):
+def panorama_push_status(job_id: str, target: Optional[str] = None):
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
+    if target:
+        params['target'] = target
+
     result = http_request(
         URL,
         'GET',
@@ -888,11 +970,13 @@ def safeget(dct: dict, keys: List[str]):
     return dct
 
 
-def panorama_push_status_command(job_id: str):
+def panorama_push_status_command(args: dict):
     """
     Check jobID of push status
     """
-    result = panorama_push_status(job_id)
+    job_id = args.get('job_id')
+    target = args.get('target')
+    result = panorama_push_status(job_id, target)
     job = result.get('response', {}).get('result', {}).get('job', {})
     if job.get('type', '') not in ('CommitAll', 'ValidateAll'):
         raise Exception('JobID given is not of a Push neither of a validate.')
@@ -2405,13 +2489,17 @@ def panorama_edit_custom_url_category_command(args: dict):
 
 
 @logger
-def panorama_get_url_category(url_cmd: str, url: str):
+def panorama_get_url_category(url_cmd: str, url: str, target: Optional[str] = None) -> List[str]:
     params = {
         'action': 'show',
         'type': 'op',
         'key': API_KEY,
         'cmd': f'<test><{url_cmd}>{url}</{url_cmd}></test>'
     }
+
+    if target:
+        params['target'] = target
+
     raw_result = http_request(
         URL,
         'POST',
@@ -2420,18 +2508,9 @@ def panorama_get_url_category(url_cmd: str, url: str):
     result = raw_result['response']['result']
     if 'Failed to query the cloud' in result:
         raise Exception('Failed to query the cloud. Please check your URL Filtering license.')
-
-    if url_cmd == 'url-info-host':
-        # The result in this case looks like so: "Ancestors info:\nBM:\nURL.com,1,5,search-engines,, {some more info
-        # here...}" - The 4th element is the url category.
-        category = result.split(',')[3]
-    else:
-        result = result.splitlines()[1]
-        if url_cmd == 'url':
-            category = result.split(' ')[1]
-        else:  # url-info-cloud
-            category = result.split(',')[3]
-    return category
+    # result structur example: 'https://someURL.com not-resolved (Base db) expires in 4 seconds
+    # https://someURL.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db)'
+    return [url_category for url_category in PAN_DB_URL_FILTERING_CATEGORIES if url_category in result]
 
 
 def populate_url_filter_category_from_context(category: str):
@@ -2477,7 +2556,8 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
     return dbot_score
 
 
-def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list, additional_malicious: list):
+def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list,
+                                      additional_malicious: list, target: Optional[str] = None):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -2489,39 +2569,62 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
     for url in urls:
         err_readable_output = None
         try:
-            category = panorama_get_url_category(url_cmd, url)
-            if category in categories_dict:
-                categories_dict[category].append(url)
-                categories_dict_hr[category].append(url)
-            else:
-                categories_dict[category] = [url]
-                categories_dict_hr[category] = [url]
-            context_urls = populate_url_filter_category_from_context(category)
-            categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
+            categories = panorama_get_url_category(url_cmd, url, target)
+            max_url_dbot_score = 0
+            url_dbot_score_category = ''
+            for category in categories:
+                if category in categories_dict:
+                    categories_dict[category].append(url)
+                    categories_dict_hr[category].append(url)
+                else:
+                    categories_dict[category] = [url]
+                    categories_dict_hr[category] = [url]
+                context_urls = populate_url_filter_category_from_context(category)
+                categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-            score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
+                current_dbot_score = calculate_dbot_score(
+                    category.lower(), additional_suspicious, additional_malicious
+                )
+                if current_dbot_score > max_url_dbot_score:
+                    max_url_dbot_score = current_dbot_score
+                    url_dbot_score_category = category
 
+            dbot_score = Common.DBotScore(
+                indicator=url,
+                indicator_type=DBotScoreType.URL,
+                integration_name='PAN-OS',
+                score=max_url_dbot_score
+            )
+            url_obj = Common.URL(
+                url=url,
+                dbot_score=dbot_score,
+                category=url_dbot_score_category
+            )
+            readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
+            command_results.append(CommandResults(
+                indicator=url_obj,
+                readable_output=readable_output
+            ))
         except InvalidUrlLengthException as e:
             score = 0
             category = None
             err_readable_output = str(e)
-
-        dbot_score = Common.DBotScore(
-            indicator=url,
-            indicator_type=DBotScoreType.URL,
-            integration_name='PAN-OS',
-            score=score
-        )
-        url_obj = Common.URL(
-            url=url,
-            dbot_score=dbot_score,
-            category=category
-        )
-        readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
-        command_results.append(CommandResults(
-            indicator=url_obj,
-            readable_output=readable_output
-        ))
+            dbot_score = Common.DBotScore(
+                indicator=url,
+                indicator_type=DBotScoreType.URL,
+                integration_name='PAN-OS',
+                score=score
+            )
+            url_obj = Common.URL(
+                url=url,
+                dbot_score=dbot_score,
+                category=category
+            )
+            readable_output = err_readable_output
+            command_results.append(CommandResults(
+                indicator=url_obj,
+                readable_output=readable_output
+            ))
 
     url_category_output_hr = []
     for key, value in categories_dict_hr.items():
@@ -2926,15 +3029,36 @@ def prettify_rule(rule: dict):
     return pretty_rule
 
 
-def prettify_rules(rules: Union[List[dict], dict]):
+def prettify_rules(rules: Union[List[dict], dict], target: Optional[str] = None):
     if not isinstance(rules, list):
-        return prettify_rule(rules)
+        rules = [rules]
     pretty_rules_arr = []
     for rule in rules:
+        if target and not target_filter(rule, target):
+            continue
         pretty_rule = prettify_rule(rule)
         pretty_rules_arr.append(pretty_rule)
 
     return pretty_rules_arr
+
+
+def target_filter(rule: dict, target: str) -> bool:
+    """
+    Args:
+        rule (dict): A rule from the panorama instance.
+        target (str): A serial number to filter the rule on
+
+    Returns:
+        True if the rule contains the firewall serial number (target), False if not.
+    """
+    firewalls_the_rule_applies_to = rule.get('target', {}).get('devices', {}).get('entry')
+    if not isinstance(firewalls_the_rule_applies_to, list):
+        firewalls_the_rule_applies_to = [firewalls_the_rule_applies_to]
+    for entry in firewalls_the_rule_applies_to:
+        if entry and entry.get('@name', None) == target:
+            return True
+
+    return False
 
 
 @logger
@@ -2958,7 +3082,7 @@ def panorama_list_rules(xpath: str, tag: str = None):
     return result['response']['result']['entry']
 
 
-def panorama_list_rules_command(tag: str):
+def panorama_list_rules_command(args: dict):
     """
     List security rules
     """
@@ -2970,8 +3094,10 @@ def panorama_list_rules_command(tag: str):
     else:
         xpath = XPATH_SECURITY_RULES
 
+    tag = args.get('tag')
+    target = args.get('target')
     rules = panorama_list_rules(xpath, tag)
-    pretty_rules = prettify_rules(rules)
+    pretty_rules = prettify_rules(rules, target)
 
     return_results({
         'Type': entryTypes['note'],
@@ -3475,9 +3601,9 @@ def panorama_get_pcap_command(args: dict):
     serial_number = args.get('serialNumber')
     if VSYS and serial_number:
         raise Exception('The serialNumber argument can only be used in a Panorama instance configuration')
-    elif DEVICE_GROUP and not serial_number:
+    elif DEVICE_GROUP and not serial_number and pcap_type != 'threat-pcap':
         raise Exception('PCAP listing is only supported on Panorama with the serialNumber argument.')
-    elif serial_number:
+    elif serial_number and pcap_type != 'threat-pcap':
         params['target'] = serial_number
 
     file_name = None
@@ -4277,7 +4403,6 @@ def panorama_get_traffic_logs(job_id: str):
         'job-id': job_id,
         'key': API_KEY
     }
-
     result = http_request(
         URL,
         'GET',
@@ -5313,7 +5438,6 @@ def panorama_show_device_version(target: str = None):
     }
     if target:
         params['target'] = target
-
     result = http_request(
         URL,
         'GET',
@@ -5350,13 +5474,15 @@ def panorama_show_device_version_command(target: Optional[str] = None):
 
 
 @logger
-def panorama_download_latest_content_update_content(target: str):
+def panorama_download_latest_content_update_content(target: Optional[str] = None):
     params = {
         'type': 'op',
-        'target': target,
         'cmd': '<request><content><upgrade><download><latest/></download></upgrade></content></request>',
         'key': API_KEY
     }
+    if target:
+        params['target'] = target
+
     result = http_request(
         URL,
         'POST',
@@ -5366,12 +5492,14 @@ def panorama_download_latest_content_update_content(target: str):
     return result
 
 
-def panorama_download_latest_content_update_command(target: Optional[str] = None):
+def panorama_download_latest_content_update_command(args: dict):
     """
     Download content and show message in war room
     """
-    if DEVICE_GROUP:
+    target = args.get('target', None)
+    if DEVICE_GROUP and not target:
         raise Exception('Download latest content is only supported on Firewall (not Panorama).')
+
     result = panorama_download_latest_content_update_content(target)
 
     if 'result' in result['response']:
@@ -5402,9 +5530,11 @@ def panorama_content_update_download_status(target: str, job_id: str):
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
-        'target': target,
         'key': API_KEY
     }
+    if target:
+        params['target'] = target
+
     result = http_request(
         URL,
         'GET',
@@ -5418,20 +5548,23 @@ def panorama_content_update_download_status_command(args: dict):
     """
     Check jobID of content update download status
     """
-    if DEVICE_GROUP:
-        raise Exception('Content download status is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
+    if DEVICE_GROUP and not target:
+        raise Exception('Content download status is only supported on Firewall (not Panorama).')
     job_id = args['job_id']
     result = panorama_content_update_download_status(target, job_id)
 
     content_download_status = {
         'JobID': result['response']['result']['job']['id']
     }
-    if result['response']['result']['job']['status'] == 'FIN':
-        if result['response']['result']['job']['result'] == 'OK':
+    if result['response']['result']['job']['status'] in ['FIN', 'ACT', 'FAIL']:
+        status_res = result['response']['result']['job']['result']
+        if status_res == 'OK':
             content_download_status['Status'] = 'Completed'
-        else:
+        elif status_res == 'FAIL':
             content_download_status['Status'] = 'Failed'
+        elif status_res == 'PEND':
+            content_download_status['Status'] = 'Pending'
         content_download_status['Details'] = result['response']['result']['job']
 
     if result['response']['result']['job']['status'] == 'PEND':
@@ -5456,9 +5589,10 @@ def panorama_install_latest_content_update(target: str):
     params = {
         'type': 'op',
         'cmd': '<request><content><upgrade><install><version>latest</version></install></upgrade></content></request>',
-        'target': target,
         'key': API_KEY
     }
+    if target:
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -5472,8 +5606,6 @@ def panorama_install_latest_content_update_command(target: Optional[str] = None)
     """
         Check jobID of content content install status
     """
-    if DEVICE_GROUP:
-        raise Exception('Content download status is only supported on Firewall (not Panorama).')
     result = panorama_install_latest_content_update(target)
 
     if 'result' in result['response']:
@@ -5503,15 +5635,15 @@ def panorama_content_update_install_status(target: str, job_id: str):
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
-        'target': target,
         'key': API_KEY
     }
+    if target:
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
         params=params
     )
-
     return result
 
 
@@ -5526,12 +5658,15 @@ def panorama_content_update_install_status_command(args: dict):
     content_install_status = {
         'JobID': result['response']['result']['job']['id']
     }
-    if result['response']['result']['job']['status'] == 'FIN':
-        if result['response']['result']['job']['result'] == 'OK':
+
+    if result['response']['result']['job']['status'] in ['FIN', 'ACT', 'FAIL']:
+        status_res = result['response']['result']['job']['result']
+        if status_res == 'OK':
             content_install_status['Status'] = 'Completed'
-        else:
-            # result['response']['job']['result'] == 'FAIL'
+        elif status_res == 'FAIL':
             content_install_status['Status'] = 'Failed'
+        elif status_res == 'PEND':
+            content_install_status['Status'] = 'Pending'
         content_install_status['Details'] = result['response']['result']['job']
 
     if result['response']['result']['job']['status'] == 'PEND':
@@ -5551,8 +5686,6 @@ def panorama_content_update_install_status_command(args: dict):
 
 
 def panorama_check_latest_panos_software_command(target: Optional[str] = None):
-    if DEVICE_GROUP:
-        raise Exception('Checking latest PAN-OS version is only supported on Firewall (not Panorama).')
     params = {
         'type': 'op',
         'cmd': '<request><system><software><check></check></software></system></request>',
@@ -5564,7 +5697,16 @@ def panorama_check_latest_panos_software_command(target: Optional[str] = None):
         'GET',
         params=params
     )
-    return_results(result['response']['result'])
+    to_context = result.get('response', {}).get('result', {})
+    versions = to_context.get('sw-updates', {}).get('versions').get('entry', [])
+    if len(versions) > 5:
+        versions = versions[:5]
+    human_readable = tableToMarkdown('5 latest pan-os software releases', versions, ['version', 'filename', 'size', 'released-on', 'downloaded' , 'current' , 'latest', 'uploaded'], removeNull=True)
+    return CommandResults(readable_output=human_readable,
+                                  outputs=to_context,
+                                  raw_response=result,
+                                  outputs_prefix='Panorama.LatestVersions'
+                                  )
 
 
 @logger
@@ -5573,9 +5715,10 @@ def panorama_download_panos_version(target: str, target_version: str):
         'type': 'op',
         'cmd': f'<request><system><software><download><version>{target_version}'
                f'</version></download></software></system></request>',
-        'target': target,
         'key': API_KEY
     }
+    if target:
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -5588,8 +5731,6 @@ def panorama_download_panos_version_command(args: dict):
     """
     Check jobID of pan-os version download
     """
-    if DEVICE_GROUP:
-        raise Exception('Downloading PAN-OS version is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
     target_version = str(args['target_version'])
     result = panorama_download_panos_version(target, target_version)
@@ -5620,9 +5761,10 @@ def panorama_download_panos_status(target: str, job_id: str):
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
-        'target': target,
         'key': API_KEY
     }
+    if target:
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -5635,20 +5777,20 @@ def panorama_download_panos_status_command(args: dict):
     """
     Check jobID of panos download status
     """
-    if DEVICE_GROUP:
-        raise Exception('PAN-OS version download status is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
     job_id = args.get('job_id')
     result = panorama_download_panos_status(target, job_id)
     panos_download_status = {
         'JobID': result['response']['result']['job']['id']
     }
-    if result['response']['result']['job']['status'] == 'FIN':
-        if result['response']['result']['job']['result'] == 'OK':
+    if result['response']['result']['job']['status'] in ['FIN', 'ACT', 'FAIL']:
+        status_res = result['response']['result']['job']['result']
+        if status_res == 'OK':
             panos_download_status['Status'] = 'Completed'
-        else:
-            # result['response']['job']['result'] == 'FAIL'
+        elif status_res == 'FAIL':
             panos_download_status['Status'] = 'Failed'
+        elif status_res == 'PEND':
+            panos_download_status['Status'] = 'Pending'
         panos_download_status['Details'] = result['response']['result']['job']
 
     if result['response']['result']['job']['status'] == 'PEND':
@@ -5674,9 +5816,11 @@ def panorama_install_panos_version(target: str, target_version: str):
         'type': 'op',
         'cmd': f'<request><system><software><install><version>{target_version}'
                '</version></install></software></system></request>',
-        'target': target,
         'key': API_KEY
     }
+    if target:
+        params['target'] = target
+
     result = http_request(
         URL,
         'GET',
@@ -5689,9 +5833,9 @@ def panorama_install_panos_version_command(args: dict):
     """
     Check jobID of panos install
     """
-    if DEVICE_GROUP:
-        raise Exception('PAN-OS installation is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
+    if DEVICE_GROUP and not target:
+        raise Exception('PAN-OS installation is only supported on Firewall (not Panorama).')
     target_version = str(args['target_version'])
     result = panorama_install_panos_version(target, target_version)
 
@@ -5721,9 +5865,10 @@ def panorama_install_panos_status(target: str, job_id: str):
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
-        'target': target,
         'key': API_KEY
     }
+    if target:
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -5767,15 +5912,14 @@ def panorama_install_panos_status_command(args: dict):
     })
 
 
-def panorama_device_reboot_command(target: Optional[str] = None):
-    if DEVICE_GROUP:
-        raise Exception('Device reboot is only supported on Firewall (not Panorama).')
+def panorama_device_reboot_command(args: dict):
     params = {
         'type': 'op',
         'cmd': '<request><restart><system></system></restart></request>',
-        'target': target,
         'key': API_KEY
     }
+    if target := args.get('target', None):
+        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -10830,6 +10974,43 @@ def dataclasses_to_command_results(
     return command_result
 
 
+def pan_os_get_running_config(args: dict):
+    """
+    Get running config file
+    """
+
+    params = {
+        'type': 'op',
+        'key': API_KEY,
+        'cmd': '<show><config><running></running></config></show>'
+    }
+
+    if args.get("target"):
+        params["target"] = args.get("target")
+
+    result = http_request(URL, 'POST', params=params, is_xml=True)
+    return fileResult("running_config", result)
+
+
+def pan_os_get_merged_config(args: dict):
+    """
+    Get merged config file
+    """
+
+    params = {
+        'type': 'op',
+        'key': API_KEY,
+        'cmd': '<show><config><merged></merged></config></show>'
+    }
+
+    if args.get("target"):
+        params["target"] = args.get("target")
+
+    result = http_request(URL, 'POST', params=params, is_xml=True)
+
+    return fileResult("merged_config", result)
+
+
 def main():
     try:
         args = demisto.args()
@@ -10862,7 +11043,7 @@ def main():
         elif command == 'pan-os-push-to-template-stack':
             panorama_push_to_template_stack_command(args)
         elif command == 'panorama-push-status' or command == 'pan-os-push-status':
-            panorama_push_status_command(**args)
+            panorama_push_status_command(args)
 
         # Addresses commands
         elif command == 'panorama-list-addresses' or command == 'pan-os-list-addresses':
@@ -10946,7 +11127,9 @@ def main():
         elif command == 'panorama-get-url-category' or command == 'pan-os-get-url-category':
             panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
                                               additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious)
+                                              additional_malicious=additional_malicious,
+                                              target=args.get('target'),
+                                              )
 
         elif command == 'panorama-get-url-category-from-cloud' or command == 'pan-os-get-url-category-from-cloud':
             panorama_get_url_category_command(url_cmd='url-info-cloud', url=args.get('url'),
@@ -11006,7 +11189,7 @@ def main():
 
         # Security Rules Managing
         elif command == 'panorama-list-rules' or command == 'pan-os-list-rules':
-            panorama_list_rules_command(args.get('tag'))
+            panorama_list_rules_command(args)
 
         elif command == 'panorama-move-rule' or command == 'pan-os-move-rule':
             panorama_move_rule_command(args)
@@ -11079,7 +11262,7 @@ def main():
 
         # Download the latest content update
         elif command == 'panorama-download-latest-content-update' or command == 'pan-os-download-latest-content-update':
-            panorama_download_latest_content_update_command(args.get('target'))
+            panorama_download_latest_content_update_command(args)
 
         # Download the latest content update
         elif command == 'panorama-content-update-download-status' or command == 'pan-os-content-update-download-status':
@@ -11095,7 +11278,7 @@ def main():
 
         # Check PAN-OS latest software update
         elif command == 'panorama-check-latest-panos-software' or command == 'pan-os-check-latest-panos-software':
-            panorama_check_latest_panos_software_command(args.get('target'))
+            return_results(panorama_check_latest_panos_software_command(args.get('target')))
 
         # Download target PAN-OS version
         elif command == 'panorama-download-panos-version' or command == 'pan-os-download-panos-version':
@@ -11115,7 +11298,7 @@ def main():
 
         # Reboot Panorama Device
         elif command == 'panorama-device-reboot' or command == 'pan-os-device-reboot':
-            panorama_device_reboot_command(args.get('target'))
+            panorama_device_reboot_command(args)
 
         # PAN-OS Set vulnerability to drop
         elif command == 'panorama-block-vulnerability' or command == 'pan-os-block-vulnerability':
@@ -11458,6 +11641,10 @@ def main():
             topology = get_topology()
             # This just returns a fileResult object directly.
             return_results(get_device_state(topology, **demisto.args()))
+        elif command == 'pan-os-get-merged-config':
+            return_results(pan_os_get_merged_config(args))
+        elif command == 'pan-os-get-running-config':
+            return_results(pan_os_get_running_config(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

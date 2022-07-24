@@ -395,18 +395,18 @@ def get_pdf(driver, width: int, height: int):
     return data
 
 
-def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bool = False):
+def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bool = False):
     """
     Converts a PDF file into a jpeg image
     :param path: file's path
-    :param max_pages: max pages to render
+    :param max_pages: max pages to render,
     :param password: PDF password
     :param horizontal: if True, will combine the pages horizontally
     :return: A list of stream of combined images
     """
     demisto.debug(f'Loading file at Path: {path}')
     input_pdf = PdfReader(open(path, "rb"), strict=False)
-    pages = min(max_pages, len(input_pdf.pages))
+    pages = len(input_pdf.pages) if max_pages == "*" else min(int(max_pages), len(input_pdf.pages))
 
     with tempfile.TemporaryDirectory() as output_folder:
         demisto.debug('Converting PDF')
@@ -519,8 +519,8 @@ def rasterize_email_command():
 
     w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
 
-    file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "png"}'  # type: ignore
-    with open('htmlBody.html', 'w') as f:
+    file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "jpeg"}'  # type: ignore
+    with open('htmlBody.html', 'w', encoding='utf-8-sig') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
 
@@ -536,7 +536,7 @@ def rasterize_email_command():
 def rasterize_pdf_command():
     entry_id = demisto.args().get('EntryID')
     password = demisto.args().get('pdfPassword')
-    max_pages = int(demisto.args().get('maxPages', 30))
+    max_pages = demisto.args().get('maxPages', 30)
     horizontal = demisto.args().get('horizontal', 'false') == 'true'
     file_name = demisto.args().get('file_name', 'image')
 
@@ -556,6 +556,25 @@ def rasterize_pdf_command():
         demisto.results(results)
 
 
+def rasterize_html_command():
+    args = demisto.args()
+    entry_id = args.get('EntryID')
+    w = args.get('width', DEFAULT_W).rstrip('px')
+    h = args.get('height', DEFAULT_H).rstrip('px')
+    r_type = args.get('type', 'png')
+    file_name = args.get('file_name', 'email')
+
+    file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
+
+    file_path = demisto.getFilePath(entry_id).get('path')
+    with open(file_path, 'rb') as f:
+        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type=r_type)
+        res = fileResult(filename=file_name, data=output)
+        if r_type == 'png':
+            res['Type'] = entryTypes['image']
+        return_results(res)
+
+
 def module_test():
     # setting up a mock email file
     with tempfile.NamedTemporaryFile('w+') as test_file:
@@ -570,7 +589,7 @@ def module_test():
     demisto.results('ok')
 
 
-def main():
+def main():  # pragma: no cover
     try:
         with open(DRIVER_LOG, 'w'):
             pass  # truncate the log file
@@ -585,6 +604,9 @@ def main():
 
         elif demisto.command() == 'rasterize-pdf':
             rasterize_pdf_command()
+
+        elif demisto.command() == 'rasterize-html':
+            rasterize_html_command()
 
         elif demisto.command() == 'rasterize':
             rasterize_command()

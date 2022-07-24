@@ -208,6 +208,9 @@ class Client(BaseClient):
     @staticmethod
     def get_readable_logs(raw_logs):
         logs = []
+        browser = ""
+        device = ""
+        os = ""
         raw_logs = raw_logs if isinstance(raw_logs, list) else [raw_logs]
         for log in raw_logs:
             if log.get('client', {}).get('userAgent'):
@@ -233,7 +236,7 @@ class Client(BaseClient):
                 'EventOutcome': log.get('outcome', {}).get('result') + (
                     f": {log.get('outcome', {}).get('reason')}" if log.get('outcome', {}).get('reason') else ''),
                 'EventSeverity': log.get('severity'),
-                'Client': f"{browser} on {os} {device}",
+                'Client': f"{browser} on {os} {device}" if browser else "Unknown client",
                 'RequestIP': log.get('client', {}).get('ipAddress'),
                 'ChainIP': [ip_chain.get('ip') for ip_chain in log.get('request', {}).get('ipChain', [])],
                 'Targets': targets or '-',
@@ -584,12 +587,16 @@ class Client(BaseClient):
             url_suffix=uri
         )
 
-    def list_zones(self):
+    def list_zones(self, limit):
         uri = 'zones'
-        return self._http_request(
-            method='GET',
-            url_suffix=uri
-        )
+        if limit:
+            query_params = {'limit': encode_string_results(limit)}
+            return self._http_request(
+                method='GET',
+                url_suffix=uri,
+                params=query_params
+            )
+        return self.get_paged_results(uri)
 
     def create_zone(self, zoneObject):
         uri = 'zones'
@@ -1111,7 +1118,7 @@ def get_zone_command(client, args):
 
 
 def list_zones_command(client, args):
-    raw_response = client.list_zones()
+    raw_response = client.list_zones(args.get('limit'))
     if not raw_response:
         return 'No zones found.', {}, raw_response
     readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
