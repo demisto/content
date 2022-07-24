@@ -101,7 +101,7 @@ class CollectionResult:
     @staticmethod
     def __empty_result() -> 'CollectionResult':
         # used for combining two CollectionResult objects
-        return CollectionResult(None, None, CollectionReason.DUMMY_OBJECT_FOR_COMBINING, self.version_range, '', {})
+        return CollectionResult(None, None, CollectionReason.DUMMY_OBJECT_FOR_COMBINING, None, '', {})
 
     def __add__(self, other: 'CollectionResult') -> 'CollectionResult':
         # initial object just to add others to
