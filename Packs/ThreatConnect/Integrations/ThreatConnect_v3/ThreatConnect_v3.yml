@@ -12,10 +12,11 @@ configuration:
   name: accessId
   required: true
   type: 0
-- display: Secret Key
-  name: secretKey
+- displaypassword:  Secret key
+  name: api_secret_key
+  hiddenusername: true
+  type: 9
   required: true
-  type: 4
 - display: Default Organization
   name: defaultOrg
   required: false
@@ -1586,7 +1587,7 @@ script:
   - arguments:
     - description: The ID of the group to which to add attributes. To get the ID of
         the group, run the tc-get-groups command.
-      name: group_id
+      name: id
       required: true
     - description: The type of attribute to add to the group. The type is located
         in the UI in a specific group or under Org Config.
@@ -1594,23 +1595,6 @@ script:
       required: true
     - description: The value of the attribute.
       name: attribute_value
-      required: true
-    - auto: PREDEFINED
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
-      name: group_type
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
       required: true
     deprecated: true
     description: Adds an attribute to a specified group.
@@ -1684,17 +1668,23 @@ script:
         or "threats".
       name: group_type
       predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
-      required: true
+      - Adversary
+      - Attack Pattern
+      - Campaign
+      - Course of Action
+      - Document
+      - E-mail
+      - Event
+      - Incident
+      - Intrusion Set
+      - Malware
+      - Report
+      - Signature
+      - Tactic
+      - Task
+      - Threat
+      - Tool
+      - Vulnerability
     deprecated: true
     description: Returns all groups, filtered by the group type.
     name: tc-get-groups
@@ -1799,7 +1789,7 @@ script:
   - arguments:
     - description: The ID of the group to which to add the security label. To get
         the ID, run the tc-get-groups command.
-      name: group_id
+      name: id
       required: true
     - auto: PREDEFINED
       description: The type of the group to which to add the security label. Can be
@@ -1820,37 +1810,20 @@ script:
     - auto: PREDEFINED
       description: The security label applied to the document. Can be "TLP:RED", "TLP:GREEN",
         "TLP:AMBER", or "TLP:WHITE".
-      name: security_label_name
+      name: security_label
       predefined:
       - TLP:RED
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
       required: true
-      deprecated: true
+    deprecated: true
     description: Adds a security label to a group.
     name: tc-add-group-security-label
   - arguments:
     - description: The ID of the group to which to add the tag. To get the ID, run
         the tc-get-groups command.
-      name: group_id
-      required: true
-    - auto: PREDEFINED
-      description: The type of the group to which to add the tag. Can be "adversaries",
-        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
-        "reports", "signatures", or "threats".
-      name: group_type
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
+      name: id
       required: true
     - description: The name of the tag to add to the group.
       name: tag_name
@@ -1884,35 +1857,12 @@ script:
       description: The value label of the indicator.
       type: String
   - arguments:
-    - description: The type of the indicator. To get the available types, run the
-        tc-get-indicator-types command. The indicator must be spelled as displayed
-        in the ApiBranch column of the UI.
-      name: indicator_type
-      required: true
-    - description: The name of the indicator. For example, "indicator_type=emailAddresses"
-        where "indicator=a@a.co.il".
-      name: indicator
-      required: true
-    - auto: PREDEFINED
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
-      name: group_type
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
+    - description: The name/id of the indicator
+      name: associated_indicator_id
       required: true
     - description: The ID of the group. To get the ID of the group, run the tc-get-groups
         command.
-      name: group_id
+      name: id
       required: true
     deprecated: true
     description: Associates an indicator with a group.
@@ -1921,14 +1871,8 @@ script:
     - contextPath: TC.Group.GroupID
       description: The ID of the group.
       type: Number
-    - contextPath: TC.Group.GroupType
-      description: The type of the group.
-      type: String
     - contextPath: TC.Group.Indicator
       description: The name of the indicator.
-      type: String
-    - contextPath: TC.Group.IndicatorType
-      description: The type of the indicator.
       type: String
   - arguments:
     - description: The name of the file to display in the UI.
@@ -1989,20 +1933,26 @@ script:
         "reports", "signatures", or "threats".
       name: group_type
       predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
-      required: true
+      - Adversary
+      - Attack Pattern
+      - Campaign
+      - Course of Action
+      - Document
+      - E-mail
+      - Event
+      - Incident
+      - Intrusion Set
+      - Malware
+      - Report
+      - Signature
+      - Tactic
+      - Task
+      - Threat
+      - Tool
+      - Vulnerability
     - description: The ID of the group to retrieve. To get the ID, run the tc-get-groups
         command.
-      name: group_id
+      name: id
       required: true
     deprecated: true
     description: Retrieves a single group.
@@ -2074,26 +2024,9 @@ script:
       description: The value of the attribute.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The type of group for which to return the security labels. Can
-        be "adversaries", "campaigns", "documents", "emails", "events", "incidents",
-        "intrusionSets", "reports", "signatures", or "threats".
-      name: group_type
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
-      required: true
     - description: The ID of the group for which to return the security labels. To
         get the ID, run the tc-get-groups command.
-      name: group_id
+      name: id
       required: true
     deprecated: true
     description: Retrieves the security labels of a group.
@@ -2109,26 +2042,9 @@ script:
       description: The date on which the security label was added.
       type: Date
   - arguments:
-    - auto: PREDEFINED
-      description: The type of group for which to return the tags. Can be "adversaries",
-        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
-        "reports", "signatures", or "threats".
-      name: group_type
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
-      required: true
     - description: The ID of the group for which to return the tags. To get the ID,
         run the tc-get-groups command.
-      name: group_id
+      name: id
       required: true
     deprecated: true
     description: Retrieves the tags of a group.
@@ -2175,26 +2091,9 @@ script:
       description: The extension of the file.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The type of the group for which to return the indicators. Can be
-        "adversaries", "campaigns", "documents", "emails", "events", "incidents",
-        "intrusionSets", "reports", "signatures", or "threats".
-      name: group_type
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
-      required: true
     - description: The ID of the group for which to return the indicators. To get
         the ID, run the tc-get-groups command.
-      name: group_id
+      name: id
       required: true
     deprecated: true
     description: Returns indicators associated with a group.
@@ -2272,43 +2171,9 @@ script:
       description: The type of the group.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
-      name: group_type
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
-      required: true
     - description: The ID of the group. To get the ID of the group, run the tc-get-groups
         command.
-      name: group_id
-      required: true
-    - auto: PREDEFINED
-      description: The type of group to associate. Can be "adversaries", "campaigns",
-        "documents", "emails", "events", "incidents", "intrusionSets", "reports",
-        "signatures", or "threats".
-      name: associated_group_type
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
+      name: id
       required: true
     - description: The ID of the group to associate.
       name: associated_group_id
@@ -2320,15 +2185,9 @@ script:
     - contextPath: TC.Group.AssociatedGroup.AssociatedGroupID
       description: The ID of the associated group.
       type: Number
-    - contextPath: TC.Group.AssociatedGroup.AssociatedGroupType
-      description: The type of the associated group.
-      type: String
     - contextPath: TC.Group.AssociatedGroup.GroupID
       description: The ID of the group to associate to.
       type: Number
-    - contextPath: TC.Group.AssociatedGroup.GroupType
-      description: The type of the group to associate to.
-      type: String
   - arguments:
     - description: Indicator Value
       name: indicator

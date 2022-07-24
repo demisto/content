@@ -30,7 +30,8 @@ class Client:
         self.base_url = base_url
         self.verify = verify
 
-    def make_request(self, method: Method, url_suffix: str, payload: dict = {}, params: dict = {}, parse_json=True):  # pragma: no cover  # noqa
+    def make_request(self, method: Method, url_suffix: str, payload: dict = {}, params: dict = {},
+                     parse_json=True):  # pragma: no cover  # noqa
         headers = self.create_header(url_suffix, method)
 
         url = urljoin(self.base_url, url_suffix)
@@ -237,13 +238,13 @@ def get_indicators(client: Client, args_type: str, type_name: str) -> list:  # p
     })
 
 
-def create_or_query(delimiter_str: str, param_name: str) -> str:
+def create_or_query(delimiter_str: str, param_name: str, wrapper: str = '"') -> str:
     if not delimiter_str:
         return ''
     arr = delimiter_str.split(',')
     query = ''
     for item in arr:
-        query += f'{param_name}="{item}" OR '
+        query += f'{param_name}={wrapper}{item}{wrapper} OR '
     return query[:len(query) - 3]
 
 
@@ -619,7 +620,7 @@ def list_groups(client: Client, group_id: str = '', from_date: str = '', tag: st
         tql_filter = f' AND {tql_filter}'
         tql_prefix = '?tql='
     if group_id:
-        group_id = f' AND ({create_or_query(group_id, "id")})'
+        group_id = f' AND ({create_or_query(group_id, "id", "")})'
         tql_prefix = '?tql='
     fields = set_fields({'tags': include_tags, 'securityLabels': include_security_labels,
                          'attributes': include_attributes,
@@ -630,10 +631,9 @@ def list_groups(client: Client, group_id: str = '', from_date: str = '', tag: st
         tql = f'{tql_filter}{group_id}{group_type}{from_date}{tag}{security_label}'.replace(' AND ', '', 1)
         tql = urllib.parse.quote(tql.encode('utf8'))
         tql = f'?tql={tql}'
-    else:
-        if fields:
-            fields = fields.replace('&', '?', 1)
     url = f'/api/v3/groups{tql}{fields}&resultStart={page}&resultLimit={limit}'
+    if not tql_prefix:
+        url = url.replace('&', '?', 1)
 
     response, status_code = client.make_request(Method.GET, url)
     if status_code != 200:
@@ -1012,7 +1012,8 @@ def create_group(client: Client, name: str = '', event_date: str = '', group_typ
 
 
 def tc_add_indicator_command(client: Client, rating: str = '0', indicator: str = '', confidence: str = '0',
-                             description: str = '', tags: str = [], indicator_type: str = '') -> Any:  # pragma: no cover  # noqa
+                             description: str = '', tags: str = [],
+                             indicator_type: str = '') -> Any:  # pragma: no cover  # noqa
     args = demisto.args()
     tags = args.get('tags', tags)
     description = args.get('description', description)
@@ -1165,7 +1166,7 @@ def tc_incident_associate_indicator_command(client: Client) -> None:  # pragma: 
 def tc_update_group(client: Client, attribute_value: str = '', attribute_type: str = '', custom_field: str = '',
                     associated_indicator_id: str = None,
                     associated_group_id: str = '', security_labels: str = [], tags: str = [],
-                    mode: str = 'append') -> Any:  # pragma: no cover
+                    mode: str = 'append', raw_data=False) -> Any:  # pragma: no cover
     args = demisto.args()
     payload = {}
     if args.get('tags', tags):
@@ -1175,14 +1176,21 @@ def tc_update_group(client: Client, attribute_value: str = '', attribute_type: s
         payload['tags'] = {'data': tmp, 'mode': mode}
     if args.get('security_label', security_labels):
         security_labels = [{'name': args.get('security_label', security_labels)}]
-        payload['securityLabels'] = {'data': security_labels, 'mode': 'replace'}
+        if mode != 'appends':
+            mode = 'replace'
+        else:
+            mode = 'append'
+        payload['securityLabels'] = {'data': security_labels, 'mode': mode}
     if args.get('associated_group_id', associated_group_id):
         payload['associatedGroups'] = {'data': [{'id': args.get('associated_group_id', associated_group_id)}],
                                        'mode': mode}
     if args.get('associated_indicator_id', associated_indicator_id):
-        payload['associatedIndicators'] = {'data': [{'id': args.get('associated_group_id', associated_indicator_id)}],
-                                           'mode': mode}
-    if args.get('attribute_value', attribute_value) and args.get('attribute_type', attribute_type):
+        payload['associatedIndicators'] = {
+            'data': [{'id': args.get('associated_indicator_id', associated_indicator_id)}],
+            'mode': mode}
+    attribute_type = args.get('attribute_type', attribute_type)
+    attribute_value = args.get('attribute_value', attribute_value)
+    if attribute_value and attribute_type:
         payload['attributes'] = {"data": [{"type": attribute_type, "value": attribute_value}], 'mode': mode}
     if args.get('custom_field', custom_field):
         for field in args.get('custom_field', custom_field).split(','):
@@ -1194,6 +1202,8 @@ def tc_update_group(client: Client, attribute_value: str = '', attribute_type: s
     if status_code != 200:
         return_error('Error from the API: ' + response.get('message',
                                                            'An error has occurred if it persist please contact your local help desk'))
+    if raw_data:
+        return response, status_code
     ec = {
         'ID': response.get('data', {}).get('id'),
         'Name': response.get('data', {}).get('name'),
@@ -1232,12 +1242,240 @@ def download_document(client: Client):  # pragma: no cover
     demisto.results(file_entry)
 
 
+def add_group_attribute(client: Client):  # pragma: no cover
+    response, status_code = tc_update_group(client, raw_data=True)
+    headers = ['Type', 'Value', 'ID', 'DateAdded', 'LastModified']
+    contents = {}
+    for attribute in response.get('data').get('attributes', {}).get('data', []):
+        if attribute.get('type') == demisto.args().get('attribute_type'):
+            contents = {
+                'Type': attribute.get('type'),
+                'Value': attribute.get('value'),
+                'ID': attribute.get('id'),
+                'DateAdded': attribute.get('dateAdded'),
+                'LastModified': attribute.get('lastModified')
+            }
+            break
+    context = {
+        'TC.Group(val.ID && val.ID === obj.ID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('The attribute was added successfully to group {}'.format(demisto.args().get('id')), contents,
+                        headers,
+                        removeNull=True),
+        context,
+        attribute
+    )
+
+
+def add_group_security_label(client: Client):  # pragma: no cover
+    tc_update_group(client, raw_data=True, mode='appends')
+    args = demisto.args()
+    demisto.results(
+        f'The security label {args.get("security_label")} was added successfully to the group {args.get("id")}')
+
+
+def associate_group_to_group(client: Client):  # pragma: no cover
+    updated_group = tc_update_group(client, raw_data=True)
+    args = demisto.args()
+    context_entries = {
+        'GroupID': args.get('id'),
+        'AssociatedGroupID': args.get('associated_group_id'),
+    }
+    context = {
+        'TC.Group.AssociatedGroup(val.GroupID && val.GroupID === obj.GroupID)': context_entries
+    }
+    return_outputs('The group {} was associated successfully.'.format(args.get('associated_group_id')),
+                   context,
+                   updated_group[0].get('data'))
+
+
+def associate_indicator_to_group(client: Client):  # pragma: no cover
+    updated_group = tc_update_group(client, raw_data=True)
+    args = demisto.args()
+    context_entries = {
+        'GroupID': args.get('id'),
+        'AssociatedGroupID': args.get('associated_indicator_id'),
+    }
+    context = {
+        'TC.Indicator(val.Indicator && val.Indicator === obj.Indicator)': context_entries
+    }
+    return_outputs('The indicator {} was associated successfully.'.format(args.get('associated_indicator_id')),
+                   context,
+                   updated_group[0].get('data'))
+
+
+def get_group(client: Client) -> None:  # pragma: no cover
+    response, status_code = list_groups(client, return_raw=True)
+    if status_code != 200:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
+    group = response.get('data')[0]
+
+    contents = {
+        'ID': group.get('id'),
+        'Name': group.get('name'),
+        'Owner': group.get('ownerName'),
+        'DateAdded': group.get('dateAdded'),
+        'EventDate': group.get('eventDate'),
+        'Status': group.get('status')
+    }
+
+    context = {
+        'TC.Group(val.ID && val.ID === obj.ID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Group information', contents, removeNull=True),
+        context,
+        response
+    )
+
+
+def get_groups(client: Client) -> None:  # pragma: no cover
+    response, status_code = list_groups(client, return_raw=True)
+    if status_code != 200:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
+    groups = response.get('data')
+    contents = []
+    for group in groups:
+        content = {
+            'ID': group.get('id'),
+            'Name': group.get('name'),
+            'Owner': group.get('ownerName'),
+            'DateAdded': group.get('dateAdded'),
+            'EventDate': group.get('eventDate'),
+            'Status': group.get('status')
+        }
+        contents.append(content)
+
+    headers = ['ID', 'Name', 'OwnerName', 'EventDate', 'DateAdded', 'Status']
+    context = {
+        'TC.Group(val.ID && val.ID === obj.ID)': content
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect groups', content, headers, removeNull=True),
+        context,
+        response
+    )
+
+
+def get_group_tags(client: Client) -> None:  # pragma: no cover
+    response, status_code = list_groups(client, return_raw=True, include_tags=True)
+    if status_code != 200:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
+    tags = response.get('data')[0].get('tags', {}).get('data', [])
+    contents = []
+    context_entries = []
+    for tag in tags:
+        contents.append({
+            'Name': tag.get('name')
+        })
+
+        context_entries.append({
+            'GroupID': demisto.args().get('id'),
+            'Name': tag.get('name')
+        })
+
+    context = {
+        'TC.Group.Tag(val.GroupID && val.GroupID === obj.GroupID && val.Name && val.Name === obj.Name)': context_entries
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Group Tags', contents, removeNull=True),
+        context,
+        response
+    )
+
+
+def get_group_indicators(client: Client) -> None:  # pragma: no cover
+    response, status_code = list_groups(client, return_raw=True, include_associated_indicators=True)
+    if status_code != 200:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
+    indicators = response.get('data')[0].get('associatedIndicators', {}).get('data', [])
+    contents = []
+    for indicator in indicators:
+        contents.append({
+            'GroupID': demisto.args().get('id'),
+            'IndicatorID': indicator.get('id'),
+            'OwnerName': indicator.get('ownerName'),
+            'Type': indicator.get('type'),
+            'DateAdded': indicator.get('dateAdded'),
+            'LastModified': indicator.get('lastModified'),
+            'Rating': indicator.get('rating'),
+            'Confidence': indicator.get('confidence'),
+            'ThreatAssertRating': indicator.get('threatAssessRating'),
+            'ThreatAssessConfidence': indicator.get('threatAssessConfidence'),
+            'Summary': indicator.get('summary')
+        })
+
+    context = {
+        'TC.Group.Indicator(val.GroupID && val.GroupID === obj.GroupID && val.IndicatorID && val.IndicatorID === '
+        'obj.IndicatorID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Group Indicators', contents, removeNull=True),
+        context,
+        response
+    )
+
+
+def get_group_security_labels(client: Client) -> None:  # pragma: no cover
+    response, status_code = list_groups(client, return_raw=True, include_security_labels=True)
+    if status_code != 200:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
+    security_labels = response.get('data')[0].get('securityLabels', {}).get('data', [])
+    contents = []
+    headers = ['Name', 'Description', 'DateAdded']
+    for security_label in security_labels:
+        contents.append({
+            'GroupID': demisto.args().get('id'),
+            'Name': security_label.get('name'),
+            'Description': security_label.get('description'),
+            'DateAdded': security_label.get('dateAdded')
+        })
+
+    context = {
+        'TC.Group.SecurityLabel(val.GroupID && val.GroupID === obj.GroupID && val.Name && val.Name === '
+        'obj.Name)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Group Security Labels', contents, headers, removeNull=True),
+        context
+    )
+
+
+def add_group_tag(client: Client):  # pragma: no cover
+    tags: str = demisto.args().get('tag_name')
+    tc_update_group(client, raw_data=True, tags=tags)
+    args = demisto.args()
+    demisto.results(f'The tag {tags.split(",")} was added successfully to group {args.get("group_id")}')
+
+
 COMMANDS = {
     'test-module': test_integration,
     'ip': get_ip_indicators,
     'url': get_url_indicators,
     'file': get_file_indicators,
     'domain': get_domain_indicators,
+    'tc-add-group-attribute': add_group_attribute,
+    'tc-add-group-security-label': add_group_security_label,
+    'tc-add-group-tag': add_group_tag,
+    'tc-associate-group-to-group': associate_group_to_group,
+    'tc-group-associate-indicator': associate_indicator_to_group,
+    'tc-get-group': get_group,
+    'tc-get-groups': get_groups,
+    'tc-get-group-tags': get_group_tags,
+    'tc-get-group-indicators': get_group_indicators,
+    'tc-get-group-security-labels': get_group_security_labels,
     'tc-list-groups': list_groups,
     'tc-owners': tc_get_owners_command,
     'tc-indicators': tc_get_indicators_command,
@@ -1271,7 +1509,8 @@ COMMANDS = {
 def main(params):  # pragma: no cover
     try:
         insecure = not params.get('insecure')
-        client = Client(params.get('accessId'), params.get('secretKey'), params.get('baseUrl'), insecure)
+        client = Client(params.get('accessId'), params.get('api_secret_key').get('password'), params.get('baseUrl'),
+                        insecure)
         command = demisto.command()
         if command in COMMANDS.keys():
             COMMANDS[command](client)
