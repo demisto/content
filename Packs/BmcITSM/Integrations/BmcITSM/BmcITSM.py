@@ -3510,6 +3510,7 @@ def test_module(client: Client) -> None:
     Args:
         client (Client): BMC ITSM API client.
     """
+    client.list_request('COM:Company')
     return_results("ok")
 
 
