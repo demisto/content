@@ -14,14 +14,17 @@
     "tags": [
         "Scam",
         "Spam",
-        "Email"
+        "Email",
+        "Use Case",
+        "Incident Response"
     ],
     "itemPrefix": [
         "Email",
         "Reported"
     ],
     "useCases": [
-        "Phishing"
+        "Phishing",
+        "Incident Response"
     ],
     "keywords": [],
     "dependencies": {
