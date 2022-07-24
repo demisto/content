@@ -1708,8 +1708,8 @@ class Pack(object):
         changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes).strip()
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
-    
-    def are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
+
+    def are_all_changes_relevant_to_more_than_one_marketplace(self, modified_files_data):
         """
         Returns whether the modified files are also relevant to other marketplaces besides the current one
         to which the upload is done.
@@ -1721,7 +1721,9 @@ class Pack(object):
             (bool) True, if all the files are relevant to more than one marketplace.
                    False, if there is an item that is relevant only to the current marketplace.
         """
-        for item in modified_files_data:
+        modified_items = [list(item.values())[0] for data in modified_files_data.values() for item in data]
+
+        for item in modified_items:
             if len(item['marketplaces']) == 1:
                 return False
 
