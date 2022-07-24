@@ -1604,7 +1604,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "afer", you need to supply the "dst" argument.
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
