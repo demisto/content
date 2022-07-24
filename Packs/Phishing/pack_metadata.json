@@ -227,6 +227,10 @@
         "Palo_Alto_Networks_WildFire": {
             "mandatory": false,
             "display_name": "Palo Alto Networks WildFire"
+        },
+        "DeprecatedContent": {
+            "mandatory": false,
+            "display_name": "Deprecated Content"
         }
     },
     "marketplaces": [

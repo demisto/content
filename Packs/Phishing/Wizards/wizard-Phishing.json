@@ -387,7 +387,7 @@
         "description": "Configure 'Threat Grid' to enable file detonation to improve investigation"
         },
         {
-        "name": "CrowdStrike Falcon Sandbox v2",
+        "name": "CrowdStrike Falcon Sandbox V2",
         "action": {
           "existing": "Configure 'CrowdStrike Falcon Sandbox v2' to enable file detonation to improve investigation.",
           "new": "Configure 'CrowdStrike Falcon Sandbox v2' to enable file detonation to improve investigation."
@@ -419,7 +419,7 @@
         "description": "Configure 'Hybrid Analysis' to enable file detonation to improve investigation."
         },
         {
-        "name": "FireEye",
+        "name": "fireeye",
         "action": {
           "existing": "Configure 'FireEye AX' to enable file detonation to improve investigation.",
           "new": "Configure 'FireEye AX' to enable file detonation to improve investigation.."
@@ -427,7 +427,7 @@
         "description": "Configure 'FireEye AX' to enable file detonation to improve investigation."
         },
         {
-        "name": "VMRay",
+        "name": "vmray",
         "action": {
           "existing": "Configure 'VMRay' to enable file detonation to improve investigation.",
           "new": "Configure 'VMRay' to enable file detonation to improve investigation."
