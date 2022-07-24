@@ -3,6 +3,16 @@ commonfields:
   id: XSOAR-Web-Server
   version: -1
 configuration:
+- additionalinfo: The URL on which the user should send the response to.
+  display: ""
+  name: xsoar-external-url
+  required: true
+  type: 0
+- additionalinfo: The port on which the integration instance will listen
+  display: Server Listening Port
+  name: longRunningPort
+  required: true
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
@@ -11,16 +21,6 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- additionalinfo: The port on which the integration instance will listen
-  display: Server Listening Port
-  name: longRunningPort
-  required: true
-  type: 0
-- additionalinfo: The URL on which the user should send the response to.
-  display: ""
-  name: xsoar-external-url
-  required: true
-  type: 0
 description: 'This is a simple web-server that as of now, supports handling configurable
   user responses (like Yes/No/Maybe). What makes it different from Data collection
   tasks is that, the URL to perform a certain action is predictable and written to
