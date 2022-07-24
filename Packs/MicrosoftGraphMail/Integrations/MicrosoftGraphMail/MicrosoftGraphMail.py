@@ -67,6 +67,7 @@ WELL_KNOWN_FOLDERS = {
 class MsGraphClient:
     ITEM_ATTACHMENT = '#microsoft.graph.itemAttachment'
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
+    # maximum attachment size to be sent through the api, files larger must be uploaded via upload session
     MAX_ATTACHMENT_SIZE = 3145728  # 3mb = 3145728 bytes
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
