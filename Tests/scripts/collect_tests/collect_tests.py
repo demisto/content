@@ -3,7 +3,6 @@ import sys
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
-from functools import reduce
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -55,7 +54,7 @@ class CollectionResult:
             reason: CollectionReason,
             version_range: Optional[VersionRange],
             reason_description: str,
-            skipped_tests: dict[str, str]
+            conf: Optional[TestConf],
     ):
         """
         Collected test playbook, and/or pack to install.
@@ -69,23 +68,26 @@ class CollectionResult:
         :param reason: CollectionReason explaining the collection
         :param version_range: XSOAR versions on which the content should be tested, matching the from/toversion fields.
         :param reason_description: free text elaborating on the collection, e.g. path of the changed file.
-        :param skipped_tests: conf.json dictionary mapping skipped tests to their skip reason.
+        :param conf: a ConfJson object. It may be None only when reason==DUMMY_OBJECT_FOR_COMBINING.
         """
         self.tests: set[str] = set()
         self.packs: set[str] = set()
-
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: Optional[Iterable[Machine]] = None
 
-        if not (any((pack, test))) and reason != CollectionReason.DUMMY_OBJECT_FOR_COMBINING:
-            logger.warning('neither pack nor test were provided')
+        if reason != CollectionReason.DUMMY_OBJECT_FOR_COMBINING:
+            if not conf:
+                # may be None only when reason==DUMMY_OBJECT_FOR_COMBINING
+                raise ValueError('no conf.json was provided')
+
+            if not any((pack, test)):
+                logger.warning('neither pack nor test were provided')
 
         if test:
             # precedes the pack collection, as a skipped test may cause return and stop initialization.
-            if test in skipped_tests:
-                skip_reason = skipped_tests[test]
-                logger.info(f'ignoring skipped test {test}, skip reason = {reason}'
-                            f' (overriding collection reason {skip_reason} {reason_description})')
+            if skip_reason := conf.skipped_tests.get(test):
+                logger.info(f'ignoring skipped {test=}, {skip_reason=}'
+                            f' (overriding collection {reason=} {reason_description})')
                 return
             self.tests = {test}
 
@@ -101,7 +103,7 @@ class CollectionResult:
     @staticmethod
     def __empty_result() -> 'CollectionResult':
         # used for combining two CollectionResult objects
-        return CollectionResult(None, None, CollectionReason.DUMMY_OBJECT_FOR_COMBINING, None, '', {})
+        return CollectionResult(None, None, CollectionReason.DUMMY_OBJECT_FOR_COMBINING, None, '', None)
 
     def __add__(self, other: 'CollectionResult') -> 'CollectionResult':
         # initial object just to add others to
@@ -142,7 +144,7 @@ class TestCollector(ABC):
         return CollectionResult.union(tuple(
             CollectionResult(test=test, pack=None, reason=CollectionReason.SANITY_TESTS,
                              version_range=None, reason_description=str(self.marketplace.value),
-                             skipped_tests=self.conf.skipped_tests)
+                             conf=self.conf)
             for test in test_names)
         )
 
@@ -180,15 +182,14 @@ class TestCollector(ABC):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
-    @staticmethod
-    def _collect_pack(pack_name: str, reason: CollectionReason, reason_description: str) -> CollectionResult:
+    def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str) -> CollectionResult:
         return CollectionResult(
             test=None,
             pack=pack_name,
             reason=reason,
             version_range=PACK_MANAGER[pack_name].version_range,
             reason_description=reason_description,
-            skipped_tests=dict()  # not collecting any tests anyway
+            conf=self.conf
         )
 
 
@@ -298,7 +299,7 @@ class BranchTestCollector(TestCollector):
                         reason=reason,
                         version_range=yml.version_range,
                         reason_description=f'{yml.id_=} ({relative_yml_path})',
-                        skipped_tests=self.conf.skipped_tests
+                        conf=self.conf
                     )
                     for test in tests
                 ))
@@ -369,7 +370,7 @@ class BranchTestCollector(TestCollector):
                                                              reason=reason,
                                                              version_range=content_item.version_range,
                                                              reason_description=reason_description,
-                                                             skipped_tests=self.conf.skipped_tests) for test in
+                                                             conf=self.conf) for test in
                                             tests))
 
     def _get_changed_files(self) -> tuple[str, ...]:
@@ -438,7 +439,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
                     reason_description=f'({self.marketplace.value})',
                     version_range=playbook.version_range,
-                    skipped_tests=self.conf.skipped_tests)
+                    conf=self.conf)
                 )
 
         if not collected:
@@ -473,7 +474,7 @@ class NightlyTestCollector(TestCollector, ABC):
         return CollectionResult.union(
             tuple(CollectionResult(test=None, pack=pack, reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
                                    version_range=None, reason_description=f'({self.marketplace.value})',
-                                   skipped_tests=self.conf.skipped_tests)
+                                   conf=self.conf)
                   for pack in packs)
         )
 
@@ -508,7 +509,7 @@ class NightlyTestCollector(TestCollector, ABC):
                             reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
                             version_range=item.version_range or pack.version_range,
                             reason_description=f'{str(relative_path)}, ({self.marketplace.value})',
-                            skipped_tests=self.conf.skipped_tests
+                            conf=self.conf
                         )
                     )
 
