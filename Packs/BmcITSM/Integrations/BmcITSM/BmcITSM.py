@@ -232,7 +232,7 @@ TICKET_TYPE_TO_DISPLAY_ID = {
 ID_QUERY_MAPPER_KEY = "IDS"
 EQUAL_QUERY_MAPPER_KEY = "EQUAL"
 LIKE_QUERY_MAPPER_KEY = "LIKE"
-DEFAULT_FETCH = 50
+DEFAULT_MAX_FETCH  = 50
 DEFAULT_LIMIT = 50
 ALL_OPTION = "All"
 TOKEN_EXPIRE_TIME = 3600
@@ -3526,7 +3526,7 @@ def main() -> None:
     username = credentials.get("identifier")
     password = credentials.get("password")
 
-    max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_FETCH))
+    max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH ))
     first_fetch = params.get("first_fetch")
     ticket_types = argToList(params.get("ticket_type"))
     ticket_statuses = argToList(params.get("ticket_status"))
