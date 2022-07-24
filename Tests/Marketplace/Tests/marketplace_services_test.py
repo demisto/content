@@ -1071,7 +1071,8 @@ This is visible
                     'id':
                         {
                             "file_path": "some/path",
-                            "display_name": "Other Integration Display Name"
+                            "display_name": "Other Integration Display Name",
+                            "marketplaces": []
                         }
                 }
             ]
@@ -1223,7 +1224,8 @@ This is visible
                     'id':
                         {
                             "file_path": "some/path",
-                            "display_name": "Integration Display Name"
+                            "display_name": "Integration Display Name",
+                            "marketplaces": []
                         }
                 }
             ],
@@ -1232,7 +1234,8 @@ This is visible
                     'id':
                         {
                             "file_path": "some/path",
-                            "display_name": "Script Name"
+                            "display_name": "Script Name",
+                            "marketplaces": []
                         }
                 }
             ],
@@ -1240,7 +1243,8 @@ This is visible
                 {
                     'id':
                         {
-                            "display_name": "Field Name 1"
+                            "display_name": "Field Name 1",
+                            "marketplaces": []
                         }
                 }
             ]
