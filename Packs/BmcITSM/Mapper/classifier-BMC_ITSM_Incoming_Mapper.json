@@ -6,31 +6,31 @@
         "BMC Change-Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BMC Contact Sensitivity": {
+                "BmcITSM Contact Sensitivity": {
                     "simple": "ContactSensitivity"
                 },
-                "BMC Display ID": {
+                "BmcITSM Display ID": {
                     "simple": "DisplayID"
                 },
-                "BMC Impact": {
+                "BmcITSM Impact": {
                     "simple": "Impact"
                 },
-                "BMC Reason For Change": {
+                "BmcITSM Reason For Change": {
                     "simple": "ReasonForChange"
                 },
-                "BMC Request ID": {
+                "BmcITSM Request ID": {
                     "simple": "RequestID"
                 },
-                "BMC Risk Level": {
+                "BmcITSM Risk Level": {
                     "simple": "RiskLevel"
                 },
-                "BMC Status Reason": {
+                "BmcITSM Status Reason": {
                     "simple": "StatusReason"
                 },
-                "BMC Sub-Type": {
+                "BmcITSM Sub-Type": {
                     "simple": "SubType"
                 },
-                "BMC Submitter": {
+                "BmcITSM Submitter": {
                     "simple": "Submitter"
                 }
             }
@@ -38,25 +38,25 @@
         "BMC Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BMC Contact Sensitivity": {
+                "BmcITSM Contact Sensitivity": {
                     "simple": "ContactSensitivity"
                 },
-                "BMC Display ID": {
+                "BmcITSM Display ID": {
                     "simple": "DisplayID"
                 },
-                "BMC Impact": {
+                "BmcITSM Impact": {
                     "simple": "Impact"
                 },
-                "BMC Request ID": {
+                "BmcITSM Request ID": {
                     "simple": "RequestID"
                 },
-                "BMC Status Reason": {
+                "BmcITSM Status Reason": {
                     "simple": "StatusReason"
                 },
-                "BMC Sub-Type": {
+                "BmcITSM Sub-Type": {
                     "simple": "SubType"
                 },
-                "BMC Submitter": {
+                "BmcITSM Submitter": {
                     "simple": "Submitter"
                 }
             }
@@ -64,25 +64,25 @@
         "BMC Problem Investigation incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BMC Contact Sensitivity": {
+                "BmcITSM Contact Sensitivity": {
                     "simple": "ContactSensitivity"
                 },
-                "BMC Display ID": {
+                "BmcITSM Display ID": {
                     "simple": "DisplayID"
                 },
-                "BMC Impact": {
+                "BmcITSM Impact": {
                     "simple": "Impact"
                 },
-                "BMC Request ID": {
+                "BmcITSM Request ID": {
                     "simple": "RequestID"
                 },
-                "BMC Status Reason": {
+                "BmcITSM Status Reason": {
                     "simple": "StatusReason"
                 },
-                "BMC Sub-Type": {
+                "BmcITSM Sub-Type": {
                     "simple": "SubType"
                 },
-                "BMC Submitter": {
+                "BmcITSM Submitter": {
                     "simple": "Submitter"
                 }
             }
@@ -90,25 +90,25 @@
         "BMC Problem – Known Error": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BMC Contact Sensitivity": {
+                "BmcITSM Contact Sensitivity": {
                     "simple": "ContactSensitivity"
                 },
-                "BMC Display ID": {
+                "BmcITSM Display ID": {
                     "simple": "DisplayID"
                 },
-                "BMC Impact": {
+                "BmcITSM Impact": {
                     "simple": "Impact"
                 },
-                "BMC Request ID": {
+                "BmcITSM Request ID": {
                     "simple": "RequestID"
                 },
-                "BMC Status Reason": {
+                "BmcITSM Status Reason": {
                     "simple": "StatusReason"
                 },
-                "BMC Sub-Type": {
+                "BmcITSM Sub-Type": {
                     "simple": "SubType"
                 },
-                "BMC Submitter": {
+                "BmcITSM Submitter": {
                     "simple": "Submitter"
                 }
             }
@@ -116,25 +116,25 @@
         "BMC Service Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BMC Contact Sensitivity": {
+                "BmcITSM Contact Sensitivity": {
                     "simple": "ContactSensitivity"
                 },
-                "BMC Display ID": {
+                "BmcITSM Display ID": {
                     "simple": "DisplayID"
                 },
-                "BMC Impact": {
+                "BmcITSM Impact": {
                     "simple": "Impact"
                 },
-                "BMC Request ID": {
+                "BmcITSM Request ID": {
                     "simple": "RequestID"
                 },
-                "BMC Status Reason": {
+                "BmcITSM Status Reason": {
                     "simple": "StatusReason"
                 },
-                "BMC Sub-Type": {
+                "BmcITSM Sub-Type": {
                     "simple": "SubType"
                 },
-                "BMC Submitter": {
+                "BmcITSM Submitter": {
                     "simple": "Submitter"
                 }
             }
@@ -142,22 +142,22 @@
         "BMC Task": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BMC Contact Sensitivity": {
+                "BmcITSM Contact Sensitivity": {
                     "simple": "ContactSensitivity"
                 },
-                "BMC Display ID": {
+                "BmcITSM Display ID": {
                     "simple": "DisplayID"
                 },
-                "BMC Request ID": {
+                "BmcITSM Request ID": {
                     "simple": "RequestID"
                 },
-                "BMC Status Reason": {
+                "BmcITSM Status Reason": {
                     "simple": "StatusReason"
                 },
-                "BMC Sub-Type": {
+                "BmcITSM Sub-Type": {
                     "simple": "SubType"
                 },
-                "BMC Submitter": {
+                "BmcITSM Submitter": {
                     "simple": "Submitter"
                 }
             }
@@ -165,7 +165,7 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BMC Assignee": {
+                "BmcITSM Assignee": {
                     "complex": {
                         "filters": [],
                         "root": "Assignee",
@@ -176,7 +176,7 @@
                         ]
                     }
                 },
-                "BMC Customer": {
+                "BmcITSM Customer": {
                     "complex": {
                         "filters": [],
                         "root": "Customer",
@@ -187,7 +187,7 @@
                         ]
                     }
                 },
-                "BMC Requester": {
+                "BmcITSM Requester": {
                     "complex": {
                         "filters": [],
                         "root": "Requester",
