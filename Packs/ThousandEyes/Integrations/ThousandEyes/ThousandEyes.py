@@ -59,15 +59,6 @@ class Client(BaseClient):
         Returns:
             Either a Response Object or Dictionary, depending on the resp_type value
         """
-        # return self._http_request(
-        #     method=method,
-        #     url_suffix=url_suffix,
-        #     params=params,
-        #     data=data,
-        #     json_data=json_data,
-        #     timeout=timeout,
-        #     resp_type=resp_type,
-        # )
 
         if test_module:
             response = self._http_request(
