@@ -61,8 +61,8 @@ contentitemexportablefields:
     toServerVersion: ""
 description: This Integration is used to to fetch-incidents via “Active alerts”, get
   alert details via “Alert details”, and get the “Agent list”.
-display: 'ThousandEyes '
-name: 'ThousandEyes '
+display: 'ThousandEyes'
+name: 'ThousandEyes'
 script:
   commands:
   - arguments:
