@@ -2633,7 +2633,7 @@ def validate_related_arguments_provided(**related_args):
     at_least_one_is_provided = any(related_args.values())
     at_least_one_is_not_provided = not all(related_args.values())
     if at_least_one_is_not_provided and at_least_one_is_provided:
-        raise ValueError(f"The arguments: {list(related_args.keys())} should be provided together.")
+        raise ValueError(f"The arguments: {list(related_args.keys())} either all should all have value, or none should have value.")
 
 
 def extract_args_from_additional_fields_arg(additional_fields: str,
