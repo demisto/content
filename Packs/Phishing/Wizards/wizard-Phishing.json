@@ -547,12 +547,12 @@
         "description": "Configure 'VirusTotal - Private API' to enrich IOCs as part of the investigation."
         },
         {
-        "name": "Pwned",
+        "name": "Have I Been Pwned? V2",
         "action": {
-          "existing": "Configure 'Pwned' to enrich IOCs as part of the investigation.",
-          "new": "Configure 'Pwned' to enrich IOCs as part of the investigation."
+          "existing": "Configure 'Have I Been Pwned? V2' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'Have I Been Pwned? V2' to enrich IOCs as part of the investigation."
           },
-        "description": "Configure 'Pwned' to enrich IOCs as part of the investigation."
+        "description": "Configure 'Have I Been Pwned? V2' to enrich IOCs as part of the investigation."
         },
         {
         "name": "PhishTank V2",
