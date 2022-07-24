@@ -1,6 +1,4 @@
-import email.message
 import json
-
 
 import demistomock as demisto
 
@@ -13,7 +11,6 @@ import quopri
 from email.parser import Parser
 from htmlentitydefs import name2codepoint
 from HTMLParser import HTMLParser, HTMLParseError
-
 
 ''' GLOBALS/PARAMS '''
 SERVER = demisto.params().get('server', '')
@@ -28,6 +25,7 @@ pop3_server_conn = None  # type: ignore
 
 TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
 
 def connect_pop3_server():
     global pop3_server_conn
@@ -205,8 +203,8 @@ def parse_mail_parts(parts):
 
         content_type = headers.get('content-type', 'text/plain')
 
-        is_attachment = headers.get('content-disposition', '').startswith('attachment')\
-            or headers.get('x-attachment-id') or "image" in content_type
+        is_attachment = headers.get('content-disposition', '').startswith('attachment') or \
+                        headers.get('x-attachment-id') or "image" in content_type
 
         if 'multipart' in content_type or isinstance(part._payload, list):
             part_body, part_html, part_attachments = parse_mail_parts(part._payload)

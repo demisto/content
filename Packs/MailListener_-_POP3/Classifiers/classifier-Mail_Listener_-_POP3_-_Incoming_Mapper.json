@@ -13,11 +13,41 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 1,
+	"logicalVersion": 2,
 	"mapping": {
 		"Phishing": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
+				"Attachment Count": {
+					"complex": {
+						"filters": [],
+						"root": "attachments",
+						"transformers": [
+							{
+								"operator": "count"
+							}
+						]
+					}
+				},
+				"Attachment Name": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "attachments",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					}
+				},
 				"Email BCC": {
 					"complex": {
 						"filters": [],
