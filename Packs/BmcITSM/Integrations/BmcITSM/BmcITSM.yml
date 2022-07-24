@@ -2324,7 +2324,7 @@ script:
       deprecated: false
       arguments:
         - name: status
-          description: Known error status.
+          description: The known error ticket status.
           required: true
           isArray: false
           defaultValue: ""
@@ -2338,21 +2338,21 @@ script:
             - Closed
             - Cancelled
         - name: summary
-          description: known error summary.
+          description: The known error ticket summary.
           required: true
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: details
-          description: known error Detailed description.
+          description: The known error ticket detailed description.
           required: true
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: impact
-          description: Known error impact.
+          description: The known error ticket impact.
           required: true
           isArray: false
           defaultValue: ""
@@ -2363,7 +2363,7 @@ script:
             - 3-Moderate/Limited
             - 4-Minor/Localized
         - name: urgency
-          description: Known error urgency.
+          description: The known error ticket urgency.
           required: true
           isArray: false
           auto: PREDEFINED
@@ -2495,14 +2495,14 @@ script:
       deprecated: false
       arguments:
         - name: ticket_request_id
-          description: Known Error request ID.
+          description: The known error ticket request ID.
           required: true
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: status
-          description: Known error status.
+          description: The known error ticket status.
           required: false
           isArray: false
           defaultValue: ""
@@ -2516,21 +2516,21 @@ script:
             - Closed
             - Cancelled
         - name: summary
-          description: known error summary.
+          description: The known error ticket summary.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: details
-          description: Known error detailed description.
+          description: The known error ticket detailed description.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: impact
-          description: Problem investigation impact.
+          description: The known error ticket impact.
           required: false
           isArray: false
           defaultValue: ""
@@ -2541,7 +2541,7 @@ script:
             - 3-Moderate/Limited
             - 4-Minor/Localized
         - name: urgency
-          description: Problem investigation urgency.
+          description: The known error ticket urgency.
           required: false
           isArray: false
           defaultValue: ""
@@ -2552,7 +2552,7 @@ script:
             - 3-Medium
             - 4-Low
         - name: view_access
-          description: "known error internal access. "
+          description: "The known error ticket internal access. "
           required: false
           isArray: false
           defaultValue: ""
@@ -2568,7 +2568,7 @@ script:
           predefined:
             - ""
         - name: target_resolution_date
-          description: Known error resolution date. Future resolution date. For example, in 12 hours, in 7 days.
+          description: The known error ticket resolution date. Future resolution date. For example, in 12 hours, in 7 days.
           required: false
           isArray: false
           defaultValue: ""
