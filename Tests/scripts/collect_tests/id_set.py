@@ -40,7 +40,6 @@ class IdSetItem(DictBased):
         return tuple(self.get('implementing_playbooks', (), warn_if_missing=False))
 
 
-
 class IdSet(DictFileBased):
     def __init__(self, marketplace: MarketplaceVersions, id_set_path: Path):
         super().__init__(id_set_path, is_infrastructure=True)
@@ -60,7 +59,6 @@ class IdSet(DictFileBased):
                 self.implemented_scripts_to_tests[script].append(test)
             for playbook in test.implementing_playbooks:
                 self.implemented_playbooks_to_tests[playbook].append(test)
-
 
     @property
     def artifact_iterator(self) -> Iterable[IdSetItem]:
@@ -84,7 +82,7 @@ class IdSet(DictFileBased):
         yield from self.id_to_test_playbook.values()
 
     @property
-    def scripts(self) -> Iterable[IdSetItem]:
+    def scripts(self) -> Iterable[IdSetItem]:  # todo remove if unused
         yield from self.id_to_script.values()
 
     def _parse_items(self, key: str) -> dict[str, IdSetItem]:
