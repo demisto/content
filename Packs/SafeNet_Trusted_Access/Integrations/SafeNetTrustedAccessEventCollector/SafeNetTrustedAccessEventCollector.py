@@ -1,7 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-import requests
 from typing import Dict, Any, Tuple
 
 # Disable insecure warnings
