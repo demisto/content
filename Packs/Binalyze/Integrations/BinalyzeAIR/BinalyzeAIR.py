@@ -160,5 +160,5 @@ def main() -> None:
         return_error(f'Failed to execute "{command}". Error: {str(ex)}')
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
