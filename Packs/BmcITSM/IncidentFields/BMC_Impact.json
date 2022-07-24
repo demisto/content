@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BMC Impact",
+    "name": "BmcITSM Impact",
     "ownerOnly": false,
     "cliName": "bmcimpact",
     "type": "shortText",

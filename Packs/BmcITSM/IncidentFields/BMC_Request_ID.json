@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BMC Request ID",
+    "name": "BmcITSM Request ID",
     "ownerOnly": false,
     "cliName": "bmcrequestid",
     "type": "shortText",

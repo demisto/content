@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BMC Assignee",
+    "name": "BmcITSM Assignee",
     "ownerOnly": false,
     "cliName": "bmcassignee",
     "type": "grid",

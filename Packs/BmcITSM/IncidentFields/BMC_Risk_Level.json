@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BMC Risk Level",
+    "name": "BmcITSM Risk Level",
     "ownerOnly": false,
     "cliName": "bmcrisklevel",
     "type": "shortText",

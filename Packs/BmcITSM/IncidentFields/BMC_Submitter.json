@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BMC Submitter",
+    "name": "BmcITSM Submitter",
     "ownerOnly": false,
     "cliName": "bmcsubmitter",
     "type": "shortText",

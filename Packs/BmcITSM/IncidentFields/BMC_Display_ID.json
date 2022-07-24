@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BMC Display ID",
+    "name": "BmcITSM Display ID",
     "ownerOnly": false,
     "cliName": "bmcdisplayid",
     "type": "shortText",

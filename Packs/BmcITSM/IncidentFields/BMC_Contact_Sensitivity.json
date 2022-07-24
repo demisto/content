@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BMC Contact Sensitivity",
+    "name": "BmcITSM Contact Sensitivity",
     "ownerOnly": false,
     "cliName": "bmccontactsensitivity",
     "type": "shortText",

@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BMC Reason For Change",
+    "name": "BmcITSM Reason For Change",
     "ownerOnly": false,
     "cliName": "bmcreasonforchange",
     "type": "shortText",

@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BMC Sub-Type",
+    "name": "BmcITSM Sub-Type",
     "ownerOnly": false,
     "cliName": "bmcsubtype",
     "type": "shortText",

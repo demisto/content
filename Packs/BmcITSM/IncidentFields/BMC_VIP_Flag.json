@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BMC VIP Flag",
+    "name": "BmcITSM VIP Flag",
     "ownerOnly": false,
     "cliName": "bmcvipflag",
     "type": "shortText",

@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BMC Customer",
+    "name": "BmcITSM Customer",
     "ownerOnly": false,
     "cliName": "bmccustomer",
     "type": "grid",
