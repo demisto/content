@@ -7,9 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
-- displaypassword: API token
-  hidden: false
-  hiddenusername: true
+- hidden: false
   name: credentials
   required: true
   type: 9
@@ -28,7 +26,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 7 days
+- additionalinfo: 'For api version v1, the first fetch can only be: 60 Minutes, 24
+    Hours, 7 days, 30 days, 60 days and 90 days.'
+  defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
   name: first_fetch
@@ -74,13 +74,15 @@ script:
     name: netskope-get-events
   dockerimage: demisto/python3:3.10.5.31928
   feed: false
-  isfetchevents: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-marketplaces:
-- marketplacev2
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0

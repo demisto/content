@@ -1,17 +1,7 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
-import json
 import io
+import json
+
+from NetskopeEventCollector import get_sorted_events_by_type, get_last_run
 
 
 def util_load_json(path):
@@ -19,24 +9,58 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+MOCK_ENTRY = util_load_json('test_data/mock_events.json')
 
-    Checks the output of the command function with the expected output.
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
+def test_get_sorted_events_by_type():
+    assert get_sorted_events_by_type(MOCK_ENTRY, event_type='audit') == [
+        {
+            "timestamp": 1658381961,
+            "type": "admin_audit_logs",
+            "user": "testing@test.com",
+            "severity_level": 2,
+            "audit_log_event": "Logout Successful",
+            "supporting_data": {
+                "data_type": "reason",
+                "data_values": [
+                    "Logged out due to inactivity"
+                ]
+            },
+            "organization_unit": "test-unit",
+            "ur_normalized": "testing@test.com",
+            "ccl": "unknown",
+            "count": 1,
+            "_insertion_epoch_timestamp": 1658382261,
+            "_id": "c8d6aed8f613f5de0fa5e123",
+            "event_type": "audit"
+        },
+        {
+            "timestamp": 1658384700,
+            "type": "admin_audit_logs",
+            "user": "testing@test.com",
+            "severity_level": 2,
+            "audit_log_event": "Login Successful",
+            "supporting_data": {
+                "data_type": "user",
+                "data_values": [
+                    "1.1.1.1",
+                    "testing@test.com"
+                ]
+            },
+            "organization_unit": "test-unit",
+            "ur_normalized": "testing@test.com",
+            "ccl": "unknown",
+            "count": 1,
+            "_insertion_epoch_timestamp": 1658385000,
+            "_id": "d3ad748bf011262fa142123",
+            "event_type": "audit"
+        }]
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+def test_get_last_run():
+    assert get_last_run(MOCK_ENTRY, {}) == {'alert': 1657199079, 'application': 1656892796, 'audit': 1658384700,
+                                            'network': 1657693921}
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+    # Still no events - last run should be from first_fetch
+    assert get_last_run([], {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400}) == \
+           {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400}

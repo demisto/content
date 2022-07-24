@@ -13,15 +13,6 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-# Relevant for api version v1
-TIME_PERIOD_MAPPING = {
-    'Last 60 Minutes': 3600,
-    'Last 24 Hours': 86400,
-    'Last 7 Days': 604800,
-    'Last 30 Days': 2592000,
-    'Last 60 Days': 5184000,
-    'Last 90 Days': 7776000
-}
 
 EVENT_TYPES_V1 = ['application', 'audit', 'network']  # api version - v1
 EVENT_TYPES_V2 = ['alert', 'application', 'audit', 'network']  # api version v2
@@ -93,7 +84,7 @@ class Client(BaseClient):
         return []
 
     def get_events_request_v2(self, last_run: dict, limit: Optional[int] = None,
-                              is_test: bool = False) -> List:
+                              is_test: bool = False) -> List[Any] | Any:
         """
         Get all events extracted from Saas traffic and or logs.
         Args:
@@ -196,7 +187,8 @@ def get_last_run(events: list, last_run: dict) -> dict:  # type: ignore
 
 def test_module(client: Client, api_version: str, last_run: dict) -> str:
     if api_version == 'v1':
-        response = client.v1_get_alerts_request(last_run, limit=1)  # timeperiod - Last 30 days
+        last_run = {'alert': 604800}  # For v1 it supports only specific timestamps - - Last 30 days
+        response = client.v1_get_alerts_request(last_run, limit=1)
     else:
         response = client.get_events_request_v2(last_run, limit=1, is_test=True)
 
@@ -292,12 +284,17 @@ def main() -> None:
         elif demisto.command() == 'fetch-events':
             if api_version == 'v1':
                 events = client.get_events_request_v1(last_run, max_fetch)
-                demisto.setLastRun(get_last_run(events, last_run))  # type: ignore
+                alerts = client.v1_get_alerts_request(last_run, max_fetch)
+                if alerts:
+                    events.extend(alerts)
+                demisto.setLastRun(get_last_run(events, last_run))
+                demisto.debug(f'Setting the last_run to: {last_run}')
                 send_events_to_xsiam(events=events, vendor=vendor, product=product)
             else:
                 events = client.get_events_request_v2(last_run, max_fetch)
-                demisto.setLastRun(get_last_run(events, last_run))  # type: ignore
-                send_events_to_xsiam(events=events, vendor=vendor, product=product)  # type: ignore
+                demisto.setLastRun(get_last_run(events, last_run))
+                demisto.debug(f'Setting the last_run to: {last_run}')
+                send_events_to_xsiam(events=events, vendor=vendor, product=product)
 
     # Log exceptions and return errors
     except Exception as e:

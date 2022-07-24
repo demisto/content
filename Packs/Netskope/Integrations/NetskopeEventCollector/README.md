@@ -83,18 +83,6 @@ There is no context output for this command.
                         {
                             "bin": "4.4.4.4",
                             "count": 1
-                        },
-                        {
-                            "bin": "5.5.5.5",
-                            "count": 2
-                        },
-                        {
-                            "bin": "6.6.6.6",
-                            "count": 6
-                        },
-                        {
-                            "bin": "7.7.7.7",
-                            "count": 194
                         }
                     ],
                     "modelId": "test",
