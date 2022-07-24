@@ -78,7 +78,6 @@ class IdSet(DictFileBased):
     def test_playbooks(self) -> Iterable[IdSetItem]:
         yield from self.id_to_test_playbook.values()
 
-
     def _parse_items(self, key: str) -> dict[str, IdSetItem]:
         result: dict[str, IdSetItem] = {}
         for dict_ in self[key]:
