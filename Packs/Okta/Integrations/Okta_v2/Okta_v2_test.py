@@ -656,6 +656,14 @@ def test_list_user_command(mocker, args, expected_context, expected_readable):
     readable, outputs, _ = list_users_command(client, args)
     assert outputs.get('Account(val.ID && val.ID == obj.ID)')[0] == expected_context
     assert expected_readable in readable
+    assert "tag: 123dasu23c" in readable
+
+
+@pytest.mark.parametrize("args", [({"userId": "TestID", "username": "", "verbose": 'false'})])
+def test_after_key_list_user_command(mocker, args):
+    mocker.patch.object(client, 'list_users', return_value=(user_data, None))
+    readable, _, _ = list_users_command(client, args)
+    assert "tag:" not in readable
 
 
 @pytest.mark.parametrize(
