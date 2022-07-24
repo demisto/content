@@ -436,7 +436,7 @@ script:
       name: file_id
       required: true
     deprecated: false
-    description: Use the Upload API to have a client application request that Check Point Threat Prevention modules scan and analyze a file. When you upload a file to the service, the file is encrypted. It is un-encrypted during analysis, and then deleted.
+    description: Use the Download API to download a scanned file from the ThreatCloud according to the file ID.
     execution: false
     name: sandblast-download
     outputs:
