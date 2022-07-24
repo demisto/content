@@ -3,10 +3,10 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from ldap3 import Server, Connection, Tls, BASE
+import ssl
+from ldap3 import Server, Connection, Tls, BASE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
 from ldap3.utils.dn import parse_dn
 from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError
-from ssl import CERT_REQUIRED
 from typing import Tuple, List
 
 ''' OpenLDAP CLIENT '''
@@ -103,14 +103,47 @@ class LdapClient:
         :rtype: ldap3.Server
         :return: Initialized ldap server object.
         """
-        if self._connection_type == 'ssl':
-            tls = Tls(validate=CERT_REQUIRED,
-                      ca_certs_file=os.environ.get('SSL_CERT_FILE')) if self._verify else None
-            # if certificate verification isn't required, SSL connection will be used. Otherwise secure connection
-            # will be performed over Tls.
-            return Server(host=self._host, port=self._port, use_ssl=True, tls=tls, connect_timeout=LdapClient.TIMEOUT)
-        else:
-            # non encrypted connection initialized
+        # TODO: ciphers correction may be added.
+        if self._connection_type == 'ssl':  # Secure connection (SSL)
+            demisto.info(f"Initializing LDAP sever with SSL (unsecure: {not self._verify})."
+                         f" port: {self._port or 'default(636)'}")
+
+            if self._verify:  # Trust any certificate is unchecked
+                # Trust any certificate = False means that the LDAP server's certificate must be valid -
+                # i.e if the server's certificate is not valid the connection will fail.
+                tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'),
+                          version=ssl.PROTOCOL_SSLv3)  # TODO: not sure that I need to specify the exact version
+                return Server(host=self._host, port=self._port, use_ssl=True, tls=tls,
+                              connect_timeout=LdapClient.TIMEOUT)
+
+            else:  # Trust any certificate is checked
+                # Trust any certificate = True means that we do not require validation of the LDAP server's certificate.
+                tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_SSLv3)
+                return Server(host=self._host, port=self._port, use_ssl=True, tls=tls,
+                              connect_timeout=LdapClient.TIMEOUT)
+
+        elif self._connection_type == 'tls':  # Secure connection (TLS)
+            demisto.info(f"Initializing LDAP sever with TLS (unsecure: {not self._verify})."
+                         f" port: {self._port or 'default(636)'}")
+            if self._verify:  # Trust any certificate is unchecked
+                # Trust any certificate = False means that the LDAP server's certificate must be valid -
+                # i.e if the server's certificate is not valid the connection will fail.
+                tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'),
+                          version=ssl.PROTOCOL_TLSv1_2)  # TODO: not sure that I need to specify the exact version
+                return Server(host=self._host, port=self._port, use_ssl=True, tls=tls,
+                              connect_timeout=LdapClient.TIMEOUT)
+
+            else:  # Trust any certificate is checked
+                # Trust any certificate = True means that we do not require validation of the LDAP server's certificate.
+                tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_TLSv1_2)
+                return Server(host=self._host, port=self._port, use_ssl=True, tls=tls,
+                              connect_timeout=LdapClient.TIMEOUT)
+            # TODO: need to add to every new connection in the code the starttls option. maybe worth adding the
+            #  auto_bind as a field to use it in every function easily.
+
+        else:  # Unsecure (non encrypted connection initialized) - connection type is None
+            demisto.info(f"Initializing LDAP sever without a secure connection. port: {self._port or 'default(389)'}")
+            # TODO: I think this option isn't working - need to check
             return Server(host=self._host, port=self._port, connect_timeout=LdapClient.TIMEOUT)
 
     @staticmethod
@@ -333,7 +366,12 @@ class LdapClient:
         """
             Performs simple bind operation on ldap server.
         """
-        ldap_conn = Connection(server=self._ldap_server, user=username, password=password, auto_bind=True)
+        if self._connection_type == 'tls':
+            auto_bind = AUTO_BIND_TLS_BEFORE_BIND
+        else:
+            auto_bind = AUTO_BIND_NO_TLS
+
+        ldap_conn = Connection(server=self._ldap_server, user=username, password=password, auto_bind=auto_bind)
 
         if ldap_conn.bound:
             ldap_conn.unbind()
@@ -508,7 +546,8 @@ class LdapClient:
 
         if build_number != LdapClient.DEV_BUILD_NUMBER \
                 and LdapClient.SUPPORTED_BUILD_NUMBER > int(build_number):
-            raise Exception(f'OpenLDAP integration is supported from build number: {LdapClient.SUPPORTED_BUILD_NUMBER}')
+            raise Exception(f'LDAP Authentication integration is supported from build number:'
+                            f' {LdapClient.SUPPORTED_BUILD_NUMBER}')
 
         try:
             parse_dn(self._username)
