@@ -1271,12 +1271,28 @@ def create_group_command(client, args):
 
 
 def get_after_tag(url):
+    """retrieve the after param from the url
+
+    Args:
+        url: some url
+
+    Returns:
+        String: the value of the 'after' query param.
+    """
     parsed_url = urlparse(url)
     captured_value = parse_qs(parsed_url.query)['after'][0]
     return captured_value
 
 
 def delete_limit_param(url):
+    """Delete the limit param from the url
+
+    Args:
+        url: some url
+
+    Returns:
+        String: the url with the limit query param.
+    """
     parsed_url = urlparse(url)
     query_dict = parse_qs(parsed_url.query)
     query_dict.pop('limit')
