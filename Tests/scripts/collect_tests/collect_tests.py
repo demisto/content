@@ -16,7 +16,7 @@ from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
 from exceptions import (DeprecatedPackException, EmptyMachineListException,
                         NonDictException, NoTestsConfiguredException,
                         NothingToCollectException, NotUnderPackException,
-                        SkippedPackException, UnsupportedPackException, SkippedTestException)
+                        SkippedPackException, UnsupportedPackException)
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
@@ -189,10 +189,6 @@ class TestCollector(ABC):
             reason_description=reason_description,
             skipped_tests=dict()  # not collecting any tests anyway
         )
-
-    def _validate_not_skipped(self, id_: str):
-        if id_ in self.conf.skipped_tests:
-            raise SkippedTestException(id_)
 
 
 class BranchTestCollector(TestCollector):

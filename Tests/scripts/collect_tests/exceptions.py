@@ -31,10 +31,6 @@ class SkippedPackException(InvalidPackException):
         super().__init__(pack_name, 'Pack is skipped')
 
 
-class SkippedTestException(Exception):
-    def __init__(self, test_id: str):
-        super().__init__(f'Test {test_id} is skipped')
-
 
 class NonDictException(Exception):
     def __init__(self, path: Path):

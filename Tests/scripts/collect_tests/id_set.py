@@ -39,9 +39,6 @@ class IdSetItem(DictBased):
     def implementing_playbooks(self) -> tuple[str, ...]:
         return tuple(self.get('implementing_playbooks', (), warn_if_missing=False))
 
-    @property
-    def pack_id_tuple(self) -> tuple[Optional[str]]:
-        return self.pack_id,
 
 
 class IdSet(DictFileBased):
@@ -64,19 +61,6 @@ class IdSet(DictFileBased):
             for playbook in test.implementing_playbooks:
                 self.implemented_playbooks_to_tests[playbook].append(test)
 
-        # the folder under where a pack is saved serves as its id
-        self.integration_to_pack_id: dict[str, Optional[str]] = {
-            integration.name: integration.pack_id
-            for integration in self.integrations
-        }
-        self.scripts_to_pack_id: dict[str, Optional[str]] = {
-            script.name: script.pack_id
-            for script in self.scripts
-        }
-        self.test_playbooks_to_pack_id: dict[str, Optional[str]] = {
-            test.name: test.pack_id
-            for test in self.test_playbooks
-        }
 
     @property
     def artifact_iterator(self) -> Iterable[IdSetItem]:

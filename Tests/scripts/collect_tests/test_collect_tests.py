@@ -41,7 +41,7 @@ class CollectTestsMocker:
         self.previous_path_manager = collect_tests.PATHS
         self._mock(self.path_manager)
 
-    def __exit__(self, *args):
+    def __exit__(self):
         self._mock(self.previous_path_manager)
         self.previous_path_manager = None
 

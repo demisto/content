@@ -19,7 +19,7 @@ class TestConf(DictFileBased):
         self.integrations_to_tests: dict[str, list[str]] = self._calculate_integration_to_tests()
 
         # Attributes
-        self.skipped_tests: dict = self['skipped_tests']  # todo use
+        self.skipped_tests: dict = self['skipped_tests']
         self.skipped_integrations_dict: dict[str, str] = self['skipped_integrations']  # todo is used?
         self.unmockable_integrations_dict: dict[str, str] = self['unmockable_integrations']  # todo is used?
         self.nightly_integrations: list[str] = self['nightly_integrations']  # todo is used?
