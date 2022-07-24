@@ -42,9 +42,6 @@ class TestConf(DictFileBased):
                 result[integration].append(test)
         return dict(result)
 
-    # def get_skipped_tests(self):  # todo is used?
-    #     return tuple(self.get('skipped_tests', {}).keys())
-
 
 class TestConfItem(DictBased):
     def __init__(self, dict_: dict):
@@ -53,7 +50,7 @@ class TestConfItem(DictBased):
 
     @property
     def integrations(self) -> tuple[str]:
-        return to_tuple(self.get('integrations', (), warn_if_missing=False))  # todo warn?
+        return to_tuple(self.get('integrations', (), warn_if_missing=False))
 
     @property
     def classifier(self):

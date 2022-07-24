@@ -5,7 +5,7 @@ from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
-from exceptions import (DeprecatedPackException, InvalidPackNameException,
+from exceptions import (DeprecatedPackException, BlankPackNameException,
                         NonDictException, NonexistentPackException,
                         NoTestsConfiguredException, NotUnderPackException,
                         SkippedPackException, UnsupportedPackException)
@@ -214,7 +214,7 @@ class PackManager:
     def validate_pack(self, pack: str) -> None:
         """raises InvalidPackException if the pack name is not valid."""
         if not pack:
-            raise InvalidPackNameException(pack)
+            raise BlankPackNameException(pack)
         if pack in PackManager.skipped_packs:
             raise SkippedPackException(pack)
         if pack in self.deprecated_packs:

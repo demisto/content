@@ -6,9 +6,9 @@ class InvalidPackException(Exception):
         self.message = f'invalid pack {pack_name}: {reason}'
 
 
-class InvalidPackNameException(InvalidPackException):
+class BlankPackNameException(InvalidPackException):
     def __init__(self, pack_name: str):
-        super().__init__(pack_name, 'Invalid pack name')
+        super().__init__(pack_name, 'Blank pack name')
 
 
 class NonexistentPackException(InvalidPackException):
