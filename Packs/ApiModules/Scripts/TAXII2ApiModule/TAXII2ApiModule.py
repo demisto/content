@@ -248,8 +248,8 @@ class Taxii2FeedClient:
     def set_api_root(self):
         roots_to_api = {str(api_root.url).split('/')[-2]: api_root
                         for api_root in self.server.api_roots}  # type: ignore[union-attr, attr-defined]
-        demisto.debug(f'In set_api_root start: {roots_to_api=} and {self.server.api_roots=}, '
-                      f'where {self.default_api_root=} and {self.server.default=}')
+        demisto.debug(f'In set_api_root start: {roots_to_api=} and {self.server.api_roots=}, '  # type: ignore[attr-defined]
+                      f'where {self.default_api_root=} and {self.server.default=}')  # type: ignore[attr-defined]
 
         if self.default_api_root:
             if not roots_to_api.get(self.default_api_root):
