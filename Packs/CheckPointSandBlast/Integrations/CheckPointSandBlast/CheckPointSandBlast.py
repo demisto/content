@@ -865,35 +865,6 @@ def get_quota_context_output(outputs: Dict[str, Any]) -> Dict[str, Any]:
     return output
 
 
-def get_quota_headers() -> List[str]:
-    """
-    A list of headers for quota's readable outputs.
-
-    Returns:
-        List[str]: Headers for each output within quota.
-    """
-    return [
-        'RemainQuotaHour',
-        'RemainQuotaMonth',
-        'AssignedQuotaHour',
-        'AssignedQuotaMonth',
-        'HourlyQuotaNextReset',
-        'MonthlyQuotaNextReset',
-        'QuotaId',
-        'CloudMonthlyQuotaPeriodStart',
-        'CloudMonthlyQuotaUsageForThisGw',
-        'CloudHourlyQuotaUsageForThisGw',
-        'CloudMonthlyQuotaUsageForQuotaId',
-        'CloudHourlyQuotaUsageForQuotaId',
-        'MonthlyExceededQuota',
-        'HourlyExceededQuota',
-        'CloudQuotaMaxAllowToExceedPercentage',
-        'PodTimeGmt',
-        'QuotaExpiration',
-        'Action',
-    ]
-
-
 ''' MAIN FUNCTION '''
 
 
