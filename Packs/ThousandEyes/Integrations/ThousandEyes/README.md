@@ -9,11 +9,11 @@ This integration was integrated and tested with version xx of ThousandEyes
 
     | **Parameter** | **Required** |
     | --- | --- |
+    | Base API URL | True |
+    | Password | True |
     | Fetch incidents | False |
     | Incidents Fetch Interval | False |
     | Incident type | False |
-    | Password | True |
-    | Base API URL | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
