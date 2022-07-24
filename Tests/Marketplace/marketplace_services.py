@@ -708,10 +708,9 @@ class Pack(object):
 
         return dependencies_metadata_result, self._is_missing_dependencies
 
-    @staticmethod
-    def _get_updated_changelog_entry(changelog: dict, version: str, release_notes: str = None,
+    def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
                                      version_display_name: str = None, build_number_with_prefix: str = None,
-                                     released_time: str = None, pull_request_numbers=None):
+                                     released_time: str = None, pull_request_numbers=None, marketplace: str = 'xsoar'):
         """
         Args:
             changelog (dict): The changelog from the production bucket.
@@ -720,6 +719,7 @@ class Pack(object):
             version_display_name (str): The version display name to update the entry with.
             build_number_with_prefix(srt): the build number to modify the entry to, including the prefix R (if present).
             released_time: The released time to update the entry with.
+            marketplace (str): The marketplace to which the upload is made.
 
         """
         changelog_entry = changelog.get(version)
@@ -731,8 +731,8 @@ class Pack(object):
             build_number_with_prefix if build_number_with_prefix else \
             changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
-        changelog_entry[Changelog.RELEASE_NOTES] = release_notes if release_notes else changelog_entry[
-            Changelog.RELEASE_NOTES]
+        release_notes = release_notes if release_notes else changelog_entry[Changelog.RELEASE_NOTES]
+        changelog_entry[Changelog.RELEASE_NOTES] = self.filter_release_notes_by_tags(release_notes, marketplace)
         changelog_entry[Changelog.DISPLAY_NAME] = f'{version_display_name} - {build_number_with_prefix}'
         changelog_entry[Changelog.RELEASED] = released_time if released_time else changelog_entry[Changelog.RELEASED]
         changelog_entry[Changelog.PULL_REQUEST_NUMBERS] = pull_request_numbers
@@ -1580,9 +1580,9 @@ class Pack(object):
                                 all_relevant_pr_nums_for_unified = list({pr_num for version in versions.keys()
                                                                         for pr_num in version_to_prs[version]})
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
-                                updated_entry = self._get_updated_changelog_entry(
+                                updated_entry, not_updated_build = self._get_updated_changelog_entry(
                                     changelog, version, release_notes=modified_release_notes_lines,
-                                    pull_request_numbers=all_relevant_pr_nums_for_unified)
+                                    pull_request_numbers=all_relevant_pr_nums_for_unified, marketplace=marketplace)
                                 changelog[version] = updated_entry
 
                 else:
@@ -1696,7 +1696,10 @@ class Pack(object):
         filtered_release_notes = self.filter_release_notes_by_entities_display_name(filtered_release_notes_from_tags,
                                                                                     modified_files_data)
 
-        if modified_files_data and not filtered_release_notes:
+        if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
+            # Will return that the pack is not updated only if all the modified files are relevant also to other marketplaces
+            # besides the current one, and if there are no release notes relevant to the current marketplace (which means
+            # that the release notes are relevant to the other marketplace).
             logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
                           f"marketplace")
             return {}, True
@@ -1705,6 +1708,24 @@ class Pack(object):
         changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes).strip()
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
+    
+    def are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
+        """
+        Returns whether the modified files are also relevant to other marketplaces besides the current one
+        to which the upload is done.
+
+        Args:
+            modified_files_data (dict): The modified files data that are given from id-set.
+
+        Return:
+            (bool) True, if all the files are relevant to more than one marketplace.
+                   False, if there is an item that is relevant only to the current marketplace.
+        """
+        for item in modified_files_data:
+            if len(item['marketplaces']) == 1:
+                return False
+
+        return True
 
     def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data):
         """
