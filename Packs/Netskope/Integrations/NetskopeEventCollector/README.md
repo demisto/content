@@ -114,7 +114,7 @@ There is no context output for this command.
                 "src_longitude": 123.456,
                 "src_region": "Province of Somewhere",
                 "src_zipcode": "1234",
-                "srcip": "180.193.190.201",
+                "srcip": "6.6.6.6",
                 "timestamp": "2022-07-17T23:48:52.000Z",
                 "traffic_type": "CloudApp",
                 "type": "nspolicy",
