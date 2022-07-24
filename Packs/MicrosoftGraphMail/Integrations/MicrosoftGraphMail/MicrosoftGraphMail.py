@@ -1061,7 +1061,7 @@ class MsGraphClient:
         Args:
             email (str): email to create the draft from.
             json_data (dict): data to create the message with.
-            message_id (str): message ID in case creating a draft to an existing message
+            message_id (str): message ID in case creating a draft to an existing message.
 
         Returns:
             dict: api response information about the draft.
@@ -1081,6 +1081,35 @@ class MsGraphClient:
             draft_id (str): the ID of the draft to send.
         """
         self.ms_client.http_request('POST', f'/users/{email}/messages/{draft_id}/send', resp_type='text')
+
+    def send_mail(self, email, json_data):
+        """
+        Sends an email.
+
+        Args:
+            email (str): email to send the the message from.
+            json_data (dict): message data.
+        """
+        self.ms_client.http_request(
+            'POST', f'/users/{email}/sendMail', json_data={'message': json_data}, resp_type="text"
+        )
+
+    def send_reply(self, email_from, json_data, message_id):
+        """
+        Sends a reply email.
+
+        Args:
+            email_from (str): email to send the reply from.
+            message_id (str): a message ID to reply to.
+            message (dict): message body request.
+            comment (str): email's body.
+        """
+        self.ms_client.http_request(
+            'POST',
+            f'/users/{email_from}/messages/{message_id}/reply',
+            json_data=json_data,
+            resp_type="text"
+        )
 
     def send_mail_with_upload_session_flow(self, email, json_data, attachments_more_than_3mb, message_id=None):
         """
@@ -1642,11 +1671,16 @@ def prepare_args(command, args):
 
 
 def divide_attachments_according_to_size(attachments):
+    """
+    Divide attachments to those are larger than 3mb and those who are less than 3mb.
 
+    Returns:
+        tuple[list, list]: less than 3mb attachments and more than 3mb attachments.
+    """
     less_than_3mb_attachments, more_than_3mb_attachments = [], []
 
     for attachment in attachments:
-        if attachment.get('requires_upload'):  # if the attachment is bigger than 3mb, it requires upload session.
+        if attachment.pop('requires_upload', None):  # if the attachment is bigger than 3mb, it requires upload session.
             more_than_3mb_attachments.append(attachment)
         else:
             less_than_3mb_attachments.append(attachment)
@@ -1659,14 +1693,13 @@ def create_draft_command(client: MsGraphClient, args):
     """
     prepared_args = prepare_args('create-draft', args)
     email = args.get('from')
-    suffix_endpoint = f'/users/{email}/messages'
     draft = client.build_message(**prepared_args)
     less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
         attachments=draft.get('attachments')
     )
 
     draft['attachments'] = less_than_3mb_attachments
-    created_draft = client.ms_client.http_request('POST', suffix_endpoint, json_data=draft)
+    created_draft = client.create_draft(email=email, json_data=draft)
 
     if more_than_3mb_attachments:  # we have at least one attachment that should be uploaded using upload session
         client.add_attachments_via_upload_session(
@@ -1729,8 +1762,7 @@ def send_email_command(client: MsGraphClient, args):
             email=email, json_data=message_content, attachments_more_than_3mb=more_than_3mb_attachments
         )
     else:  # go through process 2 (in docstring)
-        suffix_endpoint = f'/users/{email}/sendMail'
-        client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content}, resp_type="text")
+        client.send_mail(email=email, json_data=message_content)
 
     message_content.pop('attachments', None)
     message_content.pop('internet_message_headers', None)
@@ -1802,9 +1834,8 @@ def reply_email_command(client: MsGraphClient, args):
             message_id=message_id
         )
     else:
-        suffix_endpoint = f'/users/{email_from}/messages/{message_id}/reply'
-        client.ms_client.http_request(
-            'POST', suffix_endpoint, json_data={'message': reply, 'comment': message_body}, resp_type="text"
+        client.send_reply(
+            email_from=email_from, message_id=message_id, json_data={'message': reply, 'comment': message_body}
         )
 
     return prepare_outputs_for_reply_mail_command(reply, email_to, message_id)
@@ -1836,8 +1867,7 @@ def reply_to_command(client: MsGraphClient, args):
             message_id=message_id
         )
     else:
-        suffix_endpoint = f'/users/{email}/messages/{message_id}/reply'
-        client.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
+        client.send_reply(email_from=email, message_id=message_id, json_data=reply)
 
     return_outputs(f'### Replied to: {", ".join(to_recipients)} with comment: {comment}')
 
@@ -1845,8 +1875,7 @@ def reply_to_command(client: MsGraphClient, args):
 def send_draft_command(client: MsGraphClient, args):
     email = args.get('from')
     draft_id = args.get('draft_id')
-    suffix_endpoint = f'/users/{email}/messages/{draft_id}/send'
-    client.ms_client.http_request('POST', suffix_endpoint, resp_type="text")
+    client.send_draft(email=email, draft_id=draft_id)
 
     return_outputs(f'### Draft with: {draft_id} id was sent successfully.')
 
