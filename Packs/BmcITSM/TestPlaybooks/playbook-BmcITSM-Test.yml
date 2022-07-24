@@ -16,7 +16,7 @@ tasks:
       description: ""
     nexttasks:
       "#none#":
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -46,7 +46,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "2"
+      - "2"
     scriptarguments:
       all:
         simple: yes
@@ -79,7 +79,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "3"
+      - "3"
     separatecontext: false
     view: |-
       {
@@ -108,26 +108,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "4"
+      - "4"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.User.Id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.User.FirstName
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.User.LastName
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.User.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.User.FirstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.User.LastName
+            iscontext: true
     view: |-
       {
         "position": {
@@ -156,7 +156,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "5"
+      - "5"
     separatecontext: false
     view: |-
       {
@@ -185,26 +185,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "8"
+      - "8"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Company.Id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Company.Name
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Company.Type
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Company.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Company.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Company.Type
+            iscontext: true
     view: |-
       {
         "position": {
@@ -233,7 +233,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "9"
+      - "9"
     scriptarguments:
       limit:
         simple: "1"
@@ -267,73 +267,73 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "36"
+      - "36"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Ticket.RequestID
-                iscontext: true
-              right:
-                value: {}
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Ticket.DisplayID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Ticket.InstanceId
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Ticket.Type
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Ticket.Status
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Ticket.Submitter
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Ticket.Priority
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Ticket.Impact
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Ticket.Urgency
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Ticket.Summary
-                iscontext: true
-          - - operator: isExists
-              left:
-                value:
-                  simple: BmcITSM.Ticket.Details
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Ticket.CreateDate
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.RequestID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.InstanceId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Submitter
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Impact
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Urgency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Summary
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: BmcITSM.Ticket.Details
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.CreateDate
+            iscontext: true
     view: |-
       {
         "position": {
@@ -362,7 +362,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "11"
+      - "11"
     scriptarguments:
       srd_instance_id:
         simple: ${BmcITSM.ServiceRequestDefinition.InstanceID}
@@ -394,26 +394,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "12"
+      - "12"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ServiceRequest.RequestID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ServiceRequest.DisplayID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ServiceRequest.CreateDate
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequest.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequest.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequest.CreateDate
+            iscontext: true
     view: |-
       {
         "position": {
@@ -442,7 +442,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "31"
+      - "31"
     scriptarguments:
       impact:
         simple: 1-Extensive/Widespread
@@ -479,7 +479,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "14"
+      - "14"
     scriptarguments:
       request_id:
         simple: ${BmcITSM.Incident.RequestID}
@@ -512,7 +512,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "29"
+      - "29"
     scriptarguments:
       ticket_ids:
         simple: ${BmcITSM.Incident.RequestID}
@@ -547,7 +547,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "16"
+      - "16"
     scriptarguments:
       details:
         simple: Details
@@ -595,26 +595,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "13"
+      - "13"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Incident.RequestID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Incident.DisplayID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Incident.CreateDate
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Incident.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Incident.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Incident.CreateDate
+            iscontext: true
     view: |-
       {
         "position": {
@@ -643,7 +643,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "18"
+      - "18"
     scriptarguments:
       first_name:
         simple: Allen
@@ -679,26 +679,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "19"
+      - "19"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ChangeRequest.RequestID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ChangeRequest.DisplayID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ChangeRequest.CreateDate
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequest.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequest.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequest.CreateDate
+            iscontext: true
     view: |-
       {
         "position": {
@@ -727,7 +727,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "33"
+      - "33"
     scriptarguments:
       request_id:
         simple: ${BmcITSM.ChangeRequest.RequestID}
@@ -760,7 +760,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "21"
+      - "21"
     scriptarguments:
       details:
         simple: Details
@@ -804,26 +804,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "22"
+      - "22"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Task.RequestID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Task.DisplayID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.Task.CreateDate
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Task.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Task.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Task.CreateDate
+            iscontext: true
     view: |-
       {
         "position": {
@@ -852,7 +852,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "38"
+      - "38"
     scriptarguments:
       summary:
         simple: Updated Summary
@@ -887,7 +887,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "24"
+      - "24"
     scriptarguments:
       first_name:
         simple: Allen
@@ -931,26 +931,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "25"
+      - "25"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ProblemInvestigation.RequestID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ProblemInvestigation.DisplayID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ProblemInvestigation.CreateDate
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ProblemInvestigation.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ProblemInvestigation.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ProblemInvestigation.CreateDate
+            iscontext: true
     view: |-
       {
         "position": {
@@ -979,7 +979,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "41"
+      - "41"
     scriptarguments:
       problem_investigation_id:
         simple: ${BmcITSM.ProblemInvestigation.RequestID}
@@ -1012,7 +1012,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "27"
+      - "27"
     scriptarguments:
       company:
         simple: Calbro Services
@@ -1058,26 +1058,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "28"
+      - "28"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.KnownError.RequestID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.KnownError.DisplayID
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.KnownError.CreateDate
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.KnownError.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.KnownError.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.KnownError.CreateDate
+            iscontext: true
     view: |-
       {
         "position": {
@@ -1106,7 +1106,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "40"
+      - "40"
     scriptarguments:
       known_error_id:
         simple: ${BmcITSM.KnownError.RequestID}
@@ -1141,7 +1141,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "30"
+      - "30"
     separatecontext: false
     view: |-
       {
@@ -1170,26 +1170,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "17"
+      - "17"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ChangeRequestTemplate.Id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ChangeRequestTemplate.Description
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ChangeRequestTemplate.InstanceID
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequestTemplate.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequestTemplate.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequestTemplate.InstanceID
+            iscontext: true
     view: |-
       {
         "position": {
@@ -1218,7 +1218,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "32"
+      - "32"
     separatecontext: false
     view: |-
       {
@@ -1247,26 +1247,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "15"
+      - "15"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.IncidentTemplate.Id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.IncidentTemplate.Description
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.IncidentTemplate.InstanceID
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.IncidentTemplate.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.IncidentTemplate.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.IncidentTemplate.InstanceID
+            iscontext: true
     view: |-
       {
         "position": {
@@ -1295,7 +1295,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "34"
+      - "34"
     separatecontext: false
     view: |-
       {
@@ -1324,26 +1324,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "20"
+      - "20"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.TaskTemplate.Id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.TaskTemplate.TaskName
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.TaskTemplate.InstanceID
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.TaskTemplate.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.TaskTemplate.TaskName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.TaskTemplate.InstanceID
+            iscontext: true
     view: |-
       {
         "position": {
@@ -1399,7 +1399,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "37"
+      - "37"
     separatecontext: false
     view: |-
       {
@@ -1428,26 +1428,26 @@ tasks:
       brand: ""
     nexttasks:
       yes:
-        - "10"
+      - "10"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ServiceRequestDefinition.Id
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ServiceRequestDefinition.Description
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: BmcITSM.ServiceRequestDefinition.InstanceID
-                iscontext: true
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequestDefinition.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequestDefinition.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequestDefinition.InstanceID
+            iscontext: true
     view: |-
       {
         "position": {
@@ -1476,7 +1476,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "39"
+      - "39"
     scriptarguments:
       ticket_ids:
         simple: ${BmcITSM.Task.RequestID}
@@ -1511,7 +1511,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "23"
+      - "23"
     scriptarguments:
       ticket_ids:
         simple: ${BmcITSM.ChangeRequest.RequestID}
@@ -1546,7 +1546,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "35"
+      - "35"
     scriptarguments:
       ticket_ids:
         simple: ${BmcITSM.KnownError.RequestID}
@@ -1581,7 +1581,7 @@ tasks:
       brand: BmcITSM
     nexttasks:
       "#none#":
-        - "26"
+      - "26"
     scriptarguments:
       ticket_ids:
         simple: ${BmcITSM.ProblemInvestigation.RequestID}

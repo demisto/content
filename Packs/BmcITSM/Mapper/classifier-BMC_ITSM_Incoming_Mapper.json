@@ -1,19 +1,7 @@
 {
-    "brands": null,
-    "cacheVersn": 0,
-    "defaultIncidentType": "",
-    "definitionId": "",
     "description": "",
     "feed": false,
-    "fromServerVersion": "",
-    "id": "e1a21b64-6636-4227-8358-0c2b9ce2086e",
-    "incidentSamples": null,
-    "indicatorSamples": null,
-    "instanceIds": null,
-    "itemVersion": "",
-    "keyTypeMap": {},
-    "locked": false,
-    "logicalVersion": 35,
+    "id": "BMC ITSM Incoming Mapper",
     "mapping": {
         "BMC Change-Request": {
             "dontMapEventToLabels": false,
@@ -250,17 +238,7 @@
         }
     },
     "name": "BMC ITSM Incoming Mapper",
-    "nameRaw": "BMC ITSM Incoming Mapper",
-    "packID": "",
-    "packName": "",
-    "propagationLabels": [
-        "all"
-    ],
-    "sourceClassifierId": "",
-    "system": false,
-    "toServerVersion": "",
-    "transformer": {},
     "type": "mapping-incoming",
-    "unclassifiedCases": null,
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.2.0"
 }

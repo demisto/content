@@ -1,16 +1,7 @@
 {
-    "brands": null,
-    "cacheVersn": 0,
-    "defaultIncidentType": "",
-    "definitionId": "",
     "description": "",
     "feed": false,
-    "fromServerVersion": "",
-    "id": "0bb32d43-9326-4109-8426-c96b41a6e529",
-    "incidentSamples": null,
-    "indicatorSamples": null,
-    "instanceIds": null,
-    "itemVersion": "",
+    "id": "BMC ITSM Classifier",
     "keyTypeMap": {
         "change request": "BMC Change-Request",
         "incident": "BMC Incident",
@@ -19,23 +10,14 @@
         "service request": "BMC Service Request",
         "task": "BMC Task"
     },
-    "locked": false,
-    "logicalVersion": 5,
-    "mapping": null,
     "name": "BMC ITSM Classifier",
-    "nameRaw": "BMC ITSM Classifier",
-    "packID": "",
-    "packName": "",
     "propagationLabels": [
         "all"
     ],
-    "sourceClassifierId": "",
-    "system": false,
-    "toServerVersion": "",
     "transformer": {
         "simple": "Type"
     },
     "type": "classification",
-    "unclassifiedCases": null,
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.2.0"
 }
