@@ -14,17 +14,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* microsoft-atp-advanced-hunting-network-connections
 * microsoft-atp-advanced-hunting-process-details
-* setIncident
+* microsoft-atp-advanced-hunting-network-connections
 * microsoft-atp-get-file-related-machines
+* setIncident
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IP | A comma-separated list of IPs to hunt. | incident.detectedips | Optional |
 | DeviceName | A comma-separated list of host names to hunt. | incident.hostnames | Optional |
 | FileName | A comma-separated list of file names to hunt. | incident.filenames | Optional |
 | DeviceID | A comma-separated list of device IDs to hunt. | incident.agentsid | Optional |
@@ -37,14 +36,14 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| MicrosoftATP.HuntProcessDetails.Result |  | unknown |
+| MicrosoftATP.HuntProcessDetails.Result | The query results for Process Details. | unknown |
 | MicrosoftATP.HuntProcessDetails.Result.parent_process | The query results for parent_process query_purposeThe query results. | unknown |
 | MicrosoftATP.HuntProcessDetails.Result.grandparent_process | The query results for grandparent_process query_purpose. | unknown |
 | MicrosoftATP.HuntProcessDetails.Result.process_details | The query results for process_details query_purpose. | unknown |
 | MicrosoftATP.HuntProcessDetails.Result.beaconing_evidence | The query results for beaconing_evidence query_purpose. | unknown |
 | MicrosoftATP.HuntProcessDetails.Result.powershell_execution_unsigned_files | The query results for powershell_execution_unsigned_files query_purpose. | unknown |
 | MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell | The query results for process_excecution_powershell query_purpose. | unknown |
-| MicrosoftATP.FileMachine.Machines |  | unknown |
+| MicrosoftATP.FileMachine.Machines | The Query results for getting a collection of machines with a given file SHA1 hash. | unknown |
 | MicrosoftATP.FileMachine.Machines.ID | The machine ID. | unknown |
 | MicrosoftATP.FileMachine.Machines.ComputerDNSName | The machine DNS name. | unknown |
 | MicrosoftATP.FileMachine.Machines.FirstSeen | The first date and time the machine was observed by Microsoft Defender ATP. | unknown |
@@ -62,11 +61,11 @@ This playbook does not use any scripts.
 | MicrosoftATP.FileMachine.Machines.IsAADJoined | True if machine is AAD joined, False otherwise. | unknown |
 | MicrosoftATP.FileMachine.Machines.AADDeviceID | The AAD Device ID. | unknown |
 | MicrosoftATP.FileMachine.Machines.MachineTags | Set of machine tags. | unknown |
-| MicrosoftATP.Machine |  | unknown |
+| MicrosoftATP.Machine | Results for device information. | unknown |
 | MicrosoftATP.Machine.OSProcessor | The operating system processor. | unknown |
-| MicrosoftATP.FileMachine |  | unknown |
+| MicrosoftATP.FileMachine | Results for File information on a device. | unknown |
 | MicrosoftATP.FileMachine.File | The machine related file hash. | unknown |
-| MicrosoftATP.HuntNetworkConnections.Result |  | unknown |
+| MicrosoftATP.HuntNetworkConnections.Result | The query results for Hunt Network Connections. | unknown |
 | MicrosoftATP.HuntNetworkConnections.Result.external_addresses | The query results for external_addresses query_purpose. | unknown |
 | MicrosoftATP.HuntNetworkConnections.Result.dns_query | The query results for dns_query query_purpose. | unknown |
 | MicrosoftATP.HuntNetworkConnections.Result.encoded_commands | The query results for encoded_commands query_purpose. | unknown |

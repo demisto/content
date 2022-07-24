@@ -15,36 +15,6 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: A comma-separated list of file SHA1 hashes to hunt.
-  key: FileSha1
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filesha1
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of file MD5 hashes to hunt.
-  key: FileMd5
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filemd5
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of IPs to hunt.
-  key: IP
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: detectedips
-      root: incident
-      transformers:
-      - operator: uniq
 - description: A comma-separated list of host names to hunt.
   key: DeviceName
   playbookInputQuery:

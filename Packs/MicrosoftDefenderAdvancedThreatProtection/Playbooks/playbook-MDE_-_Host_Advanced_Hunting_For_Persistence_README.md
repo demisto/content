@@ -23,9 +23,6 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | FileSha256 | A comma-separated list of file SHA256 hashes to hunt. | incident.filesha256 | Optional |
-| FileSha1 | A comma-separated list of file SHA1 hashes to hunt. | incident.filesha1 | Optional |
-| FileMd5 | A comma-separated list of file MD5 hashes to hunt. | incident.filemd5 | Optional |
-| IP | A comma-separated list of IPs to hunt. | incident.detectedips | Optional |
 | DeviceName | A comma-separated list of host names to hunt. | incident.hostnames | Optional |
 | FileName | A comma-separated list of file names to hunt. | incident.filenames | Optional |
 | DeviceID | A comma-separated list of a device IDs to hunt. | incident.agentsid | Optional |
@@ -35,7 +32,7 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| MicrosoftATP.HuntPersistenceEvidence.Result |  | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result | The query results for Hunt Persistence Evidence. | unknown |
 | MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job | The query results for scheduled_job query_purpose. | unknown |
 | MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry | The query results for registry_entry query_purpose. | unknown |
 | MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes | The query results for startup_folder_changes query_purpose. | unknown |

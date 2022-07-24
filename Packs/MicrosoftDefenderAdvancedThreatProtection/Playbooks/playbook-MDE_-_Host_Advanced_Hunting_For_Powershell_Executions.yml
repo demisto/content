@@ -5,16 +5,6 @@ description: |-
   This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host PowerShell executions.
 id: MDE - Host Advanced Hunting For Powershell Executions
 inputs:
-- description: A comma-separated list of IPs to hunt.
-  key: IP
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: detectedips
-      root: incident
-      transformers:
-      - operator: uniq
 - description: A comma-separated list of host names to hunt.
   key: DeviceName
   playbookInputQuery:

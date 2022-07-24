@@ -1,18 +1,10 @@
 contentitemexportablefields:
   contentitemfields: {}
-description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.
 id: MDE - Host Advanced Hunting For Network Activity
 inputs:
-- description: A comma-separated list of IPs to hunt.
-  key: IP
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: detectedips
-      root: incident
-      transformers:
-      - operator: uniq
 - description: A comma-separated list of host names to hunt.
   key: DeviceName
   playbookInputQuery:
@@ -20,16 +12,6 @@ inputs:
   value:
     complex:
       accessor: hostnames
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of file names to hunt.
-  key: FileName
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filenames
       root: incident
       transformers:
       - operator: uniq
@@ -43,16 +25,6 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: A comma-separated list of file MD5 hashes to hunt.
-  key: FileMd5
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filemd5
-      root: incident
-      transformers:
-      - operator: uniq
 - description: A comma-separated list of file SHA256 hashes to hunt.
   key: FileSha256
   playbookInputQuery:
@@ -60,16 +32,6 @@ inputs:
   value:
     complex:
       accessor: filesha256
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of file SHA1 hashes to hunt.
-  key: FileSha1
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filesha1
       root: incident
       transformers:
       - operator: uniq
