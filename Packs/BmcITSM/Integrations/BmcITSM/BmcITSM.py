@@ -2915,8 +2915,8 @@ def fetch_incidents(
 
     incidents = []
     for incident in relevant_tickets:
-        incident["miror_direction"] = mirror_direction
-        incident["miror_instance"] = demisto.integrationInstance()
+        incident["mirror_direction"] = mirror_direction
+        incident["mirror_instance"] = demisto.integrationInstance()
         incidents.append({
             "name": incident.get("Summary"),
             "occured": incident.get("CreateDate"),
