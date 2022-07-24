@@ -94,13 +94,16 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
         collected = collector.collect(run_nightly)
 
     if not any((expected_tests, expected_packs, expected_machines)):
+        if not collected:
+            # matches expectation
+            return
         description = 'should NOT have collected '
         if collected.packs:
             description += f'packs {collected.packs} '
         if collected.tests:
             description += f'tests {collected.tests}'
 
-        assert not collected, description
+        assert False, description
 
     if expected_tests is not None:
         assert collected.tests == set(expected_tests)

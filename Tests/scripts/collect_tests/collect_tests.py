@@ -159,19 +159,23 @@ class TestCollector(ABC):
         collected: Optional[CollectedTests] = self._collect()
 
         if not collected:
-            logger.warning('No tests were collected, returning sanity tests only')
+            logger.warning('Nothing was collected, returning sanity tests only')
             collected = self.sanity_tests
 
-        collected.machines = Machine.get_suitable_machines(collected.version_range, run_nightly)
-
-        if collected and collected.machines is None:
-            raise EmptyMachineListException()
+        if not collected:  # for unit test cases, where there are no sanity tests
+            return None
 
         self._validate_tests_in_id_set(collected.tests)
+
+        if (suitable_machines := Machine.get_suitable_machines(collected.version_range, run_nightly)) is None:
+            raise EmptyMachineListException()
+        collected.machines = suitable_machines
+
         return collected
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
-        if not_found := ((set(tests) - self.sanity_tests.tests).difference(self.id_set.id_to_test_playbook.keys())):
+        sanity_tests = self.sanity_tests.tests if self.sanity_tests else set()
+        if not_found := ((set(tests) - sanity_tests).difference(self.id_set.id_to_test_playbook.keys())):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
@@ -472,7 +476,7 @@ class NightlyTestCollector(TestCollector, ABC):
                                  version_range=None, reason_description=f'({self.marketplace.value})',
                                  skipped_tests=self.conf.skipped_tests)
                   for pack in packs)
-            )
+        )
 
     def _packs_of_content_matching_marketplace_value(self, only_value: bool) -> Optional[CollectedTests]:
         """
