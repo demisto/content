@@ -7,7 +7,6 @@ import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('Dragos Worldview', 'start', __line__())
 
 
 """Dragos Worldview Integration for XSOAR."""
