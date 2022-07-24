@@ -1,8 +1,9 @@
 [MODEL: dataset=brocade_switch_raw , model=Network]
 // create timestamp part
-alter year_now = arrayindex( regextract(to_string( current_time()), "(\d{4})"),0)
-| alter extract_timestamp = concat( arrayindex( regextract(_raw_log , "\<\d+\>\s*(\w+\s\d+\s\d+\:\d+\:\d+)\s" ) ,0)," ", year_now )
-| alter format_timestamp = format_timestamp("%F %H:%M:%E3S" ,parse_timestamp("%b %d %H:%M:%S %Y", extract_timestamp ))
+| alter year_now = arrayindex( regextract(to_string( current_time()), "(\d{4})"),0)
+| alter the_extract_timestamp =  arrayindex( regextract(_raw_log , "\<\d+\>\s*(\w+\s\d+\s\d+\:\d+\:\d+)\s" ) ,0)
+| alter full_timestamp = concat(the_extract_timestamp ," ", year_now )
+| alter the_format_timestamp = format_timestamp("%F %H:%M:%E3S" ,parse_timestamp("%b %d %H:%M:%S %Y", full_timestamp ))
 // end timestamp part
 | alter Observer_name = arrayindex( regextract(_raw_log , "\<\d+\>\w+\s\d+\s\d+\:\d+\:\d+\s([A-Za-z0-9-_]+)\s" ),0),
     original_event_type = arrayindex( regextract(_raw_log , "\d{2}\:\d{2}\:\d{2}\s\S+\s(\w+)\:" ),0),
@@ -17,8 +18,7 @@ alter year_now = arrayindex( regextract(to_string( current_time()), "(\d{4})"),0
     ,src_ip3 = arrayindex( regextract(_raw_log , "from\stelnet\sclient\s(\d+\.\d+\.\d+\.\d+)") ,0)
 | alter Source_ipv4 = coalesce(src_ip1, src_ip2, src_ip3)
 // end create Source_ipv4 field
-//
-| alter XDM.Network.event_timestamp = extract_timestamp,
+| alter XDM.Network.event_timestamp = the_format_timestamp,
     XDM.Network.Observer.name = Observer_name,
     XDM.Network.original_event_type = original_event_type,
     XDM.Network.original_event_sub_type = original_event_sub_type,
