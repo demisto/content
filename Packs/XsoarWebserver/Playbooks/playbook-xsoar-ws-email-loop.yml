@@ -296,6 +296,6 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
+fromversion: 6.0.0
 description: This is a subplaybook that runs the email task a configurable number
   of times and polls the response status by the user

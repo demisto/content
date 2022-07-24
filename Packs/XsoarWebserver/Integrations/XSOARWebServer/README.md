@@ -1,5 +1,5 @@
 This is a simple web-server that as of now, supports handling configurable user responses (like Yes/No/Maybe). What makes it different from Data collection tasks is that, the URL to perform a certain action is predictable and written to the incident context when an action is setup. This URL can be inserted to for eg: an HTML email.  User clicks are  are recorded in the integration context and can be polled by Scheduled Commands/ Generic Polling
-This integration was integrated and tested with version 6.6 of XSOAR-Web-Server, but is expected to work from XSOAR version 6.2 and with some or with 6.1 with Generic polling.
+This integration was integrated and tested with version 6.6 of XSOAR, but is expected to work from XSOAR version 6.2 and with and on 6.1 with Generic polling (instead of using the automation).
 
 ## Configure XSOAR-Web-Server on Cortex XSOAR
 
@@ -12,6 +12,7 @@ This integration was integrated and tested with version 6.6 of XSOAR-Web-Server,
     | xsoar-external-url | The URL on which the user should send the response to. | True |
     | Server Listening Port | The port on which the integration instance will listen | True |
     | Long running instance | To enable the long running instance feature of XSOAR | True |
+4. Optionally enable the XSOAR proxy feature mentioned [here](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke)
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -84,7 +85,7 @@ Remove a certain action from the backend
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | uuid of the action to remove from the backend. | Optional | 
+| uuid | uuid of the action to remove from the backend. | Required | 
 
 
 #### Context Output
