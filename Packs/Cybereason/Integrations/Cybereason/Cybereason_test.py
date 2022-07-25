@@ -299,7 +299,7 @@ params = {
     'proxy': True}
 
 
-def test_query_file(mocker):
+def test_query_file(client, args, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'args', return_value={'file_hash': '4778901e54f55d54435b2626923054a8'})
     mocker.patch('Cybereason.client_certificate', side_effect=lambda: None, autospec=False)
@@ -307,7 +307,7 @@ def test_query_file(mocker):
     mocker.patch('Cybereason.query_file', return_value=FILE_OUTPUTS)
     mocker.patch.object(demisto, 'results')
     import Cybereason
-    Cybereason.query_file_command()
+    Cybereason.query_file_command(client, args)
     result = demisto.results.call_args[0]
 
     assert result[0]['ContentsFormat'] == 'json'
@@ -316,7 +316,7 @@ def test_query_file(mocker):
                                      'val.SHA1===obj.SHA1)'][0]['Machine'] == 'desktop-p0m5vad'
 
 
-def test_malop_processes_command(mocker):
+def test_malop_processes_command(client, args, mocker):
     from Cybereason import malop_processes_command
 
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -324,7 +324,7 @@ def test_malop_processes_command(mocker):
     raw_response = util_load_json('test_files/malop_processes_raw_response.json')
     mocker.patch('Cybereason.malop_processes', return_value=raw_response)
     mocker.patch.object(demisto, 'results')
-    malop_processes_command()
+    malop_processes_command(client, args)
     result = demisto.results.call_args[0]
 
     assert result[0].get('ContentsFormat', '') == 'json'
