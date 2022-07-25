@@ -77,7 +77,7 @@ configuration:
   options:
   - None
   - SSL
-  - TLS
+  - Start TLS
   required: true
   type: 15
 - display: Trust any certificate (not secure)

@@ -104,40 +104,39 @@ class LdapClient:
         :return: Initialized ldap server object.
         """
         # TODO: ciphers correction may be added.
-        if self._connection_type == 'ssl':  # Secure connection (SSL)
-            demisto.info(f"Initializing LDAP sever with SSL (unsecure: {not self._verify})."
+        if self._connection_type == 'ssl':  # Secure connection (SSL\TLS)
+            demisto.info(f"Initializing LDAP sever with SSL\TLS (unsecure: {not self._verify})."
                          f" port: {self._port or 'default(636)'}")
 
             if self._verify:  # Trust any certificate is unchecked
                 # Trust any certificate = False means that the LDAP server's certificate must be valid -
                 # i.e if the server's certificate is not valid the connection will fail.
                 tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'),
-                          version=ssl.PROTOCOL_SSLv2)  # TODO: not sure that I need to specify the exact version
-                return Server(host=self._host, port=self._port, use_ssl=True, tls=tls,
-                              connect_timeout=LdapClient.TIMEOUT)
+                          version=ssl.PROTOCOL_TLS)
 
             else:  # Trust any certificate is checked
                 # Trust any certificate = True means that we do not require validation of the LDAP server's certificate.
-                tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_SSLv2)
-                return Server(host=self._host, port=self._port, use_ssl=True, tls=tls,
-                              connect_timeout=LdapClient.TIMEOUT)
+                tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_TLS)
 
-        elif self._connection_type == 'tls':  # Secure connection (TLS)
-            demisto.info(f"Initializing LDAP sever with TLS (unsecure: {not self._verify})."
-                         f" port: {self._port or 'default(636)'}")
+                # By setting the version to ssl.PROTOCOL_TLS we select the highest protocol version that both client
+                # and server support (can be SSL or TLS versions).
+
+            return Server(host=self._host, port=self._port, use_ssl=True, tls=tls, connect_timeout=LdapClient.TIMEOUT)
+
+        elif self._connection_type == 'start tls':  # Secure connection (TLS)
+            demisto.info(f"Initializing LDAP sever without a secure connection - Start TLS operation will be executed"
+                         f" during bind. (unsecure: {not self._verify}). port: {self._port or 'default(389)'}")
             if self._verify:  # Trust any certificate is unchecked
                 # Trust any certificate = False means that the LDAP server's certificate must be valid -
                 # i.e if the server's certificate is not valid the connection will fail.
                 tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'),
-                          version=ssl.PROTOCOL_TLSv1_2)  # TODO: not sure that I need to specify the exact version
-                return Server(host=self._host, port=self._port, use_ssl=True, tls=tls,
-                              connect_timeout=LdapClient.TIMEOUT)
+                          version=ssl.PROTOCOL_TLS)
 
             else:  # Trust any certificate is checked
                 # Trust any certificate = True means that we do not require validation of the LDAP server's certificate.
-                tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_TLSv1_2)
-                return Server(host=self._host, port=self._port, use_ssl=True, tls=tls,
-                              connect_timeout=LdapClient.TIMEOUT)
+                tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_TLS)
+
+            return Server(host=self._host, port=self._port, use_ssl=False, tls=tls, connect_timeout=LdapClient.TIMEOUT)
             # TODO: need to add to every new connection in the code the starttls option. maybe worth adding the
             #  auto_bind as a field to use it in every function easily.
 
@@ -229,7 +228,8 @@ class LdapClient:
         """
             Fetches all ldap groups under given base DN.
         """
-        with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
+        auto_bind = self._get_auto_bind_value()
+        with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             if self._ldap_server_type == 'Active Directory':
                 search_filter = '(&(objectClass=group)(objectCategory=group))'
 
@@ -297,8 +297,10 @@ class LdapClient:
         """
             Fetches specific ldap groups under given base DN.
         """
+        auto_bind = self._get_auto_bind_value()
         dn_list = [group.strip() for group in argToList(specific_groups, separator="#")]
-        with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
+
+        with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
 
             if self._ldap_server_type == 'Active Directory':
                 dns_filter = ''
@@ -347,6 +349,17 @@ class LdapClient:
 
         return x_username
 
+    def _get_auto_bind_value(self) -> str:
+        """
+            Returns the proper auto bind value according to the desirable connection type.
+        """
+        if self._connection_type == 'start tls':
+            auto_bind = AUTO_BIND_TLS_BEFORE_BIND
+        else:
+            auto_bind = AUTO_BIND_NO_TLS
+
+        return auto_bind
+
     def get_ldap_groups(self, specific_group: str = '') -> dict:
         """
             Implements ldap groups command.
@@ -366,12 +379,9 @@ class LdapClient:
         """
             Performs simple bind operation on ldap server.
         """
-        if self._connection_type == 'tls':
-            auto_bind = AUTO_BIND_TLS_BEFORE_BIND
-        else:
-            auto_bind = AUTO_BIND_NO_TLS
-
+        auto_bind = self._get_auto_bind_value()
         ldap_conn = Connection(server=self._ldap_server, user=username, password=password, auto_bind=auto_bind)
+        demisto.info(f'######## LDAP Connection Details: {ldap_conn} #########')
 
         if ldap_conn.bound:
             ldap_conn.unbind()
@@ -386,7 +396,8 @@ class LdapClient:
         """
             Returns data for given ldap user.
         """
-        with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
+        auto_bind = self._get_auto_bind_value()
+        with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             attributes = [self.GROUPS_IDENTIFIER_ATTRIBUTE]
 
             if pull_name:
@@ -432,7 +443,8 @@ class LdapClient:
         """
             Returns user's group.
         """
-        with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
+        auto_bind = self._get_auto_bind_value()
+        with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             search_filter = (f'(&(objectClass={self.GROUPS_OBJECT_CLASS})'
                              f'({self.GROUPS_MEMBERSHIP_IDENTIFIER_ATTRIBUTE}={user_identifier}))')
             ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
@@ -474,7 +486,9 @@ class LdapClient:
         entries = []
 
         xsoar_username = self._get_ad_username(username)
-        with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
+        auto_bind = self._get_auto_bind_value()
+
+        with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             attributes = [self.GROUPS_MEMBER, self.GROUPS_PRIMARY_ID]
             if pull_name:
                 attributes.append(name_attribute)

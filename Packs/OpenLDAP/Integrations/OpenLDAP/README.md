@@ -29,7 +29,7 @@ Use OpenLDAP or Active Directory user authentication groups to set user roles in
     * __User Object Class__
     * __User Unique Identifier Attribute__
     * __Page size__
-    * __Connection Type__
+    * __Connection Type (None, SSL or Start TLS)__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
