@@ -206,7 +206,7 @@ def test_module(client: Client, api_version: str, last_run: dict) -> str:
         return 'Test failed - Make sure the URL and the API Token are correctly set.'
 
 
-def v1_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> CommandResults:
+def v1_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> CommandResults:  # pragma: no cover
     limit = arg_to_number(args.get('limit', 20))
 
     events = client.get_events_request_v1(last_run, limit)
