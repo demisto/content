@@ -467,6 +467,7 @@ script:
     description: Submit a file or url for analysis.
     execution: false
     name: anyrun-run-analysis
+    polling: true
     outputs:
     - contextPath: ANYRUN.Task.AnalysisDate
       description: Date and time the analysis was executed.
@@ -696,7 +697,6 @@ script:
     - contextPath: ANYRUN.Task.Reports.graph
       description: URL for the graph report.
       type: String
-    polling: true
   dockerimage: demisto/python3:3.10.5.31928
   subtype: python3
   isfetch: false

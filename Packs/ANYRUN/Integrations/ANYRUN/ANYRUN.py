@@ -11,7 +11,6 @@ from base64 import b64encode
 
 ''' GLOBAL VARS / INSTANCE CONFIGURATION '''
 
-
 # Context fields that should always be uppercase
 ALWAYS_UPPER_CASE = {
     'md5', 'sha1', 'sha256', 'sha512', 'pcap', 'ip',
