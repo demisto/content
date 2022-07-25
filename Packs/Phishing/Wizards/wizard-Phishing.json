@@ -12,7 +12,7 @@
         "packs": [
           {
             "name": "EWS",
-            "display_name": "EWS Mail (Note: Please install also the EWS Mail Sender Pack)"
+            "display_name": "EWS Mail (Make sure you also install the EWS Mail Sender pack)"
           },
           {
             "name": "Gmail",
