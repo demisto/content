@@ -217,25 +217,24 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
       ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
-     (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS, (
-             'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
-     )),
+     (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
      (MockerCases.B_xsoar, ('myOtherTestPlaybook', 'myTestPlaybook'), ('myXSOAROnlyPack',), None,
       XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',
                           'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
 
-     (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
-             'Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml',
-     )),
-     (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
-             'Packs/myPack/Playbooks/myPlaybook.yml',
-     )),
-     (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
-             'Packs/myPack/Scripts/myScript/myScript.yml',
-     )),
+     (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
+
+     (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/Playbooks/myPlaybook.yml',)),
+
+     (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/Scripts/myScript/myScript.yml',)),
+
      (MockerCases.I, ('myTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
-     ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
-      'Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml'))
+      ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
+       'Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml'))
      ))
 def test_branch(
         monkeypatch,
