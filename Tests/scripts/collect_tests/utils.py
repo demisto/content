@@ -6,6 +6,8 @@ from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
+from packaging._structures import NegativeInfinity, Infinity, InfinityType, NegativeInfinityType
+
 from exceptions import (DeprecatedPackException, BlankPackNameException,
                         NonDictException, NonexistentPackException,
                         NoTestsConfiguredException, NotUnderPackException,
@@ -47,7 +49,7 @@ class VersionRange:
     def __repr__(self):
         return f'{self.min_version} -> {self.max_version}'
 
-    def __or__(self, other: 'VersionRange') -> 'VersionRange':
+    def __or__(self, other: Optional['VersionRange']) -> 'VersionRange':
         if other is None or other.is_default or self.is_default:
             return self
 
@@ -110,7 +112,7 @@ class DictBased:
     def __getitem__(self, key):
         return self.content[key]
 
-    def _calculate_from_version(self) -> Version:
+    def _calculate_from_version(self) -> Version | NegativeInfinityType:
         if value := (
                 self.get('fromversion', warn_if_missing=False)
                 or self.get('fromVersion', warn_if_missing=False)
@@ -119,7 +121,7 @@ class DictBased:
             return Version(value)
         return version.NegativeInfinity
 
-    def _calculate_to_version(self) -> Version:
+    def _calculate_to_version(self) -> Version | NegativeInfinityType:
         if value := (
                 self.get('toversion', warn_if_missing=False)
                 or self.get('toVersion', warn_if_missing=False)
@@ -171,7 +173,7 @@ class ContentItem(DictFileBased):
     def tests(self) -> list[str]:
         tests = self.get('tests', [], warn_if_missing=False)
         if len(tests) == 1 and 'no tests' in tests[0].lower():
-            raise NoTestsConfiguredException(self.id_)
+            raise NoTestsConfiguredException(self.id_ or self.path)
         return tests
 
     @property
@@ -218,7 +220,7 @@ class PackManager:
 
             self._pack_id_to_pack_metadata[pack_id] = metadata
             if metadata.deprecated:
-                self.deprecated_packs.add(pack_folder)
+                self.deprecated_packs.add(pack_id)
 
         self.pack_ids: set[str] = set(self._pack_id_to_pack_metadata.keys())
 

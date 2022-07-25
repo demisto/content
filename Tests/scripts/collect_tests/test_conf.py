@@ -23,11 +23,11 @@ class TestConf(DictFileBased):
         self.skipped_integrations_dict: dict[str, str] = self['skipped_integrations']  # todo is used?
         self.private_tests: set[str] = set(self['private_tests'])
 
-        self.classifier_to_test: dict[TestConfItem:str] = {
+        self.classifier_to_test: dict[TestConfItem, str] = {
             test.classifier: test.playbook_id
             for test in self.tests if test.classifier
         }
-        self.incoming_mapper_to_test: dict[TestConfItem:str] = {
+        self.incoming_mapper_to_test: dict[TestConfItem, str] = {
             test.incoming_mapper: test.playbook_id
             for test in self.tests if test.incoming_mapper
         }

@@ -16,7 +16,7 @@ from exceptions import (DeprecatedPackException, EmptyMachineListException,
                         NonDictException, NoTestsConfiguredException,
                         NothingToCollectException, NotUnderPackException,
                         SkippedPackException, UnsupportedPackException, SkippedTestException, PrivateTestException,
-                        InvalidTestException)
+                        InvalidTestException, TestMissingFromIdSetException)
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
@@ -113,10 +113,14 @@ class CollectionResult:
 
         if test:
             if not is_sanity:  # sanity tests do not show in the id_set
-                if test not in id_set.id_to_test_playbook:
-                    raise InvalidTestException(test, 'missing from id-set')
+                if test not in id_set.id_to_test_playbook:  # type:ignore[union-attr]
+                    raise TestMissingFromIdSetException(test)
 
-                test_playbook = id_set.id_to_test_playbook[test]
+                test_playbook = id_set.id_to_test_playbook[test]  # type:ignore[union-attr]
+                if not test_playbook.pack_id:
+                    raise ValueError(f'{test} has no pack_id')
+                if not test_playbook.path:
+                    raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(test_playbook.path.name, test_playbook.pack_id):
                     raise SkippedTestException(test, 'skipped in .pack_ignore')
 
@@ -140,8 +144,8 @@ class CollectionResult:
     def __add__(self, other: 'CollectionResult') -> 'CollectionResult':
         # initial object just to add others to
         result = self.__empty_result()
-        result.tests = self.tests | other.tests
-        result.packs = self.packs | other.packs
+        result.tests = self.tests | other.tests  # type: ignore[operator]
+        result.packs = self.packs | other.packs  # type: ignore[operator]
         result.version_range = self.version_range | other.version_range if self.version_range else other.version_range
         return result
 
@@ -164,7 +168,7 @@ class TestCollector(ABC):
         self.conf = TestConf(PATHS.conf_path)
 
     @property
-    def sanity_tests(self) -> CollectionResult:
+    def sanity_tests(self) -> Optional[CollectionResult]:
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
                 test_names = self.conf['test_marketplacev2']
@@ -270,6 +274,9 @@ class BranchTestCollector(TestCollector):
             '.yml') if content_item_path.suffix != '.yml' else content_item_path
         try:
             yml = ContentItem(yml_path)
+            yml_id = yml.id_
+            if not yml_id:
+                raise ValueError(f'id field of {yml_path} cannot be empty')
         except FileNotFoundError:
             raise FileNotFoundError(
                 f'could not find yml matching {PackManager.relative_to_packs(content_item_path)}'

@@ -74,7 +74,7 @@ class MockerCases:
     F = CollectTestsMocker(TEST_DATA / 'F')
     G = CollectTestsMocker(TEST_DATA / 'G')
     H = CollectTestsMocker(TEST_DATA / 'H')
-    I = CollectTestsMocker(TEST_DATA / 'I_xsoar')
+    I_xsoar = CollectTestsMocker(TEST_DATA / 'I_xsoar')
 
 
 def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, collector_class: Callable,
@@ -174,7 +174,7 @@ NIGHTLY_TESTS = ((MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECT
                  (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
                   None),
 
-                 (MockerCases.I, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None)
+                 (MockerCases.I_xsoar, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None)
                  )
 
 
@@ -232,7 +232,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Scripts/myScript/myScript.yml',)),
 
-     (MockerCases.I, ('myTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+     (MockerCases.I_xsoar, ('myTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
        'Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml'))
      ))
