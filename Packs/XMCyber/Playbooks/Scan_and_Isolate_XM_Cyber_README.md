@@ -41,4 +41,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Scan and Isolate - XM Cyber](https://github.com/matan-xmcyber/content/blob/master/docs/images/playbooks/Scan_and_isolate_XM_Cyber.png)
+![Scan and Isolate - XM Cyber](../doc_files/Scan_and_Isolate_-_XM_Cyber.png)

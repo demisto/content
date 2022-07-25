@@ -1,7 +1,7 @@
-id: IP Enrichment - XM Cyber
+id: Endpoint Enrichment By IP - XM Cyber
 version: -1
 fromversion: 6.0.0
-name: IP Enrichment - XM Cyber
+name: Endpoint Enrichment By IP - XM Cyber
 description: |-
   Enrich IP addresses using XM Cyber integration.
   - Resolve IP address to entity
@@ -135,7 +135,7 @@ tasks:
       version: -1
       name: Enrich IP
       description: Return data on Entity by IP from XM Cyber
-      script: 'XMCyber|||ip'
+      script: 'XMCyber|||xmcyber-enrich-from-ip'
       type: regular
       iscommand: true
       brand: ""
@@ -240,8 +240,7 @@ tasks:
       id: 86d460d3-df69-4954-899a-ef9632cf3e75
       version: -1
       name: Is XM Available
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -305,8 +304,7 @@ tasks:
       id: 105e1f81-3df0-40e6-8119-a97dbddffbf4
       version: -1
       name: Get Critical Assets At Risk
-      description: List critical assets at risk from an entity and the complexity
-        of the attack
+      description: List critical assets at risk from an entity and the complexity of the attack
       script: XMCyber|||xmcyber-affected-critical-assets-list
       type: regular
       iscommand: true
@@ -343,8 +341,7 @@ tasks:
       id: 775c1092-07dc-4139-8502-be92d8c8e6d9
       version: -1
       name: Get Entities At Risk
-      description: List all entities at risk from an entity and the complexity of
-        the attack
+      description: List all entities at risk from an entity and the complexity of the attack
       script: XMCyber|||xmcyber-affected-entities-list
       type: regular
       iscommand: true
@@ -463,7 +460,7 @@ inputs:
       - operator: uniq
   required: false
   description: The IP address to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: IP
   description: The IP objects.
@@ -508,4 +505,4 @@ outputs:
   description: Critical assets at risk from this entity
   type: unknown
 tests:
- -  No tests
+- No tests
