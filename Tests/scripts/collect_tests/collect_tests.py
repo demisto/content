@@ -117,11 +117,11 @@ class CollectionResult:
                     raise TestMissingFromIdSetException(test)
 
                 test_playbook = id_set.id_to_test_playbook[test]  # type:ignore[union-attr]
-                if not test_playbook.pack_id:
+                if not (pack_id := test_playbook.pack_id):
                     raise ValueError(f'{test} has no pack_id')
-                if not test_playbook.path:
+                if not (playbook_path := test_playbook.path):
                     raise ValueError(f'{test} has no path')
-                if PACK_MANAGER.is_test_skipped_in_pack_ignore(test_playbook.path.name, test_playbook.pack_id):
+                if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path, pack_id):
                     raise SkippedTestException(test, 'skipped in .pack_ignore')
 
             if skip_reason := conf.skipped_tests.get(test):
