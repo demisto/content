@@ -1,6 +1,6 @@
 {
-    "name": "Palo Alto Networks Threat Vault",
-    "description": "Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.",
+    "name": "Palo Alto Networks Threat Vault (Deprecated).",
+    "description": "Deprecated. No available replacement.",
     "support": "xsoar",
     "currentVersion": "1.0.15",
     "author": "Cortex XSOAR",

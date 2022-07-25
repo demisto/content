@@ -15,14 +15,14 @@ from enum import IntEnum
 from pprint import pformat
 from threading import Thread
 from time import sleep
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Set
 
 from urllib.parse import quote_plus
 import demisto_client
 
 from demisto_sdk.commands.common.constants import FileType
 from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
-    str2bool, format_version, find_type
+    str2bool, format_version, find_type, listdir_fullpath
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
 from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
@@ -32,6 +32,7 @@ from ruamel import yaml
 
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     upload_zipped_packs, install_all_content_packs_for_nightly
+from Tests.Marketplace.marketplace_constants import Metadata
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_content import get_server_numeric_version
@@ -269,14 +270,16 @@ class Build:
         for server in self.servers:
             disable_all_integrations(server.client)
 
-    def get_changed_integrations(self) -> tuple:
+    def get_changed_integrations(self, packs_not_to_install: Set[str] = None) -> Tuple[List[str], List[str]]:
         """
-        Return 2 lists - list of new integrations and list of modified integrations since the commit of the git_sha1.
-
+        Return 2 lists - list of new integrations names and list of modified integrations names since the commit of the git_sha1.
+        The modified list is exclude the packs_not_to_install and the new list is including it
+        in order to ignore the turned non-hidden tests in the pre-update stage.
         Args:
-            self: the build object
+            self: the build object.
+            packs_not_to_install (Set[str]): The set of packs names which are turned to non-hidden.
         Returns:
-            list of new integrations and list of modified integrations
+            Tuple[List[str], List[str]]: The list of new integrations names and list of modified integrations names.
         """
         new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(
             self.branch_name) if not self.is_private else ([], [])
@@ -289,7 +292,7 @@ class Build:
         if modified_integrations_files:
             modified_integrations_names = get_integration_names_from_files(modified_integrations_files)
             logging.debug(f'Updated Integrations Since Last Release:\n{modified_integrations_names}')
-        return new_integrations_names, modified_integrations_names
+        return update_integration_lists(new_integrations_names, packs_not_to_install, modified_integrations_names)
 
     @abstractmethod
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
@@ -306,6 +309,7 @@ class Build:
             installed_content_packs_successfully: Whether packs installed successfully
         """
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
+        logging.info(f"Packs ids to install: {pack_ids}")
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
@@ -662,7 +666,7 @@ class XSOARBuild(Build):
 
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number):
-        url_suffix = quote_plus(f'{branch_name}/{ci_build_number}/xsoar')
+        url_suffix = f'{quote_plus(branch_name)}/{ci_build_number}/xsoar'
         config_path = 'marketplace.bootstrap.bypass.url'
         config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
         for server in servers:
@@ -1579,6 +1583,52 @@ def get_non_added_packs_ids(build: Build):
     return set(build.pack_ids_to_install) - set(added_pack_ids)
 
 
+def run_git_diff(pack_name: str, build: Build) -> str:
+    """
+    Run git diff command with the specific pack id.
+    Args:
+        pack_name (str): The pack name.
+        build (Build): The build object.
+    Returns:
+        (str): The git diff output.
+    """
+    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+    return run_command(f'git diff {compare_against}..{build.branch_name} -- Packs/{pack_name}/pack_metadata.json')
+
+
+def check_hidden_field_changed(pack_name: str, build: Build) -> bool:
+    """
+    Check if pack turned from hidden to non-hidden.
+    Args:
+        pack_name (str): The pack name.
+        build (Build): The build object.
+    Returns:
+        (bool): True if the pack transformed to non-hidden.
+    """
+    diff = run_git_diff(pack_name, build)
+    for diff_line in diff.splitlines():
+        if '"hidden": false' in diff_line and diff_line.split()[0].startswith('+'):
+            return True
+    return False
+
+
+def get_turned_non_hidden_packs(modified_packs_names: Set[str], build: Build) -> Set[str]:
+    """
+    Return a set of packs which turned from hidden to non-hidden.
+    Args:
+        modified_packs_names (Set[str]): The set of packs to install.
+        build (Build): The build object.
+    Returns:
+        (Set[str]): The set of packs names which are turned non-hidden.
+    """
+    hidden_packs = set()
+    for pack_name in modified_packs_names:
+        # check if the pack turned from hidden to non-hidden.
+        if check_hidden_field_changed(pack_name, build):
+            hidden_packs.add(pack_name)
+    return hidden_packs
+
+
 def create_build_object() -> Build:
     options = options_handler()
     logging.info(f'Build type: {options.build_object_type}')
@@ -1590,6 +1640,94 @@ def create_build_object() -> Build:
         raise Exception(f"Wrong Build object type {options.build_object_type}.")
 
 
+def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -> List[str]:
+    """
+    Convert packs names to the integrations names contained in it.
+    Args:
+        turned_non_hidden_packs_names (Set[str]): The turned non-hidden pack names (e.g. "AbnormalSecurity")
+    Returns:
+        List[str]: The turned non-hidden integrations names list.
+    """
+    hidden_integrations = []
+    hidden_integrations_paths = [f'Packs/{pack_name}/Integrations' for pack_name in turned_non_hidden_packs_names]
+    # extract integration names within the turned non-hidden packs.
+    for hidden_integrations_path in hidden_integrations_paths:
+        pack_integrations_paths = listdir_fullpath(hidden_integrations_path)
+        for integration_path in pack_integrations_paths:
+            hidden_integrations.append(integration_path.split("/")[-1])
+    hidden_integrations_names = [integration for integration in hidden_integrations if
+                                 not str(integration).startswith('.')]
+    return hidden_integrations_names
+
+
+def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str],
+                             modified_integrations_names: List[str]) -> Tuple[List[str], List[str]]:
+    """
+    Add the turned non-hidden integrations names to the new integrations names list and
+     remove it from modified integrations names.
+    Args:
+        new_integrations_names (List[str]): The new integration name (e.g. "AbnormalSecurity").
+        packs_not_to_install (Set[str]): The turned non-hidden packs names.
+        modified_integrations_names (List[str]): The modified integration name (e.g. "AbnormalSecurity").
+    Returns:
+        Tuple[List[str], List[str]]: The updated lists after filtering the turned non-hidden integrations.
+    """
+    if not packs_not_to_install:
+        return new_integrations_names, modified_integrations_names
+
+    hidden_integrations_names = packs_names_to_integrations_names(packs_not_to_install)
+    # update the new integration and the modified integration with the non-hidden integrations.
+    for hidden_integration_name in hidden_integrations_names:
+        if hidden_integration_name in modified_integrations_names:
+            modified_integrations_names.remove(hidden_integration_name)
+            new_integrations_names.append(hidden_integration_name)
+    return list(set(new_integrations_names)), modified_integrations_names
+
+
+def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tuple[Set[str], Set[str]]:
+    """
+    Return a set of packs to install only in the post-update.
+    Args:
+        modified_packs_names (Set[str]): The set of packs to install.
+        build (Build): The build object.
+    Returns:
+        (Set[str]): The set of the pack names that should not be installed.
+        (Set[str]): The set of the non-hidden pack names (should be installed only in post update).
+    """
+    non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
+    packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
+                                                                      build.content_path, build.server_numeric_version)
+    build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
+    return packs_with_higher_min_version.union(non_hidden_packs), non_hidden_packs
+
+
+def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
+    """
+    Return a set of packs that have higher min version than the server version.
+
+    Args:
+        packs_names (Set[str]): A set of packs to install.
+        content_path (str): The content root path.
+        server_numeric_version (str): The server version.
+
+    Returns:
+        (Set[str]): The set of the packs names that supposed to be not installed because
+                    their min version is greater than the server version.
+    """
+    packs_with_higher_version = set()
+    for pack_name in packs_names:
+
+        pack_metadata = get_json_file(f"{content_path}/Packs/{pack_name}/pack_metadata.json")
+        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
+
+        if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
+            packs_with_higher_version.add(pack_name)
+            logging.info(f"Found pack '{pack_name}' with min version {server_min_version} that is "
+                         f"higher than server version {server_numeric_version}")
+
+    return packs_with_higher_version
+
+
 def main():
     """
     This step in the build is doing different things for branch build and nightly.
@@ -1598,14 +1736,18 @@ def main():
         2. Disable all enabled integrations.
         3. Finds only modified (not new) packs and install them, same version as in production.
             (before the update in this branch).
-        4. Compares master to commit_sha and return two lists - new integrations and modified in the current branch.
-        5. Configures integration instances (same version as in production) for the modified packs
+        4. Finds all the packs that should not be intalled, like turned hidden -> non-hidden packs names
+           or packs with higher min version than the server version.
+        5. Compares master to commit_sha and return two lists - new integrations and modified in the current branch.
+           Filter the lists, add the turned non-hidden to the new integrations list and remove it from the modified list.
+           This filter purpose is to ignore the turned-hidden integration tests in the pre-update step. (#CIAC-3009)
+        6. Configures integration instances (same version as in production) for the modified packs
             and runs `test-module` (pre-update).
-        6. Changes marketplace bucket to the new one that was created in create-instances workflow.
-        7. Installs all (new and modified) packs from current branch.
-        8. After updating packs from branch, runs `test-module` for both new and modified integrations,
+        7. Changes marketplace bucket to the new one that was created in create-instances workflow.
+        8. Installs all (new and modified) packs from current branch.
+        9. After updating packs from branch, runs `test-module` for both new and modified integrations,
             to check that modified integrations was not broken. (post-update).
-        9. Prints results.
+        10. Prints results.
     The flow for nightly:
         1. Add server config and restart servers (only in xsoar).
         2. Disable all enabled integrations.
@@ -1622,18 +1764,19 @@ def main():
     if build.is_nightly:
         build.install_nightly_pack()
     else:
-        pack_ids = get_non_added_packs_ids(build)
-        build.install_packs(pack_ids=pack_ids)
-
-        new_integrations, modified_integrations = build.get_changed_integrations()
-        pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
-                                                                                            modified_integrations)
+        modified_packs_names = get_non_added_packs_ids(build)
+        packs_not_to_install, packs_to_install_in_post_update = get_packs_not_to_install(modified_packs_names, build)
+        packs_to_install = modified_packs_names - packs_not_to_install
+        build.install_packs(pack_ids=packs_to_install)
+        new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_to_install_in_post_update)
+        pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
+                                                                                            modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
         installed_content_packs_successfully = build.update_content_on_servers()
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
         success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                      new_integrations, build)
+                                      new_integrations_names, build)
         if not success or not installed_content_packs_successfully:
             sys.exit(2)
 

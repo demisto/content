@@ -14,7 +14,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 PRIVATE_BUILD_INFRA_SCRIPTS = ['Tests/scripts/validate_premium_packs.sh', 'Tests/scripts/validate_premium_packs.py',
-                               'Tests/scripts/validate_index.py']
+                               'Tests/scripts/validate_index.py', 'Tests/configure_and_test_integration_instances.py']
 PRIVATE_BUILD_INFRA_FOLDERS = ['Tests/private_build', 'Tests/Marketplace']
 
 NON_PRIVATE_BUILD_FILES = ['Tests/Marketplace/landingPage_sections.json',

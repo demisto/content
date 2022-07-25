@@ -325,7 +325,7 @@ script:
     - contextPath: AzureRiskyUsers.RiskDetection.tokenIssuerType
       description: 'Indicates the type of token issuer for the detected sign-in risk. Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.30286
+  dockerimage: demisto/crypto:1.0.0.31715
   feed: false
   isfetch: false
   longRunning: false

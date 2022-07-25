@@ -1,0 +1,20 @@
+{
+    "cert.notafter": {
+        "friendlyName": "Not After",
+        "group": "cert",
+        "help": "Certificate is not valid after this date",
+        "dbField2": "cert.notAfter",
+        "type": "date",
+        "dbField": "cert.notAfter",
+        "exp": "cert.notafter"
+    },
+    "asn.xff": {
+        "friendlyName": "XFF  ASN",
+        "group": "http",
+        "help": "GeoIP ASN string calculated from the X-Forwarded-For Header",
+        "dbField2": "http.xffASN",
+        "type": "termfield",
+        "dbField": "http.xffASN",
+        "exp": "asn.xff"
+    }
+}

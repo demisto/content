@@ -68,14 +68,20 @@ class Client(BaseClient):
     def get_datasubject(self, **kwargs):
         pii_entities = format_pii_entities(self.get_entities())["entities"]
 
-        payload = generate_datasubject_payload(pii_entities, **kwargs)
+        # payload = generate_datasubject_payload(pii_entities, **kwargs)
+
+        query = "?"
+        for entity in pii_entities:
+            if kwargs.get(entity.lower(), None):
+                query = f"{query}{entity}={kwargs[entity.lower()]}&"
+        query = query[0:len(query) - 1]
 
         found_piis = self._http_request(
-            method="POST",
-            url_suffix="/dsr/api/pii/find",
+            method="GET",
+            url_suffix=f"/pii/api/piis{query}",
             return_empty_response=True,
-            json_data=payload,
             retries=5)
+
         return found_piis
 
     def prepare_ticket(self, datasubject_id: Any, reason: str) -> Any:
@@ -153,6 +159,14 @@ class Client(BaseClient):
             retries=5
         )
 
+    def get_sources(self, datasubject_id: Any) -> Dict:
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/pii/api/piis/{datasubject_id}/sources/details",
+            return_empty_response=True,
+            retries=5
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -195,14 +209,19 @@ def get_entities_command(client: Client) -> CommandResults:
 
 
 def get_datasubjects_command(client: Client, **kwargs) -> CommandResults:
-    return CommandResults(outputs=client.get_datasubject(**kwargs),
+    results = client.get_datasubject(**kwargs)
+    for result in results:
+        result["personalInfo"] = list(result["personalInfo"].keys())
+        result["personalInfo"].sort()
+    return CommandResults(outputs=result,
                           outputs_prefix="Inventa.DataSubjects",
                           outputs_key_field="id")
 
 
 def get_datasubject_id_command(client: Client, **kwargs) -> CommandResults:
     found_piis = client.get_datasubject(**kwargs)
-    datasubs = found_piis.get("dataSubjects", [])
+    # datasubs = found_piis.get("dataSubjects", [])
+    datasubs = found_piis
     if datasubs:
         datasubject_id = datasubs[0].get("id", "")
         return CommandResults(outputs={"datasubject_id": datasubject_id},
@@ -212,6 +231,58 @@ def get_datasubject_id_command(client: Client, **kwargs) -> CommandResults:
         return CommandResults(outputs={"datasubject_id": 0},
                               outputs_prefix="Inventa.DataSubjects",
                               outputs_key_field="datasubject_id")
+
+
+def get_sources_command(client: Client, datasubject_id: str) -> CommandResults:
+    if not datasubject_id:
+        raise ValueError("No such datasubject_id found")
+    import json
+    import copy
+    result = []
+    sources = client.get_sources(datasubject_id)
+    sources = copy.deepcopy(sources)
+
+    for source in sources:
+        source_id = source["id"]
+        source_appliance_name = source["applianceName"]
+        source_ts = int(source["timestamp"])
+        source_key_type = source["key"]["keyType"]
+        source_path = source["key"]["path"]
+        source_url = source["key"]["repository"]["url"]
+        source_hostname = source["key"]["repository"]["hostName"]
+        source_db_name = source["key"]["repository"]["dbName"]
+        source_vendor = source["key"]["repository"]["vendor"]
+        source_type = source["key"]["repository"]["type"]
+        source_content = source["content"]
+        source_entity_types = source_content.pop("entityTypes", None)
+        source_content = json.dumps(source_content)
+
+        result.append({
+            "id": source_id,
+            "applianceName": source_appliance_name,
+            "timestamp": datetime.utcfromtimestamp(
+                float(f"{str(source_ts)[:10]}.{str(source_ts)[10:]}")).strftime("%d %b %Y %H:%M:%S"),
+            "keyType": source_key_type,
+            "path": source_path,
+            "url": source_url,
+            "hostName": source_hostname,
+            "dbName": source_db_name,
+            "vendor": source_vendor,
+            "type": source_type,
+            "content": source_content,
+            "entityTypes": ", ".join(source_entity_types),
+        })
+    return CommandResults(outputs=result, outputs_prefix="Inventa.Sources.sources", outputs_key_field="id")
+
+
+def get_sources_piis_command(client: Client, datasubject_id: str) -> CommandResults:
+    sources = client.get_sources(datasubject_id)
+    piis = []
+    for item in sources:
+        piis.extend(item["content"]["entityTypes"])
+    piis = list(set(piis))
+    piis.sort()
+    return CommandResults(outputs={"piis": piis}, outputs_prefix="Inventa.Sources", outputs_key_field="piis")
 
 
 def create_ticket_command(client: Client, reason: str, datasubject_id: int) -> CommandResults:
@@ -376,7 +447,7 @@ def get_dsar_dataassets_command(client: Client, ticket_id: int) -> CommandResult
 
 
 def validate_incident_inputs_command(**kwargs):
-    ticket_id = kwargs.get("ticket_id", "")
+    # ticket_id = kwargs.get("ticket_id", "")
     datasubject_id = kwargs.get("datasubject_id", "")
     national_id = kwargs.get("national_id", "")
     passport_number = kwargs.get("passport_number", "")
@@ -391,9 +462,7 @@ def validate_incident_inputs_command(**kwargs):
     birthday = kwargs.get("birthday", "")
     city = kwargs.get("city", "")
     street_address = kwargs.get("street_address", "")
-    reason = kwargs.get("reason", "")
 
-    demisto.debug(f"{ticket_id}")
     demisto.debug(f"{datasubject_id}")
 
     constraints = [
@@ -417,23 +486,16 @@ def validate_incident_inputs_command(**kwargs):
             constraints_validated = True
             break
 
-    ticket_validated = False
-    if ticket_id:
-        ticket_validated = True
     datasubject_id_validated = False
     if datasubject_id:
         datasubject_id_validated = True
 
     demisto.debug("CONSTRAINTS")
-    if constraints_validated and reason:
+    if constraints_validated:
         return CommandResults(outputs={"validated": True},
                               outputs_prefix="Inventa.Incident",
                               outputs_key_field="validated")
-    elif datasubject_id_validated and reason:
-        return CommandResults(outputs={"validated": True},
-                              outputs_prefix="Inventa.Incident",
-                              outputs_key_field="validated")
-    elif ticket_validated:
+    elif datasubject_id_validated:
         return CommandResults(outputs={"validated": True},
                               outputs_prefix="Inventa.Incident",
                               outputs_key_field="validated")
@@ -547,6 +609,12 @@ def main() -> None:
 
         elif demisto.command() == 'inventa-get-datasubject-id-from-ticket':
             return_results(get_datasubjectid_from_ticket_command(client, demisto.args().get("ticket_id", 0)))
+
+        elif demisto.command() == "inventa-get-sources":
+            return_results(get_sources_command(client, demisto.args().get("datasubject_id", "")))
+
+        elif demisto.command() == "inventa-get-sources-piis":
+            return_results(get_sources_piis_command(client, demisto.args().get("datasubject_id", "")))
 
         elif demisto.command() == 'inventa-get-entities':
             return_results(get_entities_command(client))
