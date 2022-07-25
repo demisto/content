@@ -1,0 +1,34 @@
+args:
+- default: false
+  description: Limit output to the top limit ranked strings
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  description: Limit output to strings with score >= min-score
+  isArray: false
+  name: min_score
+  required: false
+  secret: false
+- default: false
+  description: The file to process.
+  isArray: false
+  name: entryID
+  required: false
+  secret: false
+comment: This script runs stringsifter ML tool for malware anlisys and ranking of words.
+commonfields:
+  id: StringSifter
+  version: -1
+enabled: false
+name: StringSifter
+outputs:
+- contextPath: Stringsifter
+  description: The results from the Stringsifter operation.
+script: ''
+system: false
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.5.31797
+fromversion: 6.1.0
