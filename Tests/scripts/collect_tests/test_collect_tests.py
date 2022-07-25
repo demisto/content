@@ -153,33 +153,34 @@ def test_nightly_empty(monkeypatch, case_mocker, collector_class: Callable, expe
 
 
 NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
-NIGHTLY_TESTS = ((MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
-                 (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
-                 (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
-                 (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
+NIGHTLY_TESTS: tuple = (
+    (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
+    (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
+    (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
+    (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
 
-                 (MockerCases.C, XSOARNightlyTestCollector, {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
-                  {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack'}, None),
+    (MockerCases.C, XSOARNightlyTestCollector, {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
+     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack'}, None),
 
-                 (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'},
-                  {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
+    (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'},
+     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
 
-                 (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-                  (Machine.V6_5, Machine.MASTER, Machine.NIGHTLY)),
+    (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
+     (Machine.V6_5, Machine.MASTER, Machine.NIGHTLY)),
 
-                 (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
-                  None),
-                 (MockerCases.E, XSIAMNightlyTestCollector, {}, {}, None),
+    (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
+     None),
+    (MockerCases.E, XSIAMNightlyTestCollector, {}, {}, None),
 
-                 (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
-                  None),
+    (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
+     None),
 
-                 (MockerCases.I_xsoar, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None)
-                 )
+    (MockerCases.I_xsoar, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None)
+)
 
 
 @pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs,expected_machines', NIGHTLY_TESTS)
-def test_nightly(monkeypatch, case_mocker, collector_class: Callable, expected_tests: set[str],
+def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable, expected_tests: set[str],
                  expected_packs: tuple[str],
                  expected_machines: Optional[tuple[Machine]]):
     """
@@ -253,6 +254,7 @@ def test_branch(
 
 
 ONLY_COLLECT_PACK_TYPES = {
+    # see following test docstring
     FileType.RELEASE_NOTES_CONFIG,
     FileType.RELEASE_NOTES,
     FileType.IMAGE,

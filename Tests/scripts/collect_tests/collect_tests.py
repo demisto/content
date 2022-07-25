@@ -124,10 +124,10 @@ class CollectionResult:
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(str(playbook_path), pack_id):
                     raise SkippedTestException(test, 'skipped in .pack_ignore')
 
-            if skip_reason := conf.skipped_tests.get(test):
+            if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
                 raise SkippedTestException(test, skip_reason)
 
-            if test in conf.private_tests:
+            if test in conf.private_tests:  # type:ignore[union-attr]
                 raise PrivateTestException(test)
 
         if pack:
@@ -270,6 +270,7 @@ class BranchTestCollector(TestCollector):
         """
         collecting a yaml-based content item (including py-based, whose names match a yaml based one)
         """
+        result: Optional[CollectionResult] = None
         yml_path = content_item_path.with_suffix(
             '.yml') if content_item_path.suffix != '.yml' else content_item_path
         try:
@@ -331,21 +332,18 @@ class BranchTestCollector(TestCollector):
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
         # creating an object for each, as CollectedTests require #packs==#tests
         if tests:
-            collected = CollectionResult.union(
-                tuple(
-                    CollectionResult(
-                        test=test,
-                        pack=yml.pack_id,
-                        reason=reason,
-                        version_range=yml.version_range,
-                        reason_description=f'{yml.id_=} ({relative_yml_path})',
-                        conf=self.conf,
-                        id_set=self.id_set,
-                    )
-                    for test in tests
-                ))
-            if collected:
-                return collected
+            result = CollectionResult.union(tuple(
+                CollectionResult(
+                    test=test,
+                    pack=yml.pack_id,
+                    reason=reason,
+                    version_range=yml.version_range,
+                    reason_description=f'{yml.id_=} ({relative_yml_path})',
+                    conf=self.conf,
+                    id_set=self.id_set
+                ) for test in tests))
+        if result:
+            return result
         else:
             raise NothingToCollectException(yml.path, 'no tests were found')
 
