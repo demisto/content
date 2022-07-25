@@ -1,3 +1,4 @@
+from configparser import ConfigParser, MissingSectionHeaderError
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -111,18 +112,18 @@ class DictBased:
 
     def _calculate_from_version(self) -> Version:
         if value := (
-            self.get('fromversion', warn_if_missing=False)
-            or self.get('fromVersion', warn_if_missing=False)
-            or self.get('fromServerVersion', warn_if_missing=False)
+                self.get('fromversion', warn_if_missing=False)
+                or self.get('fromVersion', warn_if_missing=False)
+                or self.get('fromServerVersion', warn_if_missing=False)
         ):
             return Version(value)
         return version.NegativeInfinity
 
     def _calculate_to_version(self) -> Version:
         if value := (
-            self.get('toversion', warn_if_missing=False)
-            or self.get('toVersion', warn_if_missing=False)
-            or self.get('toServerVersion', warn_if_missing=False)
+                self.get('toversion', warn_if_missing=False)
+                or self.get('toVersion', warn_if_missing=False)
+                or self.get('toServerVersion', warn_if_missing=False)
         ):
             return Version(value)
         return version.Infinity
@@ -178,28 +179,58 @@ class ContentItem(DictFileBased):
         return self.pack_path.name
 
 
+def read_skipped_test_playbooks(pack_folder: Path) -> set[str]:
+    file_prefix = 'file:'
+
+    skipped_playbooks = set()
+    config = ConfigParser(allow_no_value=True)
+    config.read(pack_folder / '.pack_ignore')
+
+    try:
+        for section in filter(lambda s: s.startswith(file_prefix), config.sections()):
+            file_name = section[(len(file_prefix)):]
+
+            for key in filter(lambda k: k == 'ignore', config[section]):
+                if config[section][key] == 'auto-test':
+                    skipped_playbooks.add(file_name)
+                    continue
+
+    except MissingSectionHeaderError:
+        pass
+
+    return skipped_playbooks
+
+
 class PackManager:
     skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
 
     def __init__(self, path_manager: PathManager):
         self.packs_path = path_manager.packs_path
         self.deprecated_packs: set[str] = set()
-        self.pack_id_to_pack_metadata: dict[str, ContentItem] = {}  # NOTE: The ID of a pack is the name of its folder.
+        self._pack_id_to_pack_metadata: dict[str, ContentItem] = {}  # NOTE: The ID of a pack is the name of its folder.
+        self._pack_id_to_skipped_test_playbooks: dict[str, set[str]] = {}
 
         for pack_folder in (pack_folder for pack_folder in self.packs_path.iterdir() if pack_folder.is_dir()):
             metadata = ContentItem(pack_folder / 'pack_metadata.json')
-            self.pack_id_to_pack_metadata[pack_folder.name] = metadata
+            pack_id = pack_folder.name
 
+            self._pack_id_to_skipped_test_playbooks[pack_id] = read_skipped_test_playbooks(pack_folder)
+
+            self._pack_id_to_pack_metadata[pack_id] = metadata
             if metadata.deprecated:
                 self.deprecated_packs.add(pack_folder)
 
-        self.pack_ids: set[str] = set(self.pack_id_to_pack_metadata.keys())
+        self.pack_ids: set[str] = set(self._pack_id_to_pack_metadata.keys())
 
     def __getitem__(self, pack_id: str) -> ContentItem:
-        return self.pack_id_to_pack_metadata[pack_id]
+        return self._pack_id_to_pack_metadata[pack_id]
 
     def __iter__(self):
-        yield from self.pack_id_to_pack_metadata.values()
+        yield from self._pack_id_to_pack_metadata.values()
+
+    def is_test_skipped_in_pack_ignore(self, test_file_name: str, pack_id: str):
+        ignored_test_playbooks_for_pack = self._pack_id_to_skipped_test_playbooks[pack_id]
+        return test_file_name in ignored_test_playbooks_for_pack
 
     @staticmethod
     def relative_to_packs(path: Path | str):

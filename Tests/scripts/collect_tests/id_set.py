@@ -1,5 +1,4 @@
 from collections import defaultdict
-from configparser import ConfigParser, MissingSectionHeaderError
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -14,11 +13,16 @@ class IdSetItem(DictBased):
     def __init__(self, id_: Optional[str], dict_: dict):
         super().__init__(dict_)
         self.id_: Optional[str] = id_  # None for packs, as they don't have it.
-        self.file_path: str = self.get('file_path', warn_if_missing=False)  # packs have no file_path value
-        self.name: str = self.get('name', '', warning_comment=Path(self.file_path or '').name)
+        self.file_path_str: str = self.get('file_path', warn_if_missing=False)  # packs have no file_path value
+        self.path: Optional[Path] = Path(self.file_path_str) if self.file_path_str else None
+        self.name: str = self.get('name', '', warning_comment=self.path or '')
 
         # None for packs, that have no id.
-        self.pack_id: Optional[str] = self.get('pack', warning_comment=self.file_path) if id_ else None
+        self.pack_id: Optional[str] = self.get('pack', warning_comment=self.file_path_str) if id_ else None
+        self.pack_path: Optional[Path] = find_pack_folder(Path(self.file_path_str)) if self.file_path_str else None
+
+        if self.pack_path and self.pack_path.name != self.pack_id:
+            logger.warning(f'{self.pack_path.name=}!={self.pack_id} for content item {self.id_=} {self.name=}')
 
         # hidden for pack_name_to_pack_metadata, deprecated for content items
         self.deprecated: Optional[bool] = \
@@ -102,29 +106,3 @@ class IdSet(DictFileBased):
 
                     result[id_] = item
         return result
-
-    def is_test_ignored_in_pack_ignore(self, test: str) -> bool:
-        """
-        Checks if a test is ignored in the pack ignore file.
-        :param test: the test id to check.
-        :return: True if the test is ignored in the .pack_ignore, False otherwise.
-        """
-        test_playbook = self.id_to_test_playbook[test]
-        pack_path = find_pack_folder(Path(test_playbook.file_path))
-        pack_ignore_path = pack_path / '.pack_ignore'
-        skipped_playbooks = set()
-        try:
-            config = ConfigParser(allow_no_value=True)
-            config.read(pack_ignore_path)
-
-            prefix = 'file:'
-
-            for section in filter(lambda s: s.startswith(prefix), config.sections()):
-                # given section is of type file
-                file_name: str = section[(len(prefix)):]
-                for key in filter(lambda k: k == 'ignore', config[section]):
-                    if config[section][key] == 'auto-test':
-                        skipped_playbooks.add(file_name)
-        except MissingSectionHeaderError:
-            return False
-        return Path(test_playbook.file_path).name in skipped_playbooks

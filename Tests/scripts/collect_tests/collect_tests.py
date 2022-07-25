@@ -116,7 +116,8 @@ class CollectionResult:
                 if test not in id_set.id_to_test_playbook:
                     raise InvalidTestException(test, 'missing from id-set')
 
-                if id_set.is_test_ignored_in_pack_ignore(test):
+                test_playbook = id_set.id_to_test_playbook[test]
+                if PACK_MANAGER.is_test_skipped_in_pack_ignore(test_playbook.path.name, test_playbook.pack_id):
                     raise SkippedTestException(test, 'skipped in .pack_ignore')
 
             if skip_reason := conf.skipped_tests.get(test):
@@ -531,10 +532,12 @@ class NightlyTestCollector(TestCollector, ABC):
                 continue
 
             if self.marketplace in item_marketplaces:
-                path = PATHS.content_path / item.file_path
+                path = PATHS.content_path / item.file_path_str
                 try:
                     pack = PACK_MANAGER[find_pack_folder(path).name]
-                    relative_path = PACK_MANAGER.relative_to_packs(item.file_path)
+                    if not item.path:
+                        raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
+                    relative_path = PACK_MANAGER.relative_to_packs(item.path)
                     collected.append(
                         CollectionResult(
                             test=None,
