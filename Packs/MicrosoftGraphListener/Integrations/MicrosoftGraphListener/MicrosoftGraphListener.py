@@ -1074,7 +1074,6 @@ def list_attachments_command(client: MsGraphClient, args):
             readable_output=human_readable,
             raw_response=raw_response
         )
-        return_results(command_results)
     else:
         human_readable = f'### No attachments found in message {message_id}'
         command_results = CommandResults(
@@ -1085,7 +1084,7 @@ def list_attachments_command(client: MsGraphClient, args):
             readable_output=human_readable,
             raw_response=raw_response
         )
-        return_results(command_results)
+    return command_results
 
 
 def list_mails_command(client: MsGraphClient, args):
@@ -1126,7 +1125,7 @@ def list_mails_command(client: MsGraphClient, args):
         readable_output=human_readable,
         raw_response=raw_response
     )
-    return_results(command_results)
+    return command_results
 
 
 def get_email_as_eml_command(client: MsGraphClient, args):
