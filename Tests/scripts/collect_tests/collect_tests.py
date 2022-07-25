@@ -121,7 +121,7 @@ class CollectionResult:
                     raise ValueError(f'{test} has no pack_id')
                 if not (playbook_path := test_playbook.path):
                     raise ValueError(f'{test} has no path')
-                if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path, pack_id):
+                if PACK_MANAGER.is_test_skipped_in_pack_ignore(str(playbook_path), pack_id):
                     raise SkippedTestException(test, 'skipped in .pack_ignore')
 
             if skip_reason := conf.skipped_tests.get(test):
