@@ -203,8 +203,8 @@ def parse_mail_parts(parts):
 
         content_type = headers.get('content-type', 'text/plain')
 
-        is_attachment = headers.get('content-disposition', '').startswith('attachment') or \
-                        headers.get('x-attachment-id') or "image" in content_type
+        is_attachment = headers.get('content-disposition', '').startswith('attachment') or headers.get(
+            'x-attachment-id') or "image" in content_type
 
         if 'multipart' in content_type or isinstance(part._payload, list):
             part_body, part_html, part_attachments = parse_mail_parts(part._payload)
