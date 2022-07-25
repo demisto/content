@@ -1,4 +1,8 @@
-This is an automation to run oletools malware analysis for office files. Oletools is a tool for analyzing Microsoft OLE2 files, such as Microsoft Office documents or Outlook messages, mainly for malware analysis, forensics, and debugging. This automation allows performing some basic oletools commands from Cortex XSOAR. Note that oletools is open source code and is subject to change.
+This is an automation to run oletools malware analysis for office files. Oletools is a tool
+for analyzing Microsoft OLE2 files,
+such as Microsoft Office documents or Outlook messages, mainly for malware analysis,
+forensics, and debugging.
+Note that oletools is open source code and is subject to change.
 
 ## Script Data
 ---
@@ -58,7 +62,7 @@ This is an automation to run oletools malware analysis for office files. Oletool
 | Oletools.Oleid.ole_command_result.Flash_objects.Value | Indicator flash objects value. | Unknown |
 | Oletools.Oleid.ole_command_result.Flash_objects.Ole_Risk | Indicator flash objects OLE risk. | Unknown |
 | Oletools.Oleid.ole_command_result.Flash_objects.Description | Indicator flash objects description. | Unknown |
-| Oletools.Oleobj.ole_command_result.hyperlinkes | List of hyperlinks. | Unknown |
+| Oletools.Oleobj.ole_command_result.hyperlinks | List of hyperlinks. | Unknown |
 | Oletools.Oleobj.file_name | File name. | Unknown |
 | Oletools.Oleobj.sha256 | SHA256 hash. | Unknown |
 | Oletools.Olevba.file_name | File name. | Unknown |

@@ -14,6 +14,7 @@ args:
   name: ole_command
   required: true
   secret: false
+  auto: PREDEFINED
   predefined:
     - 'oleid'
     - 'oleobj'
@@ -34,6 +35,7 @@ args:
   description:  If encrypted office files are encountered, try decryption with this password. This password can be repeated.
   isArray: false
   name: password
+  auto: PREDEFINED
   required: false
   secret: true
 comment: This is an automation to run oletools malware analysis for office files. Oletools is a tool for analyzing Microsoft OLE2 files, 
@@ -111,7 +113,7 @@ outputs:
   description: Indicator Flash objects OLE risk.
 - contextPath: Oletools.Oleid.ole_command_result.Flash_objects.Description
   description: Indicator Flash objects description.
-- contextPath: Oletools.Oleobj.ole_command_result.hyperlinkes
+- contextPath: Oletools.Oleobj.ole_command_result.hyperlinks
   description: List of hyperlinks.
 - contextPath: Oletools.Oleobj.file_name
   description: File name.

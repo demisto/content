@@ -16,7 +16,7 @@ oleid_output = {'sha256': '5e39dc43ecf63d3e670f757991691f0b10317d4eb83662d0898a4
 
 oleobj_output = {'sha256': '5e39dc43ecf63d3e670f757991691f0b10317d4eb83662d0898a40149927372f',
                  'file name': 'ActiveBarcode-Demo-Bind-Text.docm',
-                 'ole_command_result': {'hyperlinkes': ['http://www.activebarcode.com']}}
+                 'ole_command_result': {'hyperlinks': ['http://www.activebarcode.com']}}
 
 olevba_otuput = {'sha256': '5e39dc43ecf63d3e670f757991691f0b10317d4eb83662d0898a40149927372f',
                  'file name': 'ActiveBarcode-Demo-Bind-Text.docm', 'ole_command_result': {'macro_list': [

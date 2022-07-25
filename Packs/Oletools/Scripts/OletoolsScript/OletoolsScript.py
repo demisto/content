@@ -59,7 +59,7 @@ class OleClient:
         elif self.ole_command == 'olevba':
             cr = self.olevba()
         else:
-            raise NotImplementedError('Command "{}" is not implemented.'.format(demisto.command()))
+            raise NotImplementedError('Command "{}" is not implemented.'.format(self.ole_command))
 
         self.wrap_command_result(cr)
         return cr
@@ -91,11 +91,11 @@ class OleClient:
                     'Description': str(i.description)
                 }
 
-            if str(i.name) == 'VBA Macros' and str(i.risk) in ['Medium', 'High']:
+            if str(i.name) == 'VBA Macros' and str(i.risk) == 'HIGH':
                 dbot_score = Common.DBotScore(self.hash,
                                               DBotScoreType.FILE,
                                               'Oletools',
-                                              Common.DBotScore.SUSPICIOUS if i.risk == 'Medium' else Common.DBotScore.BAD)
+                                              Common.DBotScore.BAD)
 
         indicator = Common.File(dbot_score, sha256=self.hash) if dbot_score else None
         cr = CommandResults(readable_output=tableToMarkdown(self.name, indicators_list,
@@ -132,7 +132,7 @@ class OleClient:
                 hyperlink_list.append(match)
 
         cr = CommandResults(readable_output=readable_md, outputs_prefix='Oletools.Oleobj',
-                            outputs={'hyperlinkes': hyperlink_list},
+                            outputs={'hyperlinks': hyperlink_list},
                             raw_response=str_output)
         return cr
 
