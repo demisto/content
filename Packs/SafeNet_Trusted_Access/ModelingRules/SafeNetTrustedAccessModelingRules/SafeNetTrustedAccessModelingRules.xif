@@ -7,9 +7,7 @@ filter json_extract_scalar(details, "$.type") in ("AUDIT")
     XDM.Audit.TriggeredBy.identity.name = json_extract_scalar(context, "$.principalId"),
     XDM.Audit.original_event_type = json_extract_scalar(details, "$.type"),
     XDM.Audit.original_event_description = json_extract_scalar(details, "$.description"),
-    XDM.Audit.operation_type = json_extract_scalar(details, "$.operationType"),
-    XDM.Audit.audited_resource.type = json_extract_scalar(details, "$.operationObjectType"),
-    XDM.Audit.audited_resource.name = json_extract_scalar(details, "$.operationObjectName");
+    XDM.Audit.operation_type = json_extract_scalar(details, "$.operationType")
 
 
 [MODEL: dataset="safenet_trusted_access_raw", model="Auth"]
@@ -24,7 +22,5 @@ filter json_extract_scalar(details, "$.type") in ("AUTHENTICATION", "ACCESS_REQU
     XDM.Auth.outcome = coalesce(json_extract_scalar(details, "$.state"), json_extract_scalar(details, "$.resultText")),
     XDM.Auth.reason = json_extract_scalar(details, "$.reason"),
     XDM.Auth.original_event_sub_type = json_extract_scalar(details, "$.actionText"),
-    XDM.Auth.Observer.unique_identifier = json_extract_scalar(details, "$.agentId"),
-    XDM.Auth.original_event_description = json_extract_scalar(details, "$.message"),
-    XDM.Auth.Client.user.username = json_extract_scalar(details, "$.usedName");
+    XDM.Auth.Observer.unique_identifier = json_extract_scalar(details, "$.agentId")
 
