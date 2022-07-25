@@ -100,6 +100,15 @@ Note: If you're uncertain which API version to use, it is recommended to use the
 1. Enter QRadar service.
 2. Click the **Menu** toolbar. A scrolling toolbar will appear.
 3. Click **About**. A new window will appear with the details of your QRadar version.
+
+## Troubleshooting
+
+Whenever *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
+It is possible, however, that some events might be missed during the creation of the incident.
+The [Mirroring](#mirroring-events) feature is recommended in this case.
+Alternatively, [Retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `QRadar` immediately.
+If the command does not execute, try setting the `interval_in_seconds` to 10.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -2514,7 +2523,7 @@ Get Source IPs
 >|DomainID|EventFlowCount|FirstEventFlowSeen|ID|LastEventFlowSeen|LocalDestinationIP|Magnitude|Network|OffenseIDs|SourceAddressIDs|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 1635 | 2021-03-31T10:02:25.965000+00:00 | 1 | 2021-08-14T09:59:52.596000+00:00 | 172.42.18.211 | 0 | Net-10-172-192.Net_172_16_0_0 | 1,<br/>4,<br/>5,<br/>9,<br/>10,<br/>11,<br/>12,<br/>13,<br/>14,<br/>15,<br/>16,<br/>17,<br/>18,<br/>19,<br/>20,<br/>21,<br/>22,<br/>23,<br/>24,<br/>25,<br/>26,<br/>27,<br/>28,<br/>29,<br/>30,<br/>31,<br/>32,<br/>33,<br/>34,<br/>35,<br/>36,<br/>37,<br/>38,<br/>39,<br/>40,<br/>41,<br/>42 | 1,<br/>2 |
-### qradar-get-events-polling
+### qradar-search-retrieve-events
 ***
 Polling command to search for events of a specific offense.
 This uses the instance parameters to create the AQL search query for the events. 
