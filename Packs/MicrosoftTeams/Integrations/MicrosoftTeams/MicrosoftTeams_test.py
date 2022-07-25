@@ -460,52 +460,6 @@ def test_send_message(mocker, requests_mock):
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
 
-    # verify message is sent properly given email with uppercase letters to send to
-    mocker.patch.object(
-        demisto,
-        'params',
-        return_value={
-            'bot_id': bot_id
-        }
-    )
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value={
-            'team_member': 'DwashinTon@email.com',
-            'message': 'MESSAGE'
-        }
-    )
-    requests_mock.post(
-        f'{service_url}/v3/conversations',
-        json={
-            'id': 'conversation-id'
-        }
-    )
-    requests_mock.post(
-        f'{service_url}/v3/conversations/conversation-id/activities',
-        json={}
-    )
-    expected_create_personal_conversation_data: dict = {
-        'bot': {
-            'id': f'28:{bot_id}',
-            'name': 'DemistoBot'
-        },
-        'members': [{
-            'id': '29:1pBMMC85IyjM3tr_MCZi7KW4pw4EULxLN4C7R_xoi3Wva_lOn3VTf7xJlCLK-r-pMumrmoz9agZxsSrCf7__u9R'
-        }],
-        'channelData': {
-            'tenant': {
-                'id': tenant_id
-            }
-        }
-    }
-    send_message()
-    assert requests_mock.request_history[0].json() == expected_create_personal_conversation_data
-    results = demisto.results.call_args[0]
-    assert len(results) == 1
-    assert results[0] == 'Message was sent successfully.'
-
     # verify message is sent properly given channel
     mocker.patch.object(
         demisto,
@@ -676,6 +630,52 @@ def test_send_message(mocker, requests_mock):
     }
     send_message()
     assert requests_mock.request_history[6].json() == expected_conversation
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == 'Message was sent successfully.'
+
+    # verify message is sent properly given email with uppercase letters to send to
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'bot_id': bot_id
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_member': 'DwashinTon@email.com',
+            'message': 'MESSAGE'
+        }
+    )
+    requests_mock.post(
+        f'{service_url}/v3/conversations',
+        json={
+            'id': 'conversation-id'
+        }
+    )
+    requests_mock.post(
+        f'{service_url}/v3/conversations/conversation-id/activities',
+        json={}
+    )
+    expected_create_personal_conversation_data: dict = {
+        'bot': {
+            'id': f'28:{bot_id}',
+            'name': 'DemistoBot'
+        },
+        'members': [{
+            'id': '29:1pBMMC85IyjM3tr_MCZi7KW4pw4EULxLN4C7R_xoi3Wva_lOn3VTf7xJlCLK-r-pMumrmoz9agZxsSrCf7__u9R'
+        }],
+        'channelData': {
+            'tenant': {
+                'id': tenant_id
+            }
+        }
+    }
+    send_message()
+    assert requests_mock.request_history[0].json() == expected_create_personal_conversation_data
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
