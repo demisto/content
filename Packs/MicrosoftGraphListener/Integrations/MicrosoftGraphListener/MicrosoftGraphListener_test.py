@@ -410,6 +410,6 @@ def test_get_email_as_eml(mocker):
         }
     }
     client = self_deployed_client()
-    mocker.patch.object(client, 'get_email_as_eml', return_value=RAW_RESPONSE)
+    mocker.patch.object(client, 'get_email_as_eml', return_value=RAW_RESPONSE['body']['content'])
     get_email_as_eml_command_results = get_email_as_eml_command(client, {'message_id': 'id'})
     assert get_email_as_eml_command_results['File'] == 'id.eml'
