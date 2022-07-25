@@ -29,13 +29,16 @@ args:
   description: Display all the obfuscated strings with their decoded content (Hex, Base64, StrReverse, Dridex, VBA). Note that this works only with the olevba command.
   isArray: false
   name: decode
+  auto: PREDEFINED
+  predefined:
+    - true
+    - false
   required: false
   secret: false
 - default: false
   description:  If encrypted office files are encountered, try decryption with this password. This password can be repeated.
   isArray: false
   name: password
-  auto: PREDEFINED
   required: false
   secret: true
 comment: This is an automation to run oletools malware analysis for office files. Oletools is a tool for analyzing Microsoft OLE2 files, 

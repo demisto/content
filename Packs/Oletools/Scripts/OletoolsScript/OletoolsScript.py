@@ -29,7 +29,7 @@ class OleClient:
     def decryption(self):
         if crypto.is_encrypted(self.file_path) and self.password:
             try:
-                passwords = self.password + crypto.DEFAULT_PASSWORDS
+                passwords = [self.password] + crypto.DEFAULT_PASSWORDS
                 self.decrypted_file_path = crypto.decrypt(self.file_path, passwords)
                 if not self.decrypted_file_path:
                     raise crypto.WrongEncryptionPassword(self.file_path)
@@ -187,8 +187,8 @@ def main():  # pragma: no cover
     ole_command = args.get('ole_command')
     attach_id = args.get('entryID', '')
     file_info = demisto.getFilePath(attach_id)
-    show_decoded = args.get('decode', False)
-    password = argToList(args.get('password', ''))
+    show_decoded = argToBoolean(args.get('decode', False))
+    password = args.get('password', '')
 
     ole_client = OleClient(file_info, ole_command, password=password, decoded=show_decoded)
 
