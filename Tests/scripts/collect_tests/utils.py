@@ -161,7 +161,6 @@ class ContentItem(DictFileBased):
     def id_(self) -> Optional[str]:  # Optional as pack_metadata (for example) doesn't have this field
         return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
 
-
     @property
     def name(self) -> str:
         id_ = self.get('id', '', warn_if_missing=False)
