@@ -94,14 +94,58 @@ CLOSE_FALSE_POSITIVE_REASON_OPTIONS = {
 INTEGRATION_NAME = 'MicrosoftCloudAppSecurity'
 
 
-class Client(BaseClient):
-    """
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
-    """
+class LegacyClient(BaseClient):
+    def http_request(self, **args):
+        return self._http_request(**args)
+
+
+class Client:
+    @logger
+    def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str, auth_mode: str, tenant_id: str = None,
+                 enc_key: str = None, certificate_thumbprint: Optional[str] = None,
+                 private_key: Optional[str] = None, headers: Optional[dict] = {}):
+
+        if auth_mode == 'legacy':
+            self.ms_client = LegacyClient(
+                base_url=base_url,
+                verify=verify,
+                headers=headers,
+                proxy=proxy)
+
+        else:
+            self.client_credentials = True if auth_mode == 'client credentials' else False
+            if '@' in app_id:
+                app_id, refresh_token = app_id.split('@')
+                integration_context = get_integration_context()
+                integration_context.update(current_refresh_token=refresh_token)
+                set_integration_context(integration_context)
+
+            client_args = assign_params(
+                base_url=base_url,
+                verify=verify,
+                proxy=proxy,
+                ok_codes=(200, 201, 202, 204),
+                scope='05a65629-4c1b-48c1-a78b-804c4abdd4af/.default',
+                self_deployed=True,  # We always set the self_deployed key as True because when not using a self
+                # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+                # flow and most of the same arguments should be set, as we're !not! using OProxy.
+
+                auth_id=app_id,
+                grant_type=CLIENT_CREDENTIALS if auth_mode == 'client credentials' else DEVICE_CODE,
+
+                # used for device code flow
+                resource='https://api.security.microsoft.com' if auth_mode == 'code flow' else None,
+                token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if auth_mode == 'code flow' else None,
+                # used for client credentials flow
+                tenant_id=tenant_id,
+                enc_key=enc_key,
+                certificate_thumbprint=certificate_thumbprint,
+                private_key=private_key,
+            )
+            self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
     def list_alerts(self, url_suffix: str, request_data: dict):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
@@ -109,7 +153,7 @@ class Client(BaseClient):
         return data
 
     def dismiss_bulk_alerts(self, request_data: dict):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_false_positive/',
             json_data=request_data,
@@ -117,7 +161,7 @@ class Client(BaseClient):
         return data
 
     def resolve_bulk_alerts(self, request_data: dict):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_true_positive/',
             json_data=request_data,
@@ -125,28 +169,28 @@ class Client(BaseClient):
         return data
 
     def close_benign(self, request_data: dict):
-        return self._http_request(
+        return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_benign/',
             json_data=request_data,
         )
 
     def close_false_positive(self, request_data: dict):
-        return self._http_request(
+        return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_false_positive/',
             json_data=request_data,
         )
 
     def close_true_positive(self, request_data: dict):
-        return self._http_request(
+        return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_true_positive/',
             json_data=request_data,
         )
 
     def list_activities(self, url_suffix: str, request_data: dict, timeout: int):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
@@ -155,7 +199,7 @@ class Client(BaseClient):
         return data
 
     def list_users_accounts(self, url_suffix: str, request_data: dict):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
@@ -163,7 +207,7 @@ class Client(BaseClient):
         return data
 
     def list_files(self, url_suffix: str, request_data: dict):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
@@ -171,7 +215,7 @@ class Client(BaseClient):
         return data
 
     def list_incidents(self, filters: dict, limit: Union[int, str]):
-        return self._http_request(
+        return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/',
             json_data={
@@ -180,6 +224,47 @@ class Client(BaseClient):
                 'sortDirection': 'asc',
             },
         )
+
+
+@logger
+def start_auth(client: Client) -> CommandResults:
+    result = client.ms_client.start_auth('!microsoft-cas-auth-complete')
+    return CommandResults(readable_output=result)
+
+
+@logger
+def complete_auth(client: Client) -> CommandResults:
+    client.ms_client.get_access_token()
+    return CommandResults(readable_output='✅ Authorization completed successfully.')
+
+
+@logger
+def reset_auth() -> CommandResults:
+    set_integration_context({})
+    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
+                                          '**!microsoft-cas-auth-start** and **!microsoft-cas-auth-complete**.')
+
+
+@logger
+def test_connection(client: Client) -> CommandResults:
+    test_context_for_token(client)
+    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    return CommandResults(readable_output='✅ Success!')
+
+
+def test_context_for_token(client: Client) -> None:
+    """test_context_for_token
+    Checks if the user acquired token via the authentication process.
+    Args:
+    Returns:
+
+    """
+    if client.client_credentials:
+        return
+    if not (get_integration_context().get('access_token') or get_integration_context().get('current_refresh_token')):
+        raise DemistoException(
+            "This integration does not have a test module. Please run !microsoft-cas-auth-auth-start and "
+            "!microsoft-cas-auth-auth-complete and check the connection using !microsoft-cas-auth-auth-test")
 
 
 def args_to_filter(arguments: dict):
@@ -814,24 +899,46 @@ def main():  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    command = demisto.command()
-    params = demisto.params()
+    params: dict = demisto.params()
+    app_id = params.get('app_id')
+    tenant_id = params.get('tenant_id')
+    auth_mode = params.get('auth_mode', 'legacy')
+    enc_key = (params.get('credentials') or {}).get('password')
+    private_key = params.get('private_key')
+
+    verify = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    certificate_thumbprint = params.get('certificate_thumbprint')
+
     token = params.get('token')
     base_url = f'{params.get("url")}/api/v1'
-    verify_certificate = not params.get('insecure', False)
     first_fetch = params.get('first_fetch')
     max_results = params.get('max_fetch')
-    proxy = params.get('proxy', False)
     severity = params.get('severity')
     resolution_status = params.get('resolution_status')
     look_back = arg_to_number(params.get('look_back')) or 0
-    LOG(f'Command being called is {command}')
+
+    command = demisto.command()
+    args = demisto.args()
+
     try:
+        if not app_id and not token:
+            raise Exception('Application ID must be provided.')
+
         client = Client(
+            app_id=app_id,
+            verify=verify,
             base_url=base_url,
-            verify=verify_certificate,
-            headers={'Authorization': f'Token {token}'},
-            proxy=proxy)
+            proxy=proxy,
+            tenant_id=tenant_id,
+            enc_key=enc_key,
+            auth_mode=auth_mode,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
+            headers={'Authorization': f'Token {token}'}
+        )
+
+        LOG(f'Command being called is {command}')
 
         if command == 'test-module':
             result = test_module(client, params.get('isFetch'), params.get('custom_filter'))
@@ -852,34 +959,46 @@ def main():  # pragma: no cover
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
+        elif command == 'microsoft-cas-auth-start':
+            return_results(start_auth(client))
+
+        elif command == 'microsoft-cas-auth-complete':
+            return_results(complete_auth(client))
+
+        elif command == 'microsoft-cas-auth-reset':
+            return_results(reset_auth())
+
+        elif command == 'microsoft-cas-auth-test':
+            return_results(test_connection(client))
+
         elif command == 'microsoft-cas-alerts-list':
-            return_results(list_alerts_command(client, demisto.args()))
+            return_results(list_alerts_command(client, args))
 
         elif command == 'microsoft-cas-alert-dismiss-bulk':
             # Deprecated.
-            return_results(bulk_dismiss_alert_command(client, demisto.args()))
+            return_results(bulk_dismiss_alert_command(client, args))
 
         elif command == 'microsoft-cas-alert-resolve-bulk':
             # Deprecated.
-            return_results(bulk_resolve_alert_command(client, demisto.args()))
+            return_results(bulk_resolve_alert_command(client, args))
 
         elif command == 'microsoft-cas-activities-list':
-            return_results(list_activities_command(client, demisto.args()))
+            return_results(list_activities_command(client, args))
 
         elif command == 'microsoft-cas-files-list':
-            return_results(list_files_command(client, demisto.args()))
+            return_results(list_files_command(client, args))
 
         elif command == 'microsoft-cas-users-accounts-list':
-            return_results(list_users_accounts_command(client, demisto.args()))
+            return_results(list_users_accounts_command(client, args))
 
         elif command == 'microsoft-cas-alert-close-benign':
-            return_results(close_benign_command(client, demisto.args()))
+            return_results(close_benign_command(client, args))
 
         elif command == 'microsoft-cas-alert-close-true-positive':
-            return_results(close_true_positive_command(client, demisto.args()))
+            return_results(close_true_positive_command(client, args))
 
         elif command == 'microsoft-cas-alert-close-false-positive':
-            return_results(close_false_positive_command(client, demisto.args()))
+            return_results(close_false_positive_command(client, args))
 
         else:
             raise NotImplementedError(f'command {command} is not implemented.')
@@ -887,6 +1006,9 @@ def main():  # pragma: no cover
     # Log exceptions
     except Exception as exc:
         return_error(f'Failed to execute {command} command. Error: {str(exc)}', error=exc)
+
+
+from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
