@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import Callable, Iterable, Optional
+from types import NoneType
+from typing import Callable, Iterable, Optional, Any
 
 import collect_tests
 import pytest
@@ -79,7 +80,7 @@ class MockerCases:
 
 def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, collector_class: Callable,
           expected_tests: Iterable[str], expected_packs: Iterable[str], expected_machines: Optional[Iterable[Machine]],
-          collector_class_args: tuple[str] = ()):
+          collector_class_args: tuple[Any, ...] = ()):
     """
     Instantiates the given collector class, calls collect with run_nightly and asserts
     that the result packs and tests are expected ones.

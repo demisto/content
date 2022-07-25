@@ -6,7 +6,7 @@ from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
-from packaging._structures import NegativeInfinity, Infinity, InfinityType, NegativeInfinityType
+from packaging._structures import NegativeInfinityType, InfinityType
 
 from exceptions import (DeprecatedPackException, BlankPackNameException,
                         NonDictException, NonexistentPackException,
@@ -40,8 +40,8 @@ def find_pack_folder(path: Path) -> Path:
 
 @dataclass
 class VersionRange:
-    min_version: Version
-    max_version: Version
+    min_version: Version | NegativeInfinityType
+    max_version: Version | InfinityType
 
     def __contains__(self, item):
         return self.min_version <= item <= self.max_version
@@ -97,8 +97,8 @@ class DictBased:
         if not isinstance(dict_, dict):
             raise ValueError('DictBased must be initialized with a dict')
         self.content = dict_
-        self.from_version = self._calculate_from_version()
-        self.to_version = self._calculate_to_version()
+        self.from_version: Version | NegativeInfinityType = self._calculate_from_version()
+        self.to_version: Version | InfinityType = self._calculate_to_version()
         self.version_range = VersionRange(self.from_version, self.to_version)
         self.marketplaces: Optional[tuple[MarketplaceVersions, ...]] = \
             tuple(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
@@ -121,7 +121,7 @@ class DictBased:
             return Version(value)
         return version.NegativeInfinity
 
-    def _calculate_to_version(self) -> Version | NegativeInfinityType:
+    def _calculate_to_version(self) -> Version | InfinityType:
         if value := (
                 self.get('toversion', warn_if_missing=False)
                 or self.get('toVersion', warn_if_missing=False)
@@ -173,7 +173,7 @@ class ContentItem(DictFileBased):
     def tests(self) -> list[str]:
         tests = self.get('tests', [], warn_if_missing=False)
         if len(tests) == 1 and 'no tests' in tests[0].lower():
-            raise NoTestsConfiguredException(self.id_ or self.path)
+            raise NoTestsConfiguredException(self.id_ or str(self.path))
         return tests
 
     @property

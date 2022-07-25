@@ -121,7 +121,7 @@ class CollectionResult:
                     raise ValueError(f'{test} has no pack_id')
                 if not (playbook_path := test_playbook.path):
                     raise ValueError(f'{test} has no path')
-                if PACK_MANAGER.is_test_skipped_in_pack_ignore(str(playbook_path), pack_id):
+                if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
                     raise SkippedTestException(test, 'skipped in .pack_ignore')
 
             if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
@@ -275,8 +275,7 @@ class BranchTestCollector(TestCollector):
             '.yml') if content_item_path.suffix != '.yml' else content_item_path
         try:
             yml = ContentItem(yml_path)
-            yml_id = yml.id_
-            if not yml_id:
+            if not yml.id_:
                 raise ValueError(f'id field of {yml_path} cannot be empty')
         except FileNotFoundError:
             raise FileNotFoundError(
@@ -350,6 +349,7 @@ class BranchTestCollector(TestCollector):
     def _collect_single(self, path: Path) -> CollectionResult:
         if not path.exists():
             raise FileNotFoundError(path)
+        tests: tuple[str, ...] = ()  # overridden later
 
         file_type = find_type_by_path(path)
         try:
@@ -392,7 +392,7 @@ class BranchTestCollector(TestCollector):
                 FileType.CLASSIFIER: (self.conf.classifier_to_test, CollectionReason.CLASSIFIER_CHANGED),
             }[file_type]
 
-            if not (tests := source.get(content_item.id_) if content_item else ''):
+            if not (tests := source.get(content_item.id_)):
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
                 reason_description = f'no specific tests for {relative_path} were found'
         elif path.suffix == '.yml':
@@ -404,13 +404,18 @@ class BranchTestCollector(TestCollector):
         if not content_item:
             raise RuntimeError(f'failed collecting {path} for an unknown reason')
 
-        return CollectionResult.union(tuple(CollectionResult(test=test,
-                                                             pack=content_item.pack_id,
-                                                             reason=reason,
-                                                             version_range=content_item.version_range,
-                                                             reason_description=reason_description,
-                                                             conf=self.conf, id_set=self.id_set) for test in
-                                            tests))
+        return CollectionResult.union(tuple(
+            CollectionResult(
+                test=test,
+                pack=content_item.pack_id,
+                reason=reason,
+                version_range=content_item.version_range,
+                reason_description=reason_description,
+                conf=self.conf,
+                id_set=self.id_set,
+            )
+            for test in tests)
+        )
 
     def _get_changed_files(self) -> tuple[str, ...]:
         contrib_diff = None  # overridden on contribution branches, added to the git diff.
