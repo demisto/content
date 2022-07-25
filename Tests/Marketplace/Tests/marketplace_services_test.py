@@ -2994,7 +2994,7 @@ class TestCheckChangesRelevanceForMarketplace:
                 ]
         }
 
-        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)
+        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy, [])
 
         assert status is True
         assert modified_files_data == expected_modified_files_data
@@ -3016,7 +3016,7 @@ class TestCheckChangesRelevanceForMarketplace:
             ]
         }
 
-        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)
+        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy, [])
 
         assert status is False
         assert modified_files_data == {}
@@ -3058,7 +3058,7 @@ class TestCheckChangesRelevanceForMarketplace:
                 ]
         }
 
-        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)
+        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy, [])
 
         assert status is True
         assert modified_files_data == expected_modified_files_data

@@ -1065,7 +1065,7 @@ class Pack(object):
         finally:
             return task_status, modified_rn_files_paths
 
-    def filter_modified_files_by_id_set(self, id_set: dict):
+    def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list):
         """
         Checks if the pack modification is relevant for the current marketplace.
 
@@ -1074,7 +1074,8 @@ class Pack(object):
         This check is done to identify changed items inside a pack that have both XSIAM and XSOAR entities.
 
         Args:
-            id_set: The current id set.
+            id_set (dict): The current id set.
+            modified_rn_files_paths (list): list of paths of the pack's modified release notes files.
 
         Returns:
             bool: whether the operation succeeded and changes are relevant for marketplace.
@@ -1096,7 +1097,7 @@ class Pack(object):
             if modified_entities:
                 modified_files_data[pack_folder] = modified_entities
 
-        if not self._modified_files or modified_files_data:
+        if not self._modified_files or modified_files_data or modified_rn_files_paths:
             task_status = True
 
         return task_status, modified_files_data
@@ -1580,7 +1581,7 @@ class Pack(object):
                                 all_relevant_pr_nums_for_unified = list({pr_num for version in versions.keys()
                                                                         for pr_num in version_to_prs[version]})
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
-                                updated_entry, not_updated_build = self._get_updated_changelog_entry(
+                                updated_entry = self._get_updated_changelog_entry(
                                     changelog, version, release_notes=modified_release_notes_lines,
                                     pull_request_numbers=all_relevant_pr_nums_for_unified, marketplace=marketplace)
                                 changelog[version] = updated_entry
