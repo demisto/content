@@ -23,8 +23,9 @@ Test Collection Unit-Test cases
 - `D` has a single pack with from_version == to_version == 6.5, for testing the version range.
 - `E` has a single pack with a script tested using myTestPlaybook, and a Playbook used in myOtherTestPlaybook.
 - `F` has a single pack with a script set up as `no tests`, and a conf where myTestPlaybook is set as the script's test.
-- `G` has objects that trigger collection of the pack (without tests)
+- `G` has objects that trigger collection of the pack (without tests).
 - `H` has a single file, that is not a content item, and find_type is mocked to test ONLY_INSTALL_PACK.
+- `I` has a single pack with two test playbooks, one of which is ignored in .pack_ignore.
 """
 
 
@@ -73,6 +74,7 @@ class MockerCases:
     F = CollectTestsMocker(TEST_DATA / 'F')
     G = CollectTestsMocker(TEST_DATA / 'G')
     H = CollectTestsMocker(TEST_DATA / 'H')
+    I = CollectTestsMocker(TEST_DATA / 'I_xsoar')
 
 
 def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, collector_class: Callable,
@@ -170,7 +172,10 @@ NIGHTLY_TESTS = ((MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECT
                  (MockerCases.E, XSIAMNightlyTestCollector, {}, {}, None),
 
                  (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
-                  None),)
+                  None),
+
+                 (MockerCases.I, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None)
+                 )
 
 
 @pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs,expected_machines', NIGHTLY_TESTS)
@@ -228,6 +233,9 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
              'Packs/myPack/Scripts/myScript/myScript.yml',
      )),
+     (MockerCases.I, ('myTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+     ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
+      'Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml'))
      ))
 def test_branch(
         monkeypatch,

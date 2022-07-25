@@ -1,17 +1,6 @@
 {
   "scripts": [],
-  "integrations": [
-    {
-      "myIntegration": {
-        "name": "myIntegration",
-        "file_path": "Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml",
-        "pack": "myXSOAROnlyPack",
-        "tests": [
-          "myOtherTestPlaybook"
-        ]
-      }
-    }
-  ],
+  "integrations": [],
   "TestPlaybooks": [
     {
       "myTestPlaybook": {

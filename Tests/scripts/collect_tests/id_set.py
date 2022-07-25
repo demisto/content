@@ -109,18 +109,22 @@ class IdSet(DictFileBased):
         :param test: the test id to check.
         :return: True if the test is ignored in the .pack_ignore, False otherwise.
         """
-        pack_path = find_pack_folder(Path(self.id_to_test_playbook[test].file_path))
+        test_playbook = self.id_to_test_playbook[test]
+        pack_path = find_pack_folder(Path(test_playbook.file_path))
         pack_ignore_path = pack_path / '.pack_ignore'
-        dict_ = {}
+        skipped_playbooks = set()
         try:
             config = ConfigParser(allow_no_value=True)
             config.read(pack_ignore_path)
 
-            for section in filter(lambda s: s.startswith('file:'), config.sections()):
+            prefix = 'file:'
+
+            for section in filter(lambda s: s.startswith(prefix), config.sections()):
                 # given section is of type file
-                file_name: str = section[5:]
+                file_name: str = section[(len(prefix)):]
                 for key in filter(lambda k: k == 'ignore', config[section]):
-                    # group ignore codes to a list
-                    dict_[file_name] = str(config[section][key]).split(',')
+                    if config[section][key] == 'auto-test':
+                        skipped_playbooks.add(file_name)
         except MissingSectionHeaderError:
             return False
+        return Path(test_playbook.file_path).name in skipped_playbooks
