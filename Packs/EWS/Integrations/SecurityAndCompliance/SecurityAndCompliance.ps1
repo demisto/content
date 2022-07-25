@@ -101,10 +101,7 @@ function CreateNewSession {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
     param([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
 
-    $endpoint = $url.split('.')[-1]
-    if ($endpoint.length -gt 3) {
-        $endpoint = $endpoint.split('/')[0]
-    }
+    $endpoint = GetUrlEndpoint($url)
     $url = GetRedirectUri -url $url -upn $upn -password $password -bearer_token $bearer_token -insecure $insecure -proxy $proxy
 
     if ($password){
@@ -230,6 +227,16 @@ function ConnectIPPSSession([string]$url, [string]$upn, [PSCredential]$credentia
         .LINK
         https://docs.microsoft.com/en-us/powershell/module/exchange/connect-ippssession?view=exchange-ps
     #>
+}
+
+function GetUrlEndpoint([string]$url) {
+    $endpoint = $url.split('.')[-1]
+
+    if ($endpoint.length -gt 3) {
+        $endpoint = $endpoint.split('/')[0]
+    }
+
+    return $endpoint
 }
 
 function ParseSuccessResults([string]$success_results, [int]$limit, [bool]$all_results) {
@@ -455,7 +462,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
 
 class OAuth2DeviceCodeClient {
     [string]$application_id = "a0c73c16-a7e3-4564-9a95-2bdf47383716"
-    [string]$application_scope = "offline_access%20https%3A//outlook.office365.com/.default"
+    [string]$application_scope
     [string]$device_code
     [int]$device_code_expires_in
     [int]$device_code_creation_time
@@ -465,9 +472,11 @@ class OAuth2DeviceCodeClient {
     [int]$access_token_creation_time
     [bool]$insecure
     [bool]$proxy
+    [string]$endpoint
 
     OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
-                            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy) {
+                           [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy, [string]$endpoint) {
+        $this.application_scope = "offline_access%20https%3A//outlook.office365.$($endpoint)/.default"
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
@@ -477,6 +486,7 @@ class OAuth2DeviceCodeClient {
         $this.access_token_creation_time = $access_token_creation_time
         $this.insecure = $insecure
         $this.proxy = $proxy
+        $this.endpoint = $endpoint
         <#
             .DESCRIPTION
             OAuth2DeviceCodeClient manage state of OAuth2.0 device-code flow described in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code.
@@ -525,10 +535,10 @@ class OAuth2DeviceCodeClient {
         #>
     }
 
-    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$endpoint){
         $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
-                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
+                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $endpoint)
 
         return $client
         <#
@@ -550,7 +560,7 @@ class OAuth2DeviceCodeClient {
         $this.device_code_creation_time = $null
         # Get device-code and user-code
         $params = @{
-            "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode"
+            "URI" = "https://login.microsoftonline.$($this.endpoint)/organizations/oauth2/v2.0/devicecode"
             "Method" = "Post"
             "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
             "Body" = "client_id=$($this.application_id)&scope=$($this.application_scope)"
@@ -585,7 +595,7 @@ class OAuth2DeviceCodeClient {
         # Get new token using device-code
         try {
             $params = @{
-                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+                "URI" = "https://login.microsoftonline.$($this.endpoint)/organizations/oauth2/v2.0/token"
                 "Method" = "Post"
                 "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
                 "Body" = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&code=$($this.device_code)&client_id=$($this.application_id)"
@@ -635,7 +645,7 @@ class OAuth2DeviceCodeClient {
         # Get new token using refresh token
         try {
             $params = @{
-                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+                "URI" = "https://login.microsoftonline.$($this.endpoint)/organizations/oauth2/v2.0/token"
                 "Method" = "Post"
                 "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
                 "Body" = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
@@ -1304,7 +1314,7 @@ function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndCompli
 function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
     $raw_response = $client.AuthorizationRequest()
     $human_readable = "## $script:INTEGRATION_NAME - Authorize instructions
-1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
+1. To sign in, use a web browser to open the page [$($raw_response.verification_uri)]($($raw_response.verification_uri)) and enter the code **$($raw_response.user_code)** to authenticate.
 2. Run the **!$script:COMMAND_PREFIX-auth-complete** command in the War Room.
 3. Run the **!$script:COMMAND_PREFIX-auth-test** command in the War Room to test the completion of the authorization process and the configured parameters."
     $entry_context = @{}
@@ -1572,8 +1582,10 @@ function Main {
     try {
         $Demisto.Debug("Command being called is $Command")
 
+        $endpoint = GetUrlEndpoint($integration_params.url)
+
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy, $endpoint)
 
         # Executing oauth2 commands
         switch ($command) {
