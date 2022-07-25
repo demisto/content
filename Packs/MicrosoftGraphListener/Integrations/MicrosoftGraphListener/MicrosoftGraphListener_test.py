@@ -246,66 +246,66 @@ def test_reply_mail_command(client, mocker):
 def test_list_emails(mocker):
     from MicrosoftGraphListener import list_mails_command
     RAW_RESPONSE = [
-    {
-        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('mailbox%40company.com')/messages",
-        "value": [
-            {
-                "@odata.etag": "W/\"ABCDEF/iABCDEF\"",
-                "bccRecipients": [],
-                "body": {
-                    "content": "test",
-                    "contentType": "text"
-                },
-                "bodyPreview": "test",
-                "categories": [],
-                "ccRecipients": [],
-                "changeKey": "ABCDEF/iABCDEF",
-                "conversationId": "asdasdasd",
-                "conversationIndex": "adqweqwe",
-                "createdDateTime": "2021-01-01T10:18:41Z",
-                "flag": {
-                    "flagStatus": "notFlagged"
-                },
-                "from": {
-                    "emailAddress": {
-                        "address": "john.doe@company.com",
-                        "name": "John Doe"
-                    }
-                },
-                "hasAttachments": True,
-                "id": "qwe",
-                "importance": "normal",
-                "inferenceClassification": "focused",
-                "internetMessageId": "\u003cqwe@qwe.eurprd05.prod.outlook.com\u003e",
-                "isDeliveryReceiptRequested": None,
-                "isDraft": False,
-                "isRead": False,
-                "isReadReceiptRequested": False,
-                "lastModifiedDateTime": "2021-01-01T10:18:41Z",
-                "parentFolderId": "PARENT==",
-                "receivedDateTime": "2021-01-01T10:18:41Z",
-                "replyTo": [],
-                "sender": {
-                    "emailAddress": {
-                        "address": "john.doe@company.com",
-                        "name": "John Doe"
-                    }
-                },
-                "sentDateTime": "2021-08-20T10:18:40Z",
-                "subject": "Test",
-                "toRecipients": [
+        {
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('mailbox%40company.com')/messages",
+            "value":
+                [
                     {
-                        "emailAddress": {
-                            "address": "mailbox@company.com",
-                            "name": "My mailbox"
-                        }
+                        "@odata.etag": "W/\"ABCDEF/iABCDEF\"",
+                        "bccRecipients": [],
+                        "body": {
+                            "content": "test",
+                            "contentType": "text"
+                        },
+                        "bodyPreview": "test",
+                        "categories": [],
+                        "ccRecipients": [],
+                        "changeKey": "ABCDEF/iABCDEF",
+                        "conversationId": "asdasdasd",
+                        "conversationIndex": "adqweqwe",
+                        "createdDateTime": "2021-01-01T10:18:41Z",
+                        "flag": {
+                            "flagStatus": "notFlagged"
+                        },
+                        "from": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "hasAttachments": True,
+                        "id": "qwe",
+                        "importance": "normal",
+                        "inferenceClassification": "focused",
+                        "internetMessageId": "\u003cqwe@qwe.eurprd05.prod.outlook.com\u003e",
+                        "isDeliveryReceiptRequested": None,
+                        "isDraft": False,
+                        "isRead": False,
+                        "isReadReceiptRequested": False,
+                        "lastModifiedDateTime": "2021-01-01T10:18:41Z",
+                        "parentFolderId": "PARENT==",
+                        "receivedDateTime": "2021-01-01T10:18:41Z",
+                        "replyTo": [],
+                        "sender": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "sentDateTime": "2021-08-20T10:18:40Z",
+                        "subject": "Test",
+                        "toRecipients": [
+                            {
+                                "emailAddress": {
+                                    "address": "mailbox@company.com",
+                                    "name": "My mailbox"
+                                }
+                            }
+                        ],
+                        "webLink": "https://outlook.office365.com/owa/?ItemID=ABCDEF"
                     }
-                ],
-                "webLink": "https://outlook.office365.com/owa/?ItemID=ABCDEF"
-            }
-        ]
-    }
-]
+                ]
+        }]
     client = self_deployed_client()
     mocker.patch.object(client, 'list_mails', return_value=RAW_RESPONSE)
 
@@ -318,27 +318,25 @@ def test_list_emails(mocker):
 def test_list_attachments(mocker):
     from MicrosoftGraphListener import list_attachments_command
     RAW_RESPONSE = {
-    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('my%40company.com')/messages('AAMkADgxYTlhZjQ0LTJQQQNGI2ZC05NjVmLWY4YzZmZGUxMDllOABGAAAAAABFAAA%3D')/attachments",
-    "value": [
-        {
-            "@odata.mediaContentType": "text/plain",
-            "@odata.type": "#microsoft.graph.fileAttachment",
-            "contentBytes": "PD48Pjw+PD48Pjw+PD48Pjw+PD48Pjw+PD48Pjw+PD48Pjw+PD48Pjw+PD4NCj4+Pj4+Pj4+Pj4+Pj4gVEVTVCBBVFRBQ0hNRU5UIDw8PDw8PDw8PDw8PDw8DQo+PD48Pjw+PD48Pjw+PD48Pjw+PD48Pjw+PD48Pjw+PD48Pjw+PD48Pjw+PA==",
-            "contentId": None,
-            "contentLocation": None,
-            "contentType": "text/plain",
-            "id": "id=",
-            "isInline": False,
-            "lastModifiedDateTime": "2022-07-18T12:34:29Z",
-            "name": "Attachment.txt",
-            "size": 3843
-        }
-    ]
-}
+        "@odata.context":
+            "",
+        "value": [
+            {
+                "@odata.mediaContentType": "text/plain",
+                "@odata.type": "#microsoft.graph.fileAttachment",
+                "contentId": None,
+                "contentLocation": None,
+                "contentType": "text/plain",
+                "id": "id=",
+                "isInline": False,
+                "lastModifiedDateTime": "2022-07-18T12:34:29Z",
+                "name": "Attachment.txt",
+                "size": 3843
+            }
+                ]}
     args = {}
     client = self_deployed_client()
     mocker.patch.object(client, 'list_attachments', return_value=RAW_RESPONSE)
-
     list_attachments_command_results = list_attachments_command(client, args)
     assert 'Total of 1 attachments found' in list_attachments_command_results.readable_output
     assert 'Attachment.txt' in list_attachments_command_results.readable_output

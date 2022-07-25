@@ -1024,28 +1024,6 @@ def assert_pages(pages: Union[str, int]) -> int:
     return 1
 
 
-def item_result_creator(raw_response, user_id) -> CommandResults:
-    item = raw_response.get('item', {})
-    item_type = item.get('@odata.type', '')
-    if 'message' in item_type:
-        message_id = raw_response.get('id')
-        item['id'] = message_id
-        mail_context = build_mail_object(item, user_id=user_id, get_body=True)
-        human_readable = tableToMarkdown(
-            f'Attachment ID {message_id} \n **message details:**',
-            mail_context,
-            headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
-        )
-        return CommandResults(outputs_prefix='MSGraphMail',
-                              outputs_key_field='ID',
-                              outputs=mail_context,
-                              readable_output=human_readable,
-                              raw_response=raw_response)
-    else:
-        human_readable = f'Integration does not support attachments from type {item_type}'
-        return CommandResults(readable_output=human_readable, raw_response=raw_response)
-
-
 def list_attachments_command(client: MsGraphClient, args):
     message_id = args.get('message_id')
     folder_id = args.get('folder_id')
@@ -1335,7 +1313,7 @@ def main():
         elif command == 'msgraph-mail-list-emails':
             return_results(list_mails_command(client, args))
         elif command == 'msgraph-mail-list-attachments':
-            list_attachments_command(client, args)
+            return_results(list_attachments_command(client, args))
         elif command == 'msgraph-mail-get-email-as-eml':
             get_email_as_eml_command(client, args)
     except Exception as e:
