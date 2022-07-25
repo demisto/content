@@ -1,5 +1,4 @@
 from pathlib import Path
-from types import NoneType
 from typing import Callable, Iterable, Optional, Any
 
 import collect_tests
