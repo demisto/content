@@ -333,10 +333,83 @@ def test_list_attachments(mocker):
                 "name": "Attachment.txt",
                 "size": 3843
             }
-                ]}
-    args = {}
+        ]}
     client = self_deployed_client()
     mocker.patch.object(client, 'list_attachments', return_value=RAW_RESPONSE)
-    list_attachments_command_results = list_attachments_command(client, args)
+    list_attachments_command_results = list_attachments_command(client, {})
     assert 'Total of 1 attachments found' in list_attachments_command_results.readable_output
     assert 'Attachment.txt' in list_attachments_command_results.readable_output
+
+
+def test_get_email_as_eml(mocker):
+    from MicrosoftGraphListener import get_email_as_eml_command
+    RAW_RESPONSE = {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('my@company.com')/messages/$entity",
+        "@odata.etag": "W/\"SOMEID\"",
+        "id": "MSGID-MSGID_B-MSGID_C-MSGID_D=",
+        "createdDateTime": "2022-07-18T12:34:29Z",
+        "lastModifiedDateTime": "2022-07-18T12:34:29Z",
+        "changeKey": "SOMEID",
+        "categories": [],
+        "receivedDateTime": "2022-07-18T12:34:29Z",
+        "sentDateTime": "2022-07-18T12:34:28Z",
+        "hasAttachments": True,
+        "internetMessageId": "<imsgid@host.eurprd05.prod.outlook.com>",
+        "subject": "Test",
+        "bodyPreview": "Test",
+        "importance": "normal",
+        "parentFolderId": "parentfolderid==",
+        "conversationId": "conversationid=",
+        "conversationIndex": "conversationindex==",
+        "isDeliveryReceiptRequested": False,
+        "isReadReceiptRequested": False,
+        "isRead": True,
+        "isDraft": False,
+        "webLink": "",
+        "inferenceClassification": "focused",
+        "body": {
+            "contentType": "html",
+            "content":
+                "<html><head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><m"
+                "eta name=\"Generator\" content=\"Microsoft Word 15 (filtered medium)\"><style>\r\n<!--\r\n@fo"
+                "nt-face\r\n\t{font-family:\"Cambria Math\"}\r\n@font-face\r\n\t{font-family:Calibri}\r\n@font-"
+                "face\r\n\t{font-family:Verdana}\r\np.MsoNormal, li.MsoNormal, div.MsoNormal\r\n\t{margin:0"
+                "in;\r\n\tfont-size:11.0pt;\r\n\tfont-family:\"Calibri\",sans-serif}\r\nspan.EmailStyle1"
+                "8\r\n\t{font-family:\"Calibri\",sans-serif;\r\n\tcolor:windowtext}\r\n.MsoChpDefault\r\n\t{font"
+                "-family:\"Calibri\",sans-serif}\r\n@page WordSection1\r\n\t{margin:1.0in 1.0in 1.0in 1.0in}\r\ndiv.Wor"
+                "dSection1\r\n\t{}\r\n-->\r\n</style></head><body lang=\"EN-US\" link=\"#0563C1\" vlink=\"#954F72\" sty"
+                "le=\"word-wrap:break-word\"><div class=\"WordSection1\"><div><p class=\"MsoNormal\" style=\"\">Test<s"
+                "pan style=\"font-size:7.5pt; font-family:&quot;Verdana&quot;,sans-serif; color:black\"> </span></p>"
+                "</div></div></body></html>"
+        },
+        "sender": {
+            "emailAddress": {
+                "name": "Jon Doe",
+                "address": "you@company.com"
+            }
+        },
+        "from": {
+            "emailAddress": {
+                "name": "Jon Doe",
+                "address": "you@company.com"
+            }
+        },
+        "toRecipients": [
+            {
+                "emailAddress": {
+                    "name": "My",
+                    "address": "my@company.com"
+                }
+            }
+        ],
+        "ccRecipients": [],
+        "bccRecipients": [],
+        "replyTo": [],
+        "flag": {
+            "flagStatus": "notFlagged"
+        }
+    }
+    client = self_deployed_client()
+    mocker.patch.object(client, 'get_email_as_eml', return_value=RAW_RESPONSE)
+    get_email_as_eml_command_results = get_email_as_eml_command(client, {'message_id': 'id'})
+    assert get_email_as_eml_command_results['File'] == 'id.eml'

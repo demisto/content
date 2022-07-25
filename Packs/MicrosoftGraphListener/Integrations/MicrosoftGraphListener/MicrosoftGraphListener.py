@@ -1110,13 +1110,10 @@ def get_email_as_eml_command(client: MsGraphClient, args):
     user_id = client.get_mailbox_to_fetch()
     message_id = args.get('message_id')
 
-    eml_content = client.get_email_as_eml(user_id, message_id)
+    eml_content = client.get_email_as_eml(user_id, message_id).get('body', {}).get('content')
     file_result = fileResult(f'{message_id}.eml', eml_content)
 
-    if is_error(file_result):
-        raise Exception(file_result['Contents'])
-
-    demisto.results(file_result)
+    return file_result
 
 
 def build_folders_path(folder_string: str) -> Optional[str]:
@@ -1315,7 +1312,7 @@ def main():
         elif command == 'msgraph-mail-list-attachments':
             return_results(list_attachments_command(client, args))
         elif command == 'msgraph-mail-get-email-as-eml':
-            get_email_as_eml_command(client, args)
+            demisto.results(get_email_as_eml_command(client, args))
     except Exception as e:
         return_error(str(e))
 
