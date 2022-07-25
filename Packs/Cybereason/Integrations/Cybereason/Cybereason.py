@@ -1762,7 +1762,7 @@ def fetchfile_progress_command(client: Client, args: dict):
         filename.append(new_malop_comments[item].get("name"))
         status.append(new_malop_comments[item].get("isSuccess"))
         message.append(new_malop_comments[item].get("message"))
-        if status is True:
+        if status[item] == True:
             output_message.append('Filename: ' + str(filename) + ' Status: ' + str(status) + ' Batch ID: ' + str(message))
         else:
             output_message.append(str(message))
