@@ -160,13 +160,13 @@ class LdapClient:
         """
             Returns parsed ldap groups entries and referrals.
         """
-        referrals = []
-        entries = []
+        referrals: List[str] = []
+        entries: List[dict] = []
 
         for ldap_group in ldap_group_entries:
             if ldap_group_type := ldap_group.get('type'):
                 if ldap_group_type == 'searchResRef':  # a referral
-                    referrals.extend(ldap_group.get('uri'))
+                    referrals.extend(ldap_group.get('uri') or [])
 
                 elif ldap_group_type == 'searchResEntry':  # an entry
                     entries.append(
@@ -568,7 +568,7 @@ class LdapClient:
         except LDAPInvalidDnError:
             raise Exception("Invalid credentials input. Credentials must be full DN.")
         self.authenticate_ldap_user(username=self._username, password=self._password)
-        demisto.results('ok')
+        return 'ok'
 
 
 def main():
@@ -583,18 +583,19 @@ def main():
         client = LdapClient(params)
 
         if command == 'test-module':
-            client.test_module()
+            test_result = client.test_module()
+            return_results(test_result)
         elif command == 'ad-authenticate':
             username = args.get('username')
             password = args.get('password')
             authentication_result = client.authenticate_ldap_user(username, password)
             demisto.info(f'ad-authenticate command - authentication result: {authentication_result}')
-            demisto.results(authentication_result)
+            return_results(authentication_result)
         elif command == 'ad-groups':
             specific_group = args.get('specific-groups')
             searched_results = client.get_ldap_groups(specific_group)
             demisto.info(f'ad-groups command - searched results: {searched_results}')
-            demisto.results(searched_results)
+            return_results(searched_results)
         elif command == 'ad-authenticate-and-roles':
             username = args.get('username')
             password = args.get('password')
@@ -609,7 +610,9 @@ def main():
                                                          mail_attribute=mail_attribute, name_attribute=name_attribute,
                                                          phone_attribute=phone_attribute)
             demisto.info(f'ad-authenticate-and-roles command - entry results: {entry_result}')
-            demisto.results(entry_result)
+            return_results(entry_result)
+        else:
+            raise NotImplementedError(f'Command {command} is not implemented')
 
     # Log exceptions
     except Exception as e:
