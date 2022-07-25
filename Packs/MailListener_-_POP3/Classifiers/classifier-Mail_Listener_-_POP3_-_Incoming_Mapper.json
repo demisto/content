@@ -1,189 +1,168 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "Phishing",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "e03a6ef1-2416-478b-8b76-16f41dcedbff",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 2,
-	"mapping": {
-		"Phishing": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Attachment Count": {
-					"complex": {
-						"filters": [],
-						"root": "attachments",
-						"transformers": [
-							{
-								"operator": "count"
-							}
-						]
-					}
-				},
-				"Attachment Name": {
-					"complex": {
-						"accessor": "name",
-						"filters": [],
-						"root": "attachments",
-						"transformers": [
-							{
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							}
-						]
-					}
-				},
-				"Email BCC": {
-					"complex": {
-						"filters": [],
-						"root": "Bcc",
-						"transformers": [
-							{
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							}
-						]
-					}
-				},
-				"Email Body": {
-					"complex": {
-						"filters": [],
-						"root": "Body",
-						"transformers": []
-					}
-				},
-				"Email CC": {
-					"complex": {
-						"filters": [],
-						"root": "Cc",
-						"transformers": [
-							{
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							}
-						]
-					}
-				},
-				"Email From": {
-					"complex": {
-						"filters": [],
-						"root": "From",
-						"transformers": []
-					}
-				},
-				"Email In Reply To": {
-					"complex": {
-						"filters": [],
-						"root": "In-Reply-To",
-						"transformers": [
-							{
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							}
-						]
-					}
-				},
-				"Email Message ID": {
-					"complex": {
-						"filters": [],
-						"root": "Message-ID",
-						"transformers": []
-					}
-				},
-				"Email Subject": {
-					"complex": {
-						"filters": [],
-						"root": "Subject",
-						"transformers": []
-					}
-				},
-				"Email To": {
-					"complex": {
-						"filters": [],
-						"root": "To",
-						"transformers": [
-							{
-								"args": {
-									"delimiter": {
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "split"
-							}
-						]
-					}
-				},
-				"Email To Count": {
-					"complex": {
-						"filters": [],
-						"root": "To",
-						"transformers": [
-							{
-								"args": {
-									"delimiter": {
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "split"
-							},
-							{
-								"operator": "count"
-							}
-						]
-					}
-				}
-			}
-		}
-	},
-	"name": "Mail Listener - POP3 - Incoming Mapper",
-	"nameRaw": "Mail Listener - POP3 - Incoming Mapper",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "defaultIncidentType": "Phishing",
+    "description": "",
+    "feed": false,
+    "id": "Mail Listener - POP3 - Incoming Mapper",
+    "mapping": {
+        "Phishing": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Attachment Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "operator": "count"
+                            }
+                        ]
+                    }
+                },
+                "Attachment Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Email BCC": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Bcc",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Email Body": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Body",
+                        "transformers": []
+                    }
+                },
+                "Email CC": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Cc",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Email From": {
+                    "complex": {
+                        "filters": [],
+                        "root": "From",
+                        "transformers": []
+                    }
+                },
+                "Email In Reply To": {
+                    "complex": {
+                        "filters": [],
+                        "root": "In-Reply-To",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Email Message ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Message-ID",
+                        "transformers": []
+                    }
+                },
+                "Email Subject": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Subject",
+                        "transformers": []
+                    }
+                },
+                "Email To": {
+                    "complex": {
+                        "filters": [],
+                        "root": "To",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            }
+                        ]
+                    }
+                },
+                "Email To Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "To",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "operator": "count"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "Mail Listener - POP3 - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
 }
