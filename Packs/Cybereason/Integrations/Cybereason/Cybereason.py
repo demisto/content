@@ -232,7 +232,6 @@ def is_probe_connected_command(client: Client, args: dict, is_remediation_commma
     machine = args.get('machine')
     is_connected = False
 
-    assert isinstance(machine, str)
     response = is_probe_connected(client, machine)
 
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
@@ -240,7 +239,6 @@ def is_probe_connected_command(client: Client, args: dict, is_remediation_commma
     for value in list(elements.values()):
         machine_name = dict_safe_get(value, ['simpleValues', 'elementDisplayName', 'values', 0],
                                      default_return_value='', return_type=str)
-        assert isinstance(machine, str)
         if machine_name.upper() == machine.upper():
             is_connected = True
             break
@@ -290,7 +288,6 @@ def query_processes_command(client: Client, args: dict):
     privileges_escalation = args.get('privilegesEscalation')
     maclicious_psexec = args.get('maliciousPsExec')
 
-    assert isinstance(machine, str)
     response = query_processes(client, machine, process_name, only_suspicious, has_incoming_connection, has_outgoing_connection,
                                has_external_connection, unsigned_unknown_reputation, from_temporary_folder,
                                privileges_escalation, maclicious_psexec)
@@ -394,11 +391,9 @@ def query_connections_command(client: Client, args: dict):
     if machine:
         input_list = machine.split(",")
     else:
-        assert isinstance(ip, str)
         input_list = ip.split(",")
 
     for filter_input in input_list:
-        assert isinstance(ip, str)
         response = query_connections(client, machine, ip, filter_input)
         elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
         outputs = []
@@ -589,7 +584,6 @@ def query_malops(
 
 def isolate_machine_command(client: Client, args: dict):
     machine = args.get('machine')
-    assert isinstance(machine, str)
     response, pylum_id = isolate_machine(client, machine)
     result = response.get(pylum_id)
     if result == 'Succeeded':
@@ -626,7 +620,6 @@ def isolate_machine(client: Client, machine: str) -> Any:
 
 def unisolate_machine_command(client: Client, args: dict):
     machine = args.get('machine')
-    assert isinstance(machine, str)
     response, pylum_id = unisolate_machine(client, machine)
     result = response.get(pylum_id)
     if result == 'Succeeded':
@@ -756,8 +749,6 @@ def add_comment_command(client: Client, args: dict):
     comment = args.get('comment') if args.get('comment') else ''
     malop_guid = args.get('malopGuid')
     try:
-        assert isinstance(malop_guid, str)
-        assert isinstance(comment, str)
         add_comment(client, malop_guid, comment.encode('utf-8'))
         return CommandResults(readable_output='Comment added successfully')
     except Exception as e:
@@ -777,7 +768,6 @@ def update_malop_status_command(client: Client, args: dict):
         raise Exception(
             'Invalid status. Given status must be one of the following: To Review,Unread,Remediated or Not Relevant')
 
-    assert isinstance(malop_guid, str)
     update_malop_status(client, malop_guid, status)
 
     ec = {
@@ -806,7 +796,6 @@ def update_malop_status(client: Client, malop_guid: str, status: str) -> None:
 
 def prevent_file_command(client: Client, args: dict):
     file_hash = args.get('md5') if args.get('md5') else ''
-    assert isinstance(file_hash, str)
     response = prevent_file(client, file_hash)
     if response['outcome'] == 'success':
         ec = {
@@ -837,7 +826,6 @@ def prevent_file(client: Client, file_hash: str) -> dict:
 
 def unprevent_file_command(client: Client, args: dict):
     file_hash = args.get('md5')
-    assert isinstance(file_hash, str)
     response = unprevent_file(client, file_hash)
     if response['outcome'] == 'success':
         ec = {
@@ -886,13 +874,7 @@ def kill_process_command(client: Client, args: dict):
     remediation_action = 'KILL_PROCESS'
     is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        assert isinstance(malop_guid, str)
-        assert isinstance(machine_name, str)
-        assert isinstance(target_id, str)
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
-        assert isinstance(user_name, str)
-        assert isinstance(timeout_second, str)
-        assert isinstance(comment, str)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
             success_response = "Kill process remediation action status is: {}".format(dict_safe_get(
@@ -919,13 +901,7 @@ def quarantine_file_command(client: Client, args: dict):
     remediation_action = 'QUARANTINE_FILE'
     is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        assert isinstance(malop_guid, str)
-        assert isinstance(machine_name, str)
-        assert isinstance(target_id, str)
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
-        assert isinstance(user_name, str)
-        assert isinstance(timeout_second, str)
-        assert isinstance(comment, str)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
             success_response = "Quarantine file remediation action status is: {}".format(dict_safe_get(
@@ -952,13 +928,7 @@ def unquarantine_file_command(client: Client, args: dict):
     remediation_action = 'UNQUARANTINE_FILE'
     is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        assert isinstance(malop_guid, str)
-        assert isinstance(machine_name, str)
-        assert isinstance(target_id, str)
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
-        assert isinstance(user_name, str)
-        assert isinstance(timeout_second, str)
-        assert isinstance(comment, str)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
             success_response = "Unquarantine file remediation action status is: {}".format(dict_safe_get(
@@ -985,13 +955,7 @@ def block_file_command(client: Client, args: dict):
     remediation_action = 'BLOCK_FILE'
     is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        assert isinstance(malop_guid, str)
-        assert isinstance(machine_name, str)
-        assert isinstance(target_id, str)
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
-        assert isinstance(user_name, str)
-        assert isinstance(timeout_second, str)
-        assert isinstance(comment, str)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
             success_response = "Block file remediation action status is: {}".format(dict_safe_get(
@@ -1018,13 +982,7 @@ def delete_registry_key_command(client: Client, args: dict):
     remediation_action = 'DELETE_REGISTRY_KEY'
     is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        assert isinstance(malop_guid, str)
-        assert isinstance(machine_name, str)
-        assert isinstance(target_id, str)
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
-        assert isinstance(user_name, str)
-        assert isinstance(timeout_second, str)
-        assert isinstance(comment, str)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
             success_response = "Delete registry key remediation action status is: {}".format(dict_safe_get(
@@ -1051,13 +1009,7 @@ def kill_prevent_unsuspend_command(client: Client, args: dict):
     remediation_action = 'KILL_PREVENT_UNSUSPEND'
     is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        assert isinstance(malop_guid, str)
-        assert isinstance(machine_name, str)
-        assert isinstance(target_id, str)
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
-        assert isinstance(user_name, str)
-        assert isinstance(timeout_second, str)
-        assert isinstance(comment, str)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
             success_response = "Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(
@@ -1084,13 +1036,7 @@ def unsuspend_process_command(client: Client, args: dict):
     remediation_action = 'UNSUSPEND_PROCESS'
     is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        assert isinstance(malop_guid, str)
-        assert isinstance(machine_name, str)
-        assert isinstance(target_id, str)
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
-        assert isinstance(user_name, str)
-        assert isinstance(timeout_second, str)
-        assert isinstance(comment, str)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
             success_response = "Unsuspend process remediation action status is: {}".format(dict_safe_get(
@@ -1163,7 +1109,6 @@ def get_remediation_action_progress(
 
 def query_file_command(client: Client, args: dict) -> Any:
     file_hash_input = args.get('file_hash')
-    assert isinstance(file_hash_input, str)
     file_hash_list = file_hash_input.split(",")
     for file_hash in file_hash_list:
 
@@ -1329,7 +1274,6 @@ def get_file_machine_details(client: Client, file_guid: str) -> dict:
 
 def query_domain_command(client: Client, args: dict) -> Any:
     domain_input_value = args.get('domain')
-    assert isinstance(domain_input_value, str)
     domain_list = domain_input_value.split(",")
     for domain_input in domain_list:
 
@@ -1405,7 +1349,6 @@ def query_domain(client: Client, filters: list) -> dict:
 
 def query_user_command(client: Client, args: dict):
     username_input = args.get('username')
-    assert isinstance(username_input, str)
     username_list = username_input.split(",")
     for username in username_list:
 
@@ -1787,10 +1730,8 @@ def fetch_imagefile_guids(client: Client, processes: list) -> dict:
 def start_fetchfile_command(client: Client, args: dict):
     malop_id = args.get('malopGUID')
     user_name = args.get('userName')
-    assert isinstance(malop_id, str)
     response = get_file_guids(client, malop_id)
     for filename, file_guid in list(response.items()):
-        assert isinstance(user_name, str)
         api_response = start_fetchfile(client, file_guid, user_name)
         try:
             if api_response['status'] == "SUCCESS":
@@ -1809,7 +1750,6 @@ def start_fetchfile(client: Client, element_id: str, user_name: str) -> dict:
 
 def fetchfile_progress_command(client: Client, args: dict):
     malop_id = args.get('malopGuid')
-    assert isinstance(malop_id, str)
     response = get_file_guids(client, malop_id)
     timeout_sec = 60
     interval_sec = 10
@@ -1930,7 +1870,6 @@ def malware_query(client: Client, action_values: list, limit: int) -> dict:
 
 def start_host_scan_command(client: Client, args: dict):
     sensor_id = args.get('sensorID')
-    assert isinstance(sensor_id, str)
     sensor_ids = sensor_id.split(",")
     argument = args.get('scanType')
     json_body = {
@@ -1966,7 +1905,6 @@ def fetch_scan_status_command(client: Client, args: dict):
     action_response = client.cybereason_api_call('GET', '/rest/sensors/allActions')
     output = "The given batch ID does not match with any actions on sensors."
     for item in action_response:
-        assert isinstance(batch_id, str)
         if dict_safe_get(item, ['batchId']) == int(batch_id):
             output = item
             break
