@@ -251,7 +251,7 @@ def v2_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
 
     url = params.get('url')

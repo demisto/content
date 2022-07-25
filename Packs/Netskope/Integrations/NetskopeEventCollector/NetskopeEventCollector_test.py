@@ -109,28 +109,28 @@ def test_test_module(mocker):
     from NetskopeEventCollector import test_module
     alert_response = [
         {
-          "_category_id":"10061",
-          "_category_name":"Web Outlook Allowed",
-          "_category_tags":[
-             "10079",
-             "10027"
-          ],
-          "_content_version":1656927640,
-          "_mladc":[
-             "ur"
-          ],
-          "_nshostname":"_hostname",
-          "_session_begin":"0",
-          "_skip_geoip_lookup":"no",
-          "_src_epoch_now":1657184640,
-          "access_method":"Client",
-          "acked":"false",
-          "action":"anomaly_detection",
-          "activity":"Create",
-          "alert":"yes",
-          "alert_id":"1234e70cda66bd71a9c46e82de86b9fde",
-          "alert_name":"user_shared_credentials",
-          "alert_type":"uba"
+            "_category_id": "10061",
+            "_category_name": "Web Outlook Allowed",
+            "_category_tags": [
+                "10079",
+                "10027"
+            ],
+            "_content_version": 1656927640,
+            "_mladc": [
+                "ur"
+            ],
+            "_nshostname": "_hostname",
+            "_session_begin": "0",
+            "_skip_geoip_lookup": "no",
+            "_src_epoch_now": 1657184640,
+            "access_method": "Client",
+            "acked": "false",
+            "action": "anomaly_detection",
+            "activity": "Create",
+            "alert": "yes",
+            "alert_id": "1234e70cda66bd71a9c46e82de86b9fde",
+            "alert_name": "user_shared_credentials",
+            "alert_type": "uba"
         }
     ]
     client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
