@@ -2,7 +2,6 @@ import os
 import sys
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
-from configparser import ConfigParser, MissingSectionHeaderError
 from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional
@@ -97,24 +96,6 @@ class CollectionResult:
             logger.info(f'collected {pack=}, {reason} {reason_description}')
 
     @staticmethod
-    def _is_ignored_pack_ignore(test: str, id_set: IdSet):  # todo better place for this?
-        pack_path = find_pack_folder(Path(id_set.id_to_test_playbook[test].file_path))
-        pack_ignore_path = pack_path / '.pack_ignore'
-        _ = {}
-        try:
-            config = ConfigParser(allow_no_value=True)
-            config.read(pack_ignore_path)
-
-            for section in filter(lambda s: s.startswith('file:'), config.sections()):
-                # given section is of type file
-                file_name: str = section[5:]
-                for key in filter(lambda k: k == 'ignore', config[section]):
-                    # group ignore codes to a list
-                    _[file_name] = str(config[section][key]).split(',')
-        except MissingSectionHeaderError:
-            return False
-
-    @staticmethod
     def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
                        id_set: Optional[IdSet], is_sanity: bool):
         """
@@ -135,7 +116,7 @@ class CollectionResult:
                 if test not in id_set.id_to_test_playbook:
                     raise InvalidTestException(test, 'missing from id-set')
 
-                if CollectionResult._is_ignored_pack_ignore(test, id_set):
+                if id_set.is_test_ignored_in_pack_ignore(test):
                     raise SkippedTestException(test, 'skipped in .pack_ignore')
 
             if skip_reason := conf.skipped_tests.get(test):

@@ -1,4 +1,5 @@
 from collections import defaultdict
+from configparser import ConfigParser, MissingSectionHeaderError
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -6,7 +7,7 @@ from demisto_sdk.commands.common.constants import MarketplaceVersions
 from logger import logger
 
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
-                                               PackManager, to_tuple)
+                                               PackManager, to_tuple, find_pack_folder)
 
 
 class IdSetItem(DictBased):
@@ -101,3 +102,25 @@ class IdSet(DictFileBased):
 
                     result[id_] = item
         return result
+
+    def is_test_ignored_in_pack_ignore(self, test: str) -> bool:
+        """
+        Checks if a test is ignored in the pack ignore file.
+        :param test: the test id to check.
+        :return: True if the test is ignored in the .pack_ignore, False otherwise.
+        """
+        pack_path = find_pack_folder(Path(self.id_to_test_playbook[test].file_path))
+        pack_ignore_path = pack_path / '.pack_ignore'
+        dict_ = {}
+        try:
+            config = ConfigParser(allow_no_value=True)
+            config.read(pack_ignore_path)
+
+            for section in filter(lambda s: s.startswith('file:'), config.sections()):
+                # given section is of type file
+                file_name: str = section[5:]
+                for key in filter(lambda k: k == 'ignore', config[section]):
+                    # group ignore codes to a list
+                    dict_[file_name] = str(config[section][key]).split(',')
+        except MissingSectionHeaderError:
+            return False
