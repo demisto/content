@@ -7,6 +7,10 @@
     "winlog": {
         "type": "string",
         "is_array": false
+    },
+    "MESSAGE": {
+        "type": "string",
+        "is_array": false
     }
   }
 }
