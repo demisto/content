@@ -4210,7 +4210,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.FeaturedField.fields
       description: String value that defines the new field.
       type: String
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: true
   longRunning: false

@@ -2,9 +2,10 @@ from datetime import timezone
 from typing import Dict, Tuple, Union
 
 import dateparser
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
 
-from CommonServerPython import *
 
 ''' IMPORTS '''
 
@@ -45,18 +46,34 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
     return date_obj.replace(tzinfo=timezone.utc)
 
 
-def get_token_soap_request(user, password, instance):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <userName>{user}</userName>' + \
-           f'            <instanceName>{instance}</instanceName>' + \
-           f'            <password>{password}</password>' + \
-           '        </CreateUserSessionFromInstance>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+def get_token_soap_request(user, password, instance, domain=None):
+
+    if domain:
+        return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
+            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
+            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+            '    <soap:Body>' + \
+            '        <CreateDomainUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
+            f'            <userName>{user}</userName>' + \
+            f'            <instanceName>{instance}</instanceName>' + \
+            f'            <password>{password}</password>' + \
+            f'            <usersDomain>{domain}</usersDomain>' + \
+            '        </CreateDomainUserSessionFromInstance>' + \
+            '    </soap:Body>' + \
+            '</soap:Envelope>'
+    else:
+        return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
+            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
+            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+            '    <soap:Body>' + \
+            '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
+            f'            <userName>{user}</userName>' + \
+            f'            <instanceName>{instance}</instanceName>' + \
+            f'            <password>{password}</password>' + \
+            '        </CreateUserSessionFromInstance>' + \
+            '    </soap:Body>' + \
+            '</soap:Envelope>'
+    return return_xml
 
 
 def terminate_session_soap_request(token):
@@ -310,15 +327,23 @@ class Client(BaseClient):
         REQUEST_HEADERS['Authorization'] = f'Archer session-id={session}'
 
     def get_token(self):
-        body = get_token_soap_request(self.username, self.password, self.instance_name)
-        headers = {'SOAPAction': 'http://archer-tech.com/webservices/CreateUserSessionFromInstance',
-                   'Content-Type': 'text/xml; charset=utf-8'}
-        res = self._http_request('POST'
-                                 '', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
+        if self.domain:
+            endpoint = 'CreateDomainUserSessionFromInstance'
+        else:
+            endpoint = 'CreateUserSessionFromInstance'
 
-        return extract_from_xml(res,
-                                'Envelope.Body.CreateUserSessionFromInstanceResponse.'
-                                'CreateUserSessionFromInstanceResult')
+        body = get_token_soap_request(self.username, self.password, self.instance_name, self.domain)
+        headers = {
+            'SOAPAction': f'http://archer-tech.com/webservices/{endpoint}',
+            'Content-Type': 'text/xml; charset=utf-8',
+        }
+        res = self._http_request('POST', 'ws/general.asmx',
+                                 headers=headers, data=body, resp_type='content')
+        return extract_from_xml(
+            res,
+            f'Envelope.Body.{endpoint}Response.'
+            f'{endpoint}Result'
+        )
 
     def destroy_token(self, token):
         body = terminate_session_soap_request(token)
@@ -1329,8 +1354,8 @@ def main():
             return commands[command](client, demisto.args())
         else:
             return_error('Command not found.')
-    except Exception as e:
-        return_error(f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}')
+    except Exception as exc:
+        return_error(f'Unexpected error: {str(exc)}', error=exc)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
