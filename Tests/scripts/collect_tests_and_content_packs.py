@@ -31,7 +31,8 @@ SANITY_TESTS = {
     'Sanity Test - Playbook with integration',
     'Sanity Test - Playbook with no integration',
     'Sanity Test - Playbook with mocked integration',
-    'Sanity Test - Playbook with Unmockable Integration',
+    'Sanity Test - Playbook with Unmockable Integration check'
+    # 'Sanity Test - Playbook with Unmockable Integration', -- quota error
 }
 
 
@@ -1303,9 +1304,9 @@ def get_test_list_and_content_packs_to_install(files_string,
             tests.update(SANITY_TESTS)
             logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
             logging.debug(
-                "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' uses it"
+                "Adding Whois to packs to install as 'Sanity Test - Playbook with Unmockable Integration check' uses it"
             )
-            packs_to_install.update(["HelloWorld", "Gmail"])
+            packs_to_install.update(["HelloWorld", "Gmail", "Whois"])
 
     # We add Base and DeveloperTools packs for every build
     if tests or packs_to_install:
