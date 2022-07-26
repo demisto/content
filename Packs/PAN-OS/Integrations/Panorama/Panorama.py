@@ -658,32 +658,71 @@ def panorama_commit(args):
     return result
 
 
+@polling_function(
+    name=demisto.command(),  # should fit to both pan-os-commit and panorama-commit (deprecated)
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('timeout', 120))
+)
 def panorama_commit_command(args: dict):
     """
-    Commit and show message in the war room
+    Commit any configuration in PAN-OS
+    This function implements the 'pan-os-commit' command.
+    Supports polling as well.
     """
-    result = panorama_commit(args)
+    commit_description = args.get('description', '')
 
-    if 'result' in result['response']:
-        # commit has been given a jobid
+    if job_id := args.get('commit_job_id'):
+        commit_status = panorama_commit_status({'job_id': job_id}).get('response', {}).get('result', {})
+        job_result = commit_status.get('job', {}).get('result')
         commit_output = {
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending',
-            'Description': args.get('description')
+            'JobID': job_id,
+            'Description': commit_description,
+            'Status': 'Success' if job_result == 'OK' else 'Failure'
         }
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Commit:', commit_output, ['JobID', 'Status'], removeNull=True),
-            'EntryContext': {
-                "Panorama.Commit(val.JobID == obj.JobID)": commit_output
+        return PollResult(
+            response=CommandResults(  # this is what the response will be in case job has finished
+                    outputs_prefix='Panorama.Commit',
+                    outputs_key_field='JobID',
+                    outputs=commit_output,
+                    readable_output=tableToMarkdown('Commit Status:', commit_output, removeNull=True)
+                ),
+            continue_to_poll=commit_status.get('job', {}).get('status') != 'FIN',  # continue polling if job isn't done
+        )
+    else:  # either no polling is required or this is the first run
+        result = panorama_commit(args)
+        job_id = result.get('response', {}).get('result', {}).get('job', '')
+        if job_id:
+            context_output = {
+                'JobID': job_id,
+                'Description': commit_description,
+                'Status': 'Pending'
             }
-        })
-    else:
-        # no changes to commit
-        return_results(result['response']['msg'])
+            continue_to_poll = True
+            commit_output = CommandResults(  # type: ignore[assignment]
+                outputs_prefix='Panorama.Commit',
+                outputs_key_field='JobID',
+                outputs=context_output,
+                readable_output=tableToMarkdown('Commit Status:', context_output, removeNull=True)
+            )
+        else:  # nothing to commit in pan-os, hence even if polling=true, no reason to poll anymore.
+            commit_output = result.get('response', {}).get('msg') or 'There are no changes to commit.'  # type: ignore[assignment]
+            continue_to_poll = False
+
+        return PollResult(
+            response=commit_output,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run={
+                'commit_job_id': job_id,
+                'description': commit_description,
+                'polling': argToBoolean(args.get('polling')),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
+                'timeout': arg_to_number(args.get('timeout'))
+            },
+            partial_result=CommandResults(
+                readable_output=f'Waiting for commit "{commit_description}" with job ID {job_id} to finish...'
+                if commit_description else f'Waiting for commit job ID {job_id} to finish...'
+            )
+        )
 
 
 @logger
@@ -11031,7 +11070,7 @@ def main():
             panorama_command(args)
 
         elif command == 'panorama-commit' or command == 'pan-os-commit':
-            panorama_commit_command(args)
+            return_results(panorama_commit_command(args))
 
         elif command == 'panorama-commit-status' or command == 'pan-os-commit-status':
             panorama_commit_status_command(args)
