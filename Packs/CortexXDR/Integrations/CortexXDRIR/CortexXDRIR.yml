@@ -2974,7 +2974,7 @@ script:
       description: Interval in seconds between each poll.
       defaultValue: '10'
       isArray: false
-      name: interval_in_seconds
+      name: polling_interval_in_seconds
       required: false
       secret: false
     - default: false
@@ -2991,10 +2991,16 @@ script:
       required: false
       secret: false
       deprecated: true
+    - name: hide_polling_output
+      deprecated: true
+      description: whether to hide the polling result (automatically filled by polling).
+      required: false
+      isArray: false
     deprecated: false
     description: Initiates a new endpoint script execution action using a script from the script library and gets its execution result back.
     execution: false
     name: xdr-script-run
+    polling: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.ScriptResult.action_id
       description: ID of the action initiated.
