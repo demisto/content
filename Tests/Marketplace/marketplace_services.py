@@ -1712,7 +1712,7 @@ class Pack(object):
 
     def are_all_changes_relevant_to_more_than_one_marketplace(self, modified_files_data):
         """
-        Returns whether the modified files are also relevant to other marketplaces besides the current one
+        Returns true if all the modified files are also relevant to another marketplace besides the current one
         to which the upload is done.
 
         Args:
