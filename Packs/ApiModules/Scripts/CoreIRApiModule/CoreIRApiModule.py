@@ -2944,8 +2944,8 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
 
 @polling_function(
     name=demisto.command(),
-    interval=arg_to_number(demisto.args().get('polling_interval_in_seconds')),
-    timeout=arg_to_number(demisto.args().get('polling_timeout'))
+    interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('polling_timeout', 600))
 )
 def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
 
