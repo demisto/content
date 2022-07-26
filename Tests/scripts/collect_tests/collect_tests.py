@@ -312,15 +312,16 @@ class BranchTestCollector(TestCollector):
 
                     match actual_content_type:
                         case FileType.SCRIPT:
+                            # type:ignore[union-attr]
                             tests = tuple(
-                                test.name for test in self.id_set.implemented_scripts_to_tests.get(yml.id_)
-                            )  # type:ignore[union-attr]
+                                test.name for test in
+                                self.id_set.implemented_scripts_to_tests.get(yml.id_)
+                            )
 
                         case FileType.PLAYBOOK:
                             tests = tuple(
                                 test.name for test in self.id_set.implemented_playbooks_to_tests.get(yml.id_)
-                                # type:ignore[union-attr]
-                            )
+                            )  # type:ignore[union-attr]
                         case _:
                             raise RuntimeError(f'unexpected content type folder {actual_content_type}')
 
@@ -391,7 +392,8 @@ class BranchTestCollector(TestCollector):
                 FileType.MAPPER: (self.conf.incoming_mapper_to_test, CollectionReason.MAPPER_CHANGED),
                 FileType.CLASSIFIER: (self.conf.classifier_to_test, CollectionReason.CLASSIFIER_CHANGED),
             }[file_type]
-            if not (tests := source.get(content_item)):  # type:ignore[arg-type]
+            # type:ignore
+            if not (tests := source.get(content_item)):
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
                 reason_description = f'no specific tests for {relative_path} were found'
         elif path.suffix == '.yml':
