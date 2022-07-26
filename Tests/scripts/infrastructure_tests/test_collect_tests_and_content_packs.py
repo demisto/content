@@ -590,7 +590,7 @@ class TestChangedCommonTesting:
         assert 'TestCommonPython' in filterd_tests
         # verify all sanity tests are collected
         assert len(SANITY_TESTS - filterd_tests) == 0
-        assert content_packs == {'DeveloperTools', 'Base', 'HelloWorld', 'Gmail'}
+        assert content_packs == {'Whois', 'DeveloperTools', 'Base', 'HelloWorld', 'Gmail'}
 
 
 class TestPackageFilesModified:
