@@ -1110,7 +1110,7 @@ class MsGraphClient:
             resp_type="text"
         )
 
-    def send_mail_with_upload_session_flow(self, email, json_data, attachments_more_than_3mb, message_id=None):
+    def send_mail_with_upload_session_flow(self, email, json_data, attachments_more_than_3mb, reply_message_id=None):
         """
         Sends an email with the upload session flow, this is used only when there is one attachment that is larger
         than 3 MB.
@@ -1123,9 +1123,9 @@ class MsGraphClient:
             email (str): email to send from.
             json_data (dict): data to send the message with.
             attachments_more_than_3mb (list[dict]): data information about the large attachments.
-            message_id (str): message ID in case sending a reply to an existing message.
+            reply_message_id (str): message ID in case sending a reply to an existing message.
         """
-        created_draft = self.create_draft(email=email, json_data=json_data, reply_message_id=message_id)  # create the draft email
+        created_draft = self.create_draft(email=email, json_data=json_data, reply_message_id=reply_message_id)  # create the draft email
         draft_id = created_draft.get('id')
         self.add_attachments_via_upload_session(  # add attachments via upload session.
             email=email, draft_id=draft_id, attachments=attachments_more_than_3mb
@@ -1832,7 +1832,7 @@ def reply_email_command(client: MsGraphClient, args):
             email=email_from,
             json_data={'message': reply, 'comment': message_body},
             attachments_more_than_3mb=more_than_3mb_attachments,
-            message_id=message_id
+            reply_message_id=message_id
         )
     else:
         client.send_reply(
@@ -1865,7 +1865,7 @@ def reply_to_command(client: MsGraphClient, args):
             email=email,
             json_data=reply,
             attachments_more_than_3mb=more_than_3mb_attachments,
-            message_id=message_id
+            reply_message_id=message_id
         )
     else:
         client.send_reply(email_from=email, message_id=message_id, json_data=reply)

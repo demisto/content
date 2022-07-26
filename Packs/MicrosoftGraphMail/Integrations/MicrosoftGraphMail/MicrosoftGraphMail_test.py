@@ -941,12 +941,12 @@ class TestCommandsWithLargeAttachments:
         with requests_mock.Mocker() as request_mocker:
             from_email = args.get('from')
             mocked_draft_id = '123'
-            message_id = args.get('inReplyTo')
+            reply_message_id = args.get('inReplyTo')
             mocker.patch.object(client.ms_client, 'get_access_token')
             mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
 
             create_draft_mail_mocker = request_mocker.post(  # mock the endpoint to create a draft for an existing message
-                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{message_id}/createReply',
+                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{reply_message_id}/createReply',
                 json={'id': mocked_draft_id}
             )
             send_reply_draft_mail_mocker = request_mocker.post(  # mock the endpoint to reply a draft mail
@@ -958,7 +958,7 @@ class TestCommandsWithLargeAttachments:
             )
             upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
             reply_mail_mocker = request_mocker.post(
-                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{message_id}/reply'
+                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{reply_message_id}/reply'
             )
 
             command_results = reply_email_command(client, args)
