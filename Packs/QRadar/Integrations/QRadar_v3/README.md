@@ -107,7 +107,7 @@ Whenever *Fetch with events* is configured, the integration will fetch the offen
 It is possible, however, that some events might be missed during the creation of the incident.
 The [Mirroring](#mirroring-events) feature is recommended in this case.
 Alternatively, [Retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `QRadar` immediately.
-If the command does not execute, try setting the `interval_in_seconds` to 10.
+If the command does not execute, try setting the `interval_in_seconds` to a lower value, like 10.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
