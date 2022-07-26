@@ -1,5 +1,5 @@
 This is a simple web-server that as of now, supports handling configurable user responses (like Yes/No/Maybe). What makes it different from Data collection tasks is that, the URL to perform a certain action is predictable and written to the incident context when an action is setup. This URL can be inserted to for eg: an HTML email.  User clicks are  are recorded in the integration context and can be polled by Scheduled Commands/ Generic Polling
-This integration was integrated and tested with version 6.6 of XSOAR, but is expected to work from XSOAR version 6.2 and with and on 6.1 with Generic polling (instead of using the automation).
+This integration was integrated and tested with version 6.6 of XSOAR, but is expected to work from XSOAR version 6.2 and on 6.1 with Generic polling (instead of using the automation).
 
 ## Configure XSOAR-Web-Server on Cortex XSOAR
 
