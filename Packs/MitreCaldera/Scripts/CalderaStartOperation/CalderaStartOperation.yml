@@ -1,0 +1,21 @@
+commonfields:
+  id: CalderaStartOperation
+  version: -1
+name: CalderaStartOperation
+comment: This script is used in the MITRE Caldera Operation playbook. It will auto-complete the task that waits for a specific date and time for the operation to start. It should not be used manually.
+dependson:
+  must:
+  - '|||caldera-create-operation'
+script: ''
+type: python
+tags:
+- sla
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.5.31928
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
