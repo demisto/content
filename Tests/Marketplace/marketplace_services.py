@@ -731,8 +731,7 @@ class Pack(object):
             build_number_with_prefix if build_number_with_prefix else \
             changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
-        release_notes = release_notes if release_notes else changelog_entry[Changelog.RELEASE_NOTES]
-        changelog_entry[Changelog.RELEASE_NOTES] = self.filter_release_notes_by_tags(release_notes, marketplace)
+        changelog_entry[Changelog.RELEASE_NOTES] = self.filter_release_notes_by_tags(release_notes or changelog_entry[Changelog.RELEASE_NOTES], marketplace)
         changelog_entry[Changelog.DISPLAY_NAME] = f'{version_display_name} - {build_number_with_prefix}'
         changelog_entry[Changelog.RELEASED] = released_time if released_time else changelog_entry[Changelog.RELEASED]
         changelog_entry[Changelog.PULL_REQUEST_NUMBERS] = pull_request_numbers
