@@ -43,54 +43,54 @@ inputs:
 name: MDE - Host Advanced Hunting
 outputs:
 - contextPath: MicrosoftATP.HuntTampering
-  description: The query results for Hunt Tampering.
+  description: The query results for hunt tampering.
   type: unknown
 - contextPath: MicrosoftATP.HuntTampering.Result
   description: The query results.
 - contextPath: MicrosoftATP.HuntPrivilegeEscalation
-  description: The query results for Hunt Privilege Escalation.
+  description: The query results for hunt privilege escalation.
   type: unknown
 - contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
   description: The query results.
 - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
-  description: The query results for Hunt Lateral Movement Evidence.
+  description: The query results for hunt lateral movement evidence.
   type: unknown
 - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
-  description: The query results for network_connections query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting on network connections.
 - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
-  description: The query results for smb_connections query_purpose.
+  description: Query Results from the Microsoft Defender For Endpoint Advanced Hunting on SMB connections.
 - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
-  description: The query results for credential_dumping query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting on credential dumping.
 - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
-  description: The query results for management_connection query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting on management connections.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence
-  description: The query results for Hunt Lateral Movement Evidence.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for hunt lateral movement evidence.
   type: unknown
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
-  description: The query results for Hunt Persistence Evidence.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for hunt persistence evidence.
   type: unknown
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
-  description: The query results for scheduled_job query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for scheduled jobs.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry
-  description: The query results for registry_entry query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for registry entries.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes
-  description: The query results for startup_folder_changes query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for startup folder changes.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created
-  description: The query results for new_service_created query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for created new services.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.service_updated
-  description: The query results for service_updated query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for updated services.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced
-  description: The query results for file_replaced query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for replaced files.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_user
-  description: The query results for new_user query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for new users.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_group
-  description: The query results for new_group query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for new groups.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change
-  description: The query results for group_user_change query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for changes in group users.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
-  description: The query results for local_firewall_change query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for changes in the local firewall.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
-  description: The query results for host_file_change query_purpose.
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for changes in the host file.
 - contextPath: MicrosoftATP.File
   description: File information from Microsoft ATP.
   type: unknown
@@ -1160,7 +1160,7 @@ tasks:
       id: 87ffe3f4-08ba-45e7-8232-46393f0dfca2
       version: -1
       name: Check if device information was provided
-      description: Check if device information was provided
+      description: Check if device information was provided.
       type: condition
       iscommand: false
       brand: ''
