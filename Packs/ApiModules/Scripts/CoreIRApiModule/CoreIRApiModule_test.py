@@ -2903,6 +2903,19 @@ class TestPollingCommands:
 
     @pytest.mark.parametrize(argnames='status_count', argvalues=[1, 3, 7, 9, 12, 15])
     def test_script_run_command(self, mocker, status_count):
+        """
+        Given -
+            xdr-script-run command arguments including polling true where each time a different amount of response
+            is returned.
+
+        When -
+            Running the xdr-script-run
+
+        Then
+            - Make sure the readable output is returned to war-room only once indicating on polling.
+            - Make sure the correct context output is returned once the command finished polling
+            - Make sure that polling since the second time does return any readable output or context output.
+        """
         from CoreIRApiModule import script_run_polling_command
         from CommonServerPython import ScheduledCommand
 
