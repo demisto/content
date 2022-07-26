@@ -40,7 +40,8 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Other',
-    'resolved_other': 'Other'
+    'resolved_other': 'Other',
+    'resolved_auto': 'Resolved'
 }
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
@@ -1309,10 +1310,11 @@ def main():  # pragma: no cover
                                                          "PENDING_ABORT"])
             raw = polling.raw_response
             # raw is the response returned by the get-action-status
-            status = raw[0].get('status')  # type: ignore
             if polling.scheduled_command:
                 return_results(polling)
-            elif status == 'COMPLETED_SUCCESSFULLY':
+                return
+            status = raw[0].get('status')  # type: ignore
+            if status == 'COMPLETED_SUCCESSFULLY':
                 file_details_results(client, args, True)
             else:  # status is not in polling value and operation was not COMPLETED_SUCCESSFULLY
                 polling.outputs_prefix = f'{args.get("integration_context_brand", "CoreApiModule")}' \
@@ -1455,7 +1457,6 @@ def main():  # pragma: no cover
             return_results(replace_featured_field_command(client, args))
 
     except Exception as err:
-        demisto.error(traceback.format_exc())
         return_error(str(err))
 
 

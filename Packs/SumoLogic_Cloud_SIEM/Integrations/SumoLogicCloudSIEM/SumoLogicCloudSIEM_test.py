@@ -49,6 +49,7 @@ def test_insight_get_details(requests_mock):
         proxy=False,
         auth=('access_id', 'access_key'),
         ok_codes=[200])
+    client.set_extra_params({'instance_endpoint': 'https://test.us2.sumologic.com'})
 
     args = {
         'insight_id': insight_id,
@@ -63,7 +64,7 @@ def test_insight_get_details(requests_mock):
     assert response.readable_output == tableToMarkdown(
         'Insight Details:', [insight],
         ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
-         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'], headerTransform=pascalToSpace)
+         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution', 'SumoUrl'], headerTransform=pascalToSpace)
 
 
 def test_insight_get_comments(requests_mock):
@@ -118,6 +119,7 @@ def test_signal_get_details(requests_mock):
         proxy=False,
         auth=('access_id', 'access_key'),
         ok_codes=[200])
+    client.set_extra_params({'instance_endpoint': 'https://test.us2.sumologic.com'})
 
     args = {
         'signal_id': signal_id
@@ -478,11 +480,13 @@ def test_fetch_incidents(requests_mock):
         auth=('access_id', 'access_key'),
         ok_codes=[200])
 
+    client.set_extra_params({'instance_endpoint': 'https://test.us2.sumologic.com'})
+
     next_run, incidents = fetch_incidents(client, 20, {}, 1621296000, None, RECORD_SUMMARY_FIELDS_DEFAULT)
 
-    assert incidents[0].get('name') == 'Defense Evasion with Persistence - 3fa0cee5-6658-31d4-bd66-32fe1739cf61'
+    assert incidents[0].get('name') == 'Defense Evasion with Persistence - INSIGHT-231'
     assert incidents[0].get('occurred') == '2021-05-18T14:46:46.000Z'
-    assert incidents[1].get('name') == 'Defense Evasion with Persistence - 67134063-94a3-3374-9c5f-dcb40d7f172e'
+    assert incidents[1].get('name') == 'Defense Evasion with Persistence - INSIGHT-232'
     assert incidents[1].get('occurred') == '2021-05-18T14:46:47.000Z'
     latest_created_time = datetime.strptime(incidents[1].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
     assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=timezone.utc).timestamp())

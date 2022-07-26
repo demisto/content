@@ -5,7 +5,7 @@ ignore=BA101
 ignore=BA101
 
 [file:playbook-Detonate_URL_-_Generic.yml]
-ignore=BA101
+ignore=BA101,PB110
 
 [file:playbook-Get_File_Sample_From_Path_-_Generic.yml]
 ignore=BA101
@@ -60,5 +60,9 @@ ignore=RM106
 
 [file:playbook-Block_Domain_-_Generic.yml]
 ignore=PB110
+
+[file:playbook-File_Enrichment_-_Generic_v2.yml]
+ignore=PB110
+
 [file:pack_metadata.json]
 ignore=PA129
