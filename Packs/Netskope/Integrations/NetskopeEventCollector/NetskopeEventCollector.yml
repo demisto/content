@@ -81,6 +81,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  isfetchevents: true
 tests:
 - No tests (auto formatted)
 marketplaces:

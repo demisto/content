@@ -120,7 +120,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def arg_to_seconds_timestamp(arg: Optional[str]) -> Optional[int]:
+def arg_to_seconds_timestamp(arg: Optional[str]) -> Optional[int]:  # pragma: no cover
     """
     Converts an XSOAR date string argument to a timestamp in seconds.
 
@@ -138,7 +138,7 @@ def arg_to_seconds_timestamp(arg: Optional[str]) -> Optional[int]:
     return date_to_seconds_timestamp(arg_to_datetime(arg))  # type: ignore[arg-type]
 
 
-def date_to_seconds_timestamp(date_str_or_dt: Union[str, datetime]) -> int:
+def date_to_seconds_timestamp(date_str_or_dt: Union[str, datetime]) -> int:  # pragma: no cover
     """
     Converts date string or datetime object to a timestamp in seconds.
 
