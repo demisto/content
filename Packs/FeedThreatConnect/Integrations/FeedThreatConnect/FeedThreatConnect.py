@@ -174,7 +174,7 @@ def set_fields_query(fields: list) -> str:
     return fields_str
 
 
-def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:
+def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no cover
     """ Fetch indicators from ThreatConnect
 
     Args:

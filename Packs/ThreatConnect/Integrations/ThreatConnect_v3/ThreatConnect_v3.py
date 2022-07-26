@@ -843,7 +843,6 @@ def tc_delete_indicator_command(client: Client) -> None:  # pragma: no cover
     indicator_id = args.get('indicatorId')
     url = f'/api/v3/indicators/{indicator_id}'
     response, status_code = client.make_request(Method.DELETE, url)
-    print(response)
     if status_code != 200:
         return_error('Error from the API: ' + response.get('message',
                                                            'An error has occurred if it persist please contact your '
@@ -855,7 +854,8 @@ def tc_delete_indicator_command(client: Client) -> None:  # pragma: no cover
     })
 
 
-# def create_document_group(client: Client) -> None:  # pragma: no cover
+def create_document_group(client: Client) -> None:  # pragma: no cover
+    pass
     # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1551,7 +1551,7 @@ COMMANDS = {
     'tc-create-threat': tc_create_threat_command,
     'tc-delete-group': tc_delete_group_command,
     'tc-get-indicator-types': tc_get_indicator_types,
-    # 'tc-create-document-group': create_document_group,
+    'tc-create-document-group': create_document_group,
     'tc-download-document': download_document,
     'tc-get-associated-groups': get_group_associated_groups,
     'tc-get-indicator-owners': tc_get_indicator_owners,
@@ -1566,7 +1566,7 @@ def main(params):  # pragma: no cover
                         insecure)
         command = demisto.command()
         if command in COMMANDS.keys():
-            COMMANDS[command](client)
+            COMMANDS[command](client)  # type: ignore
 
     except Exception as e:
         return_error(f'An error has occurred: {str(e)}', error=e)
