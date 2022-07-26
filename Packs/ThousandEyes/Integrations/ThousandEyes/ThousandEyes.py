@@ -186,8 +186,7 @@ def parse_agent_response_helper(raw_response: Dict) -> Tuple[List, List]:
 
         if agents_list:
             for items in agents_list:
-                human_readable.append(
-                    assign_params(
+                item = assign_params(
                         **{
                             "Agent ID": items.get('agentId'),
                             "Agent Name": items.get('agentName'),
@@ -211,33 +210,13 @@ def parse_agent_response_helper(raw_response: Dict) -> Tuple[List, List]:
                             "Error Details": items.get('errorDetails')
                         }
                     )
+
+                human_readable.append(
+                    item
                 )
 
                 entry_context.append(
-                    assign_params(
-                        **{
-                            "AgentID": items.get('agentId'),
-                            "AgentName": items.get('agentName'),
-                            "AgentType": items.get('agentType'),
-                            "CountryID": items.get('countryId'),
-                            "Enabled": items.get('enabled'),
-                            "KeepBrowserCache": items.get('keepBrowserCache'),
-                            "VerifySslCertificates": items.get('verifySslCertificates'),
-                            "IpAdresses": items.get('ipAdresses'),
-                            "LastSeen": items.get('lastSeen'),
-                            "Location": items.get('location'),
-                            "Network": items.get('network'),
-                            "Prefix": items.get('prefix'),
-                            "PublicIpAddresses": items.get('publicIpAddresses'),
-                            "TargetForTests": items.get('targetForTests'),
-                            "AgentState": items.get('agentState'),
-                            "Utilization": items.get('utilization'),
-                            "IPv6Policy": items.get('ipv6Policy'),
-                            "Hostname": items.get('hostname'),
-                            "CreatedDate": items.get('createdDate'),
-                            "ErrorDetails": items.get('errorDetails')
-                        }
-                    )
+                    item
                 )
     return (entry_context, human_readable)
 
