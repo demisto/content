@@ -235,29 +235,7 @@ def get_alerts_helper(alert_info: Dict, aid: Optional[int], human_readable: bool
     entry_context = {}
     human_readable_data = {}
     if alert_info:
-        if human_readable:
-            human_readable_data = assign_params(
-                **{
-                    "Active": alert_info.get('active'),
-                    "Agents": alert_info.get('agents'),
-                    "AID": aid,
-                    "Alert ID": alert_info.get('alertId'),
-                    "Date Start": alert_info.get('dateStart'),
-                    "API Links": alert_info.get('apiLinks'),
-                    "Perma Link": alert_info.get('permalink'),
-                    "Rule Expression": alert_info.get('ruleExpression'),
-                    "Rule ID": alert_info.get('ruleId'),
-                    "Rule Name": alert_info.get('ruleName'),
-                    "Test ID": alert_info.get('testId'),
-                    "Test Name": alert_info.get('testName'),
-                    "Violation Count": alert_info.get('violationCount'),
-                    "Type": alert_info.get('type'),
-                    "Severity": alert_info.get('severity')
-                }
-            )
-
-        entry_context = assign_params(
-            **{
+        prepared_alert_info = {
                 "Active": alert_info.get('active'),
                 "Agents": alert_info.get('agents'),
                 "AID": aid,
@@ -273,7 +251,14 @@ def get_alerts_helper(alert_info: Dict, aid: Optional[int], human_readable: bool
                 "ViolationCount": alert_info.get('violationCount'),
                 "Type": alert_info.get('type'),
                 "Severity": alert_info.get('severity')
-            }
+        }
+        if human_readable:
+            human_readable_data = assign_params(
+                **prepared_alert_info
+            )
+
+        entry_context = assign_params(
+            **prepared_alert_info
         )
 
     return (entry_context, human_readable_data)
