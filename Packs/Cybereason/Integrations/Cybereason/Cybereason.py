@@ -1757,10 +1757,15 @@ def fetchfile_progress_command(client: Client, args: dict):
     filename = []
     status = []
     message = []
+    output_message = []
     for item in range(len(new_malop_comments)):
         filename.append(new_malop_comments[item].get("name"))
         status.append(new_malop_comments[item].get("isSuccess"))
         message.append(new_malop_comments[item].get("message"))
+        if status[item] == True:
+            output_message.append('Filename: ' + str(filename) + ' Status: ' + str(status) + ' Batch ID: ' + str(message))
+        else:
+            output_message.append(str(message))
     ec = {
         'fileName': filename,
         'status': status,
@@ -1768,7 +1773,7 @@ def fetchfile_progress_command(client: Client, args: dict):
         'MalopID': malop_id
     }
     return CommandResults(
-        readable_output='Filename: ' + str(filename) + ' Status: ' + str(status) + ' Batch ID: ' + str(message),
+        readable_output=str(output_message),
         outputs_prefix='Cybereason.Download.Progress',
         outputs_key_field='fileName',
         outputs=ec)
