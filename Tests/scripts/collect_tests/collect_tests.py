@@ -308,22 +308,12 @@ class BranchTestCollector(TestCollector):
 
                 except NoTestsConfiguredException:
                     # collecting all tests that implement this script/playbook
+                    source = {
+                        FileType.SCRIPT: self.id_set.implemented_scripts_to_tests,
+                        FileType.PLAYBOOK: self.id_set.implemented_playbooks_to_tests
+                    }[actual_content_type]
+                    tests = tuple(test.name for test in source.get(yml.id_, ()))
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED_NO_TESTS
-
-                    match actual_content_type:
-                        case FileType.SCRIPT:
-                            # type:ignore[union-attr]
-                            tests = tuple(
-                                test.name for test in
-                                self.id_set.implemented_scripts_to_tests.get(yml.id_)
-                            )
-
-                        case FileType.PLAYBOOK:
-                            tests = tuple(
-                                test.name for test in self.id_set.implemented_playbooks_to_tests.get(yml.id_)
-                            )  # type:ignore[union-attr]
-                        case _:
-                            raise RuntimeError(f'unexpected content type folder {actual_content_type}')
 
                     if not tests:  # no tests were found in yml nor in id_set
                         logger.warning(f'{actual_content_type.value} {relative_yml_path} '
