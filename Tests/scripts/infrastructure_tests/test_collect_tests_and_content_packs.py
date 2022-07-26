@@ -1096,7 +1096,7 @@ def test_pack_ignore_test_is_skipped(mocker):
                 "Sanity Test - Playbook with no integration",
                 "Sanity Test - Playbook with integration",
                 "Sanity Test - Playbook with mocked integration",
-                "Sanity Test - Playbook with Unmockable Integration"
+                "Sanity Test - Playbook with Unmockable Whois integration"
             }
             assert not collect_tests_and_content_packs._FAILED
     finally:
