@@ -20,7 +20,7 @@ def process_call(uuid, action):
         set_integration_context(integration_context)
         return "Captured response successfully"
     except KeyError:
-        return "Cannot process action,server error"
+        return "Cannot process action, server error"
 
 
 def run_long_running(listen_port):
