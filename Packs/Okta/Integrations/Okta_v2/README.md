@@ -2282,6 +2282,13 @@ For more information about filtering, visit https://developer.okta.com/docs/api/
 #### Context Example
 ```json
 {
+    "Okta":
+    {
+        "User":
+        {
+            "tag": "test12tag"
+        }
+    },
     "Account": [
         {
             "Created": "2018-07-24T20:20:04.000Z",
@@ -2304,6 +2311,7 @@ For more information about filtering, visit https://developer.okta.com/docs/api/
 >|---|---|---|---|---|---|---|
 >| Dbot | XXXXX |  | XSOAR | dbot@xsoar.com |  | STAGED |
 > 
+> ###tag: test12tag
 ### okta-create-zone
 ***
 Creates a Zone with the specified name
