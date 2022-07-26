@@ -2936,10 +2936,9 @@ class TestPollingCommands:
         }
 
         command_result = script_run_polling_command(polling_args, client)
-        count = 0
-        while not isinstance(command_result, list) and command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
+        # if scheduled_command is set, it means that command should still poll
+        while not isinstance(command_result, list) and command_result.scheduled_command:
             # if command result is a list, it means command execution finished
-            count += 1
             assert not command_result.readable_output  # make sure that indication of polling is printed only once
             assert not command_result.outputs  # make sure no context output is being returned to war-room during polling
             command_result = script_run_polling_command(polling_args, client)
