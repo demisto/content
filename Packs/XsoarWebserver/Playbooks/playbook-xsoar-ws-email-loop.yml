@@ -4,22 +4,22 @@ contentitemexportablefields:
     - all
 id: xsoar-ws-email-loop
 inputs:
-- description: ""
+- description: "The email address of the recipient"
   key: RecipientAddress
   playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: "The file id of the attachment to send to the recipient"
   key: FileAttachments
   playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: "The HTML email"
   key: EmailHTML
   playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: "The action to monitor on XSOARWebserver, You will find it in the output of action-setup"
   key: ActionUUID
   playbookInputQuery:
   required: false
