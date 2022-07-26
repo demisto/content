@@ -127,7 +127,7 @@ def test_results_poll_state_polling_true(state, mocker, requests_mock):
     requests_mock.get(BASE_URL + f"/report/{key}/report/{filetype}", status_code=404)
     state_call = requests_mock.get(BASE_URL + f"/report/{key}/state", json={'state': state})
 
-    response = crowdstrike_result_command(client, args)
+    response = crowdstrike_result_command(args, client)
     sc = response.scheduled_command
     assert state_call.called
     assert sc._args['polling']
@@ -162,7 +162,7 @@ def test_results_in_progress_polling_true_with_file(mocker, requests_mock):
     requests_mock.get(BASE_URL + f"/report/{key}/report/{filetype}", status_code=200, text=raw_response_data)
     requests_mock.post(BASE_URL + "/search/hashes", json=hash_response_json)
 
-    response = crowdstrike_result_command(client, args)
+    response = crowdstrike_result_command(args, client)
 
     assert isinstance(response, list)
     file_result, scan_result = response
@@ -194,7 +194,7 @@ def test_results_in_progress_polling_false(requests_mock):
     requests_mock.get(BASE_URL + f"/report/{key}/report/{filetype}", status_code=404)
     state_call = requests_mock.get(BASE_URL + f"/report/{key}/state", json={'state': 'IN_PROGRESS'})
 
-    response = crowdstrike_result_command(client, args)
+    response = crowdstrike_result_command(args, client)
 
     assert not state_call.called
     assert not response.scheduled_command
@@ -215,7 +215,7 @@ def test_crowdstrike_scan_command_polling_true(mocker, requests_mock):
     """
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     requests_mock.post(BASE_URL + '/search/hashes', json=[])
-    response = crowdstrike_scan_command(client, {"file": "filehash", "polling": True})
+    response = crowdstrike_scan_command({"file": "filehash", "polling": True}, client)
     assert response.scheduled_command._args['file'] == 'filehash'
     assert response.scheduled_command._args['hide_polling_output']
 
@@ -233,7 +233,7 @@ def test_crowdstrike_scan_command_polling_false(requests_mock):
       - Get a 404 result
     """
     requests_mock.post(BASE_URL + '/search/hashes', json=[])
-    response = crowdstrike_scan_command(client, {"file": "filehash"})
+    response = crowdstrike_scan_command({"file": "filehash", 'polling': 'false'}, client)
     assert len(response) == 1
     assert response[0].scheduled_command is None
     assert response[0].outputs == []
@@ -260,7 +260,7 @@ def test_results_in_progress_polling_true_error_state(mocker, requests_mock):
     requests_mock.get(BASE_URL + f"/report/{key}/report/{filetype}", status_code=404)
     requests_mock.get(BASE_URL + f"/report/{key}/state", json={'state': 'ERROR'})
     with pytest.raises(Exception) as e:
-        crowdstrike_result_command(client, args)
+        crowdstrike_result_command(args, client)
     assert e.value.args[0] == "Got Error state from server: {'state': 'ERROR'}"
 
 
