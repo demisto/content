@@ -885,14 +885,14 @@ class Client:
         message['cc'] = cc
         message['bcc'] = bcc
         message['from'] = send_as or emailfrom
-        message['subject'] = Header(subject, 'utf-8')
+        message['subject'] = self.header(subject)
         message['reply-to'] = replyTo
 
         # # The following headers are being used for the reply-mail command.
         if inReplyTo:
-            message['In-Reply-To'] = Header(' '.join(inReplyTo.split()), 'utf-8')
+            message.add_header('In-Reply-To', ' '.join(inReplyTo.split()))
         if references:
-            message['References'] = Header(' '.join(references.split()), 'utf-8')
+            message['References'] = self.header(' '.join(references.split()))
 
         # if there are any attachments to the mail or both body and htmlBody were given
         if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
@@ -960,8 +960,8 @@ class Client:
         return link, challenge
 
 
-def test_module(client):
-    demisto.results('Test is not supported. Please use the following command: !gmail-auth-test.')
+# def test_module(client):
+#     demisto.results('Test is not supported. Please use the following command: !gmail-auth-test.')
 
 
 def send_mail_command(client):
@@ -998,7 +998,7 @@ def reply_mail_command(client):
     inReplyTo = args.get('inReplyTo')
     references = argToList(args.get('references'))
     body = args.get('body')
-    subject = args.get('subject')
+    subject = 'Re: ' + args.get('subject')
     entry_ids = args.get('attachIDs')
     cc = args.get('cc')
     bcc = args.get('bcc')
@@ -1034,7 +1034,7 @@ def get_attachments_command(client):
 
 def fetch_incidents(client: Client):
     user_key = 'me'
-    query = '' if params['query'] is None else params['query']
+    query = '' #if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
     demisto.debug(f'last run: {last_run}')
     last_fetch = last_run.get('gmt_time')
@@ -1153,7 +1153,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     commands = {
-        'test-module': test_module,
+        # 'test-module': test_module,
         'send-mail': send_mail_command,
         'reply-mail': reply_mail_command,
         'fetch-incidents': fetch_incidents,
@@ -1175,5 +1175,6 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == '__main__':
     main()
+

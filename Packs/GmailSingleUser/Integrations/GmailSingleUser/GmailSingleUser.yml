@@ -385,7 +385,7 @@ script:
     arguments: []
     description: Tests that Gmail auth is configured properly. Use this command after completing the OAuth2 authentication process.
     outputs: []
-   - arguments:
+  - arguments:
     - default: false
       description: The ID of the message to retrieve.
       isArray: false
