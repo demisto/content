@@ -890,7 +890,7 @@ class Client:
 
         # # The following headers are being used for the reply-mail command.
         if inReplyTo:
-            message.add_header('In-Reply-To', ' '.join(inReplyTo.split()))
+            message['In-Reply-To'] = self.header(' '.join(inReplyTo.split()))
         if references:
             message['References'] = self.header(' '.join(references.split()))
 
@@ -960,8 +960,8 @@ class Client:
         return link, challenge
 
 
-# def test_module(client):
-#     demisto.results('Test is not supported. Please use the following command: !gmail-auth-test.')
+def test_module(client):
+    demisto.results('Test is not supported. Please use the following command: !gmail-auth-test.')
 
 
 def send_mail_command(client):
@@ -1034,7 +1034,7 @@ def get_attachments_command(client):
 
 def fetch_incidents(client: Client):
     user_key = 'me'
-    query = '' #if params['query'] is None else params['query']
+    query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
     demisto.debug(f'last run: {last_run}')
     last_fetch = last_run.get('gmt_time')
@@ -1067,7 +1067,7 @@ def fetch_incidents(client: Client):
 
     incidents = []
     # so far, so good
-    LOG('GMAIL: possible new incidents are %s' % (result,))
+    LOG(f'GMAIL: possible new incidents are {result}')
     for msg in result.get('messages', []):
         msg_id = msg['id']
         if msg_id in ignore_ids:
@@ -1153,7 +1153,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     commands = {
-        # 'test-module': test_module,
+        'test-module': test_module,
         'send-mail': send_mail_command,
         'reply-mail': reply_mail_command,
         'fetch-incidents': fetch_incidents,
@@ -1171,7 +1171,7 @@ def main():
         # Log exceptions
     except Exception as e:
         import traceback
-        return_error('GMAIL: {} {}'.format(str(e), traceback.format_exc()))
+        return_error(f'An error occured: {e}', error=e)
 
 
 # python2 uses __builtin__ python3 uses builtins

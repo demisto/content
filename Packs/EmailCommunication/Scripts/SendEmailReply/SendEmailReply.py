@@ -934,7 +934,6 @@ def main():
     email_from = custom_fields.get('emailfrom', '')
     email_to = custom_fields.get('emailto', '')
     email_latest_message = custom_fields.get('emaillatestmessage')
-    print(email_latest_message)
     email_code = custom_fields.get('emailgeneratedcode')  # single code field for 'Email Communication' types
     email_codes = custom_fields.get('emailgeneratedcodes')  # multi-code field for other incident types
     email_to_str = get_email_recipients(email_to, email_from, service_mail, mailbox)

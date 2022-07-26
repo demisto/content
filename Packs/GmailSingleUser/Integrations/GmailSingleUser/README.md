@@ -290,4 +290,24 @@ The *subject* argument should be the same as the subject of the email you are re
 >|---|---|---|---|---|---|---|---|
 >| Gmail | 16d43287fc29b71a | test@demistodev.com | admin@demistodev.com | this is the subject |this is the body | SENT | 16d43287fc29b71a |
 
+### gmail-get-attachments
+***
+Retrieves attachments from a sent Gmail message.
+
+
+#### Base Command
+
+`gmail-get-attachments`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message-id | The ID of the message to retrieve. | Required | 
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
+
+
+
+#### Command Example
+```!gmail-get-attachments message-id=16d4316a25a332e4 user-id=admin@demistodev.com```
+
 
