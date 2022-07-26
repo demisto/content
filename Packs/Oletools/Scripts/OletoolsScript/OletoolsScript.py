@@ -182,6 +182,14 @@ class OleClient:
         return cr
 
 
+def handle_password(non_secret_password: str, password: str) -> str:
+    if non_secret_password and not password:
+        return non_secret_password
+    elif password and non_secret_password:
+        raise ValueError('Please insert a password or a non_secret_password not both')
+    return password
+
+
 def main():  # pragma: no cover
     args = demisto.args()
     ole_command = args.get('ole_command')
@@ -189,10 +197,11 @@ def main():  # pragma: no cover
     file_info = demisto.getFilePath(attach_id)
     show_decoded = argToBoolean(args.get('decode', False))
     password = args.get('password', '')
-
-    ole_client = OleClient(file_info, ole_command, password=password, decoded=show_decoded)
+    non_secret_password = args.get('non_secret_password', '')
 
     try:
+        password = handle_password(password=password, non_secret_password=non_secret_password)
+        ole_client = OleClient(file_info, ole_command, password=password, decoded=show_decoded)
         return_results(ole_client.run())
     except Exception as e:
         return_error(f'The script failed with the following error:\n {e}')

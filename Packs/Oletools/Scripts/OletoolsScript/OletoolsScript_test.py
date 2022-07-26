@@ -1,6 +1,6 @@
 from OletoolsScript import *
 from test_data.commands_outputs import oleid_output, oleobj_output, olevba_otuput, oleid_decrypted_output
-
+import pytest
 
 def read_file(file_path):
     with open(file_path) as f:
@@ -45,3 +45,12 @@ def test_oleid_decrypted(caplog):
     cr = ole_client.run()
     assert cr.outputs == oleid_decrypted_output
     assert cr.readable_output == read_file('test_data/oleid_decrypted_readable.md')
+
+
+@pytest.mark.parametrize('password, non_secret_password, returned_password',
+                         [('123', '', '123'),
+                          ('', '666', '666'),
+                          ('', '', ''),
+                          pytest.param('123', '123', False, marks=pytest.mark.xfail)])
+def test_handle_password(password, non_secret_password, returned_password):
+    assert returned_password == handle_password(password=password, non_secret_password=non_secret_password)

@@ -36,11 +36,16 @@ args:
   required: false
   secret: false
 - default: false
-  description:  If encrypted office files are encountered, try decryption with this password. This password can be repeated.
+  description: If encrypted office files are encountered, try decryption with this password. (if specified dont specify the non_secret_password parameter)
   isArray: false
   name: password
   required: false
   secret: true
+- default: false
+  description: If encrypted office files are encountered, try decryption with this password. This argument is non secret for playbook flows. (if specified dont specify the password parameter)
+  isArray: false
+  name: non_secret_password
+  required: false
 comment: This is an automation to run oletools malware analysis for office files. Oletools is a tool for analyzing Microsoft OLE2 files, 
   such as Microsoft Office documents or Outlook messages, mainly for malware analysis, forensics, and debugging. 
   This automation allows performing some basic oletools commands from Cortex XSOAR.
