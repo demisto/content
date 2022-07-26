@@ -446,13 +446,13 @@ script:
       isArray: true
       name: members
     - auto: PREDEFINED
-      defaultValue: 'modify'
+      defaultValue: modify
       description: The action that should be taken towards the values.
       name: action
       predefined:
-      - 'add'
-      - 'remove'
-      - 'modify'
+      - add
+      - remove
+      - modify
     description: Updates the specified group object.
     name: checkpoint-group-update
     outputs:
@@ -1695,8 +1695,8 @@ script:
       name: session_id
       required: true
     - description: a comma separated list of names of the ip objects to be deleted.
-      name: name
       isArray: true
+      name: name
       required: true
     - defaultValue: host
       description: Type of objects to be deleted.
@@ -1709,7 +1709,111 @@ script:
     - contextPath: CheckPoint.DeleteObjectsBatch.task-id
       description: Task id of the delete-objects-batch command.
       type: string
-  dockerimage: demisto/python3:3.9.9.25564
+  - arguments:
+    - name: uid
+    - name: name
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      name: showProfiles
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      name: additionalProperties
+      predefined:
+      - 'true'
+      - 'false'
+    description: Shows an existing threat protection using object name or uid
+    name: checkpoint-show-threat-protection
+    outputs:
+    - contextPath: CheckPoint.ShowThreatProtection
+  - arguments:
+    - name: filter
+    - name: limit
+    - name: offset
+    - name: order
+    description: Shows existing threat protections using a filter
+    name: checkpoint-show-threat-protections
+    outputs:
+    - contextPath: CheckPoint.ShowThreatProtections
+  - arguments:
+    - name: uid
+    - name: name
+    - name: comments
+    - auto: PREDEFINED
+      name: follow_up
+      predefined:
+      - 'true'
+      - 'false'
+    - name: action
+    - auto: PREDEFINED
+      name: track
+      predefined:
+      - None
+      - Log
+      - SNMP-Trap
+      - Mail
+      - Alert
+      - User-Alert
+      - User-Alert-2
+      - User-Alert-3
+    - name: capturePackets
+    - name: profiles
+    description: Edit existing object using object name or uid.
+    name: checkpoint-set-threat-protection
+    outputs:
+    - contextPath: CheckPoint.SetThreatProtections
+  - arguments:
+    - name: name
+      required: true
+    - name: active_protections_performance_impact
+    - name: active_protections_severity
+    - name: confidence_level_high
+    - name: confidence_level_low
+    - name: confidence_level_medium
+    - name: ips_settings
+    - name: tags
+    - name: use_indicators
+    - name: anti_bot
+    - name: anti_virus
+    - name: ips
+    - name: threat_emulation
+    - name: exclude_protection_with_performance_impact
+    - auto: PREDEFINED
+      name: exclude_protection_with_performance_impact_mode
+      predefined:
+      - very low
+      - low or very low
+      - medium or lower
+      - high or lower
+    - name: exclude_protection_with_severity
+    - auto: PREDEFINED
+      name: exclude_protection_with_severity_mode
+      predefined:
+      - low or above
+      - medium or above
+      - high or above
+      - critical
+    - auto: PREDEFINED
+      name: newly_updated_protections
+      predefined:
+      - active
+      - inactive
+      - staging
+    description: Add a new threat profile
+    name: checkpoint-add-threat-profile
+    outputs:
+    - contextPath: CheckPoint.AddedThreatProfiles
+  - arguments:
+    - description: Valid response is "snort"
+      name: packageFormat
+      required: true
+    description: Deletes threat protections.
+    name: checkpoint-delete-threat-protections
+    outputs:
+    - contextPath: CheckPoint.DeletedThreatProtections
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   script: ''
   subtype: python3
