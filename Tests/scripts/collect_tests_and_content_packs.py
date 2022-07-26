@@ -31,8 +31,7 @@ SANITY_TESTS = {
     'Sanity Test - Playbook with integration',
     'Sanity Test - Playbook with no integration',
     'Sanity Test - Playbook with mocked integration',
-    'Sanity Test - Playbook with Unmockable Integration check'
-    # 'Sanity Test - Playbook with Unmockable Integration', -- quota error
+    'Sanity Test - Playbook with Unmockable Integration',
 }
 
 

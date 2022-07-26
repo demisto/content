@@ -1091,7 +1091,7 @@ def test_pack_ignore_test_is_skipped(mocker):
                 id_set=fake_id_set
             )
 
-            assert content_packs == {"HelloWorld", "Gmail", "Base", "DeveloperTools", pack_name}
+            assert content_packs == {"Whois", "HelloWorld", "Gmail", "Base", "DeveloperTools", pack_name}
             assert filtered_tests == {
                 "Sanity Test - Playbook with no integration",
                 "Sanity Test - Playbook with integration",
