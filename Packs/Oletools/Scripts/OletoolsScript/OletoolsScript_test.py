@@ -40,7 +40,7 @@ def test_olevba(caplog):
 def test_oleid_decrypted(caplog):
     ole_client = OleClient({
         'path': 'test_data/protected.docm',
-        'name': 'ActiveBarcode-Demo-Bind-Text.docm'}, 'oleid', ['123123'])
+        'name': 'ActiveBarcode-Demo-Bind-Text.docm'}, 'oleid', '123123')
     caplog.clear()
     cr = ole_client.run()
     assert cr.outputs == oleid_decrypted_output
