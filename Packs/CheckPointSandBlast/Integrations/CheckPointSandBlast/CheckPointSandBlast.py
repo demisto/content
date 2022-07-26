@@ -2,7 +2,6 @@
 Check Point Threat Emulation (SandBlast) API Integration for Cortex XSOAR (aka Demisto).
 """
 from typing import Callable, Dict, Any, List
-
 import pytest
 import demistomock as demisto
 from CommonServerPython import *
@@ -453,9 +452,11 @@ def download_command(client: Client, args: Dict[str, Any]) -> Any:
         Any: File from the server.
     """
     file_id = args['file_id']
-    output = client.download_request(file_id)
 
-    return fileResult(filename=file_id, data=output)
+    output = client.download_request(file_id)
+    file_entry = fileResult(filename=file_id, data=output, file_type=EntryType.ENTRY_INFO_FILE)
+
+    return file_entry
 
 
 def quota_command(client: Client, args: Dict[str, Any]) -> CommandResults:
