@@ -142,7 +142,7 @@ class XM:
     def get_version(self):
         return self.client.get(URLS.Version)
 
-    def risk_score(self, time_id: int = DEFAULT_TIME_ID, resolution: int = 1):
+    def risk_score(self, time_id: str = DEFAULT_TIME_ID, resolution: int = 1):
         """
         The function returns risk score data for the given timeId
         return dict:
@@ -185,12 +185,12 @@ class XM:
         return response["data"]["entities"]
 
     def top_assets_at_risk(
-        self, time_id: int = DEFAULT_TIME_ID, amount_of_results: int = TOP_ENTITIES
+        self, time_id: str = DEFAULT_TIME_ID, amount_of_results: int = TOP_ENTITIES
     ) -> List[Dict[str, Any]]:
         return self._top_entities(URLS.Top_Assets_At_Risk, time_id, amount_of_results)
 
     def top_choke_points(
-        self, time_id: int = DEFAULT_TIME_ID, amount_of_results: int = TOP_ENTITIES
+        self, time_id: str = DEFAULT_TIME_ID, amount_of_results: int = TOP_ENTITIES
     ) -> List[Dict[str, Any]]:
         return self._top_entities(URLS.Top_Choke_Points, time_id, amount_of_results)
 
@@ -257,14 +257,14 @@ class XM:
         return base_url.rstrip("/api")
 
     def get_entity_report_url(
-        self, entity_id: str, time_id: int = DEFAULT_TIME_ID
+        self, entity_id: str, time_id: str = DEFAULT_TIME_ID
     ) -> str:
         return f"{self._get_base_url_without_api()}/#/report/entity/{entity_id}?timeId={time_id}"
 
     def get_dashboard_url(self) -> str:
         return f"{self._get_base_url_without_api()}/#/dashboard"
 
-    def get_technique_url(self, technique: str, time_id: int = DEFAULT_TIME_ID) -> str:
+    def get_technique_url(self, technique: str, time_id: str = DEFAULT_TIME_ID) -> str:
         return f"{self._get_base_url_without_api()}/#/report/technique/{technique}?timeId={time_id}"
 
     def get_link_for_report(self, event_type: str, data: Dict[str, Any]) -> str:
@@ -351,7 +351,7 @@ class XM:
                     )
 
     def _get_technique_best_practices_and_remediation(
-        self, technique: str
+        self, technique: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
         advices = []
         remediations = self.get_technique_remediation(technique["technique"])
