@@ -9,10 +9,10 @@ requests.packages.urllib3.disable_warnings()
 
 class Client(BaseClient):
 
-    def test_connectivity(self):
+    def test_api(self):
         return self._http_request(
             method='GET',
-            url_suffix='/api/app/info'
+            url_suffix='/api/public/endpoints?filter[organizationIds]=0'
         )
 
     def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: int) -> Dict[str, str]:
@@ -81,14 +81,19 @@ class Client(BaseClient):
 
 def test_connection(client: Client) -> str:
     '''Command for test-connection'''
-
-    result: Dict[str, Any] = client.test_connectivity()
-    initialized: Optional[bool] = result['initialized']
-
-    if initialized is True:
-        return demisto.results('ok')
-    else:
-        return demisto.results('test connection failed')
+    try:
+        result: Dict[str, Any] = client.test_api()
+        status: Optional[int] = result['statusCode']
+    except DemistoException as ex:
+        if 'Unauthorized' in str(ex):
+            return demisto.results('Authorization Error: Make sure API Key is correctly set.')
+        elif 'ConnectionError' in str(ex):
+            return demisto.results('Connection Error: Test connection failed.')
+        else:
+            raise ex
+    if status == 200:
+        pass
+    return demisto.results('ok')
 
 
 def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -99,11 +104,18 @@ def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     organization_id = args.get('organization_id', '')
 
     result: Dict[str, Any] = client.air_acquire(hostname, profile, case_id, organization_id)
+    readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
+                                      headers=('success', 'result', 'statusCode', 'errors'),
+                                      headerTransform=string_to_table_header, url_keys=('statusCode', 'errors'))
 
     return CommandResults(
         outputs_prefix='BinalyzeAIR.Acquisition',
         outputs_key_field='hostname',
-        outputs=result,
+        outputs={
+            'Result': result['result'],
+            'Success': result['success']
+        },
+        readable_output=readable_output,
     )
 
 
@@ -115,11 +127,18 @@ def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     isolation = args.get('isolation', '')
 
     result: Dict[str, Any] = client.air_isolate(hostname, organization_id, isolation)
+    readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
+                                      headers=('success', 'result', 'statusCode', 'errors'),
+                                      headerTransform=string_to_table_header, url_keys=('statusCode', 'errors'))
 
     return CommandResults(
         outputs_prefix='BinalyzeAIR.Isolate',
         outputs_key_field='hostname',
-        outputs=result,
+        outputs={
+            'Result': result['result'],
+            'Success': result['success']
+        },
+        readable_output=readable_output,
     )
 
 
