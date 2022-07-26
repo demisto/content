@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: The URL on which the user should send the response to.
-  display: ""
+  display: "URL"
   name: xsoar-external-url
   required: true
   type: 0
