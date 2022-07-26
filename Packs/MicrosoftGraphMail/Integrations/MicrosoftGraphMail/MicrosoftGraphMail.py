@@ -1,6 +1,3 @@
-import os.path
-
-import requests
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -1056,20 +1053,20 @@ class MsGraphClient:
             demisto.error(f'{e}')
             raise e
 
-    def create_draft(self, email, json_data, message_id=None):
+    def create_draft(self, email, json_data, reply_message_id=None):
         """
         Create a draft message for either a new message or as a reply to an existing message.
 
         Args:
             email (str): email to create the draft from.
             json_data (dict): data to create the message with.
-            message_id (str): message ID in case creating a draft to an existing message.
+            reply_message_id (str): message ID in case creating a draft to an existing message.
 
         Returns:
             dict: api response information about the draft.
         """
-        if message_id:
-            suffix = f'/users/{email}/messages/{message_id}/createReply'  # create draft for a reply to an existing message
+        if reply_message_id:
+            suffix = f'/users/{email}/messages/{reply_message_id}/createReply'  # create draft for a reply to an existing message
         else:
             suffix = f'/users/{email}/messages'  # create draft for a new message
         return self.ms_client.http_request('POST', suffix, json_data=json_data)
@@ -1128,7 +1125,7 @@ class MsGraphClient:
             attachments_more_than_3mb (list[dict]): data information about the large attachments.
             message_id (str): message ID in case sending a reply to an existing message.
         """
-        created_draft = self.create_draft(email=email, json_data=json_data, message_id=message_id)  # create the draft email
+        created_draft = self.create_draft(email=email, json_data=json_data, reply_message_id=message_id)  # create the draft email
         draft_id = created_draft.get('id')
         self.add_attachments_via_upload_session(  # add attachments via upload session.
             email=email, draft_id=draft_id, attachments=attachments_more_than_3mb

@@ -58,6 +58,7 @@ Refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/d
 ## Email Attachments Limitations
 * The maximum attachment size to be sent in an email can be 150-MB. [large-attachments](https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http)
 * The larger the attachment, the longer it would take for a command that supports adding attachments to run.
+* Requires the permission of Mail.ReadWrite (Application) - to send attachments > 3mb
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

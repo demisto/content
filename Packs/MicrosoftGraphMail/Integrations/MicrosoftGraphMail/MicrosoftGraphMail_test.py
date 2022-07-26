@@ -846,10 +846,10 @@ class TestCommandsWithLargeAttachments:
             Case1:
              * make sure an upload session was created and that the correct headers were sent
              * make sure the endpoint to send an email without creating draft mail was not called.
-             * make sure the endpoint to create a draft reply mail and send a draft mail were called.
+             * make sure the endpoint to create a draft mail and send a draft mail were called.
             Case2:
              * make sure an upload session was not created
-             * make sure the endpoints to create a draft reply and send a draft reply were not called.
+             * make sure the endpoints to create a draft email and send the draft email were not called.
              * make sure the endpoint to send an email was called.
             Case3:
              * make sure an upload session was created and that the correct headers were sent.
