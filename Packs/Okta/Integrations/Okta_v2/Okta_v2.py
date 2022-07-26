@@ -534,10 +534,10 @@ class Client(BaseClient):
         )
         paged_results = response.json()
         if limit > 200:
-            if 'after' in query_params:
-                query_params.pop('after')
+            query_params = {}
             limit -= 200
             while limit > 0 and "next" in response.links and len(response.json()) > 0:
+                query_params['limit'] = encode_string_results(str(limit))
                 next_page = delete_limit_param(response.links.get("next").get("url"))
                 response = self._http_request(
                     method="GET",
@@ -979,16 +979,16 @@ def list_users_command(client, args):
     users = client.get_readable_users(raw_response, verbose)
     user_context = client.get_users_context(raw_response)
     context = createContext(user_context, removeNull=True)
-    outputs = {
-        'Account(val.ID && val.ID == obj.ID)': context
-    }
     if verbose == 'true':
         readable_output = f"### Okta users found:\n {users}"
     else:
         readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
     if after_tag:
         readable_output += f"\n### tag: {after_tag}"
-
+    outputs = {
+        'Account(val.ID && val.ID == obj.ID)': context,
+        'Okta.User(val.tag)': {'tag': after_tag}
+    }
     return(
         readable_output,
         outputs,

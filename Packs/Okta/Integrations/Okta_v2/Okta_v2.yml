@@ -400,7 +400,8 @@ script:
   - arguments:
     - description: "The cursor in which to retrive the results from and on.\
         \ if the query didn't reach the end of results,\
-        \ the tag will be found in the readable output under the tag key."
+        \ the tag can be obtained from the bottom of the grid in the readable output,\
+        \ or in the context path Okta.User.tag."
       name: after
     - description: The maximum number of results to return, the default is 200.
       name: limit
@@ -462,6 +463,9 @@ script:
     - contextPath: Account.PasswordChanged
       description: Timestamp for when the user's password was last changed.
       type: Date
+    - contextPath: Okta.User.tag
+      description: The location of the next item, used with after param. 
+      type: String
     deprecated: false
     execution: false
   - arguments:
