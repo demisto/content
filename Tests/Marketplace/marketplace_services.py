@@ -1097,6 +1097,8 @@ class Pack(object):
                 modified_files_data[pack_folder] = modified_entities
 
         if not self._modified_files or modified_files_data or modified_rn_files_paths:
+            # The task status will be success if there are no modified files in the pack or if the modified files were found in
+            # the id-set or if there are modified old release notes files for items that are not being modified.
             task_status = True
 
         return task_status, modified_files_data
