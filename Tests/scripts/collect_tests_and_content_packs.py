@@ -31,7 +31,7 @@ SANITY_TESTS = {
     'Sanity Test - Playbook with integration',
     'Sanity Test - Playbook with no integration',
     'Sanity Test - Playbook with mocked integration',
-    'Sanity Test - Playbook with Unmockable Integration',
+    'Sanity Test - Playbook with Unmockable Whois integration',
 }
 
 
