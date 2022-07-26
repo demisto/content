@@ -125,7 +125,10 @@ def test_affected_entities_list(requests_mock):
     with the expected output.
     """
     req_params = "?timeId=timeAgo_days_7&sort=attackComplexity"
-    mock_url = f'{TEST_URL}{URLS.Affected_Entities.format(entity_id="gcpVirtualMachine-8891723672015628290")}{req_params}&pageSize={PAGE_SIZE}&page=1'
+    mock_url = (
+        f'{TEST_URL}{URLS.Affected_Entities.format(entity_id="gcpVirtualMachine-8891723672015628290")}'
+        f"{req_params}&pageSize={PAGE_SIZE}&page=1"
+    )
     xm = mock_request_and_get_xm_mock(
         "test_data/affected_entities.json", requests_mock, mock_url
     )
@@ -167,7 +170,10 @@ def test_enrich_from_entity_id(requests_mock):
     API response. Checks the output of the command function with the expected output.
     """
 
-    mock_url = f'{TEST_URL}{URLS.Entities}?filter={{"entityId":{{"$regex":"/3110337924893579985/i"}}}}&pageSize={PAGE_SIZE}&page=1'
+    mock_url = (
+        f'{TEST_URL}{URLS.Entities}?filter={{"entityId":{{"$regex":"/3110337924893579985/i"}}}}'
+        f"&pageSize={PAGE_SIZE}&page=1"
+    )
     xm = mock_request_and_get_xm_mock(
         "test_data/entity_id.json", requests_mock, mock_url
     )
@@ -330,7 +336,8 @@ def _get_entities_incidents(create_time):
             "name": "XM Asset at risk - Deployer",
             "severity": SEVERITY.Low,
             "create_time": create_time,
-            "linkToReport": "https://test.com/#/report/entity/azureUser-5d49400b-bc26-4d36-8cff-640d1eeb6465?timeId=timeAgo_days_7",
+            "linkToReport": "https://test.com/#/report/entity/"
+            "azureUser-5d49400b-bc26-4d36-8cff-640d1eeb6465?timeId=timeAgo_days_7",
             "type": XM_CYBER_INCIDENT_TYPE_ASSET,
         },
         {
@@ -401,7 +408,8 @@ def _get_entities_incidents(create_time):
             "name": "XM Asset at risk - testwinvm2",
             "severity": SEVERITY.Low,
             "create_time": create_time,
-            "linkToReport": "https://test.com/#/report/entity/azureVirtualMachine-4be55d60-136f-4410-9b0b-26f192e941ad?timeId=timeAgo_days_7",
+            "linkToReport": "https://test.com/#/report/entity/"
+            "azureVirtualMachine-4be55d60-136f-4410-9b0b-26f192e941ad?timeId=timeAgo_days_7",
             "type": XM_CYBER_INCIDENT_TYPE_ASSET,
         },
         {
@@ -472,7 +480,8 @@ def _get_entities_incidents(create_time):
             "name": "XM Asset at risk - testwinvm",
             "severity": SEVERITY.Low,
             "create_time": create_time,
-            "linkToReport": "https://test.com/#/report/entity/azureVirtualMachine-9f9a1625-aa36-428c-b6bd-e9c7c476510a?timeId=timeAgo_days_7",
+            "linkToReport": "https://test.com/#/report/entity/"
+            "azureVirtualMachine-9f9a1625-aa36-428c-b6bd-e9c7c476510a?timeId=timeAgo_days_7",
             "type": XM_CYBER_INCIDENT_TYPE_ASSET,
         },
         {
@@ -786,13 +795,13 @@ def _get_top_techniques_incidents(create_time):
                     "type": "Remediation",
                 },
                 {
-                    "text": "Block LLMNR (UDP port 5355) and NetBIOS (UDP port 137) traffic using endpoint security software on the "
-                    "following computers:",
+                    "text": "Block LLMNR (UDP port 5355) and NetBIOS (UDP port 137) traffic "
+                    "using endpoint security software on the following computers:",
                     "type": "Remediation",
                 },
                 {
-                    "text": "Disable LLMNR (using local computer policy settings or by group policy) and NetBIOS (by changing each "
-                    "interface settings) on the the following computers:",
+                    "text": "Disable LLMNR (using local computer policy settings or by "
+                    "group policy) and NetBIOS (by changing each interface settings) on the the following computers:",
                     "type": "Remediation",
                 },
                 {
@@ -863,13 +872,14 @@ def _get_top_techniques_incidents(create_time):
                     "type": "Remediation",
                 },
                 {
-                    "text": "Block LLMNR (UDP port 5355) and NetBIOS (UDP port 137) traffic using endpoint security software on the "
+                    "text": "Block LLMNR (UDP port 5355) and NetBIOS (UDP port 137) "
+                    "traffic using endpoint security software on the "
                     "following computers:",
                     "type": "Remediation",
                 },
                 {
-                    "text": "Disable LLMNR (using local computer policy settings or by group policy) and NetBIOS (by changing each "
-                    "interface settings) on the the following computers:",
+                    "text": "Disable LLMNR (using local computer policy settings or by group policy) "
+                    "and NetBIOS (by changing each interface settings) on the the following computers:",
                     "type": "Remediation",
                 },
                 {
