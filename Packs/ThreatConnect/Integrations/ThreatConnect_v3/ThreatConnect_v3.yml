@@ -911,7 +911,8 @@ script:
       name: page
     - description: The maximum number of results that can be returned. The default is 500.
       name: limit
-    description: Fetches incidents from ThreatConnect.
+    deprecated: true
+    description: Deprecated. Use tc-list-groups instead.
     name: tc-fetch-incidents
     outputs:
     - contextPath: TC.Incident
@@ -1492,28 +1493,6 @@ script:
       name: description
     - description: A comma-separated list of a The tags of the event.
       name: tag
-    - auto: PREDEFINED
-      description: The type of group.
-      name: group_type
-      predefined:
-      - Adversary
-      - Attack Pattern
-      - Campaign
-      - Course of Action
-      - Document
-      - E-mail
-      - Event
-      - Incident
-      - Intrusion Set
-      - Malware
-      - Report
-      - Signature
-      - Tactic
-      - Task
-      - Threat
-      - Tool
-      - Vulnerability
-      required: true
     description: Creates a group based on the "Event" type.
     name: tc-create-event
     outputs:
@@ -1569,18 +1548,8 @@ script:
       description: The ID of the threat.
       type: string
   - arguments:
-    - description: The ID of the group to delete.
+    - description: A comma seprated list of the IDs of the groups we want to to delete.
       name: groupID
-      required: true
-    - auto: PREDEFINED
-      description: The type of the group to delete. Can be "Incidents", "Events",
-        "Campaigns", or "Threats".
-      name: type
-      predefined:
-      - Incidents
-      - Events
-      - Campaigns
-      - Threats
       required: true
     description: Deletes a group.
     name: tc-delete-group
@@ -1597,7 +1566,7 @@ script:
       name: attribute_value
       required: true
     deprecated: true
-    description: Adds an attribute to a specified group.
+    description: Deprecated, replaced by tc-update-group.
     name: tc-add-group-attribute
     outputs:
     - contextPath: TC.Group.DateAdded
@@ -1686,7 +1655,7 @@ script:
       - Tool
       - Vulnerability
     deprecated: true
-    description: Returns all groups, filtered by the group type.
+    description: Deprecated, replaced by tc-list-groups.
     name: tc-get-groups
     outputs:
     - contextPath: TC.Group.DateAdded
@@ -1765,7 +1734,7 @@ script:
     - description: Add all group metadata to the results.
       name: includeAllMetaData
       type: bool
-    description: Returns all groups, filtered by the group type.
+    description: Returns all groups.
     name: tc-list-groups
     outputs:
     - contextPath: TC.Group.DateAdded
@@ -1792,22 +1761,6 @@ script:
       name: id
       required: true
     - auto: PREDEFINED
-      description: The type of the group to which to add the security label. Can be
-        "adversaries", "campaigns", "documents", "emails", "events", "incidents",
-        "intrusionSets", "reports", "signatures", or "threats".
-      name: group_type
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
-    - auto: PREDEFINED
       description: The security label applied to the document. Can be "TLP:RED", "TLP:GREEN",
         "TLP:AMBER", or "TLP:WHITE".
       name: security_label
@@ -1818,7 +1771,7 @@ script:
       - TLP:WHITE
       required: true
     deprecated: true
-    description: Adds a security label to a group.
+    description: Deprecated, replaced by tc-update-group.
     name: tc-add-group-security-label
   - arguments:
     - description: The ID of the group to which to add the tag. To get the ID, run
@@ -1865,7 +1818,7 @@ script:
       name: id
       required: true
     deprecated: true
-    description: Associates an indicator with a group.
+    description: Deprecated, replaced by tc-update-group.
     name: tc-group-associate-indicator
     outputs:
     - contextPath: TC.Group.GroupID
@@ -1927,35 +1880,12 @@ script:
       description: The ID of the group to which the attribute was added.
       type: Number
   - arguments:
-    - auto: PREDEFINED
-      description: The type of group for which to return the ID. Can be "adversaries",
-        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
-        "reports", "signatures", or "threats".
-      name: group_type
-      predefined:
-      - Adversary
-      - Attack Pattern
-      - Campaign
-      - Course of Action
-      - Document
-      - E-mail
-      - Event
-      - Incident
-      - Intrusion Set
-      - Malware
-      - Report
-      - Signature
-      - Tactic
-      - Task
-      - Threat
-      - Tool
-      - Vulnerability
     - description: The ID of the group to retrieve. To get the ID, run the tc-get-groups
         command.
       name: id
       required: true
     deprecated: true
-    description: Retrieves a single group.
+    description: Deprecated, replaced by tc-list-groups.
     name: tc-get-group
     outputs:
     - contextPath: TC.Group.DateAdded
@@ -1980,29 +1910,12 @@ script:
       description: The status of the group.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The type of group for which to return the attribute. Can be "adversaries",
-        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
-        "reports", "signatures", or "threats".
-      name: group_type
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
-      required: true
     - description: The ID of the group for which to return the attribute. To get the
         ID, run the tc-get-groups command.
       name: group_id
       required: true
     deprecated: true
-    description: Retrieves the attribute of a group.
+    description: Deprecated, replaced by tc-list-groups.
     name: tc-get-group-attributes
     outputs:
     - contextPath: TC.Group.Attribute.DateAdded
@@ -2029,7 +1942,7 @@ script:
       name: id
       required: true
     deprecated: true
-    description: Retrieves the security labels of a group.
+    description: Deprecated, replaced by tc-list-groups.
     name: tc-get-group-security-labels
     outputs:
     - contextPath: TC.Group.SecurityLabel.Name
@@ -2047,7 +1960,7 @@ script:
       name: id
       required: true
     deprecated: true
-    description: Retrieves the tags of a group.
+    description: Deprecated, replaced by tc-list-groups.
     name: tc-get-group-tags
     outputs:
     - contextPath: TC.Group.Tag.Name
@@ -2096,7 +2009,7 @@ script:
       name: id
       required: true
     deprecated: true
-    description: Returns indicators associated with a group.
+    description: Deprecated. Use tc-list-groups instead.
     name: tc-get-group-indicators
     outputs:
     - contextPath: TC.Group.Indicator.Summary
@@ -2127,28 +2040,6 @@ script:
       description: The date that the indicator was last modified.
       type: Date
   - arguments:
-    - auto: PREDEFINED
-      description: The type of group.
-      name: group_type
-      predefined:
-      - Adversary
-      - Attack Pattern
-      - Campaign
-      - Course of Action
-      - Document
-      - E-mail
-      - Event
-      - Incident
-      - Intrusion Set
-      - Malware
-      - Report
-      - Signature
-      - Tactic
-      - Task
-      - Threat
-      - Tool
-      - Vulnerability
-      required: true
     - description: The ID of the group. To get the ID, run the tc-list-groups command.
       name: id
       required: true
@@ -2179,7 +2070,7 @@ script:
       name: associated_group_id
       required: true
     deprecated: true
-    description: Associates one group with another group.
+    description: Deprecated. Use tc-update-group instead.
     name: tc-associate-group-to-group
     outputs:
     - contextPath: TC.Group.AssociatedGroup.AssociatedGroupID

@@ -266,20 +266,15 @@ def get_file_indicators(client: Client) -> list:
 
 def tc_delete_group_command(client: Client) -> Any:  # pragma: no cover
     args = demisto.args()
-    group_id = args.get('groupID')
-    group_type = args.get('type')
-    tql = f'typeName EQ "{group_type}"'
-    tql = urllib.parse.quote(tql.encode('utf8'))
-    url = f'/api/v3/groups/{group_id}?tql={tql}'
-    response, status_code = client.make_request(Method.DELETE, url)
-    if status_code == 200 and response.get('status') == 'Success':
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': '{} {} deleted Successfully'.format(group_type.lower(), group_id)
-        })
-    else:
-        return_error('Failed to delete {} {}'.format(group_type, group_id))
+    group_ids = args.get('groupID').split(',')
+    for id in group_ids:
+        url = f'/api/v3/groups/{id}'
+        client.make_request(Method.DELETE, url)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': '{} was deleted Successfully'.format(group_ids)
+    })
 
 
 def tc_get_indicators_command(client: Client, confidence_threshold: str = '', rating_threshold: str = '',
@@ -451,6 +446,7 @@ def tc_fetch_incidents_command(client: Client) -> None:  # pragma: no cover
 
     demisto.results({
         'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
         'Contents': groups,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Incidents:', groups, headerTransform=pascalToSpace),
@@ -468,7 +464,8 @@ def tc_get_incident_associate_indicators_command(client: Client) -> None:  # pra
         return_error('Error from the API: ' + response.get('message',
                                                            'An error has occurred if it persist please contact your local help desk'))
     groups = (response.get('data'))
-
+    if not groups:
+        return_error('No incident groups were found for the given arguments')
     ec, indicators = create_context(groups[0].get('associatedIndicators', {}).get('data', []),
                                     include_dbot_score=True)
     demisto.results({
@@ -519,7 +516,7 @@ def tc_create_event_command(client: Client) -> None:  # pragma: no cover
     tags = args.get('tag')
     description = args.get('description', '')
     status = args.get('status', 'New')
-    group_type = args.get('group_type')
+    group_type = 'Event'
     event_date = args.get('eventDate', '')
     name = args.get('name')
     tags_list = []
@@ -1229,7 +1226,7 @@ def tc_download_report(client: Client):  # pragma: no cover
     group_id = args.get('group_id')
     url = f'/api/v3/groups/{group_id}/pdf'
     response = client.make_request(Method.GET, url, parse_json=False)
-    file_entry = fileResult(filename=f'report_{group_id}.pdf', data=response.content)
+    file_entry = fileResult(filename=f'report_{group_id}.pdf', data=response.content, file_type=9)
     demisto.results(file_entry)
 
 
@@ -1426,6 +1423,37 @@ def get_group_indicators(client: Client) -> None:  # pragma: no cover
     )
 
 
+def get_group_attributes(client: Client) -> None:  # pragma: no cover
+    response, status_code = list_groups(client, return_raw=True, include_attributes=True)
+    if status_code != 200:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
+    attributes = response.get('data')[0].get('attributes', {}).get('data', [])
+    contents = []
+    headers = ['AttributeID', 'Type', 'Value', 'DateAdded', 'LastModified', 'Displayed']
+    for attribute in attributes:
+        contents.append({
+            'GroupID': demisto.args().get('id'),
+            'AttributeID': attribute.get('id'),
+            'Type': attribute.get('type'),
+            'Value': attribute.get('value'),
+            'DateAdded': attribute.get('dateAdded'),
+            'LastModified': attribute.get('lastModified'),
+            'Displayed': attribute.get('displayed')
+        })
+
+    context = {
+        'TC.Group.Attribute(val.GroupID && val.GroupID === obj.GroupID && val.AttributeID && val.AttributeID ==='
+        ' obj.AttributeID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Group Attributes', contents, headers, removeNull=True),
+        context,
+        response
+    )
+
+
 def get_group_security_labels(client: Client) -> None:  # pragma: no cover
     response, status_code = list_groups(client, return_raw=True, include_security_labels=True)
     if status_code != 200:
@@ -1475,6 +1503,7 @@ COMMANDS = {
     'tc-get-groups': get_groups,
     'tc-get-group-tags': get_group_tags,
     'tc-get-group-indicators': get_group_indicators,
+    'tc-get-group-attributes': get_group_attributes,
     'tc-get-group-security-labels': get_group_security_labels,
     'tc-list-groups': list_groups,
     'tc-owners': tc_get_owners_command,
