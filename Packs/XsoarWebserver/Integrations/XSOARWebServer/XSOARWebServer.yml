@@ -26,7 +26,7 @@ description: 'This is a simple web-server that as of now, supports handling conf
   tasks is that, the URL to perform a certain action is predictable and written to
   the incident context when an action is setup. This URL can be inserted to for eg:
   an HTML email.  User clicks are  are recorded in the integration context and can
-  be polled by Scheduled Commands/ Generic Polling'
+  be polled by Scheduled Commands / Generic Polling'
 display: XSOAR-Web-Server
 name: XSOAR-Web-Server
 script:
