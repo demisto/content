@@ -1699,8 +1699,8 @@ class Pack(object):
 
         if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
             # Will return that the pack should not be uploaded if the two followings are true:
-            1. All the detected changes are for items that also belong to another MP and therefore to be sure that the changes are not relevant to this MP so we will need to check the RN to be sure (item #2).
-            2. No release notes relevant to the current marketplace (which means that the changes are relevant to the other marketplace).
+            # 1. All the detected changes are for items that also belong to another MP and therefore to be sure that the changes are not relevant to this MP so we will need to check the RN to be sure (item #2).
+            # 2. No release notes relevant to the current marketplace (which means that the changes are relevant to the other marketplace).
             logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
                           f"marketplace")
             return {}, True
@@ -1722,7 +1722,10 @@ class Pack(object):
             (bool) True, if all the files are relevant to more than one marketplace.
                    False, if there is an item that is relevant only to the current marketplace.
         """
-        modified_items = [list(item.values())[0] for data in modified_files_data.values() for item in data]
+        modified_items = []
+
+        for entities_data in modified_files_data.values():
+            modified_items.extend([list(item.values())[0] for item in entities_data])
 
         for item in modified_items:
             if len(item['marketplaces']) == 1:
