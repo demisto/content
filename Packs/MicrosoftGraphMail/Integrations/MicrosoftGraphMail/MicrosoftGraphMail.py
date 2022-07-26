@@ -1125,7 +1125,8 @@ class MsGraphClient:
             attachments_more_than_3mb (list[dict]): data information about the large attachments.
             reply_message_id (str): message ID in case sending a reply to an existing message.
         """
-        created_draft = self.create_draft(email=email, json_data=json_data, reply_message_id=reply_message_id)  # create the draft email
+        # create the draft email
+        created_draft = self.create_draft(email=email, json_data=json_data, reply_message_id=reply_message_id)
         draft_id = created_draft.get('id')
         self.add_attachments_via_upload_session(  # add attachments via upload session.
             email=email, draft_id=draft_id, attachments=attachments_more_than_3mb
