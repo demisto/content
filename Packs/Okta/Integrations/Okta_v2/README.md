@@ -2273,7 +2273,7 @@ For more information about filtering, visit https://developer.okta.com/docs/api/
 | Account.Activated | Date | Timestamp for when the user was activated. | 
 | Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
 | Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
-| Okta.Users.tag| String | The location of the next item, used with after param. |
+| Okta.User.tag| String | The location of the next item, used with after param. |
 
 
 #### Command Example
