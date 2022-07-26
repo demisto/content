@@ -731,7 +731,8 @@ class Pack(object):
             build_number_with_prefix if build_number_with_prefix else \
             changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
-        changelog_entry[Changelog.RELEASE_NOTES] = self.filter_release_notes_by_tags(release_notes or changelog_entry[Changelog.RELEASE_NOTES], marketplace)
+        changelog_entry[Changelog.RELEASE_NOTES] = self.filter_release_notes_by_tags(
+            release_notes or changelog_entry[Changelog.RELEASE_NOTES], marketplace)
         changelog_entry[Changelog.DISPLAY_NAME] = f'{version_display_name} - {build_number_with_prefix}'
         changelog_entry[Changelog.RELEASED] = released_time if released_time else changelog_entry[Changelog.RELEASED]
         changelog_entry[Changelog.PULL_REQUEST_NUMBERS] = pull_request_numbers
@@ -1699,8 +1700,8 @@ class Pack(object):
                                                                                     modified_files_data)
 
         if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
-            # In case all release notes were filtered out, verify that it also makes sense - by checking that the 
-            # modified files are actually relevant for the other marketplace. 
+            # In case all release notes were filtered out, verify that it also makes sense - by checking that the
+            # modified files are actually relevant for the other marketplace.
             logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
                           f"marketplace")
             return {}, True
