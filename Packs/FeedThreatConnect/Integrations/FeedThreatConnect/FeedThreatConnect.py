@@ -4,17 +4,13 @@
 # STD packages
 import hashlib
 import hmac
-import json
-from enum import Enum
-from typing import Dict, Tuple, Any, Optional, List, Union, Iterator
-from itertools import islice
-from math import ceil
 from contextlib import contextmanager
+from enum import Enum
+from math import ceil
+from typing import Tuple
 
 # Local packages
-import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 #########
 # Notes #
@@ -150,7 +146,7 @@ class Client:
 ######################
 
 
-def module_test_command(client: Client) -> COMMAND_OUTPUT:
+def module_test_command(client: Client):
     """ Test module - Get 4 indicators from ThreatConnect.
 
     Args:
@@ -163,12 +159,12 @@ def module_test_command(client: Client) -> COMMAND_OUTPUT:
     """
     url = '/api/v3/groups?resultLimit=4'
     response, status_code = client.make_request(Method.GET, url)
-    t = json.dumps(response.get('data'))
     if status_code == 200:
         return "ok", {}, {}
     else:
         return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your local help desk'))
+                                                           'An error has occurred if it persist please contact your '
+                                                           'local help desk'))
 
 
 def set_fields_query(fields: list) -> str:
@@ -194,19 +190,19 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:
     group_type = f'AND ({create_or_query(demisto.params().get("group_type", "Incident"), "typeName")}) '
     first_fetch_time = demisto.getParam("first_fetch_time")
     if first_fetch_time:
-        first_fetch_time = dateparser.parse(demisto.getParam('first_fetch_time').strip()).strftime("%Y-%m-%d")
+        first_fetch_time = dateparser.parse(demisto.getParam('first_fetch_time').strip()).strftime("%Y-%m-%d")  # type: ignore # noqa
         from_date = f'AND (dateAdded > "{first_fetch_time}") '
     page = 0
     tql = f'{owners if owners != "AND () " else ""}{tags if tags != "AND () " else ""}' \
           f'{group_type if group_type != "AND () " else ""}{status if status != "AND () " else ""}' \
           f'{from_date if from_date != "AND () " else ""}'.replace('AND', '', 1)
     if tql:
-        tql = urllib.parse.quote(tql.encode('utf8'))
+        tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
         tql = f'?tql={tql}'
     else:
         tql = ''
         if fields:
-            fields = fields.replace('&', '?', 1)
+            fields = fields.replace('&', '?', 1)  # type: ignore
     url = f'/api/v3/groups{tql}{fields}&resultStart={page}&resultLimit=500'
     indicators = []
     while True:
@@ -219,7 +215,8 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:
                 break
         else:
             return_error('Error from the API: ' + response.get('message',
-                                                               'An error has occurred if it persist please contact your local help desk'))
+                                                               'An error has occurred if it persist please contact '
+                                                               'your local help desk'))
 
     return [parse_indicator(indicator) for indicator in indicators]
 
@@ -234,7 +231,7 @@ def create_or_query(delimiter_str: str, param_name: str) -> str:
     return query[:len(query) - 3]
 
 
-def get_indicators_command(client: Client) -> COMMAND_OUTPUT:
+def get_indicators_command(client: Client):  # pragma: no cover
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
 
     Args:
@@ -249,21 +246,22 @@ def get_indicators_command(client: Client) -> COMMAND_OUTPUT:
     offset = demisto.args().get('offset', '0')
     owners = demisto.getArg('owners') or demisto.getParam('owners')
     owners = create_or_query(owners, "ownerName")
-    owners = urllib.parse.quote(owners.encode('utf8'))
+    owners = urllib.parse.quote(owners.encode('utf8'))  # type: ignore
     url = f'/api/v3/indicators?tql={owners}&resultStart={offset}&resultLimit={limit}'
 
     response, status_code = client.make_request(Method.GET, url)
     if status_code == 200:
         readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
-                                               t=[parse_indicator(indicator) for indicator in response.get('data')])
+                                               t=[parse_indicator(indicator) for indicator in response.get('data')])  # type: ignore # noqa
 
         return readable_output, {}, list(response.get('data'))
     else:
         return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your local help desk'))
+                                                           'An error has occurred if it persist please contact your '
+                                                           'local help desk'))
 
 
-def get_owners_command(client: Client) -> COMMAND_OUTPUT:
+def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
     """ Get availble indicators owners from ThreatConnect - Help configure ThreatConnect Feed integraiton.
 
     Args:
@@ -274,12 +272,13 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    url = f'/api/v3/security/owners?resultLimit=500'
+    url = '/api/v3/security/owners?resultLimit=500'
 
     response, status_code = client.make_request(Method.GET, url)
     if status_code != 200:
         return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your local help desk'))
+                                                           'An error has occurred if it persist please contact your '
+                                                           'local help desk'))
     raw_response = response.get('data')
     readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Owners",
                                            t=list(raw_response))
@@ -287,7 +286,7 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
     return readable_output, {}, list(raw_response)
 
 
-def main():
+def main():  # pragma: no cover
     insecure = not demisto.getParam('insecure')
     client = Client(demisto.getParam('api_access_id'), demisto.getParam('api_secret_key').get('password'),
                     demisto.getParam('tc_api_path'), insecure)

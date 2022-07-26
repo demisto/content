@@ -2,6 +2,7 @@ import json
 
 import pytest
 import demistomock as demisto
+from Packs.FeedThreatConnect.Integrations.FeedThreatConnect.FeedThreatConnect import create_or_query
 
 
 def load_json_file(path):
@@ -36,3 +37,7 @@ def test_parse_indicator_with_tlp(mocker, datadir):
 
     mocker.patch.object(demisto, 'params', return_value={'tlp_color': 'AMBER'})
     assert expected_result == parse_indicator(load_json_file(datadir['indicators.json']))
+
+
+def test_create_or_query():
+    assert create_or_query('1,2,3,4,5', 'test') == 'test="1" OR test="2" OR test="3" OR test="4" OR test="5" '

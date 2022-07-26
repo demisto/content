@@ -323,7 +323,7 @@ def tc_get_indicators_command(client: Client, confidence_threshold: str = '', ra
     fields = set_fields({'associatedGroups': group_associations, 'associatedIndicators': indicator_associations,
                          'observations': indicator_observations, 'tags': indicator_tags,
                          'attributes': indicator_attributes})
-    tql = f'{indicator_id}{owners}{tag}{confidence_threshold}{rating_threshold}'.replace(' AND ', '', 1)
+    tql = f'{indicator_id}{indicator_type}{owners}{tag}{confidence_threshold}{rating_threshold}'.replace(' AND ', '', 1)
     tql = urllib.parse.quote(tql.encode('utf8'))
     url = f'/api/v3/indicators{tql_prefix}{tql}{fields}&resultStart={page}&resultLimit={limit}'
     if not tql_prefix:
@@ -575,7 +575,7 @@ def set_fields(fields) -> str:  # pragma: no cover
     fields_str = ''
     if fields.get('include_all_metadata', None):
         return '&fields=tags&fields=associatedIndicators&fields=associatedGroups&fields=securityLabels'
-        del fields['include_all_metadata']
+    del fields['include_all_metadata']
     for arg in fields:
         if fields[arg] and fields[arg] != 'false':
             fields_str += f'&fields={arg}'
