@@ -615,7 +615,7 @@ class TestNoChange:
         get_modified_files_ret = create_get_modified_files_ret()
         filterd_tests, content_packs = get_mock_test_list(get_modified_files_ret, mocker)
 
-        assert content_packs == {"Gmail", "HelloWorld", "Base", "DeveloperTools"}
+        assert content_packs == {"Gmail", "HelloWorld", "Base", "DeveloperTools", "Whois"}
 
 
 def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=None, changed_common=None,
