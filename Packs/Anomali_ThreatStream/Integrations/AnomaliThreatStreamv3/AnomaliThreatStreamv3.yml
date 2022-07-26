@@ -9,7 +9,6 @@ configuration:
   required: true
   type: 0
 - display: Username
-  displaypassword: API Key
   name: credentials
   required: true
   type: 9
@@ -29,14 +28,14 @@ configuration:
   name: file_threshold
   required: false
   type: 0
-- display: Email threshold
-  additionalinfo: Email indicators with confidence value above this threshold are
+- additionalinfo: Email indicators with confidence value above this threshold are
     considered malicious.
+  display: Email threshold
   name: email_threshold
   required: false
   type: 0
-- defaultvalue: 'false'
-  additionalinfo: Whether to include inactive indicators in reputation commands.
+- additionalinfo: Whether to include inactive indicators in reputation commands.
+  defaultvalue: 'false'
   display: Include inactive results
   name: include_inactive
   required: false
@@ -64,13 +63,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'true'
-  additionalinfo: Create relationships between indicators as part of enrichment.
+- additionalinfo: Create relationships between indicators as part of enrichment.
+  defaultvalue: 'true'
   display: Create relationships
   name: create_relationships
   required: false
   type: 8
-defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v3
 name: Anomali ThreatStream v3
@@ -84,14 +82,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: If confidence is greater than the threshold the IP address
-        is considered malicious, otherwise it is considered good. This argument
-        overrides the default IP threshold defined as a parameter.
+      description: If confidence is greater than the threshold the IP address is considered
+        malicious, otherwise it is considered good. This argument overrides the default
+        IP threshold defined as a parameter.
       isArray: false
       name: threshold
       required: false
       secret: false
     - auto: PREDEFINED
+      default: false
       description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
@@ -142,9 +141,8 @@ script:
       description: The indicator type.
       type: String
     - contextPath: ThreatStream.IP.Modified
-      description: 'The time the indicator was last updated. The date format
-        is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time in
-        UTC time.'
+      description: 'The time the indicator was last updated. The date format is: YYYYMMDDThhmmss,
+        where "T" denotes the start of the value for time in UTC time.'
       type: String
     - contextPath: ThreatStream.IP.Severity
       description: The indicator severity ("very-high", "high", "medium", or "low").
@@ -186,14 +184,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: If confidence is greater than the threshold the Domain is
-        considered malicious, otherwise it is considered good. This argument 
-        overrides the default Domain threshold defined as a parameter.
+      description: If confidence is greater than the threshold the Domain is considered
+        malicious, otherwise it is considered good. This argument overrides the default
+        Domain threshold defined as a parameter.
       isArray: false
       name: threshold
       required: false
       secret: false
     - auto: PREDEFINED
+      default: false
       description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
@@ -301,14 +300,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the confidence is greater than the threshold the hash of the file 
-        is considered malicious, otherwise it is considered good.
-        This argument overrides the default file threshold defined as a parameter.
+      description: If the confidence is greater than the threshold the hash of the
+        file is considered malicious, otherwise it is considered good. This argument
+        overrides the default file threshold defined as a parameter.
       isArray: false
       name: threshold
       required: false
       secret: false
     - auto: PREDEFINED
+      default: false
       description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
@@ -402,14 +402,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the confidence is greater than the threshold the email
-        address is considered malicious, otherwise it is considered good.
-        This argument overrides the default email threshold defined as a parameter.
+      description: If the confidence is greater than the threshold the email address
+        is considered malicious, otherwise it is considered good. This argument overrides
+        the default email threshold defined as a parameter.
       isArray: false
       name: threshold
       required: false
       secret: false
     - auto: PREDEFINED
+      default: false
       description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
@@ -536,7 +537,11 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: exploit
-      description: Type of threat associated with the imported observables. Can be "adware", "anomalous", "anonymization", "apt", "bot", "brute", "c2", "compromised", "crypto", "data_leakage", "ddos", "dyn_dns", "exfil", "exploit", "hack_tool", "i2p", "informational", "malware", "p2p", "parked", "phish", "scan", "sinkhole", "spam", "suppress", "suspicious", "tor", or "vps".
+      description: Type of threat associated with the imported observables. Can be
+        "adware", "anomalous", "anonymization", "apt", "bot", "brute", "c2", "compromised",
+        "crypto", "data_leakage", "ddos", "dyn_dns", "exfil", "exploit", "hack_tool",
+        "i2p", "informational", "malware", "p2p", "parked", "phish", "scan", "sinkhole",
+        "spam", "suppress", "suspicious", "tor", or "vps".
       isArray: false
       name: threat_type
       predefined:
@@ -645,8 +650,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Imports indicators (observables) into ThreatStream. The imported data must be approved using the ThreatStream UI. The data can be imported
-      using one of three methods: plain-text, file, or URL.'
+    description: 'Imports indicators (observables) into ThreatStream. The imported
+      data must be approved using the ThreatStream UI. The data can be imported using
+      one of three methods: plain-text, file, or URL.'
     execution: false
     name: threatstream-import-indicator-with-approval
   - arguments:
@@ -666,15 +672,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time stamp when intelligence will expire on ThreatStream,
-        in ISO format. For example, 2020-12-24T00:00:00.
+      description: The time stamp when intelligence will expire on ThreatStream, in
+        ISO format. For example, 2020-12-24T00:00:00.
       isArray: false
       name: expiration_ts
       required: false
       secret: false
     - default: false
-      description: The severity to assign to the observable when it is imported.
-        Can be "low", "medium", "high" , or "very-high".
+      description: The severity to assign to the observable when it is imported. Can
+        be "low", "medium", "high" , or "very-high".
       isArray: false
       name: severity
       predefined:
@@ -691,8 +697,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of trusted circle IDs with which threat data should
-        be shared.
+      description: A comma-separated list of trusted circle IDs with which threat
+        data should be shared.
       isArray: false
       name: trustedcircles
       required: false
@@ -710,7 +716,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether unresolved domain observables are included in the file will be accepted as valid in ThreatStream and imported.
+      description: Whether unresolved domain observables are included in the file
+        will be accepted as valid in ThreatStream and imported.
       isArray: false
       name: allow_unresolved
       predefined:
@@ -719,7 +726,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room.
+      description: The entry ID of a file (containing a JSON with an "objects" array
+        and "meta" maps) that is uploaded to the War Room.
       isArray: false
       name: file_id
       required: true
@@ -749,9 +757,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limits the model size list. Specifying limit=0 returns up to
-        a maximum of 1000 models. For limit=0, the output is not set in the
-        context.
+      description: Limits the model size list. Specifying limit=0 returns up to a
+        maximum of 1000 models. For limit=0, the output is not set in the context.
       isArray: false
       name: limit
       required: false
@@ -870,7 +877,8 @@ script:
       description: The country of the indicator associated with the specified model
       type: String
     - contextPath: ThreatStream.Model.Indicators.Organization
-      description: The organization of the indicator associated with the specified model.
+      description: The organization of the indicator associated with the specified
+        model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.ASN
       description: The ASN of the indicator associated with the specified model.
@@ -905,9 +913,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: WINDOWS7
-      description: The platform on which the submitted URL or file is run. To
-        obtain a list supported platforms run the threatstream-supported-platforms
-        command. Can be "WINDOWS7", or "WINDOWSXP".
+      description: The platform on which the submitted URL or file is run. To obtain
+        a list supported platforms run the threatstream-supported-platforms command.
+        Can be "WINDOWS7", or "WINDOWSXP".
       isArray: false
       name: report_platform
       predefined:
@@ -973,8 +981,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns the current status of the report submitted to the
-      sandbox. The report ID is returned from the threatstream-submit-to-sandbox command.
+    description: Returns the current status of the report submitted to the sandbox.
+      The report ID is returned from the threatstream-submit-to-sandbox command.
     execution: false
     name: threatstream-get-analysis-status
     outputs:
@@ -982,14 +990,15 @@ script:
       description: The report ID of the file or URL that was detonated in the sandbox.
       type: String
     - contextPath: ThreatStream.Analysis.Status
-      description: The report status of the file or URL that was detonated in the sandbox.
+      description: The report status of the file or URL that was detonated in the
+        sandbox.
       type: String
     - contextPath: ThreatStream.Analysis.Platform
       description: The platform used for detonation.
       type: String
     - contextPath: ThreatStream.Analysis.Verdict
-      description: The report verdict of the file or URL detonated in the
-        sandbox. The verdict remains "benign" until detonation is complete.
+      description: The report verdict of the file or URL detonated in the sandbox.
+        The verdict remains "benign" until detonation is complete.
       type: String
   - arguments:
     - default: false
@@ -1557,14 +1566,15 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If confidence is greater than the threshold the URL is
-        considered malicious, otherwise it is considered good. This argument 
-        overrides the default URL threshold defined as a parameter.
+      description: If confidence is greater than the threshold the URL is considered
+        malicious, otherwise it is considered good. This argument overrides the default
+        URL threshold defined as a parameter.
       isArray: false
       name: threshold
       required: false
       secret: false
     - auto: PREDEFINED
+      default: false
       description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
@@ -1639,6 +1649,246 @@ script:
     - contextPath: URL.ThreatTypes
       description: Threat types associated with the url.
       type: Unknown
+  - arguments:
+    - default: false
+      description: The value of an intelligence.
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    - default: false
+      description: The uuid of an intelligence. When several uuids stated, an “OR”
+        operator is used
+      isArray: true
+      name: uuid
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of an intelligence.
+      isArray: false
+      name: type
+      predefined:
+      - domain
+      - email
+      - ip
+      - md5
+      - string
+      - url
+      required: false
+      secret: false
+    - default: false
+      description: The itype of an intelligence.
+      isArray: false
+      name: itype
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of an intelligence.
+      isArray: false
+      name: status
+      predefined:
+      - active
+      - inactive
+      - falsepos
+      required: false
+      secret: false
+    - default: false
+      description: The tags of an intelligence. Comma-seperated list. When several
+        tags stated, an “OR” operator is used
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: The ASN of an intelligence.
+      isArray: false
+      name: asn
+      required: false
+      secret: false
+    - default: false
+      description: The confidence of an intelligence. Input will be operator then
+        value, I.e. “gt 65” or “lt 85”. If only value is stated, then we use exact.
+      isArray: false
+      name: confidence
+      required: false
+      secret: false
+    - default: false
+      description: The threat type of an intelligence.
+      isArray: false
+      name: threat_type
+      required: false
+      secret: false
+    - default: false
+      description: Is the intelligence public or not.
+      isArray: false
+      name: is_public
+      required: false
+      secret: false
+    - default: false
+      description: Query that overrides all other arguments. The filter operators
+        used for the filter language query are the symbolic form (=, <, >, and so
+        on) and not the descriptive form (exact, lt, gt, and so on). For more information,
+        see page 19 in API documentation
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: If specified, then it is recommended to use order_by=update_id
+      isArray: false
+      name: update_id_gt
+      required: false
+      secret: false
+    - default: false
+      description: How to order the results.
+      isArray: false
+      name: order_by
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return from ThreatStream. Default
+        is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Page number to get result from. Needs to be used with page_size
+        argument.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The page size of the returned results. Needs to be used with the
+        page argument.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Return filtered intelligence from ThreatStream. If a query is defined,
+      it overrides all other arguments that were passed to the command.
+    execution: false
+    name: threatstream-search-intelligence
+    outputs:
+    - contextPath: ThreatStream.Intelligence.SourceCreated
+      description: The Source from which the intelligence was created.
+      type: String
+    - contextPath: ThreatStream.Intelligence.Status
+      description: The status of the intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.IType
+      description: The itype of the intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.ExpirationTS
+      description: The Expiration timestamp  of the intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.IP
+      description: The IP  of the intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.IsEditable
+      description: Is the Intelligence editable.
+      type: Boolean
+    - contextPath: ThreatStream.Intelligence.FeedID
+      description: The feed ID of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.UpdateID
+      description: The update ID of the Intelligence
+      type: String
+    - contextPath: ThreatStream.Intelligence.Value
+      description: The value of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.IsPublic
+      description: Is the Intelligence public.
+      type: Boolean
+    - contextPath: ThreatStream.Intelligence.ThreatType
+      description: The threat type of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.WorkGroups
+      description: The work groups of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.Confidence
+      description: The confidence of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.UUID
+      description: The uuid of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.RetinaConfidence
+      description: The retina confidence of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.TrustedCircleIDs
+      description: The trusted circleIDs of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.ID
+      description: The id of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.Source
+      description: The source of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.OwnerOrganizationID
+      description: The owner organization ID of the intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.ImportSessionID
+      description: The ImportSessionID of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.SourceModified
+      description: Is the source modified or not.
+      type: Boolean
+    - contextPath: ThreatStream.Intelligence.Type
+      description: The type of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.Description
+      description: The description of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.Tags
+      description: The tags of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.Threatscore
+      description: The threat score of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.Latitude
+      description: The latitude of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.Longitude
+      description: The longitude of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.Modified
+      description: When was the intelligence modified.
+      type: String
+    - contextPath: ThreatStream.Intelligence.Organization
+      description: the organization of the Intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.ASN
+      description: The ASN of the intelligence.
+      type: Number
+    - contextPath: ThreatStream.Intelligence.CreatedTime
+      description: When was the intelligence created.
+      type: String
+    - contextPath: ThreatStream.Intelligence.TLP
+      description: The TLP of the intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.IsAnonymous
+      description: Is the intelligence anonymous.
+      type: Boolean
+    - contextPath: ThreatStream.Intelligence.Country
+      description: The country of the intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.SourceReportedConfidence
+      description: The confidence of the reported source.
+      type: String
+    - contextPath: ThreatStream.Intelligence.Subtype
+      description: The subtype of the intelligence.
+      type: String
+    - contextPath: ThreatStream.Intelligence.ResourceURI
+      description: The resource URI of the intelligence
+      type: String
+    - contextPath: ThreatStream.Intelligence.Severity
+      description: The severity of the intelligence.
+      type: String
   dockerimage: demisto/py3-tools:1.0.0.31193
   feed: false
   isfetch: false
@@ -1650,4 +1900,5 @@ script:
   type: python
 tests:
 - ThreatStream-Test
+defaultclassifier: 'null'
 fromversion: 6.0.0

@@ -95,6 +95,47 @@ INDICATOR_EXTENDED_MAPPING = {
     'Severity': 'severity'
 }
 
+INTELLIGENCE_EXTENDED_MAPPING = {
+    'SourceCreated': 'source_created',
+    'Status': 'status',
+    'IType': 'itype',
+    'ExpirationTS': 'expiration_ts',
+    'IP': 'ip',
+    'IsEditable': 'is_editable',
+    'FeedID': 'feed_id',
+    'UpdateID': 'update_id',
+    'Value': 'value',
+    'IsPublic': 'is_public',
+    'ThreatType': 'threat_type',
+    'WorkGroups': 'workgroups',
+    'Confidence': 'confidence',
+    'UUID': 'uuid',
+    'RetinaConfidence': 'retina_confidence',
+    'TrustedCircleIDs': 'trusted_circle_ids',
+    'ID': 'id',
+    'Source': 'source',
+    'OwnerOrganizationID': 'owner_organization_id',
+    'ImportSessionID': 'import_session_id',
+    'SourceModified': 'source_modified',
+    'Type': 'type',
+    'Description': 'description',
+    'Tags': 'tags',
+    'Threatscore': 'threatscore',
+    'Latitude': 'latitude',
+    'Longitude': 'longitude',
+    'Modified': 'modified_ts',
+    'Organization': 'org',
+    'ASN': 'asn',
+    'CreatedTime': 'created_ts',
+    'TLP': 'tlp',
+    'IsAnonymous': 'is_anonymous',
+    'Country': 'country',
+    'SourceReportedConfidence': 'source_reported_confidence',
+    'Subtype': 'subtype',
+    'ResourceURI': 'resource_uri',
+    'Severity': 'severity'
+}
+
 RELATIONSHIPS_MAPPING = {
     'ip': [
         {
@@ -379,6 +420,26 @@ def parse_indicators_list(iocs_list):
                              for (key, ioc_key) in INDICATOR_EXTENDED_MAPPING.items()})
 
     return iocs_context
+
+
+def parse_intelligence_list(intelligence_list):
+    """
+        Parses the indicator list and returns dictionary that will be set to context.
+    """
+    intelligence_context = []
+    for intelligence in intelligence_list:
+        if intelligence.get('type', '') == 'md5':
+            intelligence['type'] = intelligence.get('subtype', '')
+
+        intelligence['severity'] = demisto.get(intelligence, 'meta.severity') or 'low'
+
+        tags = intelligence.get('tags') or []
+        intelligence['tags'] = ",".join(tag.get('name', '') for tag in tags)
+
+        intelligence_context.append({key: intelligence.get(intelligence_key)
+                                     for (key, intelligence_key) in INTELLIGENCE_EXTENDED_MAPPING.items()})
+
+    return intelligence_context
 
 
 def build_model_data(model, name, is_public, tlp, tags, intelligence, description):
@@ -1177,6 +1238,49 @@ def get_indicators(client: Client, **kwargs):
     )
 
 
+def search_intelligence(client: Client, **kwargs):
+    """
+        Returns filtered indicators by parameters from ThreatStream.
+        By default the limit of indicators result is set to 50.
+    """
+    page = kwargs['page'] = int(kwargs.get('page', 0))
+    page_size = kwargs['page_size'] = int(kwargs.get('page_size', 0))
+    if page_size > 0:
+        limit = kwargs['limit'] = page_size
+    else:
+        limit = kwargs['limit'] = int(kwargs.get('limit', 50))
+    offset = kwargs['offset'] = page * page_size
+    url = 'v2/intelligence/'
+    if 'filter_language_query' in kwargs:
+        url += f"?q={kwargs.pop('filter_language_query')}"
+    intelligence_list = client.http_request('GET', url, params=kwargs).get('objects', None)
+    if not intelligence_list:
+        return 'No intelligence found from ThreatStream'
+
+    intelligence_context = parse_intelligence_list(intelligence_list)
+
+    # handle the issue that the API does not return more than 1000 indicators.
+    if limit > 1000:
+        while len(intelligence_context) < limit:
+            offset += len(intelligence_list)
+            kwargs['limit'] = limit
+            kwargs['offset'] = offset
+            intelligence_list = client.http_request("GET", url, params=kwargs).get('objects', None)
+            if intelligence_list:
+                intelligence_context.extend(parse_intelligence_list(intelligence_list))
+            else:
+                break
+
+    intelligence_table = tableToMarkdown('The intelligence results', intelligence_context)
+
+    return CommandResults(
+        outputs_prefix=f'{THREAT_STREAM}.Intelligence',
+        outputs=intelligence_context,
+        readable_output=intelligence_table,
+        raw_response=intelligence_list
+    )
+
+
 def main():
     """
     Initiate integration command
@@ -1220,6 +1324,8 @@ def main():
         'threatstream-update-model': update_model,
         'threatstream-submit-to-sandbox': submit_report,
         'threatstream-add-tag-to-model': add_tag_to_model,
+
+        'threatstream-search-intelligence': search_intelligence,
     }
     try:
 
