@@ -40,7 +40,8 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Other',
-    'resolved_other': 'Other'
+    'resolved_other': 'Other',
+    'resolved_auto': 'Resolved'
 }
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
