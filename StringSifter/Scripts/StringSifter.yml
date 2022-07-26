@@ -30,5 +30,5 @@ script: ''
 system: false
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.5.31797
+dockerimage: devdemisto/stringsifter:1.0.0.32387
 fromversion: 6.1.0
