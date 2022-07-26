@@ -1,0 +1,38 @@
+name: Add PR link to Related Jira Issue
+on:
+  pull_request:
+    types: [opened, edited]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  add_pr_link_to_related_jira_issue:
+    runs-on: ubuntu-latest
+
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]'
+    steps:
+      - name: Checkout
+          uses: actions/checkout@v3
+            - name: Setup Python
+              uses: actions/setup-python@v3
+              with:
+                python-version: '3.9'
+            - name: Setup Poetry
+              uses: Gr1N/setup-poetry@v7
+            - name: Install Python Dependencies
+              run: |
+                poetry install
+      - name: Run Linking pr to Jira Script
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_LINK: ${{ github.event.pull_request.html_url }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          IS_MERGED: False
+          USERNAME: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_USER }}
+          PASSWORD: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_PASSWORD }}
+        run: |
+          echo "Checking for related Jira issues to PR: $PR_NUMBER"
+          cd Utils/github_workflow_scripts
+          poetry run python ./link_pr_to_jira_issue.py --pr_num $PR_NUMBER --pr_link $PR_LINK --pr_title $PR_TITLE --pr_body $PR_BODY --is_merged $IS_MERGED --username $USERNAME --password $PASSWORD
