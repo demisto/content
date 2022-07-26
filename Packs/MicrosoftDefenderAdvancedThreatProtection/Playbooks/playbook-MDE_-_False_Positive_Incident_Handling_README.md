@@ -1,5 +1,5 @@
 This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-This playbook handles false positive incident closure for Microsoft Defender for Endpoint. 
+This playbook handles closing false positive incidents for Microsoft Defender for Endpoint. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
