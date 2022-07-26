@@ -19,6 +19,12 @@ args:
   predefined:
   - "true"
   - "false"
+- default: true
+  description: Demisto REST API instance name to use.
+  isArray: false
+  name: instance_name
+  required: false
+  secret: false
 commonfields:
   id: CustomPackInstaller
   version: -1
