@@ -2942,7 +2942,51 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
     )
 
 
-def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
+@polling_function(
+    name=demisto.command(),
+    interval=demisto.args().get('interval_in_seconds'),
+    timeout=demisto.args().get('polling_timeout')
+)
+def script_run_polling_command(args: dict, client: CoreClient):
+
+    if action_id := args.get('action_id'):
+        response = client.get_script_execution_status(action_id)
+        general_status = response.get('reply', {}).get('general_status') or ''
+        continue_to_poll = general_status.upper() in ('PENDING', 'IN_PROGRESS')
+
+        script_execution_results = get_script_execution_results_command(client, {'action_id': action_id})
+        demisto.log(f'execution result: {script_execution_results}')
+
+        return PollResult(response=script_execution_results, continue_to_poll=continue_to_poll)
+
+    else:
+        script_uid = args.get('script_uid')
+        endpoint_ids = argToList(args.get('endpoint_ids'))
+        polling_timeout = arg_to_number(args.get('polling_timeout'))
+        interval = arg_to_number(args.get('interval_in_seconds'))
+
+        response = get_run_script_execution_response(client, args)
+
+        reply = response.get('reply')
+        action_id = reply.get('action_id')
+
+        return PollResult(
+            response='',
+            continue_to_poll=True,  # if an error is raised from the api, an exception will be raised
+            partial_result=CommandResults(
+                readable_output=f'Waiting for script {script_uid} to finish running '
+                                f'on the following endpoints: {endpoint_ids}...'
+            ),
+            args_for_next_run={
+                'action_id': action_id,
+                'polling': True,
+                'polling_timeout': polling_timeout,
+                'interval_in_seconds': interval
+            }
+        )
+
+
+def get_run_script_execution_response(client: CoreClient, args: Dict):
     script_uid = args.get('script_uid')
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
@@ -2954,7 +2998,11 @@ def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
             raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
     else:
         parameters = {}
-    response = client.run_script(script_uid, endpoint_ids, parameters, timeout, incident_id=incident_id)
+    return client.run_script(script_uid, endpoint_ids, parameters, timeout, incident_id=incident_id)
+
+
+def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
+    response = get_run_script_execution_response(client, args)
     reply = response.get('reply')
     return CommandResults(
         readable_output=tableToMarkdown('Run Script', reply),
