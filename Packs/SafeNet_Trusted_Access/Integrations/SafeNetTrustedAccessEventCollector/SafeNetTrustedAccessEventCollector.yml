@@ -50,7 +50,7 @@ configuration:
   required: false
   type: 8
 description: 'Retrieve access, authentication, and audit logs and store them on a Security Information and Event Management (SIEM) system, local repository, or syslog file server. You can retrieve the logs only for the tenant that is associated with the API key, or for a direct or delegated child of that tenant.'
-display: 'SafeNet Trusted Access Event Collector'
+display: 'Thales SafeNet Trusted Access Event Collector'
 name: SafeNetTrustedAccessEventCollector
 script:
   commands:
