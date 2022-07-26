@@ -2963,7 +2963,7 @@ def script_run_polling_command(args: dict, client: CoreClient):
         script_uid = args.get('script_uid')
         endpoint_ids = argToList(args.get('endpoint_ids'))
         polling_timeout = arg_to_number(args.get('polling_timeout'))
-        interval = arg_to_number(args.get('interval_in_seconds'))
+        interval = arg_to_number(args.get('polling_interval_in_seconds'))
 
         response = get_run_script_execution_response(client, args)
 
