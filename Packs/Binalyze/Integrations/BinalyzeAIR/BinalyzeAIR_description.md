@@ -1,7 +1,7 @@
 ## Binalyze AIR Integration SETUP
 
 - Give a name to your instance,
-- Type AIR server's URL(do not put a forward-slash at the end),
+- Type AIR server's URL,
 - Copy and paste the API key that you created in AIR Server,
 - Test connection beforehand for the health check,
 - Click Save & Exit on the right bottom corner.
@@ -10,10 +10,10 @@
 You can use the integration in Automation, Playbooks, or Playground.
 
 **Isolation**
-- !air-isolate *endpoint*=\<ENDPOINTNAME\> *organization_id*=\<ORGANIZATION ID\> *isolation*=\<ENABLE or DISABLE\>
+- !air-isolate *hostname*=\<HOSTNAMEofENDPOINT\> *organization_id*=\<ORGANIZATION ID\> *isolation*=\<ENABLE or DISABLE\>
 
 **Acquisition**
-- !air-acquire *endpoint*=\<ENDPOINTNAME\> *profile*=\<DEFINED PROFILE\> *caseid*=\<The Case ID\>
+- !air-acquire *hostname*=\<HOSTNAMEofENDPOINT\> *profile*=\<DEFINED PROFILE\> *caseid*=\<The Case ID\>
 
 **Defined Profiles:**
 - browsing-history
