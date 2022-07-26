@@ -1715,7 +1715,7 @@ class Pack(object):
     def are_all_changes_relevant_to_more_than_one_marketplace(self, modified_files_data):
         """
         Returns true if all the modified files are also relevant to another marketplace besides the current one
-        to which the upload is done.
+         this upload is done for.
 
         Args:
             modified_files_data (dict): The modified files data that are given from id-set.
