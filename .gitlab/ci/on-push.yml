@@ -89,7 +89,7 @@ create-instances:
     policy: pull-push
   services:
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
-      alias: localhost
+      alias: docker
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     KUBERNETES_CPU_REQUEST: 1000m
