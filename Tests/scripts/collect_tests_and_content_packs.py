@@ -499,7 +499,7 @@ def get_api_module_integrations(changed_api_modules, integration_set):
     integration_ids_to_test = set([])
     for integration in integration_set:
         integration_data = list(integration.values())[0]
-        if integration_data.get('api_modules', '') in changed_api_modules:
+        if changed_api_modules & set(integration_data.get('api_modules', [])):
             file_path = integration_data.get('file_path')
             integration_id = tools.get_script_or_integration_id(file_path)
             integration_ids_to_test.add(integration_id)
@@ -1428,9 +1428,9 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
     """
     envs_to_test = {
         'Server Master': True,
+        'Server 6.8': is_runnable_in_server_version(from_version, '6.8', to_version),
         'Server 6.6': is_runnable_in_server_version(from_version, '6.6', to_version),
         'Server 6.5': is_runnable_in_server_version(from_version, '6.5', to_version),
-        'Server 6.2': is_runnable_in_server_version(from_version, '6.2', to_version),
 
     }
 
@@ -1438,9 +1438,9 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
         # No need to create the instances.
         envs_to_test = {
             'Server Master': False,
+            'Server 6.8': False,
             'Server 6.6': False,
             'Server 6.5': False,
-            'Server 6.2': False,
         }
 
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))

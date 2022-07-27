@@ -137,6 +137,9 @@ def fix_traceback_line_numbers(trace_str):
     return trace_str
 
 
+from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
+
+
 OS_LINUX = False
 OS_MAC = False
 OS_WINDOWS = False
@@ -1581,7 +1584,7 @@ class IntegrationLogger(object):
         if self.messages:
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
-                demisto.log(text)
+                demisto.log(text)  # pylint: disable=E9012
             if not self.debug_logging:  # we don't print out if in debug_logging as already all message where printed
                 demisto.info(text)
             self.messages = []
@@ -7857,7 +7860,7 @@ def is_demisto_version_ge(version, build_number=''):
         raise
     except ValueError:
         # dev editions are not comparable
-        demisto.log(
+        demisto.log(  # pylint: disable=E9012
             'is_demisto_version_ge: ValueError. \n '
             'input: server version: {} build number: {}\n'
             'server version: {}'.format(version, build_number, server_version)
@@ -9963,10 +9966,16 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     """
 
     def dec(func):
-        def inner(client, args):
-            if not requires_polling_arg or args.get(polling_arg_name):
+        def inner(args, *arguments, **kwargs):
+            """
+            Args:
+                args (dict): command arguments (demisto.args()).
+                *arguments: any additional arguments to the command function.
+                **kwargs: additional keyword arguments to the command function.
+            """
+            if not requires_polling_arg or argToBoolean(args.get(polling_arg_name)):
                 ScheduledCommand.raise_error_if_not_supported()
-                poll_result = func(client, args)
+                poll_result = func(args, *arguments, **kwargs)
 
                 should_poll = poll_result.continue_to_poll if isinstance(poll_result.continue_to_poll, bool) \
                     else poll_result.continue_to_poll()
@@ -9982,7 +9991,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                                                                    args=poll_args, timeout_in_seconds=timeout)
                 return poll_response
             else:
-                return func(client, args).response
+                return func(args, *arguments, **kwargs).response
 
         return inner
 

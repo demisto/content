@@ -512,7 +512,7 @@ tasks:
       version: -1
       name: PAN-OS - Delete Rule
       description: Deletes a policy rule.
-      script: '|||panorama-delete-rule'
+      script: '|||pan-os-delete-rule'
       type: regular
       iscommand: true
       brand: ""
