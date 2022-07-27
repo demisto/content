@@ -1121,21 +1121,28 @@ def add_tag(demisto_args: dict, is_attribute=False):
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
     is_local_tag = argToBoolean(demisto_args.get('is_local', False))
+    disable_output = argToBoolean(demisto_args.get('disable_output', True))
     try:
         PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
     except PyMISPError:
         raise DemistoException("Adding the required tag was failed. Please make sure the UUID exists.")
     if is_attribute:
-        response = PYMISP.search(uuid=uuid, controller='attributes')
-        human_readable = f'Tag {tag} has been successfully added to attribute {uuid}'
-        return CommandResults(
-            readable_output=human_readable,
-            outputs_prefix='MISP.Attribute',
-            outputs_key_field='ID',
-            outputs=build_attributes_search_response(response),
-            raw_response=response
-        )
-
+        response = None
+        success_msg = f'Tag {tag} has been successfully added to attribute {uuid}'
+        if not disable_output:
+            response = PYMISP.search(uuid=uuid, controller='attributes')
+            return CommandResults(
+                readable_output=success_msg,
+                outputs_prefix='MISP.Attribute',
+                outputs_key_field='ID',
+                outputs=build_attributes_search_response(response),
+                raw_response=response
+            )
+        else:
+            return CommandResults(
+                readable_output=success_msg,
+                raw_response=success_msg
+            )
     # event's uuid
     response = PYMISP.search(uuid=uuid)
     human_readable = f'Tag {tag} has been successfully added to event {uuid}'
