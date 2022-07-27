@@ -137,6 +137,14 @@ outputs:
   description: Macro source code.
 - contextPath: Oletools.Olevba.ole_command_result.macro_list
   description: Macro list.
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+- contextPath: DBotScore.Type
+  description: The indicator type.
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+- contextPath: DBotScore.Score
+  description: The actual score.
 subtype: python3
 dockerimage: demisto/parse-emails:1.0.0.32153
 tests:
