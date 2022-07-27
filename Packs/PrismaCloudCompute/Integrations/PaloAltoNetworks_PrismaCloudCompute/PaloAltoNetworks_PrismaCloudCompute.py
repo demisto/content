@@ -949,7 +949,7 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
         CommandResults: command-results object.
     """
     # the api overrides the blacklisted IPs, therefore it is necessary to add those who exist to the 'PUT' request.
-    current_ip_feeds = (client.get_custom_ip_feeds() or []).get("feed") or []
+    current_ip_feeds = (client.get_custom_ip_feeds() or {}).get("feed") or []
     new_ip_feeds = argToList(arg=args.pop("ip"))
 
     # remove duplicates, the api doesn't give error on duplicate IPs
