@@ -372,7 +372,7 @@ def test_send_message_with_mirrored_message_or_low_severity(mocker, args):
             'team': 'The-A-Team'
         }
     )
-    mocker.patch.object(demisto, 'args', args)
+    mocker.patch.object(demisto, 'args', return_value=args)
     assert send_message() is None
 
 
@@ -413,11 +413,7 @@ def test_send_message_raising_errors(mocker, args, result):
     # verify proper error is raised if both message and adaptive card were provided.
     # verify proper error is raised if neither message or adaptive card were provided.
 
-    mocker.patch.object(
-        demisto,
-        'args',
-        args
-    )
+    mocker.patch.object(demisto, 'args', return_value=args)
     with pytest.raises(ValueError) as e:
         send_message()
     assert str(e.value) == result
@@ -425,6 +421,9 @@ def test_send_message_raising_errors(mocker, args, result):
 
 def test_send_message_with_user(mocker, requests_mock):
     # verify message is sent properly given user to send to
+
+    mocker.patch.object(demisto, 'results')
+
     mocker.patch.object(
         demisto,
         'params',
@@ -473,6 +472,9 @@ def test_send_message_with_user(mocker, requests_mock):
 
 def test_send_message_with_channel(mocker, requests_mock):
     # verify message is sent properly given channel
+
+    mocker.patch.object(demisto, 'results')
+
     mocker.patch.object(
         demisto,
         'params',
@@ -500,6 +502,9 @@ def test_send_message_with_channel(mocker, requests_mock):
 
 def test_send_message_with_entitlement(mocker, requests_mock):
     # verify message is sent properly given entitlement
+
+    mocker.patch.object(demisto, 'results')
+
     message: dict = {
         'message_text': 'is this really working?',
         'options': ['yes', 'no', 'maybe'],
@@ -577,6 +582,8 @@ def test_send_message_with_entitlement(mocker, requests_mock):
 
 def test_send_message_with_adaptive_card(mocker, requests_mock):
     # verify adaptive card sent successfully
+
+    mocker.patch.object(demisto, 'results')
 
     adaptive_card: dict = {
         "contentType": "application/vnd.microsoft.card.adaptive",
