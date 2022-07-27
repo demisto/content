@@ -12,6 +12,18 @@ args:
   required: false
   secret: false
 - default: false
+  description: The file name - Mandatory when entring the data as string_text
+  isArray: false
+  name: file_name
+  required: false
+  secret: false
+- default: false
+  description: The text to analyze with string sifter
+  isArray: false
+  name: string_text
+  required: false
+  secret: false
+- default: false
   description: The file to process.
   isArray: false
   name: entryID
@@ -24,8 +36,10 @@ commonfields:
 enabled: false
 name: StringSifter
 outputs:
-- contextPath: Stringsifter
-  description: The results from the Stringsifter operation.
+- contextPath: Stringsifter.FileName
+  description: The name of the file Stringsifter operated on.
+- contextPath: Stringsifter.Results
+  description: The results from Stringsifter
 script: ''
 system: false
 type: python
