@@ -4779,10 +4779,6 @@ def panorama_query_logs_command(args: dict):
     url = args.get('url')
     job_id = args.get('job_id')
 
-    if number_of_logs > 5000:   # type: ignore
-        number_of_logs = 5000
-        raise Exception('The "number_of_logs" should be 5000 or less.')
-
     if not job_id:
         if query and (address_src or address_dst or zone_src or zone_dst
                     or time_generated or action or port_dst or rule or url or filedigest):
