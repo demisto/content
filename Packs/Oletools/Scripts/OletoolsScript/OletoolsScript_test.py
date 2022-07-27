@@ -2,6 +2,7 @@ from OletoolsScript import *
 from test_data.commands_outputs import oleid_output, oleobj_output, olevba_otuput, oleid_decrypted_output
 import pytest
 
+
 def read_file(file_path):
     with open(file_path) as f:
         file_data = f.read()

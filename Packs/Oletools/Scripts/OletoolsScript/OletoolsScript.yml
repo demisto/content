@@ -29,10 +29,11 @@ args:
   description: Display all the obfuscated strings with their decoded content (Hex, Base64, StrReverse, Dridex, VBA). Note that this works only with the olevba command.
   isArray: false
   name: decode
+  type: String
   auto: PREDEFINED
   predefined:
-    - true
-    - false
+    - 'true'
+    - 'false'
   required: false
   secret: false
 - default: false
