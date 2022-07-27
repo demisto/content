@@ -1,0 +1,31 @@
+args:
+- defaultValue: No entries
+  description: String that if found in the entry of an evidence- the evidence will
+    be removed. The default value is "No entries"
+  name: removeIfContains
+comment: |-
+  The automation removes evidence based on a query performed on the evidence content,
+  if the provided string is found within the evidence- it will be removed.
+commonfields:
+  id: 8ae8c9f7-d009-4ffe-880f-1c07bf9d119e
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 6dcab64e-f6ae-4cb7-8738-f2c789dfc644
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.5.31928
+enabled: true
+engineinfo: {}
+name: RemoveEmptyEvidence
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
