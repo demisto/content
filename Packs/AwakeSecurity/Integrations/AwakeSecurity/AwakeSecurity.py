@@ -419,6 +419,7 @@ def fetchIncidents():
                 "Query": matchingThreatBehavior["query"],
                 "StartTime": startTimeString,
                 "EndTime": endTimeString,
+                "rawJSON": json.dumps(matchingThreatBehavior),
             }
         demisto.incidents(map(toIncident, matchingThreatBehaviors))
         # Don't increase the low-water-mark until we actually find incidents
