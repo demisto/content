@@ -207,7 +207,7 @@ class ContentPackInstaller:
             return []
 
         if type(pack_data) is list:
-            pack_data = pack_data[0]
+            pack_data = pack_data[0]  # type: ignore
 
         pack_dependencies = self.get_pack_dependencies_from_marketplace(pack_data)
 
@@ -261,10 +261,10 @@ class ContentPackInstaller:
         demisto.debug(f'{SCRIPT_NAME} - Initiating installation process for pack {pack_data["id"]}')
         if pack_data['version'] == 'latest':
 
-            pack_data = self.get_packs_data_for_installation([pack_data])
+            pack_data = self.get_packs_data_for_installation([pack_data])  # type: ignore
 
             if pack_data and type(pack_data) == list:
-                pack_data = pack_data[0]
+                pack_data = pack_data[0]  # type: ignore
 
         dependencies_to_install = self.get_dependencies_for_pack(pack_data)
 
@@ -276,10 +276,7 @@ class ContentPackInstaller:
         if not dependencies_to_install and not pack_data:
             return
 
-
         demisto.debug(f'{SCRIPT_NAME} - Updated dependencies for {pack_data["id"]}: {dependencies_to_install}')
-
-
 
         if dependencies_to_install:
             self.install_packs(dependencies_to_install)

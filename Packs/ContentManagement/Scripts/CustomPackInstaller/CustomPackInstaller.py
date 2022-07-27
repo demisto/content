@@ -23,7 +23,7 @@ def build_url_parameters(skip_verify: bool, skip_validation: bool) -> str:
     return f'{uri}?{params}' if params else uri
 
 
-def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool, instance_name: str) -> Tuple[bool, str]:
+def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool, instance_name: str = '') -> Tuple[bool, str]:
     """Installs a custom pack in the machine.
 
     Args:
