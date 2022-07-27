@@ -58,8 +58,8 @@ configuration:
   type: 8
 - display: User Agent
   name: useragent
-  required: false
   type: 0
+  required: false
   additionalinfo: User Agent to perform requests
 - display: API Key (only required for scanning URLs)
   name: apikey
@@ -424,8 +424,8 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.4.30607
-defaultEnabled: false
+  dockerimage: demisto/python3:3.10.5.31928
 fromversion: 5.0.0
 tests:
 - urlscan_malicious_Test
+defaultEnabled: false
