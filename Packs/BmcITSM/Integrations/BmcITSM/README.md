@@ -33,7 +33,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bmc-itsm-user-list
 ***
-Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
 
 #### Base Command
@@ -109,7 +109,7 @@ Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved
 
 ### bmc-itsm-company-list
 ***
-Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
 
 #### Base Command
@@ -170,7 +170,7 @@ Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by 
 
 ### bmc-itsm-service-request-definition-list
 ***
-Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
 
 #### Base Command
@@ -230,7 +230,7 @@ Retrieves a list of service request definitions. The records are retrieved by th
 
 ### bmc-itsm-ticket-list
 ***
-Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
 
 #### Base Command
@@ -1042,7 +1042,7 @@ There is no context output for this command.
 
 ### bmc-itsm-change-request-template-list
 ***
-Lists all change requests ticket templates. Useful for creating change request tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+Lists all change requests ticket templates. Useful for creating change request tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
 
 #### Base Command
@@ -1102,7 +1102,7 @@ Lists all change requests ticket templates. Useful for creating change request t
 
 ### bmc-itsm-incident-template-list
 ***
-Lists all incident requests ticket templates. Useful for create incident tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+Lists all incident requests ticket templates. Useful for create incident tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
 
 #### Base Command
@@ -1162,7 +1162,7 @@ Lists all incident requests ticket templates. Useful for create incident tickets
 
 ### bmc-itsm-task-template-list
 ***
-Lists all task ticket templates. Useful for creating task tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+Lists all task ticket templates. Useful for creating task tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
 
 #### Base Command
