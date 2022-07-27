@@ -572,14 +572,11 @@ def get_alerts_command(
         human_readable=True
     )
 
-    for raw_response_temp in raw_response_temp_list:
-        raw_response_list.append(raw_response_temp)
+    raw_response_list = raw_response_temp_list
 
-    for context in entry_context_temp:
-        entry_context.append(context)
+    entry_context = entry_context_temp
 
-    for data in human_readable_data_temp:
-        human_readable_data.append(data)
+    human_readable_data = human_readable_data_temp
 
     if alerts_found:
         if aid:
