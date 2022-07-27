@@ -106,23 +106,19 @@ script:
       description: filehash to search (md5, sha1, sha256)
     - name: hostname
       description: Endpoint hostname
-      required: true
     - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
       name: from_date
     - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
       name: to_date
-    description: Search processes on a specific hostname
+    - name: limit
+      description: Maximum number of elements to fetch
+      default: true
+      defaultValue: 100
+    description: Search processes
     name: harfanglab-telemetry-processes
     outputs:
-    - contextPath: agent.agentid
-      description: An agent's identifier
-      type: string
-    - contextPath: current_directory
-      description: ''
-      type: string
-    - contextPath: hashes.sha256
-      description: ''
-      type: string
+    - contextPath: Harfanglab.Processes.data
+      description: Provides a list of processes
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -282,8 +278,10 @@ script:
       name: hash
     - description: restrict searchs for filename or filepath or filepath_regex to a given path
       name: search_in_path
-    - description: size of the file associated to the 'hash' parameters. If known, it will speed up the search process.
+    - description: size of the file associated to the 'hash' parameters (DEPRECATED, rather use the 'filesize' parameter). If known, it will speed up the search process.
       name: hash_filesize
+    - description: size of the file to search (can be used when searching a file from a hash or from a filename). If known, it will speed up the search process.
+      name: filesize
     - description: regex to search in registry (key or value)
       name: registry
     - description: 'search a regex on a filepath '
@@ -414,7 +412,6 @@ script:
   - arguments:
     - name: hostname
       description: Endpoint hostname
-      required: true
     - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
       name: from_date
     - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
@@ -427,17 +424,32 @@ script:
       description: Destination IP address
     - name: destination_port
       description: Destination port
-    description: Search network connections from a specific hostname
+    - name: limit
+      description: Maximum number of elements to fetch
+      default: true
+      defaultValue: 100
+    outputs:
+    - contextPath: Harfanglab.Network.data
+      description: Provides a list of network connections
+    description: Search network connections
     name: harfanglab-telemetry-network
   - arguments:
     - name: hostname
       description: Endpoint hostname
-      required: true
+    - name: event_id
+      description: Event id
     - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
       name: from_date
     - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
       name: to_date
-    description: Search event logs from a specific hostname
+    - name: limit
+      description: Maximum number of elements to fetch
+      default: true
+      defaultValue: 100
+    outputs:
+    - contextPath: Harfanglab.EventLogs.data
+      description: Provides a list of event logs
+    description: Search event logs
     name: harfanglab-telemetry-eventlog
   - arguments:
     - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
@@ -446,6 +458,10 @@ script:
       name: to_date
     - name: hash
       description: filehash to search (md5, sha1, sha256)
+    - name: limit
+      description: Maximum number of elements to fetch
+      default: true
+      defaultValue: 100
     description: Search for binaries
     name: harfanglab-telemetry-binary
   - arguments:
@@ -734,7 +750,7 @@ script:
       required: true
     description: Delete an IOC from a Threat Intelligence source
     name: harfanglab-delete-ioc-from-source
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   longRunning: true
   runonce: false
