@@ -29,8 +29,8 @@ By default, AD allows accessing the server from all workstations, to limit it to
     After you add the server configuration, run the `/reset_containers` command from the Cortex XSOAR CLI to reset all containers and to begin using the new configuration.
     
     Please see our [Troubleshooting Guide](https://xsoar-pan-dev--pull-request-1161-3nldxoxj.web.app/docs/reference/articles/troubleshooting-guide#docker-based-networking) for more details about *Docker Based Networking.*
-3. Get your XSOAR server hostname by running the `hostname` command on the XSOAR server machine by logging in via SSH.
-4. In the SMB server, restrict the logon workstations of the same user you are using in the XSOAR instance configurations by specifying the hostname of the previous step as the computer name. Please refer to [this guide](http://woshub.com/restrict-workstation-logon-ad-users/) regarding setting `Logon Workstations` in AD.
+2. Get your XSOAR server hostname by running the `hostname` command on the XSOAR server machine by logging in via SSH.
+3. In the SMB server, restrict the logon workstations of the same user you are using in the XSOAR instance configurations by specifying the hostname of the previous step as the computer name. Please refer to [this guide](http://woshub.com/restrict-workstation-logon-ad-users/) regarding setting `Logon Workstations` in AD.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
