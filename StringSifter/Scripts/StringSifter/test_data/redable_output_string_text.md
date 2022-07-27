@@ -1,4 +1,4 @@
-### Top 5 Stringsifter word ranking based on their relevance for malware analysis.
+### Top 5 StringSifter word ranking based on their relevance for malware analysis.
 |Rating|Word|
 |---|---|
 | 11.38 | ysmartlogon.com |
