@@ -520,6 +520,10 @@ def test_send_message_with_entitlement(mocker, requests_mock):
             'message': json.dumps(message)
         }
     )
+    requests_mock.post(
+        f'{service_url}/v3/conversations',
+        json={'id': 'conversation-id'})
+
     expected_ask_user_message: dict = {
         'attachments': [{
             'content': {
@@ -624,59 +628,6 @@ def test_send_message_with_adaptive_card(mocker, requests_mock):
 # def test_send_message(mocker, requests_mock):
 #     from MicrosoftTeams import send_message
 #     mocker.patch.object(demisto, 'results')
-
-    # # verify that a mirrored message is skipped
-    # mocker.patch.object(
-    #     demisto,
-    #     'args',
-    #     return_value={
-    #         'messageType': 'mirrorEntry',
-    #         'originalMessage': 'a mirrored message\n**From Microsoft Teams**'
-    #     }
-    # )
-    # assert send_message() is None
-
-    # verify notification from server with severity below threshold is not sent
-    # mocker.patch.object(
-    #     demisto,
-    #     'params',
-    #     return_value={
-    #         'min_incident_severity': 'Medium',
-    #         'team': 'The-A-Team'
-    #     }
-    # )
-    # mocker.patch.object(
-    #     demisto,
-    #     'args',
-    #     return_value={
-    #         'messageType': 'incidentOpened',
-    #         'severity': 1
-    #     }
-    # )
-    # assert send_message() is None
-
-    # verify error is raised if no user/channel were provided
-    # mocker.patch.object(
-    #     demisto,
-    #     'args',
-    #     return_value={}
-    # )
-    # with pytest.raises(ValueError) as e:
-    #     send_message()
-    # assert str(e.value) == 'No channel or team member to send message were provided.'
-
-    # verify error is raised if both user and channel were provided
-    # mocker.patch.object(
-    #     demisto,
-    #     'args',
-    #     return_value={
-    #         'channel': 'somechannel',
-    #         'team_member': 'someuser'
-    #     }
-    # )
-    # with pytest.raises(ValueError) as e:
-    #     send_message()
-    # assert str(e.value) == 'Provide either channel or team member to send message to, not both.'
 
     # verify message is sent properly given user to send to
     # mocker.patch.object(
