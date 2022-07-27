@@ -723,7 +723,7 @@ def main():
             results = commands[command](client=client, **demisto.args())
             return_results(results)
 
-        elif command == 'fetch-incidents'':
+        elif command == 'fetch-incidents':
             max_results = arg_to_number(arg=demisto.params().get("max_fetch"), arg_name="max_fetch", required=False)
             first_fetch_timestamp = params.get("fetch_time", "3 days").strip()
             minimum_severity = params.get("severity")
