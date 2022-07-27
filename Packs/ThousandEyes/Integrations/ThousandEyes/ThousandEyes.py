@@ -552,7 +552,8 @@ def get_alerts_command(
                 human_readable=False
             )
 
-            raw_response_list = raw_response_temp_list
+            for raw_response_temp in raw_response_temp_list:
+                raw_response_list.append(raw_response_temp)
 
         return raw_response_list
 
