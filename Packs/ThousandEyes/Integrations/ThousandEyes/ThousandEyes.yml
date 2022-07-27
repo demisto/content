@@ -50,16 +50,6 @@ configuration:
   - CRITICAL
   required: false
   type: 15
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 3cb10c3b-5342-4ffb-8fc4-fa56e21d6017
-    packName: ThousandEyes  Contribution Pack
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: This Integration is used to to fetch-incidents via “Active alerts”, get
   alert details via “Alert details”, and get the “Agent list”.
 display: 'ThousandEyes'
