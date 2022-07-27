@@ -2623,7 +2623,7 @@ def main():
     else:
         connection_args['username'] = username
         connection_args['password'] = password
-        connection_args['basic'] = True
+        connection_args['autologin'] = True
 
     if use_requests_handler:
         handle_proxy()
