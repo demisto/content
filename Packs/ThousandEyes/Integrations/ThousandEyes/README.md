@@ -139,13 +139,6 @@ Fetches a given agent.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### thousandeyes-test-fetch
 ***
 Testing fetch incidents
