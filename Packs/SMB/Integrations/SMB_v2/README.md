@@ -17,6 +17,19 @@ Files and Directories management with an SMB server. Supports SMB2 and SMB3 prot
     | Secure Dialect Negotiation | Validate the negotiation info when connecting to a share. More information can be found on https://docs.microsoft.com/en-us/archive/blogs/openspecification/smb3-secure-dialect-negotiation | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Limiting Access to Specific Workstations
+When using Active Directory (AD) in the remote SMB server it is possible to restrict the access to the server to specific workstation only.
+By default, AD allows accessing the server from all workstations, to limit it to specific workstations follow the next steps:
+1. Configure the XSOAR server to use host networking for docker by adding the following advanced server configuration in Cortex XSOAR:
+
+    | Key                                          | Value            |
+    |----------------------------------------------|------------------|
+    | `python.pass.extra.keys.demisto/smbprotocol` | `--network=host` |
+    Please see our [Troubleshooting Guide](https://xsoar-pan-dev--pull-request-1161-3nldxoxj.web.app/docs/reference/articles/troubleshooting-guide#docker-based-networking) for more details about *Docker Based Networking.*
+2. Get your XSOAR server hostname by running the `hostname` command on the XSOAR server machine by logging in via SSH.
+3. In the SMB server, restrict the logon workstations of the same user you are using in the XSOAR instance configurations by specifying the hostname of the previous step as the computer name. Please refer to [this guide](http://woshub.com/restrict-workstation-logon-ad-users/) regarding setting `Logon Workstations` in AD.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
