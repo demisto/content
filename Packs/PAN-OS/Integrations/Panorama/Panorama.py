@@ -185,6 +185,10 @@ class PAN_OS_Not_Found(Exception):
         pass
 
 
+class InvalidUrlLengthException(Exception):
+    pass
+
+
 def parse_response(response: Dict) -> SimpleNamespace:
     dumped_json = json.dumps(response)
     parsed_object = json.loads(dumped_json, object_hook=lambda d: SimpleNamespace(**({k.replace('@',''): v for k, v in d.items()})))
@@ -4772,18 +4776,18 @@ def panorama_query_logs_command(args: dict):
         # Only used in subsequent polling executions
 
         res = panorama_get_traffic_logs(job_id)
-        result: SimpleNamespace = parse_response(res)
-        if result.response.status == 'error':
-            if result.response.result.msg.line:
+        parsed: SimpleNamespace = parse_response(res)
+        if parsed.response.status == 'error':
+            if parsed.response.result.msg.line:
                 raise Exception(
-                    f'Query logs failed. Reason is: {result.response.result.msg.line}'
+                    f'Query logs failed. Reason is: {parsed.response.result.msg.line}'
                 )
             else:
                 raise Exception(
                     f'Query logs failed.'
                 )
         
-        if not result.response.result.job.id:
+        if not parsed.response.result.job.id:
             raise Exception('Missing JobID status in response.')
 
         query_traffic_logs_output = {
@@ -4791,7 +4795,7 @@ def panorama_query_logs_command(args: dict):
             'Status': 'Pending',
             'LogType': log_type
         }
-        if result.response.result.job.status == 'FIN':
+        if parsed.response.result.job.status == 'FIN':
             query_traffic_logs_output['Status'] = 'Completed'
             try:
                 pretty_traffic_logs = prettify_traffic_logs(
@@ -4806,7 +4810,7 @@ def panorama_query_logs_command(args: dict):
                 outputs_key_field='JobID',
                 outputs=query_traffic_logs_output,
                 readable_output=tableToMarkdown(
-                    f'Log query {result.response.result.job.id}:',
+                    f'Log query {parsed.response.result.job.id}:',
                     pretty_traffic_logs,
                     ['JobID', 'Source', 'SourcePort', 'Destination', 'DestinationPort',
                      'Application', 'Action'],
@@ -4814,9 +4818,9 @@ def panorama_query_logs_command(args: dict):
                 ),
                 raw_response=res
             ),
-            continue_to_poll=result.response.result.job.status != 'FIN',
+            continue_to_poll=parsed.response.result.job.status != 'FIN',
             args_for_next_run={
-                'query_log_job_id': result.response.result.job.id,
+                'query_log_job_id': parsed.response.result.job.id,
                 'log-type': log_type,
                 'polling': True,
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
