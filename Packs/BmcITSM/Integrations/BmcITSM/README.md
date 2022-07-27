@@ -1,32 +1,31 @@
-BMC Remedy ITSM integration allows customers to manage service request, incident, change request, task, problem investigation and known error tickets.
-This integration was integrated and tested with version 21.02 of BmcITSM
+BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation and known error tickets.
+This integration was integrated and tested with version xx of BmcITSM
 
-## Configure BMC Remedy ITSM on Cortex XSOAR
+## Configure BMC Helix ITSM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for BMC Remedy ITSM.
+2. Search for BMC Helix ITSM.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL | For Example: https://localhost:8008 | True |
-    | Username |  | True |
+    | User Name |  | True |
     | Password |  | True |
-    | Maximum incidents per fetch. | Default is 50. Maximum is 200. | False |
+    | Maximum Number of Incidents per Fetch | Default is 50. Maximum is 200. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
     | Ticket Type | The type of the tickets to fetch. | False |
-    | Ticket Status | The status of the tickets to fetch. Since Each ticket type has it's own unique status pool, consider to select only those who match to the selected ticket types. | False |
+    | Ticket Status | The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type\(s\). | False |
     | Ticket Impact | The impact of the tickets to fetch. | False |
-    | Ticket Urgency | The urgnecy of the tickets to fetch. | False |
-    | Fetch By Query | Search qualification to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing params. You can Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html | False |
-    | Fetch incidents |  | False |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from  BMC Remedy ITSM to XSOAR\), Outgoing \(from XSOAR to BMC Remedy ITSM\), or Incoming and Outgoing \(from/to XSOAR and BMC Remedy ITSM\). | False |
-    | Close Mirrored XSOAR Incident | When selected, closing the BMC Remedy ITSM ticket is mirrored in Cortex XSOAR. | False |
-    | Close Mirrored BMC Remedy ITSM Ticket | When selected, closing the XSOAR incident is mirrored in BMC Remedy ITSM. | False |
+    | Ticket Urgency | The urgency of the tickets to fetch. | False |
+    | Fetch by Query | Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html | False |
+    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from BMC Helix ITSM to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to BMC Helix ITSM\), or Incoming and Outgoing \(from/to Cortex XSOAR and BMC Helix ITSM\). | False |
+    | Close Mirrored XSOAR Incident | When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR. | False |
+    | Close Mirrored BMC Helix ITSM Ticket | When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -34,7 +33,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bmc-itsm-user-list
 ***
-List users profile in BMC Helix ITSM. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
+Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
 
 
 #### Base Command
@@ -44,25 +43,25 @@ List users profile in BMC Helix ITSM. The records are retrieved according to a c
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_ids | Comma separated list of user ID. Filtering argument. Possible values are: . | Optional | 
-| query | Search qualification to list by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| user_ids | A comma-separated list of user IDs. Used as a filtering argument. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
-| first_name | The user first name. Filtering argument. Possible values are: . | Optional | 
-| last_name | The user first name. Filtering argument. Possible values are: . | Optional | 
-| company | The user company name. Filtering argument. Possible values are: . | Optional | 
-| department | The user department name. Filtering argument. Possible values are: . | Optional | 
-| organization | The user organization name. Filtering argument. Possible values are: . | Optional | 
+| first_name | The user first name. Used as a filtering argument. Possible values are: . | Optional | 
+| last_name | The user first name. Used as a filtering argument. Possible values are: . | Optional | 
+| company | The user company name. Used as a filtering argument. Possible values are: . | Optional | 
+| department | The user department name. Used as a filtering argument. Possible values are: . | Optional | 
+| organization | The user organization name. Used as a filtering argument. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.User.Id | String | user ID. | 
-| BmcITSM.User.FirstName | String | user first name. | 
-| BmcITSM.User.LastName | String | user last name. | 
+| BmcITSM.User.Id | String | The user ID. | 
+| BmcITSM.User.FirstName | String | The user first name. | 
+| BmcITSM.User.LastName | String | The user last name. | 
 
 #### Command example
 ```!bmc-itsm-user-list limit=2```
@@ -110,7 +109,7 @@ List users profile in BMC Helix ITSM. The records are retrieved according to a c
 
 ### bmc-itsm-company-list
 ***
-List companies in BMC Helix ITSM. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
+Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
 
 
 #### Base Command
@@ -120,22 +119,22 @@ List companies in BMC Helix ITSM. The records are retrieved according to a const
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| company_ids | Comma separated list of company ID. Filtering argument. Possible values are: . | Optional | 
-| query | Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| company_ids | A comma-separated list of company ID. Filtering argument. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
-| company | The user company name. Filtering argument. Possible values are: . | Optional | 
-| company_type | The user company type. Filtering argument. Possible values are: . | Optional | 
+| company | The user company name. Used as a filtering argument. Possible values are: . | Optional | 
+| company_type | The user company type. Used as a filtering argument. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.Company.Id | String | Company ID | 
-| BmcITSM.Company.Name | String | Company name. | 
-| BmcITSM.Company.Type | String | Company Type | 
+| BmcITSM.Company.Id | String | The company ID. | 
+| BmcITSM.Company.Name | String | The company name. | 
+| BmcITSM.Company.Type | String | The company type. | 
 
 #### Command example
 ```!bmc-itsm-company-list limit=2```
@@ -171,7 +170,7 @@ List companies in BMC Helix ITSM. The records are retrieved according to a const
 
 ### bmc-itsm-service-request-definition-list
 ***
-List service request definitions. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
+Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
 
 
 #### Base Command
@@ -181,21 +180,21 @@ List service request definitions. The records are retrieved according to a const
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| srd_ids | Comma separated list of service request defintion ID. Filtering argument. Possible values are: . | Optional | 
-| query | Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| srd_ids | A comma-separated list of service request definition IDs. Used as a filtering argument. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
-| description | Service request definition description. Filtering argument. Possible values are: . | Optional | 
+| description | The service request ticket definition description. Used as a filtering argument. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.ServiceRequestDefinition.Id | String | Service Request definition ID. | 
-| BmcITSM.ServiceRequestDefinition.Description | String | Service Request Definition Description. | 
-| BmcITSM.ServiceRequestDefinition.InstanceID | String | Service Request Instance ID. Useful for creating Service Request. | 
+| BmcITSM.ServiceRequestDefinition.Id | String | The service request ticket definition ID. | 
+| BmcITSM.ServiceRequestDefinition.Description | String | The service request ticket definition description. | 
+| BmcITSM.ServiceRequestDefinition.InstanceID | String | The service request ticket instance ID. Used for creating service requests. | 
 
 #### Command example
 ```!bmc-itsm-service-request-definition-list limit=2```
@@ -206,12 +205,12 @@ List service request definitions. The records are retrieved according to a const
         "ServiceRequestDefinition": [
             {
                 "Description": "Other request to facilities that isn't specifically listed.",
-                "Id": "000000000000382",
+                "Id": "000000000000382|000000000000382",
                 "InstanceID": "SRGAA5V0GENAWAO6U31IO5YO03KYL3"
             },
             {
                 "Description": "Request to order new office equipment",
-                "Id": "000000000000381",
+                "Id": "000000000000381|000000000000381",
                 "InstanceID": "SRGAA5V0GENAWAO6U2OFO5YNN0K4Y6"
             }
         ]
@@ -225,13 +224,13 @@ List service request definitions. The records are retrieved according to a const
 >Showing 2 records out of 157.
 >|Id|Description|Instance ID|
 >|---|---|---|
->| 000000000000382 | Other request to facilities that isn't specifically listed. | SRGAA5V0GENAWAO6U31IO5YO03KYL3 |
->| 000000000000381 | Request to order new office equipment | SRGAA5V0GENAWAO6U2OFO5YNN0K4Y6 |
+>| 000000000000382\|000000000000382 | Other request to facilities that isn't specifically listed. | SRGAA5V0GENAWAO6U31IO5YO03KYL3 |
+>| 000000000000381\|000000000000381 | Request to order new office equipment | SRGAA5V0GENAWAO6U2OFO5YNN0K4Y6 |
 
 
 ### bmc-itsm-ticket-list
 ***
-List BMC Helix ITSM tickets.The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them. 
+Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
 
 
 #### Base Command
@@ -241,47 +240,47 @@ List BMC Helix ITSM tickets.The records are retrieved according to a constraint 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_type | The type of the tickets to list by. Possible values are: service request, incident, task, change request, problem investigation, known error. | Required | 
-| query | Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| ticket_type | The type of tickets to search for. Possible values are: service request, incident, task, change request, problem investigation, known error. | Required | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
-| ticket_ids | Comma separated list of ticket request ID. Filtering argument. Possible values are: . | Optional | 
-| status | Ticket status. Since Each ticket type has it's own unique status pool, consider to select only those who match to the selected ticket types. Filtering argument. Possible values are: Draft, In Cart, In Review, Submitted, Pending, Waiting Approval, Planning, In Progress, Completed, Rejected, Cancelled, Closed, New, Assigned, Resolved, Request For Authorization, Request For Change, Planning In Progress, Scheduled For Review, Scheduled For Approval, Scheduled, Implementation In Progress, Staged, Work In Progress, Waiting, Bypassed, Under Review, Under Investigation, Scheduled For Correction, Assigned To Vendor, No Action Planned, Corrected. | Optional | 
-| impact | Ticket impact. Filtering argument. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
-| urgency | Ticket urgency. Filtering argument. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
-| priority | Ticket Priority. Filtering argument. Possible values are: Critical, High, Medium, Low. | Optional | 
-| risk_level | Ticket risk level. Filtering argument. Possible values are: Risk Level 1, Risk Level 2, Risk Level 3, Risk Level 4. | Optional | 
-| change_type | Ticket change type level. Relevant only to change reqiest ticket type. Filtering argument. Possible values are: Project, Change, Release, Asset Configuration, Asset Management, Asset Lease, Purchase Requisition, Asset Maintenance. | Optional | 
-| summary | Ticket summary. Filtering argument. Possible values are: . | Optional | 
+| ticket_ids | A comma-separated list of ticket request IDs. Used as a filtering argument. Possible values are: . | Optional | 
+| status | The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type(s). Possible values are: Draft, In Cart, In Review, Submitted, Pending, Waiting Approval, Planning, In Progress, Completed, Rejected, Cancelled, Closed, New, Assigned, Resolved, Request For Authorization, Request For Change, Planning In Progress, Scheduled For Review, Scheduled For Approval, Scheduled, Implementation In Progress, Staged, Work In Progress, Waiting, Bypassed, Under Review, Under Investigation, Scheduled For Correction, Assigned To Vendor, No Action Planned, Corrected. | Optional | 
+| impact | The ticket impact. Used as a filtering argument. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
+| urgency | The ticket urgency. Used as a filtering argument. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
+| priority | The ticket priority. Used as a filtering argument. Possible values are: Critical, High, Medium, Low. | Optional | 
+| risk_level | The ticket risk level. Used as a filtering argument. Possible values are: Risk Level 1, Risk Level 2, Risk Level 3, Risk Level 4. | Optional | 
+| change_type | The ticket change type level. Relevant only for ticket type change requests. Used as a filtering argument. Possible values are: Project, Change, Release, Asset Configuration, Asset Management, Asset Lease, Purchase Requisition, Asset Maintenance. | Optional | 
+| summary | The ticket summary. Used as a filtering argument. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.Ticket.RequestID | String | Ticket ID. | 
-| BmcITSM.Ticket.DisplayID | String | Ticket Request Number. | 
-| BmcITSM.Ticket.InstanceId | String | Ticket Instance ID. | 
-| BmcITSM.Ticket.Type | String | Ticket type. | 
-| BmcITSM.Ticket.TargetDate | Date | Ticket target date in UTC. | 
-| BmcITSM.Ticket.Status | String | Ticket status. | 
-| BmcITSM.Ticket.StatusReason | String | Ticket status reason. | 
-| BmcITSM.Ticket.Submitter | String | Ticket submitter. | 
-| BmcITSM.Ticket.Priority | String | Ticket priority. | 
-| BmcITSM.Ticket.RiskLevel | String | Ticket risk level. | 
-| BmcITSM.Ticket.Impact | String | Ticket impact. | 
-| BmcITSM.Ticket.Urgency | String | Ticket urgency. | 
-| BmcITSM.Ticket.Requester | Unknown | Ticket's requester info. | 
-| BmcITSM.Ticket.Customer | Unknown | Ticket's customer info. | 
-| BmcITSM.Ticket.assignee | Unknown | Ticket assignee info.  | 
-| BmcITSM.Ticket.Summary | String | Ticket summary. | 
-| BmcITSM.Ticket.Details | String | Ticket details. | 
-| BmcITSM.Ticket.CreateDate | Date | Ticket create time in UTC. | 
-| BmcITSM.Ticket.LastModifiedDate | Date | Ticket last update time in UTC. | 
+| BmcITSM.Ticket.RequestID | String | The ticket ID. | 
+| BmcITSM.Ticket.DisplayID | String | The ticket request number. | 
+| BmcITSM.Ticket.InstanceId | String | The ticket instance ID. | 
+| BmcITSM.Ticket.Type | String | The ticket type. | 
+| BmcITSM.Ticket.TargetDate | Date | The ticket target date in UTC. | 
+| BmcITSM.Ticket.Status | String | The ticket status. | 
+| BmcITSM.Ticket.StatusReason | String | The ticket status reason. | 
+| BmcITSM.Ticket.Submitter | String | The ticket submitter. | 
+| BmcITSM.Ticket.Priority | String | The ticket priority. | 
+| BmcITSM.Ticket.RiskLevel | String | The ticket risk level. | 
+| BmcITSM.Ticket.Impact | String | The ticket impact. | 
+| BmcITSM.Ticket.Urgency | String | The ticket urgency. | 
+| BmcITSM.Ticket.Requester | Unknown | The ticket requester info. | 
+| BmcITSM.Ticket.Customer | Unknown | The ticket customer info. | 
+| BmcITSM.Ticket.assignee | Unknown | The ticket assignee info.  | 
+| BmcITSM.Ticket.Summary | String | The ticket summary. | 
+| BmcITSM.Ticket.Details | String | The ticket details. | 
+| BmcITSM.Ticket.CreateDate | Date | The ticket create date time in UTC. | 
+| BmcITSM.Ticket.LastModifiedDate | Date | The ticket last update date time in UTC. | 
 
 #### Command example
-```!bmc-itsm-ticket-list ticket_type="known error" limit=2```
+```!bmc-itsm-ticket-list ticket_type="service request" limit=2```
 #### Context Example
 ```json
 {
@@ -289,91 +288,87 @@ List BMC Helix ITSM tickets.The records are retrieved according to a constraint 
         "Ticket": [
             {
                 "Assignee": {
-                    "AssignedGroup": "Service Desk",
+                    "AssignedGroup": null,
                     "FullName": "Mary Mann",
-                    "Group": null,
+                    "Group": "Backoffice Support",
                     "SupportCompany": "Calbro Services",
                     "SupportOrganization": "IT Support"
                 },
-                "CreateDate": "2008-11-07T05:18:44",
-                "Customer": null,
-                "Details": "router issue - temporary workaround available",
-                "DisplayID": "PKE_CAL_1000001",
-                "Impact": "4-Minor/Localized",
-                "InstanceId": "AG00123F73CF5Ea4wTSQ1CAvAQog0B",
-                "LastModifiedDate": "2008-11-07T05:18:44",
-                "Priority": "Medium",
-                "RequestID": "000000000000001",
+                "CreateDate": "2022-06-29T14:38:36",
+                "Customer": {
+                    "Company": "Calbro Services",
+                    "Department": null,
+                    "E-mail": null,
+                    "FirstName": "App",
+                    "LastName": "Admin",
+                    "Organization": null,
+                    "PhoneNumber": "###"
+                },
+                "Details": null,
+                "DisplayID": "REQ000000000398",
+                "Impact": "1-Extensive/Widespread",
+                "InstanceId": "AGGAI7ZXDK9WFAR4IUA2R3J3RVIB6Q",
+                "LastModifiedDate": "2022-07-11T07:27:05",
+                "Priority": null,
+                "Request Type": "Standard",
+                "RequestID": "000000000000396",
                 "Requester": {
                     "Company": "Calbro Services",
-                    "FirstName": null,
-                    "LastName": null,
-                    "Region": null,
-                    "Site": null,
-                    "SiteGroup": null
+                    "FirstName": "App",
+                    "LastName": "Admin",
+                    "Region": "Americas",
+                    "Site": "Headquarters, Building 1.31",
+                    "SiteGroup": "United States"
                 },
-                "Resolution": null,
-                "Status": "Assigned",
-                "Status-History": {
-                    "Assigned": {
-                        "timestamp": "2020-02-28T00:50:29.000+0000",
-                        "user": "Action Request Installer Account"
-                    }
-                },
+                "Status": "Planning",
                 "StatusReason": null,
-                "Submitter": "Demo",
-                "Summary": "Email Connectivity Issue",
-                "TargetResolutionDate": "2009-05-28T07:00:00",
-                "TemporaryWorkaround": "Router issue - route affected users to secondary redundant email server.",
-                "Type": "known error",
-                "Urgency": "3-Medium",
-                "ViewAccess": "Internal"
+                "Submitter": "appadmin",
+                "Summary": "Add user access to network",
+                "TargetDate": null,
+                "Type": "service request",
+                "Urgency": "2-High"
             },
             {
                 "Assignee": {
-                    "AssignedGroup": "Service Desk",
-                    "FullName": "Mary Mann",
-                    "Group": null,
+                    "AssignedGroup": null,
+                    "FullName": "Bob Baxter",
+                    "Group": "Backoffice Support",
                     "SupportCompany": "Calbro Services",
                     "SupportOrganization": "IT Support"
                 },
-                "CreateDate": "2008-11-07T05:18:44",
-                "Customer": null,
-                "Details": "router issue",
-                "DisplayID": "PKE_CAL_1000002",
-                "Impact": "4-Minor/Localized",
-                "InstanceId": "AG00123F73CF5Ea4wTSQAyEvAQpA0B",
-                "LastModifiedDate": "2008-11-07T05:18:44",
-                "Priority": "Medium",
-                "RequestID": "000000000000002",
+                "CreateDate": "2022-06-29T14:38:36",
+                "Customer": {
+                    "Company": "Calbro Services",
+                    "Department": null,
+                    "E-mail": null,
+                    "FirstName": "App",
+                    "LastName": "Admin",
+                    "Organization": null,
+                    "PhoneNumber": "###"
+                },
+                "Details": null,
+                "DisplayID": "REQ000000000400",
+                "Impact": "1-Extensive/Widespread",
+                "InstanceId": "AGGAI7ZXDK9WFAR4IUA2R3J3RVIB6W",
+                "LastModifiedDate": "2022-07-11T07:27:05",
+                "Priority": null,
+                "Request Type": "Standard",
+                "RequestID": "000000000000398",
                 "Requester": {
                     "Company": "Calbro Services",
-                    "FirstName": null,
-                    "LastName": null,
-                    "Region": null,
-                    "Site": null,
-                    "SiteGroup": null
+                    "FirstName": "App",
+                    "LastName": "Admin",
+                    "Region": "Americas",
+                    "Site": "Headquarters, Building 1.31",
+                    "SiteGroup": "United States"
                 },
-                "Resolution": null,
-                "Status": "Scheduled For Correction",
-                "Status-History": {
-                    "Assigned": {
-                        "timestamp": "2020-02-28T00:50:29.000+0000",
-                        "user": "Action Request Installer Account"
-                    },
-                    "Scheduled For Correction": {
-                        "timestamp": "2020-02-28T00:50:29.000+0000",
-                        "user": "Action Request Installer Account"
-                    }
-                },
-                "StatusReason": "Pending Infrastructure Change",
-                "Submitter": "Demo",
-                "Summary": "Email Connectivity Issue",
-                "TargetResolutionDate": "2009-05-28T07:00:00",
-                "TemporaryWorkaround": "re-route user",
-                "Type": "known error",
-                "Urgency": "3-Medium",
-                "ViewAccess": "Internal"
+                "Status": "Planning",
+                "StatusReason": null,
+                "Submitter": "appadmin",
+                "Summary": "Add SAP printer",
+                "TargetDate": null,
+                "Type": "service request",
+                "Urgency": "2-High"
             }
         ]
     }
@@ -383,16 +378,16 @@ List BMC Helix ITSM tickets.The records are retrieved according to a constraint 
 #### Human Readable Output
 
 >### List Tickets.
->Showing 2 records out of 41.
+>Showing 2 records out of 227.
 >|Type|Request ID|Display ID|Summary|Status|Urgency|Impact|Create Date|Last Modified Date|
 >|---|---|---|---|---|---|---|---|---|
->| known error | 000000000000001 | PKE_CAL_1000001 | Email Connectivity Issue | Assigned | 3-Medium | 4-Minor/Localized | 2008-11-07T05:18:44 | 2008-11-07T05:18:44 |
->| known error | 000000000000002 | PKE_CAL_1000002 | Email Connectivity Issue | Scheduled For Correction | 3-Medium | 4-Minor/Localized | 2008-11-07T05:18:44 | 2008-11-07T05:18:44 |
+>| service request | 000000000000396 | REQ000000000398 | Add user access to network | Planning | 2-High | 1-Extensive/Widespread | 2022-06-29T14:38:36 | 2022-07-11T07:27:05 |
+>| service request | 000000000000398 | REQ000000000400 | Add SAP printer | Planning | 2-High | 1-Extensive/Widespread | 2022-06-29T14:38:36 | 2022-07-11T07:27:05 |
 
 
 ### bmc-itsm-service-request-create
 ***
-Create a new service request. A service request is the request record that is generated from the service request definition to manage and track the execution. In order to create it, you need to provide the srd_instance_id argument which can be retrieved by by executing "bmc-itsm-service-request-definition-list" command and extracting the instanceID field. User and company related arguments can be retrieved from fields retrived by executing the "bmc-itsm-user-list" and "bmc-itsm-company-list"
+Creates a new service request ticket. A service request ticket is the request record that is generated from the service request definition to manage and track the execution. To create it, you need to provide the srd_instance_id argument, which can be retrieved by by executing the bmc-itsm-service-request-definition-list command and extracting the instanceID field. User and company arguments can be retrieved by executing the bmc-itsm-user-list and bmc-itsm-company-list.
 
 
 #### Base Command
@@ -402,28 +397,49 @@ Create a new service request. A service request is the request record that is ge
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| srd_instance_id | The instance ID of the requested service. It can be retrieved by executing bmc-itsm-service-request-definition-list command. . Possible values are: . | Required | 
-| first_name | Requester first name. By default is determined by the logged in user. If provided, login_id, first_name and last_name arguments must be provided together. Possible values are: . | Optional | 
-| last_name | Requester last name. Requester last name. By default is determined by the logged in user. If provided, login_id, first_name and last_name arguments must be provided together. . Possible values are: . | Optional | 
-| login_id | Requester login ID. By default is determined by the logged in user. If provided, login_id, first_name and last_name arguments must be provided together. Possible values are: . | Optional | 
-| summary | Service Request summary. Possible values are: . | Optional | 
-| status | Service Request status. . Possible values are: Draft, In Cart, In Review, Submitted, Pending, Waiting Approval, Planning, In Progress, Completed, Rejected, Cancelled, Closed. | Optional | 
-| urgency | Incident Request urgency. Required when the creation is without a template. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
-| impact | Incident Request impact. Required when the creation is without a template. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
-| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee or any other custom field. Possible values are: . | Optional | 
+| srd_instance_id | The instance ID of the service request ticket. It can be retrieved by executing bmc-itsm-service-request-definition-list command. . Possible values are: . | Required | 
+| first_name | The requester first name. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together. Possible values are: . | Optional | 
+| last_name | The requester last name. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together. . Possible values are: . | Optional | 
+| login_id | The requester login ID. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together. Possible values are: . | Optional | 
+| summary | The service request ticket summary. Possible values are: . | Optional | 
+| status | The service request ticket status. . Possible values are: Draft, In Cart, In Review, Submitted, Pending, Waiting Approval, Planning, In Progress, Completed, Rejected, Cancelled, Closed. | Optional | 
+| urgency | The ticket urgency. Required when the ticket creation is without a template. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
+| impact | The ticket impact. Required when the ticket creation is without a template. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
+| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.ServiceRequest.RequestID | String | Service Request unique Request ID. | 
-| BmcITSM.ServiceRequest.DisplayID | String | Service Request Request number. | 
-| BmcITSM.ServiceRequest.CreateDate | Date | Service Request Create time in UTC. | 
+| BmcITSM.ServiceRequest.RequestID | String | The service request ticket unique request ID. | 
+| BmcITSM.ServiceRequest.DisplayID | String | The service request ticket request number. | 
+| BmcITSM.ServiceRequest.CreateDate | Date | The service request ticket create date time in UTC. | 
 
+#### Command example
+```!bmc-itsm-service-request-create service_request_definition_id=SRGAA5V0GENAWAO6ZQWYO6EBWDOUAU```
+#### Context Example
+```json
+{
+    "BmcITSM": {
+        "Task": {
+            "CreateDate": "2022-07-27T08:44:43",
+            "DisplayID": "REQ000000000513",
+            "RequestID": "000000000000513"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Task ticket successfully Created.
+>|Create Date|Display ID|Request ID|
+>|---|---|---|
+>| 2022-07-27T08:44:43 | TAS000000000413 | TAS000000000413 |
 ### bmc-itsm-service-request-update
 ***
-Update the details of an service request for a given request ID. User and company related arguments can be retrieved from fields retrived by executing the "bmc-itsm-user-list" and "bmc-itsm-company-list".
+Updates the details of a service request ticket for a given request ID. User and company related arguments can be retrieved by executing the bmc-itsm-user-list and bmc-itsm-company-list commands.
 
 
 #### Base Command
@@ -433,19 +449,19 @@ Update the details of an service request for a given request ID. User and compan
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_request_id | Unique identifier of the service request to update. Possible values are: . | Required | 
-| customer_first_name | Customer First name. By default is determined by the logged in user. . Possible values are: . | Optional | 
-| customer_last_name | Customer last name. By default is determined by the logged in user. . Possible values are: . | Optional | 
-| status | Service Request status. . Possible values are: Draft, In Cart, In Review, Submitted, Pending, Waiting Approval, Planning, In Progress, Completed, Rejected, Cancelled, Closed. | Optional | 
-| urgency | Incident Request urgency. Required when the creation is without a template. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
-| impact | Incident Request impact. Required when the creation is without a template. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
-| status_reason | The reason for updaing the status. Required only if status argument is provided. . Possible values are: Review, Need More Information, Approval, System Error, With Issues, Automatically Closed, Successful, By User, By Provider, System, Cancelled, Reopen By User. | Optional | 
-| location_company | Company associated with SR process. Possible values are: . | Optional | 
-| region | Region associated with Location Company. Possible values are: . | Optional | 
-| site_group | Site Group associated with Region. Possible values are: . | Optional | 
-| site | Site associated with Site Group. Possible values are: . | Optional | 
-| assignee | The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
-| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field. Possible values are: . | Optional | 
+| ticket_request_id | The unique identifier of the service request ticket to update. Possible values are: . | Required | 
+| customer_first_name | The customer first name. By default it is determined by the logged in user. . Possible values are: . | Optional | 
+| customer_last_name | The customer last name. By default it is determined by the logged in user. . Possible values are: . | Optional | 
+| status | The service request ticket status. . Possible values are: Draft, In Cart, In Review, Submitted, Pending, Waiting Approval, Planning, In Progress, Completed, Rejected, Cancelled, Closed. | Optional | 
+| urgency | The ticket request urgency. Required when the ticket creation is without a template. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
+| impact | Incident Request impact. Required when the ticket creation is without a template. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
+| status_reason | The reason for updating the status. Required only if status argument is provided. . Possible values are: Review, Need More Information, Approval, System Error, With Issues, Automatically Closed, Successful, By User, By Provider, System, Cancelled, Reopen By User. | Optional | 
+| location_company | The company associated with the service request process. Possible values are: . | Optional | 
+| region | The region associated with the company location. Possible values are: . | Optional | 
+| site_group | The site group associated with the region. Possible values are: . | Optional | 
+| site | The site associated with the site group. Possible values are: . | Optional | 
+| assignee | The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command. Possible values are: . | Optional | 
+| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field. Possible values are: . | Optional | 
 
 
 #### Context Output
@@ -469,36 +485,42 @@ Update incident ticket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| request_id | The ID of the incident request ticket to update. Possible values are: . | Required | 
-| first_name | Customer first name whom the incident request is for. Possible values are: . | Optional | 
-| last_name | Customer last name whom the incident request is for. Possible values are: . | Optional | 
-| summary | incident summary. Possible values are: . | Optional | 
-| service_type | The type of the incident. . Possible values are: User Service Restoration, User Service Request, Infrastructure Restoration, Infrastructure Event, Security Incident. | Optional | 
-| urgency | Incident Request urgency. Required when the creation is without a template. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
-| impact | Incident Request impact. Required when the creation is without a template. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
-| status | Incident status. Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled. | Optional | 
-| reported_source | Incident reported source. . Possible values are: Direct Input, Email,External Escalation, Fax, Self Service, Systems Management, Phone, Voice Mail, Walk In, Web, Other, BMC Impact Manager Event. | Optional | 
-| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field. Possible values are: The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee or any other custom field.. | Optional | 
-| detailed_description | Incident summary. Possible values are: . | Optional | 
-| company | Company associated with the Requester. By default is determined by the logged in user. Possible values are: . | Optional | 
-| assigned_support_company | This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the 1st tier of the Assignee’s Support Organization data structure. Possible values are: . | Optional | 
-| assigned_support_organization | This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the second tier of the Assignee’s Support Organization data structure. Possible values are: . | Optional | 
-| assigned_group | This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the third tier of the Assignee’s Support Organization data structure. Possible values are: . | Optional | 
-| assignee | The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
+| ticket_request_id | The ID of the incident ticket to update. Possible values are: . | Required | 
+| first_name | The customer first name the incident ticket is for. Possible values are: . | Optional | 
+| last_name | The customer last name the incident ticket is for. Possible values are: . | Optional | 
+| summary | The incident ticket summary. Possible values are: . | Optional | 
+| service_type | The type of the incident ticket. . Possible values are: User Service Restoration, User Service Request, Infrastructure Restoration, Infrastructure Event, Security Incident. | Optional | 
+| urgency | The ticket urgency. Required when the ticket creation is without a template. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
+| impact | The ticket impact. Required when the ticket creation is without a template. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
+| status | The incident ticket status. Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled. | Optional | 
+| reported_source | The incident ticket reported source. . Possible values are: Direct Input, Email,External Escalation, Fax, Self Service, Systems Management, Phone, Voice Mail, Walk In, Web, Other, BMC Impact Manager Event. | Optional | 
+| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field. Possible values are: The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee, or any other custom field.. | Optional | 
+| detailed_description | The incident ticket summary. Possible values are: . | Optional | 
+| company | The company associated with the requester. By default it is determined by the logged in user. Possible values are: . | Optional | 
+| assigned_support_company | The company for the assignee’s support organization. It makes up the first tier of the assignee’s support organization data structure. Possible values are: . | Optional | 
+| assigned_support_organization | The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure. Possible values are: . | Optional | 
+| assigned_group | The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure. Possible values are: . | Optional | 
+| assignee | The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command. Possible values are: . | Optional | 
 | assignee_login_id | The login ID of the assignee. The assignee and assignee_login_id arguments must be provided together. Possible values are: . | Optional | 
-| region | It makes up the second tier of the Customer’s Business Organization data structure. Possible values are: . | Optional | 
-| site_group | Site Group associated with Region. Possible values are: . | Optional | 
-| site | Site associated with Site Group. Possible values are: . | Optional | 
+| region | The region, which makes up the second tier of the customer’s business organization data structure. Possible values are: . | Optional | 
+| site_group | The site group associated with the region. Possible values are: . | Optional | 
+| site | The site associated with the site group. Possible values are: . | Optional | 
 | status_reason | The reason for updating the ticket status. Required when status is provided. Possible values are: Infrastructure Change Created, Local Site Action Required, Purchase Order Approval, Registration Approval, Supplier Delivery, Support Contact Hold, Third Party Vendor Action Reqd, Client Action Required, Infrastructure Change Request, Future Enhancement, Pending Original Incident, Client Hold, Monitoring Incident, Customer Follow-Up Required, Temporary Corrective Action, No Further Action Required, Resolved by Original Incident, Automated Resolution Reported, No longer a Causal CI, Pending Causal Incident Resolution, Resolved by Causal Incident. | Optional | 
-| resolution | Ticket resolution description. Required when status is provided. | Optional | 
+| resolution | The ticket resolution description. Required when status is provided. | Optional | 
 
 
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!bmc-itsm-incident-update request_id=INC000000000532 assignee="Mary Mann" assignee_login_id=Mary impact="2-Significant/Large" urgency="1-Critical"```
+#### Human Readable Output
+
+>Incident: INC000000000532 was successfully updated.
+
 ### bmc-itsm-ticket-delete
 ***
-Delete ticket by it's request ID. Only admin users can perform this command.
+Deletes a ticket by its request ID. Only admin users can perform this command.
 
 
 #### Base Command
@@ -508,7 +530,7 @@ Delete ticket by it's request ID. Only admin users can perform this command.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_ids | Comma seperated list of ticket request ID to delete. Possible values are: . | Required | 
+| ticket_ids | A comma-separated list of ticket request IDs to delete. Possible values are: . | Required | 
 | ticket_type | The type of the tickets to delete. Possible values are: incident, task, change request, problem investigation, known error. | Required | 
 
 
@@ -523,7 +545,7 @@ There is no context output for this command.
 
 ### bmc-itsm-incident-create
 ***
-Create a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service. 
+Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service. 
 
 
 #### Base Command
@@ -533,35 +555,35 @@ Create a new incident ticket. An incident is any event that is not part of the s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| first_name | Customer first name whom the incident request is for. Possible values are: . | Required | 
-| last_name | Customer last name whom the incident request is for. Possible values are: . | Required | 
-| template_instance_id | The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The instance ID can be retrieved by executing bmc-itsm-incident-template-list commad. Possible values are: . | Optional | 
-| summary | incident summary. Required when template_instance_id argument is not provided. Possible values are: . | Optional | 
-| service_type | The type of the incident. Required when template_instance_id argument is not provided. Possible values are: User Service Restoration, User Service Request, Infrastructure Restoration, Infrastructure Event, Security Incident. | Optional | 
-| urgency | Incident Request urgency. Required when the creation is without a template. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required | 
-| impact | Incident Request impact. Required when the creation is without a template. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required | 
+| first_name | The customer first name the incident ticket is for. Possible values are: . | Required | 
+| last_name | The customer last name the incident ticket is for. Possible values are: . | Required | 
+| template_instance_id | The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The instance ID can be retrieved by executing the bmc-itsm-incident-template-list command. Possible values are: . | Optional | 
+| summary | The incident ticket summary. Required when the template_instance_id argument is not provided. Possible values are: . | Optional | 
+| service_type | The type of the incident ticket. Required when the template_instance_id argument is not provided. Possible values are: User Service Restoration, User Service Request, Infrastructure Restoration, Infrastructure Event, Security Incident. | Optional | 
+| urgency | The ticket urgency. Required when the ticket creation is without a template. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required | 
+| impact | The ticket impact. Required when the creation is without a template. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required | 
 | status | Incident status. Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled. | Required | 
-| reported_source | Incident reported source.  Required when template_instance_id argument is not provided. Possible values are: Direct Input, Email,External Escalation, Fax, Self Service, Systems Management, Phone, Voice Mail, Walk In, Web, Other, BMC Impact Manager Event. | Optional | 
-| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field. Possible values are: The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee or any other custom field.. | Optional | 
-| details | Incident detailed description. Possible values are: . | Optional | 
-| company | Company associated with the Requester. By default is determined by the logged in user. Possible values are: . | Optional | 
-| assigned_support_company | This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the 1st tier of the Assignee’s Support Organization data structure. Possible values are: . | Optional | 
-| assigned_support_organization | This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the second tier of the Assignee’s Support Organization data structure. Possible values are: . | Optional | 
-| assigned_group | This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the third tier of the Assignee’s Support Organization data structure. Possible values are: . | Optional | 
-| assignee | The full name of the staff member to whom the ticket will be assigned to. The assignee and assignee_login_id arguments must be provided together. It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
-| assignee_login_id | The login ID of the assignee. The assignee and assignee_login_id arguments must be provided together.It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
-| region | Region associated with Company. Possible values are: . | Optional | 
-| site_group | Site Group associated with Region. Possible values are: . | Optional | 
-| site | Site associated with Site Group. Possible values are: . | Optional | 
+| reported_source | The incident ticket reported source.  Required when the template_instance_id argument is not provided. Possible values are: Direct Input, Email,External Escalation, Fax, Self Service, Systems Management, Phone, Voice Mail, Walk In, Web, Other, BMC Impact Manager Event. | Optional | 
+| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field. Possible values are: The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee, or any other custom field.. | Optional | 
+| details | The incident ticket detailed description. Possible values are: . | Optional | 
+| company | The company associated with the requester. By default it is determined by the logged in user. Possible values are: . | Optional | 
+| assigned_support_company | The company for the assignee’s support organization. It makes up the first tier of the assignee’s support organization data structure. Possible values are: . | Optional | 
+| assigned_support_organization | The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure. Possible values are: . | Optional | 
+| assigned_group | The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure. Possible values are: . | Optional | 
+| assignee | The full name of the employee the ticket will be assigned to. The assignee and assignee_login_id arguments must be provided together. It can be retrieved by using the bmc-itsm-user-list command. Possible values are: . | Optional | 
+| assignee_login_id | The login ID of the assignee. The assignee and assignee_login_id arguments must be provided together. It can be retrieved by using the bmc-itsm-user-list command. Possible values are: . | Optional | 
+| region | The region associated with the company. Possible values are: . | Optional | 
+| site_group | The site group associated with the region. Possible values are: . | Optional | 
+| site | The site associated with the site group. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.Incident.RequestID | String | Incident request ID | 
-| BmcITSM.Incident.DisplayID | String | Incident display ID.  | 
-| BmcITSM.Incident.CreateDate | Date | Incident create time in UTC.  | 
+| BmcITSM.Incident.RequestID | String | The incident ticket request ID. | 
+| BmcITSM.Incident.DisplayID | String | The incident ticket display ID.  | 
+| BmcITSM.Incident.CreateDate | Date | The incident ticket create date time in UTC. | 
 
 #### Command example
 ```!bmc-itsm-incident-create first_name=Allen last_name=Allbrook impact="1-Extensive/Widespread" status=Assigned urgency="1-Critical" template_instance_id=AG00123F73CF5EKnsTSQ5rvrAAZfQA```
@@ -570,9 +592,9 @@ Create a new incident ticket. An incident is any event that is not part of the s
 {
     "BmcITSM": {
         "Incident": {
-            "CreateDate": "2022-06-29T15:40:51",
-            "DisplayID": "INC000000000498",
-            "RequestID": "INC000000000582"
+            "CreateDate": "2022-07-27T08:44:51",
+            "DisplayID": "INC000000000505",
+            "RequestID": "INC000000000606"
         }
     }
 }
@@ -583,12 +605,12 @@ Create a new incident ticket. An incident is any event that is not part of the s
 >### Incident ticket successfully Created
 >|Create Date|Display ID|Request ID|
 >|---|---|---|
->| 2022-06-29T15:40:51 | INC000000000498 | INC000000000582 |
+>| 2022-07-27T08:44:51 | INC000000000505 | INC000000000606 |
 
 
 ### bmc-itsm-change-request-create
 ***
-Create Change Request ticket in BMC Helix ITSM.The ticket is created by using a template or from scratch.
+Creates a change request ticket in BMC Helix ITSM. The ticket is created by using a template or from scratch.
 
 
 #### Base Command
@@ -598,29 +620,29 @@ Create Change Request ticket in BMC Helix ITSM.The ticket is created by using a 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| first_name | Requester first name. Possible values are: . | Required | 
-| last_name | Requester last name. Possible values are: . | Required | 
-| customer_first_name | Customer first name. . Possible values are: . | Optional | 
-| customer_last_name | Customer last name. Possible values are: . | Optional | 
-| summary | Change request title. Required when template ID argument is not provided. Possible values are: . | Optional | 
-| template_id | The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The ID caan be retrieved by executing bmc-itsm-change-request-template-list commad. . Possible values are: . | Optional | 
-| change_type | Change request type. Required when the creation is without a template. Possible values are: Project, Change, Release, Asset Configuration, Asset Management, Asset Lease, Purchase Requisition, Asset Maintenance. | Optional | 
-| change_timing | The class of the change request which best describes your scenario. . Possible values are: Emergency, Expedited, Latent, Normal, No Impact, Standard. | Optional | 
-| impact | Change Request impact. Required when the creation is without a template. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
-| urgency | Change Request urgency. Required when the creation is without a template. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
-| risk_level | Change Request risk level. Required when the creation is without a template. Possible values are: Risk Level 1, Risk Level 2, Risk Level 3, Risk Level 4, Risk Level 5. | Optional | 
-| status | Change Request status. Required when the creation is without a template. Possible values are: Request For Authorization, Request For Change, Planning In Progress, Scheduled For Review, Scheduled For Approval, Scheduled, Implementation In Progress, Pending, Rejected, Completed, Closed, Cancelled. | Optional | 
-| location_company | Company associated with CR process. Required when template ID argument is not provided. Possible values are: . | Optional | 
-| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field. Possible values are: . | Optional | 
+| first_name | The requester first name. Possible values are: . | Required | 
+| last_name | The requester last name. Possible values are: . | Required | 
+| customer_first_name | The customer first name. . Possible values are: . | Optional | 
+| customer_last_name | The customer last name. Possible values are: . | Optional | 
+| summary | The change request ticket title. Required when the template ID argument is not provided. Possible values are: . | Optional | 
+| template_id | The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The ID can be retrieved by executing the bmc-itsm-change-request-template-list command. Possible values are: . | Optional | 
+| change_type | The change request ticket type. Required when the ticket creation is without a template. Possible values are: Project, Change, Release, Asset Configuration, Asset Management, Asset Lease, Purchase Requisition, Asset Maintenance. | Optional | 
+| change_timing | The class of the change request ticket which best describes your scenario. Possible values are: Emergency, Expedited, Latent, Normal, No Impact, Standard. | Optional | 
+| impact | The change request ticket impact. Required when the ticket creation is without a template. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
+| urgency | The change request ticket urgency. Required when the ticket creation is without a template. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
+| risk_level | The change request ticket risk level. Required when the ticket creation is without a template. Possible values are: Risk Level 1, Risk Level 2, Risk Level 3, Risk Level 4, Risk Level 5. | Optional | 
+| status | The change request ticket status. Required when the ticket creation is without a template. Possible values are: Request For Authorization, Request For Change, Planning In Progress, Scheduled For Review, Scheduled For Approval, Scheduled, Implementation In Progress, Pending, Rejected, Completed, Closed, Cancelled. | Optional | 
+| location_company | The company associated with the change request process. Required when template ID argument is not provided. Possible values are: . | Optional | 
+| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.ChangeRequest.RequestID | String | Change Request unique Request ID. | 
-| BmcITSM.ChangeRequest.DisplayID | String | Change Request Request number. | 
-| BmcITSM.ChangeRequest.CreateDate | Date | Change Request Create time. | 
+| BmcITSM.ChangeRequest.RequestID | String | The change request ticket unique request ID. | 
+| BmcITSM.ChangeRequest.DisplayID | String | The change request ticket request number. | 
+| BmcITSM.ChangeRequest.CreateDate | Date | The change request ticket create date time. | 
 
 #### Command example
 ```!bmc-itsm-change-request-create template_id=AG00123F73CF5EK3sTSQTb3rAAbfQA first_name=Allen last_name=Allbrook summary="Change request for README"```
@@ -629,9 +651,9 @@ Create Change Request ticket in BMC Helix ITSM.The ticket is created by using a 
 {
     "BmcITSM": {
         "ChangeRequest": {
-            "CreateDate": "2022-06-29T15:27:56",
-            "DisplayID": "CRQ000000000342",
-            "RequestID": "CRQ000000000337"
+            "CreateDate": "2022-07-27T08:44:24",
+            "DisplayID": "CRQ000000000404",
+            "RequestID": "CRQ000000000406"
         }
     }
 }
@@ -642,12 +664,12 @@ Create Change Request ticket in BMC Helix ITSM.The ticket is created by using a 
 >### Change Request ticket successfully Created
 >|Create Date|Display ID|Request ID|
 >|---|---|---|
->| 2022-06-29T15:27:56 | CRQ000000000342 | CRQ000000000337 |
+>| 2022-07-27T08:44:24 | CRQ000000000404 | CRQ000000000406 |
 
 
 ### bmc-itsm-change-request-update
 ***
-Update the details of change request ticket for the specfied request ID.
+Updates the details of change request ticket for the specified request ID.
 
 
 #### Base Command
@@ -657,36 +679,41 @@ Update the details of change request ticket for the specfied request ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| request_id | The ID of the change request ticket to update. | Required | 
-| first_name | Customer first name whom the change request is for. . Possible values are: . | Optional | 
-| last_name | Customer last name whom the change request is for. . Possible values are: . | Optional | 
-| summary | Change request summary. Possible values are: . | Optional | 
-| change_type | Change request type. . Possible values are: Project, Change, Release, Asset Configuration, Asset Management, Asset Lease, Purchase Requisition, Asset Maintenance. | Optional | 
-| change_timing | The class of the change request which best describes your scenario. . Possible values are: Emergency, Expedited, Latent, Normal, No Impact, Standard. | Optional | 
-| impact | Change Request impact. . Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
-| urgency | Change Request urgency. . Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
-| risk_level | Change Request risk level. Possible values are: Risk Level 1, Risk Level 2, Risk Level 3, Risk Level 4, Risk Level 5. | Optional | 
-| status | Change Request status. . Possible values are: Request For Authorization, Request For Change, Planning In Progress, Scheduled For Review, Scheduled For Approval, Scheduled, Implementation In Progress, Pending, Rejected, Completed, Closed, Cancelled. | Optional | 
-| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field. Possible values are: . | Optional | 
-| company | Company associated with the Requester. By default is determined by the logged in user. Possible values are: . | Optional | 
-| organization | Organization associated with the Requester. Possible values are: . | Optional | 
-| department | Department associated with the Requester. Possible values are: . | Optional | 
-| location_company | Company associated with CR process. Possible values are: . | Optional | 
-| region | Region associated with Location Company. Possible values are: . | Optional | 
-| site_group | Site Group associated with Region. Possible values are: . | Optional | 
-| site | Site associated with Site Group. Possible values are: . | Optional | 
-| support_organization | It makes up the second tier of the Change Manager’s Support Organization data structure. Possible values are: . | Optional | 
-| support_group_name | It makes up the third tier of the Change Manager’s Support Organization data structure. Possible values are: . | Optional | 
+| ticket_request_id | The ID of the change request ticket to update. | Required | 
+| first_name | The customer first name the change request ticket is for. . Possible values are: . | Optional | 
+| last_name | The customer last name the change request ticket is for. . Possible values are: . | Optional | 
+| summary | The change request ticket summary. Possible values are: . | Optional | 
+| change_type | The change request ticket type. . Possible values are: Project, Change, Release, Asset Configuration, Asset Management, Asset Lease, Purchase Requisition, Asset Maintenance. | Optional | 
+| change_timing | The class of the change request ticket which best describes your scenario. Possible values are: Emergency, Expedited, Latent, Normal, No Impact, Standard. | Optional | 
+| impact | The change request ticket impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
+| urgency | The change request ticket urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
+| risk_level | The change request ticket risk level. Possible values are: Risk Level 1, Risk Level 2, Risk Level 3, Risk Level 4, Risk Level 5. | Optional | 
+| status | The change request ticket status. Possible values are: Request For Authorization, Request For Change, Planning In Progress, Scheduled For Review, Scheduled For Approval, Scheduled, Implementation In Progress, Pending, Rejected, Completed, Closed, Cancelled. | Optional | 
+| additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field. Possible values are: . | Optional | 
+| company | The company associated with the requester. By default it is determined by the logged in user. Possible values are: . | Optional | 
+| organization | The organization associated with the requester. Possible values are: . | Optional | 
+| department | The department associated with the requester. Possible values are: . | Optional | 
+| location_company | The company associated with the change request process. Possible values are: . | Optional | 
+| region | The region associated with the company location. Possible values are: . | Optional | 
+| site_group | The site group associated with the region. Possible values are: . | Optional | 
+| site | The site associated with the site group. Possible values are: . | Optional | 
+| support_organization | The second tier of the change manager’s support organization data structure. Possible values are: . | Optional | 
+| support_group_name | The third tier of the change manager’s support organization data structure. Possible values are: . | Optional | 
 | status_reason | The reason for updating the ticket status. Required when status is provided. . Possible values are: No Longer Required, Funding Not Available, To Be Re-Scheduled, Resources Not Available, Successful, Successful with Issues, Unsuccessful, Backed Out, Final Review Complete, Final Review Required, Additional Coding Required, Insufficient Task Data, In Verification, In Rollout, Insufficient Change Data, Schedule Conflicts, In Development, In Test, In Build, In Rollback, In Documentation, Vendor Purchase, Support Group Communication, Task Review, Miscellaneous, Future Enhancement, Manager Intervention, Accepted, Assigned, Built, On Hold. | Optional | 
-| details | Change request ticket details. Possible values are: . | Optional | 
+| details | The change request ticket details. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!bmc-itsm-change-request-update reuqest_id=CRQ000000000313 status="Request For Authorization" details="more details" status_reason=Accepted ```
+#### Human Readable Output
+
+>Incident: CRQ000000000313 was successfully updated.
 ### bmc-itsm-task-create
 ***
-Create a new task ticket. You can create and manage tasks to resolve cases. Tasks are child records of cases that enable you to split the cases into individual assignments so that you can focus on one assignment at a time and achieve the required results efficiently. Task ticket type can be attached only to the following types:change request,incident,problem investigation and known error.
+Creates a new task ticket. By splitting cases into individual tasks (assignments), you can focus on one assignment at a time to resolve cases more efficiently. Task ticket type can be attached only to the following ticket types: change request, incident, problem investigation, and known error.
 
 
 #### Base Command
@@ -696,39 +723,62 @@ Create a new task ticket. You can create and manage tasks to resolve cases. Task
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| template_id | The instance ID of the template to use. The ID can be retrieved by executing 'bmc-itsm-task-template-list' commad. Possible values are: . | Optional | 
-| summary | Task summary. Possible values are: . | Required | 
-| details | Task detailed description. Possible values are: . | Required | 
-| root_ticket_type | Parent ticket type. Possible values are: change request, incident, problem investigation, known error. | Required | 
-| root_request_id | The request ID of the parent ticket. Can be found in the context output of ticket bmc-itsm-ticket-list command. . Possible values are: . | Required | 
-| root_request_name | The display name of the parent ticket in the task ticket. If not provoded, the parent ticket displayID will be displayed. . Possible values are: . | Optional | 
-| root_request_mode | Parent request mode. . Possible values are: Real, Simulation. Default is Real. | Optional | 
-| status | task status. Possible values are: Staged, Assigned, Pending, Work In Progress, Waiting, Closed, Bypassed. | Required | 
-| task_type | Whether it is a manual Task or an automatic one. Possible values are: Automatic, Manual. | Optional | 
+| template_id | The instance ID of the template to use. The ID can be retrieved by executing the bmc-itsm-task-template-list command. Possible values are: . | Optional | 
+| summary | The task ticket summary. Possible values are: . | Required | 
+| details | The task ticket detailed description. Possible values are: . | Required | 
+| root_ticket_type | The parent ticket type. Possible values are: change request, incident, problem investigation, known error. | Required | 
+| root_request_id | The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. . Possible values are: . | Required | 
+| root_request_name | The display name of the parent ticket in the task ticket. If not provided, the parent ticket displayID is displayed. . Possible values are: . | Optional | 
+| root_request_mode | The parent ticket request mode. . Possible values are: Real, Simulation. Default is Real. | Optional | 
+| status | The task status. Possible values are: Staged, Assigned, Pending, Work In Progress, Waiting, Closed, Bypassed. | Required | 
+| task_type | Whether the task is manual or automatic. Possible values are: Automatic, Manual. | Optional | 
 | additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field. Possible values are: The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.. | Optional | 
-| priority | Task priority. Possible values are: Critical, High, Medium, Low. | Required | 
-| location_company | Company associated with the task process. Possible values are: . | Required | 
-| support_company | Technical support team assoiciated company. Possible values are: . | Optional | 
-| assigned_support_organization | It makes up the second tier of the Task's Support Organization data structure. The arguments assigned_support_organization,assigned_group,support_company Should be provided together. Possible values are: . | Optional | 
-| assigned_support_group | It makes up the third tier of the Task’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,support_company Should be provided together. Possible values are: . | Optional | 
-| impact | Task impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
-| urgency | Task urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
-| assignee | The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
-| scedulded_start_date | Task schedulded Future start date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
-| scedulded_end_date | Task schedulded Future end date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
+| priority | The task ticket priority. Possible values are: Critical, High, Medium, Low. | Required | 
+| location_company | The company associated with the task process. Possible values are: . | Required | 
+| support_company | The technical support team associated with the company. Possible values are: . | Optional | 
+| assigned_support_organization | The organization for the task's support organization. It makes up the second tier of the task’s support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together. Possible values are: . | Optional | 
+| assigned_support_group | The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together. Possible values are: . | Optional | 
+| impact | The task ticket impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
+| urgency | The task ticket urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
+| assignee | The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command. Possible values are: . | Optional | 
+| scedulded_start_date | The task ticket scheduled future start date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
+| scedulded_end_date | The task ticket scheduled future end date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.Task.RequestID | String | Task unique Request ID. | 
-| BmcITSM.Task.DisplayID | String | Task Request display ID. | 
-| BmcITSM.Task.CreateDate | Date | Task Create time in UTC. | 
+| BmcITSM.Task.RequestID | String | The task ticket unique Request ID. | 
+| BmcITSM.Task.DisplayID | String | The task ticket request display ID. | 
+| BmcITSM.Task.CreateDate | Date | The task ticket creation date time in UTC. | 
+
+#### Command example
+```!bmc-itsm-task-create location_company="Calbro Services" details="Details" priority=Critical root_request_id=PBI000000000322 root_request_name=error root_ticket_type="problem investigation" status=Assigned summary="Summary task" assigned_support_group="Service Desk" assigned_support_organization="IT Support"  support_company="Calbro Services" task_type=Manual assignee="Francie Stafford" scedulded_end_date="in 10 days" scedulded_start_date="in 2 days"```
+#### Context Example
+```json
+{
+    "BmcITSM": {
+        "Task": {
+            "CreateDate": "2022-07-27T08:44:43",
+            "DisplayID": "TAS000000000413",
+            "RequestID": "TAS000000000413"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Task ticket successfully Created.
+>|Create Date|Display ID|Request ID|
+>|---|---|---|
+>| 2022-07-27T08:44:43 | TAS000000000413 | TAS000000000413 |
+
 
 ### bmc-itsm-task-update
 ***
-Update task ticket. 
+Updates the task ticket. 
 
 
 #### Base Command
@@ -738,30 +788,36 @@ Update task ticket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | The ID of the task request ticket to update. Possible values are: . | Required | 
-| summary | Task summary. Possible values are: . | Optional | 
-| details | Task detailed description. Possible values are: . | Optional | 
-| priority | Task priority. Possible values are: Critical, High, Medium, Low. | Optional | 
-| status | Task status. Possible values are: Staged, Assigned, Pending, Work In Progress, Waiting, Closed, Bypassed. | Optional | 
-| status_reason | The reason for changing the status. Required when the status is changed. . Possible values are: Success, Failed, Cancelled, Assignment, Staging in Progress, Staging Complete, Acknowledgment, Another Task, Task Rule, Completion, Error. | Optional | 
-| company | Company associated with the Requester. By default is determined by the logged in user. Possible values are: . | Optional | 
-| location_company | Company associated with the task process. Possible values are: . | Optional | 
-| support_company | Technical support team assoiciated company. Possible values are: . | Optional | 
-| assignee | The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
-| assigned_support_organization | It makes up the second tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together. Possible values are: . | Optional | 
-| assigned_group | It makes up the third tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together. Possible values are: . | Optional | 
-| task_type | Task type. . Possible values are: Automatic, Manual. | Optional | 
+| ticket_request_id | The ID of the task ticket to update. Possible values are: . | Required | 
+| summary | The task ticket summary. Possible values are: . | Optional | 
+| details | The task ticket detailed description. Possible values are: . | Optional | 
+| priority | The task ticket priority. Possible values are: Critical, High, Medium, Low. | Optional | 
+| status | The task ticket status. Possible values are: Staged, Assigned, Pending, Work In Progress, Waiting, Closed, Bypassed. | Optional | 
+| status_reason | The reason for changing the ticket status. Required when the status is changed. . Possible values are: Success, Failed, Cancelled, Assignment, Staging in Progress, Staging Complete, Acknowledgment, Another Task, Task Rule, Completion, Error. | Optional | 
+| company | The company associated with the requester. By default it is determined by the logged in user. Possible values are: . | Optional | 
+| location_company | The company associated with the task process. Possible values are: . | Optional | 
+| support_company | The technical support team associated with the company. Possible values are: . | Optional | 
+| assignee | The full name of the employee the ticket is assigned to. It can be retrieved by using the bmc-itsm-user-list command. Possible values are: . | Optional | 
+| assigned_support_organization | The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together. Possible values are: . | Optional | 
+| assigned_group | The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together. Possible values are: . | Optional | 
+| task_type | The task ticket type. . Possible values are: Automatic, Manual. | Optional | 
 | additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field. Possible values are: The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.. | Optional | 
-| scedulded_start_date | Task schedulded Future start date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
-| scedulded_end_date | Task schedulded Future end date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
+| scedulded_start_date | The task ticket scheduled future start date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
+| scedulded_end_date | The task ticket scheduled future end date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!bmc-itsm-task-update task_id=TAS000000000305 company=test priority=High status="Work In Progress" status_reason="Task Rule" summary="Updated summary for demo" details="Updated details for demo" ```
+#### Human Readable Output
+
+>Task: TAS000000000305 was successfully updated.
+
 ### bmc-itsm-problem-investigation-create
 ***
-Create problem investigation ticket. 
+Creates a problem investigation ticket. 
 
 
 #### Base Command
@@ -771,30 +827,30 @@ Create problem investigation ticket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| first_name | Customer first name whom the incident request is for. Possible values are: . | Required | 
-| last_name | Customer last name whom the incident request is for. Possible values are: . | Required | 
-| status | Problem investigation status. Possible values are: Draft, Under Review, Request for Authorization, Assigned, Under Investigation, Pending, Completed, Rejected, Closed, Cancelled. | Required | 
-| investigation_driver | Problem investigation driver. . Possible values are: High Impact Incident, Re-Occuring Incidents, Non-Routine Incident, Other. | Required | 
-| summary | Problem investigation summary. Possible values are: . | Required | 
-| details | Detailed description on the problem investigation ticket. Possible values are: . | Optional | 
-| impact | problem investigation impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required | 
-| urgency | Problem investigation urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required | 
-| target_resolution_date | Future resolution date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
-| company | Company associated with the Requester. By default is determined by the logged in user. Possible values are: . | Optional | 
-| region | The region of the problem location. The arguments region, site_group and site should be provided together. Possible values are: . | Optional | 
-| site_group | The site group of the problem location.The arguments region, site_group and site should be provided together. Possible values are: . | Optional | 
-| site | The site of the problem location.The arguments region, site_group and site should be provided together. Possible values are: . | Optional | 
-| assignee | The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
-| assignee_pbm_mgr | The full name of the staff member to whom the ticket will be assign to as the problem coordinator. It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
-| assigned_group_pbm_mgr | It makes up the third tier of the Problem Coordinator’s Support Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together. Possible values are: . | Optional | 
-| support_company_pbm_mgr | the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together. Possible values are: . | Optional | 
-| support_organization_pbm_mgr | It makes up the second tier of the Problem Coordinator’s Support Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together. Possible values are: . | Optional | 
-| assigned_support_company |  This is the Company for the Problem Assignee’s Support Organization. It makes up the first tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together. Possible values are: . | Optional | 
-| assigned_support_organization | It makes up the second tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together. Possible values are: . | Optional | 
-| assigned_group | It makes up the third tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together. Possible values are: . | Optional | 
+| first_name | The customer first name the ticket request is for. Possible values are: . | Required | 
+| last_name | The customer last name the ticket request is for. Possible values are: . | Required | 
+| status | The problem investigation ticket status. Possible values are: Draft, Under Review, Request for Authorization, Assigned, Under Investigation, Pending, Completed, Rejected, Closed, Cancelled. | Required | 
+| investigation_driver | The problem investigation ticket driver. . Possible values are: High Impact Incident, Re-Occurring Incidents, Non-Routine Incident, Other. | Required | 
+| summary | The problem investigation ticket summary. Possible values are: . | Required | 
+| details | The detailed description on the problem investigation ticket. Possible values are: . | Optional | 
+| impact | The problem investigation ticket impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required | 
+| urgency | The problem investigation ticket urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required | 
+| target_resolution_date | The future resolution date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
+| company | The company associated with the requester. By default it is determined by the logged in user. Possible values are: . | Optional | 
+| region | The region of the problem investigation location. The arguments region, site_group, and site should be provided together. Possible values are: . | Optional | 
+| site_group | The site group of the problem investigation location. The arguments region, site_group, and site should be provided together. Possible values are: . | Optional | 
+| site | The site of the problem investigation location. The arguments region, site_group, and site should be provided together. Possible values are: . | Optional | 
+| assignee | The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command. Possible values are: . | Optional | 
+| assignee_pbm_mgr | The full name of the employee the ticket will be assigned to as the problem coordinator. It can be retrieved by using the bmc-itsm-user-list command. Possible values are: . | Optional | 
+| assigned_group_pbm_mgr | The group for the problem coordinator’s support organization, which makes up the third tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together. Possible values are: . | Optional | 
+| support_company_pbm_mgr | The company for the problem coordinator’s support organization, which makes up the first tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together. Possible values are: . | Optional | 
+| support_organization_pbm_mgr | The organization for the problem coordinator’s support organization, which makes up the second tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together. Possible values are: . | Optional | 
+| assigned_support_company | The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together. Possible values are: . | Optional | 
+| assigned_support_organization | The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together. Possible values are: . | Optional | 
+| assigned_group | The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together. Possible values are: . | Optional | 
 | investigation_justification | The justification for the ticket creation. Possible values are: . | Optional | 
-| temporary_workaround | Problem workaround. Possible values are: . | Optional | 
-| resolution | Ticket resolution. Possible values are: . | Optional | 
+| temporary_workaround | The problem workaround. Possible values are: . | Optional | 
+| resolution | The ticket resolution. Possible values are: . | Optional | 
 | additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field. Possible values are: . | Optional | 
 
 
@@ -802,9 +858,9 @@ Create problem investigation ticket.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.ProblemInvestigation.RequestID | String | Problem Investigation unique Request ID. | 
-| BmcITSM.ProblemInvestigation.DisplayID | String | Problem Investigation Display ID. | 
-| BmcITSM.ProblemInvestigation.CreateDate | Date | Problem Investigation Create time in UTC. | 
+| BmcITSM.ProblemInvestigation.RequestID | String | The problem investigation ticket unique Request ID. | 
+| BmcITSM.ProblemInvestigation.DisplayID | String | The problem investigation ticket display ID. | 
+| BmcITSM.ProblemInvestigation.CreateDate | Date | The problem investigation ticket creation date time in UTC. | 
 
 #### Command example
 ```!bmc-itsm-problem-investigation-create first_name=Allen last_name=Allbrook summary=Test-create-prob urgency="1-Critical" impact="4-Minor/Localized" details="Problem details" status=Assigned target_resolution_date="in 3 days" assigned_support_company="Calbro Services" assigned_support_organization="IT Support" assigned_group="Backoffice Support" investigation_driver="High Impact Incident"```
@@ -813,9 +869,9 @@ Create problem investigation ticket.
 {
     "BmcITSM": {
         "ProblemInvestigation": {
-            "CreateDate": "2022-06-29T15:28:03",
-            "DisplayID": "PBI000000000370",
-            "RequestID": "PBI000000000329"
+            "CreateDate": "2022-07-27T08:44:33",
+            "DisplayID": "PBI000000000404",
+            "RequestID": "PBI000000000404"
         }
     }
 }
@@ -826,12 +882,12 @@ Create problem investigation ticket.
 >### Problem Investigation  ticket successfully Created
 >|Create Date|Display ID|Request ID|
 >|---|---|---|
->| 2022-06-29T15:28:03 | PBI000000000370 | PBI000000000329 |
+>| 2022-07-27T08:44:33 | PBI000000000404 | PBI000000000404 |
 
 
 ### bmc-itsm-problem-investigation-update
 ***
-Update Problem Investigation ticket type.
+Updates The problem investigation ticket type.
 
 
 #### Base Command
@@ -841,29 +897,29 @@ Update Problem Investigation ticket type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| problem_investigation_id | Problem Investigation request ID. Possible values are: . | Required | 
-| status | Problem investigation status. Possible values are: Draft, Under Review, Request for Authorization, Assigned, Under Investigation, Pending, Completed, Rejected, Closed, Cancelled. | Optional | 
-| investigation_driver | Problem investigation driver. . Possible values are: High Impact Incident, Re-Occuring Incidents, Non-Routine Incident, Other. | Optional | 
-| summary | Problem investigation summary. Possible values are: . | Optional | 
-| impact | problem investigation impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
-| urgency | Problem investigation urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
-| target_resolution_date | Problem investigation target resolution date. Future resolution date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
-| details | Problem investigation detailed description. Possible values are: . | Optional | 
-| company | Company associated with the Requester. By default is determined by the logged in user. Possible values are: . | Optional | 
-| region | The region of the problem location. The arguments region, site_group and site should be provided together. Possible values are: . | Optional | 
-| site_group | The site group of the problem location.The arguments region, site_group and site should be provided together. Possible values are: . | Optional | 
-| site | The site of the problem location.The arguments region, site_group and site should be provided together. Possible values are: . | Optional | 
-| assigned_to | To whom technical support person the ticket is asigned to. . Possible values are: . | Optional | 
-| assigned_group_pbm_mgr | It makes up the third tier of the Problem Coordinator’s Support Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together. Possible values are: . | Optional | 
-| support_company_pbm_mgr | the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together. Possible values are: . | Optional | 
-| support_organization_pbm_mgr | It makes up the second tier of the Problem Coordinator’s Support Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together. Possible values are: . | Optional | 
-| assigned_support_company |  This is the Company for the Problem Assignee’s Support Organization. It makes up the first tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together. Possible values are: . | Optional | 
-| assigned_support_organization | It makes up the second tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together. Possible values are: . | Optional | 
-| assigned_group | It makes up the third tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together. Possible values are: . | Optional | 
+| ticket_request_id | The problem investigation ticket request ID. Possible values are: . | Required | 
+| status | The problem investigation ticket status. Possible values are: Draft, Under Review, Request for Authorization, Assigned, Under Investigation, Pending, Completed, Rejected, Closed, Cancelled. | Optional | 
+| investigation_driver | The problem investigation ticket driver. . Possible values are: High Impact Incident, Re-Occuring Incidents, Non-Routine Incident, Other. | Optional | 
+| summary | The problem investigation ticket summary. Possible values are: . | Optional | 
+| impact | The problem investigation ticket impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
+| urgency | The problem investigation ticket urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
+| target_resolution_date | The problem investigation ticket target resolution date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
+| details | The problem investigation ticket detailed description. Possible values are: . | Optional | 
+| company | The company associated with the requester. By default it is determined by the logged in user. Possible values are: . | Optional | 
+| region | The region of the problem investigation location. The arguments region, site_group, and site should be provided together. Possible values are: . | Optional | 
+| site_group | The site group of the problem investigation location. The arguments region, site_group, and site should be provided together. Possible values are: . | Optional | 
+| site | The site of the problem investigation location.The arguments region, site_group, and site should be provided together. Possible values are: . | Optional | 
+| assigned_to | The technical support person the ticket is assigned to. Possible values are: . | Optional | 
+| assigned_group_pbm_mgr | The group for the problem coordinator’s support organization, which makes up the third tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together. Possible values are: . | Optional | 
+| support_company_pbm_mgr | The company for the problem coordinator’s support organization, which makes up the first tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together. Possible values are: . | Optional | 
+| support_organization_pbm_mgr | The organization for the problem coordinator’s support organization, which makes up the second tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together. Possible values are: . | Optional | 
+| assigned_support_company | The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together. Possible values are: . | Optional | 
+| assigned_support_organization | The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together. Possible values are: . | Optional | 
+| assigned_group | The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together. Possible values are: . | Optional | 
 | investigation_justification | The justification for the ticket creation. Possible values are: . | Optional | 
-| temporary_workaround | Problem workaround. Possible values are: . | Optional | 
-| resolution | Ticket resolution. Possible values are: . | Optional | 
-| status_reason | The reason for changing the status. Required when the status argument provided. Possible values are: Publish, Reject, Not Applicable. | Optional | 
+| temporary_workaround | The problem workaround. Possible values are: . | Optional | 
+| resolution | The ticket resolution. Possible values are: . | Optional | 
+| status_reason | The reason for changing the status. Required when the status argument is provided. Possible values are: Publish, Reject, Not Applicable. | Optional | 
 
 
 #### Context Output
@@ -887,11 +943,11 @@ Create known error ticket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | Known error status. Possible values are: Assigned, Scheduled For Correction, Assigned To Vendor, No Action Planned, Corrected, Closed, Cancelled. | Required | 
-| summary | known error summary. Possible values are: . | Required | 
-| details | known error Detailed description. Possible values are: . | Required | 
-| impact | Known error impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required | 
-| urgency | Known error urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required | 
+| status | The known error ticket status. Possible values are: Assigned, Scheduled For Correction, Assigned To Vendor, No Action Planned, Corrected, Closed, Cancelled. | Required | 
+| summary | The known error ticket summary. Possible values are: . | Required | 
+| details | The known error ticket Detailed description. Possible values are: . | Required | 
+| impact | The known error ticket impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required | 
+| urgency | The known error ticket urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required | 
 | view_access | Whether if the ticket is for internal view or public view. Possible values are: Public, Internal. | Required | 
 | company | Company associated with the Requester. Possible values are: . | Required | 
 | target_resolution_date | Known error resolution date. Future resolution date. For example, in 12 hours, in 7 days. Possible values are: . | Required | 
@@ -899,9 +955,9 @@ Create known error ticket.
 | assigned_group_pbm_mgr | It makes up the third tier of the Problem Coordinator’s Support Organization data structure. Possible values are: . | Optional | 
 | support_company_pbm_mgr | the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. . Possible values are: . | Optional | 
 | support_organization_pbm_mgr | It makes up the second tier of the Problem Coordinator’s Support Organization data structure. Possible values are: . | Optional | 
-| assigned_support_company |  This is the Company for the Problem Assignee’s Support Organization. It makes up the first tier of the Problem Assignee’s Support Organization data structure. Possible values are: . | Optional | 
-| assigned_support_organization | It makes up the second tier of the Problem Assignee’s Support Organization data structure. Possible values are: . | Optional | 
-| assigned_group | It makes up the third tier of the Problem Assignee’s Support Organization data structure. Possible values are: . | Optional | 
+| assigned_support_company | The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. Possible values are: . | Optional | 
+| assigned_support_organization | The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. Possible values are: . | Optional | 
+| assigned_group | The group for the problem assignee’s support organization. It makes up the third tier of the problem assignee’s support organization data structure. Possible values are: . | Optional | 
 | investigation_justification | The justification for the ticket creation. Possible values are: . | Optional | 
 | assignee | The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
 | assignee_pbm_mgr | The full name of the staff member to whom the ticket will be assign to as the problem coordinator. It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
@@ -924,9 +980,9 @@ Create known error ticket.
 {
     "BmcITSM": {
         "KnownError": {
-            "CreateDate": "2022-06-29T15:28:12",
-            "DisplayID": "PKE000000000250",
-            "RequestID": "PKE000000000230"
+            "CreateDate": "2022-07-27T08:44:37",
+            "DisplayID": "PKE000000000303",
+            "RequestID": "PKE000000000303"
         }
     }
 }
@@ -937,7 +993,7 @@ Create known error ticket.
 >### Known Error ticket successfully Created
 >|Create Date|Display ID|Request ID|
 >|---|---|---|
->| 2022-06-29T15:28:12 | PKE000000000250 | PKE000000000230 |
+>| 2022-07-27T08:44:37 | PKE000000000303 | PKE000000000303 |
 
 
 ### bmc-itsm-known-error-update
@@ -952,26 +1008,26 @@ Update Known Error ticket type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| known_error_id | Known Error request ID. Possible values are: . | Required | 
-| status | Known error status. Possible values are: Assigned, Scheduled For Correction, Assigned To Vendor, No Action Planned, Corrected, Closed, Cancelled. | Optional | 
-| summary | known error summary. Possible values are: . | Optional | 
-| details | Known error detailed description. Possible values are: . | Optional | 
-| impact | Problem investigation impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
-| urgency | Problem investigation urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
-| view_access | known error internal access. . Possible values are: Public, Internal. | Optional | 
+| ticket_request_id | The known error ticket request ID. Possible values are: . | Required | 
+| status | The known error ticket status. Possible values are: Assigned, Scheduled For Correction, Assigned To Vendor, No Action Planned, Corrected, Closed, Cancelled. | Optional | 
+| summary | The known error ticket summary. Possible values are: . | Optional | 
+| details | The known error ticket detailed description. Possible values are: . | Optional | 
+| impact | The known error ticket impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
+| urgency | The known error ticket urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
+| view_access | The known error ticket internal access. . Possible values are: Public, Internal. | Optional | 
 | company | Company associated with the Requester. By default is determined by the logged in user. Possible values are: . | Optional | 
 | target_resolution_date | Known error resolution date. Future resolution date. For example, in 12 hours, in 7 days. Possible values are: . | Optional | 
 | resolution | Ticket resolution. Possible values are: . | Optional | 
 | assigned_group_pbm_mgr | It makes up the third tier of the Problem Coordinator’s Support Organization data structure. Possible values are: . | Optional | 
 | support_company_pbm_mgr | the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. . Possible values are: . | Optional | 
 | support_organization_pbm_mgr | It makes up the second tier of the Problem Coordinator’s Support Organization data structure. Possible values are: . | Optional | 
-| assigned_support_company |  This is the Company for the Problem Assignee’s Support Organization. It makes up the first tier of the Problem Assignee’s Support Organization data structure. Possible values are: . | Optional | 
-| assigned_support_organization | It makes up the second tier of the Problem Assignee’s Support Organization data structure. Possible values are: . | Optional | 
-| assigned_group | It makes up the third tier of the Problem Assignee’s Support Organization data structure. Possible values are: . | Optional | 
+| assigned_support_company | The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. Possible values are: . | Optional | 
+| assigned_support_organization | The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. Possible values are: . | Optional | 
+| assigned_group | The group for the problem assignee’s support organization. It makes up the third tier of the problem assignee’s support organization data structure. Possible values are: . | Optional | 
 | temporary_workaround | Error workaround. Possible values are: . | Optional | 
-| status_reason | The reason for changing the status. Required when the status provided. . Possible values are: Duplicate, No Longer Applicable, Pending PIR, Funding Not Available, Pending Infrastructure Change, Pending Third Party Vendor. | Optional | 
-| assignee | The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
-| assignee_pbm_mgr | The full name of the staff member to whom the ticket will be assign to as the problem coordinator. It can be retrieved by using the 'bmc-itsm-user-list' command. Possible values are: . | Optional | 
+| status_reason | The reason for changing the status. Required when the status is provided. . Possible values are: Duplicate, No Longer Applicable, Pending PIR, Funding Not Available, Pending Infrastructure Change, Pending Third Party Vendor. | Optional | 
+| assignee | The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command. Possible values are: . | Optional | 
+| assignee_pbm_mgr | The full name of the employee the ticket will be assign to as the problem coordinator. It can be retrieved by using the bmc-itsm-user-list command. Possible values are: . | Optional | 
 | additional_fields | The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field. Possible values are: . | Optional | 
 
 
@@ -986,7 +1042,7 @@ There is no context output for this command.
 
 ### bmc-itsm-change-request-template-list
 ***
-List all change requests ticket templates. Useful for create change request ticket. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
+Lists all change requests ticket templates. Useful for creating change request tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
 
 
 #### Base Command
@@ -996,21 +1052,21 @@ List all change requests ticket templates. Useful for create change request tick
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| template_ids | Comma separated list of change request template ID. Filtering argument. Possible values are: . | Optional | 
-| query | Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| template_ids | A comma-separated list of change request template IDs. Used as a filtering argument. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
-| description | Change request description. Filtering argument. Possible values are: . | Optional | 
+| description | The change request ticket description. Used as a filtering argument. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.ChangeRequestTemplate.Id | String | ChangeRequestTemplate ID. | 
-| BmcITSM.ChangeRequestTemplate.Description | String | ChangeRequestTemplate Description. | 
-| BmcITSM.ChangeRequestTemplate.InstanceID | String | ChangeRequestTemplate ID. Useful for creating change Request. | 
+| BmcITSM.ChangeRequestTemplate.Id | String | The change request ticket template ID. | 
+| BmcITSM.ChangeRequestTemplate.Description | String | The change request ticket template description. | 
+| BmcITSM.ChangeRequestTemplate.InstanceID | String | The change request ticket template instance ID. Useful for creating change request tickets. | 
 
 #### Command example
 ```!bmc-itsm-change-request-template-list limit=2```
@@ -1046,7 +1102,7 @@ List all change requests ticket templates. Useful for create change request tick
 
 ### bmc-itsm-incident-template-list
 ***
-List all incident requests ticket templates. Useful for create incident ticket. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
+Lists all incident requests ticket templates. Useful for create incident tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
 
 
 #### Base Command
@@ -1056,21 +1112,21 @@ List all incident requests ticket templates. Useful for create incident ticket. 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
-| description | Incident template description. Filtering argument. Possible values are: . | Optional | 
-| template_ids | Comma separated list of incident template ids. Filtering argument. Possible values are: . | Optional | 
+| description | The incident ticket template description. Used as a filtering argument. Possible values are: . | Optional | 
+| template_ids | A comma-separated list of incident template IDs. Used as a filtering argument. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.IncidentTemplate.Id | String | Incident Template ID. | 
-| BmcITSM.IncidentTemplate.Description | String | Incident Template Description. | 
-| BmcITSM.IncidentTemplate.InstanceID | String | Incident Template ID. Useful for creating change Request. | 
+| BmcITSM.IncidentTemplate.Id | String | The incident ticket template ID. | 
+| BmcITSM.IncidentTemplate.Description | String | The incident ticket template description. | 
+| BmcITSM.IncidentTemplate.InstanceID | String | The incident ticket template ID. Useful for creating change request tickets. | 
 
 #### Command example
 ```!bmc-itsm-incident-template-list limit=2```
@@ -1106,7 +1162,7 @@ List all incident requests ticket templates. Useful for create incident ticket. 
 
 ### bmc-itsm-task-template-list
 ***
-List all task ticket templates. Useful for create task ticket. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
+Lists all task ticket templates. Useful for creating task tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
 
 
 #### Base Command
@@ -1116,21 +1172,21 @@ List all task ticket templates. Useful for create task ticket. The records are r
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
-| template_ids | Comma separated list of task template ids. Filtering argument. Possible values are: . | Optional | 
-| task_name | Task template name. Filtering argument. Possible values are: . | Optional | 
+| template_ids | A comma-separated list of task template IDs. Used as a filtering argument. Possible values are: . | Optional | 
+| task_name | The task ticket template name. Used as a filtering argument. Possible values are: . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.TaskTemplate.Id | String | Task Template ID. | 
-| BmcITSM.TaskTemplate.TaskName | String | Task Template name. | 
-| BmcITSM.TaskTemplate.InstanceID | String | Task Template ID. Useful for creating change Request. | 
+| BmcITSM.TaskTemplate.Id | String | The task ticket template ID. | 
+| BmcITSM.TaskTemplate.TaskName | String | The task template name. | 
+| BmcITSM.TaskTemplate.InstanceID | String | The task ticket template ID. Useful for creating change request tickets. | 
 
 #### Command example
 ```!bmc-itsm-task-template-list limit=2```
@@ -1163,3 +1219,76 @@ List all task ticket templates. Useful for create task ticket. The records are r
 >| 14 | Backup System | TM00123F73CF5EK3sTSQ877rAAhfQA |
 >| 13 | Check Approval automatically | TM001143D417CBD_bDQwojSFAA9qQA |
 
+
+### get-mapping-fields
+***
+Returns the list of fields for an incident type.
+
+
+#### Base Command
+
+`get-mapping-fields`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+There is no context output for this command.
+### get-remote-data
+***
+Gets remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+
+
+#### Base Command
+
+`get-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ticket ID. | Required | 
+| lastUpdate | Retrieves entries that were created after lastUpdate. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### get-modified-remote-data
+***
+Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
+
+
+#### Base Command
+
+`get-modified-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and BMC Helix ITSM corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in BMC Helix ITSM events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in BMC Helix ITSM events (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and BMC Helix ITSM events will be reflected in both directions. |
+
+3. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in BMC Helix ITSM.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and BMC Helix ITSM.
