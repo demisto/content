@@ -79,7 +79,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 2
+                        "y": 0
                     },
                     {
                         "h": 2,
@@ -92,7 +92,7 @@
                         "type": "notes",
                         "w": 1,
                         "x": 2,
-                        "y": 2
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
@@ -106,7 +106,7 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 1,
-                        "y": 2
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
@@ -121,7 +121,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 8
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -135,7 +135,7 @@
                         "type": "childInv",
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -149,7 +149,7 @@
                         "type": "evidence",
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -164,7 +164,7 @@
                         "type": "team",
                         "w": 1,
                         "x": 2,
-                        "y": 8
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -180,7 +180,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "displayType": "CARD",
@@ -240,7 +240,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 4
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -283,7 +283,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 8
+                        "y": 6
                     },
                     {
                         "displayType": "CARD",
@@ -308,7 +308,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 4
+                        "y": 2
                     }
                 ],
                 "type": "custom"
@@ -406,10 +406,10 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "bmcstatusreason",
+                                "endCol": 5,
+                                "fieldId": "bmcitsmstatusreason",
                                 "height": 53,
-                                "id": "ee3eeca0-00e7-11ed-9edb-f1a901c1194e",
+                                "id": "3b646d20-0d77-11ed-970e-db2ee62c5bc3",
                                 "index": 2,
                                 "listId": "caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-0c0bc2a0-e26e-11ec-b68d-b1f9ed68fffc",
                                 "sectionItemType": "field",
@@ -422,6 +422,17 @@
                                 "height": 53,
                                 "id": "80a464a0-e26e-11ec-b68d-b1f9ed68fffc",
                                 "index": 0,
+                                "listId": "caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-0c0bc2a0-e26e-11ec-b68d-b1f9ed68fffc",
+                                "sectionItemType": "field",
+                                "startCol": 5
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "bmcitsmreasonforchange",
+                                "height": 53,
+                                "id": "051c46a0-0d74-11ed-9fa9-4372e24e9954",
+                                "index": 1,
                                 "listId": "caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-0c0bc2a0-e26e-11ec-b68d-b1f9ed68fffc",
                                 "sectionItemType": "field",
                                 "startCol": 5
@@ -454,19 +465,19 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "bmccontactsensitivity",
+                                "fieldId": "bmcitsmrisklevel",
                                 "height": 53,
-                                "id": "adaf9140-e278-11ec-9d5f-e7f636020d17",
+                                "id": "9bbf30d0-0d70-11ed-9b9f-098d59f980d4",
                                 "index": 1,
-                                "listId": "caseinfoid-lfzregufnw-caseinfoid-103b89a0-e26e-11ec-b68d-b1f9ed68fffc",
+                                "listId": "caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-103b89a0-e26e-11ec-b68d-b1f9ed68fffc",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 1,
-                                "fieldId": "bmcrisklevel",
+                                "fieldId": "bmcitsmcontactsensitivity",
                                 "height": 53,
-                                "id": "038c5280-e58d-11ec-9615-0f5dfd115359",
+                                "id": "a17040a0-0d70-11ed-9b9f-098d59f980d4",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -483,11 +494,22 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "bmcimpact",
+                                "fieldId": "bmcitsmimpact",
                                 "height": 53,
-                                "id": "70a6d7c0-e58b-11ec-adb7-25410f0b9d4d",
+                                "id": "8c6941c0-0d70-11ed-9b9f-098d59f980d4",
                                 "index": 1,
-                                "listId": "caseinfoid-lfzregufnw-caseinfoid-103b89a0-e26e-11ec-b68d-b1f9ed68fffc",
+                                "listId": "caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-103b89a0-e26e-11ec-b68d-b1f9ed68fffc",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "bmcitsmvipflag",
+                                "height": 53,
+                                "id": "32768600-0d70-11ed-9b9f-098d59f980d4",
+                                "index": 2,
+                                "listId": "caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-lfzregufnw-caseinfoid-103b89a0-e26e-11ec-b68d-b1f9ed68fffc",
                                 "sectionItemType": "field",
                                 "startCol": 1
                             }
@@ -542,6 +564,15 @@
                                 "height": 106,
                                 "id": "454d72b0-e274-11ec-9d5f-e7f636020d17",
                                 "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "bmcitsmvipflag",
+                                "height": 53,
+                                "id": "bbeb4650-0d70-11ed-9b9f-098d59f980d4",
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
