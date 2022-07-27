@@ -410,7 +410,7 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None):
         })
 
         md_obj.update({
-            'issueType': demisto.get(element, 'fields.issuetype.description'),
+            'issueType': f"{demisto.get(element, 'fields.issuetype')} ({demisto.get(element, 'fields.issuetype.description')})",
             'labels': demisto.get(element, 'fields.labels'),
             'description': demisto.get(element, 'fields.description'),
             'ticket_link': demisto.get(element, 'self'),
