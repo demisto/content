@@ -111,16 +111,40 @@ There is no context output for this command.
 `!ad-groups`
 
 #### Human Readable Output
-
->{
->    "Entries": {
->        "Attributes": [
->            {
->                "Name": "primaryGroupToken"
->            }
->        ]
->    }
->}
+```json
+{
+    "Controls": null,
+    "Entries": [
+        {
+            "Attributes": [
+                {
+                    "Name": "primaryGroupToken",
+                    "Values": [
+                        "111"
+                    ]
+                }
+            ],
+            "DN": "CN=Admin,CN=Builtin,DC=Test,DC=Test1"
+        },
+        {
+            "Attributes": [
+                {
+                    "Name": "primaryGroupToken",
+                    "Values": [
+                        "222"
+                    ]
+                }
+            ],
+            "DN": "CN=Users,CN=Builtin,DC=Test,DC=Test1"
+        },
+        
+    ],
+    "Referrals": [
+        "ldap://domainTest/CN=Test,DC=Test,DC=Test1",
+        "ldap://domainTest2/CN=Test,DC=Test,DC=Test2"
+    ]
+}
+```
 
 ### ad-authenticate-and-roles
 ***
@@ -146,16 +170,52 @@ Performs a simple bind operation on the LDAP server and returns the authenticate
 There is no context output for this command.
 
 #### Command Example
-`!ad-authenticate-and-roles`
+`!ad-authenticate-and-roles username='username' password='password' attribute-phone-pull=true`
 
 #### Human Readable Output
-
->{
->    "Entries": {
->        "Attributes": [
->            {
->                "Name": "primaryGroupToken"
->            }
->        ]
->    }
->}
+```json
+{
+    "Controls": [],
+    "Entries": [
+        {
+            "Attributes": [
+                {
+                    "Name": "memberOf",
+                    "Values": [
+                        "CN=Domain ,CN=Users,DC=Test,DC=Test1"
+                    ]
+                },
+                {
+                    "Name": "name",
+                    "Values": [
+                        "User Name"
+                    ]
+                },
+                {
+                    "Name": "primaryGroupID",
+                    "Values": [
+                        "111"
+                    ]
+                },
+                {
+                    "Name": "mail",
+                    "Values": [
+                        "username@mail.com"
+                    ]
+                },
+                {
+                    "Name": "mobile",
+                    "Values": [
+                        "555-5555555"
+                    ]
+                }
+            ],
+            "DN": "CN=User Name,CN=Users,DC=Test,DC=Test1"
+        }
+    ],
+    "Referrals": [
+        "ldap://domainTest/CN=Test,DC=Test,DC=Test1",
+        "ldap://domainTest2/CN=Test,DC=Test,DC=Test2"
+    ]
+}
+```
