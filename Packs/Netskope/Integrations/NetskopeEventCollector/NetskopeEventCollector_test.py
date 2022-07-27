@@ -1,7 +1,7 @@
 import io
 import json
 
-from NetskopeEventCollector import get_sorted_events_by_type, get_last_run, Client
+from NetskopeEventCollector import get_sorted_events_by_type, create_last_run, Client
 
 
 def util_load_json(path):
@@ -10,6 +10,7 @@ def util_load_json(path):
 
 
 MOCK_ENTRY = util_load_json('test_data/mock_events.json')
+EVENTS_RAW_V2 = util_load_json('test_data/events_raw_v2.json')
 BASE_URL = 'https://netskope.example.com/'
 
 
@@ -66,16 +67,43 @@ def test_get_sorted_events_by_type():
         }]
 
 
-def test_get_last_run():
-    assert get_last_run(MOCK_ENTRY, {}) == {'alert': 1657199079, 'application': 1656892796, 'audit': 1658384700,
-                                            'network': 1657693921}
+def test_create_last_run():
+    """
+    Given:
+        - List of events
+        - Empty list of events
+    When:
+        - Running the command create_last_run
+    Then:
+        - Verify that when a list of events exists, it will take the last timestamp
+        - Verify that when there are no events yet (first fetch) the timestamp for all will be as the first fetch
+    """
+    assert create_last_run(MOCK_ENTRY, {}) == {'alert': 1657199110, 'audit': 1658384700, 'application': 1656892798,
+                                               'network': 1657693986}
 
     # Still no events - last run should be from first_fetch
-    assert get_last_run([], {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400}) == \
+    assert create_last_run([], {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400}) == \
            {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400}
 
 
-def test_get_events(mocker):
+def test_test_module_v2(mocker):
+    """
+    Given:
+        - raw_response of an event (as it returns from the api)
+    When:
+        - Running the test_module command
+    Then:
+        - Verify that 'ok' is returned.
+    """
+    from NetskopeEventCollector import test_module
+    client = Client(BASE_URL, 'dummy_token', 'v2', False, False)
+    mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
+
+    results = test_module(client, api_version='v2', last_run={})
+    assert results == 'ok'
+
+
+def test_v2_get_events_command(mocker):
     """
     Given:
         - netskope-get-events call
@@ -86,71 +114,11 @@ def test_get_events(mocker):
     """
     from NetskopeEventCollector import v2_get_events_command
     client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
-    mocker.patch.object(client, 'get_events_request_v2', return_value=MOCK_ENTRY)
-    last_run = {}
+    mocker.patch('NetskopeEventCollector.get_events_v2', return_value=MOCK_ENTRY)
     args = {
         'limit': 2
     }
-
-    response = v2_get_events_command(client, args, last_run)
+    response, _ = v2_get_events_command(client, args, {})
     assert response.raw_response == MOCK_ENTRY
     assert len(response.outputs) == 8
-
-
-def test_test_module(mocker):
-    """
-    Given:
-        - test-module call
-    When:
-        - A response with an OK status_code is retrieved from the API call.
-    Then:
-        - Make sure 'ok' is returned.
-    """
-    from NetskopeEventCollector import test_module
-    alert_response = [
-        {
-            "_category_id": "10061",
-            "_category_name": "Web Outlook Allowed",
-            "_category_tags": [
-                "10079",
-                "10027"
-            ],
-            "_content_version": 1656927640,
-            "_mladc": [
-                "ur"
-            ],
-            "_nshostname": "_hostname",
-            "_session_begin": "0",
-            "_skip_geoip_lookup": "no",
-            "_src_epoch_now": 1657184640,
-            "access_method": "Client",
-            "acked": "false",
-            "action": "anomaly_detection",
-            "activity": "Create",
-            "alert": "yes",
-            "alert_id": "1234e70cda66bd71a9c46e82de86b9fde",
-            "alert_name": "user_shared_credentials",
-            "alert_type": "uba"
-        }
-    ]
-    client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
-    mocker.patch.object(client, 'get_events_request_v2', return_value=alert_response)
-
-    assert test_module(client, 'v2', {}) == 'ok'
-
-
-def test_failed_test_module(mocker):
-    """
-    Given:
-        - test-module call
-    When:
-        - A response with non-ok status_code is retrieved from the API call.
-    Then:
-        - Make sure error is returned.
-    """
-    from NetskopeEventCollector import test_module
-    alert_response = []
-    client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
-    mocker.patch.object(client, 'get_events_request_v2', return_value=alert_response)
-
-    assert test_module(client, 'v2', {}) == 'Test failed - Make sure the URL and the API Token are correctly set.'
+    assert 'Events List' in response.readable_output

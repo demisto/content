@@ -1,6 +1,6 @@
 Netskope Event Collector integration.
 
-## Configure Netskope Event Collector on Cortex XSOAR
+## Configure Netskope Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Netskope Event Collector.
@@ -20,7 +20,7 @@ Netskope Event Collector integration.
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### netskope-get-events
 ***
