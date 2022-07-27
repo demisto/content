@@ -3370,7 +3370,9 @@ def get_modified_remote_data(client: Client, args: Dict[str, Any]) -> GetModifie
                 "limit": 100,
             },
         ).outputs
-        modified_tickets += modified_tickets_by_type
+        if modified_tickets_by_type:
+            modified_tickets += modified_tickets_by_type
+
     for raw_ticket in modified_tickets:
         ticket_id = raw_ticket.get("RequestID")
         modified_ticket_ids.append(ticket_id)
