@@ -4727,12 +4727,11 @@ def panorama_query_logs_command(args: dict):
                     or time_generated or action or port_dst or rule or url or filedigest):
             raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
 
-        res = panorama_query_logs(
+        result = panorama_query_logs(
             log_type, number_of_logs, query, address_src, address_dst, ip_,
             zone_src, zone_dst, time_generated, action,
             port_dst, rule, url, filedigest
         )
-        result = ResponseObject(res)
 
         if result.response.status == 'error':
             if result.response.msg:
