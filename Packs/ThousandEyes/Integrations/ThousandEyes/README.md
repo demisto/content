@@ -61,13 +61,6 @@ Fetches all the alerts.
 | ThousandEyes.Alerts.Severity | unknown | field with one of the following values: INFO, MAJOR, MINOR, CRITICAL for all alert types | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### thousandeyes-get-alert
 ***
 Fetches a given alert.
