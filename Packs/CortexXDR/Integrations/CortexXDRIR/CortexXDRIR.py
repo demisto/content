@@ -40,7 +40,8 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Other',
-    'resolved_other': 'Other'
+    'resolved_other': 'Other',
+    'resolved_auto': 'Resolved'
 }
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
@@ -1456,7 +1457,6 @@ def main():  # pragma: no cover
             return_results(replace_featured_field_command(client, args))
 
     except Exception as err:
-        demisto.error(traceback.format_exc())
         return_error(str(err))
 
 
