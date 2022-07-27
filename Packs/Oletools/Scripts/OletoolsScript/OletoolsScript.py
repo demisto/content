@@ -65,7 +65,7 @@ class OleClient:
         return cr
 
     def wrap_command_result(self, cr: CommandResults):
-        cr.outputs = {'sha256': self.hash, 'file name': self.name, 'ole_command_result': cr.outputs}
+        cr.outputs = {'sha256': self.hash, 'file_name': self.name, 'ole_command_result': cr.outputs}
         cr.outputs_key_field = 'sha256'
 
     @staticmethod
