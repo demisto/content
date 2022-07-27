@@ -397,7 +397,7 @@ def test_send_message_with_mirrored_message_or_low_severity(mocker, args):
 #     assert send_message() is None
 
 
-@pytest.mark.parametrize('args', 'result', [({}, 'No channel or team member to send message were provided.'),
+@pytest.mark.parametrize('args, result', [({}, 'No channel or team member to send message were provided.'),
                                             ({'channel': 'somechannel', 'team_member': 'someuser'},
                                              'Provide either channel or team member to send message to, not both.'),
                                             ({'channel': 'channel', 'adaptive_card': 'THISisSTRINGnotJSON'},
