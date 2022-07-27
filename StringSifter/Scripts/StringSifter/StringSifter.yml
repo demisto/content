@@ -29,7 +29,7 @@ args:
   name: entryID
   required: false
   secret: false
-comment: This script runs stringsifter ML tool for malware anlisys and ranking of words.
+comment: This script runs stringsifter ML tool for malware anlisys and ranking of words. User can enter an entryID or string_text as input.
 commonfields:
   id: StringSifter
   version: -1

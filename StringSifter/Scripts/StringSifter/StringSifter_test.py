@@ -1,5 +1,4 @@
 import json
-import io
 from StringSifter import *
 import pytest
 

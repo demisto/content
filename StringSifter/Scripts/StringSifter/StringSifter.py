@@ -84,8 +84,10 @@ def stringsifter(args: dict):
             {'Rating': matches.group('rating'),
              'Word': matches.group('word')})
 
-    readable = tableToMarkdown(f'Top {str(min(20, len(words_rating_list)))} Stringsifter word ranking based on their relevance for malware analysis.',
-                               words_rating_list[:20])
+    readable = tableToMarkdown(
+        f'Top {str(min(20, len(words_rating_list)))} '
+        f'Stringsifter word ranking based on their relevance for malware analysis.',
+        words_rating_list[:20])
     outputs = {'FileName': file_name, 'Results': words_rating_list}
     return CommandResults(readable_output=readable, outputs=outputs, outputs_prefix='Stringsifter',
                           outputs_key_field='FileName')
