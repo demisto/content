@@ -120,13 +120,6 @@ Fetches all agents.
 | ThousandEyes.Agents.ErrorDetails | unknown | if an enterprise agent or a cluster member presents at least one error, the errors will be shown as an array of entries in the errorDetails field \(Enterprise Agents and Enterprise Cluster members only\) | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### thousandeyes-get-agent
 ***
 Fetches a given agent.
