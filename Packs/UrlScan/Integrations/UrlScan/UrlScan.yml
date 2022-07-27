@@ -56,12 +56,6 @@ configuration:
   name: create_relationships
   required: false
   type: 8
-- display: Interval
-  name: interval
-  type: 0
-  required: false
-  additionalinfo: The amount of time (in seconds) to wait prior to retrying the command. Default is 60.
-  defaultvalue: '60'
 - display: User Agent
   name: useragent
   required: false
