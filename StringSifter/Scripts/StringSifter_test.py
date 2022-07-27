@@ -41,3 +41,11 @@ def test_main_with_flags(mocker):
     cr = main()
     assert cr.readable_output == open_file('test_data/stringsifter_results_with_filters.md')
     assert cr.outputs == open_json('test_data/words_rating_with_filter.json')
+
+
+def test_text_as_string():
+    with open('test_data/temp_out.txt') as f:
+        string_output = f.read()
+        handle_words_as_string(string_output)
+
+
