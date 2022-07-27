@@ -166,7 +166,9 @@ script:
   dockerimage: demisto/python3:3.10.5.31928
   commands:
     - name: bmc-itsm-user-list
-      description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+      description:
+        Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+        To see the entire JSON then you can use the raw_response=true at the end of the command.
       outputs:
         - contextPath: BmcITSM.User.Id
           description: The user ID.
@@ -249,7 +251,9 @@ script:
           predefined:
             - ""
     - name: bmc-itsm-company-list
-      description: Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+      description:
+        Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+        To see the entire JSON then you can use the raw_response=true at the end of the command.
       outputs:
         - type: String
           contextPath: BmcITSM.Company.Id
@@ -311,7 +315,9 @@ script:
           predefined:
             - ""
     - name: bmc-itsm-service-request-definition-list
-      description: Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+      description:
+        Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+        To see the entire JSON then you can use the raw_response=true at the end of the command.
       outputs:
         - type: String
           contextPath: BmcITSM.ServiceRequestDefinition.Id
@@ -366,7 +372,9 @@ script:
           predefined:
             - ""
     - name: bmc-itsm-ticket-list
-      description: "Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them."
+      description:
+        Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+        To see the entire JSON then you can use the raw_response=true at the end of the command.
       deprecated: false
       arguments:
         - name: ticket_type
@@ -582,7 +590,9 @@ script:
           description: The ticket last update date time in UTC.
           type: Date
     - name: bmc-itsm-service-request-create
-      description: Creates a new service request ticket. A service request ticket is the request record that is generated from the service request definition to manage and track the execution. To create it, you need to provide the srd_instance_id argument, which can be retrieved by by executing the bmc-itsm-service-request-definition-list command and extracting the instanceID field. User and company arguments can be retrieved by executing the bmc-itsm-user-list and bmc-itsm-company-list.
+      description:
+        Creates a new service request ticket. A service request ticket is the request record that is generated from the service request definition to manage and track the execution. To create it, you need to provide the srd_instance_id argument, which can be retrieved by by executing the bmc-itsm-service-request-definition-list command and extracting the instanceID field. User and company arguments can be retrieved by executing the bmc-itsm-user-list and bmc-itsm-company-list.
+        To see the entire JSON then you can use the raw_response=true at the end of the command.
       arguments:
         - name: srd_instance_id
           description: "The instance ID of the service request ticket. It can be retrieved by executing bmc-itsm-service-request-definition-list command. "
@@ -2666,7 +2676,9 @@ script:
             - ""
       outputs: []
     - name: bmc-itsm-change-request-template-list
-      description: Lists all change requests ticket templates. Useful for creating change request tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+      description:
+        Lists all change requests ticket templates. Useful for creating change request tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+        To see the entire JSON then you can use the raw_response=true at the end of the command.
       deprecated: false
       arguments:
         - name: template_ids
@@ -2722,7 +2734,9 @@ script:
           contextPath: BmcITSM.ChangeRequestTemplate.InstanceID
           description: The change request ticket template instance ID. Useful for creating change request tickets.
     - name: bmc-itsm-incident-template-list
-      description: Lists all incident requests ticket templates. Useful for create incident tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+      description:
+        Lists all incident requests ticket templates. Useful for create incident tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+        To see the entire JSON then you can use the raw_response=true at the end of the command.
       deprecated: false
       arguments:
         - name: query
@@ -2778,7 +2792,9 @@ script:
           contextPath: BmcITSM.IncidentTemplate.InstanceID
           description: The incident ticket template ID. Useful for creating change request tickets.
     - name: bmc-itsm-task-template-list
-      description: Lists all task ticket templates. Useful for creating task tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+      description:
+        Lists all task ticket templates. Useful for creating task tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them.
+        To see the entire JSON then you can use the raw_response=true at the end of the command.
       deprecated: false
       arguments:
         - name: query
