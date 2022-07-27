@@ -4856,10 +4856,7 @@ def panorama_query_logs_command(args: dict):
             'LogType': log_type
         }
         
-        if result.response.result.job.status != 'FIN':
-            continue_to_poll = True
-        else:
-            continue_to_poll = False
+        if result.response.result.job.status == 'FIN':
             query_traffic_logs_output['Status'] = 'Completed'
             try:
                 pretty_traffic_logs = prettify_traffic_logs(result.response.result.log.log_entries)
@@ -4881,7 +4878,7 @@ def panorama_query_logs_command(args: dict):
                 ),
                 raw_response=res
             ),
-            continue_to_poll=continue_to_poll,
+            continue_to_poll=result.response.result.job.status != 'FIN',
             args_for_next_run={
                 'job_id': result.response.result.job.id,
                 'log-type': log_type,
