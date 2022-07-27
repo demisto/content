@@ -93,9 +93,9 @@ create-instances:
   needs: []
   stage: create-instances
   script:
-    - !reference [.download-demisto-conf]
-    - !reference [.create-id-set-xsoar]
-    - !reference [.create-release-notes-and-common-docs]
+    # - !reference [.download-demisto-conf]
+    # - !reference [.create-id-set-xsoar]
+    # - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Create content graph"
     - demisto-sdk content-graph
