@@ -1,4 +1,4 @@
-### Top 14 Stringsifter word ranking based on their relevance for malware analysis.
+### Top 14 StringSifter word ranking based on their relevance for malware analysis.
 |Rating|Word|
 |---|---|
 | 7.84 | cryptominer |
