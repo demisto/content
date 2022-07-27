@@ -1,58 +1,61 @@
-[
-  {
-    "rating": "7.84",
-    "word": "cryptominer"
-  },
-  {
-    "rating": "7.47",
-    "word": "cybersecurity"
-  },
-  {
-    "rating": "7.44",
-    "word": "registry"
-  },
-  {
-    "rating": "7.44",
-    "word": "download"
-  },
-  {
-    "rating": "7.35",
-    "word": "botnets"
-  },
-  {
-    "rating": "7.35",
-    "word": "exploit"
-  },
-  {
-    "rating": "7.25",
-    "word": "miner"
-  },
-  {
-    "rating": "7.17",
-    "word": "bios"
-  },
-  {
-    "rating": "6.95",
-    "word": "crypto"
-  },
-  {
-    "rating": "6.46",
-    "word": "microcomputer"
-  },
-  {
-    "rating": "6.41",
-    "word": "technical"
-  },
-  {
-    "rating": "6.39",
-    "word": "propaganda"
-  },
-  {
-    "rating": "6.37",
-    "word": "subroutine"
-  },
-  {
-    "rating": "6.36",
-    "word": "attacker"
-  }
-]
+{
+  "FileName": "name",
+  "Results": [
+    {
+      "Rating": "7.84",
+      "Word": "cryptominer"
+    },
+    {
+      "Rating": "7.47",
+      "Word": "cybersecurity"
+    },
+    {
+      "Rating": "7.44",
+      "Word": "registry"
+    },
+    {
+      "Rating": "7.44",
+      "Word": "download"
+    },
+    {
+      "Rating": "7.35",
+      "Word": "botnets"
+    },
+    {
+      "Rating": "7.35",
+      "Word": "exploit"
+    },
+    {
+      "Rating": "7.25",
+      "Word": "miner"
+    },
+    {
+      "Rating": "7.17",
+      "Word": "bios"
+    },
+    {
+      "Rating": "6.95",
+      "Word": "crypto"
+    },
+    {
+      "Rating": "6.46",
+      "Word": "microcomputer"
+    },
+    {
+      "Rating": "6.41",
+      "Word": "technical"
+    },
+    {
+      "Rating": "6.39",
+      "Word": "propaganda"
+    },
+    {
+      "Rating": "6.37",
+      "Word": "subroutine"
+    },
+    {
+      "Rating": "6.36",
+      "Word": "attacker"
+    }
+  ]
+}

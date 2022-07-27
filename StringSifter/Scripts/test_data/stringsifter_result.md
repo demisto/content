@@ -1,5 +1,5 @@
-### Stringsifter word ranking based on their relevance for malware analysis.
-|rating|word|
+### Top 20 Stringsifter word ranking based on their relevance for malware analysis.
+|Rating|Word|
 |---|---|
 | 7.84 | cryptominer |
 | 7.47 | cybersecurity |
@@ -21,36 +21,3 @@
 | 6.33 | bundleware |
 | 6.33 | glyphosate |
 | 6.33 | vulnerabilities |
-| 6.33 | virtualize |
-| 6.33 | infection |
-| 6.33 | detection |
-| 6.33 | filtering |
-| 6.33 | pathogens |
-| 6.33 | motherboard |
-| 6.33 | infections |
-| 6.32 | crapware |
-| 6.32 | feedback |
-| 6.32 | intranet |
-| 6.30 | tracking |
-| 6.30 | scammers |
-| 6.30 | compute |
-| 6.23 | tagging |
-| 6.23 | tracker |
-| 6.23 | reverse |
-| 6.23 | fishing |
-| 6.23 | illegal |
-| 6.14 | kludge |
-| 6.14 | keygen |
-| 6.14 | threat |
-| 6.14 | infect |
-| 6.14 | ransom |
-| 6.12 | other |
-| 6.12 | viren |
-| 6.06 | cyber |
-| 6.06 | hacks |
-| 6.04 | fake |
-| 6.02 | scan |
-| 5.00 | error |
-| 4.44 | intrusion |
-| 4.33 | steal |
-| 0.69 | junk |

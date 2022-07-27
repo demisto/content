@@ -1,214 +1,217 @@
-[
+{
+  "FileName": "name",
+  "Results": [
     {
-        "rating": "7.84",
-        "word": "cryptominer"
+      "Rating": "7.84",
+      "Word": "cryptominer"
     },
     {
-        "rating": "7.47",
-        "word": "cybersecurity"
+      "Rating": "7.47",
+      "Word": "cybersecurity"
     },
     {
-        "rating": "7.44",
-        "word": "registry"
+      "Rating": "7.44",
+      "Word": "registry"
     },
     {
-        "rating": "7.44",
-        "word": "download"
+      "Rating": "7.44",
+      "Word": "download"
     },
     {
-        "rating": "7.35",
-        "word": "botnets"
+      "Rating": "7.35",
+      "Word": "botnets"
     },
     {
-        "rating": "7.35",
-        "word": "exploit"
+      "Rating": "7.35",
+      "Word": "exploit"
     },
     {
-        "rating": "7.25",
-        "word": "miner"
+      "Rating": "7.25",
+      "Word": "miner"
     },
     {
-        "rating": "7.17",
-        "word": "bios"
+      "Rating": "7.17",
+      "Word": "bios"
     },
     {
-        "rating": "6.95",
-        "word": "crypto"
+      "Rating": "6.95",
+      "Word": "crypto"
     },
     {
-        "rating": "6.46",
-        "word": "microcomputer"
+      "Rating": "6.46",
+      "Word": "microcomputer"
     },
     {
-        "rating": "6.41",
-        "word": "technical"
+      "Rating": "6.41",
+      "Word": "technical"
     },
     {
-        "rating": "6.39",
-        "word": "propaganda"
+      "Rating": "6.39",
+      "Word": "propaganda"
     },
     {
-        "rating": "6.37",
-        "word": "subroutine"
+      "Rating": "6.37",
+      "Word": "subroutine"
     },
     {
-        "rating": "6.36",
-        "word": "attacker"
+      "Rating": "6.36",
+      "Word": "attacker"
     },
     {
-        "rating": "6.33",
-        "word": "engineering"
+      "Rating": "6.33",
+      "Word": "engineering"
     },
     {
-        "rating": "6.33",
-        "word": "translator"
+      "Rating": "6.33",
+      "Word": "translator"
     },
     {
-        "rating": "6.33",
-        "word": "detecting"
+      "Rating": "6.33",
+      "Word": "detecting"
     },
     {
-        "rating": "6.33",
-        "word": "bundleware"
+      "Rating": "6.33",
+      "Word": "bundleware"
     },
     {
-        "rating": "6.33",
-        "word": "glyphosate"
+      "Rating": "6.33",
+      "Word": "glyphosate"
     },
     {
-        "rating": "6.33",
-        "word": "vulnerabilities"
+      "Rating": "6.33",
+      "Word": "vulnerabilities"
     },
     {
-        "rating": "6.33",
-        "word": "virtualize"
+      "Rating": "6.33",
+      "Word": "virtualize"
     },
     {
-        "rating": "6.33",
-        "word": "infection"
+      "Rating": "6.33",
+      "Word": "infection"
     },
     {
-        "rating": "6.33",
-        "word": "detection"
+      "Rating": "6.33",
+      "Word": "detection"
     },
     {
-        "rating": "6.33",
-        "word": "filtering"
+      "Rating": "6.33",
+      "Word": "filtering"
     },
     {
-        "rating": "6.33",
-        "word": "pathogens"
+      "Rating": "6.33",
+      "Word": "pathogens"
     },
     {
-        "rating": "6.33",
-        "word": "motherboard"
+      "Rating": "6.33",
+      "Word": "motherboard"
     },
     {
-        "rating": "6.33",
-        "word": "infections"
+      "Rating": "6.33",
+      "Word": "infections"
     },
     {
-        "rating": "6.32",
-        "word": "crapware"
+      "Rating": "6.32",
+      "Word": "crapware"
     },
     {
-        "rating": "6.32",
-        "word": "feedback"
+      "Rating": "6.32",
+      "Word": "feedback"
     },
     {
-        "rating": "6.32",
-        "word": "intranet"
+      "Rating": "6.32",
+      "Word": "intranet"
     },
     {
-        "rating": "6.30",
-        "word": "tracking"
+      "Rating": "6.30",
+      "Word": "tracking"
     },
     {
-        "rating": "6.30",
-        "word": "scammers"
+      "Rating": "6.30",
+      "Word": "scammers"
     },
     {
-        "rating": "6.30",
-        "word": "compute"
+      "Rating": "6.30",
+      "Word": "compute"
     },
     {
-        "rating": "6.23",
-        "word": "tagging"
+      "Rating": "6.23",
+      "Word": "tagging"
     },
     {
-        "rating": "6.23",
-        "word": "tracker"
+      "Rating": "6.23",
+      "Word": "tracker"
     },
     {
-        "rating": "6.23",
-        "word": "reverse"
+      "Rating": "6.23",
+      "Word": "reverse"
     },
     {
-        "rating": "6.23",
-        "word": "fishing"
+      "Rating": "6.23",
+      "Word": "fishing"
     },
     {
-        "rating": "6.23",
-        "word": "illegal"
+      "Rating": "6.23",
+      "Word": "illegal"
     },
     {
-        "rating": "6.14",
-        "word": "kludge"
+      "Rating": "6.14",
+      "Word": "kludge"
     },
     {
-        "rating": "6.14",
-        "word": "keygen"
+      "Rating": "6.14",
+      "Word": "keygen"
     },
     {
-        "rating": "6.14",
-        "word": "threat"
+      "Rating": "6.14",
+      "Word": "threat"
     },
     {
-        "rating": "6.14",
-        "word": "infect"
+      "Rating": "6.14",
+      "Word": "infect"
     },
     {
-        "rating": "6.14",
-        "word": "ransom"
+      "Rating": "6.14",
+      "Word": "ransom"
     },
     {
-        "rating": "6.12",
-        "word": "other"
+      "Rating": "6.12",
+      "Word": "other"
     },
     {
-        "rating": "6.12",
-        "word": "viren"
+      "Rating": "6.12",
+      "Word": "viren"
     },
     {
-        "rating": "6.06",
-        "word": "cyber"
+      "Rating": "6.06",
+      "Word": "cyber"
     },
     {
-        "rating": "6.06",
-        "word": "hacks"
+      "Rating": "6.06",
+      "Word": "hacks"
     },
     {
-        "rating": "6.04",
-        "word": "fake"
+      "Rating": "6.04",
+      "Word": "fake"
     },
     {
-        "rating": "6.02",
-        "word": "scan"
+      "Rating": "6.02",
+      "Word": "scan"
     },
     {
-        "rating": "5.00",
-        "word": "error"
+      "Rating": "5.00",
+      "Word": "error"
     },
     {
-        "rating": "4.44",
-        "word": "intrusion"
+      "Rating": "4.44",
+      "Word": "intrusion"
     },
     {
-        "rating": "4.33",
-        "word": "steal"
+      "Rating": "4.33",
+      "Word": "steal"
     },
     {
-        "rating": "0.69",
-        "word": "junk"
+      "Rating": "0.69",
+      "Word": "junk"
     }
-]
+  ]
+}
