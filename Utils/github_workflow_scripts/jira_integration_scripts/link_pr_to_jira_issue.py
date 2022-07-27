@@ -1,8 +1,10 @@
 import argparse
 import re
 import sys
-
 import requests
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 JIRA_PATH_FOR_REGEX = "https:\/\/jira-hq.paloaltonetworks.local\/browse\/"
 JIRA_FIXED_ISSUE_REGEX = f"fixes: ({JIRA_PATH_FOR_REGEX}([A-Z][A-Z0-9]+-[0-9]+))\s?"
