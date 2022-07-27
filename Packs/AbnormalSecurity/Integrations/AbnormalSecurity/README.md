@@ -1131,7 +1131,7 @@ Submit a False Positive Report
 
 
 #### Command Example
-```!abnormal-security-submit-false-positive-report recipient_email=abc@def.com sender_email=def@def.com subject=hello```
+```!abnormal-security-submit-false-positive-report portal_link=https://portal.abnormalsecurity.com/home/threat-center/remediation-history/123455667```
 
 #### Context Example
 ```json
