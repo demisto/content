@@ -1136,7 +1136,7 @@ def main():
             continue
 
         if is_bucket_upload_flow:
-            task_status, modified_files_data = pack.filter_modified_files_by_id_set(id_set)
+            task_status, modified_files_data = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths)
 
             if not task_status:
                 pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
