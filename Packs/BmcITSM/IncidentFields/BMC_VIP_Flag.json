@@ -1,19 +1,20 @@
 {
-    "id": "incident_bmcvipflag",
+    "id": "incident_bmcitsmvipflag",
     "version": -1,
-    "modified": "2022-06-23T10:31:07.941079326+03:00",
-    "propagationLabels": [
-        "all"
-    ],
+    "modified": "2022-07-27T08:59:08.958420865+03:00",
     "name": "BmcITSM VIP Flag",
     "ownerOnly": false,
-    "cliName": "bmcvipflag",
-    "type": "shortText",
+    "cliName": "bmcitsmvipflag",
+    "type": "singleSelect",
     "closeForm": false,
     "editForm": true,
     "required": false,
     "neverSetAsRequired": false,
     "isReadOnly": false,
+    "selectValues": [
+        "Yes",
+        "No"
+    ],
     "useAsKpi": false,
     "locked": false,
     "system": false,

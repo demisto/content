@@ -1,13 +1,10 @@
 {
-    "id": "incident_bmcreasonforchange",
+    "id": "incident_bmcitsmreasonforchange",
     "version": -1,
-    "modified": "2022-06-23T10:31:07.840266417+03:00",
-    "propagationLabels": [
-        "all"
-    ],
+    "modified": "2022-07-27T09:37:46.870896315+03:00",
     "name": "BmcITSM Reason For Change",
     "ownerOnly": false,
-    "cliName": "bmcreasonforchange",
+    "cliName": "bmcitsmreasonforchange",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
