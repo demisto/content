@@ -523,7 +523,10 @@ def test_send_message_with_entitlement(mocker, requests_mock):
     requests_mock.post(
         f'{service_url}/v3/conversations',
         json={'id': 'conversation-id'})
-
+    requests_mock.post(
+        f'{service_url}/v3/conversations/conversation-id/activities',
+        json={}
+    )
     expected_ask_user_message: dict = {
         'attachments': [{
             'content': {
@@ -618,6 +621,13 @@ def test_send_message_with_adaptive_card(mocker, requests_mock):
         'type': 'message',
         'attachments': [adaptive_card]
     }
+    requests_mock.post(
+        f'{service_url}/v3/conversations',
+        json={'id': 'conversation-id'})
+    requests_mock.post(
+        f'{service_url}/v3/conversations/conversation-id/activities',
+        json={}
+    )
     send_message()
     assert requests_mock.request_history[6].json() == expected_conversation
     results = demisto.results.call_args[0]
