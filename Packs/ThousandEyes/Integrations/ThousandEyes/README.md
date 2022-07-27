@@ -1,5 +1,5 @@
 This Integration is used to fetch-incidents via “Active alerts”, get alert details via “Alert details”, and get the “Agent list”.
-It was integrated and tested with APIv6 of ThousandEyes.
+It was integrated and tested with API v6 of ThousandEyes.
 
 ## Configure ThousandEyes  on Cortex XSOAR
 
