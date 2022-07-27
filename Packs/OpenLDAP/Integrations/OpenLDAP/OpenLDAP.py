@@ -9,7 +9,7 @@ from ldap3.utils.dn import parse_dn
 from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError
 from typing import Tuple, List
 
-''' OpenLDAP CLIENT '''
+''' LDAP Authentication CLIENT '''
 
 
 class LdapClient:
@@ -20,6 +20,8 @@ class LdapClient:
         :param kwargs: Initialize params for ldap client
     """
 
+    OPENLDAP = 'OpenLDAP'
+    ACTIVE_DIRECTORY = 'Active Directory'
     GROUPS_TOKEN = 'primaryGroupToken'
     GROUPS_MEMBER = 'memberOf'
     GROUPS_PRIMARY_ID = 'primaryGroupID'
@@ -30,7 +32,7 @@ class LdapClient:
                      'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
 
     def __init__(self, kwargs):
-        self._ldap_server_type = kwargs.get('ldap_server_type', 'OpenLDAP')  # OpenLDAP or Active Directory
+        self._ldap_server_type = kwargs.get('ldap_server_type', self.OPENLDAP)  # OpenLDAP or Active Directory
         self._host = kwargs.get('host')
         self._port = int(kwargs.get('port')) if kwargs.get('port') else None
         self._username = kwargs.get('credentials', {}).get('identifier', '')
@@ -41,14 +43,14 @@ class LdapClient:
         self._verify = not kwargs.get('insecure', False)
         self._ldap_server = self._initialize_ldap_server()
         self._page_size = int(kwargs.get('page_size', 500))
+
+        # OpenLDAP only fields:
         self._groups_filter_class = kwargs.get('group_filter_class', 'posixGroup').strip()
         self._group_identifier_attribute = kwargs.get('group_identifier_attribute', 'gidNumber').strip()
         self._member_identifier_attribute = kwargs.get('member_identifier_attribute', 'memberUid').strip()
         self._user_filter_class = kwargs.get('user_filter_class', 'posixAccount')
         self._user_identifier_attribute = kwargs.get('user_identifier_attribute', 'uid')
         self._custom_attributes = kwargs.get('custom_attributes', '')
-        # TODO: need to check if we can change the instance configuration params according to the selected server type.
-        # TODO: if not - worth adding explanation to the descriptions of the params that are relevant only to OpenLDAP.
 
     @property
     def GROUPS_OBJECT_CLASS(self):
@@ -180,6 +182,37 @@ class LdapClient:
                          })
         return referrals, entries
 
+    def _parse_and_authenticate_ldap_group_entries_and_referrals(self, ldap_group_entries: List[dict],
+                                                                 password: str) -> Tuple[List[str], List[dict]]:
+        """
+            Returns parsed ldap groups entries and referrals.
+            Authenticate - performs simple bind operation on the ldap server with the given user and password.
+        """
+
+        referrals: List[str] = []
+        entries: List[dict] = []
+
+        for entry in ldap_group_entries:
+            if entry_type := entry.get('type'):
+                if entry_type == 'searchResRef':  # a referral
+                    referrals.extend(entry.get('uri') or [])
+
+                elif entry_type == 'searchResEntry':  # an entry
+                    # (should be only one searchResEntry to authenticate)
+                    entry_dn = entry.get('dn', '')
+                    entry_attributes = entry.get('attributes', {})
+                    relevant_entry_attributes = []
+                    for attr in entry_attributes:
+                        if attr_value := entry_attributes.get(attr, []):
+                            if not isinstance(attr_value, list):
+                                attr_value = [str(attr_value)]  # handle numerical values
+                            relevant_entry_attributes.append({'Name': attr, 'Values': attr_value})
+
+                    entries.append({'DN': entry_dn, 'Attributes': relevant_entry_attributes})
+                    self.authenticate_ldap_user(entry_dn, password)
+
+        return referrals, entries
+
     @staticmethod
     def _parse_ldap_users_groups_entries(ldap_group_entries: List[dict]) -> List[Optional[Any]]:
         """
@@ -235,7 +268,7 @@ class LdapClient:
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             demisto.info(f'LDAP Connection Details: {ldap_conn}')
 
-            if self._ldap_server_type == 'Active Directory':
+            if self._ldap_server_type == self.ACTIVE_DIRECTORY:
                 search_filter = '(&(objectClass=group)(objectCategory=group))'
 
                 referrals, entries = self._get_ldap_groups_entries_and_referrals_ad(ldap_conn=ldap_conn,
@@ -290,6 +323,7 @@ class LdapClient:
         referrals, entries = LdapClient._parse_ldap_group_entries_and_referrals(ldap_group_entries)
 
         # Reverse the lists to conform Active Directory Authentication integration's output:
+        # TODO: Consider removing it - because it is meaningless - need to consult with Judha.
         referrals.reverse()
         entries.reverse()
 
@@ -308,7 +342,7 @@ class LdapClient:
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             demisto.info(f'LDAP Connection Details: {ldap_conn}')
 
-            if self._ldap_server_type == 'Active Directory':
+            if self._ldap_server_type == self.ACTIVE_DIRECTORY:
                 dns_filter = ''
                 for dn in dn_list:
                     dns_filter += f'(distinguishedName={dn})'
@@ -503,9 +537,6 @@ class LdapClient:
         """
             Implements authenticate and roles command for Active Directory.
         """
-        referrals = []
-        entries = []
-
         xsoar_username = self._get_ad_username(username)
         auto_bind = self._get_auto_bind_value()
 
@@ -529,27 +560,12 @@ class LdapClient:
             if not ldap_conn_entries:
                 raise Exception("LDAP Authentication - LDAP user not found")
 
-            # TODO: consider taking that block out to a separate function
-            for entry in ldap_conn_entries:
-                if entry_type := entry.get('type'):
-                    if entry_type == 'searchResRef':  # a referral
-                        referrals.extend(entry.get('uri'))
-
-                    elif entry_type == 'searchResEntry':  # an entry
-                        entry_dn = entry.get('dn')
-                        entry_attributes = entry.get('attributes')
-                        relevant_entry_attributes = []
-                        for attr in entry_attributes:
-                            if attr_value := entry_attributes.get(attr):
-                                if not isinstance(attr_value, list):
-                                    attr_value = [str(attr_value)]
-                                relevant_entry_attributes.append({'Name': attr, 'Values': attr_value})
-
-                        entries.append({'DN': entry_dn, 'Attributes': relevant_entry_attributes})
-                        self.authenticate_ldap_user(entry_dn, password)
+            referrals, entries = \
+                self._parse_and_authenticate_ldap_group_entries_and_referrals(ldap_group_entries=ldap_conn_entries,
+                                                                              password=password)
 
         return {
-            'Controls': None,
+            'Controls': [],
             'Referrals': referrals,
             'Entries': entries
         }
@@ -560,9 +576,7 @@ class LdapClient:
         """
             Implements authenticate and roles command.
         """
-        # TODO: need to better understand what is the different between AD usernames and OpenLDAP usernames.
-        #  is it possible to use DN as a username in AD?
-        if self._ldap_server_type == 'Active Directory':
+        if self._ldap_server_type == self.ACTIVE_DIRECTORY:
             return self.authenticate_and_roles_active_directory(username=username, password=password,
                                                                 pull_name=pull_name, pull_mail=pull_mail,
                                                                 pull_phone=pull_phone, mail_attribute=mail_attribute,
@@ -586,10 +600,11 @@ class LdapClient:
             raise Exception(f'LDAP Authentication integration is supported from build number:'
                             f' {LdapClient.SUPPORTED_BUILD_NUMBER}')
 
-        try:
-            parse_dn(self._username)
-        except LDAPInvalidDnError:
-            raise Exception("Invalid credentials input. Credentials must be full DN.")
+        if self._ldap_server_type == self.OPENLDAP:
+            try:
+                parse_dn(self._username)
+            except LDAPInvalidDnError:
+                raise Exception("Invalid credentials input. Credentials must be full DN.")
         self.authenticate_ldap_user(username=self._username, password=self._password)
         return 'ok'
 

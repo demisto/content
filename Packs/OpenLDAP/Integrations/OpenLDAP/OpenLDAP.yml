@@ -40,23 +40,27 @@ configuration:
   name: group_filter_class
   required: false
   type: 0
+  additionalinfo: Relevant for OpenLDAP.
 - defaultvalue: gidNumber
   display: Groups Unique Identifier Attribute
   name: group_identifier_attribute
   required: false
   type: 0
+  additionalinfo: Relevant for OpenLDAP.
 - defaultvalue: memberUid
   display: Group Membership Identifier Attribute
   name: member_identifier_attribute
   required: false
   type: 0
+  additionalinfo: Relevant for OpenLDAP.
 - defaultvalue: posixAccount
   display: User Object Class
   name: user_filter_class
   required: false
   type: 0
+  additionalinfo: Relevant for OpenLDAP.
 - additionalinfo: User attributes will be added to the user filter in 'ad-authenticate-and-roles'.
-    Attributes should be in the format "attrA=valA,attrB=valB,...".
+    Attributes should be in the format "attrA=valA,attrB=valB,..." (Relevant for OpenLDAP).
   display: User Defined Attributes
   name: custom_attributes
   required: false
@@ -66,6 +70,7 @@ configuration:
   name: user_identifier_attribute
   required: false
   type: 0
+  additionalinfo: Relevant for OpenLDAP.
 - defaultvalue: '500'
   display: Page size
   name: page_size
