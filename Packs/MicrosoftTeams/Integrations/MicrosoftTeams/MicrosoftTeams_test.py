@@ -398,14 +398,14 @@ def test_send_message_with_mirrored_message_or_low_severity(mocker, args):
 
 
 @pytest.mark.parametrize('args, result', [({}, 'No channel or team member to send message were provided.'),
-                                            ({'channel': 'somechannel', 'team_member': 'someuser'},
-                                             'Provide either channel or team member to send message to, not both.'),
-                                            ({'channel': 'channel', 'adaptive_card': 'THISisSTRINGnotJSON'},
-                                             'Given adaptive card is not in valid JSON format.'),
-                                            ({'channel': 'channel', 'message': 'message', 'adaptive_card': '{"a":"b"}'},
-                                             'Provide either message or adaptive to send, not both.'),
-                                            ({'channel': 'channel'},
-                                             'No message or adaptive card to send were provided.')])
+                                          ({'channel': 'somechannel', 'team_member': 'someuser'},
+                                           'Provide either channel or team member to send message to, not both.'),
+                                          ({'channel': 'channel', 'adaptive_card': 'THISisSTRINGnotJSON'},
+                                           'Given adaptive card is not in valid JSON format.'),
+                                          ({'channel': 'channel', 'message': 'message', 'adaptive_card': '{"a":"b"}'},
+                                           'Provide either message or adaptive to send, not both.'),
+                                          ({'channel': 'channel'},
+                                           'No message or adaptive card to send were provided.')])
 def test_send_message_raising_errors(mocker, args, result):
     # verify error is raised if no user/channel were provided.
     # verify error is raised if user and channel provided.
