@@ -8,8 +8,7 @@ from typing import Dict, Optional, List, Tuple, Union
 from dateparser import parse
 from urllib3 import disable_warnings
 from math import ceil
-from gcloud import storage
-
+from google.cloud import storage
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
@@ -57,7 +56,6 @@ class Client:
     def http_request(self, url_suffix: str, requests_kwargs=None) -> Dict:
         if requests_kwargs is None:
             requests_kwargs = dict()
-
         res = requests.post(url=self._base_url + url_suffix,
                             verify=self._verify_cert,
                             headers=self._headers,
@@ -100,11 +98,9 @@ def get_headers(params: Dict) -> Dict:
     return headers
 
 
-def get_requests_kwargs(_json=None, file_path: Optional[str] = None) -> Dict:
+def get_requests_kwargs(_json=None) -> Dict:
     if _json is not None:
         return {'data': json.dumps({"request_data": _json})}
-    elif file_path is not None:
-        return {'files': [('file', ('iocs.json', open(file_path, 'rb'), 'application/json'))]}
     else:
         return {}
 
@@ -246,10 +242,9 @@ def sync(client: Client):
     temp_file_path: str = get_temp_file()
     try:
         create_file_sync(temp_file_path)
-        requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
-        path: str = 'sync_tim_iocs'
         upload_file_to_bucket(temp_file_path)
-        client.http_request(path, requests_kwargs)
+        requests_kwargs = get_requests_kwargs(_json={"path_to_file": temp_file_path})
+        client.http_request(url_suffix='sync_tim_iocs', requests_kwargs=requests_kwargs)
     finally:
         os.remove(temp_file_path)
     set_integration_context({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
@@ -264,9 +259,9 @@ def iocs_to_keep(client: Client):
     temp_file_path: str = get_temp_file()
     try:
         create_file_iocs_to_keep(temp_file_path)
-        requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
-        path = 'iocs_to_keep'
-        client.http_request(path, requests_kwargs)
+        upload_file_to_bucket(temp_file_path)
+        requests_kwargs = get_requests_kwargs(_json={"path_to_file": temp_file_path})
+        client.http_request(url_suffix='iocs_to_keep', requests_kwargs=requests_kwargs)
     finally:
         os.remove(temp_file_path)
     return_outputs('sync with XDR completed.')
@@ -428,17 +423,16 @@ def get_sync_file():
         os.remove(temp_file_path)
 
 
-def upload_file_to_bucket(file):
-    print("GOT TO upload_file_to_bucket")
-    print(file)
+def upload_file_to_bucket(file_path: str) -> None:
     gcpconf_project_id = demisto.getLicenseCustomField("Core.gcpconf_project_id")
-    print(gcpconf_project_id)
     gcpconf_papi_bucket = demisto.getLicenseCustomField("Core.gcpconf_papi_bucket")
-    print(gcpconf_papi_bucket)
-    client = storage.Client(project=gcpconf_project_id)
-    bucket = client.get_bucket(gcpconf_papi_bucket)
-    blob = bucket.blob(file)
-    blob.upload_from_filename(file)
+    try:
+        client = storage.Client(project=gcpconf_project_id)
+        bucket = client.get_bucket(gcpconf_papi_bucket)
+        blob = bucket.blob(file_path)
+        blob.upload_from_filename(file_path)
+    except Exception as error:
+        raise DemistoException(f'Could not upload to bucket {gcpconf_papi_bucket}', exception=error)
 
 
 def main():
