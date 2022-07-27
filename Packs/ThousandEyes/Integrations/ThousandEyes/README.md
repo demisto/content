@@ -138,28 +138,3 @@ Fetches a given agent.
 #### Context Output
 
 There is no context output for this command.
-
-### thousandeyes-test-fetch
-***
-Testing fetch incidents
-
-
-#### Base Command
-
-`thousandeyes-test-fetch`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
