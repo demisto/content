@@ -1,0 +1,32 @@
+{
+    "id":"0123a45b-6c7d-8900-e12f-3456789gh0i1",
+    "date_create":1521214343,
+    "action":"user_login",
+    "actor":{
+       "type":"user",
+       "user":{
+          "id":"W123AB456",
+          "name":"Charlie Parker",
+          "email":"bird@slack.com"
+       }
+    },
+    "entity":{
+       "type":"user",
+       "user":{
+          "id":"W123AB456",
+          "name":"Charlie Parker",
+          "email":"bird@slack.com"
+       }
+    },
+    "context":{
+       "location":{
+          "type":"enterprise",
+          "id":"E1701NCCA",
+          "name":"Birdland",
+          "domain":"birdland"
+       },
+       "ua":"Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/64.0.3282.186 Safari\/537.36",
+       "session_id": "847288190092",
+       "ip_address":"1.23.45.678"
+    }
+ }

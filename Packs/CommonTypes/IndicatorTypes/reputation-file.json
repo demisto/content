@@ -13,9 +13,7 @@
     "reputationScriptName": "",
     "reputationCommand": "file",
     "enhancementScriptNames": [
-      "FileReputation",
-      "SplunkSearch",
-      "WildfireReport"
+      "FileReputation"
     ],
     "system": true,
     "locked": false,

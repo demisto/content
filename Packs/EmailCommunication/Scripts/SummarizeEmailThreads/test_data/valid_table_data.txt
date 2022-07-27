@@ -1,0 +1,1 @@
+[{"Thread Number": 0, "Subject": "Test Email 2", "Recipients": "end_user@company.com, soc_sender@company.com", "CC": "cc_user_1@company.com, cc_user_2@company.com", "BCC": "bcc_user@company.com"}, {"Thread Number": 1, "Subject": "Test Email 4", "Recipients": "end_user@company.com, soc_sender@company.com", "CC": "", "BCC": "bcc_user@company.com"}]

@@ -1,3 +1,4 @@
+import io
 import json
 from typing import Dict
 
@@ -7,7 +8,7 @@ from VirusTotalV3 import (ScoreCalculator, encode_to_base64,
                           get_working_id, raise_if_hash_not_valid,
                           raise_if_ip_not_valid, create_relationships, get_whois)
 
-from CommonServerPython import DemistoException
+from CommonServerPython import argToList, DemistoException
 import demistomock as demisto
 
 INTEGRATION_NAME = 'VirusTotal'
@@ -41,7 +42,7 @@ class TestScoreCalculator:
         )
 
     def test_there_are_logs(self):
-        with open('./TestData/file.json') as f:
+        with open('./test_data/file.json') as f:
             self.score_calculator.file_score('given hash', json.load(f))
         assert self.score_calculator.logs
         self.score_calculator.logs = []
@@ -177,7 +178,7 @@ def test_create_relationships():
     - Validate that the relationships were created as expected.
     """
     expected_name = ['communicates-with', 'communicates-with', 'related-to', 'related-to']
-    with open('./TestData/relationships.json') as f:
+    with open('./test_data/relationships.json') as f:
         relationships = create_relationships(entity_a='Test', entity_a_type='IP', relationships_response=json.load(f),
                                              reliability='B - Usually reliable')
     relation_entry = [relation.to_entry() for relation in relationships]
@@ -200,3 +201,167 @@ def test_get_whois_unexpected_value():
     - Validate empty dict is returned
     """
     assert get_whois('g. [Organization] Reserved Domain Name\nl. [Organization Type] Reserved Domain Name') == dict()
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+DEFAULT_PARAMS = {
+    'credentials': {'password': 'somepassword'},
+    'domain_relationships': '* cname records',
+    'ip_relationships': '* cname records',
+    'url_relationships': '* cname records',
+    'preferredVendors': 'vt1, v2, vt3',
+    'preferredVendorsThreshold': 2,
+    'fileThreshold': 1,
+    'ipThreshold': 1,
+    'urlThreshold': 1,
+    'domainThreshold': 1,
+    'crowdsourced_yara_rules_enabled': True,
+    'yaraRulesThreshold': 1,
+    'SigmaIDSThreshold': 1,
+    'domain_popularity_ranking': 1,
+    'relationship_threshold': 1,
+    'is_premium_api': 'false',
+    'feedReliability': 'A - Completely reliable',
+    'insecure': 'false',
+    'proxy': 'false'
+}
+
+
+def test_domain_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid Testing domain (testing.com)
+
+    When:
+    - Running the !domain command
+
+    Then:
+    - Validate the command results are valid and contains metric data
+    """
+    from VirusTotalV3 import domain_command, ScoreCalculator, Client
+    import CommonServerPython
+    # Setup Mocks
+    mocker.patch.object(demisto, 'args', return_value={'domain': 'testing.com', 'extended_data': 'false'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
+    client = Client(
+        params=params
+    )
+
+    # Load assertions and mocked request data
+    mock_response = util_load_json('test_data/domain.json')
+    expected_results = util_load_json('test_data/domain_results.json')
+    requests_mock.get(f'https://www.virustotal.com/api/v3/domains/testing.com?relationships={domain_relationships}',
+                      json=mock_response)
+
+    # Run command and collect result array
+    results = domain_command(
+        client=client,
+        score_calculator=mocked_score_calculator,
+        args=demisto.args(),
+        relationships=domain_relationships
+    )
+
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].outputs == expected_results
+
+
+def test_ip_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid testing ip (8.8.8.8)
+
+    When:
+    - Running the !ip command
+
+    Then:
+    - Validate the command results are valid and contains metric data
+    """
+    from VirusTotalV3 import ip_command, ScoreCalculator, Client
+    import CommonServerPython
+    # Setup Mocks
+    mocker.patch.object(demisto, 'args', return_value={'ip': '8.8.8.8', 'extended_data': 'false'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(" ", "_")
+    client = Client(
+        params=params
+    )
+
+    # Load assertions and mocked request data
+    mock_response = util_load_json('test_data/ip.json')
+    expected_results = util_load_json('test_data/ip_results.json')
+    requests_mock.get(f'https://www.virustotal.com/api/v3/ip_addresses/8.8.8.8?relationships={ip_relationships}',
+                      json=mock_response)
+
+    # Run command and collect result array
+    results = ip_command(
+        client=client,
+        score_calculator=mocked_score_calculator,
+        args=demisto.args(),
+        relationships=ip_relationships
+    )
+
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].outputs == expected_results
+
+
+def test_url_command_success(mocker, requests_mock):
+    """
+    Given:
+    - A valid testing url (https://vt_is_awesome.com/uts)
+
+    When:
+    - Running the !url command
+
+    Then:
+    - Validate the command results are valid and contains metric data
+    """
+    from VirusTotalV3 import url_command, ScoreCalculator, Client
+    import CommonServerPython
+    # Setup Mocks
+    mocker.patch.object(demisto, 'args', return_value={'url': 'https://vt_is_awesome.com/uts', 'extended_data': 'false'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    testing_url = 'https://vt_is_awesome.com/uts'
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    url_relationships = (','.join(argToList(params.get('url_relationships')))).replace('* ', '').replace(" ", "_")
+    client = Client(
+        params=params
+    )
+
+    # Load assertions and mocked request data
+    mock_response = util_load_json('test_data/url.json')
+    expected_results = util_load_json('test_data/url_results.json')
+    requests_mock.get(f'https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}'
+                      f'?relationships={url_relationships}', json=mock_response)
+
+    # Run command and collect result array
+    results = url_command(
+        client=client,
+        score_calculator=mocked_score_calculator,
+        args=demisto.args(),
+        relationships=url_relationships
+    )
+
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].outputs == expected_results

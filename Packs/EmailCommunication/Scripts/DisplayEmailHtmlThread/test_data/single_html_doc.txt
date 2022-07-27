@@ -1,0 +1,4 @@
+<html><body><b>From:</b> soc_sender@company.com<br><b>To:</b> end_user@company.com<br><b>CC:</b> cc_user@company.com<br><b>Subject:</b> Test Email #1<br><b>Email Time:</b> 2022-04-06T17:53:46UTC<br><b>Attachments:</b> File1.txt, File2.txt</body></html>
+<!DOCTYPE html><html><body><p>Test email body.</p></body></html>
+<hr style="width:98%;text-align:center;height:3px;border-width:0;background-color:#cccccc">
+

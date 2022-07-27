@@ -376,7 +376,7 @@ def windows_device_defender_scan_command(client: MsGraphClient, args: dict) -> N
 def wipe_device_command(client: MsGraphClient, args: dict) -> None:
     keep_enrollment_data: bool = bool(args.get('keep_enrollment_data'))
     keep_user_data: bool = bool(args.get('keep_user_data'))
-    mac_os_unlock_code: str = str(args.get('mac_os_unlock_code'))
+    mac_os_unlock_code: str = str(args.get('mac_os_unlock_code', ""))
     device_id: str = str(args.get('device_id'))
     client.wipe_device(keep_enrollment_data, keep_user_data, mac_os_unlock_code, device_id, 'wipe')
     return_outputs('Wipe device action activated successfully.', {}, {})

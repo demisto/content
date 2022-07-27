@@ -5,3 +5,6 @@ In order to retrieve API Token:
 2. Navigate to `Administration` at the top bar.
 3. In `Configuration` tab choose `API Tokens`.
 4. Press on `New API Token` in order to create new API Token.
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/tanium-threat-response-v2)

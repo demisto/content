@@ -106,7 +106,7 @@ class Client:
     @logger
     def update_incident(self, incident_id: int, status: Optional[str], assigned_to: Optional[str],
                         classification: Optional[str],
-                        determination: Optional[str], tags: Optional[List[str]], timeout: int) -> Dict:
+                        determination: Optional[str], tags: Optional[List[str]], timeout: int, comment: str) -> Dict:
         """
         PATCH request to update single incident.
         Args:
@@ -120,6 +120,7 @@ class Client:
                  for example: tag1,tag2,tag3.
             timeout (int): The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
+            comment (str): Comment to be added to the incident
        Returns( Dict): request results as dict:
                     { '@odata.context',
                       'value': updated incident,
@@ -127,7 +128,7 @@ class Client:
 
         """
         body = assign_params(status=status, assignedTo=assigned_to, classification=classification,
-                             determination=determination, tags=tags)
+                             determination=determination, tags=tags, comment=comment)
         updated_incident = self.ms_client.http_request(method='PATCH', url_suffix=f'api/incidents/{incident_id}',
                                                        json_data=body, timeout=timeout)
         return updated_incident
@@ -380,10 +381,11 @@ def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -
     determination = args.get('determination')
     incident_id = arg_to_number(args.get('id'))
     timeout = arg_to_number(args.get('timeout', TIMEOUT))
+    comment = args.get('comment')
 
     updated_incident = client.update_incident(incident_id=incident_id, status=status, assigned_to=assigned_to,
                                               classification=classification, determination=determination, tags=tags,
-                                              timeout=timeout)
+                                              timeout=timeout, comment=comment)
     if updated_incident.get('@odata.context'):
         del updated_incident['@odata.context']
 
@@ -657,7 +659,6 @@ def main() -> None:
             raise NotImplementedError
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

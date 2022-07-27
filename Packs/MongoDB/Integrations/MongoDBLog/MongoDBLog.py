@@ -82,12 +82,12 @@ def read_log_json():
     """ Get all log documents/records from MondoDB """
     limit = int(demisto.args().get('limit'))
     # Point to all the documents
-    cursor = COLLECTION.find({}, {'_id': False}).limit(limit)
-    cursor_count = COLLECTION.find({}, {'_id': False}).count()
+    doc_count = COLLECTION.count_documents(filter={}, limit=limit)
+    cursor = COLLECTION.find({}, {'_id': False})
     # Create an empty log list
     entries = []
     # Iterate through those documents
-    if cursor_count > 0:
+    if doc_count > 0:
         for i in cursor:
             # Append log entry to list
             entries.append(i)
@@ -101,10 +101,8 @@ def read_log_json():
 def num_log_json():
     """ Get a count of all log documents/records from MondoDB """
     # Point to the documents
-    cursor = COLLECTION.find({}, {'_id': False})
-    # Get count of those documents
-    log_number = cursor.count()
-    human_readable = f'The count of log documents/records is {str(log_number)}'
+    doc_count = COLLECTION.count_documents(filter={})
+    human_readable = f'The count of log documents/records is {str(doc_count)}'
     return human_readable, {}, {}
 
 

@@ -2,7 +2,7 @@
     "name": "Phishing",
     "description": "Phishing emails still hooking your end users? This Content Pack can drastically reduce the time your security team spends on phishing alerts.",
     "support": "xsoar",
-    "currentVersion": "3.2.2",
+    "currentVersion": "3.2.9",
     "serverMinVersion": "6.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
@@ -25,57 +25,13 @@
     ],
     "keywords": [],
     "dependencies": {
-        "MicrosoftGraphMail": {
-            "mandatory": false,
-            "display_name": "Microsoft Graph Mail"
-        },
         "EWS": {
             "mandatory": false,
             "display_name": "EWS"
         },
-        "MicrosoftGraphListener": {
-            "mandatory": false,
-            "display_name": "Microsoft Graph Mail Single User"
-        },
-        "rasterize": {
-            "mandatory": false,
-            "display_name": "Rasterize"
-        },
-        "MailSenderNew": {
-            "mandatory": false,
-            "display_name": "Mail Sender (New)"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
         "Gmail": {
             "mandatory": false,
             "display_name": "Gmail"
-        },
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "GmailSingleUser": {
-            "mandatory": false,
-            "display_name": "Gmail Single User (Beta)"
-        },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
-        "CoreAlertFields": {
-            "mandatory": false,
-            "display_name": "Core Alert Fields"
-        },
-        "FiltersAndTransformers": {
-            "mandatory": true,
-            "display_name": "Filters And Transformers"
         }
     },
     "marketplaces": [
