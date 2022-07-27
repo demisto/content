@@ -4852,7 +4852,8 @@ def panorama_query_logs_command(args: dict):
 
         query_traffic_logs_output = {
             'JobID': job_id,
-            'Status': 'Pending'
+            'Status': 'Pending',
+            'LogType': log_type
         }
         
         if result.response.result.job.status != 'FIN':
