@@ -1477,16 +1477,54 @@ def authorize_security_group_ingress_command(args, aws_client):
     )
     kwargs = {'GroupId': args.get('groupId')}
     IpPermissions = []
-    IpPermissions_dict = {}
     UserIdGroupPairs = []
-    UserIdGroupPairs_dict = {}
+    IpPermissions_dict = create_ip_premissions_dict(args)
+    UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
-    if args.get('IpPermissionsfromPort') is not None:
-        IpPermissions_dict.update({'FromPort': int(args.get('IpPermissionsfromPort'))})
-    if args.get('IpPermissionsIpProtocol') is not None:
-        IpPermissions_dict.update({'IpProtocol': str(args.get('IpPermissionsIpProtocol'))})  # type: ignore
-    if args.get('IpPermissionsToPort') is not None:
-        IpPermissions_dict.update({'ToPort': int(args.get('IpPermissionsToPort'))})
+    kwargs.update(create_policy_kwargs_dict(args))
+
+    UserIdGroupPairs.append(UserIdGroupPairs_dict)
+    IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
+
+    IpPermissions.append(IpPermissions_dict)
+    kwargs.update({'IpPermissions': IpPermissions})
+
+    response = client.authorize_security_group_ingress(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
+        demisto.results("The Security Group ingress rule was created")
+
+
+def authorize_security_group_egress_command(args, aws_client):
+    client = aws_client.aws_session(
+        service='ec2',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {'GroupId': args.get('groupId')}
+    IpPermissions = []
+    UserIdGroupPairs = []
+    IpPermissions_dict = create_ip_premissions_dict(args)
+    UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
+
+    UserIdGroupPairs.append(UserIdGroupPairs_dict)
+    IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
+    IpPermissions.append(IpPermissions_dict)
+    kwargs.update({'IpPermissions': IpPermissions})
+
+    response = client.authorize_security_group_egress(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
+        demisto.results("The Security Group egress rule was created")
+
+
+def create_ip_premissions_dict(args):
+    IpPermissions_dict = {}
+    UserIdGroupPairs_keys = (('IpPermissionsfromPort', 'FromPort'), ('IpPermissionsIpProtocol', 'IpProtocol'),
+                             ('IpPermissionsToPort', 'ToPort'))
+    for args_key, dict_key in UserIdGroupPairs_keys:
+        if args.get(args_key) is not None:
+            IpPermissions_dict.update({dict_key: args.get(args_key)})
 
     if args.get('IpRangesCidrIp') is not None:
         IpRanges = [{
@@ -1506,46 +1544,30 @@ def authorize_security_group_ingress_command(args, aws_client):
             'Description': args.get('PrefixListIdDesc', None)
         }]
         IpPermissions_dict.update({'PrefixListIds': PrefixListIds})  # type: ignore
+    return IpPermissions_dict
 
-    if args.get('UserIdGroupPairsDescription') is not None:
-        UserIdGroupPairs_dict.update({'Description': args.get('UserIdGroupPairsDescription')})
-    if args.get('UserIdGroupPairsGroupId') is not None:
-        UserIdGroupPairs_dict.update({'GroupId': args.get('UserIdGroupPairsGroupId')})
-    if args.get('UserIdGroupPairsGroupName') is not None:
-        UserIdGroupPairs_dict.update({'GroupName': args.get('UserIdGroupPairsGroupName')})
-    if args.get('UserIdGroupPairsPeeringStatus') is not None:
-        UserIdGroupPairs_dict.update({'PeeringStatus': args.get('UserIdGroupPairsPeeringStatus')})
-    if args.get('UserIdGroupPairsUserId') is not None:
-        UserIdGroupPairs_dict.update({'UserId': args.get('UserIdGroupPairsUserId')})
-    if args.get('UserIdGroupPairsVpcId') is not None:
-        UserIdGroupPairs_dict.update({'VpcId': args.get('UserIdGroupPairsVpcId')})
-    if args.get('UserIdGroupPairsVpcPeeringConnectionId') is not None:
-        UserIdGroupPairs_dict.update({'VpcPeeringConnectionId': args.get('UserIdGroupPairsVpcPeeringConnectionId')})
 
-    if args.get('fromPort') is not None:
-        kwargs.update({'FromPort': int(args.get('fromPort'))})
-    if args.get('cidrIp') is not None:
-        kwargs.update({'CidrIp': args.get('cidrIp')})
-    if args.get('toPort') is not None:
-        kwargs.update({'ToPort': int(args.get('toPort'))})
-    if args.get('ipProtocol') is not None:
-        kwargs.update({'IpProtocol': args.get('ipProtocol')})
-    if args.get('sourceSecurityGroupName') is not None:
-        kwargs.update({'SourceSecurityGroupName': args.get('sourceSecurityGroupName')})
-    if args.get('SourceSecurityGroupOwnerId') is not None:
-        kwargs.update({'SourceSecurityGroupOwnerId': args.get('SourceSecurityGroupOwnerId')})
+def create_policy_kwargs_dict(args):
+    policy_kwargs_keys = (('fromPort', 'FromPort'), ('cidrIp', 'CidrIp'), ('toPort', 'ToPort'), ('ipProtocol', 'IpProtocol'),
+                          ('sourceSecurityGroupName', 'SourceSecurityGroupName'),
+                          ('SourceSecurityGroupOwnerId', 'SourceSecurityGroupOwnerId'))
+    policy_kwargs = {}
+    for args_key, dict_key in policy_kwargs_keys:
+        if args.get(args_key) is not None:
+            policy_kwargs.update({dict_key: args.get(args_key)})
+    return policy_kwargs
 
-    if UserIdGroupPairs_dict is not None:
-        UserIdGroupPairs.append(UserIdGroupPairs_dict)
-        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
 
-    if IpPermissions_dict is not None:
-        IpPermissions.append(IpPermissions_dict)
-        kwargs.update({'IpPermissions': IpPermissions})
-
-    response = client.authorize_security_group_ingress(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
-        demisto.results("The Security Group ingress rule was created")
+def create_user_id_group_pairs_dict(args):
+    UserIdGroupPairs_dict = {}
+    UserIdGroupPairs_keys = (('UserIdGroupPairsDescription', 'Description'), ('UserIdGroupPairsGroupId', 'GroupId'),
+                             ('UserIdGroupPairsGroupName', 'GroupName'), ('UserIdGroupPairsPeeringStatus', 'PeeringStatus'),
+                             ('UserIdGroupPairsUserId', 'UserId'), ('UserIdGroupPairsVpcId', 'VpcId'),
+                             ('UserIdGroupPairsVpcPeeringConnectionId', 'VpcPeeringConnectionId'))
+    for args_key, dict_key in UserIdGroupPairs_keys:
+        if args.get(args_key) is not None:
+            UserIdGroupPairs_dict.update({dict_key: args.get(args_key)})
+    return UserIdGroupPairs_dict
 
 
 def revoke_security_group_ingress_command(args, aws_client):
@@ -1558,16 +1580,7 @@ def revoke_security_group_ingress_command(args, aws_client):
     )
     kwargs = {'GroupId': args.get('groupId')}
 
-    if args.get('fromPort') is not None:
-        kwargs.update({'FromPort': int(args.get('fromPort'))})
-    if args.get('cidrIp') is not None:
-        kwargs.update({'CidrIp': args.get('cidrIp')})
-    if args.get('toPort') is not None:
-        kwargs.update({'ToPort': int(args.get('toPort'))})
-    if args.get('ipProtocol') is not None:
-        kwargs.update({'IpProtocol': args.get('ipProtocol')})
-    if args.get('sourceSecurityGroupName') is not None:
-        kwargs.update({'SourceSecurityGroupName': args.get('sourceSecurityGroupName')})
+    kwargs.update(create_policy_kwargs_dict(args))
 
     response = client.revoke_security_group_ingress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
@@ -1589,57 +1602,11 @@ def revoke_security_group_egress_command(args, aws_client):
         'GroupId': args.get('groupId')
     }
 
-    IpPermissions_dict = {}  # type: Dict[str, Any]
-    UserIdGroupPairs_dict = {}  # type: Dict[str, Any]
+    IpPermissions_dict = create_ip_premissions_dict(args)
+    UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
-    if args.get('IpPermissionsfromPort') is not None:
-        IpPermissions_dict['FromPort'] = int(args.get('IpPermissionsfromPort'))
-    if args.get('IpPermissionsIpProtocol') is not None:
-        IpPermissions_dict['IpProtocol'] = str(args.get('IpPermissionsIpProtocol'))
-    if args.get('IpPermissionsToPort') is not None:
-        IpPermissions_dict['ToPort'] = int(args.get('IpPermissionsToPort'))
-
-    if args.get('IpRangesCidrIp') is not None:
-        IpRanges = [{
-            'CidrIp': args['IpRangesCidrIp'],
-            'Description': args.get('IpRangesDescription', '')
-        }]
-        IpPermissions_dict['IpRanges'] = IpRanges
-
-    if args.get('Ipv6RangesCidrIp') is not None:
-        Ipv6Ranges = [{
-            'CidrIp': args['Ipv6RangesCidrIp'],
-            'Description': args.get('Ipv6RangesDescription', '')
-        }]
-        IpPermissions_dict['Ipv6Ranges'] = Ipv6Ranges
-
-    if args.get('PrefixListId') is not None:
-        PrefixListIds = [{
-            'PrefixListId': args['PrefixListId'],
-            'Description': args.get('PrefixListIdDescription', '')
-        }]
-        IpPermissions_dict['PrefixListIds'] = PrefixListIds
-
-    if args.get('UserIdGroupPairsDescription') is not None:
-        UserIdGroupPairs_dict['Description'] = args['UserIdGroupPairsDescription']
-    if args.get('UserIdGroupPairsGroupId') is not None:
-        UserIdGroupPairs_dict['GroupId'] = args['UserIdGroupPairsGroupId']
-    if args.get('UserIdGroupPairsGroupName') is not None:
-        UserIdGroupPairs_dict['GroupName'] = args['UserIdGroupPairsGroupName']
-    if args.get('UserIdGroupPairsPeeringStatus') is not None:
-        UserIdGroupPairs_dict['PeeringStatus'] = args['UserIdGroupPairsPeeringStatus']
-    if args.get('UserIdGroupPairsUserId') is not None:
-        UserIdGroupPairs_dict['UserId'] = args['UserIdGroupPairsUserId']
-    if args.get('UserIdGroupPairsVpcId') is not None:
-        UserIdGroupPairs_dict['VpcId'] = args['UserIdGroupPairsVpcId']
-    if args.get('UserIdGroupPairsVpcPeeringConnectionId') is not None:
-        UserIdGroupPairs_dict['VpcPeeringConnectionId'] = args['UserIdGroupPairsVpcPeeringConnectionId']
-
-    if UserIdGroupPairs_dict is not None:
-        IpPermissions_dict['UserIdGroupPairs'] = [UserIdGroupPairs_dict]
-
-    if IpPermissions_dict is not None:
-        kwargs['IpPermissions'] = [IpPermissions_dict]
+    IpPermissions_dict['UserIdGroupPairs'] = [UserIdGroupPairs_dict]
+    kwargs['IpPermissions'] = [IpPermissions_dict]
 
     response = client.revoke_security_group_egress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
@@ -3096,6 +3063,9 @@ def main():
 
         elif command == 'aws-ec2-authorize-security-group-ingress-rule':
             authorize_security_group_ingress_command(args, aws_client)
+
+        elif command == 'aws-ec2-authorize-security-group-egress-rule':
+            authorize_security_group_egress_command(args, aws_client)
 
         elif command == 'aws-ec2-revoke-security-group-ingress-rule':
             revoke_security_group_ingress_command(args, aws_client)

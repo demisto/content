@@ -147,6 +147,9 @@ def create_py_documentation(path, origin, language):
     with open(path, 'r') as file:
         py_script = YmlUnifier.clean_python_code(file.read(), remove_print_future=False)
 
+    logging.info("replacing DemistoClassApiModule: ")
+    py_script = re.sub(r'from DemistoClassApiModule import \*[ \t]*(#.*)?', "", py_script)
+
     code = compile(py_script, '<string>', 'exec')
     ns = {'demisto': demistomock}
     exec(code, ns)  # guardrails-disable-line # pylint: disable=W0122

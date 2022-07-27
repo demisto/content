@@ -32,7 +32,7 @@
             "owner": {
                 "id": "id",
                 "type": "user",
-                "email": "some_name"
+                "email": "email@email.com"
             },
             "account": {
                 "id": "id",

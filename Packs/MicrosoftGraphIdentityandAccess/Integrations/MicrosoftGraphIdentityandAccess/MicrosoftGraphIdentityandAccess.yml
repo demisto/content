@@ -3,185 +3,567 @@ commonfields:
   id: MicrosoftGraphIdentityandAccess
   version: -1
 configuration:
-- defaultvalue: 597c0375-766f-4e6d-ad2a-f48117044ac5
-  display: Application ID
-  hidden: false
-  name: app_id
-  required: true
-  type: 0
-- defaultvalue: https://login.microsoftonline.com
-  display: Azure AD endpoint
-  hidden: false
-  name: azure_ad_endpoint
-  options:
-  - https://login.microsoftonline.com
-  - https://login.microsoftonline.us
-  - https://login.microsoftonline.de
-  - https://login.chinacloudapi.cn
-  required: false
-  type: 15
-  additionalinfo: Azure AD endpoint associated with a national cloud.
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
+  - defaultvalue: 597c0375-766f-4e6d-ad2a-f48117044ac5
+    display: Application ID (Client ID for Client credentials mode)
+    hidden: false
+    name: app_id
+    required: true
+    type: 0
+  - display: Tenant ID (required for Client Credentials mode)
+    name: tenant_id
+    required: false
+    type: 0
+  - displaypassword: Client Secret (required for Client Credentials mode)
+    name: credentials
+    required: false
+    type: 9
+    additionalinfo: "Client Secret. Required for Client Credentials mode)"
+    hiddenusername: true
+  - name: first_fetch
+    display: First Fetch Time Interval
+    required: false
+    defaultvalue: 1 days
+    type: 0
+    additionalinfo: The time range to consider for the initial data fetch in the format
+      <number> <unit>. For example, 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours, etc.
+  - defaultvalue: '50'
+    display: Max fetch interval
+    additionalinfo: The maximum number of incidents per request from the Azure Active Directory. Default is 50.
+    name: max_fetch
+    required: false
+    type: 0
+  - display: Fetch query
+    name: fetch_filter_expression
+    required: false
+    type: 0
+  - defaultvalue: https://login.microsoftonline.com
+    display: Azure AD endpoint
+    hidden: false
+    name: azure_ad_endpoint
+    options:
+      - https://login.microsoftonline.com
+      - https://login.microsoftonline.us
+      - https://login.microsoftonline.de
+      - https://login.chinacloudapi.cn
+    required: false
+    type: 15
+    additionalinfo: Azure AD endpoint associated with a national cloud.
+  - display: Incident type
+    name: incidentType
+    required: false
+    type: 13
+  - additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+    display: Use Client Credentials Authorization Flow
+    name: client_credentials
+    required: false
+    type: 8
+  - name: isFetch
+    display: Fetch incidents
+    required: false
+    type: 8
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
 description: Use the Azure Active Directory Identity And Access integration to manage
   roles and members.
 display: Azure Active Directory Identity And Access
 name: MicrosoftGraphIdentityandAccess
 script:
   commands:
-  - deprecated: false
-    description: Run this command to start the authorization process and follow the
-      instructions in the command results.
-    execution: false
-    name: msgraph-identity-auth-start
-  - deprecated: false
-    description: |-
-      Run this command to complete the authorization process.
-      Should be used after running the msgraph-identity-auth-start command.
-    execution: false
-    name: msgraph-identity-auth-complete
-  - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication
-      process.
-    execution: false
-    name: msgraph-identity-auth-reset
-  - deprecated: false
-    description: Tests connectivity to Microsoft.
-    execution: false
-    name: msgraph-identity-auth-test
-  - deprecated: false
-    description: Lists the roles in the directory.
-    execution: false
-    name: msgraph-identity-directory-roles-list
-    arguments:
-    - name: limit
-      default: false
-      description: Maximum number of results to fetch.
-      isArray: false
-      required: false
-      defaultValue: 10
-      secret: false
-    outputs:
-    - contextPath: MSGraphIdentity.Role.deletedDateTime
-      description: The time when a role was deleted. Displays only if a role was deleted.
-      type: Date
-    - contextPath: MSGraphIdentity.Role.description
-      description: The description of the directory role.
-      type: String
-    - contextPath: MSGraphIdentity.Role.displayName
-      description: The display name of the directory role.
-      type: String
-    - contextPath: MSGraphIdentity.Role.id
-      description: The unique identifier of the directory role.
-      type: String
-    - contextPath: MSGraphIdentity.Role.roleTemplateId
-      description: The ID of the directory role template on which the role is based.
-      type: String
-  - deprecated: false
-    description: Activates a role by its template ID.
-    execution: false
-    name: msgraph-identity-directory-role-activate
-    arguments:
-    - name: role_template_id
-      default: false
-      description: ID of the role template to activate. Can be retrieved using the
-        msgraph-identity-directory-roles-list command.
-      isArray: false
-      required: true
-      secret: false
-    outputs:
-    - contextPath: MSGraphIdentity.Role.deletedDateTime
-      description: The time when the role was deleted. Displays only if the role was
-        deleted.
-      type: Date
-    - contextPath: MSGraphIdentity.Role.description
-      description: The description of the directory role.
-      type: String
-    - contextPath: MSGraphIdentity.Role.displayName
-      description: The display name of the directory role.
-      type: String
-    - contextPath: MSGraphIdentity.Role.id
-      description: The unique identifier of the directory role.
-      type: String
-    - contextPath: MSGraphIdentity.Role.roleTemplateId
-      description: The ID of the directory role template on which this role is based.
-      type: String
-  - deprecated: false
-    description: Gets all members in a role ID.
-    execution: false
-    name: msgraph-identity-directory-role-members-list
-    arguments:
-    - name: role_id
-      default: false
-      description: The ID of the application for which to get its role members list.
-        Can be retrieved using the msgraph-identity-directory-roles-list command.
-      isArray: false
-      required: true
-      secret: false
-    - name: limit
-      default: false
-      description: The maximum number of members to fetch.
-      defaultValue: 10
-      isArray: false
-      required: false
-      secret: false
-    outputs:
-    - contextPath: MSGraphIdentity.RoleMember.user_id
-      description: The unique identifier of the user in the role.
-      type: String
-    - contextPath: MSGraphIdentity.RoleMember.role_id
-      description: The unique identifier of the role specified in the input.
-      type: String
-  - deprecated: false
-    description: Adds a user to a role.
-    execution: false
-    name: msgraph-identity-directory-role-member-add
-    arguments:
-    - name: role_id
-      default: false
-      description: The ID of the role to add the user to. Can be retrieved using the
-        msgraph-identity-directory-roles-list command.
-      isArray: false
-      required: true
-      secret: false
-    - name: user_id
-      default: false
-      description: The ID of the user to add to the role. Can be retrieved using the
-        msgraph-identity-directory-role-members-list command.
-      isArray: false
-      required: true
-      secret: false
-  - deprecated: false
-    description: Removes a user from a role.
-    execution: false
-    name: msgraph-identity-directory-role-member-remove
-    arguments:
-    - name: role_id
-      default: false
-      description: ID of the role from which to remove the user. Can be retrieved
-        using the msgraph-identity-directory-roles-list command.
-      isArray: false
-      required: true
-      secret: false
-    - name: user_id
-      default: false
-      description: ID of the user to remove from the role. Can be retrieved using
-        the msgraph-identity-directory-role-members-list command.
-      isArray: false
-      required: true
-      secret: false
-  isfetch: false
+    - deprecated: false
+      description: Run this command to start the authorization process and follow the
+        instructions in the command results.
+      execution: false
+      name: msgraph-identity-auth-start
+    - deprecated: false
+      description: |-
+        Run this command to complete the authorization process.
+        Should be used after running the msgraph-identity-auth-start command.
+      execution: false
+      name: msgraph-identity-auth-complete
+    - deprecated: false
+      description: Run this command if for some reason you need to rerun the authentication
+        process.
+      execution: false
+      name: msgraph-identity-auth-reset
+    - deprecated: false
+      description: Tests connectivity to Microsoft.
+      execution: false
+      name: msgraph-identity-auth-test
+    - deprecated: false
+      description: Lists the roles in the directory.
+      execution: false
+      name: msgraph-identity-directory-roles-list
+      arguments:
+        - name: limit
+          default: false
+          description: Maximum number of results to fetch.
+          isArray: false
+          required: false
+          defaultValue: 10
+          secret: false
+      outputs:
+        - contextPath: MSGraphIdentity.Role.deletedDateTime
+          description: The time when a role was deleted. Displays only if a role was deleted.
+          type: Date
+        - contextPath: MSGraphIdentity.Role.description
+          description: The description of the directory role.
+          type: String
+        - contextPath: MSGraphIdentity.Role.displayName
+          description: The display name of the directory role.
+          type: String
+        - contextPath: MSGraphIdentity.Role.id
+          description: The unique identifier of the directory role.
+          type: String
+        - contextPath: MSGraphIdentity.Role.roleTemplateId
+          description: The ID of the directory role template on which the role is based.
+          type: String
+    - deprecated: false
+      description: Activates a role by its template ID.
+      execution: false
+      name: msgraph-identity-directory-role-activate
+      arguments:
+        - name: role_template_id
+          default: false
+          description: ID of the role template to activate. Can be retrieved using the
+            msgraph-identity-directory-roles-list command.
+          isArray: false
+          required: true
+          secret: false
+      outputs:
+        - contextPath: MSGraphIdentity.Role.deletedDateTime
+          description: The time when the role was deleted. Displays only if the role was
+            deleted.
+          type: Date
+        - contextPath: MSGraphIdentity.Role.description
+          description: The description of the directory role.
+          type: String
+        - contextPath: MSGraphIdentity.Role.displayName
+          description: The display name of the directory role.
+          type: String
+        - contextPath: MSGraphIdentity.Role.id
+          description: The unique identifier of the directory role.
+          type: String
+        - contextPath: MSGraphIdentity.Role.roleTemplateId
+          description: The ID of the directory role template on which this role is based.
+          type: String
+    - deprecated: false
+      description: Gets all members in a role ID.
+      execution: false
+      name: msgraph-identity-directory-role-members-list
+      arguments:
+        - name: role_id
+          default: false
+          description: The ID of the application for which to get its role members list.
+            Can be retrieved using the msgraph-identity-directory-roles-list command.
+          isArray: false
+          required: true
+          secret: false
+        - name: limit
+          default: false
+          description: The maximum number of members to fetch.
+          defaultValue: 10
+          isArray: false
+          required: false
+          secret: false
+      outputs:
+        - contextPath: MSGraphIdentity.RoleMember.user_id
+          description: The unique identifier of the user in the role.
+          type: String
+        - contextPath: MSGraphIdentity.RoleMember.role_id
+          description: The unique identifier of the role specified in the input.
+          type: String
+    - deprecated: false
+      description: Adds a user to a role.
+      execution: false
+      name: msgraph-identity-directory-role-member-add
+      arguments:
+        - name: role_id
+          default: false
+          description: The ID of the role to add the user to. Can be retrieved using the
+            msgraph-identity-directory-roles-list command.
+          isArray: false
+          required: true
+          secret: false
+        - name: user_id
+          default: false
+          description: The ID of the user to add to the role. Can be retrieved using the
+            msgraph-identity-directory-role-members-list command.
+          isArray: false
+          required: true
+          secret: false
+    - deprecated: false
+      description: Removes a user from a role.
+      execution: false
+      name: msgraph-identity-directory-role-member-remove
+      arguments:
+        - name: role_id
+          default: false
+          description: ID of the role from which to remove the user. Can be retrieved
+            using the msgraph-identity-directory-roles-list command.
+          isArray: false
+          required: true
+          secret: false
+        - name: user_id
+          default: false
+          description: ID of the user to remove from the role. Can be retrieved using
+            the msgraph-identity-directory-role-members-list command.
+          isArray: false
+          required: true
+          secret: false
+    - deprecated: false
+      description: Retrieve an ip named location by id.
+      execution: false
+      name: msgraph-identity-ip-named-locations-get
+      arguments:
+        - name: ip_id
+          default: false
+          description: The id of the named ip location to get from the api.
+          isArray: false
+          required: true
+          secret: false
+      outputs:
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
+          description: The time when an ip named location was created.
+          type: Date
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_modified
+          description: The time when an ip named location was updated.
+          type: Date
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.display_name
+          description: The display name of the ip named location.
+          type: String
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.id
+          description: The unique identifier of the ip named location.
+          type: String
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.is_trusted
+          description: Abollean that taled if the ip named location is a trusted source.
+          type: String
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
+          description: List of ip ranges for the ip named location
+          type: Array
+    - deprecated: false
+      description: Retrieve all ip named locations.
+      execution: false
+      name: msgraph-identity-ip-named-locations-list
+      arguments:
+        - name: limit
+          description: The limit for results we get from the api.
+          isArray: false
+          required: false
+          secret: false
+        - name: page
+          description: The page to get the data from.
+          isArray: false
+          required: false
+          secret: false
+        - name: odata_query
+          description: An odata query to send to the api.
+          isArray: false
+          required: false
+          secret: false
+      outputs:
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_named_locations
+          description: List of ip named locations.
+          type: Array
+    - deprecated: false
+      description: Delete an ip named location by id.
+      execution: false
+      name: msgraph-identity-ip-named-locations-delete
+      arguments:
+        - name: ip_id
+          default: false
+          description: The id of the named ip location to get from the api.
+          isArray: false
+          required: true
+          secret: false
+    - deprecated: false
+      description: Create an ip named location.
+      execution: false
+      name: msgraph-identity-ip-named-locations-create
+      arguments:
+        - name: ips
+          default: false
+          description: A list of IP addresses to add to the named location, should be a string with the addresses separated by the delimiter ','.
+          isArray: false
+          required: false
+          secret: false
+        - name: is_trusted
+          default: false
+          description: Boolean that indicates if the ip can be trusted.
+          isArray: false
+          required: false
+          secret: false
+        - name: display_name
+          default: false
+          description: The disply name for the named ip location.
+          isArray: false
+          required: false
+          secret: false
+      outputs:
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
+          description: The time when an ip named location was created.
+          type: Date
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_modified
+          description: The time when an ip named location was updated.
+          type: Date
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.display_name
+          description: The display name of the ip named location.
+          type: String
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.id
+          description: The unique identifier of the ip named location.
+          type: String
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.is_trusted
+          description: Abollean that taled if the ip named location is a trusted source.
+          type: String
+        - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
+          description: List of ip ranges for the ip named location
+          type: Array
+    - deprecated: false
+      description: update an ip named location by id.
+      execution: false
+      name: msgraph-identity-ip-named-locations-update
+      arguments:
+        - name: ip_id
+          default: false
+          description: The id of the named ip location to get from the api.
+          isArray: false
+          required: true
+          secret: false
+        - name: ips
+          default: false
+          description: A list of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
+          isArray: false
+          required: false
+          secret: false
+        - name: is_trusted
+          default: false
+          description: Boolean that indicates if the ip can be trusted.
+          isArray: false
+          required: false
+          secret: false
+        - name: display_name
+          default: false
+          description: The disply name for the named ip location.
+          isArray: false
+          required: false
+          secret: false
+    - deprecated: false
+      description: Retrieve all the detected risks.
+      execution: false
+      name: msgraph-identity-protection-risks-list
+      arguments:
+        - name: limit
+          description: The limit for results we get from the api.
+          isArray: false
+          required: false
+          secret: false
+        - name: odata_query
+          description: An odata query to send to the api.
+          isArray: false
+          required: false
+          secret: false
+      outputs:
+        - contextPath: MSGraph.identityProtection.risks.additionalInfo
+          description: dentityProtection.risks.additionalInfo
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.userPrincipalName
+          description: Risky user principal name.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.userDisplayName
+          description: Risky user display name.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.userId
+          description: Unique ID of the user.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.lastUpdatedDateTime
+          description: Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.detectedDateTime
+          description: Date and time that the risk was detected. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.activityDateTime
+          description: Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.location.state
+          description: State of the sign-in.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.location.geoCoordinates.longitude
+          description: Longitude of the sign-in.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.location.geoCoordinates.latitude
+          description: Latitude of the sign-in.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.location.countryOrRegion
+          description: Country or region of the sign-in.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.location.city
+          description: City of the sign-in.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.ipAddress
+          description: Provides the IP address of the client from where the risk occurred.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.tokenIssuerType
+          description: Indicates the type of token issuer for the detected sign-in risk. The possible values are AzureAD, ADFederationServices, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.activity
+          description: Indicates the activity type the detected risk is linked to. The possible values are signin, user, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.detectionTimingType
+          description: Timing of the detected risk (real-time/offline). The possible values are notDefined, realtime, nearRealtime, offline, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.source
+          description: Source of the risk detection. For example, activeDirectory.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.riskDetail
+          description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.riskstate
+          description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.riskLevel
+          description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.riskType
+          description: Deprecated. Use riskEventType instead. List of risk event types.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.riskEventType
+          description: The type of risk event detected. The possible values are unlikelyTravel, anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress, suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence, generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules, investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.correlationId
+          description: Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.requestId
+          description: The ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
+          type: string
+        - contextPath: MSGraph.identityProtection.risks.id
+          description: Unique ID of the risk detection.
+          type: string
+    - deprecated: false
+      description: Retrieve the risky users in active directory.
+      execution: false
+      name: msgraph-identity-protection-risky-user-list
+      arguments:
+        - name: limit
+          description: The limit for results we get from the api.
+          isArray: false
+          required: false
+          secret: false
+        - name: odata_query
+          description: An odata query to send to the api.
+          isArray: false
+          required: false
+          secret: false
+      outputs:
+        - contextPath: MSGraph.identityProtection.risky-users.userPrincipalName
+          description: Risky user principal name.
+          type: string
+        - contextPath: MSGraph.identityProtection.risky-users.userDisplayName
+          description: Risky user display name.
+          type: string
+        - contextPath: MSGraph.identityProtection.risky-users.riskDetail
+          description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.risky-users.riskstate
+          description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.risky-users.riskLevel
+          description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.risky-users.riskLastUpdatedDateTime
+          description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+          type: DateTime
+        - contextPath: MSGraph.identityProtection.risky-users.isProcessing
+          description: Indicates whether a user's risky state is being processed by the backend.
+          type: Boolean
+        - contextPath: MSGraph.identityProtection.risky-users.isDeleted
+          description: Indicates whether a user is delted
+          type: Boolean
+        - contextPath: MSGraph.identityProtection.risky-users.id
+          description: Unique ID of the risky user.
+          type: string
+    - deprecated: false
+      description: Retrieve the risky users history in active directory.
+      execution: false
+      name: msgraph-identity-protection-risky-user-history-list
+      arguments:
+        - name: limit
+          description: The limit for results we get from the api.
+          isArray: false
+          required: false
+          secret: false
+        - name: odata_query
+          description: An odata query to send to the api.
+          isArray: false
+          required: false
+          secret: false
+        - name: user_id
+          description: The id of the user to get the history for.
+          isArray: false
+          required: true
+          secret: false
+      outputs:
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.userPrincipalName
+          description: Risky user principal name.
+          type: string
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.userDisplayName
+          description: Risky user display name.
+          type: string
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskDetail
+          description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskstate
+          description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLevel
+          description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
+          type: string
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLastUpdatedDateTime
+          description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+          type: DateTime
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.isProcessing
+          description: Indicates whether a user's risky state is being processed by the backend.
+          type: Boolean
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.isDeleted
+          description: Indicates whether the user is deleted.
+          type: Boolean
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.id
+          description: Unique ID of the risky user.
+          type: string
+    - deprecated: false
+      description: Delete an ip named location by id.
+      execution: false
+      name: msgraph-identity-protection-risky-user-confirm-compromised
+      arguments:
+        - name: user_ids
+          default: false
+          description: The ids of the users to compromise seperated be commas.
+          isArray: false
+          required: true
+          secret: false
+    - deprecated: false
+      description: Delete an ip named location by id.
+      execution: false
+      name: msgraph-identity-protection-risky-user-dismiss
+      arguments:
+        - name: user_ids
+          default: false
+          description: The ids of the users to dismiss seperated be commas.
+          isArray: false
+          required: true
+          secret: false
+  isfetch: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.30286
+  dockerimage: demisto/crypto:1.0.0.31715
 fromversion: 5.0.0
+defaultmapperin: Microsoft Graph Identity and Access Incoming Mapper
+defaultclassifier: Microsoft Graph Identity and Access
 tests:
-- Identity & Access test playbook
+  - Identity & Access test playbook
