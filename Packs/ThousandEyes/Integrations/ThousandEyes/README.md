@@ -44,21 +44,21 @@ Fetches all the alerts.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThousandEyes.Alerts.AlertID | unknown | unique ID of the alert; each alert occurrence is assigned a new unique ID | 
-| ThousandEyes.Alerts.Active | unknown | 0 for inactive, 1 for active, 2 for disabled. Alert is disabled if either alert rule itself has been deleted or the test it is applied to has been disabled, deleted, disabled alerting, or disassociated the alert rule from the test | 
-| ThousandEyes.Alerts.Agents | unknown | array of monitors where the alert has at some point been active since the point that the alert was triggered. Not shown on BGP alerts. | 
-| ThousandEyes.Alerts.AID | unknown | Unique identifier of the Group AID | 
-| ThousandEyes.Alerts.DateStart | unknown | the date/time where an alert rule was triggered, expressed in UTC | 
-| ThousandEyes.Alerts.ApiLinks | unknown | list of hyperlinks to other areas of the API | 
-| ThousandEyes.Alerts.PermaLink | unknown | hyperlink to alerts list, with row expanded | 
-| ThousandEyes.Alerts.RuleExpression | unknown | string expression of alert rule | 
-| ThousandEyes.Alerts.RuleID | unknown | unique ID of the alert rule | 
-| ThousandEyes.Alerts.RuleName | unknown | name of the alert rule | 
-| ThousandEyes.Alerts.TestID | unknown | unique ID of the test | 
-| ThousandEyes.Alerts.TestName | unknown | name of the test | 
-| ThousandEyes.Alerts.ViolationCount | unknown | number of sources currently meeting the alert criteria | 
-| ThousandEyes.Alerts.Type | unknown | type of alert being triggered | 
-| ThousandEyes.Alerts.Severity | unknown | field with one of the following values: INFO, MAJOR, MINOR, CRITICAL for all alert types | 
+| ThousandEyes.Alerts.AlertID | Integer | unique ID of the alert; each alert occurrence is assigned a new unique ID | 
+| ThousandEyes.Alerts.Active | Integer | 0 for inactive, 1 for active, 2 for disabled. Alert is disabled if either alert rule itself has been deleted or the test it is applied to has been disabled, deleted, disabled alerting, or disassociated the alert rule from the test | 
+| ThousandEyes.Alerts.Agents | Unknown | array of monitors where the alert has at some point been active since the point that the alert was triggered. Not shown on BGP alerts. | 
+| ThousandEyes.Alerts.AID | Integer | Unique identifier of the Group AID | 
+| ThousandEyes.Alerts.DateStart | Unknown | the date/time where an alert rule was triggered, expressed in UTC | 
+| ThousandEyes.Alerts.ApiLinks | Unknown | list of hyperlinks to other areas of the API | 
+| ThousandEyes.Alerts.PermaLink | String | hyperlink to alerts list, with row expanded | 
+| ThousandEyes.Alerts.RuleExpression | String | string expression of alert rule | 
+| ThousandEyes.Alerts.RuleID | Integer | unique ID of the alert rule | 
+| ThousandEyes.Alerts.RuleName | String | name of the alert rule | 
+| ThousandEyes.Alerts.TestID | Integer | unique ID of the test | 
+| ThousandEyes.Alerts.TestName | String | name of the test | 
+| ThousandEyes.Alerts.ViolationCount | Integer | number of sources currently meeting the alert criteria | 
+| ThousandEyes.Alerts.Type | Integer | type of alert being triggered | 
+| ThousandEyes.Alerts.Severity | Integer | field with one of the following values: INFO, MAJOR, MINOR, CRITICAL for all alert types | 
 
 
 ### thousandeyes-get-alert
@@ -98,26 +98,26 @@ Fetches all agents.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThousandEyes.Agents.AgentID | unknown | unique ID of agent | 
-| ThousandEyes.Agents.AgentName | unknown | display name of the agent | 
-| ThousandEyes.Agents.AgentType | unknown | Cloud, Enterprise or Enterprise Cluster, shows the type of agent | 
-| ThousandEyes.Agents.CountryID | unknown | ISO-3166-1 alpha-2 country code of the agent | 
-| ThousandEyes.Agents.Enabled | unknown | 1 for enabled, 0 for disabled \(Enterprise Agents only\) | 
-| ThousandEyes.Agents.KeepBrowserCache | unknown | 1 for enabled, 0 for disabled \(Enterprise Agents and Enterprise Clusters only\) | 
-| ThousandEyes.Agents.VerifySslCertificates | unknown | 1 for enabled, 0 for disabled \(Enterprise Agents and Enterprise Clusters only\) | 
-| ThousandEyes.Agents.IpAdresses | unknown | array of ipAddress entries | 
-| ThousandEyes.Agents.LastSeen | unknown | yyyy-MM-dd hh:mm:ss, expressed in UTC \(Enterprise Agents only\) | 
-| ThousandEyes.Agents.Location | unknown | location of the agent | 
-| ThousandEyes.Agents.Network | unknown | name of the autonomous system in which the Agent is found \(Enterprise Agents only\) | 
-| ThousandEyes.Agents.Prefix | unknown | Network prefix, expressed in CIDR format \(Enterprise Agents only\) | 
-| ThousandEyes.Agents.PublicIpAddresses | unknown | array of ipAddress entries | 
-| ThousandEyes.Agents.TargetForTests | unknown | target IP address or domain name representing test destination when agent is acting as a test target in an agent-to-agent test \(Enterprise Agents only\) | 
-| ThousandEyes.Agents.AgentState | unknown | Online, Offline or Disabled \(standalone Enterprise Agents only\) | 
-| ThousandEyes.Agents.Utilization | unknown | shows overall utilization percentage \(online Enterprise Agents and Enterprise Clusters only\) | 
-| ThousandEyes.Agents.IPv6Policy | unknown | IP version policy, can be FORCE_IPV4, PREFER_IPV6 or FORCE_IPV6 \(Enterprise Agents and Enterprise Clusters only\) | 
-| ThousandEyes.Agents.Hostname | unknown | fully qualified domain name of the agent \(Enterprise Agents only\) | 
-| ThousandEyes.Agents.CreatedDate | unknown | yyyy-MM-dd hh:mm:ss, expressed in UTC. For Enterprise Clusters, this equals to the createdDate value of the initial cluster member before the conversion to cluster was performed \(Enterprise Agents and Enterprise Clusters only\) | 
-| ThousandEyes.Agents.ErrorDetails | unknown | if an enterprise agent or a cluster member presents at least one error, the errors will be shown as an array of entries in the errorDetails field \(Enterprise Agents and Enterprise Cluster members only\) | 
+| ThousandEyes.Agents.AgentID | Integer | unique ID of agent | 
+| ThousandEyes.Agents.AgentName | String | display name of the agent | 
+| ThousandEyes.Agents.AgentType | String | Cloud, Enterprise or Enterprise Cluster, shows the type of agent | 
+| ThousandEyes.Agents.CountryID | String | ISO-3166-1 alpha-2 country code of the agent | 
+| ThousandEyes.Agents.Enabled | Boolean | 1 for enabled, 0 for disabled \(Enterprise Agents only\) | 
+| ThousandEyes.Agents.KeepBrowserCache | Boolean | 1 for enabled, 0 for disabled \(Enterprise Agents and Enterprise Clusters only\) | 
+| ThousandEyes.Agents.VerifySslCertificates | Boolean | 1 for enabled, 0 for disabled \(Enterprise Agents and Enterprise Clusters only\) | 
+| ThousandEyes.Agents.IpAdresses | Unknown | array of ipAddress entries | 
+| ThousandEyes.Agents.LastSeen | Unknown | yyyy-MM-dd hh:mm:ss, expressed in UTC \(Enterprise Agents only\) | 
+| ThousandEyes.Agents.Location | String | location of the agent | 
+| ThousandEyes.Agents.Network | String | name of the autonomous system in which the Agent is found \(Enterprise Agents only\) | 
+| ThousandEyes.Agents.Prefix | String | Network prefix, expressed in CIDR format \(Enterprise Agents only\) | 
+| ThousandEyes.Agents.PublicIpAddresses | Unknown | array of ipAddress entries | 
+| ThousandEyes.Agents.TargetForTests | String | target IP address or domain name representing test destination when agent is acting as a test target in an agent-to-agent test \(Enterprise Agents only\) | 
+| ThousandEyes.Agents.AgentState | String | Online, Offline or Disabled \(standalone Enterprise Agents only\) | 
+| ThousandEyes.Agents.Utilization | Integer | shows overall utilization percentage \(online Enterprise Agents and Enterprise Clusters only\) | 
+| ThousandEyes.Agents.IPv6Policy | String | IP version policy, can be FORCE_IPV4, PREFER_IPV6 or FORCE_IPV6 \(Enterprise Agents and Enterprise Clusters only\) | 
+| ThousandEyes.Agents.Hostname | String | fully qualified domain name of the agent \(Enterprise Agents only\) | 
+| ThousandEyes.Agents.CreatedDate | Unknown | yyyy-MM-dd hh:mm:ss, expressed in UTC. For Enterprise Clusters, this equals to the createdDate value of the initial cluster member before the conversion to cluster was performed \(Enterprise Agents and Enterprise Clusters only\) | 
+| ThousandEyes.Agents.ErrorDetails | Unknown | if an enterprise agent or a cluster member presents at least one error, the errors will be shown as an array of entries in the errorDetails field \(Enterprise Agents and Enterprise Cluster members only\) | 
 
 
 ### thousandeyes-get-agent
