@@ -2276,5 +2276,3 @@ def main():  # pragma: no cover
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-register_module_line('CheckPointFirewall_v2', 'end', __line__())
