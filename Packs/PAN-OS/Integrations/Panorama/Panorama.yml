@@ -5541,7 +5541,7 @@ script:
       - 'true'
       - 'false'
     - description: Job ID to use in polling commands. (automatically filled by polling).
-      name: job_id
+      name: query_log_job_id
       deprecated: true
     - description: The timeout (in seconds) when polling.
       name: timeout

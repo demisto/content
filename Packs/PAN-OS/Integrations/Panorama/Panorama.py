@@ -4777,7 +4777,7 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
-    job_id = args.get('job_id')
+    job_id = args.get('query_log_job_id')
 
     if not job_id:
         if query and (address_src or address_dst or zone_src or zone_dst
@@ -4818,7 +4818,7 @@ def panorama_query_logs_command(args: dict):
             response=command_results,
             continue_to_poll=argToBoolean(args.get('polling', 'false')),
             args_for_next_run={
-                'job_id': result.response.result.job.id,
+                'query_log_job_id': result.response.result.job.id,
                 'log-type': log_type,
                 'polling': argToBoolean(args.get('polling', 'false')),
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
