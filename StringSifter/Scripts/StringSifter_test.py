@@ -50,4 +50,6 @@ def test_text_as_string(mocker):
         assert cr.outputs == open_json('test_data/string_text_outputs.json')
 
 
-
+@pytest.mark.xfail(raiseExceptions=ValueError)
+def test_entered_entry_id_and_string_text(mocker):
+    stringsifter({'string_text': '123', 'entryID': '123'})
