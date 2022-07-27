@@ -15,12 +15,12 @@ Note that oletools is open source code and is subject to change.
 ## Inputs
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| ole_command | The OLE command to activate.<br>- oleid - to analyze OLE files to detect specific characteristics usually found in malicious files.<br>- oleobj - to extract embedded objects from OLE files. <br>- olevba- to extract and analyze VBA Macro source code from MS Office documents \(OLE and OpenXML\).</br> |
-| entryID | The file to activate the oletools analysis on. |
-| decode | Display all the obfuscated strings with their decoded content \(Hex, Base64, StrReverse, Dridex, VBA\). Note that this works only with the olevba command |
-| password | If encrypted office files are encountered, try decryption with this password. May be repeated. |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ole_command | The OLE command to activate.<br/>- oleid - to analyze OLE files to detect specific characteristics usually found in malicious files.<br/>- oleobj - to extract embedded objects from OLE files. <br/>- olevba- to extract and analyze VBA Macro source code from MS Office documents \(OLE and OpenXML\).<br/> |
+| entryID | The file to activate the oletools analysis on.                                                                                                                                                                                                                                                                 |
+| decode | Display all the obfuscated strings with their decoded content \(Hex, Base64, StrReverse, Dridex, VBA\). Note that this works only with the olevba command                                                                                                                                                      |
+| password | If encrypted office files are encountered, try decryption with this password. May be repeated.                                                                                                                                                                                                                 |
 
 ## Outputs
 ---
