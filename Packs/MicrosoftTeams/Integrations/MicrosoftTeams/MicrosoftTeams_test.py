@@ -580,8 +580,8 @@ def test_send_message_with_entitlement(mocker, requests_mock):
 
     send_message()
 
-    demisto.log(f"history is {requests_mock.request_history}")
-    assert requests_mock.request_history[4].json() == expected_ask_user_message
+    demisto.log(f"history is {len(requests_mock.request_history)}")
+    assert requests_mock.request_history[0].json() == expected_ask_user_message
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
@@ -629,7 +629,7 @@ def test_send_message_with_adaptive_card(mocker, requests_mock):
         json={}
     )
     send_message()
-    assert requests_mock.request_history[6].json() == expected_conversation
+    assert requests_mock.request_history[0].json() == expected_conversation
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
