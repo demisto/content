@@ -310,6 +310,103 @@ class Client(BaseClient):
         suffix = reference_id
         return self._http_request('DELETE', suffix)
 
+    # TODO new
+
+    def create_host_record(self, host: Optional[str], ipaddress: Optional[str]) -> Dict:
+        """Add a host record
+        Args:
+            host: # TODO in ref: FQDN to change
+            ip_address: IP Address # TODO verify string
+        Returns:
+            Response JSON
+        """
+        suffix = "record:host"
+        request_data = assign_params(name=host, ipv4addrs=[{"ipv4addr": ipaddress}])
+        headers = {'content-type': 'application/json'}
+        return self._http_request('POST', suffix, headers=headers, data=json.dumps(request_data))
+
+    def create_record(self, record_type, **kwargs: Union[str, int, None]) -> Dict:
+        """Create a record.
+         Args:
+             record_type: record type
+             kwargs: A dict of arguments to be passed to the rule body. The following may appear:
+                 - name
+                 - ipv4addr
+                 - comment
+         Returns:
+             Response JSON
+         """
+        suffix = "record:" + record_type
+        request_data = {key: val for key, val in kwargs.items() if val is not None}
+        request_params = {'_return_fields+': ','.join(request_data.keys())}
+        # TODO maybe need like he do in :  rule['result']['type'] = suffix
+        return self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
+
+    def update_host_ip(self, refid: Optional[str], ipv4addr: Optional[str]) -> Dict:
+        """Update a host ip.
+        Args:
+            refid: reference id to update.
+            ipv4addr: ipv4 address
+        Returns:
+            Response JSON
+        """
+        suffix = "record:host/" + refid  # TODO in ref dif
+        request_params = assign_params(_return_fields=ipv4addr)
+        request_data = assign_params(ipv4addrs=[{"ipv4addr": ipv4addr}])
+        return self._http_request('PUT', suffix, params=request_params, data=json.dumps(request_data))
+
+    def update_record(self, record_type, **kwargs: Union[str, int, None]) -> Dict:
+        """Update a record.
+         Args:
+             record_type: record type
+             kwargs: A dict of arguments to be passed to the rule body. The following may appear:
+                 - refid
+                 - name
+                 - ipv4addr
+                 - comment
+         Returns:
+             Response JSON
+         """
+        suffix = "record:" + record_type
+        request_data = {key: val for key, val in kwargs.items() if val is not None}
+        request_params = {'_return_fields+': ','.join(request_data.keys())}
+        return self._http_request('PUT', suffix, params=request_params, data=json.dumps(request_data))
+
+    def delete_record(self, record_type, refid: Optional[str]) -> Dict:
+        """Delete a record
+        Args:
+            record_type: record type
+            refid: reference id to delete
+        Returns:
+            Response JSON
+        """
+        suffix = "record:" + record_type + "/" + refid
+        headers = {'content-type': "application/json"}
+        return self._http_request('DELETE', suffix, headers=headers)
+
+    def delete_host_record(self, refid: Optional[str]) -> Dict:
+        """Delete a host record
+        Args:
+            refid: reference id to delete
+        Returns:
+            Response JSON
+        """
+        suffix = "record:host/" + refid
+        headers = {'content-type': "application/json"}
+        return self._http_request('DELETE', suffix, headers=headers)
+
+    def list_records(self, zone: Optional[str]) -> Dict:
+        """Retrieve all records in a zone
+        Args:
+            zone: zone name
+            # TODO maybe only in specific type (in ref like this)
+        Returns:
+            Response JSON
+        """
+        suffix = "allrecords"
+        request_params = {"zone": zone}
+        return self._http_request('GET', suffix, params=request_params)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -323,8 +420,11 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
     elif 'Error in API call' in err_string:
         err_lines = err_string.split('\n')
         infoblox_err = err_lines[1] if len(err_lines) > 1 else '{}'
-        infoblox_json = json.loads(infoblox_err)
-        err_msg = infoblox_json.get(field_in_error, 'text') if infoblox_json else err_string
+        try:
+            infoblox_json = json.loads(infoblox_err)
+            err_msg = infoblox_json.get(field_in_error, 'text') if infoblox_json else err_string
+        except ValueError:  # TODO JSONDecodeError
+            err_msg = re.sub('<[^<]+?>', '', infoblox_err)
     return DemistoException(err_msg)
 
 
@@ -425,7 +525,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     }
     if new_next_page_id:
         context.update({
-            f'{INTEGRATION_CONTEXT_NAME}.RulesNextPage(val.NextPageID !== obj.NextPageID)': {   # type: ignore
+            f'{INTEGRATION_CONTEXT_NAME}.RulesNextPage(val.NextPageID !== obj.NextPageID)': {  # type: ignore
                 'NextPageID': new_next_page_id}
         })
     human_readable = tableToMarkdown(title, fixed_keys_rule_list,
@@ -500,7 +600,7 @@ def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     raw_response = client.delete_response_policy_zone(ref_id)
     deleted_rule_ref_id = raw_response.get('result', {})
     human_readable = f'{INTEGRATION_NAME} - Response Policy Zone with the following id was deleted: \n ' \
-        f'{deleted_rule_ref_id}'
+                     f'{deleted_rule_ref_id}'
     return human_readable, {}, raw_response
 
 
@@ -910,6 +1010,214 @@ def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     return title, {}, raw_response
 
 
+# TODO NEW
+
+def create_host_record_command(client: Client, args: Dict) -> CommandResults:
+    """ #TODO MAYBE NEED TO WRITE MORE? THIS LIKE THE BEFORE DID
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        CommandResults object
+    """
+    host = args.get('host')
+    ipaddress = args.get('ipaddress')
+    raw_response = client.create_host_record(host=host, ipaddress=ipaddress)
+    rule = raw_response.get('result', {})
+    # TODO maybe need:  fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+    #                            rule.items()}
+    # title = f'{INTEGRATION_NAME} - Host record: {host} has been added'
+    # context = {
+    #     f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': fixed_keys_rule_res}
+    # human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    # return human_readable, context, raw_response
+    readable_output = tableToMarkdown(
+        f'{INTEGRATION_NAME} - Host record: {host} has been added',
+        t=rule,
+        headerTransform=string_to_table_header
+    )  # TODO t - remove_empty_elements?, pascalToSpace, removeNull
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Infoblox.Task',
+        outputs_key_field='id',  # TODO maybe ip? no id?
+        raw_response=raw_response,
+        outputs=remove_empty_elements(rule),
+    )
+
+
+def create_record_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        CommandResults object
+    """
+    record_type = args.get('record_type')
+    name = args.get('name')
+    ipv4addr = args.get('ipv4addr')
+    comment = args.get('comment')
+    raw_response = client.create_record(record_type, name=name, ipv4addr=ipv4addr, comment=comment)
+    rule = raw_response.get('result', {})
+
+    readable_output = tableToMarkdown(
+        f'{INTEGRATION_NAME} - Record:{record_type}.{name} has been created:',
+        t=rule, headerTransform=string_to_table_header
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Infoblox.Task',
+        outputs_key_field='id',  # TODO
+        raw_response=raw_response,
+        outputs=remove_empty_elements(rule),
+    )
+
+
+def update_host_ip_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        CommandResults object
+    """
+    ref_id = args.get('reference_id')
+    ipv4addr = args.get('ipv4addr')
+    raw_response = client.update_host_ip(ref_id, ipv4addr)
+    rule = raw_response.get('result', {})
+
+    readable_output = tableToMarkdown(
+        f'{INTEGRATION_NAME} - Host ip: {ipv4addr} has been updated:',
+        t=rule, headerTransform=string_to_table_header
+    )  # TODO maybe add ref-id name
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Infoblox.Task',
+        outputs_key_field='id',  # TODO
+        raw_response=raw_response,
+        outputs=remove_empty_elements(rule),
+    )
+
+
+def update_record_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        CommandResults object
+    """
+    record_type = args.get('record_type')  # TODO maybe need to be 'object_type' like in before? in design..
+    ref_id = args.get('reference_id')
+    name = args.get('name')
+    ipv4addr = args.get('ipv4addr')
+    comment = args.get('comment')
+    raw_response = client.update_record(record_type, ref_id=ref_id, name=name, ipv4addr=ipv4addr, comment=comment)
+    rule = raw_response.get('result', {})
+
+    readable_output = tableToMarkdown(
+        f'{INTEGRATION_NAME} - Record:{record_type}.{name} has been updated:',
+        t=rule, headerTransform=string_to_table_header
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Infoblox.Task',
+        outputs_key_field='id',  # TODO
+        raw_response=raw_response,
+        outputs=remove_empty_elements(rule),
+    )
+
+
+def delete_record_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        CommandResults object
+    """
+    record_type = args.get('record_type')
+    ref_id = args.get('reference_id')  # TODO maybe problemic see contrib (splits)
+    raw_response = client.delete_record(record_type, ref_id)
+    rule = raw_response.get('result', {})
+
+    readable_output = tableToMarkdown(
+        f'{INTEGRATION_NAME} - Record:{record_type}, ReferenceID: {ref_id} has been deleted',
+        t=rule, headerTransform=string_to_table_header
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Infoblox.Task',
+        outputs_key_field='id',  # TODO
+        raw_response=raw_response,
+        outputs=remove_empty_elements(rule),  # TODO maybe not need in delete context
+    )
+
+
+def delete_host_record_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        CommandResults object
+    """
+    ref_id = args.get('reference_id')
+    raw_response = client.delete_host_record(ref_id)
+    rule = raw_response.get('result', {})
+
+    readable_output = tableToMarkdown(
+        f'{INTEGRATION_NAME} - Host record, ReferenceID: {ref_id} has been deleted',
+        t=rule, headerTransform=string_to_table_header
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Infoblox.Task',
+        outputs_key_field='id',  # TODO
+        raw_response=raw_response,
+        outputs=remove_empty_elements(rule),  # TODO maybe not need in delete - context
+    )
+
+
+def list_records_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        CommandResults object
+    """
+    zone = args.get('zone')
+    raw_response = client.list_records(zone)
+    rule = raw_response.get('result', {})
+
+    readable_output = tableToMarkdown(
+        f'{INTEGRATION_NAME} - List of all the records in zone: {zone}:',
+        t=rule, headerTransform=string_to_table_header
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Infoblox.Task',
+        outputs_key_field='id',  # TODO
+        raw_response=raw_response,
+        outputs=remove_empty_elements(rule),  # TODO maybe not need in list - context
+    )
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -952,9 +1260,23 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-search-rule': search_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-rpz-rule': delete_rpz_rule_command,
     }
+    # TODO if stay in the old version format not need
+    new_commands: Dict[str, Callable[[Client, Dict[str, str]], CommandResults]] = {
+        f'{INTEGRATION_COMMAND_NAME}-create-host-record': create_host_record_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-record': create_record_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-host-ip': update_host_ip_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-record': update_record_command,
+        f'{INTEGRATION_COMMAND_NAME}-delete-record': delete_record_command,
+        f'{INTEGRATION_COMMAND_NAME}-delete-host-record': delete_host_record_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-records': list_records_command,
+    }
+
     try:
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
+        if command in new_commands:
+            return_results(*commands[command](client, demisto.args()))
+
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} - {e}'
