@@ -1,4 +1,4 @@
-This script runs stringsifter ML tool for malware anlisys and ranking of words. User can enter an entryID or string_text as input.
+This script runs the StringSifter ML tool for malware anlisys and ranking of words. You can enter an entryID or string_text as input.
 
 ## Script Data
 ---
@@ -13,10 +13,10 @@ This script runs stringsifter ML tool for malware anlisys and ranking of words. 
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| limit | Limit output to the top limit ranked strings |
-| min_score | Limit output to strings with score &amp;gt;= min-score |
-| file_name | The file name - Mandatory when entring the data as string_text |
-| string_text | The text to analyze with string sifter |
+| limit | Limit output to the top limit ranked strings. |
+| min_score | Limit output to strings with score &amp;gt;= min-score. |
+| file_name | The file name. Mandatory when entering the data as string_text. |
+| string_text | The text to analyze with StringSifter. |
 | entryID | The file to process. |
 
 ## Outputs
@@ -24,5 +24,5 @@ This script runs stringsifter ML tool for malware anlisys and ranking of words. 
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Stringsifter.FileName | The name of the file Stringsifter operated on. | Unknown |
-| Stringsifter.Results | The results from Stringsifter | Unknown |
+| Stringsifter.FileName | The name of the file StringSifter operated on. | Unknown |
+| Stringsifter.Results | The results from StringSifter. | Unknown |
