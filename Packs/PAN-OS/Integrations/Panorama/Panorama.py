@@ -1,5 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass, fields
+from types import SimpleNamespace
 import enum
 
 import demistomock as demisto  # noqa: F401
@@ -184,69 +185,10 @@ class PAN_OS_Not_Found(Exception):
         pass
 
 
-class InvalidUrlLengthException(Exception):
-    pass
-
-
-class ResponseObject():
-    """
-    Takes in a response from the PANOS command and provides a convenient object
-    in which to access data from.
-
-    :param response: The response received from the PANOS command executed.
-
-    Returns:
-        ResponseObject containing information from the PANOS command.
-    """
-    def __init__(self, response: dict = {}):
-        self.response = self.APIResponse(dict_safe_get(response, ['response'], default_return_value={}))
-
-    def __bool__(self):
-        if self.response:
-            return True
-        else:
-            return False
-
-    class APIResponse():
-        def __init__(self, response_data: dict = {}):
-            self.status = dict_safe_get(response_data, ['@status'])
-            self.msg =  dict_safe_get(response_data, ['msg'])
-            self.result = self.ResponseResult(dict_safe_get(response_data, ['result']))
-
-        class ResponseResult():
-            def __init__(self, result: dict = {}):
-                self.job = self.JobData(dict_safe_get(result, ['job']))
-                self.log = self.LogData(dict_safe_get(result, ['log']))
-
-            def __bool__(self):
-                if self.job:
-                    return True
-                else:
-                    return False
-
-            class JobData():
-                def __init__(self, job_data: any = None):
-                    self.id = None
-                    self.status = None
-                    self.type = None
-                    self.result = None
-                    self.details = None
-                    self.warnings = None
-                    if isinstance(job_data, dict):
-                        self.id = dict_safe_get(job_data, ['id'])
-                        self.status = dict_safe_get(job_data, ['status'])
-                        self.type = dict_safe_get(job_data, ['type'])
-                        self.result = dict_safe_get(job_data, ['result'])
-                        self.details = dict_safe_get(job_data, ['details'])
-                        self.warnings = dict_safe_get(job_data, ['warnings', 'line'])
-                        
-                    elif isinstance(job_data, str):
-                        self.id = job_data
-
-            class LogData():
-                def __init__(self, log_data: dict = {}):
-                    self.logs = dict_safe_get(log_data, ['logs'])
-                    self.log_entries = dict_safe_get(self.logs, ['entry'])
+def parse_response(response: Dict) -> SimpleNamespace:
+    dumped_json = json.dumps(response)
+    parsed_object = json.loads(dumped_json, object_hook=lambda d: SimpleNamespace(**d))
+    return parsed_object
 
 
 def http_request(uri: str, method: str, headers: dict = {},
@@ -4750,8 +4692,9 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_
         'GET',
         params=params,
     )
+    parsed_namespace = parse_response(result)
 
-    return result
+    return parsed_namespace
 
 
 @polling_function(
