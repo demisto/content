@@ -1,93 +1,66 @@
-{
-  "columns": [
-    "Alert.ID",
-    "Alert.Rule.Name",
-    "Alert.Time",
-    "Alert.Rule.Severity.Name",
-    "Alert.Rule.Category.Name",
-    "Alert.Location.CountryName",
-    "Alert.Location.SubdivisionName",
-    "Alert.Status.Name",
-    "Alert.CloseReason.Name",
-    "Alert.Location.BlacklistedLocation",
-    "Alert.Location.AbnormalLocation",
-    "Alert.EventsCount",
-    "Alert.User.Name",
-    "Alert.User.SamAccountName",
-    "Alert.User.AccountType.Name",
-    "Alert.By.Department",
-    "Alert.Data.IsFlagged",
-    "Alert.Data.IsSensitive",
-    "Alert.Filer.Platform.Name",
-    "Alert.Asset.Path",
-    "Alert.Filer.Name",
-    "Alert.Device.HostName",
-    "Alert.Device.IsMaliciousExternalIP",
-    "Alert.Device.ExternalIPThreatTypesName"
-  ],
-  "rows": [
-    [
-      "4FDB86C2-D78F-47EC-A1B1-74C4268A8A60",
-      "DNS",
-      "2022-02-12T13:59:00",
-      "High",
-      "Privilege Escalation",
-      "",
-      "",
-      "Open",
-      "",
-      "",
-      "",
-      "1",
-      "",
-      "",
-      "",
-      "IT",
-      "",
-      "",
-      "DNS",
-      "",
-      "dns",
-      "ilhrzrodc01",
-      "No",
-      ""
-    ],
-    [
-      "D99AEA15-7F17-46FC-A249-942B974377D6",
-      "DNS - Copy(2)",
-      "2022-02-12T13:59:00",
-      "High",
-      "Privilege Escalation",
-      "",
-      "",
-      "Open",
-      "",
-      "",
-      "",
-      "1",
-      "",
-      "",
-      "",
-      "IT",
-      "",
-      "",
-      "DNS",
-      "",
-      "dns",
-      "ilhrzrodc01",
-      "No",
-      ""
-    ]
-  ],
-  "hasResults": true,
-  "rowsCount": 2,
-  "cappedNumber": 50000,
-  "progress": 100,
-  "notStarted": false,
-  "finished": true,
-  "versionId": 2,
-  "entityTagHeaderValue": {
-    "tag": "\"2\"",
-    "isWeak": false
+[
+  {
+      "ID": "4FDB86C2-D78F-47EC-A1B1-74C4268A8A60",
+      "Name": "DNS",
+      "Time": "2022-02-12T13:59:00",
+      "Severity": "High",
+      "Category": "Privilege Escalation",
+      "Country": "",
+      "State": "",
+      "Status": "Open",
+      "CloseReason": "",
+      "BlacklistLocation": "",
+      "AbnormalLocation": "",
+      "NumOfAlertedEvents": "1",
+      "UserName": "",
+      "By": {
+          "SamAccountName": "",
+          "PrivilegedAccountType": "",
+          "Department": "IT"
+      },
+      "On": {
+          "ContainsFlaggedData": "",
+          "ContainsSensitiveData": "",
+          "Platform": "DNS",
+          "Asset": "",
+          "FileServerOrDomain": "dns"
+      },
+      "Device": {
+          "Name": "ilhrzrodc01",
+          "ContainMaliciousExternalIP": "No",
+          "IPThreatTypes": ""
+      }
+  },
+  {
+      "ID": "D99AEA15-7F17-46FC-A249-942B974377D6",
+      "Name": "DNS - Copy(2)",
+      "Time": "2022-02-12T13:59:00",
+      "Severity": "High",
+      "Category": "Privilege Escalation",
+      "Country": "",
+      "State": "",
+      "Status": "Open",
+      "CloseReason": "",
+      "BlacklistLocation": "",
+      "AbnormalLocation": "",
+      "NumOfAlertedEvents": "1",
+      "UserName": "",
+      "By": {
+          "SamAccountName": "",
+          "PrivilegedAccountType": "",
+          "Department": "IT"
+      },
+      "On": {
+          "ContainsFlaggedData": "",
+          "ContainsSensitiveData": "",
+          "Platform": "DNS",
+          "Asset": "",
+          "FileServerOrDomain": "dns"
+      },
+      "Device": {
+          "Name": "ilhrzrodc01",
+          "ContainMaliciousExternalIP": "No",
+          "IPThreatTypes": ""
+      }
   }
-}
+]

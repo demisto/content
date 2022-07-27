@@ -43,12 +43,7 @@ def test_varonis_get_alerts_command(mocker: MockerFixture):
     )
     mocker.patch.object(
         client,
-        'varonis_execute_search',
-        return_value=util_load_json('test_data/search_alerts_response.json')
-    )
-    mocker.patch.object(
-        client,
-        'varonis_get_search_result',
+        'varonis_get_alerts',
         return_value=util_load_json('test_data/varonis_get_alerts_api_response.json')
     )
     mocker.patch.object(
@@ -131,12 +126,7 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
     )
     mocker.patch.object(
         client,
-        'varonis_execute_search',
-        return_value=util_load_json('test_data/search_alerted_events_response.json')
-    )
-    mocker.patch.object(
-        client,
-        'varonis_get_search_result',
+        'varonis_get_alerted_events',
         return_value=util_load_json('test_data/varonis_get_alerted_events_response.json')
     )
 
@@ -155,8 +145,8 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     fetch_output = util_load_json('test_data/varonis_fetch_incidents_response.json')
 
     requests_mock.get(
-        'https://test.com/api/alert/alert/GetXsoarAlerts'
-        '?threatModels=Suspicious&severity=Medium&status=1&fromAlertId=150&bulkSize=100',
+        'https://test.com/api/alert/alert/GetAlerts'
+        '?ruleName=Suspicious&fromAlertId=150&status=Open&severity=high&severity=medium&aggregate=True&offset=0&maxResult=100',
         json=fetch_output)
 
     client = Client(
