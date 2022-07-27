@@ -80,13 +80,6 @@ Fetches a given alert.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### thousandeyes-get-agents
 ***
 Fetches all agents.
