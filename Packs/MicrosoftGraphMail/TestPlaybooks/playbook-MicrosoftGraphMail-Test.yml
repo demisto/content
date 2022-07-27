@@ -14,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -31,6 +30,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: e269748d-4c88-4fcf-881a-b5a1ed164192
@@ -50,7 +51,6 @@ tasks:
     scriptarguments:
       attachment_id:
         simple: ${MSGraphMailAttachment.Attachment.ID}
-      folder_id: {}
       message_id:
         simple: ${MSGraphMailAttachment.ID}
       user_id:
@@ -59,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
+          "x": 480,
           "y": 1920
         }
       }
@@ -68,6 +68,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 9caf5187-7158-4a2c-8fbb-4bdf599ce5a7
@@ -85,11 +87,8 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      folder_id: {}
-      get_body: {}
       message_id:
         simple: ${MSGraphMail.ID}
-      odata: {}
       user_id:
         simple: ${MSGraphMail.UserID}
     separatecontext: false
@@ -105,6 +104,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 208a52ea-e16e-4828-87ba-4517b4bc814e
@@ -122,7 +123,6 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      folder_id: {}
       message_id:
         complex:
           root: MSGraphMail
@@ -148,6 +148,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: de8e735f-a61f-4a4d-8f49-b00f6209f1aa
@@ -165,9 +167,6 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      folder_id: {}
-      odata: {}
-      pages_to_pull: {}
       search:
         simple: קבל
       user_id:
@@ -185,6 +184,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 3db4b8cf-cdc6-481f-8a32-993f84ca10c8
@@ -204,10 +205,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -221,6 +218,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: bc5ce48d-1d4e-491b-8eec-d958cd219dca
@@ -232,13 +231,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2265
+          "y": 2785
         }
       }
     note: false
@@ -246,6 +244,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 1a5835b3-439c-4542-827d-0c4a261465b1
@@ -263,11 +263,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      folder_id: {}
-      odata: {}
       pages_to_pull:
         simple: "2"
-      search: {}
       user_id:
         simple: avishai@demistodev.onmicrosoft.com
     separatecontext: false
@@ -283,6 +280,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: d1aac14c-6574-4078-8459-4982e5001f57
@@ -302,10 +301,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -319,6 +314,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: db4076dc-4ccf-4e6e-802d-15befaf8d504
@@ -354,6 +351,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 50379a4a-ae99-40b9-8744-6489867f2a8d
@@ -371,10 +370,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      folder_id: {}
       odata:
         simple: $select=from
-      pages_to_pull: {}
       search:
         simple: קבל
       user_id:
@@ -392,6 +389,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 705a6ad1-592f-49e6-8cf4-d0f6e9c7d67d
@@ -403,7 +402,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -422,6 +420,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: f1004efd-0441-4892-8f47-01eba3cc9fb1
@@ -439,11 +439,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      folder_id: {}
       odata:
         simple: $filter=sentDateTime ge 2020-05-27T06:59:22Z and sentDateTime le 2020-05-27T06:59:22Z
-      pages_to_pull: {}
-      search: {}
       user_id:
         simple: oren@demistodev.onmicrosoft.com
     separatecontext: false
@@ -459,6 +456,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 93181118-955e-4d85-8530-9f0f93e2b016
@@ -476,11 +475,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      folder_id: {}
       odata:
         simple: $filter=from/emailAddress/name eq 'testuser_DO_NOT_DELETE'
-      pages_to_pull: {}
-      search: {}
       user_id:
         simple: oren@demistodev.onmicrosoft.com
     separatecontext: false
@@ -496,6 +492,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 3b73cca2-6919-498e-86e4-27b38799f28c
@@ -513,8 +511,6 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      folder_id: {}
-      get_body: {}
       message_id:
         simple: ${MSGraphMail.ID}
       odata:
@@ -534,6 +530,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: da3a6c7f-1f70-4ba0-885f-53d6be4f3d79
@@ -549,7 +547,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "18"
     scriptarguments:
       seconds:
         simple: "30"
@@ -566,12 +564,124 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 476ff987-0b59-4d37-89a9-7241449aa066
+    type: title
+    task:
+      id: 476ff987-0b59-4d37-89a9-7241449aa066
+      version: -1
+      name: Send Email
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 2ba3f976-9e47-46a6-858a-22daef79c291
+    type: regular
+    task:
+      id: 2ba3f976-9e47-46a6-858a-22daef79c291
+      version: -1
+      name: Send Mail
+      description: Sends an email using Microsoft Graph.
+      script: MicrosoftGraphMail|||send-mail
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphMail
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      attachIDs:
+        simple: ${File.EntryID}
+      body:
+        simple: test-playbook
+      from:
+        simple: testbox@demistodev.onmicrosoft.com
+      subject:
+        simple: test-playbook
+      to:
+        simple: testbox@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 392cadbb-119c-4ac2-8149-bbde53ac56f8
+    type: regular
+    task:
+      id: 392cadbb-119c-4ac2-8149-bbde53ac56f8
+      version: -1
+      name: Get large Attachment
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/jpg_with_pdf_extension.pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2280,
+        "height": 2800,
         "width": 1240,
         "x": 50,
         "y": 50
