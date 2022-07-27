@@ -1305,7 +1305,7 @@ def get_test_list_and_content_packs_to_install(files_string,
             logging.debug(
                 "Adding Whois to packs to install as 'Sanity Test - Playbook with Unmockable Whois Integration' uses it"
             )
-            packs_to_install.update(["HelloWorld", "Gmail", "Whois"])
+            packs_to_install.update(["HelloWorld", "Whois"])
 
     # We add Base and DeveloperTools packs for every build
     if tests or packs_to_install:

@@ -590,7 +590,7 @@ class TestChangedCommonTesting:
         assert 'TestCommonPython' in filterd_tests
         # verify all sanity tests are collected
         assert len(SANITY_TESTS - filterd_tests) == 0
-        assert content_packs == {'Whois', 'DeveloperTools', 'Base', 'HelloWorld', 'Gmail'}
+        assert content_packs == {'Whois', 'DeveloperTools', 'Base', 'HelloWorld'}
 
 
 class TestPackageFilesModified:
@@ -615,7 +615,7 @@ class TestNoChange:
         get_modified_files_ret = create_get_modified_files_ret()
         filterd_tests, content_packs = get_mock_test_list(get_modified_files_ret, mocker)
 
-        assert content_packs == {"Gmail", "HelloWorld", "Base", "DeveloperTools", "Whois"}
+        assert content_packs == {"HelloWorld", "Base", "DeveloperTools", "Whois"}
 
 
 def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=None, changed_common=None,
@@ -1091,7 +1091,7 @@ def test_pack_ignore_test_is_skipped(mocker):
                 id_set=fake_id_set
             )
 
-            assert content_packs == {"Whois", "HelloWorld", "Gmail", "Base", "DeveloperTools", pack_name}
+            assert content_packs == {"Whois", "HelloWorld", "Base", "DeveloperTools", pack_name}
             assert filtered_tests == {
                 "Sanity Test - Playbook with no integration",
                 "Sanity Test - Playbook with integration",
