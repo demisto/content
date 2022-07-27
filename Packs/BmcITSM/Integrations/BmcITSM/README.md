@@ -18,7 +18,7 @@ This integration was integrated and tested with version xx of BmcITSM
     | Ticket Status | The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type\(s\). | False |
     | Ticket Impact | The impact of the tickets to fetch. | False |
     | Ticket Urgency | The urgency of the tickets to fetch. | False |
-    | Fetch by Query | Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html | False |
+    | Fetch by Query | Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for  [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). | False |
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from BMC Helix ITSM to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to BMC Helix ITSM\), or Incoming and Outgoing \(from/to Cortex XSOAR and BMC Helix ITSM\). | False |
     | Close Mirrored XSOAR Incident | When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR. | False |
     | Close Mirrored BMC Helix ITSM Ticket | When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM. | False |
@@ -44,7 +44,7 @@ Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_ids | A comma-separated list of user IDs. Used as a filtering argument. Possible values are: . | Optional | 
-| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
@@ -120,7 +120,7 @@ Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | company_ids | A comma-separated list of company ID. Filtering argument. Possible values are: . | Optional | 
-| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
@@ -181,7 +181,7 @@ Retrieves a list of service request definitions. The records are retrieved by th
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | srd_ids | A comma-separated list of service request definition IDs. Used as a filtering argument. Possible values are: . | Optional | 
-| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
@@ -241,7 +241,7 @@ Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the que
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ticket_type | The type of tickets to search for. Possible values are: service request, incident, task, change request, problem investigation, known error. | Required | 
-| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
@@ -1053,7 +1053,7 @@ Lists all change requests ticket templates. Useful for creating change request t
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | template_ids | A comma-separated list of change request template IDs. Used as a filtering argument. Possible values are: . | Optional | 
-| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
@@ -1112,7 +1112,7 @@ Lists all incident requests ticket templates. Useful for create incident tickets
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 
@@ -1172,7 +1172,7 @@ Lists all task ticket templates. Useful for creating task tickets. The records a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html. Possible values are: . | Optional | 
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). Possible values are: . | Optional | 
 | limit | The maximum number of records to retrieve. Possible values are: . Default is 50. | Optional | 
 | page_size | The maximum number of records to retrieve per page. Possible values are: . | Optional | 
 | page | The page number of the results to retrieve. Possible values are: . | Optional | 

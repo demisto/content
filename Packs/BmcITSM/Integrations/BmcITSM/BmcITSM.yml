@@ -115,7 +115,7 @@ configuration:
     required: false
     defaultvalue:
     type: 0
-    additionalinfo: 'Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+    additionalinfo: 'Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
   - additionalinfo: "Choose the direction to mirror the incident: Incoming (from BMC Helix ITSM to Cortex XSOAR), Outgoing (from Cortex XSOAR to BMC Helix ITSM), or Incoming and Outgoing (from/to Cortex XSOAR and BMC Helix ITSM)."
     defaultvalue: None
     display: Incident Mirroring Direction
@@ -188,7 +188,7 @@ script:
           predefined:
             - ""
         - name: query
-          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
           required: false
           isArray: false
           defaultValue: ""
@@ -273,7 +273,7 @@ script:
           predefined:
             - ""
         - name: query
-          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
           required: false
           isArray: false
           defaultValue: ""
@@ -337,7 +337,7 @@ script:
           predefined:
             - ""
         - name: query
-          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
           required: false
           isArray: false
           defaultValue: ""
@@ -391,7 +391,7 @@ script:
             - problem investigation
             - known error
         - name: query
-          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
           required: false
           isArray: false
           defaultValue: ""
@@ -2689,7 +2689,7 @@ script:
           predefined:
             - ""
         - name: query
-          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
           required: false
           isArray: false
           defaultValue: ""
@@ -2740,7 +2740,7 @@ script:
       deprecated: false
       arguments:
         - name: query
-          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
           required: false
           isArray: false
           defaultValue: ""
@@ -2798,7 +2798,7 @@ script:
       deprecated: false
       arguments:
         - name: query
-          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for building search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
           required: false
           isArray: false
           defaultValue: ""
