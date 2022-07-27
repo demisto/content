@@ -236,7 +236,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2785
+          "y": 2885
         }
       }
     note: false
@@ -579,13 +579,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "21"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2280
+          "y": 2260
         }
       }
     note: false
@@ -627,7 +627,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2600
+          "y": 2730
         }
       }
     note: false
@@ -665,7 +665,46 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2420
+          "y": 2570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 64ad31d0-0dc3-4d8a-8143-f3da6e91ab5f
+    type: regular
+    task:
+      id: 64ad31d0-0dc3-4d8a-8143-f3da6e91ab5f
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2400
         }
       }
     note: false
@@ -681,7 +720,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2800,
+        "height": 2900,
         "width": 1240,
         "x": 50,
         "y": 50
