@@ -87,7 +87,7 @@
         "determination": null,
         "detectionSource": "AutomatedInvestigation",
         "detectorId": "detectorId",
-        "assignedTo": "assignedTo",
+        "assignedTo": "",
         "actorName": null,
         "threatFamilyName": null,
         "mitreTechniques": [],
