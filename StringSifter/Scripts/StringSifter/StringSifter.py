@@ -1,11 +1,10 @@
-import os
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from subprocess import Popen, PIPE
 import re
 from pathlib import Path
+import os
 
 WORDS_TEMP_DIR = 'words_temp_file.txt'
 
@@ -28,7 +27,7 @@ def create_rank_strings_args(args: dict) -> list:
     return args_rank_strings
 
 
-def handle_words_as_string(string_input):
+def handle_words_as_string(string_input: str):
     seperated_words = re.split('\n| ', string_input)
     words_set = set()
     for word in seperated_words:
@@ -41,7 +40,7 @@ def handle_words_as_string(string_input):
     return str(p)
 
 
-def stringsifter(args):
+def stringsifter(args: dict):
     entry_id = args.get('entryID')
 
     string_text = args.get('string_text', '')
@@ -72,7 +71,7 @@ def stringsifter(args):
         os.remove(path)
 
     output_data = output.decode("utf-8")
-    regex = r"(?P<rating>.*),(?P<word>.*)"
+    regex = r"(?P<rating>^([^,]*?)),(?P<word>.*)"
     min_score = args.get('min_score')
 
     words_rating_list = []
