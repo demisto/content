@@ -4781,7 +4781,7 @@ def panorama_query_logs_command(args: dict):
 
     if number_of_logs > 5000:   # type: ignore
         number_of_logs = 5000
-        return_warning('The "number_of_logs" was greater than 5000, so was reduced to 5000')
+        raise Exception('The "number_of_logs" should be 5000 or less.')
 
     if not job_id:
         if query and (address_src or address_dst or zone_src or zone_dst
