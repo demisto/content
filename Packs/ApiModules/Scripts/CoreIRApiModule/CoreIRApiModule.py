@@ -129,6 +129,8 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
+MIRROR_IN_CLOSE_REASON = 'Closed during mirroring-in due to remote incident was closed'
+
 
 class CoreClient(BaseClient):
 
@@ -2645,9 +2647,12 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
-        update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
-        demisto.debug(f"Closing Remote incident with status {update_args['status']}")
-        update_args['resolve_comment'] = update_args.get('closeNotes', '')
+        if MIRROR_IN_CLOSE_REASON not in update_args.get('closeNotes', ''):
+            update_args['resolve_comment'] = update_args.get('closeNotes', '')
+            update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
+            demisto.debug(f"Closing Remote incident with status {update_args['status']}")
+        else:
+            demisto.debug('Ignore closing Remote incident because incident closed during mirroring in')
 
 
 def get_update_args(delta, inc_status):

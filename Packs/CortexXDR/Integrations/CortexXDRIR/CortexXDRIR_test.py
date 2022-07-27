@@ -6,6 +6,7 @@ from freezegun import freeze_time
 
 import demistomock as demisto
 from CommonServerPython import Common
+from CoreIRApiModule import MIRROR_IN_CLOSE_REASON
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -619,7 +620,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
     expected_modified_incident['assigned_user_mail'] = ''
     expected_modified_incident['assigned_user_pretty_name'] = ''
     expected_modified_incident['closeReason'] = 'Resolved'
-    expected_modified_incident['closeNotes'] = 'Handled'
+    expected_modified_incident['closeNotes'] = MIRROR_IN_CLOSE_REASON + '\nHandled'
     expected_modified_incident['in_mirror_error'] = ''
     del expected_modified_incident['creation_time']
     expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
