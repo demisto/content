@@ -2475,7 +2475,7 @@ def formatTimeColumns(data, timeColumnNames):
             row[k] = epochToTimestamp(row[k])
 
 
-def format_dashboard_datetime(dashboard_time: str) -> str:
+def format_dashboard_datetime(dashboard_time):
     """
         Formats the time coming from the dashboard
          - 2022-07-28T00:00:00.123456Z
