@@ -376,9 +376,9 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None):
         context_obj['ProjectName'] = md_obj['project'] = demisto.get(element, 'fields.project.name')
         context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
         context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
+
         # Parse custom fields into their original names
-        custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
-        if custom_fields and customfields and not nofields:
+        if customfields and not nofields:
             field_mappings = get_custom_field_names()
             for field_returned in customfields:
                 readable_field_name = field_mappings.get(field_returned)
