@@ -6,6 +6,11 @@ display: CrowdStrike Falcon Sandbox v2
 category: Forensics & Malware Analysis
 description: Fully automated malware analysis (Hybrid Analysis).
 configuration:
+  - name: serverUrl
+    required: true
+    defaultvalue: https://www.hybrid-analysis.com
+    type: 0
+    display: Server URL (e.g. https://www.hybrid-analysis.com)
   - name: credentials
     required: true
     defaultvalue: null
@@ -40,7 +45,7 @@ script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   commands:
     - name: cs-falcon-sandbox-scan
       polling: true

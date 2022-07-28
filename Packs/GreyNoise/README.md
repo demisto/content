@@ -17,7 +17,7 @@ This Pack Contains two Integrations: GreyNoise and GreyNoise Community
 - GreyNoise: is intended for those users that have a Paid GreyNoise subscription
 - GreyNoise Community: is intended for those users that use the free GreyNoise Community API
 
-_For more information, visit our [GreyNoise Developer Documentation](https://developer.greynoise.io)_
+_For more information, visit our [GreyNoise Documentation](https://docs.greynoise.io)_
 
 _For pricing information, visit our [GreyNoise Pricing](https://greynoise.io/pricing) or contact 
 [GreyNoise Sales](mailto:sales@greynoise.io)_

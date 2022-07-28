@@ -837,8 +837,8 @@ script:
       - 'false'
       required: false
       secret: false
-    deprecated: false
-    description: Isolates the specified endpoint. This command will be deprecated soon, use `xdr-endpoint-isolate` instead.
+    deprecated: true
+    description: Deprecated. Use `xdr-endpoint-isolate` instead.
     execution: true
     name: xdr-isolate-endpoint
     outputs:
@@ -900,8 +900,8 @@ script:
       description: Isolates the specified endpoint.
       type: String
     polling: true
-  - deprecated: false
-    description: Reverses the isolation of an endpoint. This command will be deprecated soon, use `xdr-endpoint-unisolate` instead.
+  - deprecated: true
+    description: Deprecated. Use `xdr-endpoint-unisolate` instead.
     execution: true
     name: xdr-unisolate-endpoint
     outputs:
@@ -1090,6 +1090,9 @@ script:
       - desc
       required: false
       secret: false
+    - name: username
+      description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
+      isArray: true
     deprecated: false
     description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
     execution: false
@@ -1847,8 +1850,8 @@ script:
     execution: false
     name: xdr-file-quarantine
     polling: true
-  - deprecated: false
-    description: Quarantines a file on selected endpoints. This command will be deprecated soon, use `xdr-file-quarantine` instead.
+  - deprecated: true
+    description: Deprecated. Use `xdr-file-quarantine` instead.
     execution: false
     name: xdr-quarantine-files
     arguments:
@@ -1961,8 +1964,8 @@ script:
       name: endpoint_id
       required: false
       secret: false
-    deprecated: false
-    description: Restores a quarantined file on requested endpoints. This command will be deprecated soon, use `xdr-file-restore` instead.
+    deprecated: true
+    description: Deprecated. Use `xdr-file-restore` instead.
     execution: false
     name: xdr-restore-file
   - arguments:
@@ -2196,8 +2199,8 @@ script:
       - 'false'
       required: false
       secret: false
-    deprecated: false
-    description: Runs a scan on a selected endpoint. This command will be deprecated soon, use `xdr-endpoint-scan-execute` instead.
+    deprecated: true
+    description: Deprecated. Use `xdr-endpoint-scan-execute` instead.
     execution: true
     name: xdr-endpoint-scan
     outputs:
@@ -2738,8 +2741,8 @@ script:
       name: generic_file_path
       required: false
       secret: false
-    deprecated: false
-    description: Retrieves files from selected endpoints. This command will be deprecated soon, use `xdr-file-retrieve` instead.
+    deprecated: true
+    description: Deprecated. Use `xdr-file-retrieve` instead.
     execution: false
     name: xdr-retrieve-files
     outputs:
@@ -3001,8 +3004,8 @@ script:
       name: snippet_code
       required: true
       secret: false
-    deprecated: false
-    description: Initiates a new endpoint script execution action using the provided snippet code. This command will be deprecated soon, use `xdr-snippet-code-script-execute` instead.
+    deprecated: true
+    description: Deprecated. Use `xdr-snippet-code-script-execute` instead.
     execution: false
     name: xdr-run-snippet-code-script
     outputs:
@@ -3242,8 +3245,8 @@ script:
       name: timeout
       required: false
       secret: false
-    deprecated: false
-    description: Initiates a new endpoint script execution of shell commands. This command will be deprecated soon, use `xdr-script-commands-execute` instead.
+    deprecated: true
+    description: Deprecated. Use `xdr-script-commands-execute` instead.
     execution: false
     name: xdr-run-script-execute-commands
     outputs:
@@ -3336,8 +3339,8 @@ script:
       name: timeout
       required: false
       secret: false
-    deprecated: false
-    description: Initiates a new endpoint script execution to delete the specified file. This command will be deprecated soon, use `xdr-file-delete-script-execute` instead.
+    deprecated: true
+    description: Deprecated. Use `xdr-file-delete-script-execute` instead.
     execution: false
     name: xdr-run-script-delete-file
     outputs:
@@ -3430,8 +3433,8 @@ script:
       name: timeout
       required: false
       secret: false
-    deprecated: false
-    description: Initiates a new endpoint script execution to check if file exists. This command will be deprecated soon, use `xdr-file-exist-script-execute` instead.
+    deprecated: true
+    description: Deprecated. Use `xdr-file-exist-script-execute` instead.
     execution: false
     name: xdr-run-script-file-exists
     outputs:
@@ -3524,8 +3527,8 @@ script:
       name: timeout
       required: false
       secret: false
-    deprecated: false
-    description: Initiates a new endpoint script execution kill process. This command will be deprecated soon, use `xdr-kill-process-script-execute` instead.
+    deprecated: true
+    description: Deprecated. Use `xdr-kill-process-script-execute` instead.
     execution: false
     name: xdr-run-script-kill-process
     outputs:
@@ -4207,7 +4210,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.FeaturedField.fields
       description: String value that defines the new field.
       type: String
-  dockerimage: demisto/python3:3.10.4.31492
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: true
   longRunning: false
