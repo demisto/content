@@ -8059,6 +8059,11 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
             # found timezone - appending it to the date format
             date_format += time_zone[0]
 
+        # Make the fractions shorter less than 6 charactors
+        # e.g. '2022-01-23T12:34:56.123456789+09:00' to '2022-01-23T12:34:56.123456+09:00'
+        #      '2022-01-23T12:34:56.123456789' to '2022-01-23T12:34:56.123456'
+        date_string = re.sub(r'([0-9]+\.[0-9]{6})[0-9]*([Zz]|[+-]\S+?)?', '\\1\\2', date_string)
+
         return datetime.strptime(date_string, date_format)
 
 
