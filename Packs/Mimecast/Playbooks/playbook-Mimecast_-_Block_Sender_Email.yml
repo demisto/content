@@ -14,15 +14,15 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -41,7 +41,8 @@ tasks:
       id: 54122410-237c-4672-806d-0cc403f403eb
       version: -1
       name: Mimecast integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -57,11 +58,12 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -73,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b100e467-66b7-49bf-8f35-8106489c4f7c
+    taskid: ae4cec49-f03e-4671-8f12-9f9f8823ba0a
     type: regular
     task:
-      id: b100e467-66b7-49bf-8f35-8106489c4f7c
+      id: ae4cec49-f03e-4671-8f12-9f9f8823ba0a
       version: -1
       name: Get block group id
       description: Returns the list of groups according to the specified query.
@@ -89,16 +91,18 @@ tasks:
       - "4"
     scriptarguments:
       query_source:
-        simple: cloud
+        complex:
+          root: inputs.QuerySource
       query_string:
         complex:
           root: inputs.BlockGroup
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 360
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -119,13 +123,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 770
+          "x": 162.5,
+          "y": 895
         }
       }
     note: false
@@ -143,7 +147,8 @@ tasks:
       id: e5bbaf5f-1ec7-403b-898b-4dbf975e3b7d
       version: -1
       name: Add senders to the block group
-      description: Adds a user to a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
+      description: Adds a user to a group. The email_address and domain_adddress arguments
+        are optional, but one of them must be supplied.
       script: '|||mimecast-add-group-member'
       type: regular
       iscommand: true
@@ -160,11 +165,65 @@ tasks:
           root: Mimecast.Group
           accessor: ID
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 530
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ef20587d-db16-4f2c-8944-5754784502db
+    type: condition
+    task:
+      id: ef20587d-db16-4f2c-8944-5754784502db
+      version: -1
+      name: All mandatory inputs provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.BlockGroup
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SenderEmail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.QuerySource
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
         }
       }
     note: false
@@ -179,9 +238,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 785,
-        "width": 640,
-        "x": 450,
+        "height": 910,
+        "width": 492.5,
+        "x": 50,
         "y": 50
       }
     }
@@ -191,14 +250,19 @@ inputs:
   value: {}
   required: true
   description: The sender email block group.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SenderEmail
   value: {}
   required: true
   description: The sender email to block.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: QuerySource
+  value: {}
+  required: true
+  description: The query source, please input cloud or ldap in the value input.
+  playbookInputQuery: null
 outputs: []
-quiet: true
+quiet: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
