@@ -1,5 +1,6 @@
 import io
 import json
+from typing import List
 
 import pytest
 from Syslogv2 import parse_rfc_3164_format, parse_rfc_5424_format, fetch_samples, \
@@ -104,7 +105,7 @@ def test_parse_rfc_not_valid(test_case: dict, func: Callable[[bytes], SyslogMess
                                        'sd': {'exampleSDID@32473': {'eventID': '1011', 'eventSource': 'Application',
                                                                     'iut': '3'}}, 'severity': 'notice',
                                        'timestamp': '2003-10-11T22:14:15.003Z', 'version': 1}]])
-def test_fetch_samples(samples: list[dict], mocker):
+def test_fetch_samples(samples: List[dict], mocker):
     """
     Given:
 

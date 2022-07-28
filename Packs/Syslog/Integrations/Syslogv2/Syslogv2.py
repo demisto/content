@@ -95,7 +95,7 @@ def parse_rfc_5424_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
 
 def parse_rfc_6587_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     """
-    Receives a log message which is in RFC 5424 format. Parses it into SyslogMessageExtract data class object
+    Receives a log message which is in RFC 6587 format. Parses it into SyslogMessageExtract data class object
     Args:
         log_message (bytes): Syslog message.
 
