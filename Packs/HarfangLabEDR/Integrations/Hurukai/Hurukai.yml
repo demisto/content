@@ -119,6 +119,15 @@ script:
     outputs:
     - contextPath: Harfanglab.Processes.data
       description: Provides a list of processes
+    - contextPath: agent.agentid
+      description: An agent's identifier (DEPRECATED)
+      type: string
+    - contextPath: current_directory (DEPRECATED)
+      description: ''
+      type: string
+    - contextPath: hashes.sha256 (DEPRECATED)
+      description: ''
+      type: string
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
