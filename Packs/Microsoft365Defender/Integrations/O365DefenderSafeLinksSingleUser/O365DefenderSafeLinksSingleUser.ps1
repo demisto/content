@@ -907,9 +907,6 @@ class ExchangeOnlineClient {
         https://docs.microsoft.com/en-us/powershell/module/exchange/get-safelinksdetailreport?view=exchange-ps
         #>
     }
-    
-
-
     [PSObject]
     GetSafeLinksAggregateReport(
         [hashtable]$kwargs
