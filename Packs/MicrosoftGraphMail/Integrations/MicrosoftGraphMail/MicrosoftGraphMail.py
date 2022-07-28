@@ -70,7 +70,7 @@ class MsGraphClient:
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
                  app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
                  emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None,
-                 display_full_email_body=False):
+                 display_full_email_body=False, look_back=0):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
@@ -83,6 +83,7 @@ class MsGraphClient:
         self._emails_fetch_limit = emails_fetch_limit
         # whether to display the full email body for the fetch-incidents
         self.display_full_email_body = display_full_email_body
+        self.look_back = look_back
 
     def pages_puller(self, response: dict, page_count: int) -> list:
         """ Gets first response from API and returns all pages
@@ -889,8 +890,19 @@ class MsGraphClient:
         :return: Next run data and parsed fetched incidents
         :rtype: ``dict`` and ``list``
         """
-        last_fetch = last_run.get('LAST_RUN_TIME')
+
+        last_run = demisto.getLastRun()
+
+        start_fetch_date, end_fetch_date = get_fetch_run_time_range(
+            last_run=last_run,
+            first_fetch=self._first_fetch_interval,
+            look_back=self.look_back,
+            date_format=DATE_FORMAT
+        )
+
+        start_fetch = last_run.get('LAST_RUN_TIME') or start_fetch_date
         exclude_ids = list(set(last_run.get('LAST_RUN_IDS', [])))  # remove any possible duplicates
+
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
         folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
         last_run_account = last_run.get('LAST_RUN_ACCOUNT')
@@ -899,27 +911,42 @@ class MsGraphClient:
         if folder_path_changed or mailbox_to_fetch_changed:
             # detected folder path change, get new folder id
             folder_id = self._get_folder_by_path(self._mailbox_to_fetch, self._folder_to_fetch).get('id')
-            demisto.info("MS-Graph-Listener: detected file path change, ignored last run.")
+            demisto.info("MS-Graph-Listener: detected file path change, ignored LAST_RUN_FOLDER_ID from last run.")
         else:
             # LAST_RUN_FOLDER_ID is stored in order to avoid calling _get_folder_by_path method in each fetch
             folder_id = last_run.get('LAST_RUN_FOLDER_ID')
 
-        if not last_fetch or folder_path_changed:  # initialized fetch
-            last_fetch, _ = parse_date_range(self._first_fetch_interval, date_format=DATE_FORMAT, utc=True)
-            demisto.info(f"MS-Graph-Listener: initialize fetch and pull emails from date :{last_fetch}")
+        # if not last_fetch or folder_path_changed:  # initialized fetch
+        #     last_fetch, _ = parse_date_range(self._first_fetch_interval, date_format=DATE_FORMAT, utc=True)
+        #     demisto.info(f"MS-Graph-Listener: initialize fetch and pull emails from date :{last_fetch}")
 
         fetched_emails, exclude_ids, next_run_time = self._fetch_last_emails(
-            folder_id=folder_id, last_fetch=last_fetch, exclude_ids=exclude_ids)
+            folder_id=folder_id, last_fetch=start_fetch, exclude_ids=exclude_ids)
         incidents = list(map(self._parse_email_as_incident, fetched_emails))
-        next_run = {
-            'LAST_RUN_TIME': next_run_time,
-            'LAST_RUN_IDS': exclude_ids,
-            'LAST_RUN_FOLDER_ID': folder_id,
-            'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
-            'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
-        }
+
+        next_run = update_last_run_object(
+            last_run=start_fetch,
+            incidents=incidents,
+            fetch_limit=self._emails_fetch_limit,
+            start_fetch_time=start_fetch_date,
+            end_fetch_time=end_fetch_date,
+            look_back=self.look_back,
+            created_time_field='occurred',
+            id_field='ID',
+            date_format=DATE_FORMAT
+        )
+
+        next_run.update(
+            {
+                'LAST_RUN_IDS': exclude_ids,
+                'LAST_RUN_FOLDER_ID': folder_id,
+                'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
+                'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
+            }
+        )
+
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
-        demisto.debug(next_run)
+        demisto.debug(f"last run at the end of fetching incidents: {next_run}")
 
         return next_run, incidents
 
