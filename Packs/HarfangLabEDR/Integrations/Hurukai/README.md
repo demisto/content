@@ -365,9 +365,9 @@ Search processes
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Processes.data | unknown | Provides a list of processes | 
-| agent.agentid | unknown | DEPRECATED | 
-| current_directory | unknown | DEPRECATED | 
-| hashes.sha256 | unknown | DEPRECATED | 
+| agent.agentid | unknown |  | 
+| current_directory | unknown |  | 
+| hashes.sha256 | unknown |  | 
 
 #### Command example
 ```!harfanglab-telemetry-processes hostname="DC-01" hash=3541d189d1bd3341a72769d43bf487eaa3b20e80aa04a54550bbfa9a04360db3 limit=5```
