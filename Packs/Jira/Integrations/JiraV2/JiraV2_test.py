@@ -1445,6 +1445,6 @@ def test_append_to_field_command(mocker):
 
     mocker.patch('JiraV2.jira_req', return_value=GET_ISSUE_RESPONSE)
 
-    _, outputs, _ = append_to_field_command('id', field_json={'labels':'New'})
+    _, outputs, _ = append_to_field_command('id', field_json="{'labels':'New'}")
 
     assert outputs == GET_ISSUE_OUTPUTS_RESULT_WITH_APPEND
