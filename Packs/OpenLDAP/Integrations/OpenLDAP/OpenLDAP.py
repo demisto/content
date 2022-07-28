@@ -318,7 +318,8 @@ class LdapClient:
         ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
                                                                     search_filter=search_filter,
                                                                     attributes=[LdapClient.GROUPS_TOKEN],
-                                                                    paged_size=self._page_size)
+                                                                    paged_size=self._page_size,
+                                                                    generator=False)
 
         referrals, entries = LdapClient._parse_ldap_group_entries_and_referrals(ldap_group_entries)
 
@@ -379,7 +380,8 @@ class LdapClient:
     @staticmethod
     def _get_ad_username(username: str) -> str:
         """
-            Returns the Active Directory username for XSOAR.
+            Gets a user logon name (the username that is used for log in to XSOAR)
+            and returns the Active Directory username.
         """
         x_username = username
         if '\\' in username:
