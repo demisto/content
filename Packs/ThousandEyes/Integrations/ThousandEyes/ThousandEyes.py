@@ -1,9 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
-
-''' IMPORTS '''
 import json
 import time
 import traceback
@@ -128,10 +125,10 @@ def test_module_command(client: Client, *_) -> str:
         test_module=True
     )
 
-    if response.status_code == 200 and response.json().get('timestamp'):
+    if response.status_code == 200 and response.json().get('timestamp'):  # type: ignore
         return "ok"
 
-    raise DemistoException(f'Test module failed, {response.text}')
+    raise DemistoException(f'Test module failed, {response.text}')  # type: ignore
 
 
 ''' Helper Functions '''
@@ -713,7 +710,7 @@ def main():
 
     try:
         if command in commands:
-            results = commands[command](client=client, **demisto.args())
+            results = commands[command](client=client, **demisto.args())  # type: ignore
             return_results(results)
 
         elif command == 'fetch-incidents':
