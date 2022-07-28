@@ -93,6 +93,7 @@ create-instances:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     KUBERNETES_CPU_REQUEST: 1000m
+    NEO4J_AUTH: neo4j/neo4j
   needs: []
   stage: create-instances
   script:
