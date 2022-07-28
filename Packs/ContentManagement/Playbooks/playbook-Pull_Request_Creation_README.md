@@ -1,4 +1,4 @@
-This playbook creates a pull request from content zip file.
+This playbook creates a pull request from the content zip file.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -33,7 +33,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| SlackChannel | Slack channel name to send the notifications. |  | Optional |
+| SlackChannel | Name of the Slack channel to send the notifications. |  | Optional |
 
 ## Playbook Outputs
 ---
