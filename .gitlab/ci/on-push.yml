@@ -87,11 +87,11 @@ create-instances:
     - if: '$INSTANCE_TESTS'
   cache:
     policy: pull-push
-  services:
-    - name: docker-io.art.code.pan.run/neo4j:latest
-      alias: neo4j
-      variables:
-        NEO4J_AUTH: neo4j/test
+  # services:
+  #   - name: docker-io.art.code.pan.run/neo4j:latest
+  #     alias: neo4j
+  #     variables:
+  #       NEO4J_AUTH: neo4j/test
 
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
@@ -104,9 +104,10 @@ create-instances:
     # - !reference [.download-demisto-conf]
     # - !reference [.create-id-set-xsoar]
     # - !reference [.create-release-notes-and-common-docs]
-    - ls /builds
+    - neo4j start
     - section_start "Create content graph"
     - demisto-sdk content-graph
+    - neo4j stop
     - neo4j-admin dump --to=neo4j/content-graph.dump
     - cp ./neo4j/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
 
