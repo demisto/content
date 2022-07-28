@@ -74,7 +74,7 @@ validate-content-conf:
         fi
             echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
       fi
-    - section_end "Validate content-tesgt-conf Branch Merged"
+    - section_end "Validate content-test-conf Branch Merged"
 
 create-instances:
   tags:
@@ -87,6 +87,9 @@ create-instances:
     - if: '$INSTANCE_TESTS'
   cache:
     policy: pull-push
+  services:
+    - name: docker.art.code.pan.run/neo4j:latest
+      alias: neo4j
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     KUBERNETES_CPU_REQUEST: 1000m
@@ -98,9 +101,7 @@ create-instances:
     # - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Create content graph"
-    - neo4j start
     - demisto-sdk content-graph
-    - neo4j stop
     - neo4j-admin dump --to=neo4j/content-graph.dump
     - cp ./neo4j/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
 
