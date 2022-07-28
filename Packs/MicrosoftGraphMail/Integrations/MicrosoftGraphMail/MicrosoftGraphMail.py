@@ -20,7 +20,8 @@ CONTEXT_FOLDER_PATH = 'MSGraphMail.Folders(val.ID && val.ID === obj.ID)'
 CONTEXT_COPIED_EMAIL = 'MSGraphMail.MovedEmails(val.ID && val.ID === obj.ID)'
 CONTEXT_DRAFT_PATH = 'MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)'
 CONTEXT_SENT_EMAIL_PATH = 'MicrosoftGraph.Email'
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+API_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+LAST_RUN_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 EMAIL_DATA_MAPPING = {
     'id': 'ID',
@@ -681,6 +682,20 @@ class MsGraphClient:
             # didn't reach the end of the loop, set the current_directory_level_folders to folder children
             current_directory_level_folders = self._get_folder_children(user_id, found_folder.get('id', ''))
 
+    def get_emails(self, exclude_ids, last_fetch, folder_id):
+
+        suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
+        # If you add to the select filter the $ sign, The 'internetMessageHeaders' field not contained within the
+        # API response, (looks like a bug in graph API).
+        params = {
+            "$filter": f"receivedDateTime ge {last_fetch}",
+            "$orderby": "receivedDateTime asc",
+            "select": "*",
+            "$top": len(exclude_ids) + self._emails_fetch_limit  # fetch extra incidents
+        }
+
+        return self.ms_client.http_request('GET', suffix_endpoint, params=params).get('value') or []
+
     def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
         """
         Fetches emails from given folder that were modified after specific datetime (last_fetch).
@@ -703,17 +718,7 @@ class MsGraphClient:
         :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
         :rtype: ``list`` and ``list``
         """
-        suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
-        # If you add to the select filter the $ sign, The 'internetMessageHeaders' field not contained within the
-        # API response, (looks like a bug in graph API).
-        params = {
-            "$filter": f"receivedDateTime ge {last_fetch}",
-            "$orderby": "receivedDateTime asc",
-            "select": "*",
-            "$top": len(exclude_ids) + self._emails_fetch_limit  # fetch extra incidents
-        }
-
-        fetched_emails = self.ms_client.http_request('GET', suffix_endpoint, params=params).get('value') or []
+        fetched_emails = self.get_emails(exclude_ids=exclude_ids, last_fetch=last_fetch, folder_id=folder_id)
         demisto.debug(f'{fetched_emails=}.')
 
         fetched_emails_ids = {email.get('id') for email in fetched_emails}
@@ -854,9 +859,9 @@ class MsGraphClient:
         parsed_email = MsGraphClient._parse_item_as_dict(email)
 
         # handling attachments of fetched email
-        # attachments = self._get_email_attachments(message_id=email.get('id', ''))
-        # if attachments:
-        #     parsed_email['Attachments'] = attachments
+        attachments = self._get_email_attachments(message_id=email.get('id', ''))
+        if attachments:
+            parsed_email['Attachments'] = attachments
 
         parsed_email['Mailbox'] = self._mailbox_to_fetch
 
@@ -866,10 +871,10 @@ class MsGraphClient:
             body = get_text_from_html(parsed_email.get('Body') or '')
 
         incident = {
-            'name': parsed_email['Subject'],
+            'name': parsed_email.get('Subject'),
             'details': body,
             'labels': MsGraphClient._parse_email_as_labels(parsed_email),
-            'occurred': parsed_email['ModifiedTime'],
+            'occurred': parsed_email.get('ModifiedTime'),
             'attachment': parsed_email.get('Attachments', []),
             'rawJSON': json.dumps(parsed_email),
             'ID': parsed_email.get('ID')  # only used for look-back to identify the email in a unique way
@@ -891,13 +896,16 @@ class MsGraphClient:
         :rtype: ``dict`` and ``list``
         """
         if 'time' not in last_run and (last_run_time := last_run.get('LAST_RUN_TIME')):
-            last_run['time'] = last_run_time
+            last_run['time'] = last_run_time.replace('Z', '')
+
+        if 'time' in last_run:
+            last_run['time'] = last_run['time'].replace('Z', '')
 
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(
             last_run=last_run,
             first_fetch=self._first_fetch_interval,
             look_back=self.look_back,
-            date_format=DATE_FORMAT
+            date_format=API_DATE_FORMAT
         )
 
         exclude_ids = list(set(last_run.get('LAST_RUN_IDS', [])))  # remove any possible duplicates
@@ -917,7 +925,14 @@ class MsGraphClient:
 
         fetched_emails, exclude_ids = self._fetch_last_emails(
             folder_id=folder_id, last_fetch=start_fetch_time, exclude_ids=exclude_ids)
-        incidents = list(map(self._parse_email_as_incident, fetched_emails))
+
+        # remove duplicate incidents which were already fetched
+        incidents = filter_incidents_by_duplicates_and_limit(
+            incidents_res=list(map(self._parse_email_as_incident, fetched_emails)),
+            last_run=last_run,
+            fetch_limit=self._emails_fetch_limit,
+            id_field='ID'
+        )
 
         next_run = update_last_run_object(
             last_run=last_run,
@@ -928,7 +943,7 @@ class MsGraphClient:
             look_back=self.look_back,
             created_time_field='occurred',
             id_field='ID',
-            date_format=DATE_FORMAT,
+            date_format=API_DATE_FORMAT,
             increase_last_run_time=True
         )
 
@@ -941,11 +956,12 @@ class MsGraphClient:
             }
         )
 
-        for incident in incidents:
+        for incident in incidents:  # remove the ID from the incidents, they are used only for look-back.
             incident.pop('ID', None)
 
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
-        demisto.debug(f"last run at the end of fetching incidents: {next_run}")
+        demisto.debug(f"{incidents=}")
+        demisto.debug(f"{next_run=}")
 
         return next_run, incidents
 
@@ -1195,7 +1211,7 @@ def get_now_utc():
     :return: String format of current UTC time
     :rtype: ``str``
     """
-    return datetime.utcnow().strftime(DATE_FORMAT)
+    return datetime.utcnow().strftime(API_DATE_FORMAT)
 
 
 def read_file(attach_id):
