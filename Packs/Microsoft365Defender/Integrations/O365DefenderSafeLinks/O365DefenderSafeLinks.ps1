@@ -1,9 +1,24 @@
 Import-Module ExchangeOnlineManagement
-
+. $PSScriptRoot\CommonServerPowerShell.ps1
 
 $COMMAND_PREFIX = "o365-defender-safelinks"
 $INTEGRATION_ENTRY_CONTEXT = "O365Defender.SafeLinks"
 
+function CreateContextForReport{
+    Param(
+        [hashtable]$raw_response
+    )
+    $context_data = @{"Data"=$raw_response}
+    if ($raw_response -is [array]) {
+        $context_data.ReportId=$raw_response[0].RunspaceId
+    }
+
+    else {
+        $context_data.ReportId=$raw_response.RunspaceId
+    }
+
+    return $context_data
+}
 
 function EncloseArgWithQuotes {
     Param (
@@ -362,6 +377,103 @@ class ExchangeOnlinePowershellV2Client {
         https://docs.microsoft.com/en-us/powershell/module/exchange/set-safelinksrule?view=exchange-ps
         #>
     }
+    [PSObject]
+    GetSafeLinksDetailReport(
+        [hashtable]$kwargs
+    ) {
+        try
+        {
+            $cmd_params = @{
+                "StartDate" = $kwargs.start_date
+                "EndDate" = $kwargs.end_date
+            }
+            if ($kwargs.domain) {
+                $cmd_params.Domain = $kwargs.domain
+            }
+            if ($kwargs.app_names) {
+                $cmd_params.AppNameList = ArgToList($kwargs.app_names)
+            }
+            if ($kwargs.action) {
+                $cmd_params.Action = $kwargs.action
+            }
+            if ($kwargs.recipient_address) {
+                $cmd_params.RecipientAddress = ArgToList($kwargs.recipient_address)
+            }
+            if ($kwargs.page) {
+                $cmd_params.Page = [int]$kwargs.page
+            }
+            if ($kwargs.page_size) {
+                $cmd_params.PageSize = [int]$kwargs.page_size
+            }
+
+            $this.CreateSession()
+            $results = Get-SafeLinksDetailReport @cmd_params
+
+            return $results
+
+        }
+        finally
+        {
+            $this.DisconnectSession()
+        }
+
+        <#
+        .DESCRIPTION
+        Use this cmdlet to view Safe Links report in your cloud-based organization.
+        This cmdlet is available only in the cloud-based service.
+
+        .OUTPUTS
+        PSObject- Raw response
+
+        .LINK
+        https://docs.microsoft.com/en-us/powershell/module/exchange/get-safelinksdetailreport?view=exchange-ps
+        #>
+    }
+    
+    [PSObject]
+    GetSafeLinksAggregateReport(
+        [hashtable]$kwargs
+    ) {
+        try
+        {
+            $cmd_params = @{
+                "StartDate" = $kwargs.start_date
+                "EndDate" = $kwargs.end_date
+            }
+            if ($kwargs.app_names) {
+                $cmd_params.AppNameList = ArgToList($kwargs.app_names)
+            }
+            if ($kwargs.action) {
+                $cmd_params.Action = $kwargs.action
+            }
+            if ($kwargs.summerize_by) {
+                $cmd_params.SummarizeBy = $kwargs.summerize_by
+            }
+
+            $this.CreateSession()
+            $results = Get-SafeLinksAggregateReport @cmd_params
+
+            return $results
+
+        }
+        finally
+        {
+            $this.DisconnectSession()
+        }
+
+        <#
+        .DESCRIPTION
+        Use this cmdlet to view Safe Links report in your cloud-based organization.
+        This cmdlet is available only in the cloud-based service.
+
+        .OUTPUTS
+        PSObject- Raw response
+
+        .LINK
+        https://docs.microsoft.com/en-us/powershell/module/exchange/get-safelinksaggregatereport?view=exchange-ps
+        #>
+    }   
+
 }
 
 
@@ -457,6 +569,46 @@ function CreateUpdateRuleCommand {
     return $human_readable, $entry_context, $raw_response
 }
 
+function GetDetailedReport {
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    Param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
+        [hashtable]$kwargs
+    )
+
+    $raw_response = $client.GetSafeLinksDetailReport($kwargs)
+    if (!$raw_response){
+        return "#### No records were found.", @{}, @{}
+    }
+
+    $report_id = $raw_response[0].RunspaceId
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.DetailedReport" = @{"ReportId"=$report_id;
+                                                                                "Data"=$raw_response} }
+    return $human_readable, $entry_context, $raw_response
+}
+
+function GetAggregateReport {
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    Param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
+        [hashtable]$kwargs
+    )
+
+    $raw_response = $client.GetSafeLinksAggregateReport($kwargs)
+    if (!$raw_response){
+        return "#### No records were found.", @{}, @{}
+    }
+
+    $report_id = $raw_response[0].RunspaceId
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AggregateReport" =  @{"ReportId"=$report_id;
+                                                                                 "Data"=$raw_response} }
+    return $human_readable, $entry_context, $raw_response
+}
+
 function TestModuleCommand($client) {
     try {
         $client.CreateSession()
@@ -516,6 +668,12 @@ function Main {
             }
             "$script:COMMAND_PREFIX-rule-update" {
                 ($human_readable, $entry_context, $raw_response) = CreateUpdateRuleCommand -client $exo_client -command_type "update" -kwargs $command_arguments
+            }
+            "$script:COMMAND_PREFIX-detailed-report-get" {
+                ($human_readable, $entry_context, $raw_response) = GetDetailedReport -client $exo_client -kwargs $command_arguments
+            }
+            "$script:COMMAND_PREFIX-aggregate-report-get" {
+                ($human_readable, $entry_context, $raw_response) = GetAggregateReport -client $exo_client -kwargs $command_arguments
             }
 
             default {
