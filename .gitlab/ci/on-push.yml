@@ -78,7 +78,7 @@ validate-content-conf:
 
 create-instances:
   tags:
-    - gce
+    - gke
   extends:
     - .default-job-settings
   rules:
@@ -87,17 +87,9 @@ create-instances:
     - if: '$INSTANCE_TESTS'
   cache:
     policy: pull-push
-  services:
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
-      alias: docker
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     KUBERNETES_CPU_REQUEST: 1000m
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-
-
   needs: []
   stage: create-instances
   script:
