@@ -58,3 +58,8 @@ Packs/**/report_pytest.json
 **/.devcontainer
 !/.devcontainer
 
+# neo4j
+
+neo4j/**
+!neo4j/docker-compose.yml
+
