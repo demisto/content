@@ -721,7 +721,7 @@ class MsGraphClient:
         if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
             # no new emails
             demisto.debug(f'No new emails: {fetched_emails_ids=}. {exclude_ids_set=}')
-            return [], exclude_ids, last_fetch
+            return [], exclude_ids
         new_emails = [mail for mail in fetched_emails
                       if mail.get('id') in filtered_new_email_ids][:self._emails_fetch_limit]
         last_email_time = new_emails[-1].get('receivedDateTime')
