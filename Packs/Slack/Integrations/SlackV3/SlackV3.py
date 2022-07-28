@@ -3,9 +3,8 @@ import concurrent
 import ssl
 import threading
 from distutils.util import strtobool
-from typing import Tuple
+from typing import Tuple, Any, Dict
 import binascii
-from typing import Any, Dict
 
 import aiohttp
 import slack_sdk
@@ -862,7 +861,7 @@ def create_slack_block(question):
         "block_id": str(q_id),
         "label": {"type": "plain_text", "text": f'{question.get("label")}', "emoji": True}
     }
-    if q_opt:
+    if q_type == "singleselect" or q_type == "multiselect":
         opts = [{"text": {"type": "plain_text", "text": str(q), "emoji": True}, "value": q} for q in q_opt if q]
         if q_type == "singleselect":
             q_block["element"] = {"type": "radio_buttons", "options": opts, "action_id": f"{q_id}-action"}
