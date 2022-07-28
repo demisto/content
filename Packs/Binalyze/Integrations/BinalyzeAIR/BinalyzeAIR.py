@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 import requests
 
@@ -82,17 +82,14 @@ class Client(BaseClient):
 def test_connection(client: Client) -> str:
     '''Command for test-connection'''
     try:
-        result: Dict[str, Any] = client.test_api()
-        status: Optional[int] = result['statusCode']
+        client.test_api()
     except DemistoException as ex:
         if 'Unauthorized' in str(ex):
-            return demisto.results('Authorization Error: Make sure API Key is correctly set.')
-        elif 'ConnectionError' in str(ex):
-            return demisto.results('Connection Error: Test connection failed.')
+            return demisto.results(f'Authorization Error: Make sure API Key is correctly set.{str(ex)}')
+        if 'ConnectionError' in str(ex):
+            return demisto.results(f'Connection Error: Test connection failed. {str(ex)}')
         else:
             raise ex
-    if status == 200:
-        pass
     return demisto.results('ok')
 
 
@@ -106,7 +103,10 @@ def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     result: Dict[str, Any] = client.air_acquire(hostname, profile, case_id, organization_id)
     readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
                                       headers=('success', 'result', 'statusCode', 'errors'),
-                                      headerTransform=string_to_table_header, url_keys=('statusCode', 'errors'))
+                                      headerTransform=string_to_table_header)
+
+    if result.get('statusCode') == 404:
+        return CommandResults(readable_output='No contex for queried hostname.')
 
     return CommandResults(
         outputs_prefix='BinalyzeAIR.Acquisition',
@@ -129,7 +129,9 @@ def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     result: Dict[str, Any] = client.air_isolate(hostname, organization_id, isolation)
     readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
                                       headers=('success', 'result', 'statusCode', 'errors'),
-                                      headerTransform=string_to_table_header, url_keys=('statusCode', 'errors'))
+                                      headerTransform=string_to_table_header)
+    if result.get('statusCode') == 404:
+        return CommandResults(readable_output='No contex for queried hostname.')
 
     return CommandResults(
         outputs_prefix='BinalyzeAIR.Isolate',
