@@ -1,4 +1,4 @@
-This script gets content files as input from the context, commit the files in the right folder and create the pull request text.
+This script gets content files as input from the context, commits the files in the correct folder and creates the pull request text.
 
 ## Script Data
 ---
@@ -11,7 +11,7 @@ This script gets content files as input from the context, commit the files in th
 ## Used In
 ---
 This script is used in the following playbooks and scripts.
-* Pull Request Creation
+Pull Request Creation
 
 ## Inputs
 ---
@@ -22,7 +22,7 @@ This script is used in the following playbooks and scripts.
 | branch | The branch name to commit. |
 | pack | The name of the pack. |
 | user | The current user details from the command "getUsers". |
-| comment | Short description to add the pull request text. |
+| comment | Short description to add to the pull request text. |
 
 ## Outputs
 ---
