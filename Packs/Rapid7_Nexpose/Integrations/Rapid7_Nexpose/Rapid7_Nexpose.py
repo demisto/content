@@ -340,13 +340,13 @@ def get_asset_command():
     for i, v in enumerate(asset['vulnerabilities']):
         detailed_vuln = get_vulnerability(v['id'])
         # Add to raw output
-        asset['vulnerabilities'][i] = dict(asset['vulnerabilities'][i].items() + detailed_vuln.items())
+        asset['vulnerabilities'][i] = dict(list(asset['vulnerabilities'][i].items()) + list(detailed_vuln.items()))
         cvss = dq(detailed_vuln['cvss'], ['v2', 'score'])
 
         if ('cves' in detailed_vuln):
-            cves_output = cves_output + map(lambda cve: {
+            cves_output = cves_output + [{
                 'ID': cve
-            }, detailed_vuln['cves'])
+            } for cve in detailed_vuln['cves']]
 
         output_vuln = {
             'Id': v['id'],
@@ -435,7 +435,7 @@ def get_asset_vulnerability_command():
 
     detailed_vuln = get_vulnerability(v['id'])
     # Add to raw output
-    v = dict(v.items() + detailed_vuln.items())
+    v = dict(list(v.items()) + list(detailed_vuln.items()))
     vuln_outputs = translate_object(detailed_vuln, [
         {'from': 'id', 'to': 'Id'},
         {'from': 'title', 'to': 'Title'},
@@ -507,9 +507,9 @@ def get_asset_vulnerability_command():
     md = vulnerabilities_md + results_md + solutions_md
     cves = []  # type: ignore
     if (vuln_outputs['CVES'] is not None and len(vuln_outputs['CVES']) > 0):
-        cves = map(lambda cve: {
+        cves = [{
             'ID': cve
-        }, vuln_outputs['CVES'])
+        } for cve in vuln_outputs['CVES']]
 
     vuln_outputs['Check'] = results_output
     vuln_outputs['Solution'] = solutions_output
@@ -635,11 +635,11 @@ def search_assets_command():
         {'from': 'LastScanId', 'to': 'LastScanId'}
     ])
 
-    endpoint = map(lambda o: {
+    endpoint = [{
         'IP': o['Address'],
         'HostName': o['Name'],
         'OS': o['OperatingSystem']
-    }, outputs)
+    } for o in outputs]
 
     entry = {
         'Type': entryTypes['note'],
@@ -747,11 +747,11 @@ def get_assets_command():
         {'from': 'LastScanId', 'to': 'LastScanId'}
     ])
 
-    endpoint = map(lambda o: {
+    endpoint = [{
         'IP': o['Address'],
         'HostName': o['Name'],
         'OS': o['OperatingSystem']
-    }, outputs)
+    } for o in outputs]
 
     entry = {
         'Type': entryTypes['note'],
@@ -1448,5 +1448,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
     main()
