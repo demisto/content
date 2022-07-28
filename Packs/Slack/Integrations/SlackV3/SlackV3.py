@@ -4,6 +4,8 @@ import ssl
 import threading
 from distutils.util import strtobool
 from typing import Tuple
+import binascii
+from typing import Any, Dict
 
 import aiohttp
 import slack_sdk
@@ -50,7 +52,8 @@ DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 OBJECTS_TO_KEYS = {
     'mirrors': 'investigation_id',
     'questions': 'entitlement',
-    'users': 'id'
+    'users': 'id',
+    'dcquestion': 'message'
 }
 SYNC_CONTEXT = True
 PROFILING_DUMP_ROWS_LIMIT = 20
@@ -775,6 +778,149 @@ def mirror_investigation():
     demisto.results(f'Investigation mirrored successfully, channel: {conversation_name}')
 
 
+def add_dcq_to_context(newquestion: dict):
+    """
+    In some cases, we want to save question to the integration context.
+
+    Args:
+        integration_context: The current context for the instance of the Slack which executed the command.
+        user: The context safe version of a user's data to insert into the context.
+    """
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    if integration_context.get('dcquestion'):
+        dcquestion = json.loads(integration_context['dcquestion'])
+        dcquestion.append(newquestion)
+    else:
+        dcquestion = [newquestion]
+    set_to_integration_context_with_retries({'dcquestion': dcquestion}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+
+def slack_send_data_collection(to, channel, group, entry, ignore_add_url, thread_id, message, blocks, channel_id):
+    svr_url = demisto.demistoUrls().get('server', '')
+    form_url_search = re.search(f"({re.escape(svr_url)}/?#/external/form/\w+/\w+)", message)
+    if isinstance(form_url_search, str):
+        form_url = form_url_search.groups()[0]
+    else:
+        raise ValueError('Regex failed to extract URL form from message')
+    message_without_url = message.replace(form_url, '')
+    users_task_search = re.search(f"{re.escape(svr_url)}/?#/external/form/(\w+)/(\w+)", form_url)
+    if isinstance(users_task_search, str):
+        incdt_tsk_encoded, usr_encoded = users_task_search.groups()
+        incident_task_decoded = bytes.decode(base64.decodebytes(binascii.unhexlify(incdt_tsk_encoded)), "ascii")
+        incident_id, task_id = incident_task_decoded.split('@')
+        questions_response = requests.get(f"{svr_url}/form?key={incdt_tsk_encoded}&user={usr_encoded}")
+    else:
+        raise ValueError('Regex failed to extract Users or incident task from the URL form')
+    if questions_response.json().get("expired"):
+        return_error("Could not retrieve survey because it is expired")
+    elif not questions_response.json().get('questions'):
+        return_error("Could not format survey because questions are missing")
+    blocks = [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": message_without_url
+            }
+        },
+        {
+            "type": "divider"
+        }
+    ]
+    for qst in questions_response.json().get('questions'):
+        blocks.append(create_slack_block(qst))
+    blocks.append({
+        "type": "actions",
+        "elements": [
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Submit",
+                    "emoji": True
+                },
+                "value": f"{incident_id}@{task_id}",
+                "action_id": "xsoar_data_collection-action"
+            }
+        ]
+    })
+    response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, blocks=json.dumps(blocks),
+                                  channel_id=channel_id)
+    return response
+
+
+def create_slack_block(question):
+    q_id = question.get("id")
+    q_type = question.get("type").lower()
+    q_required = question.get("required")
+    q_placeholder = question.get("placeholder")
+    q_tooltip = question.get("tooltip")
+    q_opt = question.get("options")
+    q_block: Dict[str, Any]
+    q_block = {
+        "type": "input",
+        "block_id": str(q_id),
+        "label": {"type": "plain_text", "text": f'{question.get("label")}', "emoji": True}
+    }
+    if q_opt:
+        opts = [{"text": {"type": "plain_text", "text": str(q), "emoji": True}, "value": q} for q in q_opt if q]
+        if q_type == "singleselect":
+            q_block["element"] = {"type": "radio_buttons", "options": opts, "action_id": f"{q_id}-action"}
+        elif q_type == "multiselect":
+            q_block["element"] = {"type": "checkboxes", "options": opts, "action_id": f"{q_id}-action"}
+        else:
+            return_error("Options found in question payload but question type not handled")
+    if q_type == "shorttext":
+        q_block["element"] = {"type": "plain_text_input", "action_id": f"{q_id}-action"}
+    elif q_type == "longtext":
+        q_block["element"] = {"type": "plain_text_input", "multiline": True, "action_id": f"{q_id}-action"}
+    elif q_type == "date":
+        q_block["element"] = {"type": "datepicker", "action_id": f"{q_id}-action"}
+        q_block["element"] = {"type": "timepicker", "action_id": f"{q_id}-action"}
+    elif q_type == "number":  # Slack support for number input does not exist yet
+        q_block["element"] = {"type": "plain_text_input", "action_id": f"{q_id}-action"}
+        q_block["hint"] = {"type": "plain_text", "text": "Please enter a number value", "emoji": True}
+
+    else:
+        return_error("Invalid question type")
+
+    if q_tooltip:
+        q_block["hint"] = {"type": "plain_text", "text": q_tooltip, "emoji": True}
+
+    if q_required:
+        q_block["optional"] = not bool(q_required)
+        q_block["label"]["text"] = q_block["label"]["text"] + " (Required)"
+
+    if q_placeholder and not q_opt:
+        q_block["element"]["placeholder"] = {"type": "plain_text", "text": q_placeholder, "emoji": True}
+
+    return q_block
+
+
+def extract_awaiting_dc():
+    integration_context = fetch_context()
+    questions = integration_context.get('dcquestion', [])
+    if questions:
+        questions = json.loads(questions)
+    updated_questions = []
+    for question in questions:
+        slack_send_data_collection(
+            question.get('to'),
+            question.get('channel'),
+            question.get('group'),
+            question.get('entry'),
+            question.get('ignore_add_url'),
+            question.get('thread_id'),
+            question.get('message'),
+            question.get('blocks'),
+            question.get('channel_id')
+        )
+        question["remove"] = True
+        updated_questions.append(question)
+    if updated_questions:
+        set_to_integration_context_with_retries({'dcquestion': updated_questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+
 def long_running_loop():
     while True:
         error = ''
@@ -1482,7 +1628,88 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
             action_text = actions[0].get('text').get('text')
             answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
+            if actions[0].get("action_id") == "xsoar_data_collection-action":
+                # Parse answers for data collection survey
+                channel = data.get('channel', {}).get('id', '')
+                state_values = data.get('state', {}).get("values")
+                answers = dict()
+                user_tz = user.get("tz")
+                survey_time = ''
+                survey_date = ''
+                survey_date_key = ''
+                for key in state_values:
+                    block_type = list(state_values.get(key).values())[0].get("type")
+                    if block_type == "radio_buttons":
+                        survey_resp = list(state_values.get(key).values())[0].get("selected_option")
+                        if survey_resp:
+                            answers[key] = survey_resp.get("value")
+                    elif block_type == "checkboxes":
+                        survey_resp = [v for v in state_values.get(key).values().get("selected_options")]
+                        if survey_resp:
+                            answers[key] = [opt.get("value") for opt in survey_resp]
+                    elif block_type == "timepicker":
+                        survey_resp = list(state_values.get(key).values())[0].get("selected_time")
+                        if survey_resp:
+                            survey_time = survey_resp
+                    elif block_type == "datepicker":
+                        survey_resp = list(state_values.get(key).values())[0].get("selected_date")
+                        if survey_resp:
+                            survey_date = survey_resp
+                            survey_date_key = key
+                    else:
+                        survey_resp = list(state_values.get(key).values())[0].get("value")
+                        if survey_resp:
+                            answers[key] = survey_resp
+                    for m_block in message.get("blocks"):
+                        if m_block.get("block_id") == key and not m_block.get("optional") and answers.get(key) is None:
+                            m_block["label"]["text"] += "\n:warning: Please fill this required field."
+                            await send_slack_request_sync(client=ASYNC_CLIENT, method='chat.update',
+                                                          body={
+                                                              'channel': channel,
+                                                              'ts': message_ts,
+                                                              'text': message.get("text"),
+                                                              'blocks': message.get("blocks")
+                                                          })
+                            return
 
+                answers[survey_date_key] = f"{survey_date} {survey_time}  {user_tz}"
+
+                await send_slack_request_sync(client=ASYNC_CLIENT, method='chat.update',
+                                              body={
+                                                  'channel': channel,
+                                                  'ts': message_ts,
+                                                  'text': "Thank you for your response.",
+                                                  'blocks': []
+                                              })
+
+                user_name = user.get("profile").get("email", '')
+                if not user_name:
+                    user_name = data.get('user', {}).get('name', '')
+                user_name_b64 = base64.b64encode(bytes(user_name, "ascii"))
+                user_name_encoded = binascii.hexlify(user_name_b64).decode()
+
+                incident_and_task = actions[0].get("value")
+                incident_and_task_b64 = base64.b64encode(bytes(incident_and_task, "ascii"))
+                incident_and_task_encoded = binascii.hexlify(incident_and_task_b64).decode()
+
+                server_url = demisto.demistoUrls().get('server', '')
+                DEMISTO_API_KEY = demisto.params().get("demisto_api_key")
+                form_questions_url = f"{server_url}/form/submit"
+                headers = {"Authorization": DEMISTO_API_KEY}
+                files = {
+                    "answers": (None, json.dumps(answers)),
+                    "user": (None, user_name_encoded),
+                    "key": (None, incident_and_task_encoded)
+                }
+                questions_response = requests.request("POST", form_questions_url, headers=headers, files=files)
+
+                if questions_response.status_code == 200:
+                    demisto.info("Survey responses posted successfully.")
+                else:
+                    demisto.info("Survey responses failed to post.")
+                return
+            elif "xsoar_data_collection" in message.get("blocks"):
+                return
         # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
         # are not mirrored
         elif thread:
@@ -1775,7 +2002,12 @@ def slack_send():
 
     if not (to or group or channel or channel_id):
         return_error('Either a user, group, channel id, or channel must be provided.')
-
+    overwrite_data_collection = demisto.params().get('overwrite_data_collection_survey', False)
+    survey_url = re.search(f"({re.escape(demisto.demistoUrls().get('server', ''))}/?#/external/form/\w+/\w+)", message)
+    if overwrite_data_collection and survey_url:
+        add_dcq_to_context({'to': to, 'channel': channel, 'group': group, 'entry': entry,
+                            'ignore_add_url': ignore_add_url, 'thread_id': thread_id, 'message': message,
+                            'blocks': blocks, 'channel_id': channel_id})
     reply = ''
     expiry = ''
     default_response = ''
