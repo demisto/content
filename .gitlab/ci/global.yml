@@ -63,8 +63,9 @@
       echo "running nightly or bucket upload, skipping files up-to-date validation"
     else
       ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
-      ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CI_COMMIT_BRANCH
-      ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CI_COMMIT_BRANCH
+      # we want to checkout if it's not up-to-date
+      ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CI_COMMIT_BRANCH true
+      ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CI_COMMIT_BRANCH true
     fi
   - section_end "Check Build Files Are Up To Date"
 
@@ -239,7 +240,7 @@
             export COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq -r ".\"commit\"")
             demisto-sdk lint -vvv -p 8 -g --prev-ver $COMMIT_HASH_COMPARE_TO -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -idp $ARTIFACTS_FOLDER/id_set.json -cdam
           else
-            demisto-sdk lint -vvv -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+            echo "Skipping, Should run on circleCi."
           fi
         fi
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then

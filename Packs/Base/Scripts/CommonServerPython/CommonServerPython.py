@@ -137,6 +137,9 @@ def fix_traceback_line_numbers(trace_str):
     return trace_str
 
 
+from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
+
+
 OS_LINUX = False
 OS_MAC = False
 OS_WINDOWS = False
@@ -8056,6 +8059,11 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
             # found timezone - appending it to the date format
             date_format += time_zone[0]
 
+        # Make the fractions shorter less than 6 charactors
+        # e.g. '2022-01-23T12:34:56.123456789+09:00' to '2022-01-23T12:34:56.123456+09:00'
+        #      '2022-01-23T12:34:56.123456789' to '2022-01-23T12:34:56.123456'
+        date_string = re.sub(r'([0-9]+\.[0-9]{6})[0-9]*([Zz]|[+-]\S+?)?', '\\1\\2', date_string)
+
         return datetime.strptime(date_string, date_format)
 
 
@@ -9963,10 +9971,16 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     """
 
     def dec(func):
-        def inner(client, args):
-            if not requires_polling_arg or args.get(polling_arg_name):
+        def inner(args, *arguments, **kwargs):
+            """
+            Args:
+                args (dict): command arguments (demisto.args()).
+                *arguments: any additional arguments to the command function.
+                **kwargs: additional keyword arguments to the command function.
+            """
+            if not requires_polling_arg or argToBoolean(args.get(polling_arg_name)):
                 ScheduledCommand.raise_error_if_not_supported()
-                poll_result = func(client, args)
+                poll_result = func(args, *arguments, **kwargs)
 
                 should_poll = poll_result.continue_to_poll if isinstance(poll_result.continue_to_poll, bool) \
                     else poll_result.continue_to_poll()
@@ -9982,7 +9996,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                                                                    args=poll_args, timeout_in_seconds=timeout)
                 return poll_response
             else:
-                return func(client, args).response
+                return func(args, *arguments, **kwargs).response
 
         return inner
 
