@@ -743,23 +743,23 @@ def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, tra
     return get_issue(issue_id, headers, is_update=True)
 
 
-def append_to_field_command(issue_id, fieldJson, headers=None, **kwargs):
+def append_to_field_command(issue_id, field_json, headers=None, **kwargs):
     issue = jira_req('GET', f'rest/api/latest/issue/{issue_id}', resp_type='json')
 
-    for field in fieldJson:
+    for field in field_json:
         field_type = __get_field_type(field)
         if not field_type:
-            return_error(f"field {field} could not be updated.")
+            raise DemistoException(f"field {field} could not be updated.")
 
         if field_type == 'Field Not Found':
-            return_error(f'Could not identify field {field}. Make sure it was entered with the correct field id.')
+            raise DemistoException(f'Could not identify field {field}. Make sure it was entered with correct field ID.')
 
         current_data_in_field = issue.get('fields', {}).get(field)
         new_data = {}
         if not current_data_in_field:
-            new_data[field] = __create_value_by_type(field_type, fieldJson[field])
+            new_data[field] = __create_value_by_type(field_type, field_json[field])
         else:
-            new_data[field] = __add_value_by_type(field_type, current_data_in_field, fieldJson[field])
+            new_data[field] = __add_value_by_type(field_type, current_data_in_field, field_json[field])
 
         url = f'rest/api/latest/issue/{issue_id}/'
         jira_req('PUT', url, json.dumps({'fields': new_data}))
@@ -789,7 +789,7 @@ def __add_value_by_type(type, current_value, new_value):
     elif type == 'array':
         return current_value + [new_value]
     else:
-        return_error(f"We only support string or array-typed field. Field given is typed {type}")
+        raise DemistoException(f"Command only support string or array-typed fields. Field given is typed {type}")
 
 
 def __create_value_by_type(type, value):
@@ -798,7 +798,7 @@ def __create_value_by_type(type, value):
     elif type == 'array':
         return [value]
     else:
-        return_error(f"We only support string or array-typed field. Field given is typed {type}")
+        raise DemistoException(f"Command only support string or array-typed fields. Field given is typed {type}")
 
 
 def edit_status(issue_id, status, issue):

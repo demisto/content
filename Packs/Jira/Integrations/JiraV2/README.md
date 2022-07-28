@@ -585,6 +585,63 @@ Account ID for attribute: XSOAR User is: 5e4ds952052b790c97509a7c
 Lists all possible transitions for a given ticket.
 
 
+
+### jira-append-to-field
+***
+Modifies a specific field in issue in Jira by appending to it instead of replacing its content. 
+Field must be either string-typed (appending by using ',') or array-typed.
+
+
+#### Base Command
+
+`jira-append-to-field`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issueId | The ID of the issue to edit. | Required | 
+| fieldJson | The field object (in JSON format). For example {"customfield_10037": "New value"}. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | Unknown | The ticket ID. | 
+| Ticket.Key | Unknown | The ticket key. | 
+| Ticket.Assignee | Unknown | The user assigned to the ticket. | 
+| Ticket.Creator | Unknown | The user who created the ticket. | 
+| Ticket.Summary | Unknown | The ticket summary. | 
+| Ticket.Status | Unknown | The ticket status. | 
+
+
+### jira-get-specific-field
+***
+Gets specific fields from a Jira issue, add it to context dynamicly.
+
+#### Base Command
+
+`jira-get-specific-field`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issueId | The ID of the issue to edit. | Required | 
+| components | The fields to retrieve from the issue. For example field="customfield_164,labels". | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | Unknown | The ticket ID. | 
+| Ticket.Key | Unknown | The ticket key. | 
+| Ticket.Assignee | Unknown | The user assigned to the ticket. | 
+| Ticket.Creator | Unknown | The user who created the ticket. | 
+| Ticket.Summary | Unknown | The ticket summary. | 
+| Ticket.Status | Unknown | The ticket status. | 
+
+
 #### Base Command
 
 `jira-list-transitions`
