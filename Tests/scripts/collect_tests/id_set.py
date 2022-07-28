@@ -10,6 +10,10 @@ from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
 
 
 class IdSetItem(DictBased):
+    """
+    Represents an ID-Set item (pack or content item).
+    See the IdSet class to see how it's parsed.
+    """
     def __init__(self, id_: Optional[str], dict_: dict):
         super().__init__(dict_)
         self.id_: Optional[str] = id_  # None for packs, as they don't have it.
@@ -46,6 +50,9 @@ class IdSetItem(DictBased):
 
 
 class IdSet(DictFileBased):
+    """
+    Allows access to the IdSet and the content it holds (using IdSetItem objects)
+    """
     def __init__(self, marketplace: MarketplaceVersions, id_set_path: Path):
         super().__init__(id_set_path, is_infrastructure=True)
         self.marketplace = marketplace

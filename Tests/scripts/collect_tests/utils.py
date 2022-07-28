@@ -60,10 +60,17 @@ class VersionRange:
 
     @property
     def is_default(self):
+        """
+        :return: whether the range is (-Infinity -> Infinity)
+        """
         return self.min_version == version.NegativeInfinity and self.max_version == version.Infinity
 
 
 class Machine(Enum):
+    """
+    Represents an XSOAR version.
+    Serves as the single source of truth for versions used for collect_tests.
+    """
     V6_5 = Version('6.5')
     V6_6 = Version('6.6')
     V6_8 = Version('6.8')
@@ -76,6 +83,12 @@ class Machine(Enum):
 
     @staticmethod
     def get_suitable_machines(version_range: Optional[VersionRange], run_nightly: bool) -> tuple['Machine', ...]:
+        """
+
+        :param version_range: range of versions. If None, all versions are returned.
+        :param run_nightly: whether a nightly machine is required
+        :return: Master, as well as all Machine items matching the input.
+        """
         result: list[Machine] = [Machine.MASTER]
 
         if not version_range:
@@ -93,6 +106,10 @@ class Machine(Enum):
 
 
 class DictBased:
+    """
+    Represents a dictionary-based object, parsing common properties
+    """
+
     def __init__(self, dict_: dict):
         if not isinstance(dict_, dict):
             raise ValueError('DictBased must be initialized with a dict')
@@ -104,6 +121,9 @@ class DictBased:
             tuple(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
 
     def get(self, key: str, default: Any = None, warn_if_missing: bool = True, warning_comment: str = ''):
+        """
+        allows fetching an attribute, with or without logging (useful for debug purposes)
+        """
         if key not in self.content and warn_if_missing:
             suffix = f' ({warning_comment})' if warning_comment else ''
             logger.warning(f'attempted to access nonexistent key {key}{suffix}')
@@ -113,6 +133,7 @@ class DictBased:
         return self.content[key]
 
     def _calculate_from_version(self) -> Version | NegativeInfinityType:
+        # all three options are equivalent
         if value := (
                 self.get('fromversion', warn_if_missing=False)
                 or self.get('fromVersion', warn_if_missing=False)
@@ -122,6 +143,7 @@ class DictBased:
         return version.NegativeInfinity
 
     def _calculate_to_version(self) -> Version | InfinityType:
+        # all three options are equivalent
         if value := (
                 self.get('toversion', warn_if_missing=False)
                 or self.get('toVersion', warn_if_missing=False)
@@ -132,6 +154,11 @@ class DictBased:
 
 
 class DictFileBased(DictBased):
+    """
+    Represents a dictfile (json, yml), allowing access to common attributes (see DictBased)
+    raising a NonDictException when called with an unsupported extension.
+    """
+
     def __init__(self, path: Path, is_infrastructure: bool = False):
         if not path.exists():
             raise FileNotFoundError(path)
@@ -155,6 +182,10 @@ class DictFileBased(DictBased):
 
 
 class ContentItem(DictFileBased):
+    """
+    Represents a dict-based content item (yml, json), providing access to common attributes.
+    """
+
     def __init__(self, path: Path):
         super().__init__(path)
         self.pack_path = find_pack_folder(self.path)
@@ -182,6 +213,10 @@ class ContentItem(DictFileBased):
 
 
 def read_skipped_test_playbooks(pack_folder: Path) -> set[str]:
+    """
+    :param pack_folder: containing .pack_ignore
+    :return: all file names of test playbooks skipped under the .pack_ignore.
+    """
     file_prefix = 'file:'
 
     skipped_playbooks = set()
@@ -195,9 +230,8 @@ def read_skipped_test_playbooks(pack_folder: Path) -> set[str]:
             for key in filter(lambda k: k == 'ignore', config[section]):
                 if config[section][key] == 'auto-test':
                     skipped_playbooks.add(file_name)
-                    continue
 
-    except MissingSectionHeaderError:
+    except MissingSectionHeaderError:  # no `ignore` header
         pass
 
     return skipped_playbooks
@@ -271,5 +305,9 @@ def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
 
 
 def find_yml_content_type(yml_path: Path) -> Optional[FileType]:
+    """
+    :param yml_path: path to some yml of a content item
+    :return: matching FileType, based on the yml path
+    """
     return {'Playbooks': FileType.PLAYBOOK, 'TestPlaybooks': FileType.TEST_PLAYBOOK}.get(yml_path.parent.name) or \
            {'Integrations': FileType.INTEGRATION, 'Scripts': FileType.SCRIPT, }.get(yml_path.parents[1].name)
