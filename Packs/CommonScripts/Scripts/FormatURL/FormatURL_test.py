@@ -149,21 +149,6 @@ class TestFormatURL:
         from FormatURL import replace_protocol
         assert replace_protocol(non_formatted_url) == expected
 
-    @pytest.mark.parametrize('non_formatted_url, expected', BRACKETS_URL_TO_FORMAT)
-    def test_remove_brackets_from_end_of_url(self, non_formatted_url: str, expected: str):
-        """
-        Given:
-        - non_formatted_url: A URL.
-
-        When:
-        - calling remove_brackets_from_end_of_url
-
-        Then:
-        - Ensure url was formatted properly.
-        """
-        from FormatURL import remove_brackets_from_end_of_url
-        assert remove_brackets_from_end_of_url(non_formatted_url) == expected
-
     @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
     def test_format_url(self, url_: str, expected: Union[List[str], str]):
         """
@@ -330,8 +315,10 @@ class TestFormatURL:
          'https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$'),
         ('(https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$)',
          'https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$'),
-        ('[someURL].', 'someURL'),
-        ('[another_test)', '[another_test)'),
+        ('[someURL].', 'someURL].'),
+        ('[https://another_test)', 'https://another_test'),
+        ('[https://another_test', 'https://another_test'),
+        ('[(https://another_test)]', 'https://another_test'),
         ('{a}', 'a')
     ])
     def test_remove_special_chars_from_start_and_end_of_url(self, url_, expected):
