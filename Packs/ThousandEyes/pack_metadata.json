@@ -1,6 +1,6 @@
 {
     "name": "ThousandEyes",
-    "description": "",
+    "description": "This pack is used to to fetch-incidents, get alerts details and to get agent list",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "masquerad3r",
