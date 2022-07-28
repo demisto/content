@@ -407,6 +407,29 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                  - - operator: isEqualString
+                      left:
+                        value:
+                          simple: modules.brand
+                        iscontext: true
+                      right:
+                        value:
+                          simple: SecurityAndCompliance
+                  - - operator: isEqualString
+                      left:
+                        value:
+                          simple: modules.state
+                        iscontext: true
+                      right:
+                        value:
+                          simple: active
+            iscontext: true
       - - operator: isEqualString
           left:
             value:
