@@ -1,0 +1,17 @@
+{
+    "name": "AssignViewerIncident",
+    "description": "This automation assigns the unassigned incident to the person that opens the incident for the first time.\nI have included the video demo. The automation can be used in the dynamic section and it will check if the owner for the incident is set if not it will set the current user as the owner.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "amkoppad",
+    "url": "",
+    "email": "",
+    "created": "2022-07-28T14:13:09Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "amkoppad"
+    ]
+}

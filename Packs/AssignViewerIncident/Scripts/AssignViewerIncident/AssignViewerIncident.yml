@@ -1,0 +1,28 @@
+comment: Automation to display asset objects from Splunk.
+commonfields:
+  id: a36dbe88-90f0-4c9a-8b96-2a5d9a574f51
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4165b5ca-be89-4d8e-8a99-0e74c7d55e77
+    packName: AssignViewerIncident Contribution Pack
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: AssignViewerIncident
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
