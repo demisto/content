@@ -231,14 +231,25 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". Default value is "false".
+      description: Used in conjunction with thread_ts and indicates whether reply should be made visible to everyone in the channel or conversation. Can be "true" or "false". Default value is "false".
       isArray: false
-      name: ignoreAddURL
+      name: reply_broadcast
       predefined:
       - 'true'
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". Default value is "false".
+      isArray: false
+      name: ignoreAddURL
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
     - default: false
       description: The ID of the thread to which to reply - can be retrieved from a previous send-notification command.
       isArray: false
@@ -558,7 +569,7 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.31031
+  dockerimage: demisto/slackv3:1.0.0.32378
   feed: false
   isfetch: false
   longRunning: true

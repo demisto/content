@@ -1730,6 +1730,7 @@ def slack_send():
     thread_id = args.get('threadID', '')
     severity = args.get('severity')  # From server
     blocks = args.get('blocks')
+    reply_broadcast = args.get('reply_broadcast')
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
 
@@ -1805,7 +1806,7 @@ def slack_send():
                 demisto.info('Slack - could not parse JSON from entitlement message.')
 
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks,
-                                  channel_id=channel_id)
+                                  channel_id=channel_id, reply_broadcast=reply_broadcast)
 
     if response:
         thread = response.get('ts')
@@ -1910,7 +1911,7 @@ def handle_tags_in_message_sync(message: str) -> str:
 
 
 def send_message(destinations: list, entry: str, ignore_add_url: bool, integration_context: dict, message: str,
-                 thread_id: str, blocks: str):
+                 thread_id: str, blocks: str, reply_broadcast: bool = False):
     """
     Sends a message to Slack.
     Args:
@@ -1921,6 +1922,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
         message: The message to send.
         thread_id: The Slack thread ID to send the message to.
         blocks: Message blocks to send
+        reply_broadcast: Whether a notification should be broadcasted to the channel or not
 
     Returns:
         The Slack send response.
@@ -1950,7 +1952,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
                     if link:
                         message += f'\nView it on: {link}#/home'
     try:
-        response = send_message_to_destinations(destinations, message, thread_id, blocks)
+        response = send_message_to_destinations(destinations, message, thread_id, blocks, reply_broadcast)
     except SlackApiError as e:
         if str(e).find('not_in_channel') == -1 and str(e).find('channel_not_found') == -1:
             raise
@@ -1959,12 +1961,12 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
             bot_id = get_bot_id()
         for dest in destinations:
             invite_users_to_conversation(dest, [bot_id])
-        response = send_message_to_destinations(destinations, message, thread_id, blocks)
+        response = send_message_to_destinations(destinations, message, thread_id, blocks, reply_broadcast)
     return response
 
 
-def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str = '') \
-        -> Optional[SlackResponse]:
+def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str = '',
+                                 reply_broadcast: bool = False) -> Optional[SlackResponse]:
     """
     Sends a message to provided destinations Slack.
 
@@ -1988,6 +1990,8 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
         body['blocks'] = block_list
     if thread_id:
         body['thread_ts'] = thread_id
+        if reply_broadcast:
+            body['reply_broadcast'] = reply_broadcast
 
     for destination in destinations:
         body['channel'] = destination
@@ -2058,7 +2062,7 @@ def send_file_to_destinations(destinations: list, file_dict: dict, thread_id: st
 
 def slack_send_request(to: str = None, channel: str = None, group: str = None, entry: str = '',
                        ignore_add_url: bool = False, thread_id: str = '', message: str = '',
-                       blocks: str = '', file_dict: dict = None, channel_id: str = None) \
+                       blocks: str = '', file_dict: dict = None, channel_id: str = None, reply_broadcast: bool = False) \
         -> Optional[SlackResponse]:
     """
     Requests to send a message or a file to Slack.
@@ -2074,6 +2078,7 @@ def slack_send_request(to: str = None, channel: str = None, group: str = None, e
         blocks: Blocks to send with a slack message
         file_dict: A file to send.
         channel_id: ID of channel to send to.
+        reply_broadcast: Whether a notification should be broadcasted to the channel or not
 
     Returns:
         The Slack send response.
@@ -2127,7 +2132,7 @@ def slack_send_request(to: str = None, channel: str = None, group: str = None, e
         return response
 
     response = send_message(destinations, entry, ignore_add_url, integration_context, message,
-                            thread_id, blocks)
+                            thread_id, blocks, reply_broadcast)
 
     return response
 
