@@ -12,9 +12,9 @@ args:
 - description: The current user details from the command "getUsers".
   name: user
   required: true
-- description: Short description to add the pull request text.
+- description: Short description to add to the pull request text.
   name: comment
-comment: This script gets content files as input from the context, commit the files in the right folder and create the pull request text.
+comment: This script gets content files as input from the context, commits the files in the correct folder and creates the pull request text.
 commonfields:
   id: CommitFiles
   version: -1
