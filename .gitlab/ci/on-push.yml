@@ -105,14 +105,12 @@ create-instances:
     # - !reference [.download-demisto-conf]
     # - !reference [.create-id-set-xsoar]
     # - !reference [.create-release-notes-and-common-docs]
-    - neo4j-admin set-initial-password test
-    - neo4j start
     - section_start "Create content graph"
+    - pip install docker-compose
     - sleep 10
     - demisto-sdk content-graph
     - neo4j stop
-    - neo4j-admin dump --to=neo4j/content-graph.dump
-    - cp ./neo4j/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
+    - cp ./neo4j/backups/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
 
     # - section_start "Create Content Artifacts and Update Conf" --collapsed
     # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
