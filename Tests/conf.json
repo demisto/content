@@ -2142,11 +2142,6 @@
             "timeout": 200
         },
         {
-            "integrations": "FireEye HX",
-            "playbookID": "FireEye HX Test",
-            "timeout": 800
-        },
-        {
             "integrations": "FireEyeFeed",
             "playbookID": "playbook-FeedFireEye_test",
             "memory_threshold": 110
@@ -4389,7 +4384,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 95,
+            "memory_threshold": 100,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4398,7 +4393,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 91,
+            "memory_threshold": 100,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5173,7 +5168,8 @@
         {
             "integrations": "Arkime",
             "playbookID": "Arkime Test playbook",
-            "fromversion": "6.2.0"
+            "fromversion": "6.2.0",
+            "memory_threshold": 95
         }
     ],
     "skipped_tests": {
