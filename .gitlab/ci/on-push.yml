@@ -98,6 +98,7 @@ create-instances:
     KUBERNETES_CPU_REQUEST: 1000m
     NEO4J_AUTH: neo4j/test
 
+
   needs: []
   stage: create-instances
   script:
