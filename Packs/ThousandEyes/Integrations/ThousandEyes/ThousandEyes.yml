@@ -170,10 +170,13 @@ script:
       required: true
     description: Fetches a given agent.
     name: thousandeyes-get-agent
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.5.31928
   isFetchSamples: true
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
