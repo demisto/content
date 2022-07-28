@@ -2255,6 +2255,10 @@ Lists users in your organization.
 | --- | --- | --- |
 | verbose | Whether to return extended user information. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
 | limit | The maximum number of results to return. | Optional | 
+| query | Searches the name property of groups for matching values. | Optional | 
+| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/>type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID.
+For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
+| after | The cursor in which to retrive the results from and on. If the query didn't reach the end of results, the tag will be found in the readable output under the tag key. | Optional |
 
 #### Context Output
 
@@ -2269,6 +2273,7 @@ Lists users in your organization.
 | Account.Activated | Date | Timestamp for when the user was activated. | 
 | Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
 | Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
+| Okta.User.tag| String | The location of the next item, used with after param. |
 
 
 #### Command Example
@@ -2277,6 +2282,13 @@ Lists users in your organization.
 #### Context Example
 ```json
 {
+    "Okta":
+    {
+        "User":
+        {
+            "tag": "test12tag"
+        }
+    },
     "Account": [
         {
             "Created": "2018-07-24T20:20:04.000Z",
@@ -2299,6 +2311,7 @@ Lists users in your organization.
 >|---|---|---|---|---|---|---|
 >| Dbot | XXXXX |  | XSOAR | dbot@xsoar.com |  | STAGED |
 > 
+> ### tag: test12tag
 ### okta-create-zone
 ***
 Creates a Zone with the specified name
