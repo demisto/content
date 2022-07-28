@@ -106,16 +106,9 @@ create-instances:
     # - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Create content graph"
-    - curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
-    - pushd neo4j
-    - docker-compose up -d
-    - popd
     - demisto-sdk content-graph
-    - pushd neo4j
-    - docker-compose down
-    - popd
-    - cp ./neo4j/backups/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
+    - neo4j-admin dump --to=neo4j/content-graph.dump
+    - cp ./neo4j/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
 
     # - section_start "Create Content Artifacts and Update Conf" --collapsed
     # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
