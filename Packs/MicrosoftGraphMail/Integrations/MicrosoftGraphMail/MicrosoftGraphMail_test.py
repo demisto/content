@@ -334,7 +334,7 @@ class TestFetchIncidentsWithLookBack:
             'id': '1',
             'subject': 'email-1',
             'lastModifiedDateTime': (
-                    self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=2)
+                self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=2)
             ).strftime(API_DATE_FORMAT)
         }
 
@@ -342,7 +342,7 @@ class TestFetchIncidentsWithLookBack:
             'id': '2',
             'subject': 'email-2',
             'lastModifiedDateTime': (
-                    self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=5)
+                self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=5)
             ).strftime(API_DATE_FORMAT)
         }
 
@@ -350,7 +350,7 @@ class TestFetchIncidentsWithLookBack:
             'id': '3',
             'subject': 'email-3',
             'lastModifiedDateTime': (
-                    self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=10)
+                self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=10)
             ).strftime(API_DATE_FORMAT)
         }
 
@@ -392,11 +392,11 @@ class TestFetchIncidentsWithLookBack:
         mocker.patch.object(client, '_get_email_attachments', return_value=[])
 
         last_run = {
-                'LAST_RUN_FOLDER_ID': 'last_run_dummy_folder_id',
-                'LAST_RUN_FOLDER_PATH': "Phishing",
-                'LAST_RUN_ACCOUNT': 'dummy@mailbox.com',
-                'LAST_RUN_TIME': (datetime.now() - timedelta(minutes=20)).strftime(API_DATE_FORMAT)
-            }
+            'LAST_RUN_FOLDER_ID': 'last_run_dummy_folder_id',
+            'LAST_RUN_FOLDER_PATH': "Phishing",
+            'LAST_RUN_ACCOUNT': 'dummy@mailbox.com',
+            'LAST_RUN_TIME': (datetime.now() - timedelta(minutes=20)).strftime(API_DATE_FORMAT)
+        }
 
         expected_last_run_timestamps = ['2022-07-28T12:07:17Z', '2022-07-28T12:04:17Z', '2022-07-28T11:59:17Z']
 
