@@ -88,7 +88,7 @@ create-instances:
   cache:
     policy: pull-push
   services:
-    - name: docker.art.code.pan.run/neo4j:latest
+    - name: docker-io.art.code.pan.run/neo4j:latest
       alias: neo4j
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
