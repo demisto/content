@@ -180,29 +180,29 @@ def parse_agent_response_helper(raw_response: Dict) -> Tuple[List, List]:
         if agents_list:
             for items in agents_list:
                 item = assign_params(
-                        **{
-                            "Agent ID": items.get('agentId'),
-                            "Agent Name": items.get('agentName'),
-                            "Agent Type": items.get('agentType'),
-                            "Country ID": items.get('countryId'),
-                            "Enabled": items.get('enabled'),
-                            "Keep Browser Cache": items.get('keepBrowserCache'),
-                            "Verify SSL Certificates": items.get('verifySslCertificates'),
-                            "Ip Adresses": items.get('ipAdresses'),
-                            "Last Seen": items.get('lastSeen'),
-                            "Location": items.get('location'),
-                            "Network": items.get('network'),
-                            "Prefix": items.get('prefix'),
-                            "Public IP Addresses": items.get('publicIpAddresses'),
-                            "Target For Tests": items.get('targetForTests'),
-                            "Agent State": items.get('agentState'),
-                            "Utilization": items.get('utilization'),
-                            "IPv6 Policy": items.get('ipv6Policy'),
-                            "Hostname": items.get('hostname'),
-                            "Created Date": items.get('createdDate'),
-                            "Error Details": items.get('errorDetails')
-                        }
-                    )
+                    **{
+                        "Agent ID": items.get('agentId'),
+                        "Agent Name": items.get('agentName'),
+                        "Agent Type": items.get('agentType'),
+                        "Country ID": items.get('countryId'),
+                        "Enabled": items.get('enabled'),
+                        "Keep Browser Cache": items.get('keepBrowserCache'),
+                        "Verify SSL Certificates": items.get('verifySslCertificates'),
+                        "Ip Adresses": items.get('ipAdresses'),
+                        "Last Seen": items.get('lastSeen'),
+                        "Location": items.get('location'),
+                        "Network": items.get('network'),
+                        "Prefix": items.get('prefix'),
+                        "Public IP Addresses": items.get('publicIpAddresses'),
+                        "Target For Tests": items.get('targetForTests'),
+                        "Agent State": items.get('agentState'),
+                        "Utilization": items.get('utilization'),
+                        "IPv6 Policy": items.get('ipv6Policy'),
+                        "Hostname": items.get('hostname'),
+                        "Created Date": items.get('createdDate'),
+                        "Error Details": items.get('errorDetails')
+                    }
+                )
 
                 human_readable.append(
                     item
@@ -229,21 +229,21 @@ def get_alerts_helper(alert_info: Dict, aid: Optional[int], human_readable: bool
     human_readable_data = {}
     if alert_info:
         prepared_alert_info = {
-                "Active": alert_info.get('active'),
-                "Agents": alert_info.get('agents'),
-                "AID": aid,
-                "AlertID": alert_info.get('alertId'),
-                "DateStart": alert_info.get('dateStart'),
-                "ApiLinks": alert_info.get('apiLinks'),
-                "PermaLink": alert_info.get('permalink'),
-                "RuleExpression": alert_info.get('ruleExpression'),
-                "RuleID": alert_info.get('ruleId'),
-                "RuleName": alert_info.get('ruleName'),
-                "TestID": alert_info.get('testId'),
-                "TestName": alert_info.get('testName'),
-                "ViolationCount": alert_info.get('violationCount'),
-                "Type": alert_info.get('type'),
-                "Severity": alert_info.get('severity')
+            "Active": alert_info.get('active'),
+            "Agents": alert_info.get('agents'),
+            "AID": aid,
+            "AlertID": alert_info.get('alertId'),
+            "DateStart": alert_info.get('dateStart'),
+            "ApiLinks": alert_info.get('apiLinks'),
+            "PermaLink": alert_info.get('permalink'),
+            "RuleExpression": alert_info.get('ruleExpression'),
+            "RuleID": alert_info.get('ruleId'),
+            "RuleName": alert_info.get('ruleName'),
+            "TestID": alert_info.get('testId'),
+            "TestName": alert_info.get('testName'),
+            "ViolationCount": alert_info.get('violationCount'),
+            "Type": alert_info.get('type'),
+            "Severity": alert_info.get('severity')
         }
         if human_readable:
             human_readable_data = assign_params(
@@ -731,7 +731,6 @@ def main():
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents_to_create)
-
 
         else:
             raise NotImplementedError(f"{command} is not an existing ThousandEyes command")
