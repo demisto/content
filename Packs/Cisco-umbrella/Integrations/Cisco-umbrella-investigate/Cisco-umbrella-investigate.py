@@ -855,20 +855,6 @@ def get_domain_command():
                 outputs=context,
                 raw_response=[contents, whois, name_servers, emails, domain_categorization_table]
             ))
-            # results.append({
-            #     'Type': entryTypes['note'],
-            #     'ContentsFormat': formats['json'],
-            #     'Contents': [contents, whois, name_servers, emails, domain_categorization_table],
-            #     'ReadableContentsFormat': formats['markdown'],
-            #     'HumanReadable':
-            #         tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers)
-            #         + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
-            #                           date_fields=["Last Retrieved"])
-            #         + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
-            #         + tableToMarkdown('Emails:', emails, ['Emails'])
-            #         + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
-            #     'EntryContext': context
-            # })
             execution_metrics.success += 1
         except RequestException as r:
             if r.response.status_code == 429:
@@ -906,11 +892,13 @@ def get_domain_command():
                     'EntryContext': context
                 })
             else:
-                results.append(execution_metrics.metrics)
+                if execution_metrics.metrics is not None:
+                    results.append(execution_metrics.metrics)
                 return_results(results)
                 return_error(r.response.text)
 
-    results.append(execution_metrics.metrics)
+    if execution_metrics.metrics is not None:
+        results.append(execution_metrics.metrics)
     return results
 
 
@@ -1520,18 +1508,19 @@ def get_whois_for_domain_command():
         return_results(execution_metrics.metrics)
         return_error(r.response.text)
 
-    results.extend([{
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': [table_whois, contents_nameserver, contents_email],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'], table_whois,
-                                         headers, date_fields=["Last Retrieved"])  # noqa: W504
-                         + tableToMarkdown('Nameservers: ', contents_nameserver, headers)  # noqa: W504
-                         + tableToMarkdown('Email Addresses: ', contents_email, headers),
-        'EntryContext': context
-    },
-        execution_metrics.metrics])
+    results.append(
+        CommandResults(
+            type=entryTypes['note'],
+            content_format=formats['json'],
+            raw_response=[table_whois, contents_nameserver, contents_email],
+            outputs=context,
+            readable_output=tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'], table_whois,
+                                             headers, date_fields=["Last Retrieved"])  # noqa: W504
+                             + tableToMarkdown('Nameservers: ', contents_nameserver, headers)  # noqa: W504
+                             + tableToMarkdown('Email Addresses: ', contents_email, headers),
+        ))
+    if execution_metrics.metrics is not None:
+        results.append(execution_metrics.metrics)
 
     return results
 
@@ -1925,7 +1914,7 @@ def main() -> None:
         elif demisto.command() == 'umbrella-get-domains-for-nameserver':
             demisto.results(get_domains_for_nameserver_command())
         elif demisto.command() == 'umbrella-get-whois-for-domain':
-            demisto.results(get_whois_for_domain_command())
+            return_results(get_whois_for_domain_command())
         elif demisto.command() == 'umbrella-get-malicious-domains-for-ip':
             demisto.results(get_malicious_domains_for_ip_command())
         elif demisto.command() == 'umbrella-get-domains-using-regex':
