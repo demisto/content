@@ -104,6 +104,7 @@ create-instances:
     # - !reference [.download-demisto-conf]
     # - !reference [.create-id-set-xsoar]
     # - !reference [.create-release-notes-and-common-docs]
+    - apt-get install tree
     - tree /builds
     - section_start "Create content graph"
     - demisto-sdk content-graph
