@@ -1,7 +1,7 @@
 id: Pull Request Creation
 version: -1
 name: Pull Request Creation
-description: This playbook creates a pull request from content zip file.
+description: This playbook creates a pull request from the content zip file.
 starttaskid: '0'
 tasks:
   '0':
@@ -77,7 +77,7 @@ tasks:
       id: 048a20fd-23e2-405c-859d-2f1478bdcf27
       version: -1
       name: Get master branch
-      description: Gets a branch
+      description: Gets a branch.
       script: '|||GitHub-get-branch'
       type: regular
       iscommand: true
@@ -424,7 +424,7 @@ tasks:
       id: 3a5a8b59-c768-4023-844d-6b2463c15205
       version: -1
       name: Get branch
-      description: Gets a branch
+      description: Gets a branch.
       script: '|||GitHub-get-branch'
       type: regular
       iscommand: true
@@ -937,7 +937,7 @@ tasks:
       id: bd97a3d0-f71c-46e4-81e4-5a40106c76bf
       version: -1
       name: Is Slack v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1257,7 +1257,7 @@ tasks:
     task:
       id: 24eb1fef-65f4-43dd-86cb-2b6ab62569a9
       version: -1
-      name: Is slack channel given?
+      name: Is Slack channel given?
       type: condition
       iscommand: false
       brand: ''
