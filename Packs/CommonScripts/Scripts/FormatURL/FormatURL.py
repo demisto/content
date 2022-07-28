@@ -130,7 +130,7 @@ def remove_special_chars_from_start_and_end_of_url(url_: str) -> str:
     while url_[0] in opening_brackets or url_[0] in quotes:
         if url_[0] in quotes:
             if url_[-1] == quotes[url_[0]]:
-                url_ = url_[1:len(url_)]
+                url_ = url_[1:-1]
         elif url_[-1] in closing_brackets:
             url_ = url_[1:-1]
         else:

@@ -319,7 +319,8 @@ class TestFormatURL:
         ('[https://another_test)', 'https://another_test'),
         ('[https://another_test', 'https://another_test'),
         ('[(https://another_test)]', 'https://another_test'),
-        ('{a}', 'a')
+        ('{a}', 'a'),
+        ('"{a}"', 'a')
     ])
     def test_remove_special_chars_from_start_and_end_of_url(self, url_, expected):
         """
