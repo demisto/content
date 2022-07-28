@@ -43,4 +43,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Detonate URL - VirusTotal (API v3)](../doc_files/Detonate_URL_-_VirusTotal_(API_v3).png)
+![Detonate URL - VirusTotal API v3](../doc_files/Detonate_URL_-_VirusTotal_API_v3.png)
