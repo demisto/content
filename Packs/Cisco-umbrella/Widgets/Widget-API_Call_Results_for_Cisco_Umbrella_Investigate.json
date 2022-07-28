@@ -1,0 +1,83 @@
+{
+  "dataType": "metrics",
+  "widgetType": "line",
+  "query": "type:integration and instance:\"Cisco Umbrella Investigate_instance_1\"",
+  "params": {
+    "groupBy": [
+      "modified(d)",
+      "apiResponseType"
+    ],
+    "keys": [
+      "sum|totalAPICalls"
+    ],
+    "customGroupBy": [
+      null,
+      {
+        "General Error": {
+          "conditions": [
+            [
+              {
+                "field": "apiResponseType",
+                "operator": "isEqualCaseString",
+                "right": "GeneralError",
+                "type": "string"
+              }
+            ]
+          ],
+          "name": "General Error"
+        },
+        "Quota Error": {
+          "conditions": [
+            [
+              {
+                "field": "apiResponseType",
+                "operator": "isEqualCaseString",
+                "right": "QuotaError",
+                "type": "string"
+              }
+            ]
+          ],
+          "name": "Quota Error"
+        },
+        "Success": {
+          "conditions": [
+            [
+              {
+                "field": "apiResponseType",
+                "operator": "isEqualCaseString",
+                "right": "Successful",
+                "type": "string"
+              }
+            ]
+          ],
+          "name": "Success"
+        }
+      }
+    ],
+    "showOthers": false,
+    "valuesFormat": "abbreviated",
+    "timeFrame": "days",
+    "yAxisLabel": "Request Counts",
+    "xAxisLabel": "Time",
+    "referenceLine": {
+      "type": "max"
+    }
+  },
+  "dateRange": {
+    "period": {
+      "byTo": "days",
+      "toValue": 0,
+      "byFrom": "days",
+      "fromValue": 3
+    }
+  },
+  "propagationLabels": [
+    "all"
+  ],
+  "customCalculation": {
+    "operation": "sum",
+    "fieldName": "Total API Calls",
+    "expression": "totalAPICalls"
+  },
+  "name": "API Call Results for Cisco Umbrella Investigate"
+}
