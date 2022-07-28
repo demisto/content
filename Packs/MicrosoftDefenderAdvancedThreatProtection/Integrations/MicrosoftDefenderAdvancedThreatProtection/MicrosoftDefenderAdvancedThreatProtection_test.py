@@ -127,8 +127,18 @@ def test_get_machine_investigation_package_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import get_machine_investigation_package_command
     mocker.patch.object(client_mocker, 'get_investigation_package', return_value=INVESTIGATION_PACKAGE_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=INVESTIGATION_ACTION_DATA)
-    result = get_machine_investigation_package_command(client_mocker, {'machine_id': '123', 'comment': 'test'})
-    assert result.outputs['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == INVESTIGATION_ACTION_DATA
+    _, res, _ = get_machine_investigation_package_command(client_mocker, {'machine_id': '123', 'comment': 'test'})
+    assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == INVESTIGATION_ACTION_DATA
+
+
+def test_offboard_machine_command(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import offboard_machine_command
+    mocker.patch.object(client_mocker, 'offboard_machine', return_value=MACHINE_OFFBOARD_API_RESPONSE)
+    args = {'machine_id': '9b898e79b0ed2173cc87577a158d1dba5f61d7a7', 'comment': 'Testing Offboarding'}
+    result = offboard_machine_command(client_mocker, args)
+    assert result.outputs[0]['ID'] == '947a677a-a11a-4240-ab6q-91277e2386b9'
+    assert result.outputs[0]['Status'] == 'Pending'
+    assert result.outputs[0]['Type'] == 'Offboard'
 
 
 def test_get_investigation_package_sas_uri_command(mocker):
@@ -806,6 +816,30 @@ MACHINE_ALERTS_OUTPUT = {
     "Title": "Network connection to a risky host",
 }
 
+MACHINE_OFFBOARD_API_RESPONSE = {
+    "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#MachineActions/$entity",
+    "id": "947a677a-a11a-4240-ab6q-91277e2386b9",
+    "type": "Offboard",
+    "title": None,
+    "requestor": "cbceb30b-f2b1-488e-893e-62907e4fe6d5",
+    "requestorComment": "Testing Offboarding",
+    "status": "Pending",
+    "machineId": None,
+    "computerDnsName": None,
+    "creationDateTimeUtc": "2022-07-12T14:39:19.6103056Z",
+    "lastUpdateDateTimeUtc": "2022-07-12T14:39:19.610309Z",
+    "cancellationRequestor": None,
+    "cancellationComment": None,
+    "cancellationDateTimeUtc": None,
+    "errorHResult": 0,
+    "scope": None,
+    "externalId": None,
+    "requestSource": "PublicApi",
+    "relatedFileInfo": None,
+    "commands": [],
+    "troubleshootInfo": None
+}
+
 
 def tests_get_future_time(mocker):
     from datetime import datetime
@@ -1076,8 +1110,7 @@ def test_run_script_polling(mocker, args, request_status, args_to_compare, expec
     import CommonServerPython
 
     def mock_action_command(client, args):
-        return CommonServerPython.CommandResults(outputs={'action_id': 'action_id_example'},
-                                                 raw_response={'id': 'action_id_example'})
+        return CommonServerPython.CommandResults(outputs={'action_id': 'action_id_example'})
 
     def mock_get_status(client, args):
         return CommonServerPython.CommandResults(

@@ -1,0 +1,32 @@
+{
+    "id": "incident_calderaoperationjitter",
+    "version": -1,
+    "name": "MITRE Caldera Operation Jitter",
+    "ownerOnly": false,
+    "placeholder": "2/8",
+    "description": "Jitter is defined as a fraction (default is '2/8')",
+    "cliName": "calderaoperationjitter",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "script": "CalderaReadOnlyFields",
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Caldera Operation"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

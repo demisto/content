@@ -24,3 +24,5 @@ ignore=auto-test
 
 [known_words]
 pcaps
+FW
+dst

@@ -1,0 +1,51 @@
+{
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Sumo Logic Insight Mapper",
+	"feed": false,
+	"fromVersion": "6.2.0",
+	"id": "Sumo Logic Insight - Mapper",
+	"mapping": {
+		"Sumo Logic Insight": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Sumo Logic Cloud SIEM Insight Entity": {
+					"complex": {
+						"filters": [],
+						"root": "entity",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Sumo Logic Cloud SIEM Insight Involved Entities": {
+					"complex": {
+						"filters": [],
+						"root": "involvedEntities",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Sumo Logic Cloud SIEM Insight Signals": {
+					"complex": {
+						"filters": [],
+						"root": "signals",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				}
+			}
+		}
+	},
+	"name": "Sumo Logic Insight - Mapper",
+	"type": "mapping-incoming",
+	"version": -1
+}

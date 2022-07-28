@@ -3,6 +3,7 @@ version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - SIEM ingestion Get Incident Data
 description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook handles incident ingestion from a SIEM.
   The user provides the field for the incident ID or detection ID and the field indicating whether the ingested item is an incident or detection. This playbook enables changing the severity scale in Cortex XSOAR as well as fetching CrowdStrike detections based on the CrowdStrike incident type.
 starttaskid: '0'
@@ -47,7 +48,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: Verify if incident or detection
+      description: Verify if this is an incident or detection
     nexttasks:
       detection:
       - '2'
@@ -212,7 +213,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '6'
+      - '22'
     scriptarguments:
       ids:
         simple: ${inputs.SIEMincidentFieldForID}
@@ -312,7 +313,7 @@ tasks:
       id: 5c22181f-8e83-462c-8893-8becc8d992e2
       version: -1
       name: Set Severity
-      description: Set Severity
+      description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -352,104 +353,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
-    taskid: 2bb37186-a026-4de6-803b-ff80e9ee9ce5
-    type: regular
-    task:
-      id: 2bb37186-a026-4de6-803b-ff80e9ee9ce5
-      version: -1
-      name: Get detections for incident
-      description: Gets the detections for a specific incident.
-      script: '|||cs-falcon-get-detections-for-incident'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '8'
-    scriptarguments:
-      incident_id:
-        simple: ${CrowdStrike.Incidents.incident_id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
-    taskid: 68f57416-0049-4014-8b8a-27b5b7ca5e86
-    type: regular
-    task:
-      id: 68f57416-0049-4014-8b8a-27b5b7ca5e86
-      version: -1
-      name: Get full detection details
-      description: Searches for specific detection details either by using a filter query or by providing the IDs of the detections.
-      script: '|||cs-falcon-search-detection'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '21'
-    scriptarguments:
-      extended_data:
-        simple: Yes
-      ids:
-        simple: ${CrowdStrike.IncidentDetection.detection_ids}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: File Names
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.FileName}
-    - incidentfield: Scenario
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.Scenario}
-    - incidentfield: Process MD5
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.MD5}
-    - incidentfield: Process SHA256
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.SHA256}
-    - incidentfield: Process CMD
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.CommandLine}
-    - incidentfield: External Confidence
-      output:
-        simple: ${CrowdStrike.Detection.MaxConfidence}
-    - incidentfield: Users
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.UserName}
-    - incidentfield: MITRE Technique ID
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.TechniqueId}
-    - incidentfield: MITRE Tactic ID
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.TacticID}
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   '9':
     id: '9'
     taskid: ab07910c-703a-4326-80ca-c1f417d42922
@@ -458,7 +361,7 @@ tasks:
       id: ab07910c-703a-4326-80ca-c1f417d42922
       version: -1
       name: Set Severity
-      description: Set Severity
+      description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -545,7 +448,7 @@ tasks:
       id: a3ab8a8f-116c-4471-8912-27cc94fa5234
       version: -1
       name: Set Endpoint information to layout
-      description: Set Endpoint information to layout
+      description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -780,13 +683,13 @@ tasks:
     isautoswitchedtoquietmode: false
   '21':
     id: '21'
-    taskid: 861aef8f-45e6-466a-85dd-6ab401cfd7d9
+    taskid: 0818fcc6-9969-41de-85f7-7338f8829fc8
     type: regular
     task:
-      id: 861aef8f-45e6-466a-85dd-6ab401cfd7d9
+      id: 0818fcc6-9969-41de-85f7-7338f8829fc8
       version: -1
       name: Extract Indicators
-      description: Extract Indicators
+      description: commands.local.cmd.extract.indicators
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -804,6 +707,45 @@ tasks:
         "position": {
           "x": 480,
           "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: bef28f61-1669-44d9-8b4f-02bd8b04597a
+    type: playbook
+    task:
+      id: bef28f61-1669-44d9-8b4f-02bd8b04597a
+      version: -1
+      name: CrowdStrike Falcon - Get Detections by Incident
+      playbookName: CrowdStrike Falcon - Get Detections by Incident
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      IncidentID:
+        simple: ${CrowdStrike.Incidents.incident_id}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 370
         }
       }
     note: false
@@ -844,8 +786,8 @@ inputs:
   required: false
   description: |-
     The severity scale in the EDR.
-    For example, CrowdStrike uses values from 0 to 100,  
-    so the scale can be divided into ranges such as 
+    For example, CrowdStrike uses values from 0 to 100, 
+    so the scale can be divided into ranges such as
     0-20,21-40,41-60,61-80,81-100
   playbookInputQuery:
 - key: SeverityValuesMapping
@@ -855,8 +797,8 @@ inputs:
   description: |-
     The mapping from the EDR severity scale to the Cortex XSOAR severity scale.
     For example: 
-    0.5, 1, 2, 3,4  
-    Possible values to use are 0,0.5, 1, 2, 3,4  
+    0.5, 1, 2, 3,4
+    Possible values to use are 0,0.5, 1, 2, 3,4
     which represent Unknown, Informational, Low, Medium, High, Critical.
   playbookInputQuery:
 - key: OverrideSIEMSeverity
@@ -919,6 +861,9 @@ outputs:
   type: string
 - contextPath: Endpoint
   description: The details of the endpoint.
+  type: string
+- contextPath: CrowdStrike.FoundDetections
+  description: Indicates whether detections were found.
   type: string
 tests:
 - Test - CrowdStrike Falcon
