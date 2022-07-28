@@ -887,34 +887,83 @@ def panorama_push_to_template_stack(args: dict):
 
 def panorama_push_to_device_group_command(args: dict):
     """
-    Push Panorama configuration and show message in warroom
+    Push Panorama configuration and show message in war-room
     """
-
     if not DEVICE_GROUP:
         raise Exception("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
-    result = panorama_push_to_device_group(args)
-    if 'result' in result['response']:
-        # commit has been given a jobid
+    if push_job_id := args.get('push_job_id'):
+        push_status = panorama_push_status(job_id=push_job_id).get('response', {}).get('result', {})
+        job_result = push_status.get('job', {}).get('result')
         push_output = {
             'DeviceGroup': DEVICE_GROUP,
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending'
+            'JobID': push_job_id,
+            'Status': 'Success' if job_result == 'OK' else 'Failure'
         }
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Push to Device Group:', push_output, ['JobID', 'Status'],
-                                             removeNull=True),
-            'EntryContext': {
-                "Panorama.Push(val.JobID == obj.JobID)": push_output
-            }
-        })
+        return PollResult(
+            response=CommandResults(  # this is what the response will be in case job has finished
+                outputs_prefix='Panorama.Push',
+                outputs_key_field='JobID',
+                outputs=push_output,
+                readable_output=tableToMarkdown('Commit Status:', push_output, removeNull=True)
+            ),
+            continue_to_poll=push_status.get('job', {}).get('status') != 'FIN'  # continue polling if job isn't done
+        )
     else:
-        # no changes to commit
-        return_results(result['response']['msg']['line'])
+        result = panorama_push_to_device_group(args)
+        job_id = result.get('response', {}).get('result', {}).get('job', '')
+        if job_id:
+            context_output = {
+                'DeviceGroup': DEVICE_GROUP,
+                'JobID': job_id,
+                'Status': 'Pending'
+            }
+            continue_to_poll = True
+            push_output = CommandResults(  # type: ignore[assignment]
+                outputs_prefix='Panorama.Push',
+                outputs_key_field='JobID',
+                outputs=context_output,
+                readable_output=tableToMarkdown('Push to Device Group:', context_output, removeNull=True)
+            )
+        else:
+            push_output = result.get('response', {}).get('msg') or 'There are no changes to commit.' # type: ignore[assignment]
+            continue_to_poll = False
+
+        return PollResult(
+            response=push_output,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run={
+                'push_job_id': job_id,
+                'polling': argToBoolean(args.get('polling')),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
+                'timeout': arg_to_number(args.get('timeout'))
+            },
+            partial_result=CommandResults(
+                readable_output=f'Waiting for push with Job-ID {job_id} to push changes device-group {DEVICE_GROUP}...'
+            )
+        )
+    # if 'result' in result['response']:
+    #     # commit has been given a jobid
+    #     push_output = {
+    #         'DeviceGroup': DEVICE_GROUP,
+    #         'JobID': result['response']['result']['job'],
+    #         'Status': 'Pending'
+    #     }
+    #     return_results({
+    #         'Type': entryTypes['note'],
+    #         'ContentsFormat': formats['json'],
+    #         'Contents': result,
+    #         'ReadableContentsFormat': formats['markdown'],
+    #         'HumanReadable': tableToMarkdown('Push to Device Group:', push_output, ['JobID', 'Status'],
+    #                                          removeNull=True),
+    #         'EntryContext': {
+    #             "Panorama.Push(val.JobID == obj.JobID)": push_output
+    #         }
+    #     })
+    # else:
+    #     # no changes to commit
+    #     return_results(result['response']['msg']['line'])
+
 
 
 def panorama_push_to_template_command(args: dict):
@@ -976,6 +1025,7 @@ def panorama_push_to_template_stack_command(args: dict):
     else:
         # no changes to commit
         return_results(result['response']['msg']['line'])
+
 
 @logger
 def panorama_push_status(job_id: str, target: Optional[str] = None):
