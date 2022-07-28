@@ -23,6 +23,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | BlockGroup | The sender email block group. |  | Required |
 | SenderDomain | The sender domain to block. |  | Required |
+| QuerySource | The query source, please input cloud or ldap in the value input. |  | Required |
 
 ## Playbook Outputs
 ---
