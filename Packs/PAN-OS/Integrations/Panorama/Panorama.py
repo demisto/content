@@ -4820,7 +4820,7 @@ def panorama_query_logs_command(args: dict):
 
         poll_result = PollResult(
             response=command_results,
-            continue_to_poll=argToBoolean(args.get('polling', 'false')),
+            continue_to_poll=True,
             args_for_next_run={
                 'query_log_job_id': result.ns.response.result.job,
                 'log-type': log_type,
