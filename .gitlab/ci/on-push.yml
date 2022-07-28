@@ -108,7 +108,7 @@ create-instances:
     - neo4j-admin set-initial-password test
     - neo4j start
     - section_start "Create content graph"
-    - sleep 5
+    - sleep 10
     - demisto-sdk content-graph
     - neo4j stop
     - neo4j-admin dump --to=neo4j/content-graph.dump
