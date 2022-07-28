@@ -1,7 +1,7 @@
 name: Add PR link to Related Jira Issue
 on:
   pull_request:
-    types: [opened, edited]
+    types: [ opened, edited ]
 
 permissions:
   pull-requests: read
@@ -14,15 +14,15 @@ jobs:
     steps:
       - name: Checkout
           uses: actions/checkout@v3
-            - name: Setup Python
-              uses: actions/setup-python@v3
-              with:
-                python-version: '3.9'
-            - name: Setup Poetry
-              uses: Gr1N/setup-poetry@v7
-            - name: Install Python Dependencies
-              run: |
-                poetry install
+                  - name: Setup Python
+                  uses: actions/setup-python@v3
+                  with:
+                    python-version: '3.9'
+                  - name: Setup Poetry
+                    uses: Gr1N/setup-poetry@v7
+                  - name: Install Python Dependencies
+                    run: |
+                      poetry install
       - name: Run Linking pr to Jira Script
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
