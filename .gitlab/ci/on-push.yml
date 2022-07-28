@@ -105,9 +105,10 @@ create-instances:
     # - !reference [.download-demisto-conf]
     # - !reference [.create-id-set-xsoar]
     # - !reference [.create-release-notes-and-common-docs]
+    - neo4j-admin set-initial-password test
     - neo4j start
     - section_start "Create content graph"
-    - sleep 60
+    - sleep 5
     - demisto-sdk content-graph
     - neo4j stop
     - neo4j-admin dump --to=neo4j/content-graph.dump
