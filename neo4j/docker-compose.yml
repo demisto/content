@@ -9,5 +9,13 @@ services:
       - "7687:7687"
     volumes:
       - ./data:/data
+      - ./import:/import
     environment:
       NEO4J_AUTH: neo4j/test
+    healthcheck:
+      test: curl http://localhost:7474 || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 20
+      start_period: 3s
+  
