@@ -21,7 +21,6 @@ CONTEXT_COPIED_EMAIL = 'MSGraphMail.MovedEmails(val.ID && val.ID === obj.ID)'
 CONTEXT_DRAFT_PATH = 'MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)'
 CONTEXT_SENT_EMAIL_PATH = 'MicrosoftGraph.Email'
 API_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-LAST_RUN_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 EMAIL_DATA_MAPPING = {
     'id': 'ID',
