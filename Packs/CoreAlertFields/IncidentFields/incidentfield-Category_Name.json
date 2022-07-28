@@ -26,7 +26,7 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.5.0",
-	"x2_fields": "alert_category",
+    "x2_fields": "alert_category",
     "Aliases": [
         {
             "cliName": "alertcategory",
