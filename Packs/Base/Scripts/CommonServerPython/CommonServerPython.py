@@ -2475,6 +2475,24 @@ def formatTimeColumns(data, timeColumnNames):
             row[k] = epochToTimestamp(row[k])
 
 
+def format_dashboard_datetime(dashboard_time: str) -> str:
+    """
+        Formats the time coming from the dashboard
+         - 2022-07-28T00:00:00.123456Z
+         - 2022-07-28T00:00:00Z
+         - 2022-07-28T00:00:00+03:00
+         =>
+         2022-07-28T00:00:00
+
+        :type dashboard_time: ``str``
+        :param dashboard_time: The dashboard time to format (required)
+
+        :return: Formatted time in form 2022-07-28T00:00:00
+        :rtype: ``str``
+    """
+    return dashboard_time.removesuffix('Z').split('.')[0].split('+')[0]
+
+
 def strip_tag(tag):
     split_array = tag.split('}')
     if len(split_array) > 1:
