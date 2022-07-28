@@ -67,7 +67,7 @@ def trigger_generic_webhook(options):
             "PullRequestNum": pr_num,
             "closeIssue": is_merged,  # whether to close the fixed issue in Jira
             "PullRequestLink": pr_link,  # will be used to add to jira issue's fields
-            "PullRequestTitle": pr_title,  # will be used in comment of attaching jira issue.
+            "PullRequestTitle": f"{pr_title} ({pr_link})",  # will be used in comment of attaching jira issue.
             "JiraIssues": issues_in_pr
         },
     }
