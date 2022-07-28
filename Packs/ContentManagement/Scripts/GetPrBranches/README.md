@@ -1,4 +1,4 @@
-Field-display script that gets the branch names from "Pull Request Creation" incidents to use in the incident field "Pull Request Branch".
+Field-display script that gets the branch names from "Pull Request Creation" incidents to use in the "Pull Request Branch" incident field.
 
 ## Script Data
 ---
