@@ -4807,16 +4807,14 @@ def panorama_query_logs_command(args: dict):
             raise Exception('Missing JobID in response.')
         query_logs_output = {
             'JobID': result.ns.response.result.job,
-            'Status': 'Pending',
-            'LogType': log_type,
-            'Message': result.ns.response.result.msg.line
+            'Status': 'Pending'
         }
 
         command_results = CommandResults(
             outputs_prefix='Panorama.Monitor',
             outputs_key_field='JobID',
             outputs=query_logs_output,
-            readable_output=tableToMarkdown('Query Logs:',query_logs_output, ['JobID', 'Status', 'Message', 'LogType'], removeNull=True)
+            readable_output=tableToMarkdown('Query Logs:',query_logs_output, ['JobID', 'Status'], removeNull=True)
         )
 
         poll_result = PollResult(
@@ -4856,31 +4854,31 @@ def panorama_query_logs_command(args: dict):
         if not parsed.ns.response.result.job.id:
             raise Exception('Missing JobID status in response.')
 
-        query_traffic_logs_output = {
+        query_logs_output = {
             'JobID': job_id,
-            'Status': 'Pending',
-            'LogType': log_type
+            'Status': 'Pending'
         }
         if parsed.ns.response.result.job.status.upper() == 'FIN':
-            query_traffic_logs_output['Status'] = 'Completed'
-            try:
-                pretty_traffic_logs = prettify_traffic_logs(parsed.get_nested_key('response.result.log.logs.entry'))
-            except:
-                pretty_traffic_logs = []
-            query_traffic_logs_output['Logs'] = pretty_traffic_logs
+            query_logs_output['Status'] = 'Completed'
+            if parsed.ns.response.result.log.logs.count == '0':
+                readable_output = f'No {log_type} logs matched the query.'
+                query_logs_output['Logs'] = []
+            else:
+                pretty_logs = prettify_logs(parsed.get_nested_key('response.result.log.logs.entry'))
+                query_logs_output['Logs'] = pretty_logs
+                readable_output = tableToMarkdown(
+                    f'Query {log_type} Logs:',
+                    pretty_logs,
+                    ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application', 'Action', 'Rule', 'URLOrFilename'],
+                    removeNull=True
+                )
 
         poll_result = PollResult(
             response=CommandResults(
                 outputs_prefix='Panorama.Monitor',
                 outputs_key_field='JobID',
-                outputs=query_traffic_logs_output,
-                readable_output=tableToMarkdown(
-                    f'Log query {parsed.ns.response.result.job.id}:',
-                    pretty_traffic_logs,
-                    ['JobID', 'Source', 'SourcePort', 'Destination', 'DestinationPort',
-                     'Application', 'Action'],
-                    removeNull=True
-                ),
+                outputs=query_logs_output,
+                readable_output=readable_output,
                 raw_response=parsed.raw
             ),
             continue_to_poll=parsed.ns.response.result.job.status != 'FIN',
