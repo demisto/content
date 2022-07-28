@@ -1,6 +1,6 @@
-id: Sanity - Whois
+id: Sanity Test - Playbook with Unmockable Whois Integration
 version: -1
-name: Sanity - Whois
+name: Sanity Test - Playbook with Unmockable Whois Integration
 starttaskid: "0"
 tasks:
   "0":
