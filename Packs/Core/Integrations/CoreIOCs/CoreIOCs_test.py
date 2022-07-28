@@ -74,7 +74,6 @@ class TestHttpRequest:
 
 
 class TestGetRequestsKwargs:
-    
     def test_with_json(self):
         """
             Given:

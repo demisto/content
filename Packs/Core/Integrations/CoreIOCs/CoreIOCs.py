@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 import secrets
 import tempfile
 from datetime import timezone
-from typing import Dict, Optional, List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 from dateparser import parse
 from urllib3 import disable_warnings
 from math import ceil
