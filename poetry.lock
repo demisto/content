@@ -180,14 +180,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.38"
+version = "1.24.39"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.38,<1.28.0"
+botocore = ">=1.27.39,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -196,7 +196,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.38"
+version = "1.27.39"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -509,8 +509,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "2e0726cb88ea225da3f66c0f286e71b876d685a2"
-resolved_reference = "2e0726cb88ea225da3f66c0f286e71b876d685a2"
+reference = "3a3c67cfdb936cec65af864bf8c190af4620d813"
+resolved_reference = "3a3c67cfdb936cec65af864bf8c190af4620d813"
 
 [[package]]
 name = "deprecated"
@@ -2092,7 +2092,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.16.1"
+version = "20.16.2"
 description = "Virtual Python Environment builder"
 category = "main"
 optional = false
@@ -2215,7 +2215,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "c03038350f4aabe2c27e8b61ca89755da01e6a1610648eb5079db868fbf56bb3"
+content-hash = "f887a51bf509301c8122ee1c142ff462beb83f515c5c1844451255d56560b8b9"
 
 [metadata.files]
 aiohttp = [
@@ -2368,12 +2368,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.24.38-py3-none-any.whl", hash = "sha256:bcf97fd7c494f4e2bbbe2511625500654179c0a6b3bea977d46f97af764e85a4"},
-    {file = "boto3-1.24.38.tar.gz", hash = "sha256:f4c6b025f392c934338c7f01badfddbd0d3cf2397ff5df35c31409798dce33f5"},
+    {file = "boto3-1.24.39-py3-none-any.whl", hash = "sha256:057b4132e81f5ba63dc7d9d989023f3e81216999d76edabffade5bad5ae9bd3e"},
+    {file = "boto3-1.24.39.tar.gz", hash = "sha256:c303fa76dde0422476ed2413fde8e34f539fede087910ad1f911fee6546a4be3"},
 ]
 botocore = [
-    {file = "botocore-1.27.38-py3-none-any.whl", hash = "sha256:46a0264ff3335496bd9cb404f83ec0d8eb7bfdef8f74a830c13e6a6b9612adea"},
-    {file = "botocore-1.27.38.tar.gz", hash = "sha256:56a7682564ea57ceecfef5648f77b77e0543b9c904212fc9ef4416517d24fa45"},
+    {file = "botocore-1.27.39-py3-none-any.whl", hash = "sha256:b5eb8731542e7e987465be80ce206d72de6774e16d4e808e636d92c467779d7e"},
+    {file = "botocore-1.27.39.tar.gz", hash = "sha256:12d9f5866da51738201d00f6df76571e2f46233d8effb5cdcfe871616bff6197"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -3756,8 +3756,8 @@ urllib3 = [
     {file = "urllib3-1.26.11.tar.gz", hash = "sha256:ea6e8fb210b19d950fab93b60c9009226c63a28808bc8386e05301e25883ac0a"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.16.1-py2.py3-none-any.whl", hash = "sha256:bde925b831f36053a0fa7a468ca337dee26851c9f0bfc3d72a79d534703102d2"},
-    {file = "virtualenv-20.16.1.tar.gz", hash = "sha256:6cc42cad4d1a15c7ea5ed68e602eb49cc243b52d2eead36e577555cb56bf8705"},
+    {file = "virtualenv-20.16.2-py2.py3-none-any.whl", hash = "sha256:635b272a8e2f77cb051946f46c60a54ace3cb5e25568228bd6b57fc70eca9ff3"},
+    {file = "virtualenv-20.16.2.tar.gz", hash = "sha256:0ef5be6d07181946891f5abc8047fda8bc2f0b4b9bf222c64e6e8963baee76db"},
 ]
 virtualenv-clone = [
     {file = "virtualenv-clone-0.5.7.tar.gz", hash = "sha256:418ee935c36152f8f153c79824bb93eaf6f0f7984bae31d3f48f350b9183501a"},
