@@ -237,7 +237,7 @@ class PanosResponse():
             key.replace(char, ''): val for key, val in dictionary.items() for char in illegal_chars
         }
 
-    def to_class(self, response, ignored_keys: set = None, illegal_chars: set = None):
+    def to_class(self, response, ignored_keys: set = None, illegal_chars: set = None) -> PanosNamespace:
         if not ignored_keys:
             ignored_keys = set()
         if not illegal_chars:
@@ -4807,7 +4807,9 @@ def panorama_query_logs_command(args: dict):
             raise Exception('Missing JobID in response.')
         query_logs_output = {
             'JobID': result.ns.response.result.job,
-            'Status': 'Pending'
+            'Status': 'Pending',
+            'LogType': log_type,
+            'Message': result.ns.response.result.msg.line
         }
 
         command_results = CommandResults(
@@ -4828,14 +4830,14 @@ def panorama_query_logs_command(args: dict):
                 'timeout': arg_to_number(args.get('timeout', 120))
             },
             partial_result=CommandResults(
-                readable_output=f"Fetching logs for job ID {result.ns.response.result.job}...",
+                readable_output=f"Fetching {log_type} logs for job ID {result.ns.response.result.job}...",
                 raw_response=result.raw
             )
         )
 
     else:
         # Only used in subsequent polling executions
-
+        
         parsed: PanosResponse = PanosResponse(
             panorama_get_traffic_logs(job_id),
             illegal_chars=illegal_chars,
@@ -4853,11 +4855,12 @@ def panorama_query_logs_command(args: dict):
         
         if not parsed.ns.response.result.job.id:
             raise Exception('Missing JobID status in response.')
-
+        
         query_logs_output = {
             'JobID': job_id,
-            'Status': 'Pending'
+            'LogType': log_type
         }
+        readable_output = None
         if parsed.ns.response.result.job.status.upper() == 'FIN':
             query_logs_output['Status'] = 'Completed'
             if parsed.ns.response.result.log.logs.count == '0':
