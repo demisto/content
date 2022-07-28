@@ -104,8 +104,7 @@ create-instances:
     # - !reference [.download-demisto-conf]
     # - !reference [.create-id-set-xsoar]
     # - !reference [.create-release-notes-and-common-docs]
-    - apt-get install tree
-    - tree /builds
+    - ls /builds
     - section_start "Create content graph"
     - demisto-sdk content-graph
     - neo4j-admin dump --to=neo4j/content-graph.dump
