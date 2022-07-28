@@ -227,7 +227,7 @@ def main():
     certificate = params.get('certificate', None)
     key = params.get('key', None)
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
-    default_api_root = args.get('default_api_root')
+    default_api_root = params.get('default_api_root')
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
