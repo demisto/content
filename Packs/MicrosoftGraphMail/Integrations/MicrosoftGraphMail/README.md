@@ -55,6 +55,12 @@ Using a national cloud endpoint is supported by setting the *Server URL* paramet
 
 Refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
 
+## Email Attachments Limitations
+* The maximum attachment size to be sent in an email can be 150-MB. [large-attachments](https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http)
+* The larger the attachment, the longer it would take for a command that supports adding attachments to run.
+* Requires the permission of Mail.ReadWrite (Application) - to send attachments > 3mb
+* When sending mails with large attachments, it could take up to 5 minutes for the mail to actually be sent.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -858,6 +864,7 @@ Creates a draft message in the specified user's mailbox.
 **The following permissions are required for this command:**
 - Mail.ReadWrite (Application)
 
+
 ##### Base Command
 
 `msgraph-mail-create-draft`
@@ -957,6 +964,7 @@ Attachments size is limited to 3 MB.
 ##### Required Permissions
 **The following permissions are required for this command:**
 - Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 
 ##### Base Command
 
@@ -1036,6 +1044,7 @@ Replies to the recipients of a message.
 ##### Required Permissions
 **The following permissions are required for this command:**
 - Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 
 ##### Base Command
 
@@ -1106,6 +1115,10 @@ There is no context output for this command.
 ***
 Replies to an email using Graph Mail.
 
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 
 #### Base Command
 
