@@ -674,7 +674,7 @@ script:
     - default: false
       description: 'The field object (in JSON format). For example {"customfield_10037": "New value"}'
       isArray: false
-      name: fieldJson
+      name: field_json
       required: true
       secret: false
     deprecated: false
@@ -712,7 +712,7 @@ script:
     - default: false
       description: The fields to retrieve from the issue. For example field="customfield_164,labels".
       isArray: true
-      name: components
+      name: field
       required: false
       secret: false
     deprecated: false

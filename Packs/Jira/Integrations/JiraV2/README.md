@@ -614,6 +614,33 @@ Field must be either string-typed (appending by using ',') or array-typed.
 | Ticket.Summary | Unknown | The ticket summary. | 
 | Ticket.Status | Unknown | The ticket status. | 
 
+#### Command Example
+```!jira-append-to-field issueId=CIAC-3597 fieldJson={\"customfield_16492\":\"example\"} ```
+
+#### Context Example
+```json
+{
+  "Ticket": {
+    "Assignee": "User Name(user@example.com)",
+    "Created": "2022-07-21T10:52:22.043+0000",
+    "Creator": "User Name(user@example.com)",
+    "DueDate": null,
+    "Custom Field Display Name": "test,example",
+    "Id": "1179420",
+    "Key": "TEST-3597",
+    "Labels": [
+      "test",
+    ],
+    "LastSeen": null,
+    "LastUpdate": "2022-07-27T04:47:24.214+0000",
+    "Priority": "P5",
+    "ProjectName": "Project Name",
+    "Status": "Backlog",
+    "Summary": "example",
+    "attachment": ""
+  }
+}
+
 
 ### jira-get-specific-field
 ***
@@ -640,6 +667,35 @@ Gets specific fields from a Jira issue, add it to context dynamicly.
 | Ticket.Creator | Unknown | The user who created the ticket. | 
 | Ticket.Summary | Unknown | The ticket summary. | 
 | Ticket.Status | Unknown | The ticket status. | 
+
+#### Command Example
+```!jira-get-specific-field issueId="TEST-3597" field="labels,customfield_16492" ```
+
+#### Context Example
+```json
+{
+  "Ticket": {
+    "Assignee": "User Name(user@example.com)",
+    "Created": "2022-07-21T10:52:22.043+0000",
+    "Creator": "User Name(user@example.com)",
+    "DueDate": null,
+    "Custom Field Display Name": "test",
+    "Id": "1179420",
+    "Key": "TEST-3597",
+    "Labels": [
+      "test"
+    ],
+    "LastSeen": null,
+    "LastUpdate": "2022-07-27T04:47:24.214+0000",
+    "Priority": "P5",
+    "ProjectName": "Project Name",
+    "Status": "Backlog",
+    "Summary": "example",
+    "attachment": ""
+  }
+}
+
+```
 
 
 #### Base Command

@@ -410,7 +410,7 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None):
         })
 
         md_obj.update({
-            'issueType': f"{demisto.get(element, 'fields.issuetype')} ({demisto.get(element, 'fields.issuetype.description')})",
+            'issueType': f"{demisto.get(element, 'fields.issuetype.name')} ({demisto.get(element, 'fields.issuetype.description')})",
             'labels': demisto.get(element, 'fields.labels'),
             'description': demisto.get(element, 'fields.description'),
             'ticket_link': demisto.get(element, 'self'),
@@ -745,8 +745,9 @@ def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, tra
 
 def append_to_field_command(issue_id, field_json, headers=None, **kwargs):
     issue = jira_req('GET', f'rest/api/latest/issue/{issue_id}', resp_type='json')
+    fields = json.loads(field_json, strict=False)
 
-    for field in field_json:
+    for field in fields:
         field_type = __get_field_type(field)
         if not field_type:
             raise DemistoException(f"field {field} could not be updated.")
@@ -757,9 +758,9 @@ def append_to_field_command(issue_id, field_json, headers=None, **kwargs):
         current_data_in_field = issue.get('fields', {}).get(field)
         new_data = {}
         if not current_data_in_field:
-            new_data[field] = __create_value_by_type(field_type, field_json[field])
+            new_data[field] = __create_value_by_type(field_type, fields[field])
         else:
-            new_data[field] = __add_value_by_type(field_type, current_data_in_field, field_json[field])
+            new_data[field] = __add_value_by_type(field_type, current_data_in_field, fields[field])
 
         url = f'rest/api/latest/issue/{issue_id}/'
         jira_req('PUT', url, json.dumps({'fields': new_data}))
@@ -768,7 +769,7 @@ def append_to_field_command(issue_id, field_json, headers=None, **kwargs):
 
 
 def get_field_command(issue_id, field, **kwargs):
-    fields=argToList(field)
+    fields = argToList(field)
     return get_issue(issue_id, customfields=fields, is_update=False)
 
 
@@ -784,12 +785,12 @@ def __get_field_type(field_id):
 
 def __add_value_by_type(type, current_value, new_value):
     if type == 'string':
-        new_str = current_value + "," + new_value
-        return new_str
+        new_val = current_value + "," + new_value
     elif type == 'array':
-        return current_value + [new_value]
+        new_val = current_value + [new_value]
     else:
         raise DemistoException(f"Command only support string or array-typed fields. Field given is typed {type}")
+    return new_val
 
 
 def __create_value_by_type(type, value):
@@ -1435,7 +1436,8 @@ def main():
             return_outputs(human_readable, outputs, raw_response)
 
         elif demisto.command() == 'jira-get-specific-field':
-            get_field_command(**snakify(demisto.args()))
+            human_readable, outputs, raw_response = get_field_command(**snakify(demisto.args()))
+            return_outputs(human_readable, outputs, raw_response)
 
         elif demisto.command() == 'jira-get-comments':
             human_readable, outputs, raw_response = get_comments_command(**snakify(demisto.args()))
