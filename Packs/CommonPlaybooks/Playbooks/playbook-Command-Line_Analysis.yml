@@ -297,7 +297,7 @@ tasks:
     scriptarguments:
       data:
         complex:
-          root: commandline
+          root: commandline.original
       group:
         simple: "1"
       regex:
@@ -704,7 +704,7 @@ tasks:
           left:
             value:
               complex:
-                root: commandline
+                root: commandline.original
             iscontext: true
           right:
             value:
@@ -714,7 +714,7 @@ tasks:
           left:
             value:
               complex:
-                root: commandline
+                root: commandline.original
             iscontext: true
           right:
             value:
@@ -724,7 +724,7 @@ tasks:
           left:
             value:
               complex:
-                root: commandline
+                root: commandline.original
             iscontext: true
           right:
             value:
@@ -1557,7 +1557,7 @@ outputs:
 - contextPath: Indicators
   description: Indicators extracted from the command line
   type: unknown
-- contextPath: commandline
+- contextPath: commandline.original
   description: The command line
   type: unknown
 - contextPath: CommandlineVerdict
