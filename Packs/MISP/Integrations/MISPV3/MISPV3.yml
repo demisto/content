@@ -1708,8 +1708,8 @@ script:
           isArray: false
           defaultValue: "true"
           predefined:
-            - false
-            - true
+            - "false"
+            - "true"
       deprecated: false
       description: Adds a tag to the given UUID attribute.
       execution: false
