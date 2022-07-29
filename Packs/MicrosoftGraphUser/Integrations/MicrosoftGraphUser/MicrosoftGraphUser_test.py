@@ -117,7 +117,7 @@ def test_suppress_errors(mocker):
     from MicrosoftGraphUser import unblock_user_command, disable_user_account_command, \
         update_user_command, change_password_user_command, delete_user_command, \
         get_direct_reports_command, get_manager_command, assign_manager_command, \
-        revoke_user_session_command, MsGraphClient
+        revoke_user_session_command, restore_user_command, MsGraphClient
     from MicrosoftApiModule import NotFoundError
 
     TEST_SUPPRESS_ERRORS = [
@@ -149,6 +149,9 @@ def test_suppress_errors(mocker):
          'mock_value': NotFoundError('123456789'), 'args': {'manager': '123456789'},
          'expected_result': '#### Manager -> 123456789 does not exist'},
         {'fun': revoke_user_session_command, 'mock_fun': 'revoke_user_session',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+         {'fun': restore_user_command, 'mock_fun': 'restore_user',
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
          'expected_result': '#### User -> 123456789 does not exist'}
     ]
