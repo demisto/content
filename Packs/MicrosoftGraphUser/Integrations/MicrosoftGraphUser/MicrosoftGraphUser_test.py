@@ -151,7 +151,7 @@ def test_suppress_errors(mocker):
         {'fun': revoke_user_session_command, 'mock_fun': 'revoke_user_session',
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
          'expected_result': '#### User -> 123456789 does not exist'},
-         {'fun': restore_user_command, 'mock_fun': 'restore_user',
+        {'fun': restore_user_command, 'mock_fun': 'restore_user',
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
          'expected_result': '#### User -> 123456789 does not exist'}
     ]
