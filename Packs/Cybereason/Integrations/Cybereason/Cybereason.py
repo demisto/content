@@ -122,7 +122,7 @@ class Client(BaseClient):
     def cybereason_api_call(
         self, method: str, url_suffix: str, data: dict = None, json_body: Any = None, headers: dict = HEADERS,
             return_json: bool = True, custom_response: bool = False) -> Any:
-        LOG('running request with url=%s' % (SERVER + url_suffix))
+        demisto.info(f'running request with url={SERVER + url_suffix}')
         try:
             res = self._http_request(
                 method,
@@ -140,7 +140,7 @@ class Client(BaseClient):
                                 + str(res.status_code))
 
         except Exception as e:
-            LOG(e)
+            demisto.error(e)
             raise
 
         if return_json:
@@ -152,7 +152,7 @@ class Client(BaseClient):
                 if 'Login' in str(error_content):
                     error_msg = 'Authentication failed, verify the credentials are correct.'
                 raise ValueError(
-                    'Failed to process the API response. {} {} - {}'.format(str(error_msg), str(error_content), str(e)))
+                    f'Failed to process the API response. {str(error_msg)} {str(error_content)} - {str(e)}')
 
     def error_handler(self, res: requests.Response):
         # Handle error responses gracefully
@@ -246,17 +246,14 @@ def is_probe_connected_command(client: Client, args: dict, is_remediation_commma
     if is_remediation_commmand:
         return is_connected
 
-    ec = {
-        'Cybereason.Machine(val.Name && val.Name === obj.Name)': {
-            'isConnected': is_connected,
-            'Name': machine
-        }
-    }
     return CommandResults(
-        readable_output='{}'.format(is_connected),
+        readable_output=f'{is_connected}',
         outputs_prefix='Cybereason.Machine',
         outputs_key_field='Name',
-        outputs=ec)
+        outputs={
+            'isConnected': is_connected,
+            'Name': machine
+        })
 
 
 def is_probe_connected(client: Client, machine: str) -> dict:
@@ -313,15 +310,11 @@ def query_processes_command(client: Client, args: dict):
         # Remove whitespaces from dictionary keys
         context.append({key.translate({32: None}): value for key, value in output.items()})
 
-    ec = {
-        'Cybereason.Process': context
-    }
-
     return CommandResults(
         readable_output=tableToMarkdown('Cybereason Processes', outputs, headers=PROCESS_HEADERS),
         outputs_prefix='Cybereason.Process',
         outputs_key_field='Name',
-        outputs=ec)
+        outputs=context)
 
 
 def query_processes(client: Client, machine: str, process_name: Any, only_suspicious: str = None,
@@ -380,8 +373,8 @@ def query_processes(client: Client, machine: str, process_name: Any, only_suspic
 
 
 def query_connections_command(client: Client, args: dict):
-    machine = args.get('machine')
-    ip = args.get('ip')
+    machine = argToList(args.get('machine'))
+    ip = argToList(args.get('ip'))
 
     if ip and machine:
         raise Exception('Too many arguments given.')
@@ -389,9 +382,9 @@ def query_connections_command(client: Client, args: dict):
         raise Exception('Not enough arguments given.')
 
     if machine:
-        input_list = machine.split(",")
+        input_list = machine
     else:
-        input_list = ip.split(",")
+        input_list = ip
 
     for filter_input in input_list:
         response = query_connections(client, machine, ip, filter_input)
@@ -410,15 +403,11 @@ def query_connections_command(client: Client, args: dict):
             # Remove whitespaces from dictionary keys
             context.append({key.translate({32: None}): value for key, value in output.items()})
 
-        ec = {
-            'Cybereason.Connection': context
-        }
-
         return CommandResults(
-            readable_output=tableToMarkdown('Cybereason Connections for: {}'.format(filter_input), outputs),
+            readable_output=tableToMarkdown(f'Cybereason Connections for: {filter_input}', outputs),
             outputs_prefix='Cybereason.Connection',
             outputs_key_field='Name',
-            outputs=ec)
+            outputs=context)
 
 
 def query_connections(client: Client, machine: str, ip: str, filter_input: str) -> dict:
@@ -464,8 +453,8 @@ def query_connections(client: Client, machine: str, ip: str, filter_input: str) 
 
 
 def query_malops_command(client: Client, args: dict):
-    total_result_limit = args.get('totalResultLimit')
-    per_group_limit = args.get('perGroupLimit')
+    total_result_limit = arg_to_number(args.get('totalResultLimit'))
+    per_group_limit = arg_to_number(args.get('perGroupLimit'))
     template_context = args.get('templateContext')
     filters = json.loads(args.get('filters')) if args.get('filters') else []
     within_last_days = args.get('withinLastDays')
@@ -514,7 +503,7 @@ def query_malops_command(client: Client, args: dict):
             suspects_string = ''
             if raw_suspects:
                 suspects = dict_safe_get(raw_suspects, ['elementValues', 0], default_return_value={}, return_type=dict)
-                suspects_string = '{}: {}'.format(suspects.get('elementType'), suspects.get('name'))
+                suspects_string = f"{suspects.get('elementType')}: {suspects.get('name')}"
 
             affected_machines = []
             elementValues = dict_safe_get(malop, ['elementValues', 'affectedMachines', 'elementValues'],
@@ -543,15 +532,11 @@ def query_malops_command(client: Client, args: dict):
             }
             outputs.append(malop_output)
 
-    ec = {
-        'Cybereason.Malops(val.GUID && val.GUID === obj.GUID)': outputs
-    }
-
     return CommandResults(
         readable_output=tableToMarkdown('Cybereason Malops', outputs, headers=MALOP_HEADERS) if outputs else 'No malops found',
         outputs_prefix='Cybereason.Malops',
         outputs_key_field='GUID',
-        outputs=ec)
+        outputs=outputs)
 
 
 def query_malops(
@@ -656,13 +641,11 @@ def unisolate_machine(client: Client, machine: str) -> Any:
 def malop_processes_command(client: Client, args: dict):
     malop_guids = args.get('malopGuids')
     machine_name = args.get('machineName')
-    date_time = args.get('dateTime')
+    date_time = dateparser.parse(args.get('dateTime')).timestamp()
 
     filter_input = []
     if date_time:
-        pattern = '%Y/%m/%d %H:%M:%S'
-        epoch = int(time.mktime(time.strptime(date_time, pattern)))
-        milliseconds = int(epoch * 1000)
+        milliseconds = int(date_time * 1000)
         filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult":True}]
 
     if isinstance(malop_guids, str):
@@ -706,15 +689,11 @@ def malop_processes_command(client: Client, args: dict):
         # Remove whitespaces from dictionary keys
         context.append({key.translate({32: None}): value for key, value in output.items()})
 
-    ec = {
-        'Cybereason.Process': context
-    }
-
     return CommandResults(
         readable_output=tableToMarkdown('Cybereason Malop Processes', outputs, headers=PROCESS_HEADERS, removeNull=True),
         outputs_prefix='Cybereason.Process',
         outputs_key_field='Name',
-        outputs=ec)
+        outputs=context)
 
 
 def malop_processes(client: Client, malop_guids: list, filter_value: list) -> dict:
@@ -770,17 +749,14 @@ def update_malop_status_command(client: Client, args: dict):
 
     update_malop_status(client, malop_guid, status)
 
-    ec = {
-        'Cybereason.Malops(val.GUID && val.GUID == {})'.format(malop_guid): {
-            'GUID': malop_guid,
-            'Status': status
-        }
-    }
     return CommandResults(
-        readable_output='Successfully updated malop {0} to status {1}'.format(malop_guid, status),
+        readable_output=f'Successfully updated malop {malop_guid} to status {status}',
         outputs_prefix='Cybereason.Malops',
         outputs_key_field='GUID',
-        outputs=ec)
+        outputs={
+            'GUID': malop_guid,
+            'Status': status
+        })
 
 
 def update_malop_status(client: Client, malop_guid: str, status: str) -> None:
@@ -790,25 +766,22 @@ def update_malop_status(client: Client, malop_guid: str, status: str) -> None:
 
     response = client.cybereason_api_call('POST', '/rest/crimes/status', json_body=json_body)
     if response['status'] != 'SUCCESS':
-        raise Exception('Failed to update malop {0} status to {1}. Message: {2}'.format(malop_guid, status,
-                                                                                        response['message']))
+        raise Exception(f"Failed to update malop {malop_guid} status to {status}. Message: {response['message']}")
 
 
 def prevent_file_command(client: Client, args: dict):
     file_hash = args.get('md5') if args.get('md5') else ''
     response = prevent_file(client, file_hash)
     if response['outcome'] == 'success':
-        ec = {
-            'Cybereason.Process(val.MD5 && val.MD5 === obj.MD5)': {
-                'MD5': file_hash,
-                'Prevent': True
-            }
-        }
+
         return CommandResults(
             readable_output='File was prevented successfully',
             outputs_prefix='Cybereason.Process',
             outputs_key_field='MD5',
-            outputs=ec)
+            outputs={
+                'MD5': file_hash,
+                'Prevent': True
+            })
     else:
         raise Exception('Failed to prevent file')
 
@@ -828,17 +801,15 @@ def unprevent_file_command(client: Client, args: dict):
     file_hash = args.get('md5')
     response = unprevent_file(client, file_hash)
     if response['outcome'] == 'success':
-        ec = {
-            'Cybereason.Process(val.MD5 && val.MD5 === obj.MD5)': {
-                'MD5': file_hash,
-                'Prevent': False
-            }
-        }
+
         return CommandResults(
             readable_output='File was unprevented successfully',
             outputs_prefix='Cybereason.Process',
             outputs_key_field='MD5',
-            outputs=ec)
+            outputs={
+                'MD5': file_hash,
+                'Prevent': False
+            })
     else:
         raise Exception('Failed to unprevent file')
 
@@ -877,15 +848,13 @@ def kill_process_command(client: Client, args: dict):
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            success_response = "Kill process remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID']))
+            success_response = f'''Kill process remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            failure_response = "Kill process remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
-                    action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID']))
+            failure_response = f'''Kill process remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
+                    action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=failure_response)
     else:
         return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
@@ -904,15 +873,13 @@ def quarantine_file_command(client: Client, args: dict):
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            success_response = "Quarantine file remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID']))
+            success_response = f'''Quarantine file remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            failure_response = "Quarantine file remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
-                    action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID']))
+            failure_response = f'''Quarantine file remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
+                    action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=failure_response)
     else:
         return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
@@ -931,15 +898,13 @@ def unquarantine_file_command(client: Client, args: dict):
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            success_response = "Unquarantine file remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID']))
+            success_response = f'''Unquarantine file remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            failure_response = "Unquarantine file remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
-                    action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID']))
+            failure_response = f'''Unquarantine file remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
+                    action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=failure_response)
     else:
         return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
@@ -958,15 +923,13 @@ def block_file_command(client: Client, args: dict):
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            success_response = "Block file remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID']))
+            success_response = f'''Block file remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            failure_response = "Block file remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
-                    action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID']))
+            failure_response = f'''Block file remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
+                    action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=failure_response)
     else:
         return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
@@ -985,15 +948,13 @@ def delete_registry_key_command(client: Client, args: dict):
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            success_response = "Delete registry key remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID']))
+            success_response = f'''Delete registry key remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            failure_response = "Delete registry key remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
-                    action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID']))
+            failure_response = f'''Delete registry key remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
+                    action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=failure_response)
     else:
         return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
@@ -1012,15 +973,13 @@ def kill_prevent_unsuspend_command(client: Client, args: dict):
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            success_response = "Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID']))
+            success_response = f'''Kill prevent unsuspend remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            failure_response = "Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
-                    action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID']))
+            failure_response = f'''Kill prevent unsuspend remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n" Reason: {dict_safe_get(
+                    action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=failure_response)
     else:
         return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
@@ -1039,15 +998,13 @@ def unsuspend_process_command(client: Client, args: dict):
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            success_response = "Unsuspend process remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID']))
+            success_response = f'''Unsuspend process remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            failure_response = "Unsuspend process remediation action status is: {}".format(dict_safe_get(
-                action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
-                    action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID']))
+            failure_response = f'''Unsuspend process remediation action status is: {dict_safe_get(
+                action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
+                    action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=failure_response)
     else:
         return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
@@ -1108,8 +1065,7 @@ def get_remediation_action_progress(
 
 
 def query_file_command(client: Client, args: dict) -> Any:
-    file_hash_input = args.get('file_hash')
-    file_hash_list = file_hash_input.split(",")
+    file_hash_list = argToList(args.get('file_hash'))
     for file_hash in file_hash_list:
 
         filters = []
@@ -1221,7 +1177,7 @@ def query_file_command(client: Client, args: dict) -> Any:
 
             return CommandResults(
                 readable_output=tableToMarkdown(
-                    'Cybereason file query results for the file hash: {}'.format(file_hash), cybereason_outputs, removeNull=True),
+                    f'Cybereason file query results for the file hash: {file_hash}', cybereason_outputs, removeNull=True),
                 outputs_prefix='Cybereason.File',
                 outputs_key_field='Name',
                 outputs=ec)
@@ -1273,8 +1229,7 @@ def get_file_machine_details(client: Client, file_guid: str) -> dict:
 
 
 def query_domain_command(client: Client, args: dict) -> Any:
-    domain_input_value = args.get('domain')
-    domain_list = domain_input_value.split(",")
+    domain_list = argToList(args.get('domain'))
     for domain_input in domain_list:
 
         filters = [{
@@ -1320,8 +1275,8 @@ def query_domain_command(client: Client, args: dict) -> Any:
 
             return CommandResults(
                 readable_output=tableToMarkdown(
-                    'Cybereason domain query results for the domain: {}'.format(
-                        domain_input), cybereason_outputs, headers=DOMAIN_HEADERS),
+                    f'Cybereason domain query results for the domain: {domain_input}',
+                    cybereason_outputs, headers=DOMAIN_HEADERS),
                 outputs_prefix='Cybereason.Domain',
                 outputs_key_field='Name',
                 outputs=ec)
@@ -1348,8 +1303,7 @@ def query_domain(client: Client, filters: list) -> dict:
 
 
 def query_user_command(client: Client, args: dict):
-    username_input = args.get('username')
-    username_list = username_input.split(",")
+    username_list = argToList(args.get('username'))
     for username in username_list:
 
         filters = [{
@@ -1381,17 +1335,12 @@ def query_user_command(client: Client, args: dict):
                     'LocalSystem': local_system
                 })
 
-                ec = {
-                    'Cybereason.User(val.Username && val.Username===obj.Username)': cybereason_outputs
-                }
-
-                return CommandResults(
-                    readable_output=tableToMarkdown(
-                        'Cybereason user query results for the username: {}'.format(
-                            username), cybereason_outputs, headers=USER_HEADERS),
-                    outputs_prefix='Cybereason.User',
-                    outputs_key_field='Username',
-                    outputs=ec)
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    f'Cybereason user query results for the username: {username}', cybereason_outputs, headers=USER_HEADERS),
+                outputs_prefix='Cybereason.User',
+                outputs_key_field='Username',
+                outputs=cybereason_outputs)
         else:
             return CommandResults(readable_output='No results found.')
 
@@ -1427,7 +1376,7 @@ def archive_sensor_command(client: Client, args: dict):
         'POST', '/rest/sensors/action/archive', json_body=data, return_json=False, custom_response=True)
 
     if response.status_code == 204:
-        output = "The selected Sensor with Sensor ID: {sensor_id} is not available for archive.".format(sensor_id=sensor_id)
+        output = f"The selected Sensor with Sensor ID: {sensor_id} is not available for archive."
     elif response.status_code == 200:
         output = ""
         try:
@@ -1440,7 +1389,7 @@ def archive_sensor_command(client: Client, args: dict):
     else:
         try:
             json_response = response.json()
-            output = "Could not archive Sensor. The received response is {json_response}".format(json_response=json_response)
+            output = f"Could not archive Sensor. The received response is {json_response}"
         except Exception:
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
@@ -1458,7 +1407,7 @@ def unarchive_sensor_command(client: Client, args: dict):
     response = client.cybereason_api_call(
         'POST', '/rest/sensors/action/unarchive', json_body=data, return_json=False, custom_response=True)
     if response.status_code == 204:
-        output = "The selected Sensor with Sensor ID: {sensor_id} is not available for unarchive.".format(sensor_id=sensor_id)
+        output = f"The selected Sensor with Sensor ID: {sensor_id} is not available for unarchive."
     elif response.status_code == 200:
         output = ""
         try:
@@ -1471,7 +1420,7 @@ def unarchive_sensor_command(client: Client, args: dict):
     else:
         try:
             json_response = response.json()
-            output = "Could not unarchive Sensor. The received response is {json_response}".format(json_response=json_response)
+            output = f"Could not unarchive Sensor. The received response is {json_response}"
         except Exception:
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
@@ -1489,13 +1438,13 @@ def delete_sensor_command(client: Client, args: dict):
         'POST', '/rest/sensors/action/delete', json_body=data, return_json=False, custom_response=True)
 
     if response.status_code == 204:
-        output = "The selected Sensor with Sensor ID: {sensor_id} is not available for deleting.".format(sensor_id=sensor_id)
+        output = f"The selected Sensor with Sensor ID: {sensor_id} is not available for deleting."
     elif response.status_code == 200:
         output = "Sensor deleted successfully."
     else:
         try:
             json_response = response.json()
-            output = "Could not delete Sensor. The received response is {json_response}".format(json_response=json_response)
+            output = f"Could not delete Sensor. The received response is {json_response}"
         except Exception:
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
@@ -1669,7 +1618,7 @@ def fetch_malop_processes(client: Client, malop_id: str) -> list:
     try:
         result = response['data']['resultIdToElementDataMap']
     except Exception as e:
-        raise ValueError("Exception when parsing JSON response: {}".format(str(e)))
+        raise ValueError(f"Exception when parsing JSON response: {str(e)}")
     return list(result.keys())
 
 
@@ -1762,7 +1711,7 @@ def fetchfile_progress_command(client: Client, args: dict):
         filename.append(new_malop_comments[item].get("name"))
         status.append(new_malop_comments[item].get("isSuccess"))
         message.append(new_malop_comments[item].get("message"))
-        if status[item] == True:
+        if status[item] is True:
             output_message.append('Filename: ' + str(filename) + ' Status: ' + str(status) + ' Batch ID: ' + str(message))
         else:
             output_message.append(str(message))
@@ -1794,8 +1743,8 @@ def get_batch_id(client: Client, suspect_files_guids: dict, timeout_seconds: int
         time.sleep(interval_seconds)  # Sleep for 10 seconds before next call
         passed_seconds = passed_seconds - interval_seconds
     for suspect_file in list(suspect_files_guids.keys()):
-        malop_comment = "Could not download the file {} from source machine, even after waiting for {} seconds.".format(
-            suspect_file, timeout_seconds)
+        malop_comment = f'''Could not download the file '{
+            suspect_file}' from source machine, even after waiting for {timeout_seconds} seconds.'''
         new_malop_comments.append({"isSuccess": False, "message": malop_comment})
     return new_malop_comments
 
@@ -1817,7 +1766,7 @@ def download_fetchfile_command(client: Client, args: dict):
 
 
 def download_fetchfile(client: Client, batch_id: str) -> Any:
-    url = '/rest/fetchfile/getfiles/{batch_id}'.format(batch_id=batch_id)
+    url = f'/rest/fetchfile/getfiles/{batch_id}'
     return client.cybereason_api_call('GET', url, custom_response=True, return_json=False)
 
 
@@ -1832,7 +1781,7 @@ def close_fetchfile_command(client: Client, args: dict):
 
 
 def close_fetchfile(client: Client, batch_id: str) -> Any:
-    url = '/rest/fetchfile/close/{batch_id}'.format(batch_id=batch_id)
+    url = f'/rest/fetchfile/close/{batch_id}'
     return client.cybereason_api_call('GET', url, custom_response=True, return_json=False)
 
 
@@ -1841,8 +1790,7 @@ def malware_query_command(client: Client, args: dict):
     malware_type = args.get('type')
     malware_status = args.get('status')
     time_stamp = args.get('timestamp')
-    limit_range = args.get('limit')
-    limit_range = int(limit_range)
+    limit_range = arg_to_number(args.get('limit'))
     if limit_range > 0:
         filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
         return CommandResults(raw_response=filter_response)
@@ -1862,7 +1810,7 @@ def malware_query_filter(
         is_status = malware_status.split(",")
         query.append({"fieldName": "status", "operator": "Equals", "values": is_status})
     if time_stamp:
-        query.append({"fieldName": "timestamp", "operator": "GreaterThan", "values": [int(time_stamp)]})
+        query.append({"fieldName": "timestamp", "operator": "GreaterThan", "values": [arg_to_number(time_stamp)]})
     response = malware_query(client, query, limit_range)
     return response
 
@@ -1874,8 +1822,7 @@ def malware_query(client: Client, action_values: list, limit: int) -> dict:
 
 
 def start_host_scan_command(client: Client, args: dict):
-    sensor_id = args.get('sensorID')
-    sensor_ids = sensor_id.split(",")
+    sensor_ids = argToList(args.get('sensorID'))
     argument = args.get('scanType')
     json_body = {
         "sensorsIds": sensor_ids,
@@ -1885,20 +1832,19 @@ def start_host_scan_command(client: Client, args: dict):
         'POST', '/rest/sensors/action/schedulerScan', json_body=json_body, return_json=False, custom_response=True)
     if response.status_code == 204:
         return CommandResults(
-            readable_output="Given Sensor ID/ID's {sensor_ids} is/are not available for scanning.".format(sensor_ids=sensor_ids))
+            readable_output=f"Given Sensor ID/ID's {sensor_ids} is/are not available for scanning.")
     elif response.status_code == 200:
         try:
             response_json = response.json()
             batch_id = dict_safe_get(response_json, ['batchId'])
-            return CommandResults(readable_output='Scanning initiation successful. Batch ID: {}'.format(batch_id))
+            return CommandResults(readable_output=f'Scanning initiation successful. Batch ID: {batch_id}')
         except Exception as e:
             raise Exception("Exception occurred while processing response for scanning a host: " + str(e))
     else:
         try:
             json_response = response.json()
             return CommandResults(
-                readable_output='Could not scan the host. The received response is {json_response}'.format(
-                    json_response=json_response))
+                readable_output=f'Could not scan the host. The received response is {json_response}')
         except Exception:
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
@@ -1931,7 +1877,7 @@ def get_sensor_id_command(client: Client, args: dict):
         }
     response = client.cybereason_api_call('POST', '/rest/sensors/query', json_body=json_body)
     if dict_safe_get(response, ['sensors']) == []:
-        return CommandResults(readable_output="Could not found any Sensor ID for the machine '{}'".format(machine_name))
+        return CommandResults(readable_output=f"Could not found any Sensor ID for the machine '{machine_name}'")
     else:
         output = {}
         for single_sensor in response['sensors']:
