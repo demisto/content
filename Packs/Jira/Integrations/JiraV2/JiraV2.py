@@ -1406,7 +1406,7 @@ def main():
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(demisto.args()))
         else:
-            raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
+            raise NotImplementedError(f'error- {COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
 
     except Exception as err:
         if isinstance(err, NotImplementedError) and COMMAND_NOT_IMPELEMENTED_MSG in str(err):
