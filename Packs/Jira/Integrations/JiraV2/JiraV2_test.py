@@ -1430,7 +1430,8 @@ def test_get_account_id_from_attribute_attribute_do_not_match(mocker):
 
     assert res.outputs['AccountID'] == 'TEST-ID'
 
-def test_append_to_field_command(mocker):
+
+def test_append_to_empty_field_command(mocker):
     """
     Given:
         - The issue ID, a json of field and new values
@@ -1440,12 +1441,33 @@ def test_append_to_field_command(mocker):
         - Ensure appending is working as excpected
     """
     from test_data.raw_response import GET_ISSUE_RESPONSE
-    from test_data.expected_results import GET_ISSUE_OUTPUTS_RESULT_WITH_APPEND
     from JiraV2 import append_to_field_command
 
     mocker.patch('JiraV2.jira_req', return_value=GET_ISSUE_RESPONSE)
+    mocker.patch('JiraV2.__get_field_type', return_value='string')
+    mock_update = mocker.patch('JiraV2._update_fields')
 
-    _, outputs, _ = append_to_field_command('id', field_json="{'labels':'New'}")
+    _, outputs, _ = append_to_field_command('id', field_json='{"labels":"New"}')
 
-    assert outputs == GET_ISSUE_OUTPUTS_RESULT_WITH_APPEND
+    mock_update.assert_called_with('id', {'labels': 'New'})
 
+
+def test_append_to_existing_field_command(mocker):
+    """
+    Given:
+        - The issue ID, a json of field and new values
+    When
+        - Running the append_to_field_command
+    Then
+        - Ensure appending is working as excpected
+    """
+    from test_data.raw_response import GET_ISSUE_RESPONSE_WITH_LABELS
+    from JiraV2 import append_to_field_command
+
+    mocker.patch('JiraV2.jira_req', return_value=GET_ISSUE_RESPONSE_WITH_LABELS)
+    mocker.patch('JiraV2.__get_field_type', return_value='array')
+    mock_update = mocker.patch('JiraV2._update_fields')
+
+    _, outputs, _ = append_to_field_command('id', field_json='{"labels":"New"}')
+
+    mock_update.assert_called_with('id', {'labels': ['test', 'New']})

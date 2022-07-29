@@ -413,7 +413,8 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None, extra_
         })
 
         md_obj.update({
-            'issueType': f"{demisto.get(element, 'fields.issuetype.name')} ({demisto.get(element, 'fields.issuetype.description')})",
+            'issueType': f"{demisto.get(element, 'fields.issuetype.name')} "
+                         f"({demisto.get(element, 'fields.issuetype.description')})",
             'labels': demisto.get(element, 'fields.labels'),
             'description': demisto.get(element, 'fields.description'),
             'ticket_link': demisto.get(element, 'self'),
@@ -746,10 +747,10 @@ def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, tra
     return get_issue(issue_id, headers, is_update=True)
 
 
-def append_to_field_command(issue_id, field_json, headers=None, **kwargs):
+def append_to_field_command(issue_id, field_json, headers=None):
     issue = jira_req('GET', f'rest/api/latest/issue/{issue_id}', resp_type='json')
     fields = json.loads(field_json, strict=False)
-
+    new_data = {}
     for field in fields:
         field_type = __get_field_type(field)
         if not field_type:
@@ -759,19 +760,23 @@ def append_to_field_command(issue_id, field_json, headers=None, **kwargs):
             raise DemistoException(f'Could not identify field {field}. Make sure it was entered with correct field ID.')
 
         current_data_in_field = issue.get('fields', {}).get(field)
-        new_data = {}
         if not current_data_in_field:
             new_data[field] = __create_value_by_type(field_type, fields[field])
         else:
             new_data[field] = __add_value_by_type(field_type, current_data_in_field, fields[field])
 
-        url = f'rest/api/latest/issue/{issue_id}/'
-        jira_req('PUT', url, json.dumps({'fields': new_data}))
+    _update_fields(issue_id, new_data)
 
     return get_issue(issue_id, headers, is_update=True)
 
 
-def get_field_command(issue_id, field, **kwargs):
+def _update_fields(issue_id, new_data):
+    url = f'rest/api/latest/issue/{issue_id}/'
+    if new_data:
+        jira_req('PUT', url, json.dumps({'fields': new_data}))
+
+
+def get_field_command(issue_id, field):
     fields = argToList(field)
     return get_issue(issue_id, extra_fields=fields, is_update=False)
 
