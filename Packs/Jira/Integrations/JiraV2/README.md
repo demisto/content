@@ -588,8 +588,8 @@ Lists all possible transitions for a given ticket.
 
 ### jira-append-to-field
 ***
-Modifies a specific field in issue in Jira by appending to it instead of replacing its content. 
-Field must be either string-typed (appending by using ',') or array-typed.
+Modifies a specific field in an issue in Jira by appending to it instead of replacing its content. 
+Field must be either of type string (appending by using ',') or arrayd.
 
 
 #### Base Command
@@ -644,7 +644,7 @@ Field must be either string-typed (appending by using ',') or array-typed.
 
 ### jira-get-specific-field
 ***
-Gets specific fields from a Jira issue, add it to context dynamicly.
+Gets specific fields from a Jira issue and adds it to context dynamically.
 
 #### Base Command
 
