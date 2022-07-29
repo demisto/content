@@ -1185,7 +1185,7 @@ tasks:
             args:
               item:
                 value:
-                  simple: inputs.CommandLine
+                  simple: inputs.Commandline
                 iscontext: true
     reputationcalc: 2
     separatecontext: false
@@ -1226,7 +1226,7 @@ tasks:
         simple: commandline.decoded
       value:
         complex:
-          root: inputs.CommandLine
+          root: inputs.Commandline
           transformers:
           - operator: replaceMatch
             args:
