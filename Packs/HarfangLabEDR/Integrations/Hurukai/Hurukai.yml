@@ -340,6 +340,8 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
+    - contextPath: Harfanglab.Job.Action
+      description: HarfangLab job action
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -350,6 +352,8 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
+    - contextPath: Harfanglab.Job.Action
+      description: HarfangLab job action
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -360,6 +364,8 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
+    - contextPath: Harfanglab.Job.Action
+      description: HarfangLab job action
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -370,6 +376,8 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
+    - contextPath: Harfanglab.Job.Action
+      description: HarfangLab job action
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -472,9 +480,9 @@ script:
     description: Get job status information
     name: harfanglab-job-info
     outputs:
-    - contextPath: Harfanglab.Job.Status
+    - contextPath: Harfanglab.Job.Info
       description: Job Status
-      type: string
+      type: unknown
   - arguments:
     - name: job_id
       description: Job id as returned by the job submission commands
