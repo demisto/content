@@ -409,6 +409,15 @@ tasks:
                         value:
                           simple: active
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SearchAndDeleteIntegration
+            iscontext: true
+          right:
+            value:
+              simple: EWS
     view: |-
       {
         "position": {
