@@ -337,9 +337,6 @@ script:
     description: Start a job to download the MFT from a host (Windows)
     name: harfanglab-job-artifact-mft
     outputs:
-    - contextPath: Harfanglab.artifact.download_link
-      description: URL to download the artifact
-      type: string
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
@@ -350,9 +347,6 @@ script:
     description: Start a job to download the hives from a host (Windows)
     name: harfanglab-job-artifact-hives
     outputs:
-    - contextPath: Harfanglab.artifact.download_link
-      description: URL to download the artifact
-      type: string
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
@@ -363,9 +357,6 @@ script:
     description: Start a job to download the event logs from a host (Windows)
     name: harfanglab-job-artifact-evtx
     outputs:
-    - contextPath: Harfanglab.artifact.download_link
-      description: URL to download the artifact
-      type: string
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
@@ -376,9 +367,6 @@ script:
     description: Start a job to download Linux log files from a host (Linux)
     name: harfanglab-job-artifact-logs
     outputs:
-    - contextPath: Harfanglab.artifact.download_link
-      description: URL to download the artifact
-      type: string
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
