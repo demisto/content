@@ -64,6 +64,7 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 <li><a href="#user-assign-manager" target="_self">Assign a manager to a user: msgraph-user-assign-manager</a></li>
 <li><a href="#user-account-disable" target="_self">Disable a user account: msgraph-user-account-disable</a></li>
 <li><a href="#user-revoke-session" target="_self">Revoke a user session: msgraph-user-session-revoke</a></li>
+<li><a href="#user-restore-deleted" target="_self">restore a deleted user: msgraph-user-restore-user</a></li>
 </ol>
 </div>
 <div class="cl-preview-section">
@@ -1717,6 +1718,62 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 <div class="cl-preview-section">
 <p>user: <a href="mailto:%22test@demistodev.onmicrosoft.com">"test@demistodev.onmicrosoft.com</a>" session has been revoked successfully</p>
 </div>
+<h3 id="msgraph-user-restore-user">15. restore a deleted user</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Reestores a recently deleted user. from deleted items A recently deleted item will remain available for up to 30 days. After 30 days, the item is permanently deleted. This is not applicable to users, which are deleted permanently.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>msgraph-user-restore-user</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 243px;"><strong>Argument Name</strong></th>
+<th style="width: 367px;"><strong>Description</strong></th>
+<th style="width: 130px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 243px;">user_id</td>
+<td style="width: 367px;">User ID</td>
+<td style="width: 130px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>There is no context output for this command.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="command-example">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre> msgraph-user-restore-user user_id="2e9443fbd683d43b6f237se603227e3"</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>ABC has been restored successfully</p>
+</div>
+<div class="cl-preview-section">
+
 ### msgraph-user-test
 ***
 Tests connectivity to Microsoft Graph User.

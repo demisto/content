@@ -208,6 +208,15 @@ class MsGraphClient:
             resp_type="text"
         )
 
+    def restore_user(self, object_id):
+        user_data = self.ms_client.http_request(
+            method='POST',
+            url_suffix=f'/directory/deletedItems/{quote(object_id)}/restore'
+        )
+        user_data.pop('@odata.context', None)
+        user_data.pop('@odata.type', None)
+        return user_data
+
 
 def suppress_errors_with_404_code(func):
     def wrapper(client: MsGraphClient, args: Dict):
@@ -427,6 +436,16 @@ def revoke_user_session_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
+@suppress_errors_with_404_code
+def restore_user_command(client: MsGraphClient, args: Dict):
+    object_id = args.get('user_id')
+    user_data = client.restore_user(object_id)
+    user_readable, user_outputs = parse_outputs(user_data)
+    human_readable = tableToMarkdown(name=f"{user_data.get('displayName')} has been restored", t=user_readable, removeNull=True)
+    outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
+    return human_readable, outputs, user_data
+
+
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
@@ -467,6 +486,8 @@ def main():
         'msgraph-user-get-manager': get_manager_command,
         'msgraph-user-assign-manager': assign_manager_command,
         'msgraph-user-session-revoke': revoke_user_session_command,
+        'msgraph-user-restore-user': restore_user_command,
+
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
