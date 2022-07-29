@@ -1448,3 +1448,4 @@ def test_append_to_field_command(mocker):
     _, outputs, _ = append_to_field_command('id', field_json="{'labels':'New'}")
 
     assert outputs == GET_ISSUE_OUTPUTS_RESULT_WITH_APPEND
+

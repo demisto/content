@@ -360,7 +360,7 @@ def get_account_id_from_attribute(
     )
 
 
-def generate_md_context_get_issue(data, customfields=None, nofields=None):
+def generate_md_context_get_issue(data, customfields=None, nofields=None, extra_fields=None):
     get_issue_obj: dict = {"md": [], "context": []}
     if not isinstance(data, list):
         data = [data]
@@ -378,9 +378,12 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None):
         context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
 
         # Parse custom fields into their original names
-        if customfields and not nofields:
+        custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
+        if extra_fields:
+            custom_fields = extra_fields
+        if (custom_fields and customfields and not nofields) or extra_fields:
             field_mappings = get_custom_field_names()
-            for field_returned in customfields:
+            for field_returned in custom_fields:
                 readable_field_name = field_mappings.get(field_returned)
                 if readable_field_name:
                     context_obj[readable_field_name] = md_obj[readable_field_name] = \
@@ -671,7 +674,7 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
     return issue
 
 
-def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_attachments=False, customfields=None):
+def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_attachments=False, extra_fields=None):
     j_res = jira_req('GET', f'rest/api/latest/issue/{issue_id}', resp_type='json')
     if expand_links == "true":
         expand_urls(j_res)
@@ -688,7 +691,7 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
             filename, attachments_zip = get_attachment_data(attachment)
             demisto.results(fileResult(filename=filename, data=attachments_zip))
 
-    md_and_context = generate_md_context_get_issue(j_res, customfields=customfields)
+    md_and_context = generate_md_context_get_issue(j_res, extra_fields=extra_fields)
     human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], argToList(headers))
     if is_update:
         human_readable += f'Issue #{issue_id} was updated successfully'
@@ -770,7 +773,7 @@ def append_to_field_command(issue_id, field_json, headers=None, **kwargs):
 
 def get_field_command(issue_id, field, **kwargs):
     fields = argToList(field)
-    return get_issue(issue_id, customfields=fields, is_update=False)
+    return get_issue(issue_id, extra_fields=fields, is_update=False)
 
 
 def __get_field_type(field_id):
