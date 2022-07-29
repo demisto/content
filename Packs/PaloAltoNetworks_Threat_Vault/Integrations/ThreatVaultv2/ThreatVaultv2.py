@@ -85,7 +85,7 @@ def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[in
                      "[page, page_size]")
 
 
-def resp_to_hr(response: dict, type_: str, extra: bool = False) -> dict:
+def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
 
     match type_:
         case 'file':
@@ -100,7 +100,7 @@ def resp_to_hr(response: dict, type_: str, extra: bool = False) -> dict:
                             'SHA256': response.get('sha256', None),
                             'SHA1': response.get('sha1', None),
                             }
-            if extra:
+            if expanded:
                 table_for_md.update({
                     'Family': response.get('family', None),
                     'Platform': response.get('platform', None),
@@ -263,7 +263,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
         else:
             filesformat = [response.get('data', {}).get('fileformat', [])[0]]
         for fileformat in filesformat:
-            table_for_md = resp_to_hr(response=vulnerability, type_='fileformat')
+            table_for_md = resp_to_hr(response=fileformat, type_='fileformat')
             readable_output = tableToMarkdown(name=f"{fileformat.get('id')} fileformat reputation:", t=table_for_md,
                                               removeNull=True)
             command_results_list.append(
@@ -354,7 +354,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 dbot_score=dbot_score
             )
 
-            table_for_md = resp_to_hr(response=file_info, type_='file', extra=args.get('extra', False))  # I need to change the name of extra arg
+            table_for_md = resp_to_hr(response=file_info, type_='file', expanded=args.get('expanded', False))
 
             readable_output = tableToMarkdown(name=f"Hash {_hash} antivirus reputation:", t=table_for_md,
                                               removeNull=True)
@@ -427,7 +427,7 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
     args['file'] = args.get('sha256', '')
     if md5 := args.get('md5', ''):
         args['file'] += f",{md5}" if args['file'] else md5
-    args['extra'] = True
+    args['expanded'] = True
     ids = argToList(args.get('signature_id'))
 
     if not ids and not args['file']:
@@ -528,7 +528,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
                 dbot_score=dbot_score
             )
 
-            table_for_md = resp_to_hr(response=file_info, type_='file', extra=True)
+            table_for_md = resp_to_hr(response=file_info, type_='file', expanded=True)
             readable_output = tableToMarkdown(name=f"File {file_info.get('sha256')}:", t=table_for_md,
                                               removeNull=True)
             command_results_list.append(
