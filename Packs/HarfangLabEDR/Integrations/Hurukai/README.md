@@ -714,7 +714,7 @@ Start a job to get the list of pipes from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-pipelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -760,7 +760,7 @@ Start a job to download a file from a host (Windows / Linux)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-artifact-downloadfile agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filename="C:\\Program Files\\HarfangLab\\agent.ini"```
@@ -805,7 +805,7 @@ Start a job to get the list of prefetches from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-prefetchlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -850,7 +850,7 @@ Start a job to get the list of run keys from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-runkeylist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -895,7 +895,7 @@ Start a job to get the list of scheduled tasks from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-scheduledtasklist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -940,7 +940,7 @@ Start a job to get the list of drivers from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-driverlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -985,7 +985,7 @@ Start a job to get the list of services from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-servicelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1030,7 +1030,7 @@ Start a job to get the list of processes from a host (Windows / Linux)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-processlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1075,7 +1075,7 @@ Start a job to get the list of network connections from a host (Windows / Linux)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-networkconnectionlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1120,7 +1120,7 @@ Start a job to get the list of network shares from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-networksharelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1165,7 +1165,7 @@ Start a job to get the list of sessions from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-sessionlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1210,7 +1210,7 @@ Start a job to get the list of persistence items from a host (Linux)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-persistencelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1263,7 +1263,7 @@ Start a job to search for IOCs on a host (Windows / Linux)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filename="agent.ini"```
@@ -1469,7 +1469,7 @@ Start a job to get the list of startup items from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-startuplist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1514,7 +1514,7 @@ Start a job to get the list of WMI items from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-wmilist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1559,7 +1559,7 @@ Start a job to download the MFT from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-artifact-mft agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1604,7 +1604,7 @@ Start a job to download the hives from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-artifact-hives agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1649,7 +1649,7 @@ Start a job to download the event logs from a host (Windows)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-artifact-evtx agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1694,7 +1694,7 @@ Start a job to download Linux log files from a host (Linux)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-artifact-logs agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1739,7 +1739,7 @@ Start a job to download Linux filesystem entries from a host (Linux)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-artifact-filesystem agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1784,7 +1784,7 @@ Start a job to download all artifacts from a host (Windows MFT, Hives, evt/evtx,
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-artifact-all agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
@@ -1829,7 +1829,7 @@ Start a job to get the entine RAM from a host (Windows / Linux)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Harfanglab.Job.ID | string | id | 
-| harfanglab.Job.Action | string | HarfangLab job action | 
+| Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
 ```!harfanglab-job-artifact-ramdump agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
