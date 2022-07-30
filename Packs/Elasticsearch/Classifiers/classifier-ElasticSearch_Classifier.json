@@ -1,0 +1,14 @@
+{
+    "defaultIncidentType": "ElasticSearch",
+    "description": "",
+    "feed": false,
+    "id": "ElasticSearch Classifier",
+    "keyTypeMap": {},
+    "name": "ElasticSearch Classifier",
+    "transformer": {
+        "simple": "event.dataset"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

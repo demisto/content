@@ -1,0 +1,61 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "ElasticSearch - Incoming Mapper",
+    "mapping": {
+        "ElasticSearch": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Destination IP": {
+                    "simple": "destination.ip"
+                },
+                "ElasticSearch Event info": {
+                    "simple": "event"
+                },
+                "ElasticSearch Host": {
+                    "simple": "host"
+                },
+                "ElasticSearch Machine": {
+                    "simple": "machine"
+                },
+                "ElasticSearch Source ": {
+                    "simple": "_source"
+                },
+                "ElasticSearch Timestamp": {
+                    "simple": "timestamp"
+                },
+                "ElasticSearch index": {
+                    "simple": "_index"
+                },
+                "Event ID": {
+                    "simple": "_id"
+                },
+                "External Link": {
+                    "simple": "url"
+                },
+                "File Name": {
+                    "simple": "file.name"
+                },
+                "File Path": {
+                    "simple": "file.path"
+                },
+                "File Size": {
+                    "simple": "file.size"
+                },
+                "Process Name": {
+                    "simple": "process.name"
+                },
+                "Source IP": {
+                    "simple": "ip"
+                },
+                "Tags": {
+                    "simple": "tags"
+                }
+            }
+        }
+    },
+    "name": "ElasticSearch - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}
