@@ -567,7 +567,6 @@ MOC_ES7_SERVER_RESPONSE = {
     }
 }
 
-
 MOCK_PARAMS = [
     {
         'client_type': 'Elasticsearch',
@@ -850,3 +849,10 @@ class TestIncidentLabelMaker(unittest.TestCase):
 
         labels = incident_label_maker(sources)
         self.assertEqual(labels, expected_labels)
+
+
+@pytest.mark.parametrize('last_fetch,fetch_time, time_range_start, time_range_end, result',
+                         [('','','1.1.2000','2.1.2000',{'range': {'time_field': {'gt': 946677600000, 'lt': 949356000000}}})])
+def test_get_time_range(last_fetch, fetch_time, time_range_start, time_range_end, result):
+    from Elasticsearch_v2 import get_time_range
+    assert get_time_range(last_fetch, fetch_time, time_range_start, time_range_end, "time_field") == result

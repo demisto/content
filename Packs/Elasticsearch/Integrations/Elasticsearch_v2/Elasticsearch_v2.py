@@ -48,13 +48,18 @@ HTTP_ERRORS = {
 param = demisto.params()
 TIME_FIELD = param.get('fetch_time_field', '')
 FETCH_INDEX = param.get('fetch_index', '')
-FETCH_QUERY = param.get('fetch_query', '')
+FETCH_QUERY_PARM = param.get('fetch_query', '')
+RAW_QUERY = param.get('raw_query', '')
 FETCH_TIME = param.get('fetch_time', '3 days')
 FETCH_SIZE = int(param.get('fetch_size', 50))
 INSECURE = not param.get('insecure', False)
 TIME_METHOD = param.get('time_method', 'Simple-Date')
 TIMEOUT = int(param.get('timeout') or 60)
 MAP_LABELS = param.get('map_labels', True)
+TIME_RANGE_START = param.get('time_range_start')
+TIME_RANGE_END = param.get('time_range_end')
+
+FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
 
 def get_timestamp_first_fetch(last_fetch):
@@ -74,6 +79,9 @@ def get_timestamp_first_fetch(last_fetch):
         return int(last_fetch.timestamp())
 
     elif TIME_METHOD == 'Timestamp-Milliseconds':
+        return int(last_fetch.timestamp() * 1000)
+
+    else:
         return int(last_fetch.timestamp() * 1000)
 
 
@@ -590,36 +598,54 @@ def format_to_iso(date_string):
     return date_string
 
 
+def get_time_range(last_fetch: Union[str, None], fetch_time=FETCH_TIME, time_range_start=TIME_RANGE_START,
+                   time_range_end=TIME_RANGE_END, time_field=TIME_FIELD) -> Dict:
+    """
+    Creates the time range filter's dictionary based on the last fetch and given params.
+    Args:
+
+        last_fetch (str): last fetch time stamp
+        fetch_time (str): first fetch time
+        time_range_start (str): start of time range
+        time_range_end (str): end of time range
+        time_field ():
+
+    Returns:
+        dictionary (Ex. {"range":{'gt': 1000 'lt':1001}})
+    """
+    range_dict = {}
+    if not last_fetch:
+        if time_range_start:
+            start_date = dateparser.parse(time_range_start)
+        elif fetch_time:
+            start_date = dateparser.parse(fetch_time)
+        else:
+            raise DemistoException("Missing First fetch timestamp and Time Range Start, please provide one of them.")
+
+        start_time = get_timestamp_first_fetch(start_date)
+    else:
+        start_time = last_fetch
+
+    range_dict['gt'] = start_time
+
+    if time_range_end:
+        end_date = dateparser.parse(time_range_end)
+        end_time = get_timestamp_first_fetch(end_date)
+        range_dict['lt'] = end_time
+
+    return {'range': {time_field: range_dict}}
+
+
 def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
-    # handle first time fetch
-    if last_fetch is None:
-        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%f', utc=False,
-                                         to_timestamp=False)
-        last_fetch = parse(str(last_fetch))
-        last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
-
-        # if timestamp: get the last fetch to the correct format of timestamp
-        if 'Timestamp' in TIME_METHOD:
-            last_fetch = get_timestamp_first_fetch(last_fetch)
-            last_fetch_timestamp = last_fetch
-
-    # if method is simple date - convert the date string to datetime
-    elif 'Simple-Date' == TIME_METHOD:
-        last_fetch = parse(str(last_fetch))
-        last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
-
-    # if last_fetch is set and we are in a "Timestamp" method - than the last_fetch_timestamp is the last_fetch.
-    else:
-        last_fetch_timestamp = last_fetch
-
+    time_range_dict = get_time_range(last_fetch)
     es = elasticsearch_builder(proxies)
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
     # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
-    search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch_timestamp}}})
+    search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
     search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)

@@ -3,11 +3,12 @@ commonfields:
   id: Elasticsearch v2
   version: -1
 configuration:
-- display: Server URL
+- additionalinfo: The Elasticsearch server to which the integration connects. Ensure
+    that the URL includes the correct Elasticsearch port. By default this is 9200.
+  display: Server URL
   name: url
   required: true
   type: 0
-  additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200.
 - additionalinfo: Provide Username + Passoword instead of API key + API ID
   display: Username for server login
   name: credentials
@@ -21,8 +22,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: Elasticsearch
-  additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
+- additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch
+    client is not supported. If you encounter any related client issues, please consider
+    using the OpenSearch client type.
+  defaultvalue: Elasticsearch
   display: Client type
   name: client_type
   options:
@@ -38,6 +41,24 @@ configuration:
   name: fetch_query
   required: false
   type: 0
+- additionalinfo: Will replace the ‘fetch_query’ lucene syntax string.
+  display: Raw Query
+  hidden: false
+  name: raw_query
+  required: false
+  type: 0
+- additionalinfo: Query time range expressions, start time. Will replace the First Fetch field.
+  display: Query Time Range - Start
+  hidden: false
+  name: time_range_start
+  required: false
+  type: 0
+- additionalinfo: Query time range expressions, end time.
+  display: Query Time Range - End
+  hidden: false
+  name: time_range_end
+  required: false
+  type: 0
 - display: Index time field (for sorting sort and limiting data)
   name: fetch_time_field
   required: false
@@ -51,8 +72,8 @@ configuration:
   - Timestamp-Milliseconds
   required: false
   type: 15
-- display: Map JSON fields into labels
-  defaultvalue: 'true'
+- defaultvalue: 'true'
+  display: Map JSON fields into labels
   name: map_labels
   required: false
   type: 8
@@ -316,10 +337,10 @@ script:
       description: The maximum number of scores that a search can return.
       type: Number
   - deprecated: false
-    execution: false
-    name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should
       be used for debugging purposes.
+    execution: false
+    name: get-mapping-fields
   dockerimage: demisto/py3-tools:1.0.0.31193
   feed: false
   isfetch: true
