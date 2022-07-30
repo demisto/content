@@ -28,7 +28,6 @@ class Client(AbxBaseClient):
 
     def get_incidents(self, orderBy='ASC', pageSize=None, pageToken=None, first_fetch=None):
         request_params = {}
-        PATH = 'incidents'
         request_params['orderBy'] = orderBy
 
         if pageToken == -1 and first_fetch:
@@ -39,11 +38,12 @@ class Client(AbxBaseClient):
 
         if pageSize:
             request_params['pageSize'] = pageSize
-        response_json, _ = self.incidents.list_resource(PATH, params=request_params)
+
+        response_json, next_page_token, total_count = self.incidents.list(params=request_params)
         if response_json is None:
-            return []
+            return [], next_page_token
         else:
-            return response_json
+            return response_json, next_page_token
 
     def get_incident_details(self, incident_id):
         return self.incidents.get(incident_id)
@@ -77,9 +77,13 @@ def test_module(client: Client) -> str:
 
 
 def get_page_token(client, pageToken=None):
-    response = client.get_incidents(pageSize=MAX_INCIDENTS_TO_FETCH, pageToken=pageToken, first_fetch=FIRST_FETCH)
-    if 'next_page_token' in response.keys():
-        return response['next_page_token']
+    response, next_page_token = client.get_incidents(
+        pageSize=MAX_INCIDENTS_TO_FETCH,
+        pageToken=pageToken,
+        first_fetch=FIRST_FETCH
+    )
+    if next_page_token:
+        return next_page_token
     else:
         return None
 
@@ -88,11 +92,7 @@ def get_incidents_list(client, pageToken, first_fetch):
     """
     Hits the Armorblox API and returns the list of fetched incidents.
     """
-    response = client.get_incidents(pageSize=MAX_INCIDENTS_TO_FETCH, pageToken=pageToken, first_fetch=first_fetch)
-    results = []
-    if 'incidents' in response.keys():
-        results = response['incidents']
-
+    results, next_page_token = client.get_incidents(pageSize=MAX_INCIDENTS_TO_FETCH, pageToken=pageToken, first_fetch=first_fetch)
     # For each incident, get the details and extract the message_id
     for result in results:
         result['message_ids'] = get_incident_message_ids(client, result["id"])
@@ -146,15 +146,13 @@ def fetch_incidents_command(client):
     incidents = []
     if 'start_time' not in last_run.keys():
         pageToken = -1
-        response = client.get_incidents(pageSize=1, pageToken=pageToken, first_fetch=FIRST_FETCH)
-        if 'incidents' in response.keys():
-            start_time = response['incidents'][0]['date']
-            start_time = dateparser.parse(start_time)
-            message_ids = get_incident_message_ids(client, response['incidents'][0]['id'])
-            response['incidents'][0]['message_ids'] = message_ids
-            curr_incident = {'rawJSON': json.dumps(response['incidents'][0]),
-                             'details': json.dumps(response['incidents'][0])}
-            incidents.append(curr_incident)
+        response, next_page_token = client.get_incidents(pageSize=1, pageToken=pageToken, first_fetch=FIRST_FETCH)
+        start_time = response[0]['date']
+        start_time = dateparser.parse(start_time)
+        message_ids = get_incident_message_ids(client, response[0]['id'])
+        response[0]['message_ids'] = message_ids
+        curr_incident = {'rawJSON': json.dumps(response[0]), 'details': json.dumps(response[0])}
+        incidents.append(curr_incident)
 
     if last_run and 'pageToken' in last_run.keys():
         pageToken = last_run.get('pageToken')
@@ -162,7 +160,7 @@ def fetch_incidents_command(client):
     if last_run and 'start_time' in last_run.keys():
         start_time = dateparser.parse(last_run.get('start_time'))
 
-    start_time = int(start_time.timestamp())
+    start_time = start_time.timestamp()
     incidents_data = get_incidents_list(client, pageToken=pageToken, first_fetch=FIRST_FETCH)
     pageToken = get_page_token(client, pageToken=pageToken)
     last_time = start_time
@@ -174,6 +172,7 @@ def fetch_incidents_command(client):
         dt = int(parsed_date.timestamp())
         # Update last run and add incident if the incident is newer than last fetch
         if dt > start_time:
+
             curr_incident = {'rawJSON': json.dumps(incident), 'details': json.dumps(incident)}
             last_time = dt
             incidents.append(curr_incident)
@@ -184,7 +183,7 @@ def fetch_incidents_command(client):
 
 def main():
     ''' EXECUTION '''
-    LOG('command is %s' % (demisto.command(),))
+    LOG('command is %s' % (demisto.command(), ))
     try:
 
         client = Client(
