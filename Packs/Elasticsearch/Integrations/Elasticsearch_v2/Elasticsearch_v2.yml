@@ -185,17 +185,17 @@ script:
       required: false
       secret: false
     - default: false
+      description: The starting time of the time range.
       isArray: false
       name: timestamp_range_start
       required: false
       secret: false
-      description: The starting time of the time range.
     - default: false
+      description: The ending time of the time range.
       isArray: false
       name: timestamp_range_end
       required: false
       secret: false
-      description: The ending time of the time range.
     deprecated: false
     description: Queries an index.
     execution: false
@@ -360,6 +360,117 @@ script:
       be used for debugging purposes.
     execution: false
     name: get-mapping-fields
+  - deprecated: false
+    description: Search using EQL query
+    execution: false
+    name: es-eql-search
+    arguments:
+      - default: false
+        description: The index in which to perform a search.
+        isArray: false
+        name: index
+        required: false
+        secret: false
+      - default: false
+        description: The string to query (in Lucene syntax).
+        isArray: false
+        name: query
+        required: true
+        secret: false
+      - default: false
+        description: A comma-separated list of document fields to fetch. If empty, fetches
+          the entire document.
+        isArray: true
+        name: fields
+        required: true
+        secret: false
+      - default: false
+        description: If two or more events share the same timestamp, Elasticsearch uses
+          a tiebreaker field value to sort the events in ascending order.
+        isArray: false
+        name: sort-tiebreaker
+        required: false
+        secret: false
+      - default: false
+        description: Filter using query DSL.
+        isArray: false
+        name: filter
+        required: false
+        secret: false
+      - default: false
+        defaultValue: event.category
+        description: The event catagory field.
+        isArray: false
+        name: event_category_field
+        required: false
+        secret: false
+      - default: false
+        defaultValue: '100'
+        description: The number of documents displayed per page. Can be an integer between
+          "1" and "10,000". The default is "100".
+        isArray: false
+        name: size
+        required: false
+        secret: false
+      - default: false
+        description: The starting time of the time range.
+        isArray: false
+        name: timestamp_range_start
+        required: false
+        secret: false
+      - default: false
+        description: The ending time of the time range.
+        isArray: false
+        name: timestamp_range_end
+        required: false
+        secret: false
+      - default: false
+        description: Timestamp field name.
+        defaultValue: "@timestamp"
+        isArray: false
+        name: timestamp_field
+        required: false
+        secret: false
+    outputs:
+      - contextPath: Elasticsearch.Search.Results._index
+        description: The index to which the document belongs.
+        type: String
+      - contextPath: Elasticsearch.Search.Results._id
+        description: The ID of the document.
+        type: String
+      - contextPath: Elasticsearch.Search.Results._type
+        description: The mapping type of the document.
+        type: String
+      - contextPath: Elasticsearch.Search.max_score
+        description: The maximum relevance score of a query.
+        type: Number
+      - contextPath: Elasticsearch.Search.Query
+        description: The query performed in the search.
+        type: String
+      - contextPath: Elasticsearch.Search.total.value
+        description: The number of search results.
+        type: Number
+      - contextPath: Elasticsearch.Search.Results._score
+        description: The relevance score of the search result.
+        type: Number
+      - contextPath: Elasticsearch.Search.Index
+        description: The index in which the search was performed.
+        type: String
+      - contextPath: Elasticsearch.Search.Server
+        description: The server on which the search was performed.
+        type: String
+      - contextPath: Elasticsearch.Search.timed_out
+        description: Whether the search stopped due to a time out.
+        type: Boolean
+      - contextPath: Elasticsearch.Search.took
+        description: The time in milliseconds taken for the search to complete.
+        type: Number
+      - contextPath: Elasticsearch.Search.Page
+        description: The page number from which the search started.
+        type: Number
+      - contextPath: Elasticsearch.Search.Size
+        description: The maximum number of scores that a search can return.
+        type: Number
   dockerimage: demisto/py3-tools:1.0.0.31193
   feed: false
   isfetch: true

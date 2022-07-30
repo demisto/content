@@ -703,6 +703,37 @@ def get_mapping_fields_command():
     demisto.results(elastic_mapping)
 
 
+def search_eql_command(args, proxies):
+    index = args.get('index')
+    query = args.get('query')
+    fields = args.get('fields')  # fields to display
+    size = int(args.get('size'))
+    timestamp_field = args.get('timestamp_field')
+    event_category_field = args.get('event_category_field')
+    sort_tiebreaker = args.get('sort_tiebreaker')
+    query_filter = args.get('filter')
+
+    es = elasticsearch_builder(proxies)
+    search = es.eql.search(index=index, query=query, fields=fields, size=size, tiebreaker_field=sort_tiebreaker,
+                           timestamp_field=timestamp_field, event_category_field=event_category_field,
+                           filter=query_filter)
+    response = search.to_dict()
+
+    total_dict, total_results = get_total_results(response)
+    CommandResults()
+    search_context, meta_headers, hit_tables, hit_headers = results_to_context(index, query, 0,
+                                                                               size, total_dict, response)
+    search_human_readable = tableToMarkdown('Search Metadata:', search_context, meta_headers, removeNull=True)
+    hits_human_readable = tableToMarkdown('Hits:', hit_tables, hit_headers, removeNull=True)
+    total_human_readable = search_human_readable + '\n' + hits_human_readable
+
+    return CommandResults(
+        readable_output=total_human_readable,
+        outputs_prefix='Elasticsearch.Search',
+        outputs=search_context
+    )
+
+
 def main():
     proxies = handle_proxy()
     proxies = proxies if proxies else None
@@ -716,6 +747,8 @@ def main():
             search_command(proxies)
         elif demisto.command() == 'get-mapping-fields':
             get_mapping_fields_command()
+        elif demisto.command() == 'es-eql-search':
+            return_results(search_eql_command(demisto.args(), proxies))
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
