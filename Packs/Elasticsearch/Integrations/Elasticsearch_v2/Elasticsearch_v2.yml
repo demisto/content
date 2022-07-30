@@ -47,7 +47,8 @@ configuration:
   name: raw_query
   required: false
   type: 0
-- additionalinfo: Query time range expressions, start time. Will replace the First Fetch field.
+- additionalinfo: Query time range expressions, start time. Will replace the First
+    Fetch field.
   display: Query Time Range - Start
   hidden: false
   name: time_range_start
@@ -177,6 +178,24 @@ script:
       - desc
       required: false
       secret: false
+    - default: false
+      description: Used instead of ‘query'.
+      isArray: false
+      name: query_dsl
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: timestamp_range_start
+      required: false
+      secret: false
+      description: The starting time of the time range.
+    - default: false
+      isArray: false
+      name: timestamp_range_end
+      required: false
+      secret: false
+      description: The ending time of the time range.
     deprecated: false
     description: Queries an index.
     execution: false

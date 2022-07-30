@@ -243,14 +243,22 @@ def search_command(proxies):
     size = int(demisto.args().get('size'))
     sort_field = demisto.args().get('sort-field')
     sort_order = demisto.args().get('sort-order')
+    query_dsl = demisto.args().get('query_dsl')
+    timestamp_range_start = demisto.args().get('timestamp_range_start')
+    timestamp_range_end = demisto.args().get('timestamp_range_end')
 
+    search_query = query_dsl or query
     es = elasticsearch_builder(proxies)
 
-    que = QueryString(query=query)
+    que = QueryString(query=search_query)
     search = Search(using=es, index=index).query(que)[base_page:base_page + size]
     if explain:
         # if 'explain parameter is set to 'true' - adds explanation section to search results
         search = search.extra(explain=True)
+
+    if timestamp_range_end or timestamp_range_start:
+        time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end)
+        search.filter(time_range_dict)
 
     if fields is not None:
         fields = fields.split(',')
@@ -598,7 +606,7 @@ def format_to_iso(date_string):
     return date_string
 
 
-def get_time_range(last_fetch: Union[str, None], fetch_time=FETCH_TIME, time_range_start=TIME_RANGE_START,
+def get_time_range(last_fetch: Union[str, None] = None, fetch_time=FETCH_TIME, time_range_start=TIME_RANGE_START,
                    time_range_end=TIME_RANGE_END, time_field=TIME_FIELD) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
