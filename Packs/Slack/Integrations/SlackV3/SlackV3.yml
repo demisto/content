@@ -118,6 +118,11 @@ configuration:
   type: 12
   required: false
   additionalinfo: For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID.
+- display: Use Data Collection in Slack
+  name: overwrite_data_collection_survey
+  required: false
+  type: 8
+  defaultvalue: 'false'
 description: Send messages and notifications to your Slack team.
 display: Slack v3
 name: SlackV3

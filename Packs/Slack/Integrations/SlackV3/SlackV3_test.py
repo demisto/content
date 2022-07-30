@@ -21,8 +21,11 @@ def load_test_data(path):
 
 
 USERS = load_test_data('./test_data/users.txt')
+PAYLOAD_DC = load_test_data('test_data/payload_dc.json')
+SURVEY_RESPONSE = load_test_data('./test_data/survey_response.json')
 CONVERSATIONS = load_test_data('./test_data/conversations.txt')
 PAYLOAD_JSON = load_test_data('./test_data/payload.txt')
+DC_USER_RESPONSE = load_test_data('./test_data/dc_user_response.json')
 INTEGRATION_CONTEXT: dict
 
 BOT = '''{
@@ -4764,3 +4767,134 @@ def test_slack_get_integration_context(mocker):
     slack_get_integration_context()
 
     assert demisto.results.mock_calls[0][1][0]['HumanReadable'] == expected_results
+
+
+def test_send_data_collection(requests_mock, mocker):
+    import SlackV3
+    slack_response_mock = SlackResponse(
+        client=None,
+        http_verb='',
+        api_url='',
+        req_args={},
+        headers={},
+        status_code=200,
+        data=js.loads(PAYLOAD_DC)
+    )
+    requests_mock.get(
+        'https://test-address:8443/form?key=4d5463334d5452414d54453d'
+        '&user=6347687062476c77634755756247467762334a305a55423163484e3059584a304c6d4e7662513d3d',
+        json=js.loads(SURVEY_RESPONSE)
+    )
+
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'conversations.open':
+            return {'channel': {'id': 'im_channel'}}
+        elif method == 'chat.postMessage':
+            return slack_response_mock
+        return {}
+    SlackV3.CACHE_EXPIRY = EXPIRED_TIMESTAMP
+
+    base = "https://test-address:8443/#/external/form/"
+    url = f"{base}4d5463334d5452414d54453d/6347687062476c77634755756247467762334a305a55423163484e3059584a304c6d4e7662513d3d"
+    msg = f'\nMy first DC\n{url}'
+    mocker.patch.object(demisto, 'params', return_value={'overwrite_data_collection_survey': True})
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'args', return_value={'to': 'spengler', 'channel': '', 'group': '', 'entry': '',
+                                                       'ignore_add_url': 'true', 'thread_id': '', 'message': msg,
+                                                       'blocks': None, 'channel_id': ''})
+    SlackV3.slack_send()
+    SlackV3.extract_awaiting_dc()
+    calls = slack_sdk.WebClient.api_call.call_args_list
+    chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
+    msgs = [x[1].get('json').get('blocks') for x in chat_call if 'blocks' in x[1].get('json').keys()]
+    dc_blockformated = js.loads(PAYLOAD_DC).get('message').get('blocks')
+    msg_tid = [elm.get('value') for msg in msgs for d in msg if d.get('type') == "actions" for elm in d.get('elements')
+               if elm.get('type') == "button"][0]
+    dc_tid = [elm.get('value') for d in dc_blockformated if d.get('type') == "actions" for elm in d.get('elements')
+              if elm.get('type') == "button"][0]
+
+    assert msg_tid == dc_tid
+    assert len(msgs[0]) == len(dc_blockformated)
+
+
+def test_add_dcq_to_context(mocker):
+    import SlackV3
+
+    base = "https://test-address:8443/#/external/form/"
+    url = f"{base}4d5463334d5452414d54453d/6347687062476c77634755756247467762334a305a55423163484e3059584a304c6d4e7662513d3d"
+    msg = f'\nMy first DC\n{url}'
+    mocker.patch.object(demisto, 'params', return_value={'overwrite_data_collection_survey': True})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+
+    SlackV3.add_dcq_to_context({'to': 'spengler', 'channel': '', 'group': '', 'entry': '', 'ignore_add_url': 'true',
+                                'thread_id': '', 'message': msg, 'blocks': None, 'channel_id': ''})
+    dc_questions = get_integration_context().get('dcquestion')
+    json_dc_message = js.loads(dc_questions)
+
+    assert json_dc_message[0].get('message') == msg
+    assert json_dc_message[0].get('to') == 'spengler'
+
+
+def test_create_slack_block():
+    from SlackV3 import create_slack_block
+    blocks = []
+    questions = json.loads(SURVEY_RESPONSE).get('questions')
+    for q in questions:
+        blocks.append(create_slack_block(q))
+    type_button = {x.get('type') for x in blocks}
+    assert type_button == {"input"}
+
+
+def test_get_state_values_wdate(mocker):
+    from SlackV3 import get_state_values, get_user_by_name
+
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            return users
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    user_tz = get_user_by_name('spengler').get('tz')
+    state = js.loads(DC_USER_RESPONSE).get('payload').get('state', {})
+    answers = get_state_values(state.get('values'), user_tz)
+    assert answers.get('0') == 'Yes'
+    assert answers.get('1') == 'DEBUG SLACK'
+    assert answers.get('3') == '2022-01-29 07:00  America/Los_Angeles'
+
+
+def test_get_state_values(mocker):
+    from SlackV3 import get_state_values
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    state = js.loads(DC_USER_RESPONSE).get('payload').get('state', {})
+    answers = get_state_values(state.get('values'))
+    assert answers.get('0') == 'Yes'
+    assert answers.get('1') == 'DEBUG SLACK'
+
+
+def test_reply_dc_survey(mocker, requests_mock):
+    from SlackV3 import get_state_values, get_user_by_name, reply_dc_survey
+
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            return users
+    requests_mock.post('https://test-address:8443/form/submit', status_code=200)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'params', return_value={'demisto_api_key': "xxxxxxxxxxxxxxxxx"})
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    user = get_user_by_name('spengler')
+    payload = js.loads(DC_USER_RESPONSE).get('payload')
+    state = payload.get('state', {})
+    actions = payload.get('actions', {})
+    answers = get_state_values(state.get('values'))
+    action_id_submit = "xsoar_dc_action"
+    reply_dc_survey(answers, user, actions, action_id_submit)
+    success_results = demisto.results.mock_calls[0][1][0]['HumanReadable']
+
+    assert success_results == 'Successfully answers posted to Demisto'
