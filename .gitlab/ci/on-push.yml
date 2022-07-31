@@ -87,13 +87,7 @@ create-instances:
     - if: '$INSTANCE_TESTS'
   cache:
     policy: pull-push
-  services:
-    - name: docker-io.art.code.pan.run/neo4j:latest
-      alias: localhost
-      variables:
-        NEO4J_AUTH: neo4j/test
   variables:
-    NEO4J_AUTH: neo4j/test
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     KUBERNETES_CPU_REQUEST: 1000m
 
