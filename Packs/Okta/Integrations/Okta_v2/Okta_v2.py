@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 # IMPORTS
 # Disable insecure warnings
@@ -525,13 +525,33 @@ class Client(BaseClient):
             if key == 'query':
                 key = 'q'
             query_params[key] = encode_string_results(value)
-        if args.get('limit'):
-            return self._http_request(
-                method='GET',
-                url_suffix=uri,
-                params=query_params
-            )
-        return self.get_paged_results(uri, query_params)
+        limit = int(args.get('limit'))
+        response = self._http_request(
+            method="GET",
+            url_suffix=uri,
+            resp_type='response',
+            params=query_params
+        )
+        paged_results = response.json()
+        if limit > 200:
+            query_params = {}
+            limit -= 200
+            while limit > 0 and "next" in response.links and len(response.json()) > 0:
+                query_params['limit'] = encode_string_results(str(limit))
+                next_page = delete_limit_param(response.links.get("next").get("url"))
+                response = self._http_request(
+                    method="GET",
+                    full_url=next_page,
+                    url_suffix='',
+                    resp_type='response',
+                    params=query_params
+                )
+                paged_results += response.json()
+                limit -= 200
+        after = None
+        if "next" in response.links and len(response.json()) > 0:
+            after = get_after_tag(response.links.get("next").get("url"))
+        return (paged_results, after)
 
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
@@ -587,12 +607,16 @@ class Client(BaseClient):
             url_suffix=uri
         )
 
-    def list_zones(self):
+    def list_zones(self, limit):
         uri = 'zones'
-        return self._http_request(
-            method='GET',
-            url_suffix=uri
-        )
+        if limit:
+            query_params = {'limit': encode_string_results(limit)}
+            return self._http_request(
+                method='GET',
+                url_suffix=uri,
+                params=query_params
+            )
+        return self.get_paged_results(uri)
 
     def create_zone(self, zoneObject):
         uri = 'zones'
@@ -950,19 +974,21 @@ def get_group_members_command(client, args):
 
 
 def list_users_command(client, args):
-    raw_response = client.list_users(args)
+    raw_response, after_tag = client.list_users(args)
     verbose = args.get('verbose')
     users = client.get_readable_users(raw_response, verbose)
     user_context = client.get_users_context(raw_response)
     context = createContext(user_context, removeNull=True)
-    outputs = {
-        'Account(val.ID && val.ID == obj.ID)': context
-    }
     if verbose == 'true':
         readable_output = f"### Okta users found:\n {users}"
     else:
         readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
-
+    if after_tag:
+        readable_output += f"\n### tag: {after_tag}"
+    outputs = {
+        'Account(val.ID && val.ID == obj.ID)': context,
+        'Okta.User(val.tag)': {'tag': after_tag}
+    }
     return(
         readable_output,
         outputs,
@@ -1114,7 +1140,7 @@ def get_zone_command(client, args):
 
 
 def list_zones_command(client, args):
-    raw_response = client.list_zones()
+    raw_response = client.list_zones(args.get('limit'))
     if not raw_response:
         return 'No zones found.', {}, raw_response
     readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
@@ -1242,6 +1268,35 @@ def create_group_command(client, args):
         outputs,
         raw_response
     )
+
+
+def get_after_tag(url):
+    """retrieve the after param from the url
+
+    Args:
+        url: some url
+
+    Returns:
+        String: the value of the 'after' query param.
+    """
+    parsed_url = urlparse(url)
+    captured_value = parse_qs(parsed_url.query)['after'][0]
+    return captured_value
+
+
+def delete_limit_param(url):
+    """Delete the limit param from the url
+
+    Args:
+        url: some url
+
+    Returns:
+        String: the url with the limit query param.
+    """
+    parsed_url = urlparse(url)
+    query_dict = parse_qs(parsed_url.query)
+    query_dict.pop('limit')
+    return urlunparse(parsed_url._replace(query=urlencode(query_dict, True)))
 
 
 def main():
