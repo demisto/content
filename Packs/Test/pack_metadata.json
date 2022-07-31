@@ -1,0 +1,21 @@
+{
+    "name": "Test",
+    "description": "Test.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Arad",
+    "url": "",
+    "email": "",
+    "created": "2022-07-31T14:54:32Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "AradCarmi"
+    ]
+}
