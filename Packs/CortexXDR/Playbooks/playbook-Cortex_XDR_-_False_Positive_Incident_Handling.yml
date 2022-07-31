@@ -301,7 +301,7 @@ tasks:
           simple: Mark IOCs to be approved
         options: []
         optionsarg:
-        - simple: ${incident.filesha256}
+        - simple: ${inputs.filesha256}
         placeholder: ''
         readonly: false
         required: false
@@ -426,7 +426,7 @@ tasks:
           left:
             iscontext: true
             value:
-              simple: inputs.AutoUnisolate
+              simple: inputs.AutoUnisolation
           operator: isEqualString
           right:
             value:
@@ -480,7 +480,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       Endpoint_ID:
-        simple: ${Endpoint.ID}
+        simple: ${inputs.HostID}
     separatecontext: true
     skipunavailable: false
     task:
