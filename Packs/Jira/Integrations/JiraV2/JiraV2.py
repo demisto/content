@@ -4,6 +4,7 @@ from requests_oauthlib import OAuth1
 from dateparser import parse
 from datetime import timedelta
 from CommonServerPython import *
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -182,7 +183,8 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
         fields = extra_fields.split(",")
         fields_mapping_name_id = {k.lower(): v.lower() for k, v in get_custom_field_names().items()}
         query_params['fields'] = [k for y in fields for k, v in fields_mapping_name_id.items() if v == y.lower()]
-        nofields.update({fieldextra for fieldextra in fields if fieldextra.lower() not in fields_mapping_name_id.values()})
+        nofields.update(
+            {fieldextra for fieldextra in fields if fieldextra.lower() not in fields_mapping_name_id.values()})
     if nofields:
         if len(nofields) > 1:
             return_warning(f'{",".join(nofields)} do not exist')
@@ -358,7 +360,7 @@ def get_account_id_from_attribute(
     )
 
 
-def generate_md_context_get_issue(data, customfields=None, nofields=None):
+def generate_md_context_get_issue(data, customfields=None, nofields=None, extra_fields=None):
     get_issue_obj: dict = {"md": [], "context": []}
     if not isinstance(data, list):
         data = [data]
@@ -374,9 +376,12 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None):
         context_obj['ProjectName'] = md_obj['project'] = demisto.get(element, 'fields.project.name')
         context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
         context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
+
         # Parse custom fields into their original names
         custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
-        if custom_fields and customfields and not nofields:
+        if extra_fields:
+            custom_fields = extra_fields
+        if (custom_fields and customfields and not nofields) or extra_fields:
             field_mappings = get_custom_field_names()
             for field_returned in custom_fields:
                 readable_field_name = field_mappings.get(field_returned)
@@ -408,7 +413,8 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None):
         })
 
         md_obj.update({
-            'issueType': demisto.get(element, 'fields.issuetype.description'),
+            'issueType': f"{demisto.get(element, 'fields.issuetype.name')} "
+                         f"({demisto.get(element, 'fields.issuetype.description')})",
             'labels': demisto.get(element, 'fields.labels'),
             'description': demisto.get(element, 'fields.description'),
             'ticket_link': demisto.get(element, 'self'),
@@ -669,7 +675,7 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
     return issue
 
 
-def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_attachments=False):
+def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_attachments=False, extra_fields=None):
     j_res = jira_req('GET', f'rest/api/latest/issue/{issue_id}', resp_type='json')
     if expand_links == "true":
         expand_urls(j_res)
@@ -686,7 +692,7 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
             filename, attachments_zip = get_attachment_data(attachment)
             demisto.results(fileResult(filename=filename, data=attachments_zip))
 
-    md_and_context = generate_md_context_get_issue(j_res)
+    md_and_context = generate_md_context_get_issue(j_res, extra_fields=extra_fields)
     human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], argToList(headers))
     if is_update:
         human_readable += f'Issue #{issue_id} was updated successfully'
@@ -739,6 +745,69 @@ def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, tra
         url = f'rest/api/latest/issue/{issue_id}/'
         jira_req('PUT', url, json.dumps(issue))
     return get_issue(issue_id, headers, is_update=True)
+
+
+def append_to_field_command(issue_id, field_json, headers=None):
+    issue = jira_req('GET', f'rest/api/latest/issue/{issue_id}', resp_type='json')
+    fields = json.loads(field_json, strict=False)
+    new_data = {}
+    for field in fields:
+        field_type = __get_field_type(field)
+        if not field_type:
+            raise DemistoException(f"field {field} could not be updated.")
+
+        if field_type == 'Field Not Found':
+            raise DemistoException(f'Could not identify field {field}. Make sure it was entered with correct field ID.')
+
+        current_data_in_field = issue.get('fields', {}).get(field)
+        if not current_data_in_field:
+            new_data[field] = __create_value_by_type(field_type, fields[field])
+        else:
+            new_data[field] = __add_value_by_type(field_type, current_data_in_field, fields[field])
+
+    _update_fields(issue_id, new_data)
+
+    return get_issue(issue_id, headers, is_update=True)
+
+
+def _update_fields(issue_id, new_data):
+    url = f'rest/api/latest/issue/{issue_id}/'
+    if new_data:
+        jira_req('PUT', url, json.dumps({'fields': new_data}))
+
+
+def get_field_command(issue_id, field):
+    fields = argToList(field)
+    return get_issue(issue_id, extra_fields=fields, is_update=False)
+
+
+def __get_field_type(field_id):
+    fields = jira_req('GET', 'rest/api/2/field')
+    field_data_filter = filter(lambda x: x.get('id') == field_id, fields.json())
+    try:
+        field_data = next(field_data_filter)
+        return field_data.get('schema', {}).get('type')
+    except StopIteration:
+        return 'Field Not Found'
+
+
+def __add_value_by_type(type, current_value, new_value):
+    if type == 'string':
+        new_val = current_value + "," + new_value
+    elif type == 'array':
+        new_val = current_value + [new_value]
+    else:
+        raise DemistoException(f"Command only support string or array-typed fields. Field given is typed {type}")
+    return new_val
+
+
+def __create_value_by_type(type, value):
+    if type == 'string':
+        return str(value)
+    elif type == 'array':
+        return [value]
+    else:
+        raise DemistoException(f"Command only support string or array-typed fields. Field given is typed {type}")
 
 
 def edit_status(issue_id, status, issue):
@@ -1368,6 +1437,14 @@ def main():
 
         elif demisto.command() == 'jira-edit-issue':
             human_readable, outputs, raw_response = edit_issue_command(**snakify(demisto.args()))
+            return_outputs(human_readable, outputs, raw_response)
+
+        elif demisto.command() == 'jira-append-to-field':
+            human_readable, outputs, raw_response = append_to_field_command(**snakify(demisto.args()))
+            return_outputs(human_readable, outputs, raw_response)
+
+        elif demisto.command() == 'jira-get-specific-field':
+            human_readable, outputs, raw_response = get_field_command(**snakify(demisto.args()))
             return_outputs(human_readable, outputs, raw_response)
 
         elif demisto.command() == 'jira-get-comments':
