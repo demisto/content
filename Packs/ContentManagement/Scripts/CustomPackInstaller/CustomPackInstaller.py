@@ -83,7 +83,7 @@ def main():
     pack_id = args.get('pack_id')
     skip_verify = args.get('skip_verify')
     skip_validation = args.get('skip_validation')
-    instance_name = args.get('instance_name')
+    instance_name = args.get('using')
 
     try:
         installation_status, error_message = install_custom_pack(pack_id, skip_verify, skip_validation, instance_name)

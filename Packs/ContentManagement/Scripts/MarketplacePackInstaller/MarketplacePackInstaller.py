@@ -348,7 +348,8 @@ def create_context(packs_to_install: List[Dict[str, str]], content_packs_install
 def main():
     try:
         args = demisto.args()
-        installer = ContentPackInstaller(args.get('instance_name'))
+        instance_name = args.get('using')
+        installer = ContentPackInstaller(instance_name)
         packs_to_install = format_packs_data_for_installation(args)
 
         for pack in packs_to_install:

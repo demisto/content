@@ -328,8 +328,9 @@ tasks:
         simple: ${ConfigurationSetup.CustomPacks.packid}
       retry-count:
         simple: '3'
-      instance_name:
-        simple: Demisto REST API Gold
+      using:
+        complex:
+          root: inputs.InstanceName
     separatecontext: false
     view: |-
       {
@@ -398,8 +399,9 @@ tasks:
         simple: packversion
       packs_data:
         simple: ${ConfigurationSetup.MarketplacePacks}
-      instance_name:
-        simple: Demisto REST API Gold
+      using:
+        complex:
+          root: inputs.InstanceName
     separatecontext: false
     view: |-
       {
@@ -1034,7 +1036,12 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: InstanceName
+  value: {}
+  required: false
+  description: Demisto REST API instance name to use.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)

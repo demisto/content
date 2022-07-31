@@ -18,12 +18,6 @@ args:
   name: pack_version_key
   required: true
   secret: false
-- default: true
-  description: Demisto REST API instance name to use.
-  isArray: false
-  name: instance_name
-  required: false
-  secret: false
 commonfields:
   id: MarketplacePackInstaller
   version: -1
