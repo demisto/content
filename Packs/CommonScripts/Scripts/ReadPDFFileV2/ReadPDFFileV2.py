@@ -49,6 +49,8 @@ def handle_error_read_only(fun, path, exp):
             fun(path)
         except Exception as e:
             raise ValueError(str(e))
+    else:
+        raise ValueError(str(exp))
 
 
 def mark_suspicious(suspicious_reason, entry_id):
