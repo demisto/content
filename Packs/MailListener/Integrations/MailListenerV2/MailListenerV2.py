@@ -296,7 +296,7 @@ def fetch_mails(client: IMAPClient,
                                                permitted_from_domains,
                                                uid_to_fetch_from)
         demisto.debug(f'Searching for email messages with criteria: {messages_query}')
-        messages_uids = client.search(messages_query)[:limit]
+        messages_uids = client.search(messages_query)
     mails_fetched = []
     messages_fetched = []
     demisto.debug(f'Messages to fetch: {messages_uids}')
@@ -315,6 +315,8 @@ def fetch_mails(client: IMAPClient,
                 int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)
+            if len(mails_fetched) >= limit:
+                break
         elif email_message_object.date is None:
             demisto.error(f"Skipping email with ID {email_message_object.message_id},"
                           f" it doesn't include a date field that shows when was it received.")
@@ -403,7 +405,8 @@ def list_emails(client: IMAPClient,
                 first_fetch_time: str,
                 with_headers: bool,
                 permitted_from_addresses: str,
-                permitted_from_domains: str) -> CommandResults:
+                permitted_from_domains: str,
+                _limit: int,) -> CommandResults:
     """
     Lists all emails that can be fetched with the given configuration and return a preview version of them.
     Args:
@@ -412,6 +415,7 @@ def list_emails(client: IMAPClient,
         with_headers: Whether to add headers to the search query
         permitted_from_addresses: A string representation of list of mail addresses to fetch from
         permitted_from_domains: A string representation list of domains to fetch from
+        _limit: Upper limit as set in the integration params.
 
     Returns:
         The Subject, Date, To, From and ID of the fetched mails wrapped in command results object.
@@ -422,7 +426,8 @@ def list_emails(client: IMAPClient,
                                       time_to_fetch_from=fetch_time,
                                       with_headers=with_headers,
                                       permitted_from_addresses=permitted_from_addresses,
-                                      permitted_from_domains=permitted_from_domains)
+                                      permitted_from_domains=permitted_from_domains,
+                                      limit=_limit)
     results = [{'Subject': email.subject,
                 'Date': email.date.isoformat(),
                 'To': email.to,
@@ -491,7 +496,8 @@ def main():
                                            first_fetch_time=first_fetch_time,
                                            with_headers=with_headers,
                                            permitted_from_addresses=permitted_from_addresses,
-                                           permitted_from_domains=permitted_from_domains))
+                                           permitted_from_domains=permitted_from_domains,
+                                           _limit=limit))
             elif demisto.command() == 'mail-listener-get-email':
                 return_results(get_email(client=client,
                                          message_id=args.get('message-id')))
