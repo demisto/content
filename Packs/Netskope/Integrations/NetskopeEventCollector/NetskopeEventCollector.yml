@@ -31,7 +31,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events) - for more information see the help section.
+- additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events). For more information about event types see the help section.
   defaultvalue: '1000'
   display: Max Fetch
   hidden: false
