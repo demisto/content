@@ -513,7 +513,11 @@ def setup_upload_polling_command(client: Client, args: Dict[str, Any]) -> Comman
     return upload_polling_command(args, client=client)
 
 
-@polling_function('sandblast-upload')
+@polling_function(
+    name='sandblast-upload',
+    interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', DEFAULT_INTERVAL)),
+    timeout=arg_to_number(demisto.args().get('polling_timeout', DEFAULT_TIMEOUT)),
+)
 def upload_polling_command(args: Dict[str, Any], **kwargs) -> PollResult:
     """
     Polling command to display the progress of the upload command.
