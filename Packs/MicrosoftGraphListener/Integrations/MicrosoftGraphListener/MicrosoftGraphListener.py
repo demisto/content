@@ -1,12 +1,14 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 ''' IMPORTS '''
 import requests
 import base64
 import os
 import json
+from urllib.parse import quote
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -662,7 +664,7 @@ class MsGraphClient:
 
         return mime_content
 
-    def _get_email_attachments(self, message_id):
+    def _get_email_attachments(self, message_id, user_id=None):
         """
         Get email attachments  and upload to War Room.
 
@@ -672,9 +674,10 @@ class MsGraphClient:
         :return: List of uploaded to War Room data, uploaded file path and name
         :rtype: ``list``
         """
-
+        if not user_id:
+            user_id = self._mailbox_to_fetch
         attachment_results = []  # type: ignore
-        suffix_endpoint = f'users/{self._mailbox_to_fetch}/messages/{message_id}/attachments'
+        suffix_endpoint = f'users/{user_id}/messages/{message_id}/attachments'
         attachments = self.ms_client.http_request('Get', suffix_endpoint).get('value', [])
 
         for attachment in attachments:
@@ -889,6 +892,105 @@ class MsGraphClient:
             'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
         }
 
+    def list_mails(self, search: str = None, odata: str = None) -> Union[dict, list]:
+        """Returning all mails from given user
+
+        Args:
+            search (str):   plaintext search query
+            odata (str):    odata-formatted query
+
+        Returns:
+            dict or list:   list of mails or dictionary when single item is returned
+        """
+        suffix = f'/users/{self._mailbox_to_fetch}/messages'
+        pages_to_pull = demisto.args().get('pages_to_pull', 1)
+        page_size = demisto.args().get('page_size', 20)
+        odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
+
+        if search:
+            # Data is being handled as a JSON so in cases the search phrase contains double quote ",
+            # we should escape it.
+            search = search.replace('"', '\\"')
+            odata = f'{odata}&$search="{quote(search)}"'
+        if odata:
+            suffix += f'?{odata}'
+        demisto.debug(f"URL suffix is {suffix}")
+        response = self.ms_client.http_request('GET', suffix)
+        return self.pages_puller(response, assert_pages(pages_to_pull))
+
+    def list_attachments(self, message_id: str, folder_id: str) -> dict:
+        """Listing all the attachments
+
+        Args:
+            message_id (str): ID of a message to pull
+            folder_id (str):  ID of folder from which to pull message
+
+        Returns:
+            dict: Attachments Data
+        """
+        no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/'
+        with_folder = f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/'
+        suffix = with_folder if folder_id else no_folder
+        return self.ms_client.http_request('GET', suffix)
+
+    def get_mailbox_to_fetch(self):
+        return self._mailbox_to_fetch
+
+    def get_attachment(self, message_id: str, attachment_id: str, folder_id: str = None) -> dict:
+        """
+
+        Args:
+            message_id (str):       ID of a message to pull
+            attachment_id (str):    ID of an attachment to pull
+            folder_id (str):        ID of folder from which to pull message
+
+        Returns:
+            dict:                   Attachment Data
+        """
+        no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/' \
+                    f'?$expand=microsoft.graph.itemattachment/item'
+        with_folder = (f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/'  # type: ignore
+                       f'messages/{message_id}/attachments/{attachment_id}/'
+                       f'?$expand=microsoft.graph.itemattachment/item')
+        suffix = with_folder if folder_id else no_folder
+
+        response = self.ms_client.http_request('GET', suffix)
+        return response
+
+    def get_email_as_eml(self, user_id: str, message_id: str) -> str:
+        """Returns MIME content of specified message
+
+        Args:
+            user_id (str): User id or mailbox address
+            message_id (str): The message id of the email
+
+        Returns:
+            str: MIME content of the email
+        """
+
+        suffix = f'/users/{user_id}/messages/{message_id}/$value'
+        return self.ms_client.http_request('GET', suffix, resp_type='text')
+
+    def pages_puller(self, response: dict, page_count: int) -> list:
+        """ Gets first response from API and returns all pages
+
+        Args:
+            response (dict):        raw http response data
+            page_count (int):       amount of pages
+
+        Returns:
+            list: list of all pages
+        """
+        responses = [response]
+        for i in range(page_count - 1):
+            next_link = response.get('@odata.nextLink')
+            if next_link:
+                response = self.ms_client.http_request('GET', full_url=next_link, url_suffix=None)
+                responses.append(response)
+            else:
+                return responses
+        return responses
+
     def test_connection(self):
         """
         Basic connection test instead of test-module.
@@ -903,6 +1005,236 @@ class MsGraphClient:
             return_outputs('```✅ Success!```')
         else:
             raise Exception("Failed validating the user.")
+
+
+def assert_pages(pages: Union[str, int]) -> int:
+    """
+
+    Args:
+        pages (str or int): pages need to pull in int or str
+
+    Returns:
+        int: default 1
+
+    """
+    if isinstance(pages, str) and pages.isdigit():
+        return int(pages)
+    elif isinstance(pages, int):
+        return pages
+    return 1
+
+
+def list_attachments_command(client: MsGraphClient, args):
+    message_id = args.get('message_id')
+    folder_id = args.get('folder_id')
+    raw_response = client.list_attachments(message_id, folder_id)
+    attachments = raw_response.get('value')
+    if attachments:
+        attachment_list = [{
+            'ID': attachment.get('id'),
+            'Name': attachment.get('name') or attachment.get('id'),
+            'Type': attachment.get('contentType')
+        } for attachment in attachments]
+        entry_context = {'ID': message_id, 'Attachment': attachment_list, 'UserID': client.get_mailbox_to_fetch()}
+
+        # Build human readable
+        file_names = [attachment.get('Name') for attachment in attachment_list if isinstance(
+            attachment, dict) and attachment.get('Name')]
+        human_readable = tableToMarkdown(
+            f'Total of {len(attachment_list)} attachments found in message {message_id}',
+            {'File names': file_names}
+        )
+        command_results = CommandResults(
+            outputs_prefix='MSGraphMailAttachment',
+            outputs_key_field='ID',
+
+            outputs=entry_context,
+            readable_output=human_readable,
+            raw_response=raw_response
+        )
+    else:
+        human_readable = f'### No attachments found in message {message_id}'
+        command_results = CommandResults(
+            outputs_prefix='MSGraphMailAttachment',
+            outputs_key_field='ID',
+
+            outputs=dict(),
+            readable_output=human_readable,
+            raw_response=raw_response
+        )
+    return command_results
+
+
+def list_mails_command(client: MsGraphClient, args):
+    search = args.get('search')
+    odata = args.get('odata')
+
+    raw_response = client.list_mails(search=search, odata=odata)
+    last_page_response = raw_response[len(raw_response) - 1]
+    metadata = ''
+    next_page = last_page_response.get('@odata.nextLink')
+    if next_page:
+        metadata = '\nPay attention there are more results than shown. For more data please ' \
+                   'increase "pages_to_pull" argument'
+
+    mail_context = build_mail_object(raw_response)
+    if mail_context:
+        entry_context = mail_context
+        if next_page:
+            entry_context['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': next_page}  # type: ignore
+
+        # human_readable builder
+        human_readable_header = f'{len(mail_context)} mails received {metadata}' if metadata \
+            else f'Total of {len(mail_context)} mails received'
+        human_readable = tableToMarkdown(
+            human_readable_header,
+            mail_context,
+            headers=['Subject', 'From', 'Recipients', 'SendTime', 'ID', 'InternetMessageID']
+        )
+    else:
+        human_readable = '### No mails were found'
+        entry_context = {}
+
+    command_results = CommandResults(
+        outputs_prefix='MSGraphMail',
+        outputs_key_field='ID',
+
+        outputs=entry_context,
+        readable_output=human_readable,
+        raw_response=raw_response
+    )
+    return command_results
+
+
+def get_email_as_eml_command(client: MsGraphClient, args):
+    user_id = client.get_mailbox_to_fetch()
+    message_id = args.get('message_id')
+
+    eml_content = client.get_email_as_eml(user_id, message_id)
+    file_result = fileResult(f'{message_id}.eml', eml_content)
+
+    return file_result
+
+
+def build_folders_path(folder_string: str) -> Optional[str]:
+    """
+
+    Args:
+        folder_string (str): string with `,` delimiter. first one is mailFolders all other are child
+
+    Returns:
+        str or None:  string with path to the folder and child folders
+    """
+    if isinstance(folder_string, str):
+        path = 'mailFolders/'
+        folders_list = argToList(folder_string, ',')
+        first = True
+        for folder in folders_list:
+            if first:
+                path += folder
+                first = False
+            else:
+                path += f'/childFolders/{folder}'
+        return path
+    return None
+
+
+def build_mail_object(raw_response: Union[dict, list], get_body: bool = False, user_id: str = None) -> Union[dict, list]:
+    """Building mail entry context
+    Getting a list from build_mail_object
+
+    Args:
+        user_id (str): user id of the mail
+        get_body (bool): should get body
+        raw_response (dict or list): list of pages
+
+    Returns:
+        dict or list: output context
+    """
+
+    def build_mail(given_mail: dict) -> dict:
+        """
+
+        Args:
+            given_mail (dict):  Mail Data
+
+        Returns:
+            dict: Transformed mail data
+        """
+        # Dicts
+        mail_properties = {
+            'ID': 'id',
+            'Created': 'createdDateTime',
+            'LastModifiedTime': 'lastModifiedDateTime',
+            'ReceivedTime': 'receivedDateTime',
+            'SendTime': 'sentDateTime',
+            'Categories': 'categories',
+            'HasAttachments': 'hasAttachments',
+            'Subject': 'subject',
+            'IsDraft': 'isDraft',
+            'Headers': 'internetMessageHeaders',
+            'Flag': 'flag',
+            'Importance': 'importance',
+            'InternetMessageID': 'internetMessageId',
+            'ConversationID': 'conversationId',
+        }
+
+        contact_properties = {
+            'Sender': 'sender',
+            'From': 'from',
+            'Recipients': 'toRecipients',
+            'CCRecipients': 'ccRecipients',
+            'BCCRecipients': 'bccRecipients',
+            'ReplyTo': 'replyTo'
+        }
+
+        # Create entry properties
+        entry = {k: given_mail.get(v) for k, v in mail_properties.items()}
+
+        # Create contacts properties
+        entry.update(
+            {k: build_contact(given_mail.get(v)) for k, v in contact_properties.items()}  # type: ignore
+        )
+
+        if get_body:
+            entry['Body'] = given_mail.get('body', {}).get('content')
+        if user_id:
+            entry['UserID'] = user_id
+        return entry
+
+    def build_contact(contacts: Union[dict, list, str]) -> object:
+        """Building contact object
+
+        Args:
+            contacts (list or dict or str):
+
+        Returns:
+            dict or list[dict] or str or None: describing contact
+        """
+        if contacts:
+            if isinstance(contacts, list):
+                return [build_contact(contact) for contact in contacts]
+            elif isinstance(contacts, dict):
+                email = contacts.get('emailAddress')
+                if email and isinstance(email, dict):
+                    return {
+                        'Name': email.get('name'),
+                        'Address': email.get('address')
+                    }
+        return None
+
+    mails_list = list()
+    if isinstance(raw_response, list):  # response from list_emails_command
+        for page in raw_response:
+            # raw_response is a list containing multiple pages or one page
+            # if value is not empty, there are emails in the page
+            value = page.get('value')
+            if value:
+                for mail in value:
+                    mails_list.append(build_mail(mail))
+    elif isinstance(raw_response, dict):  # response from get_message_command
+        return build_mail(raw_response)
+    return mails_list
 
 
 def main():
@@ -975,6 +1307,12 @@ def main():
             return_outputs(human_readable, ec)
         elif command == 'reply-mail':
             return_results(client.reply_mail(args))
+        elif command == 'msgraph-mail-list-emails':
+            return_results(list_mails_command(client, args))
+        elif command == 'msgraph-mail-list-attachments':
+            return_results(list_attachments_command(client, args))
+        elif command == 'msgraph-mail-get-email-as-eml':
+            demisto.results(get_email_as_eml_command(client, args))
     except Exception as e:
         return_error(str(e))
 
