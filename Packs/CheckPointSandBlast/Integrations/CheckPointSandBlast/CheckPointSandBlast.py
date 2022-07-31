@@ -497,7 +497,7 @@ def quota_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 ''' POLLING COMMANDS '''
 
 
-def upload_with_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def setup_upload_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Initiate polling command for upload command.
 
@@ -509,119 +509,56 @@ def upload_with_polling_command(client: Client, args: Dict[str, Any]) -> Command
         CommandResults: A result to return to the user which will be presented in a markdown value.
             The result itself will depend on the stage of polling.
     """
-    return run_polling_command(client, args, 'sandblast-upload', upload_command, query_command)
+    args['polling'] = True
+    return upload_polling_command(args, client=client)
 
 
-def run_polling_command(
-    client: Client,
-    args: Dict[str, Any],
-    command: str,
-    upload_function: Callable,
-    query_function: Callable
-) -> CommandResults:
+@polling_function('sandblast-upload')
+def upload_polling_command(args: Dict[str, Any], **kwargs) -> CommandResults:
     """
-    Polling command that will display the progress of the upload command.
-    To show the progress there will be use of the query command.
+    Polling command to display the progress of the upload command.
+    After the first run, progress will be shown through the query command.
     Once a new file is uploaded to the server, upload command will provide the status
-    'UPLOAD_SUCCESS' and pass arguments to then run with query command.
-    Query command will run till its status is 'FOUND' or 'PARTIALLY_FOUND'
+    'UPLOAD_SUCCESS' and pass arguments to the with query command.
+    Query command will run till its status is 'FOUND' or 'PARTIALLY_FOUND',
     which is the ending term for the polling command.
 
     Args:
-        client (Client): Connection to the client class from which we can run the desired request.
-        args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request.
-        command (str): Command to schedule.
-        upload_function (Callable): upload_command to run.
-        query_function (Callable): query_command to run.
+        args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request and a Client.
 
     Returns:
         CommandResults: A result to return to the user which will be presented in a markdown value.
             The result itself will depend on the stage of polling.
     """
-    ScheduledCommand.raise_error_if_not_supported()
-
-    interval_in_secs = int(args.get('interval_in_seconds', DEFAULT_INTERVAL))
-    timeout_in_seconds = int(args.get('timeout_in_seconds', DEFAULT_TIMEOUT))
-
     if 'file_hash' not in args:
-        command_results = upload_function(client, args)
-        outputs = command_results.raw_response
+        command_results = upload_command(kwargs['client'], args)
 
-        file_name = dict_safe_get(outputs, ['response', 'file_name'])
-        file_hash = dict_safe_get(outputs, ['response', 'md5'])
-        label = dict_safe_get(outputs, ['response', 'status', 'label'])
+    else:
+        command_results = query_command(kwargs['client'], args)
 
-        if label not in ('FOUND', 'PARTIALLY_FOUND'):
-            scheduled_command = schedule_next_polling(
-                args=args,
-                command=command,
-                interval_in_secs=interval_in_secs,
-                timeout_in_seconds=timeout_in_seconds,
-                file_name=file_name,
-                file_hash=file_hash
-            )
-            command_results.scheduled_command = scheduled_command
+    raw_response = command_results.raw_response
 
-            return command_results
+    file_name = dict_safe_get(raw_response, ['response', 'file_name'])
+    file_hash = dict_safe_get(raw_response, ['response', 'md5'])
+    label = dict_safe_get(raw_response, ['response', 'status', 'label'])
 
-        args['file_name'] = file_name
-        args['file_hash'] = file_hash
-
-    command_results = query_function(client, args)
-    outputs = command_results.raw_response
-    label = dict_safe_get(outputs, ['response', 'status', 'label'])
-
-    if label not in ('FOUND', 'PARTIALLY_FOUND'):
-        scheduled_command = schedule_next_polling(
-            args=args,
-            command=command,
-            interval_in_secs=interval_in_secs,
-            timeout_in_seconds=timeout_in_seconds,
-            file_name=file_name,
-            file_hash=file_hash
+    if label in ('FOUND', 'PARTIALLY_FOUND'):
+        return PollResult(
+            response=command_results,
+            continue_to_poll=False,
         )
 
-        # result with scheduled_command only - no update to the war room
-        command_results = CommandResults(scheduled_command=scheduled_command)
-
-    return command_results
-
-
-def schedule_next_polling(
-    args: Dict[str, Any],
-    command: str,
-    interval_in_secs: int,
-    timeout_in_seconds: int,
-    file_name: str,
-    file_hash: str,
-) -> ScheduledCommand:
-    """
-    Initialize a scheduled command for the next poll.
-
-    Args:
-        args (Dict[str, Any]): Arguments passed by the user and for the next polling command.
-        command (str): Next command to poll.
-        interval_in_secs (int): Time interval between each polling.
-        timeout_in_seconds (int): Timeout for polling to end.
-        file_name (str): Name of the file to poll.
-        file_hash (str): Hash of the file to poll.
-
-    Returns:
-        ScheduledCommand: Next poll.
-    """
     polling_args = {
         'file_name': file_name,
         'file_hash': file_hash,
-        'interval_in_seconds': interval_in_secs,
-        'polling': True,
         **args
     }
 
-    return ScheduledCommand(
-        command=command,
-        next_run_in_seconds=interval_in_secs,
-        args=polling_args,
-        timeout_in_seconds=timeout_in_seconds
+    return PollResult(
+        response=command_results,
+        continue_to_poll=True,
+        args_for_next_run=polling_args,
+        partial_result=command_results
     )
 
 
@@ -885,7 +822,7 @@ def main() -> None:
 
     commands = {
         'sandblast-query': query_command,
-        'sandblast-upload': upload_with_polling_command,
+        'sandblast-upload': setup_upload_polling_command,
         'sandblast-download': download_command,
         'sandblast-quota': quota_command,
     }
