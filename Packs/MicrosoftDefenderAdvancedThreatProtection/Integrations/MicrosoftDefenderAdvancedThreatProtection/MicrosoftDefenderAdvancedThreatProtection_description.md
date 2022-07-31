@@ -19,10 +19,11 @@ After authorizing the Demisto app, you will get an ID, Token, and Key, which sho
 
 ### Device Code Flow
 ___
+In order to use Device-Code auth flow, fill only *ID* parameter and mark *Use a self-deployed Azure Application*.
 
-In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
+Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
+to link Microsoft Defender for Endpoint with Cortex XSOAR.
 
-To connect to the Microsoft Defender for Endpoint using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
 1. Fill in the required parameters.
 2. Run the ***!microsoft-atp-auth-start*** command. 
 3. Follow the instructions that appear.
