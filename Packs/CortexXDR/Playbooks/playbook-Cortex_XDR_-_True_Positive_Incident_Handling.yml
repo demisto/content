@@ -1,7 +1,5 @@
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+  contentitemfields: {}
 id: Cortex XDR - True Positive Incident Handling
 inputs:
 - description: Add comment to close this incident.
@@ -57,7 +55,7 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: ${incident.processpath}
+    simple: ${incident.processpaths}
 name: Cortex XDR - True Positive Incident Handling
 outputs: []
 starttaskid: '0'
@@ -141,18 +139,22 @@ tasks:
                 value:
                   simple: incident.id
             operator: append
+      closeNotes:
+        simple: ${inputs.Comment}
+      closeReason:
+        simple: ${inputs.Classification}
     separatecontext: false
     skipunavailable: false
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: 709eed41-4804-498a-8005-d3f058deaf78
+      id: f84358ca-ee4e-4b20-84e6-6cbdc62a9b4b
       iscommand: true
       name: Close  XSOAR incident
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 709eed41-4804-498a-8005-d3f058deaf78
+    taskid: f84358ca-ee4e-4b20-84e6-6cbdc62a9b4b
     timertriggers: []
     type: regular
     view: |-
@@ -647,9 +649,9 @@ tasks:
       id: 4cb4c297-3421-43fe-8a41-320b3744f30f
       iscommand: false
       name: Open Snow ticket
-      scriptName: ServiceNowCreateIncident
       type: regular
       version: -1
+      script: ServiceNowCreateIncident
     taskid: 4cb4c297-3421-43fe-8a41-320b3744f30f
     timertriggers: []
     type: regular
@@ -856,13 +858,13 @@ tasks:
     task:
       brand: ''
       description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
-      id: f5147d47-a7ce-4434-804d-3e31ae018797
+      id: a436e5a3-1532-4de0-8650-3698a9e7ed71
       iscommand: false
       name: Cortex XDR - Isolate Endpoint
-      playbookId: Cortex XDR - Isolate Endpoint
       type: playbook
       version: -1
-    taskid: f5147d47-a7ce-4434-804d-3e31ae018797
+      playbookName: Cortex XDR - Isolate Endpoint
+    taskid: a436e5a3-1532-4de0-8650-3698a9e7ed71
     timertriggers: []
     type: playbook
     view: |-
@@ -902,9 +904,9 @@ tasks:
       id: 068f10b0-dba5-4ddc-8720-57bc57b79fdb
       iscommand: false
       name: Cortex XDR - delete file
-      playbookId: Cortex XDR - delete file
       type: playbook
       version: -1
+      playbookName: Cortex XDR - delete file
     taskid: 068f10b0-dba5-4ddc-8720-57bc57b79fdb
     timertriggers: []
     type: playbook
@@ -928,18 +930,20 @@ tasks:
     scriptarguments:
       hash_list:
         simple: ${Indicators to block.Answers.0}
+      incident_id:
+        simple: ${incident.externalsystemid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Block lists requested files which have not already been block listed or added to allow lists.
-      id: c75d027f-fe8e-4c47-82f8-7d9299935e0d
+      id: 6c0b1d0f-4b3d-422c-8fee-d9b257e3ebf5
       iscommand: true
       name: Create IOCs in Cortex XDR - Banned Hashes
       script: '|||xdr-blocklist-files'
       type: regular
       version: -1
-    taskid: c75d027f-fe8e-4c47-82f8-7d9299935e0d
+    taskid: 6c0b1d0f-4b3d-422c-8fee-d9b257e3ebf5
     timertriggers: []
     type: regular
     view: |-
@@ -963,7 +967,7 @@ tasks:
           simple: Confirm which File Path will be deleted
         options: []
         optionsarg:
-        - simple: ${incident.processpaths}
+        - simple: ${inputs.FilePaths}
         placeholder: ''
         readonly: false
         required: false
@@ -999,13 +1003,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 1c398210-5829-4044-8751-5bd3ace1d4a8
+      id: 11767335-5fe7-4f48-8616-51fe44c23683
       iscommand: false
       name: Confirm which File Path will be deleted
       description: Confirm which File Path will be deleted
       type: collection
       version: -1
-    taskid: 1c398210-5829-4044-8751-5bd3ace1d4a8
+    taskid: 11767335-5fe7-4f48-8616-51fe44c23683
     timertriggers: []
     type: collection
     view: |-
@@ -1149,3 +1153,4 @@ fromversion: 6.5.0
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook handles a true-positive incident closure for Cortex XDR - Malware Investigation.
+system: true
