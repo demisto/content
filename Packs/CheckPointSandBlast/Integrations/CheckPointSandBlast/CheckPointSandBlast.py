@@ -2,7 +2,6 @@
 Check Point Threat Emulation (SandBlast) API Integration for Cortex XSOAR (aka Demisto).
 """
 from typing import Dict, Any, List
-import pytest
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -244,7 +243,6 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-@pytest.mark.skip(reason="No reason to test this.")
 def test_module(client: Client) -> str:
     """
     Tests API connectivity and authentication
@@ -342,10 +340,12 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     output = raw_output.get('response', {'': ''})
     readable_output = get_analysis_readable_output(features, output, 'Query')
     output = get_analysis_context_output(output)
+    file_indicator = get_file_indicator(file_name, file_hash, digest, raw_output)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='SandBlast.Query',
+        indicator=file_indicator,
         outputs_key_field=['MD5', 'SHA1', 'SHA256'],
         outputs=output,
         raw_response=raw_output,
@@ -736,6 +736,67 @@ def get_analysis_readable_output(
         )
 
     return readable_output
+
+
+def get_dbotscore(response: Dict[str, Any]) -> Common.DBotScore:
+    """
+    Response received from the API request which holds fields that will help indicate the DBotScore.
+
+    Args:
+        response (Dict[str, Any]): Response received from the API request.
+
+    Returns:
+        Common.DBotScore: A score to represent the reputation of an indicator.
+    """
+    av_confidence = dict_safe_get(response, ['response', 'av', 'malware_info', 'confidence'])
+    av_severity = dict_safe_get(response, ['response', 'av', 'malware_info', 'severity'])
+
+    te_confidence = dict_safe_get(response, ['response', 'te', 'confidence'])
+    te_severity = dict_safe_get(response, ['response', 'te', 'severity'])
+    te_combined_verdict = dict_safe_get(response, ['response', 'te', 'combined_verdict'])
+
+    if av_confidence == 0 and av_severity == 0 and\
+        te_combined_verdict == 'benign' and te_severity is None and (te_confidence == 1 or te_confidence is None):
+        score = Common.DBotScore.GOOD
+
+    elif te_severity == 1:
+        score = Common.DBotScore.SUSPICIOUS
+
+    else:
+        score = Common.DBotScore.BAD
+
+    return score
+
+
+def get_file_indicator(file_name: str, file_hash: str, digest: str, response: Dict[str, Any]) -> Common.File:
+    """
+    Returns a file indicator that could potentially be malicious and will be checked for reputation.
+
+    Args:
+        file_name (str): File name
+        file_hash (str): File hash value
+        digest (str): File hash name.
+        response (Dict[str, Any]): Response received from the API request.
+
+    Returns:
+        Common.File: File indicator.
+    """
+    dbot_score = Common.DBotScore(
+        indicator=file_hash,
+        indicator_type=DBotScoreType.FILE,
+        integration_name='CheckPointSandBlast',
+        reliability=DBotScoreReliability.B,
+        score=get_dbotscore(response),
+    )
+
+    file_indicator = Common.File(
+        dbot_score=dbot_score,
+        name=file_name,
+        file_type=os.path.splitext(file_name)[1],
+        **{digest: file_hash}
+    )
+
+    return file_indicator
 
 
 def get_date_string(timestamp_string: str = '0') -> str:
