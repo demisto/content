@@ -717,8 +717,8 @@ class MsGraphClient:
         :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
         :rtype: ``list`` and ``list``
         """
+        demisto.debug(f'fetching emails since {last_fetch}')
         fetched_emails = self.get_emails(exclude_ids=exclude_ids, last_fetch=last_fetch, folder_id=folder_id)
-        demisto.debug(f'{fetched_emails=}.')
 
         fetched_emails_ids = {email.get('id') for email in fetched_emails}
         exclude_ids_set = set(exclude_ids)
@@ -907,6 +907,8 @@ class MsGraphClient:
             date_format=API_DATE_FORMAT
         )
 
+        demisto.debug(f'{start_fetch_time=}, {end_fetch_time=}')
+
         exclude_ids = list(set(last_run.get('LAST_RUN_IDS', [])))  # remove any possible duplicates
 
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
@@ -925,12 +927,20 @@ class MsGraphClient:
         fetched_emails, exclude_ids = self._fetch_last_emails(
             folder_id=folder_id, last_fetch=start_fetch_time, exclude_ids=exclude_ids)
 
+        demisto.debug(
+            f'fetched email IDs before removing duplications - {[email.get("id") for email in fetched_emails]}'
+        )
+
         # remove duplicate incidents which were already fetched
         incidents = filter_incidents_by_duplicates_and_limit(
             incidents_res=list(map(self._parse_email_as_incident, fetched_emails)),
             last_run=last_run,
             fetch_limit=self._emails_fetch_limit,
             id_field='ID'
+        )
+
+        demisto.debug(
+            f'fetched email IDs before after removing duplications - {[email.get("ID") for email in incidents]}'
         )
 
         next_run = update_last_run_object(
@@ -959,7 +969,6 @@ class MsGraphClient:
             incident.pop('ID', None)
 
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
-        demisto.debug(f"{incidents=}")
         demisto.debug(f"{next_run=}")
 
         return next_run, incidents
@@ -1961,7 +1970,7 @@ def main():
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     timeout = arg_to_number(params.get('timeout', '10') or '10')
     display_full_email_body = argToBoolean(params.get("display_full_email_body", False))
-    look_back = params.get('look_back', 0)
+    look_back = arg_to_number(params.get('look_back', 0))
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
