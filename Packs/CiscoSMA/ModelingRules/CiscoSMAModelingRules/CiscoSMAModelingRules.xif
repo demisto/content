@@ -103,6 +103,7 @@ filter _raw_log contains "mail_logs"
 , XDM.Email.original_event_type= log_category
 , XDM.Email.Client.host.ipv4_addresses = arraycreate(coalesce(Source_ip, ""))
 , XDM.Email.message_id = Message_ID
+,XDM.Email.subject= Subject
 , XDM.Email.Server.host.hostname =Hostname
 , XDM.Email.Observer.unique_identifier = InternalId 
 , XDM.Email.application_protocol = protocol
