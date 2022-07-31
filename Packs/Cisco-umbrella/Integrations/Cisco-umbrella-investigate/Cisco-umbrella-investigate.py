@@ -15,6 +15,7 @@ import urllib.request, urllib.parse, urllib.error
 from urllib.parse import urlparse
 from distutils.util import strtobool
 from datetime import datetime, timedelta
+from requests.exceptions import HTTPError
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -182,12 +183,13 @@ def timestamp_to_date(ts):
 def securerank_to_dbotscore(sr):
     # converts cisco umbrella score to dbotscore
     DBotScore = 0
-    if sr > 0 and sr <= 100:
-        DBotScore = 1
-    elif sr < 0 and sr > MALICIOUS_THRESHOLD:
-        DBotScore = 2
-    elif sr <= MALICIOUS_THRESHOLD:
-        DBotScore = 3
+    if sr is not None:
+        if sr > 0 and sr <= 100:
+            DBotScore = 1
+        elif sr < 0 and sr > MALICIOUS_THRESHOLD:
+            DBotScore = 2
+        elif sr <= MALICIOUS_THRESHOLD:
+            DBotScore = 3
     return DBotScore
 
 
@@ -819,7 +821,7 @@ def get_domain_command():
             }
 
             # Add malicious if needed
-            if risk_score == -1 or secure_rank < MALICIOUS_THRESHOLD:
+            if risk_score == -1 or (secure_rank and secure_rank < MALICIOUS_THRESHOLD):
                 context[outputPaths['domain']]['Malicious'] = {
                     'Vendor': 'Cisco Umbrella Investigate',
                     'Description': 'Malicious domain found with risk score -1'
@@ -844,12 +846,14 @@ def get_domain_command():
 
             # Domain reputation + [whois -> whois nameservers -> whois emails] + domain categorization
             results.append(CommandResults(
-                readable_output=tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers)
-                    + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
-                                      date_fields=["Last Retrieved"])
-                    + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
-                    + tableToMarkdown('Emails:', emails, ['Emails'])
-                    + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
+                readable_output=tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents,
+                                                headers)
+                                + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois,
+                                                  headers,
+                                                  date_fields=["Last Retrieved"])
+                                + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
+                                + tableToMarkdown('Emails:', emails, ['Emails'])
+                                + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
                 entry_type=entryTypes['note'],
                 content_format=formats['json'],
                 outputs=context,
@@ -1514,10 +1518,11 @@ def get_whois_for_domain_command():
             content_format=formats['json'],
             raw_response=[table_whois, contents_nameserver, contents_email],
             outputs=context,
-            readable_output=tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'], table_whois,
-                                             headers, date_fields=["Last Retrieved"])  # noqa: W504
-                             + tableToMarkdown('Nameservers: ', contents_nameserver, headers)  # noqa: W504
-                             + tableToMarkdown('Email Addresses: ', contents_email, headers),
+            readable_output=tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'],
+                                            table_whois,
+                                            headers, date_fields=["Last Retrieved"])  # noqa: W504
+                            + tableToMarkdown('Nameservers: ', contents_nameserver, headers)  # noqa: W504
+                            + tableToMarkdown('Email Addresses: ', contents_email, headers),
         ))
     if execution_metrics.metrics is not None:
         results.append(execution_metrics.metrics)
@@ -1926,10 +1931,19 @@ def main() -> None:
         elif demisto.command() == 'umbrella-get-url-timeline':
             demisto.results(get_url_timeline_command())
 
+    except HTTPError as e:
+        if e.args[0]:
+            return_error(e.args[0])
+        else:
+            return_error(f"HTTP error with code {e.response.status_code}")
+
     except Exception as e:
-        LOG(e.message)
-        LOG.print_log()
-        return_error(e.message)
+        if hasattr(e, 'message'):
+            LOG(e.message)
+            LOG.print_log()
+            return_error(e.message)
+        else:
+            return_error("Error occurred while running the command.")
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
