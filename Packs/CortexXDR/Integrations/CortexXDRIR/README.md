@@ -2444,7 +2444,7 @@ Replace the featured hosts\users\ip addresses\active directory groups listed in 
 
 ### xdr-script-run
 ***
-Initiates a new endpoint script execution action using a script from the script library and returns the results.
+This command will soon be deprecated; prefer xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
 
 
 #### Base Command

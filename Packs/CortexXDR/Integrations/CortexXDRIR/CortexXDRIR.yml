@@ -2923,7 +2923,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Initiates a new endpoint script execution action using a script from the script library, will be deprecated in the future.
+    description: This command will soon be deprecated; prefer xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
     execution: false
     name: xdr-run-script
     outputs:

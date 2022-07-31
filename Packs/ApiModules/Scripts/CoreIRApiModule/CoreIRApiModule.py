@@ -2970,7 +2970,7 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
         args['action_id'] = action_id
 
         return PollResult(
-            response='',
+            response=None,  # since polling defaults to true, no need to deliver response here
             continue_to_poll=True,  # if an error is raised from the api, an exception will be raised
             partial_result=CommandResults(
                 readable_output=f'Waiting for the script to finish running '

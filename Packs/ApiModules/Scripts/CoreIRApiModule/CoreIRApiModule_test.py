@@ -2914,7 +2914,8 @@ class TestPollingCommands:
         Then
             - Make sure the readable output is returned to war-room only once indicating on polling.
             - Make sure the correct context output is returned once the command finished polling
-            - Make sure that polling since the second time does return any readable output or context output.
+            - Make sure context output is returned only at the end of polling.
+            - Make sure the readable output is returned only in the first run.
             - Make sure the correct output prefix is returned.
         """
         from CoreIRApiModule import script_run_polling_command
@@ -2929,6 +2930,7 @@ class TestPollingCommands:
 
         assert command_result.readable_output == "Waiting for the script to " \
                                                  "finish running on the following endpoints: ['1']..."
+        assert not command_result.outputs
 
         polling_args = {
             'endpoint_ids': '1', 'script_uid': '1', 'action_id': '1', 'hide_polling_output': True
