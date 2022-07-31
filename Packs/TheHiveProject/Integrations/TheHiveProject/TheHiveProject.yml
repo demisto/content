@@ -29,6 +29,11 @@ configuration:
   defaultvalue: "1"
   type: 19
   required: false
+- display: Fetch closed cases
+  name: fetch_closed
+  type: 8
+  defaultvalue: false
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false

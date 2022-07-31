@@ -972,7 +972,12 @@ def fetch_incidents(client: Client):
     last_run = demisto.getLastRun()
     last_timestamp = int(last_run.get('timestamp', 0))
     res = client.get_cases()
-    res[:] = [x for x in res if x['createdAt'] > last_timestamp and x['status'] == 'Open']
+    demisto.debug(f"number of returned cases from the api:{len(res)}")
+    if demisto.params().get('fetch_closed', True):
+        res[:] = [x for x in res if x['createdAt'] > last_timestamp]
+    else:
+        res[:] = [x for x in res if x['createdAt'] > last_timestamp and x['status'] == 'Open']
+
     res = sorted(res, key=lambda x: x['createdAt'])
     incidents = list()
     instance_name = demisto.integrationInstance()
@@ -990,27 +995,21 @@ def fetch_incidents(client: Client):
         incidents.append(incident)
         last_timestamp = case['createdAt'] if case['createdAt'] > last_timestamp else last_timestamp
     demisto.setLastRun({"timestamp": str(last_timestamp)})
+    demisto.debug(f"number of cases after filtering: {len(incidents)}")
     return incidents
 
 
 def main() -> None:
     params = demisto.params()
     args = demisto.args()
-    api_key = params.get('apiKey')
-    base_url = urljoin(params.get('url'), '/api')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
     mirroring = params.get('mirror', 'Disabled').title()
-    mirroring = None if mirroring == 'Disabled' else mirroring
-
-    headers = {'Authorization': f'Bearer {api_key}'}
 
     client = Client(
-        base_url=base_url,
-        verify=verify_certificate,
-        headers=headers,
-        proxy=proxy,
-        mirroring=mirroring,
+        base_url=urljoin(params.get('url'), '/api'),
+        verify=not params.get('insecure', False),
+        headers={'Authorization': f'Bearer {params.get("apiKey")}'},
+        proxy=params.get('proxy', False),
+        mirroring=None if mirroring == 'Disabled' else mirroring,
     )
 
     command = demisto.command()
