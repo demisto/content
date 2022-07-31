@@ -509,8 +509,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "09c3dcbae96124c9a33e125b39313026615e7172"
-resolved_reference = "09c3dcbae96124c9a33e125b39313026615e7172"
+reference = "24def2184b8807d04d5a28efcdb6c48e2f98f04f"
+resolved_reference = "24def2184b8807d04d5a28efcdb6c48e2f98f04f"
 
 [[package]]
 name = "deprecated"
@@ -2224,7 +2224,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "b0389863aef8b18b2e39c2ed5c16ee64d05ed00f60b0abd4e4663ce57c87f53d"
+content-hash = "de046af51f505eec56b5537a8082d9752275bcd525f91e4f1eb4c289f06eb022"
 
 [metadata.files]
 aiohttp = [
