@@ -20,7 +20,7 @@ class TestConf(DictFileBased):
 
         # Attributes
         self.skipped_tests: dict[str, str] = self['skipped_tests']
-        self.skipped_integrations_dict: dict[str, str] = self['skipped_integrations']  # todo is used?
+        self.skipped_integrations: dict[str, str] = self['skipped_integrations']
         self.private_tests: set[str] = set(self['private_tests'])
 
         self.classifier_to_test: dict[TestConfItem, str] = {

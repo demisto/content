@@ -271,8 +271,7 @@ class BranchTestCollector(TestCollector):
         collecting a yaml-based content item (including py-based, whose names match a yaml based one)
         """
         result: Optional[CollectionResult] = None
-        yml_path = content_item_path.with_suffix(
-            '.yml') if content_item_path.suffix != '.yml' else content_item_path
+        yml_path = content_item_path.with_suffix('.yml') if content_item_path.suffix != '.yml' else content_item_path
         try:
             yml = ContentItem(yml_path)
             if not yml.id_:
@@ -281,6 +280,8 @@ class BranchTestCollector(TestCollector):
             raise FileNotFoundError(
                 f'could not find yml matching {PackManager.relative_to_packs(content_item_path)}'
             )
+        if yml.id_ in self.conf.skipped_integrations:
+            raise NothingToCollectException(yml.path, 'integration is skipped')
         relative_yml_path = PackManager.relative_to_packs(yml_path)
         tests: tuple[str, ...]
 

@@ -26,6 +26,7 @@ Test Collection Unit-Test cases
 - `G` has objects that trigger collection of the pack (without tests).
 - `H` has a single file, that is not a content item, and find_type is mocked to test ONLY_INSTALL_PACK.
 - `I` has a single pack with two test playbooks, one of which is ignored in .pack_ignore.
+- `J` has a single pack with two integrations, with mySkippedIntegration being skipped in conf.json.
 """
 
 
@@ -75,6 +76,7 @@ class MockerCases:
     G = CollectTestsMocker(TEST_DATA / 'G')
     H = CollectTestsMocker(TEST_DATA / 'H')
     I_xsoar = CollectTestsMocker(TEST_DATA / 'I_xsoar')
+    J = CollectTestsMocker(TEST_DATA / 'J')
 
 
 def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, collector_class: Callable,
@@ -248,7 +250,11 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      # Two test playbooks change, but myOtherTestPlaybook is ignored so it should not be collected
      (MockerCases.I_xsoar, ('myTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
-       'Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml'))
+       'Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml')),
+
+     # Skipped integration changes - should not be collected
+     (MockerCases.J, XSOAR_SANITY_TEST_NAMES, (), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',)),
      ))
 def test_branch(
         monkeypatch,
