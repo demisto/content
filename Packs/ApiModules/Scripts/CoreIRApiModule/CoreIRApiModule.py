@@ -2955,7 +2955,9 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
         general_status = response.get('reply', {}).get('general_status') or ''
 
         return PollResult(
-            response=get_script_execution_results_command(client, {'action_id': action_id}),
+            response=get_script_execution_results_command(
+                client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
+            ),
             continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
         )
 
