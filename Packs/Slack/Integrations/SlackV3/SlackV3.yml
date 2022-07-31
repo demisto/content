@@ -54,6 +54,12 @@ configuration:
   name: allow_incidents
   required: false
   type: 8
+- display: Ignore event retries
+  name: ignore_event_retries
+  additionalinfo: In some cases, events may not be processed fast enough. If you wish to attempt to retry the event, select `false`. Please note, this can result in some responses being double-posted.
+  required: false
+  defaultvalue: 'true'
+  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
