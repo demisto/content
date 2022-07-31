@@ -25,16 +25,6 @@ configuration:
   name: page_size
   required: false
   type: 0
-- defaultvalue: box
-  display: Vendor Name
-  name: vendor_name
-  required: false
-  type: 0
-- defaultvalue: box
-  display: Product Name
-  name: product_name
-  required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

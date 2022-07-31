@@ -14,7 +14,6 @@ from SiemApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
 
-
 class Claims(BaseModel):
     iss: str = Field(alias='client_id')
     sub: str = Field(alias='id', description='user id or enterprise id')
