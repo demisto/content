@@ -19,9 +19,9 @@ class PathManager:
 
         self.id_set_path = PathManager.ARTIFACTS_PATH / 'id_set.json'
         self.conf_path = PathManager.ARTIFACTS_PATH / 'conf.json'
-        self.output_tests_file = PathManager.ARTIFACTS_PATH / 'filter_file_new.txt'
-        self.output_packs_file = PathManager.ARTIFACTS_PATH / 'content_packs_to_install_new.txt'
-        self.output_machines_file = PathManager.ARTIFACTS_PATH / 'filter_envs_new.json'
+        self.output_tests_file = PathManager.ARTIFACTS_PATH / 'filter_file_v2.txt'
+        self.output_packs_file = PathManager.ARTIFACTS_PATH / 'content_packs_to_install_v2.txt'
+        self.output_machines_file = PathManager.ARTIFACTS_PATH / 'filter_envs_v2.json'
 
 
 def _calculate_excluded_files(content_path: Path) -> set[Path]:
