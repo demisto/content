@@ -49,6 +49,6 @@ alter event_code=json_extract_scalar(EVENT, "$.code")
     XDM.Audit.audited_resource.name = audited_resource_name,
     XDM.Audit.TriggeredBy.identity.name = TriggeredBy_identity_name,
     XDM.Audit.TriggeredBy.ipv4 = TriggeredBy_ipv4,
-    XDM.Audit.TriggeredBy.user_agent = TriggeredBy_user_agent,
+    //XDM.Audit.TriggeredBy.user_agent = TriggeredBy_user_agent,
     XDM.Audit.audited_resource.id = audited_resource_id,
     XDM.Audit.original_event_description = original_event_description;
