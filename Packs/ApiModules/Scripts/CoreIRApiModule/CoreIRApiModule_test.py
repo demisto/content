@@ -2915,6 +2915,7 @@ class TestPollingCommands:
             - Make sure the readable output is returned to war-room only once indicating on polling.
             - Make sure the correct context output is returned once the command finished polling
             - Make sure that polling since the second time does return any readable output or context output.
+            - Make sure the correct output prefix is returned.
         """
         from CoreIRApiModule import script_run_polling_command
         from CommonServerPython import ScheduledCommand
@@ -2955,3 +2956,4 @@ class TestPollingCommands:
                 }
             ]
         }
+        assert command_result[0].outputs_prefix == 'PaloAltoNetworksXDR.ScriptResult'
