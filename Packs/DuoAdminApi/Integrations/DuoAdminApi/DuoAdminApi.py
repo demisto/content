@@ -1,10 +1,21 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-# imports
 import calendar
+
+import demistomock as demisto  # noqa: F401
 import duo_client
+from CommonServerPython import *  # noqa: F401
+
+register_module_line('DUO Admin', 'start', __line__())
+
+# Integrations
+# DUO
+#  - Added command get_all_bypass_codes, which provides the ability to pull information from the bypass_code table.
+#     This identifies users in bypass mode, and allows for actions against these accounts
+#  - Added command get_all_admins, which provides the ability to get a list of the admininstrator accounts
+#  - Added command modify_admin_user, which allows the use of the update_admin command within the api
+#  - Added command modify_user, which allows the use of the update_user command within the api
+#  - Updated command get_all_users to include more of the fields available within the user table
+# imports
+
 
 # Setup
 
@@ -214,7 +225,13 @@ def get_all_users():
         },
         headers=[
             'username',
-            'user_id'
+            'user_id',
+            'is_enrolled',
+            'last_login',
+            'realname',
+            'email',
+            'phones',
+            'status'
         ]
     )
 
@@ -330,6 +347,63 @@ def delete_u2f_token(token_id):
     demisto.results('Token with ID ' + token_id + ' deleted successfully')
 
 
+def get_all_bypass_codes():
+    res = admin_api.get_bypass_codes()
+    entry = get_entry_for_object(
+        'Bypass', res, res,
+        {
+            'DuoAdmin.UserDetails(val.bypass_code_id==obj.bypasscodeid)': res
+        },
+        headers=[
+            'bypass_code_id',
+            'admin_email',
+            'expiration',
+            'reuse_count',
+            'user.created',
+            'user.email',
+            'user.last_login',
+            'user.status',
+            'user.user_id',
+            'user.username'
+        ]
+    )
+    demisto.results(entry)
+
+
+def get_all_admins():
+    res = admin_api.get_admins()
+
+    entry = get_entry_for_object(
+        'Admins', res, res,
+        {
+            'DuoAdmin.AdminDetails(val.name==obj.name)': res
+        },
+        headers=[
+            'admin_id',
+            'admin_units',
+            'created',
+            'email',
+            'last_login',
+            'name',
+            'phone',
+            'role',
+            'status'
+        ]
+    )
+    demisto.results(entry)
+
+
+def modify_admin_user(user_id, name, phone, password, password_change_required, status):
+    admin_api.update_admin(user_id, name, phone, password, password_change_required, status)
+    demisto.results('Status for' + user_id + ' Successful updated to ' + status)
+
+
+def modify_user(user_id, username, realname, status, notes, email, firstname, lastname, alias1, alias2, alias3, alias4, aliases):
+    admin_api.update_user(user_id, username, realname, status, notes, email, firstname,
+                          lastname, alias1, alias2, alias3, alias4, aliases)
+    demisto.results('Status for' + user_id + ' Successful updated to ' + status)
+
+
 # Execution
 try:
     admin_api = create_api_call()
@@ -340,6 +414,12 @@ try:
 
     if demisto.command() == 'duoadmin-get-users':
         get_all_users()
+
+    if demisto.command() == 'duoadmin-get-admins':
+        get_all_admins()
+
+    if demisto.command() == 'duoadmin-get-bypass-codes':
+        get_all_bypass_codes()
 
     if demisto.command() == 'duoadmin-get-authentication-logs-by-user':
         get_authentication_logs_by_user(demisto.getArg('username'), demisto.getArg('from'))
@@ -362,7 +442,20 @@ try:
     if demisto.command() == 'duoadmin-delete-u2f-token':
         delete_u2f_token(demisto.getArg('token_id'))
 
+    if demisto.command() == 'duoadmin-modify-user':
+        modify_user(demisto.getArg('user_id'), demisto.getArg('username'), demisto.getArg('realname'),
+                    demisto.getArg('status'), demisto.getArg('notes'), demisto.getArg('email'),
+                    demisto.getArg('firstname'), demisto.getArg('lastname'), demisto.getArg('alias1'),
+                    demisto.getArg('alias2'), demisto.getArg('alias3'), demisto.getArg('alias4'), demisto.getArg('aliases'))
+
+    if demisto.command() == 'duoadmin-modify-admin':
+        modify_admin_user(demisto.getArg('user_id'), demisto.getArg('name'), demisto.getArg('phone'),
+                          demisto.getArg('password'), demisto.getArg('password_change_required'), demisto.getArg('status'))
+
+
 except Exception as e:
     demisto.error("Duo Admin failed on: {} on this command {}".format(e, demisto.command))
     return_error(e.message)
 sys.exit(0)
+
+register_module_line('DUO Admin', 'end', __line__())
