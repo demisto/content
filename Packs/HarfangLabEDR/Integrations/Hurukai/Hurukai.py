@@ -2189,7 +2189,8 @@ class TelemetryBinary(Telemetry):
                 link = None
                 if x['downloaded'] == 0:
                     link = f'{client._base_url}/api/data/telemetry/Binary/download/{x["hashes"]["sha256"]}/'
-                    link += f'?hl_expiring_key={api_token}'
+                    if api_token:
+                        link += f'?hl_expiring_key={api_token}'
 
                 output.append({
                     'name': name,
