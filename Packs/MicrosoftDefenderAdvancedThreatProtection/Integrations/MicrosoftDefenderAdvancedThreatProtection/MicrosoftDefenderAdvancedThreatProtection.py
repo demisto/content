@@ -4201,8 +4201,10 @@ def cover_up_command(client, args):  # pragma: no cover
 
 
 def test_module(client: MsClient):
-    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
-    demisto.results('ok')
+    return_error(
+        'Please run `!microsoft-atp-auth-start` and `!microsoft-atp-auth-complete` to log in. '
+        'You can validate the connection by running `!microsoft-atp-auth-test`\n '
+        'For more details press the (?) button.')
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
@@ -4813,6 +4815,31 @@ def put_file_get_successful_action_results(client, res):
     )
 
 
+@logger
+def test_connection(client) -> CommandResults:  # pragma: no cover
+    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    return CommandResults(readable_output='✅ Success!')
+
+
+@logger
+def start_auth(client) -> CommandResults:  # pragma: no cover
+    result = client.ms_client.start_auth('!microsoft-atp-auth-complete')
+    return CommandResults(readable_output=result)
+
+
+@logger
+def complete_auth(client) -> CommandResults:   # pragma: no cover
+    client.ms_client.get_access_token()
+    return CommandResults(readable_output='✅ Authorization completed successfully.')
+
+
+@logger
+def reset_auth(client) -> CommandResults:  # pragma: no cover
+    set_integration_context({})
+    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
+                                          '**!microsoft-atp-auth-start** and **!microsoft-atp-auth-complete**.')
+
+
 def main():  # pragma: no cover
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
@@ -5020,6 +5047,14 @@ def main():  # pragma: no cover
             return_results(get_machine_alerts_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
+        elif command == 'microsoft-atp-auth-start':
+            return_results(start_auth(client))
+        elif command == 'microsoft-atp-auth-complete':
+            return_results(complete_auth(client))
+        elif command == 'microsoft-atp-auth-reset':
+            return_results(reset_auth(client))
+        elif command == 'microsoft-atp-auth-test':
+            return_results(test_connection(client))
     except Exception as err:
         return_error(str(err))
 
