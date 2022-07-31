@@ -252,7 +252,6 @@ def test_module(client: Client) -> str:
 
     Args:
         client (Client): Connection to the client class from which we can run the desired request.
-        first_fetch_time (int): How much time before the first fetch to retrieve incidents.
 
     Returns:
         str: 'ok' if test passed, anything else will fail the test.
