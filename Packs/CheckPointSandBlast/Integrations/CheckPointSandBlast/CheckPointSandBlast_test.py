@@ -8,7 +8,7 @@ import os
 from unittest import mock
 import pytest
 from CheckPointSandBlast import Client,\
-    query_command, quota_command, upload_command, download_command, test_module
+    query_command, quota_command, upload_command, download_command
 
 
 HOST = 'https://te.checkpoint.com'
@@ -193,15 +193,3 @@ def test_download_command(requests_mock, mock_client):
     assert 'Type' in response
     assert 'FileID' in response
     assert response['File'] == 'file_id'
-
-
-def test_test_module(requests_mock, mock_client):
-    mock_response = load_mock_response('query_response.json')
-    requests_mock.post(
-        f'{BASE_URL}{QUERY_PATH}',
-        json=mock_response,
-    )
-
-    response = test_module(mock_client)
-
-    assert response == 'ok'
