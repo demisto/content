@@ -105,7 +105,7 @@ Note: If you're uncertain which API version to use, it is recommended to use the
 
 Whenever *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
 It is possible, however, that some events might be missed during the creation of the incident.
-The [Mirroring](#mirroring-events) feature is recommended in this case.
+It is recommended to enable [mirroring](#mirroring-events), as it should fetch previously missed events when the offense is updated.
 Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `events` immediately.
 If the command takes too long to finish execution, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
 
