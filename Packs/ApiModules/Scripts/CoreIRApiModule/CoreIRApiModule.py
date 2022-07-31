@@ -129,7 +129,7 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
-MIRROR_IN_CLOSE_REASON = 'Closed during mirroring-in due to remote incident was closed'
+MIRROR_IN_CLOSE_REASON = 'Closed during mirroring-in due to the remote incident being closed.'
 
 
 class CoreClient(BaseClient):
