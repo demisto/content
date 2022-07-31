@@ -1514,7 +1514,7 @@ def get_whois_for_domain_command():
 
     results.append(
         CommandResults(
-            type=entryTypes['note'],
+            entry_type=entryTypes['note'],
             content_format=formats['json'],
             raw_response=[table_whois, contents_nameserver, contents_email],
             outputs=context,
