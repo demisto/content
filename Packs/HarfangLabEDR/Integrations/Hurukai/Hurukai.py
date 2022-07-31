@@ -1324,12 +1324,9 @@ def job_ioc(client, args):
     size = None
 
     if filesize:
-    size = arg_to_number(filesize)
+        size = arg_to_number(filesize)
     elif filehash_size:
-        try:
-            size = int(filehash_size)
-        except Exception:
-            pass
+        size = arg_to_number(filehash_size)
 
     if filename is not None:
         job_parameters['values'].append({
