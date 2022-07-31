@@ -863,14 +863,15 @@ def get_domain_command():
         except RequestException as r:
             if r.response.status_code == 429:
                 execution_metrics.quota_error += 1
-                results.append({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['json'],
-                    'Contents': contents,
-                    'HumanReadable': "Quota exceeded for domain {}".format(domain),
-                    'HumanReadableFormat': formats['text'],
-                    'EntryContext': context
-                })
+                results.append(
+                    CommandResults(
+                        readable_output=f"Quota exceeded for domain {domain}",
+                        entry_type=entryTypes['note'],
+                        content_format=formats['json'],
+                        outputs=context,
+                        raw_response=contents
+
+                    ))
                 continue
 
             execution_metrics.general_error += 1
@@ -887,14 +888,14 @@ def get_domain_command():
                                                      'Message': 'No results found',
                                                      'Reliability': reliability}
 
-                results.append({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['json'],
-                    'Contents': contents,
-                    'HumanReadable': human_readable,
-                    'HumanReadableFormat': formats['markdown'],
-                    'EntryContext': context
-                })
+                results.append(
+                    CommandResults(
+                        entry_type=entryTypes['note'],
+                        content_format=formats['json'],
+                        readable_output=human_readable,
+                        outputs=context,
+                        raw_response=contents
+                    ))
             else:
                 if execution_metrics.metrics is not None:
                     results.append(execution_metrics.metrics)
@@ -1938,12 +1939,9 @@ def main() -> None:
             return_error(f"HTTP error with code {e.response.status_code}")
 
     except Exception as e:
-        if hasattr(e, 'message'):
-            LOG(e.message)
-            LOG.print_log()
-            return_error(e.message)
-        else:
-            return_error("Error occurred while running the command.")
+        LOG(str(e))
+        LOG.print_log()
+        return_error(str(e))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
