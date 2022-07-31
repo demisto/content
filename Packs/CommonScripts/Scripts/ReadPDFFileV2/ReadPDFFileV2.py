@@ -48,7 +48,7 @@ def handle_error_read_only(fun, path, exp):
             os.chmod(path, stat.S_IWUSR)
             fun(path)
         except Exception as e:
-            demisto.debug(f'Failed to change file permission for {path} with error -> {str(e)}')
+            raise ValueError(str(e))
 
 
 def mark_suspicious(suspicious_reason, entry_id):
