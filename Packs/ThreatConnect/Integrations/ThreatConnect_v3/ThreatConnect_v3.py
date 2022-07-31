@@ -31,7 +31,7 @@ class Client:
         self.verify = verify
 
     def make_request(self, method: Method, url_suffix: str, payload: dict = {}, params: dict = {},
-                     parse_json=True):  # pragma: no cover  # noqa  # type: ignore
+                     parse_json=True):  # pragma: no cover # noqa # type: ignore
         headers = self.create_header(url_suffix, method)
 
         url = urljoin(self.base_url, url_suffix)
@@ -1025,7 +1025,7 @@ def create_group(client: Client, name: str = '', event_date: str = '', group_typ
 
 def tc_add_indicator_command(client: Client, rating: str = '0', indicator: str = '', confidence: str = '0',
                              description: str = '', tags: list = [],
-                             indicator_type: str = '') -> Any:  # pragma: no cover  # noqa
+                             indicator_type: str = '') -> Any:  # pragma: no cover # noqa
     args = demisto.args()
     tags = args.get('tags', tags)
     description = args.get('description', description)
