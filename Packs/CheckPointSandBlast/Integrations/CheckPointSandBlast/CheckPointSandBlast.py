@@ -515,8 +515,8 @@ def setup_upload_polling_command(client: Client, args: Dict[str, Any]) -> Comman
 
 @polling_function(
     name='sandblast-upload',
-    interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', DEFAULT_INTERVAL)),
-    timeout=arg_to_number(demisto.args().get('polling_timeout', DEFAULT_TIMEOUT)),
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', DEFAULT_INTERVAL)),
+    timeout=arg_to_number(demisto.args().get('timeout_in_seconds', DEFAULT_TIMEOUT)),
 )
 def upload_polling_command(args: Dict[str, Any], **kwargs) -> PollResult:
     """
