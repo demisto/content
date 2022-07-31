@@ -28,6 +28,6 @@ winlogbeat.event_logs:
         fields:
           vendor: msft
           product: adfs
-```
+``` 
 
 **Please note**: The above configuration uses the default location of the logs. In case your linux saves the logs under a different location, you would need to change it in the yaml (under the `paths` field).
