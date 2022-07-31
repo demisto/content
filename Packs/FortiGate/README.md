@@ -1,4 +1,4 @@
-Broker VM
+### Broker VM
 You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/broker-vm/set-up-broker-vm/configure-your-broker-vm).
 You can configure the specific vendor and product for this instance.
 
