@@ -1,8 +1,6 @@
 from requests import RequestException
 
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
@@ -11,7 +9,9 @@ import requests
 import json
 import time
 import re
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 from urllib.parse import urlparse
 from distutils.util import strtobool
 from datetime import datetime, timedelta
@@ -845,15 +845,15 @@ def get_domain_command():
             })
 
             # Domain reputation + [whois -> whois nameservers -> whois emails] + domain categorization
+            readable = tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers) \
+                       + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
+                                         date_fields=["Last Retrieved"]) \
+                       + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers) \
+                       + tableToMarkdown('Emails:', emails, ['Emails']) \
+                       + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers)
+
             results.append(CommandResults(
-                readable_output=tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents,
-                                                headers)
-                                + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois,
-                                                  headers,
-                                                  date_fields=["Last Retrieved"])
-                                + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
-                                + tableToMarkdown('Emails:', emails, ['Emails'])
-                                + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
+                readable_output=readable,
                 entry_type=entryTypes['note'],
                 content_format=formats['json'],
                 outputs=context,
@@ -1434,6 +1434,8 @@ def get_whois_for_domain_command():
     results = []
     contents_nameserver = {}  # type: ignore
     contents_email = {}  # type: ignore
+    table_whois = {}
+    whois = {}
     execution_metrics = ExecutionMetrics()
 
     original_domain = demisto.args()['domain']

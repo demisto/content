@@ -1,6 +1,5 @@
 import pytest
 import requests
-from requests import RequestException
 
 import demistomock as demisto
 import importlib
@@ -118,6 +117,28 @@ def test_get_domain_command_some_valid_domains(mocker):
     metrics = results[2].execution_metrics
     assert len(results) == 3
     assert metrics == [{'Type': 'Successful', 'APICallsCount': 1}, {'Type': 'GeneralError', 'APICallsCount': 1}]
+
+
+def test_get_whois_command_for_domain(mocker):
+    """
+        Given:
+            - list of domains
+        When:
+            - Some of the domains can be found by whois
+        Then:
+            - returns results for all of the domains that can be found
+            - returns metrics command results
+    """
+    mocker.patch.object(demisto, 'args', return_value={'domain': "good.com"})
+    domains_info = {
+        "good1.com": {"key": "val"},
+        "domainName": "good1.com"
+    }
+    mocker.patch.object(Cisco_umbrella_investigate, 'http_request', return_value=domains_info)
+    results_whois_command = Cisco_umbrella_investigate.get_whois_for_domain_command()
+    metrics = results_whois_command[1].execution_metrics
+    assert len(results_whois_command) == 2
+    assert metrics == [{'Type': 'Successful', 'APICallsCount': 1}]
 
 
 def test_get_domain_command_non_404_request_exception(mocker):
