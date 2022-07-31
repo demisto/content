@@ -1734,7 +1734,8 @@
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy_KV_commands_requests_handler",
             "memory_threshold": 200,
-            "instance_names": "use_python_requests_handler"
+            "instance_names": "use_python_requests_handler",
+            "is_mockable": false
         },
         {
             "integrations": "McAfee NSM",
