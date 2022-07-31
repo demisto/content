@@ -199,27 +199,37 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
 
 @pytest.mark.parametrize(
     'case_mocker,expected_tests,expected_packs,expected_machines,collector_class_args,mocked_changed_files',
+    # Empty content folder: expecting xsoar sanity tests to be collected
     ((MockerCases.empty, XSOAR_SANITY_TEST_NAMES, (), None, XSOAR_BRANCH_ARGS, ()),
 
+     # Empty content folder: expecting XSIAM collector to not collect anything
      (MockerCases.empty, (), (), None, XSIAM_BRANCH_ARGS, ()),
 
+     # Empty content folder: expecting XSIAM collector to collect tests from conf.json
      (MockerCases.empty_xsiam, ('some_xsiam_test_only_mentioned_in_conf_json',), (), None, XSIAM_BRANCH_ARGS,
       ()),
 
+     # Case A, yml file changes, expect the test playbook testing the integration to be collected
      (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',)),
 
+     # Case A, py file changes, expect the test playbook testing the integration to be collected
      (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
+     # Case A: yml file changes, expect the test playbook testing the integration to be collected
      (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
       ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.yml',)),
 
+     # Case A: py file changes, expect the test playbook testing the integration to be collected
      (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
       ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
+     # Case B: test playbook changes, expect it to be collected
      (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
+
+     # Case B: two test playbook change, expect both to be collected
      (MockerCases.B_xsoar, ('myOtherTestPlaybook', 'myTestPlaybook'), ('myXSOAROnlyPack',), None,
       XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',
                           'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
@@ -227,12 +237,15 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
 
+     # Playbook changes, expect its test playbook to be collected
      (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Playbooks/myPlaybook.yml',)),
 
+     # Script changes, expect its test playbook to be collected
      (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Scripts/myScript/myScript.yml',)),
 
+     # Two test playbooks change, but myOtherTestPlaybook is ignored so it should not be collected
      (MockerCases.I_xsoar, ('myTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
        'Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml'))
