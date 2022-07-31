@@ -7072,7 +7072,7 @@ class ExecutionMetrics(object):
 
     @staticmethod
     def is_supported():
-        if is_demisto_version_ge('7.0.0'):
+        if is_demisto_version_ge('6.8.0'):
             return True
         return False
 
