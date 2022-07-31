@@ -35,17 +35,20 @@ EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
 # Documentation claims png is enough for pdftohtml, but through testing we found jpg can be generated as well
 IMG_FORMATS = ['jpg', 'jpeg', 'png', 'gif']
 
+
 def handle_error_read_only(fun, path, exp):
-    
+
     demisto.debug(exp)
 
+    # Checking if the file is Read-Only
     if not os.access(path, os.W_OK):
         demisto.debug(f'The {path} file is read-only')
+        # Change the file permission to the writting
         try:
             os.chmod(path, stat.S_IWUSR)
             fun(path)
         except Exception as e:
-            demisto.debug(f'Failed to change file permission for {path}')
+            demisto.debug(f'Failed to change file permission for {path} with error -> {str(e)}')
 
 
 def mark_suspicious(suspicious_reason, entry_id):
