@@ -578,6 +578,7 @@ class Notable:
         self.incident_created = True
 
         for e in self.enrichments:
+            demisto.debug("%%%% debug session %%%% - to_incident")
             self.data[e.type] = e.data
             self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
 
@@ -953,7 +954,7 @@ def identity_enrichment(service, notable_data, num_enrichment_events):
         try:
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
-            demisto.error("Caught an exception in drilldown_enrichment function: {}".format(str(e)))
+            demisto.error("Caught an exception in identity_enrichment function: {}".format(str(e)))
     else:
         demisto.debug('No users were found in notable. {}'.format(error_msg))
 
@@ -1009,8 +1010,11 @@ def handle_submitted_notables(service, incidents, cache_object, mapper):
     demisto.debug("Trying to handle {}/{} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES]), total))
 
     for notable in notables[:MAX_HANDLE_NOTABLES]:
+        demisto.debug("%%%% debug session %%%% - processing {}".format(notable.id))
         task_status = handle_submitted_notable(service, notable, enrichment_timeout)
         if task_status:
+            demisto.debug("%%%% debug session %%%% - incident {}".format(notable.to_incident(mapper)))
+            # todo add docs about mapper
             incidents.append(notable.to_incident(mapper))
             handled_notables.append(notable)
 
@@ -1033,7 +1037,7 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
 
     """
     task_status = False
-
+    demisto.debug("%%%% debug session %%%% - is timeout {}".format(notable.is_enrichment_process_exceeding_timeout(enrichment_timeout)))
     if not notable.is_enrichment_process_exceeding_timeout(enrichment_timeout):
         demisto.debug("Trying to handle open enrichment {}".format(notable.id))
         for enrichment in notable.enrichments:
@@ -1042,7 +1046,9 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_ready():
                         demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
+                        demisto.debug("%%%% debug session %%%% - Here we should see the identity succeed")
                         for item in results.ResultsReader(job.results()):
+                            demisto.debug("%%%% debug session %%%% - {}".format(item))
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
                 except Exception as e:
@@ -2140,14 +2146,16 @@ def splunk_search_command(service):
 
 def splunk_job_create_command(service):
     query = demisto.args()['query']
-    app = demisto.args().get('app', '')
-    if not query.startswith('search'):
-        query = 'search ' + query
-    search_kwargs = {
-        "exec_mode": "normal",
-        "app": app
-    }
-    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+    # app = demisto.args().get('app', '')
+    # if not query.startswith('search'):
+    #     query = 'search ' + query
+    # search_kwargs = {
+    #     "exec_mode": "normal",
+    #     "app": app
+    # }
+    kwargs = {"count": 100, "exec_mode": "normal"}
+
+    search_job = service.jobs.create(query, **kwargs)  # type: ignore
 
     entry_context = {
         'Splunk.Job': search_job.sid
