@@ -6011,3 +6011,100 @@ Collect and download an investigation package as a gz file.
 >| 1f3098e20464 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef | desktop-s2455r8 |
 >| 6d39a3da0744 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef8f06606 | desktop-s2455r9 |
 
+
+
+### microsoft-atp-auth-start
+***
+Run this command to start the authorization process and follow the instructions in the command results.
+
+
+#### Base Command
+
+`microsoft-atp-auth-start`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!microsoft-atp-auth-start```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
+> and enter the code **CODECODE** to authenticate.
+>2. Run the ***!microsoft-atp-auth-complete*** command in the War Room.
+
+### microsoft-atp-auth-complete
+***
+Run this command to complete the authorization process. Should be used after running the ***microsoft-atp-auth-start*** command.
+
+
+#### Base Command
+
+`microsoft-atp-auth-complete`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!microsoft-atp-auth-complete```
+
+#### Human Readable Output
+
+>✅ Authorization completed successfully.
+
+### microsoft-atp-auth-reset
+***
+Run this command if you need to rerun the authentication process.
+
+
+#### Base Command
+
+`microsoft-atp-auth-reset`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!microsoft-atp-auth-reset```
+
+#### Human Readable Output
+
+>Authorization was reset successfully. You can now run ***!microsoft-atp-auth-start*** and ***!microsoft-atp-auth-complete***.
+
+### microsoft-atp-auth-test
+***
+Tests the connectivity to the Microsoft Defender for Endpoint.
+
+
+#### Base Command
+
+`microsoft-atp-auth-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!microsoft-atp-auth-test```
+
+#### Human Readable Output
+
+>✅ Success!
+
