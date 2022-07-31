@@ -6943,10 +6943,7 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
-    try:
-        is_command = hasattr(demisto, 'command')
-    except Exception:
-        is_command = False
+    is_command = hasattr(demisto, 'command')
     is_server_handled = is_command and demisto.command() in ('fetch-incidents',
                                                              'fetch-credentials',
                                                              'long-running-execution',
