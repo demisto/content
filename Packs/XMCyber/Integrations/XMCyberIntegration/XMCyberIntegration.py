@@ -472,10 +472,11 @@ def writeLog(msg, logLevel=LogLevel.Info):
 
 
 def create_client():
-    api_key = demisto.params().get("apikey")
-    base_url = urljoin(demisto.params()["url"], "/api")
-    verify_certificate = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
+    params = demisto.params()
+    api_key = params.get("apikey")
+    base_url = urljoin(params["url"], "/api")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
     headers = {"X-Api-Key": api_key, "Content-Type": "application/json; charset=utf-8"}
     return Client(
         base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
