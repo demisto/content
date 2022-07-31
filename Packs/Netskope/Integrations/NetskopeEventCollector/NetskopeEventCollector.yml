@@ -31,26 +31,11 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The maximum amount of events to retrieve (up to 10000 events).
+- additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events) - for more information see the help section.
   defaultvalue: '1000'
   display: Max Fetch
   hidden: false
   name: max_fetch
-  required: false
-  type: 0
-- additionalinfo: The vendor name to be used in the dataset name, in this format <vendor>_<product>_raw.
-  defaultvalue: Netskope
-  display: Vendor
-  hidden: false
-  name: vendor
-  required: false
-  type: 0
-- additionalinfo: The product name to be used in the dataset name, in this format
-    <vendor>_<product>_raw.
-  defaultvalue: Netskope
-  display: Product
-  hidden: false
-  name: product
   required: false
   type: 0
 - display: Trust any certificate (not secure)

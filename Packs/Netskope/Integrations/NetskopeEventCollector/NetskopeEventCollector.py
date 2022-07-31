@@ -39,7 +39,7 @@ class Client(BaseClient):
     def get_events_request_v1(self, event_type: str, last_run: dict, limit: Optional[int] = None) -> Dict:
         body = {
             'starttime': last_run.get(event_type),
-            'endtime': datetime.now().timestamp(),
+            'endtime': int(datetime.now().timestamp()),
             'limit': limit,
             'type': event_type
         }
@@ -61,7 +61,7 @@ class Client(BaseClient):
         url_suffix = 'alerts'
         body = {
             'starttime': last_run.get('alert'),
-            'endtime': datetime.now().timestamp(),
+            'endtime': int(datetime.now().timestamp()),
             'limit': limit
         }
         response = self._http_request(method='GET', url_suffix=url_suffix, json_data=body)
@@ -234,7 +234,7 @@ def main() -> None:  # pragma: no cover
 
         last_run = demisto.getLastRun()
         if not last_run:
-            first_fetch = int(arg_to_datetime(first_fetch).timestamp() // 100)  # type: ignore[union-attr]
+            first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
             last_run = {
                 'alert': first_fetch,
                 'application': first_fetch,
