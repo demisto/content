@@ -1,7 +1,7 @@
 [MODEL:model="Network", dataset="fortinet_fortigate_raw"]
 // create timestamp field
-alter time_p1 = arrayindex( regextract(time,"(\w+\s\d+)") ,0)
-| alter time_p2 = arrayindex( regextract(time ,"(\d{4}\s\d+:\d+:\d+)") ,0)
+alter time_p1 = arrayindex( regextract(_time,"(\w+\s\d+)") ,0)
+| alter time_p2 = arrayindex( regextract(_time ,"(\d{4}\s\d+:\d+:\d+)") ,0)
 | alter timestamp = parse_timestamp("%b %d %Y %H:%M:%S", concat(time_p1, " ", time_p2 ) )
 // end timestamp field
 |alter XDM.Network.application_protocol	=	app,
