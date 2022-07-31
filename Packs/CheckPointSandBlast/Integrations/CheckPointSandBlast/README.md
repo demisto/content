@@ -375,16 +375,11 @@ Use the Upload API to have a client application request that Check Point Threat 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Size | Number | The size of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Name | String | The name of the file. | 
-| File.SSDeep | String | The SSDeep hash of the file. | 
-| File.EntryID | String | The entry ID of the file. | 
-| File.Info | String | File information. | 
-| File.Type | String | The file type. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.Extension | String | The file extension. | 
+| InfoFile.Name | String | The name of the file. | 
+| InfoFile.EntryID | String | The EntryID of the report | 
+| InfoFile.Size | Number | The size of the file. | 
+| InfoFile.Type | String | The file type. | 
+| InfoFile.Info | String | Basic information of the file | 
 
 #### Command example
 ```!sandblast-download file_id=d2aa35e1-7951-4e6c-a938-a5c78769267c```

@@ -441,7 +441,7 @@ script:
     name: sandblast-download
     outputs:
     - contextPath: InfoFile.Name
-      description: FileName
+      description: The name of the file.
       type: string
     - contextPath: InfoFile.EntryID
       description: The EntryID of the report
@@ -450,7 +450,7 @@ script:
       description: File Size
       type: number
     - contextPath: InfoFile.Type
-      description: File type e.g. "PE"
+      description: The file type.
       type: string
     - contextPath: InfoFile.Info
       description: Basic information of the file
