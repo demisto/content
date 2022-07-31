@@ -1706,7 +1706,7 @@ script:
             reponse, reducing the runtime
           required: false
           isArray: false
-          defaultValue: "true"
+          defaultValue: "false"
           predefined:
             - "false"
             - "true"

@@ -1121,7 +1121,7 @@ def add_tag(demisto_args: dict, is_attribute=False):
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
     is_local_tag = argToBoolean(demisto_args.get('is_local', False))
-    disable_output = argToBoolean(demisto_args.get('disable_output', True))
+    disable_output = argToBoolean(demisto_args.get('disable_output', False))
     try:
         PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
     except PyMISPError:
