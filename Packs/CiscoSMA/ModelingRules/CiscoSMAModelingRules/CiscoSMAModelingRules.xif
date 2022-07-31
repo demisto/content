@@ -22,7 +22,7 @@
 | alter XDM.Audit.threat.severity= Alert_severity
 | alter XDM.Audit.original_event_type = log_category
 | alter XDM.Audit.TriggeredBy.identity.name= Username
-| alter XDM.Audit.identity.uuid = Session
+| alter XDM.Audit.identity.uuid = session
 | alter XDM.Audit.audited_resource.name= Filename
 | alter XDM.Audit.TriggeredBy.ipv4= sourceip 
 | alter XDM.Audit.audited_resource.name= appliance
@@ -60,7 +60,7 @@ or _raw_log contains "euqgui_logs: Info: login:" or _raw_log contains "euqgui_lo
 | alter XDM.Auth.Client.user.username= Username
 | alter XDM.Auth.Client.process.pid= Process_id
 | alter XDM.Auth.Server.process.command_line= command 
-| alter XDM.Auth.Client.host.ipv4_addresses = Destination_ip
+| alter XDM.Auth.Client.host.ipv4_addresses = destination_ip
 | alter XDM.Auth.Client.ipv4 = Sourceip
 | alter XDM.Auth.Observer.product= appliance
 | alter XDM.Auth.Server.process.executable.path= location
@@ -81,6 +81,7 @@ filter _raw_log contains "mail_logs"
 | alter hostname2= arrayindex(regextract(_raw_log ,"\shost\s([^\s]+)"),0)
 | alter Hostname = coalesce(hostname1,hostname2)
 | alter InternalId= arrayindex(regextract(_raw_log ,"InternalId\=(\d+)") ,0)
+| alter protocol = arrayindex(regextract(_raw_log ,"New\s(\w+)") ,0)
 | alter sender1= arrayindex(regextract(_raw_log ,"mailfrom\s\S+\s([^\s]+)") ,0)
 | alter sender2= arrayindex(regextract(_raw_log ,"bytes\sfrom\s\<?([^\"\>?]+)") ,0)
 | alter sender3= arrayindex(regextract(_raw_log ,"Response\s\S+\s([^\s]+)") ,0)
@@ -94,11 +95,10 @@ filter _raw_log contains "mail_logs"
 | alter reciver2= arrayindex(regextract(_raw_log ,"To\:\s\<?([^\s\>?]+)") ,0)
 | alter reciver3= arrayindex(regextract(_raw_log ,"\'to\'\,\s\'([^\>?\']+)") ,0)
 | alter reciver = coalesce(reciver1,reciver2,reciver3)
-| alter protocol = arrayindex(regextract(_raw_log ,"New\s(\w+)") ,0)
 | alter attachment = arrayindex(regextract(_raw_log ,"attachment\s\'?([^\']+)") ,0)
 | alter signature_status= arrayindex(regextract(_raw_log ,"(\w+)\s\(v\=") ,0) 
 | alter XDM.Email.observation_timestamp=parse_timestamp("%h %e %T",Timestamp) 
-,XDM.Email.original_event_description=Message
+, XDM.Email.original_event_description=Message
 , XDM.Email.threat.severity =Alert_severity
 , XDM.Email.original_event_type= log_category
 , XDM.Email.Client.host.ipv4_addresses = arraycreate(coalesce(Source_ip, ""))
