@@ -458,6 +458,90 @@ def test_remove_from_custom_url_category(category_name, items, mocker):
     assert "www.test.com" in demisto_result_got['element']
 
 
+
+class TestQueryLogsCommand:
+
+    
+    @staticmethod
+    def create_logs_query_queue(status_count, no_logs_found):
+
+        response_queue = [
+            MockedResponse(
+                text='<response status="success" code="19"><result><msg><line>query '
+                'job enqueued with jobid 1</line></msg><job>1</job></result></response>',
+                status_code=200
+            )
+        ]
+
+        for _ in range(status_count):
+            response_queue.append(
+                MockedResponse(
+                    text='<response status="success"><result><job><tenq>15:05:47</tenq><tdeq>15:05:47</tdeq><tlast>01:00:00</tlast><status>ACT</status><id>1</id></job><log><logs count="0"progress="20"/></log></result></response>',
+                    status_code=200
+                )
+            )
+
+        if no_logs_found:
+            # job has finished without finding any logs
+            response_queue.append(
+                MockedResponse(
+                    text='<response status="success"><result><job><tenq>15:05:47</tenq><tdeq>15:05:47</tdeq>'
+                         '<tlast>01:00:00</tlast><status>ACT</status><id>1</id></job><log><logs count="0" '
+                         'progress="20"/></log></result></response>',
+                    status_code=200
+                )
+            )
+
+        else:
+            # job has finished with finding logs
+            response_queue.append(
+                MockedResponse(
+                    text='<response status="success"><result><job><status>FIN</status><id>1</id></job><log><logs '
+                         'count="1"progress="100"><entry logid="7125205883407255640"><domain>1</domain></entry><'
+                         '/logs></log></result></response>',
+                    status_code=200
+                )
+            )
+
+        return response_queue
+
+    @pytest.mark.parametrize(
+        'status_count, no_logs_found', [(1, False), (2, True), (3, False), (5, True), (8, False), (10, True)]
+    )
+    def test_query_logs_command_with_polling(self, mocker, status_count, no_logs_found):
+        import Panorama
+        import requests
+        from Panorama import panorama_query_logs_command
+        from CommonServerPython import ScheduledCommand
+
+        Panorama.API_KEY = 'thisisabogusAPIKEY!'
+        mocker.patch.object(
+            requests,
+            'request',
+            side_effect=self.create_logs_query_queue(status_count=status_count, no_logs_found=no_logs_found)
+        )
+        mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
+        command_result = panorama_query_logs_command({'log-type': 'traffic', 'polling': 'true'})
+        assert command_result.readable_output == 'Fetching traffic logs for job ID 1...'
+        assert not command_result.outputs  # no context should be returned until polling is done.
+
+        polling_args = {
+            'query_log_job_id': '1', 'hide_polling_output': True, 'polling': True, 'log-type': 'traffic'
+        }
+
+        command_result = panorama_query_logs_command(polling_args)
+        while command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
+            assert not command_result.readable_output  # make sure that indication of polling is printed only once
+            assert not command_result.outputs  # make sure no context output is being returned to war-room during polling
+            command_result = panorama_query_logs_command(polling_args)
+
+        # last response of the command should be job status and the commit description
+        assert command_result.outputs == {'JobID': '123', 'Description': '123', 'Status': 'Success'}
+
+
+
+
 def test_prettify_edl():
     from Panorama import prettify_edl
     edl = {'@name': 'edl_name', 'type': {'my_type': {'url': 'abc.com', 'description': 'my_desc'}}}
