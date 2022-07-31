@@ -55,6 +55,5 @@ filter activity in ("SignInEvent","Logout","Login Attempt","Login Successful","L
         XDM.Auth.Client.host.ipv4_addresses=arraycreate(userip),
         XDM.Auth.reason=action,
         XDM.Auth.threat.severity=severity,
-        XDM.Auth.Client.process.executable.sha256=_sha256,
-        XDM.Auth.Client.process.executable.sha256=sha256,
+        XDM.Auth.Client.process.executable.sha256=coalesce(_sha256, sha256),
         XDM.Auth.kerberos.padata_type=data_type;
