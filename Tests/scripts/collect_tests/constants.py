@@ -4,7 +4,7 @@ XSOAR_SANITY_TEST_NAMES: tuple[str, ...] = (
     'Sanity Test - Playbook with integration',
     'Sanity Test - Playbook with no integration',
     'Sanity Test - Playbook with mocked integration',
-    'Sanity Test - Playbook with Unmockable Integration',
+    'Sanity Test - Playbook with Unmockable Whois Integration',
 )
 DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
     'FormattingPerformance - Test',
