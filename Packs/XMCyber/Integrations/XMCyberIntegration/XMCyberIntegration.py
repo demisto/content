@@ -41,7 +41,7 @@ class Client(BaseClient):
     def get(self, url_suffix: str, params: Optional[Dict[str, Any]] = None):
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
-    def post(self, url_suffix: str, params: Optional[Dict[str, Any]]):
+    def post(self, url_suffix: str, params: Optional[Dict[str, Any]] = None):
         return self._http_request(
             method="POST", url_suffix=url_suffix, data=json.dumps(params)
         )
