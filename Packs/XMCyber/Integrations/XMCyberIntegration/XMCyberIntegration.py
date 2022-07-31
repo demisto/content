@@ -78,13 +78,11 @@ class Client(BaseClient):
     def get_paginated(
         self,
         url_suffix: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = {},
         page_size: int = PAGE_SIZE,
         max_pages: int = MAX_PAGES,
         log: bool = True,
     ):
-        if params is None:
-            params = {}
         return self._paginated("GET", url_suffix, params, page_size, max_pages, log)
 
     def post_paginated(
