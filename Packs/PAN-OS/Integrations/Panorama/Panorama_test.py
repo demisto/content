@@ -458,10 +458,8 @@ def test_remove_from_custom_url_category(category_name, items, mocker):
     assert "www.test.com" in demisto_result_got['element']
 
 
-
 class TestQueryLogsCommand:
 
-    
     @staticmethod
     def create_logs_query_queue(status_count, no_logs_found):
 
@@ -476,7 +474,9 @@ class TestQueryLogsCommand:
         for _ in range(status_count):
             response_queue.append(
                 MockedResponse(
-                    text='<response status="success"><result><job><tenq>15:05:47</tenq><tdeq>15:05:47</tdeq><tlast>01:00:00</tlast><status>ACT</status><id>1</id></job><log><logs count="0"progress="20"/></log></result></response>',
+                    text='<response status="success"><result><job><tenq>15:05:47</tenq><tdeq>15:05:47</tdeq><tlast>'
+                         '01:00:00</tlast><status>ACT</status><id>1238</id></job><log><logs count="0" progress="20"/'
+                         '></log></result></response>',
                     status_code=200
                 )
             )
@@ -485,30 +485,78 @@ class TestQueryLogsCommand:
             # job has finished without finding any logs
             response_queue.append(
                 MockedResponse(
-                    text='<response status="success"><result><job><tenq>15:05:47</tenq><tdeq>15:05:47</tdeq>'
-                         '<tlast>01:00:00</tlast><status>ACT</status><id>1</id></job><log><logs count="0" '
-                         'progress="20"/></log></result></response>',
+                    text='<response status="success"><result><job><tenq>15:05:47</tenq><tdeq>15:05:47</tdeq><tlast>'
+                         '15:06:52</tlast><status>FIN</status><id>1</id></job><log><logs count="0"'
+                         ' progress="100"/></log></result></response>',
                     status_code=200
                 )
             )
 
         else:
-            # job has finished with finding logs
-            response_queue.append(
-                MockedResponse(
-                    text='<response status="success"><result><job><status>FIN</status><id>1</id></job><log><logs '
-                         'count="1"progress="100"><entry logid="7125205883407255640"><domain>1</domain></entry><'
-                         '/logs></log></result></response>',
-                    status_code=200
+
+            with open('test_data/query_logs.xml') as f:
+                # job has finished with finding logs
+                response_queue.append(
+                    MockedResponse(
+                        text=f.read(),
+                        status_code=200
+                    )
                 )
-            )
 
         return response_queue
+
+    def test_query_logs_command_without_polling(self, mocker):
+        """
+        Given
+        - an api response indicating a log query job has been created
+
+        When
+        - querying logs without polling
+
+        Then
+        - make sure polling is not triggered.
+        - make sure context output indicates that the status of the job is 'Pending'
+        """
+        import Panorama
+        import requests
+        from Panorama import panorama_query_logs_command
+
+        Panorama.API_KEY = 'thisisabogusAPIKEY!'
+        mocker.patch.object(
+            requests,
+            'request',
+            return_value=MockedResponse(
+                text='<response status="success" code="19"><result><msg><line>query '
+                'job enqueued with jobid 1</line></msg><job>1</job></result></response>',
+                status_code=200
+            )
+        )
+
+        command_result = panorama_query_logs_command({'log-type': 'traffic', 'polling': 'false'})
+        assert command_result.outputs == {
+            'JobID': '1', 'Status': 'Pending', 'LogType': 'traffic', 'Message': 'query job enqueued with jobid 1'
+        }
+        assert not command_result.scheduled_command
+        assert command_result.readable_output == '### Query Logs:\n|JobID|Status|\n|---|---|\n| 1 | Pending |\n'
 
     @pytest.mark.parametrize(
         'status_count, no_logs_found', [(1, False), (2, True), (3, False), (5, True), (8, False), (10, True)]
     )
     def test_query_logs_command_with_polling(self, mocker, status_count, no_logs_found):
+        """
+        Given
+        - a queue of api responses
+        - responses indicating query logs succeeded or not succeeded.
+        - a status count which means how many times polling was done.
+
+        When
+        - querying logs with polling
+
+        Then
+        - make sure the readable output indicating polling is active is printed only once.
+        - make sure context is returned only at the end of polling, and that the context is valid
+          if there are logs available and if there aren't.
+        """
         import Panorama
         import requests
         from Panorama import panorama_query_logs_command
@@ -536,9 +584,13 @@ class TestQueryLogsCommand:
             assert not command_result.outputs  # make sure no context output is being returned to war-room during polling
             command_result = panorama_query_logs_command(polling_args)
 
-        # last response of the command should be job status and the commit description
-        assert command_result.outputs == {'JobID': '123', 'Description': '123', 'Status': 'Success'}
-
+        if no_logs_found:
+            assert command_result.outputs == {'JobID': '1', 'LogType': 'traffic', 'Logs': [], 'Status': 'Completed'}
+        else:
+            partial_expected_outputs = {'JobID': '1', 'LogType': 'traffic', 'Status': 'Completed'}
+            assert partial_expected_outputs.items() <= command_result.outputs.items()
+            assert 'Logs' in command_result.outputs
+            assert command_result.outputs['Logs']  # make sure there are log outputs available.
 
 
 
