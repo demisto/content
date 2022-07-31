@@ -2923,7 +2923,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Initiates a new endpoint script execution action using a script from the script library.
+    description: Initiates a new endpoint script execution action using a script from the script library, will be deprecated in the future.
     execution: false
     name: xdr-run-script
     outputs:
@@ -2966,11 +2966,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: 'true'
-      description: Polling argument.
-      name: polling
-      deprecated: true
-    - default: false
       description: Interval in seconds between each poll.
       defaultValue: '10'
       isArray: false
@@ -2997,7 +2992,7 @@ script:
       required: false
       isArray: false
     deprecated: false
-    description: Initiates a new endpoint script execution action using a script from the script library and gets its execution result back.
+    description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
     execution: false
     name: xdr-script-run
     polling: true

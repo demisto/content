@@ -2924,15 +2924,13 @@ class TestPollingCommands:
         mocker.patch.object(client, '_http_request', side_effect=self.create_mocked_responses(status_count))
         mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
-        command_result = script_run_polling_command(
-            {'endpoint_ids': '1', 'script_uid': '1', 'polling': 'true'}, client
-        )
+        command_result = script_run_polling_command({'endpoint_ids': '1', 'script_uid': '1'}, client)
 
         assert command_result.readable_output == "Waiting for the script to " \
                                                  "finish running on the following endpoints: ['1']..."
 
         polling_args = {
-            'polling': 'true', 'endpoint_ids': '1', 'script_uid': '1', 'action_id': '1', 'hide_polling_output': True
+            'endpoint_ids': '1', 'script_uid': '1', 'action_id': '1', 'hide_polling_output': True
         }
 
         command_result = script_run_polling_command(polling_args, client)
