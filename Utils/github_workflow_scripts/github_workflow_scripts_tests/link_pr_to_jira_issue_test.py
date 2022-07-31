@@ -1,5 +1,4 @@
 import pytest
-import requests
 
 from Utils.github_workflow_scripts.jira_integration_scripts import link_pr_to_jira_issue
 
