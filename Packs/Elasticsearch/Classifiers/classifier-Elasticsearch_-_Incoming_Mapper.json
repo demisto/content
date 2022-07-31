@@ -1,30 +1,30 @@
 {
     "description": "",
     "feed": false,
-    "id": "ElasticSearch - Incoming Mapper",
+    "id": "Elasticsearch - Incoming Mapper",
     "mapping": {
-        "ElasticSearch": {
+        "Elasticsearch": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Destination IP": {
                     "simple": "destination.ip"
                 },
-                "ElasticSearch Event info": {
+                "Elasticsearch Event info": {
                     "simple": "event"
                 },
-                "ElasticSearch Host": {
+                "Elasticsearch Host": {
                     "simple": "host"
                 },
-                "ElasticSearch Machine": {
+                "Elasticsearch Machine": {
                     "simple": "machine"
                 },
-                "ElasticSearch Source ": {
+                "Elasticsearch Source ": {
                     "simple": "_source"
                 },
-                "ElasticSearch Timestamp": {
+                "Elasticsearch Timestamp": {
                     "simple": "timestamp"
                 },
-                "ElasticSearch index": {
+                "Elasticsearch index": {
                     "simple": "_index"
                 },
                 "Event ID": {
@@ -54,7 +54,7 @@
             }
         }
     },
-    "name": "ElasticSearch - Incoming Mapper",
+    "name": "Elasticsearch - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.2.0"

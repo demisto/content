@@ -854,7 +854,7 @@ class TestIncidentLabelMaker(unittest.TestCase):
 @pytest.mark.parametrize('last_fetch,fetch_time, time_range_start, time_range_end, result',
                          [('','','1.1.2000 12:00:00Z','2.1.2000 12:00:00Z',
                            {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
-                          ('1.1.2000 12:00:00Z', '', '', '2.1.2000 12:00:00Z',
+                          (946728000000, '', '', '2.1.2000 12:00:00Z',
                            {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
                           ('', '1.1.2000 12:00:00Z', '', '2.1.2000 12:00:00Z',
                            {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
