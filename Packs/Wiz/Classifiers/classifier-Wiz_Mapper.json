@@ -22,6 +22,10 @@
                     "complex": null,
                     "simple": "entitySnapshot.cloudPlatform"
                 },
+                "Wiz Issue Due Date": {
+                    "complex": null,
+                    "simple": "dueAt"
+                },
                 "Wiz Details": {
                     "complex": null,
                     "simple": "control.description"

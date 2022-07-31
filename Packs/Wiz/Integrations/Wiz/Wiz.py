@@ -606,7 +606,7 @@ def reject_issue(issue_id, reject_reason, reject_note):
 
     demisto.debug("reject_issue, enter")
 
-    if not issue_id or not reject_reason or not reject_note or (not issue_id and not reject_reason and not reject_note):
+    if not issue_id or not reject_reason or not reject_note:
         demisto.error("You should pass all of: Issue ID, rejection reason and note.")
         return "You should pass all of: Issue ID, rejection reason and note."
 
@@ -759,7 +759,7 @@ def set_issue_note(issue_id, note):
 
     demisto.debug("set_issue_note, enter")
 
-    if not issue_id and not note:
+    if not issue_id or not note:
         demisto.error("You should pass an Issue ID and note.")
         return "You should pass an Issue ID and note."
 
@@ -786,11 +786,11 @@ def set_issue_note(issue_id, note):
     if 'errors' in issue_response:
         demisto.error(f"Could not find Issue with ID {issue_id}")
         demisto.error(f"Error: {issue_response}")
-        return (f"Could not find Issue with ID {issue_id}")
+        return f"Could not find Issue with ID {issue_id}"
 
     # Check if note is empty for appending
     issue_response_json = issue_response['data']
-    if not issue_response_json['issue']['note']:
+    if not issue_response_json['issue'].get('note'):
         new_note = datetime.today().strftime('%Y-%m-%d') + " " + note
     else:
         new_note = issue_response_json['issue']['note'] + "\n" + datetime.today().strftime('%Y-%m-%d') + " " + note
@@ -831,7 +831,7 @@ def set_issue_note(issue_id, note):
 
 def clear_issue_note(issue_id):
     """
-    Clear a note from a Wiz Issue
+    Clear the note from a Wiz Issue
     """
 
     demisto.debug("clear_issue_note, enter")
@@ -874,7 +874,7 @@ def clear_issue_note(issue_id):
     if 'errors' in response:
         demisto.error(f"Could not find Issue with ID {issue_id}")
         demisto.error(f"Error: {response}")
-        return (f"Could not find Issue with ID {issue_id}")
+        return f"Could not find Issue with ID {issue_id}"
 
     return response
 
@@ -886,23 +886,18 @@ def set_issue_due_date(issue_id, due_at):
 
     demisto.debug("set_issue_due_date, enter")
 
-    if not issue_id:
-        demisto.error("You should pass an Issue ID.")
-        return "You should pass an Issue ID."
+    if not issue_id or not due_at:
+        demisto.error("issue_id and due_at parameters must be provided.")
+        return "issue_id and due_at parameters must be provided."
 
-    if (due_at is not None) and (due_at != ""):
-        # time has to be like 2022-01-19T00:00:00.000Z
-        format = "%Y-%m-%d"
-        try:
-            datetime.strptime(due_at, format)
-            demisto.info("This is the correct date string format.")
-        except ValueError:
-            demisto.error("This is the incorrect. It should be YYYY-MM-DD")
-            return "The date format is the incorrect. It should be YYYY-MM-DD"
-        due_at = due_at + 'T00:00:00.000Z'
-    else:
+    format = "%Y-%m-%d"
+    try:
+        datetime.strptime(due_at, format)
+        demisto.info("This is the correct date string format.")
+    except ValueError:
         demisto.error("This is the incorrect. It should be YYYY-MM-DD")
         return "The date format is the incorrect. It should be YYYY-MM-DD"
+    due_at = due_at + 'T00:00:00.000Z'
 
     variables = {
         'issueId': issue_id,
@@ -1173,10 +1168,10 @@ def get_issue_evidence(issue_id):
         demisto.debug(f"Failed getting Issue evidence on ID {issue_id}")
         return {}
 
-    if response['data']['graphSearch']['nodes'] is None:
+    if response.get('data', {}).get('graphSearch', {}).get('nodes') is None:
         return "Resource Not Found"
     else:
-        return response['data']['graphSearch']['nodes'][0]['entities']
+        return response['data']['graphSearch']['nodes'][0].get('entities', {})
 
 
 def rescan_machine_disk(vm_id):
@@ -1233,9 +1228,9 @@ def rescan_machine_disk(vm_id):
         return {}
 
     # Run the rescan query
-    if vm_response['data']['graphSearch']['nodes'] == []:
+    if not vm_response.get('data', {}).get('graphSearch', {}).get('nodes', []):
         demisto.log(f"could not find VM with ID {vm_id}")
-        return (f"could not find VM with ID {vm_id}")
+        return f"could not find VM with ID {vm_id}"
 
     else:
         vm_id_wiz = vm_response['data']['graphSearch']['nodes'][0]['entities'][0]['id']
@@ -1354,7 +1349,7 @@ def get_project_team(project_name):
         demisto.debug(f"Error with finding Project with name {project_name}")
         return {}
 
-    project_response = response_json['data']['projects']['nodes']
+    project_response = response_json.get('data', {}).get('projects', {}).get('nodes')
 
     demisto.log(f"Validating if Project with name \"{project_name}\" exists.")
     if not project_response:
