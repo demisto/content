@@ -133,7 +133,7 @@ def main():
                 continue
 
     if len(indicators) > 1:
-        bundle = Bundle(indicators)
+        bundle = Bundle(indicators, allow_custom=True)
         context = {
             'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(bundle))
         }
