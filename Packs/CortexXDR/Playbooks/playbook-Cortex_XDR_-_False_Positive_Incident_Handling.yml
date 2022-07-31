@@ -301,7 +301,7 @@ tasks:
           simple: Mark IOCs to be approved
         options: []
         optionsarg:
-        - simple: ${inputs.filesha256}
+        - simple: ${inputs.FileSha256}
         placeholder: ''
         readonly: false
         required: false
