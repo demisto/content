@@ -111,7 +111,7 @@ def remove_special_chars_from_start_and_end_of_url(url_: str) -> str:
         url_ (str): URL to remove the special characters from.
 
     Returns:
-        (str): URL with characters brackets, if needed to remove, else the URL itself.
+        (str): URL without special characters, if needed to remove, else the URL itself.
     """
     opening_brackets = {
         "[",
