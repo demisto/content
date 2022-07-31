@@ -26,7 +26,7 @@ class ExchangeOnlinePowershellV2Client
             [string]$url,
             [string]$app_id,
             [string]$organization,
-            [SecureString]$certificate,
+            [string]$certificate,
             [SecureString]$password
     )
     {
@@ -687,29 +687,20 @@ function Main
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
 
-    if ($integration_params.certificate.password)
+    if ($integration_params.password.password)
     {
-        $password = ConvertTo-SecureString $integration_params.certificate.password -AsPlainText -Force
+        $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
     }
     else
     {
         $password = $null
     }
 
-    if ($integration_params.certificate.password)
-    {
-        $certificate = ConvertTo-SecureString $integration_params.certificate.password -AsPlainText -Force
-    }
-    else
-    {
-        $certificate = $null
-    }
-
     $exo_client = [ExchangeOnlinePowershellV2Client]::new(
             $integration_params.url,
             $integration_params.app_id,
             $integration_params.organization,
-            $certificate,
+            $integration_params.certificate.password,
             $password
     )
     try

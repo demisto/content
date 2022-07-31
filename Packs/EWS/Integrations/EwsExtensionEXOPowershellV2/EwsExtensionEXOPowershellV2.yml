@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: EWS Extension Online Powershell v2 test
+  id: EWS Extension Online Powershell v2
   version: -1
 configuration:
 - defaultvalue: https://outlook.office365.com
@@ -14,7 +14,7 @@ configuration:
   required: true
   additionalinfo: A pfx certificate encoded in Base64.
   hiddenusername: true
-- displaypassword: password
+- displaypassword: Password
   name: password
   required: true
   type: 9
@@ -28,8 +28,8 @@ configuration:
   required: true
   type: 0
 description: Use the EWS Extension Online Powershell v2 integration to get information about mailboxes and users in your organization.  This integration can also retrieve and modify Tenant Allow/Block Lists.
-display: EWS Extension Online Powershell v2 test
-name: EWS Extension Online Powershell v2 test
+display: EWS Extension Online Powershell v2
+name: EWS Extension Online Powershell v2
 script:
   commands:
   - arguments:
