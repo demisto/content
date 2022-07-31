@@ -1,7 +1,7 @@
 """
 Check Point Threat Emulation (SandBlast) API Integration for Cortex XSOAR (aka Demisto).
 """
-from typing import Callable, Dict, Any, List
+from typing import Dict, Any, List
 import pytest
 import demistomock as demisto
 from CommonServerPython import *
