@@ -45,25 +45,25 @@ FEATURE_BY_NAME = {
     'All': 'all'
 }
 QUOTA_HEADERS = [
-        'RemainQuotaHour',
-        'RemainQuotaMonth',
-        'AssignedQuotaHour',
-        'AssignedQuotaMonth',
-        'HourlyQuotaNextReset',
-        'MonthlyQuotaNextReset',
-        'QuotaId',
-        'CloudMonthlyQuotaPeriodStart',
-        'CloudMonthlyQuotaUsageForThisGw',
-        'CloudHourlyQuotaUsageForThisGw',
-        'CloudMonthlyQuotaUsageForQuotaId',
-        'CloudHourlyQuotaUsageForQuotaId',
-        'MonthlyExceededQuota',
-        'HourlyExceededQuota',
-        'CloudQuotaMaxAllowToExceedPercentage',
-        'PodTimeGmt',
-        'QuotaExpiration',
-        'Action',
-    ]
+    'RemainQuotaHour',
+    'RemainQuotaMonth',
+    'AssignedQuotaHour',
+    'AssignedQuotaMonth',
+    'HourlyQuotaNextReset',
+    'MonthlyQuotaNextReset',
+    'QuotaId',
+    'CloudMonthlyQuotaPeriodStart',
+    'CloudMonthlyQuotaUsageForThisGw',
+    'CloudHourlyQuotaUsageForThisGw',
+    'CloudMonthlyQuotaUsageForQuotaId',
+    'CloudHourlyQuotaUsageForQuotaId',
+    'MonthlyExceededQuota',
+    'HourlyExceededQuota',
+    'CloudQuotaMaxAllowToExceedPercentage',
+    'PodTimeGmt',
+    'QuotaExpiration',
+    'Action',
+]
 
 
 ''' CLIENT CLASS '''
@@ -297,7 +297,7 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: Information about the queried file.
     """
-    file_name = args.get('file_name')
+    file_name = args.get('file_name', '')
     file_hash = args['file_hash']
     features = argToList(args.get('features', ''))
     reports = argToList(args.get('reports'))
@@ -514,7 +514,7 @@ def setup_upload_polling_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 @polling_function('sandblast-upload')
-def upload_polling_command(args: Dict[str, Any], **kwargs) -> CommandResults:
+def upload_polling_command(args: Dict[str, Any], **kwargs) -> PollResult:
     """
     Polling command to display the progress of the upload command.
     After the first run, progress will be shown through the query command.
@@ -527,7 +527,7 @@ def upload_polling_command(args: Dict[str, Any], **kwargs) -> CommandResults:
         args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request and a Client.
 
     Returns:
-        CommandResults: A result to return to the user which will be presented in a markdown value.
+        PollResult: A result to return to the user which will be set as a CommandResults.
             The result itself will depend on the stage of polling.
     """
     if 'file_hash' not in args:
@@ -738,7 +738,7 @@ def get_analysis_readable_output(
     return readable_output
 
 
-def get_dbotscore(response: Dict[str, Any]) -> Common.DBotScore:
+def get_dbotscore(response: Dict[str, Any]) -> int:
     """
     Response received from the API request which holds fields that will help indicate the DBotScore.
 
@@ -746,7 +746,7 @@ def get_dbotscore(response: Dict[str, Any]) -> Common.DBotScore:
         response (Dict[str, Any]): Response received from the API request.
 
     Returns:
-        Common.DBotScore: A score to represent the reputation of an indicator.
+        int: A score to represent the reputation of an indicator.
     """
     av_confidence = dict_safe_get(response, ['response', 'av', 'malware_info', 'confidence'])
     av_severity = dict_safe_get(response, ['response', 'av', 'malware_info', 'severity'])
@@ -755,8 +755,8 @@ def get_dbotscore(response: Dict[str, Any]) -> Common.DBotScore:
     te_severity = dict_safe_get(response, ['response', 'te', 'severity'])
     te_combined_verdict = dict_safe_get(response, ['response', 'te', 'combined_verdict'])
 
-    if av_confidence == 0 and av_severity == 0 and\
-        te_combined_verdict == 'benign' and te_severity is None and (te_confidence == 1 or te_confidence is None):
+    if av_confidence == 0 and av_severity == 0 and \
+            te_combined_verdict == 'benign' and te_severity is None and (te_confidence == 1 or te_confidence is None):
         score = Common.DBotScore.GOOD
 
     elif te_severity == 1:
