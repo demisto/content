@@ -78,7 +78,7 @@ validate-content-conf:
 
 create-instances:
   tags:
-    - gce
+    - gke
   extends:
     - .default-job-settings
   rules:
@@ -87,14 +87,11 @@ create-instances:
     - if: '$INSTANCE_TESTS'
   cache:
     policy: pull-push
-  # services:
-  #   - name: docker-io.art.code.pan.run/neo4j:latest
-  #     alias: neo4j
-  #     variables:
-  #       NEO4J_AUTH: neo4j/test
   services:
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
-      alias: docker
+    - name: docker-io.art.code.pan.run/neo4j:latest
+      alias: localhost
+      variables:
+        NEO4J_AUTH: neo4j/test
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
@@ -109,9 +106,7 @@ create-instances:
     # - !reference [.create-id-set-xsoar]
     # - !reference [.create-release-notes-and-common-docs]
     - section_start "Create content graph"
-    - pip install docker-compose
     - demisto-sdk content-graph
-    - neo4j stop
     - cp ./neo4j/backups/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
 
     # - section_start "Create Content Artifacts and Update Conf" --collapsed
