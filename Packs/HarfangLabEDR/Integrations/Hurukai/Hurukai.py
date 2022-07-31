@@ -2169,7 +2169,7 @@ class TelemetryBinary(Telemetry):
 
     def _construct_output(self, results, client):
         """Download with an API token is not supported yet"""
-        api_token =  client.get_api_token().get('api_token')
+        api_token = client.get_api_token().get('api_token')
 
         output = []
         for x in results:
