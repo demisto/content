@@ -32,7 +32,7 @@ fixes: https://jira-hq.paloaltonetworks.local/browse/CIAC-3475
 
 something else to say"""
 
-PR_TEST_CASE=[
+PR_TEST_CASE = [
     # Pr is not merged, so just need to detect all the issues.
     (PR_WITH_ONLY_FIXES_WITH_SPACE, False, ['CIAC-3473']),
     (PR_WITH_ONLY_FIXES_WITH_NEWLINE, False, ['CIAC-3473']),
@@ -55,14 +55,14 @@ PR_TEST_CASE=[
     (PR_WITH_ONLY_RELATES_WITH_SPACE, True, []),
     (PR_WITH_ONLY_RELATES_WITH_NEWLINE, True, []),
     (PR_WITH_ONLY_RELATES_WITHOUT_END_OF_STR, True, []),
-    (PR_WITH_BOTH_BY_NEWLINE, True,  ['CIAC-3473'])
+    (PR_WITH_BOTH_BY_NEWLINE, True, ['CIAC-3473'])
 ]
 
 
 @pytest.mark.parametrize('pr_body, is_merged, expected', PR_TEST_CASE)
 def test_find_fixed_issue_in_body(pr_body, is_merged, expected):
     res = link_pr_to_jira_issue.find_fixed_issue_in_body(pr_body, is_merged)
-    res_ids = [x.get('id') for x  in res]
+    res_ids = [x.get('id') for x in res]
     assert res_ids == expected
 
 
@@ -72,8 +72,9 @@ TRIGGER_TEST_CASE = [
              {'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3475', 'id': 'CIAC-3475'}])
 ]
 
+
 @pytest.mark.parametrize('is_merged, expected', TRIGGER_TEST_CASE)
-def test_trigger_generic_webhook(mocker, requests_mock, is_merged, expected):
+def test_trigger_generic_webhook(requests_mock, is_merged, expected):
     class OptionMock:
         def __init__(self, link, num, title, body, merged):
             self.pr_link = link
@@ -84,9 +85,8 @@ def test_trigger_generic_webhook(mocker, requests_mock, is_merged, expected):
             self.username = 'test_user'
             self.password = 'test_password'
 
-    # post_mock = mocker.patch.object(requests, 'post', return_value=requests_mock )
     post_mock = requests_mock.post(link_pr_to_jira_issue.JIRA_GITHUB_INTEGRATION_INSTANCE_URL, status_code=200)
-    option_mock = OptionMock('pr_link_example','1', 'dummy pr', PR_WITH_BOTH_BY_NEWLINE, is_merged)
+    option_mock = OptionMock('pr_link_example', '1', 'dummy pr', PR_WITH_BOTH_BY_NEWLINE, is_merged)
     link_pr_to_jira_issue.trigger_generic_webhook(option_mock)
     res = post_mock.last_request.json()
     assert res.get('name') == link_pr_to_jira_issue.GENERIC_WEBHOOK_NAME
