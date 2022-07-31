@@ -38,6 +38,19 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  display: Source Reliability
+  name: reliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  defaultvalue: F - Reliability cannot be judged
 - display: Period between incident fetch interval (in minutes)
   name: fetch_interval
   defaultvalue: "1"

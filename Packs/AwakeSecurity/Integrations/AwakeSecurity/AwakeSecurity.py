@@ -20,6 +20,7 @@ identifier = credentials["identifier"]
 password = credentials["password"]
 suspicious_threshold = params["suspicious_threshold"]
 malicious_threshold = params["malicious_threshold"]
+reliability = params["reliability"]
 authTokenRequest = {
     "loginUsername": identifier,
     "loginPassword": password
@@ -174,7 +175,8 @@ def lookupDevice():
             "Vendor": "Awake Security",
             "Type": 'device',
             "Indicator": lookup_key,
-            "Score": 0
+            "Score": 0,
+            "Reliability": reliability,
         }
     humanReadable = displayTable([contents], humanReadableFields)
     contents["device"] = lookup_key
@@ -203,7 +205,8 @@ def lookupDomain():
             "Vendor": "Awake Security",
             "Type": 'domain',
             "Indicator": lookup_key,
-            "Score": 0
+            "Score": 0,
+            "Reliability": reliability,
         }
     humanReadable = displayTable([contents], humanReadableFields)
     contents["domain"] = lookup_key
@@ -234,7 +237,8 @@ def lookupEmail():
             "Vendor": "Awake Security",
             "Type": 'email',
             "Indicator": lookup_key,
-            "Score": 0
+            "Score": 0,
+            "Reliability": reliability,
         }
     humanReadable = displayTable(contents, humanReadableFields)
     for content in contents:
@@ -255,7 +259,8 @@ def lookupIp():
         "Vendor": "Awake Security",
         "Type": 'ip',
         "Indicator": lookup_key,
-        "Score": 0
+        "Score": 0,
+        "Reliability": reliability,
     }
     # Note: No DBotScore for IP addresses as we do not score them.
     # Our product scores devices rather than IP addresses.
