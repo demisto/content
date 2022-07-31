@@ -122,7 +122,8 @@ def toDBotScore(indicator_type, percentile, lookup_key):
         "Vendor": "Awake Security",
         "Type": indicator_type,
         "Indicator": lookup_key,
-        "Score": score
+        "Score": score,
+        "Reliability": reliability,
     }
 
 
@@ -208,6 +209,7 @@ def lookupDomain():
             "Score": 0,
             "Reliability": reliability,
         }
+        p
     humanReadable = displayTable([contents], humanReadableFields)
     contents["domain"] = lookup_key
     genericContext = {"Domain": {"Name": lookup_key}}
