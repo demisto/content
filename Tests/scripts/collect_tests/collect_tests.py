@@ -383,8 +383,7 @@ class BranchTestCollector(TestCollector):
                 FileType.MAPPER: (self.conf.incoming_mapper_to_test, CollectionReason.MAPPER_CHANGED),
                 FileType.CLASSIFIER: (self.conf.classifier_to_test, CollectionReason.CLASSIFIER_CHANGED),
             }[file_type]
-            # type: ignore[call-overload]
-            if not (tests := source.get(content_item)):
+            if not (tests := source.get(content_item)):  # type: ignore[call-overload]
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
                 reason_description = f'no specific tests for {relative_path} were found'
         elif path.suffix == '.yml':
