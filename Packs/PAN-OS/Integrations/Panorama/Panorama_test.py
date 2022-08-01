@@ -593,7 +593,6 @@ class TestQueryLogsCommand:
             assert command_result.outputs['Logs']  # make sure there are log outputs available.
 
 
-
 def test_prettify_edl():
     from Panorama import prettify_edl
     edl = {'@name': 'edl_name', 'type': {'my_type': {'url': 'abc.com', 'description': 'my_desc'}}}
