@@ -4883,14 +4883,7 @@ def panorama_query_logs_command(args: dict):
                 readable_output=readable_output,
                 raw_response=parsed.raw
             ),
-            continue_to_poll=parsed.ns.response.result.job.status != 'FIN',
-            args_for_next_run={
-                'query_log_job_id': parsed.ns.response.result.job.id,
-                'log-type': log_type,
-                'polling': True,
-                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
-                'timeout': arg_to_number(args.get('timeout'))
-            }
+            continue_to_poll=parsed.ns.response.result.job.status != 'FIN'
         )
 
     return poll_result
