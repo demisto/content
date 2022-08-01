@@ -4,7 +4,7 @@
     "modified": "2022-01-12T08:13:44.844285695Z",
     "ownerOnly": false,
     "cliName": "categoryname",
-	"description": "Alert category based on the alert source. An example of an XDR Agent alert category is Exploit Modules.",
+    "description": "Alert category based on the alert source. An example of an XDR Agent alert category is Exploit Modules.",
     "name": "Category Name",
     "type": "shortText",
     "closeForm": false,
