@@ -508,7 +508,6 @@ def setup_upload_polling_command(client: Client, args: Dict[str, Any]) -> Comman
         CommandResults: A result to return to the user which will be presented in a markdown value.
             The result itself will depend on the stage of polling.
     """
-    args['polling'] = True
     return upload_polling_command(args, client=client)
 
 
@@ -516,6 +515,7 @@ def setup_upload_polling_command(client: Client, args: Dict[str, Any]) -> Comman
     name='sandblast-upload',
     interval=arg_to_number(demisto.args().get('interval_in_seconds', DEFAULT_INTERVAL)),
     timeout=arg_to_number(demisto.args().get('timeout_in_seconds', DEFAULT_TIMEOUT)),
+    requires_polling_arg=False,
 )
 def upload_polling_command(args: Dict[str, Any], **kwargs) -> PollResult:
     """
