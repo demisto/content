@@ -1518,8 +1518,7 @@ def get_whois_for_domain_command():
         return_error(r.response.text)
 
     readable_whois = tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'],
-                                            table_whois,
-                                            headers, date_fields=["Last Retrieved"])  # noqa: W504
+                                     table_whois, headers, date_fields=["Last Retrieved"])  # noqa: W504
     readable_name_servers = tableToMarkdown('Nameservers: ', contents_nameserver, headers)  # noqa: W504
     readable_email = tableToMarkdown('Email Addresses: ', contents_email, headers)
 
@@ -1883,7 +1882,6 @@ def get_url_timeline(url):
 def main() -> None:
     LOG('command is %s' % (demisto.command(),))
     try:
-
         handle_proxy()
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
