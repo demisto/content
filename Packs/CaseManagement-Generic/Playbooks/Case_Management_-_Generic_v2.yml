@@ -1,0 +1,643 @@
+description: "This playbook will extract and enrich indicators upon trigger, calculate Severity, and set SLAs and Timers. \n\nCan be used as a default playbook to ingest new Incidents, or for manually created Incidents. "
+id: Case Management - Generic v2
+inputs:
+- description: |-
+    Determines whether to extract and enrich all indicators in the Incident.  This is run on all Incident fields.
+
+    Set to "True" to enable extraction and enrichment.
+  key: Enrich
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'True'
+- description: "Set to \"True\" to enable setting SLAs for the Incident, Time to Assignment, and Remediation SLA Timers.  \n\nComplete the other inputs to set the SLA, and Timer SLAs based on Severity."
+  key: SetSLAs
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+- description: Set to "True" to set the SLA on the Incident.
+  key: SetIncidentSLAs
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+- description: Set to "True" to set the SLAs on the Time to Assignment Timer.
+  key: SetTimeToAssignmentSLAs
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+- description: Set to "True" to set the SLAs on the Remediation SLA Timer.
+  key: SetRemediationTimerSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Critical.
+  key: CriticalRemediationSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '180'
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is High.
+  key: HighRemediationSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '300'
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Medium.
+  key: MediumRemediationSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '1440'
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Low or Informational.
+  key: LowRemediationSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '7200'
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Critical. '
+  key: CriticalTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '15'
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is High. '
+  key: HighTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '60'
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Medium. '
+  key: MediumTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '180'
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Low or Informational. '
+  key: LowTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '1440'
+name: Case Management - Generic v2
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '24'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a48d5514-a168-41c5-8798-809683bb68d8
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: a48d5514-a168-41c5-8798-809683bb68d8
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  '12':
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: d14fd353-5b17-4cd9-8630-973dde8c74e3
+      iscommand: false
+      name: 'Done '
+      type: title
+      version: -1
+      description: ''
+    taskid: d14fd353-5b17-4cd9-8630-973dde8c74e3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2145
+        }
+      }
+  '16':
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: "### Analyst Investigation\n\nPlease ensure to take the following actions:\n\n### Assign to yourself, or another Analyst\n- Click Assign to Me to assign this to yourself.\n- Select an Owner via the Owner field to assign or reassign to another Analyst.\n\n### Select Actions -> Close Incident to close this when completed. \n- Please ensure to capture the appropriate close reason, and closing notes/resolution as required.\n\n### Timers\n- Time to Assignment will stop when an Owner is assigned, and the Remediation SLA Timer will be started.\n- The Remediation SLA timers will not stop until the Incident is closed"
+      id: 57d24284-885f-4c22-8bee-83d2f3b27936
+      iscommand: false
+      name: Manual - Analyst Investigation
+      type: regular
+      version: -1
+    taskid: 57d24284-885f-4c22-8bee-83d2f3b27936
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1970
+        }
+      }
+  '18':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.owner
+          operator: isNotEmpty
+      label: yes
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '22'
+      yes:
+      - '23'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks to see if there is an Owner assigned to this case.
+      id: 5c6c0a82-2d81-498c-88a3-035199c898e1
+      iscommand: false
+      name: Is an Owner already assigned?
+      type: condition
+      version: -1
+    taskid: 5c6c0a82-2d81-498c-88a3-035199c898e1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1650
+        }
+      }
+  '20':
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '31'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f2b5f1f3-6ea5-4e73-847b-686b36646b22
+      iscommand: false
+      name: Calculate Severity - Standard
+      playbookId: Calculate Severity - Standard
+      type: playbook
+      version: -1
+      description: ''
+    taskid: f2b5f1f3-6ea5-4e73-847b-686b36646b22
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 835
+        }
+      }
+  '22':
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 12992c48-d963-44a6-85ae-d23ce25a223a
+      iscommand: false
+      name: Start Time to Assignment Timer
+      type: title
+      version: -1
+      description: ''
+    taskid: 12992c48-d963-44a6-85ae-d23ce25a223a
+    timertriggers:
+    - action: start
+      fieldname: timetoassignment
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1825
+        }
+      }
+  '23':
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 3627deaf-6946-432c-8c2e-0add06bf2e8e
+      iscommand: false
+      name: Start Remediation SLA Timer
+      type: title
+      version: -1
+      description: ''
+    taskid: 3627deaf-6946-432c-8c2e-0add06bf2e8e
+    timertriggers:
+    - action: start
+      fieldname: remediationsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1825
+        }
+      }
+  '24':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Enrich
+          operator: isEqualString
+          right:
+            value:
+              simple: 'True'
+      label: yes
+    id: '24'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '27'
+      yes:
+      - '25'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks whether the Enrich playbook input is set to True.
+      id: d8ec74d0-aa42-4e63-8fc7-4a8ef0dd756d
+      iscommand: false
+      name: Should indicators be extracted and enriched?
+      type: condition
+      version: -1
+    taskid: d8ec74d0-aa42-4e63-8fc7-4a8ef0dd756d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  '25':
+    id: '25'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '26'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 26700fc2-1de4-4b08-8125-a89a969cd1ee
+      iscommand: false
+      name: Enrich indicators
+      type: title
+      version: -1
+      description: ''
+    taskid: 26700fc2-1de4-4b08-8125-a89a969cd1ee
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 370
+        }
+      }
+  '26':
+    id: '26'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '27'
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      text:
+        complex:
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Extracts all indicators that match the regex for the indicator type, and enriches the repuration using the reputation command defined for the indicator type.
+      id: 5ff4184b-c4ea-498a-8702-362b77826ae7
+      iscommand: true
+      name: Extract Indicators from Incident
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: 5ff4184b-c4ea-498a-8702-362b77826ae7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 515
+        }
+      }
+  '27':
+    id: '27'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '20'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 0ab8768c-20da-437c-87ca-ca6be6a4c160
+      iscommand: false
+      name: Calculate Severity
+      type: title
+      version: -1
+      description: ''
+    taskid: 0ab8768c-20da-437c-87ca-ca6be6a4c160
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+  '28':
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: cdf4cb29-9cd1-4b7d-81c9-74838ac541a1
+      iscommand: false
+      name: Start SLA Timers
+      type: title
+      version: -1
+      description: ''
+    taskid: cdf4cb29-9cd1-4b7d-81c9-74838ac541a1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1505
+        }
+      }
+  '29':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SetSLAs
+          operator: isEqualString
+          right:
+            value:
+              simple: 'True'
+      label: yes
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '28'
+      yes:
+      - '30'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the SetSLAs input is set to True, and if so moves to the sub-playbook to set the SLAs based on Severity.
+      id: d1cca75f-7e05-4503-872f-75c5e596187e
+      iscommand: false
+      name: Should we set SLAs based on Severity?
+      type: condition
+      version: -1
+    taskid: d1cca75f-7e05-4503-872f-75c5e596187e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1155
+        }
+      }
+  '30':
+    id: '30'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '28'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CriticalRemediationSLA:
+        complex:
+          root: inputs.CriticalRemediationSLA
+      CriticalTimeToAssignSLA:
+        complex:
+          root: inputs.CriticalTimeToAssignSLA
+      HighRemediationSLA:
+        complex:
+          root: inputs.HighRemediationSLA
+      HighTimeToAssignSLA:
+        complex:
+          root: inputs.HighTimeToAssignSLA
+      LowRemediationSLA:
+        complex:
+          root: inputs.LowRemediationSLA
+      LowTimeToAssignSLA:
+        complex:
+          root: inputs.LowTimeToAssignSLA
+      MediumRemediationSLA:
+        complex:
+          root: inputs.MediumRemediationSLA
+      MediumTimeToAssignSLA:
+        complex:
+          root: inputs.MediumTimeToAssignSLA
+      SetIncidentSLAs:
+        complex:
+          root: inputs.SetIncidentSLAs
+      SetRemediationTimerSLA:
+        complex:
+          root: inputs.SetRemediationTimerSLA
+      SetTimeToAssignmentSLAs:
+        complex:
+          root: inputs.SetTimeToAssignmentSLAs
+      Severity:
+        complex:
+          accessor: severity
+          root: incident
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 70d0f89c-9f27-441d-8acc-2b8cf37c051a
+      iscommand: false
+      name: Case Management - Generic - Set SLAs based on Severity
+      playbookId: Case Management - Generic - Set SLAs based on Severity
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 70d0f89c-9f27-441d-8acc-2b8cf37c051a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1330
+        }
+      }
+  '31':
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f629382c-7027-478b-8455-acaf88e39887
+      iscommand: false
+      name: Set SLAs
+      type: title
+      version: -1
+      description: ''
+    taskid: f629382c-7027-478b-8455-acaf88e39887
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1010
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2160,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
