@@ -414,6 +414,15 @@ tasks:
           right:
             value:
               simple: SNOW
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.TicketingSystemToUse
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow
+          ignorecase: true
       label: SNOW
     - condition:
       - - left:

@@ -100,6 +100,15 @@ tasks:
             value:
               simple: SNOW
           ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.TicketingSystemToUse
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow
+          ignorecase: true
     - label: JIRA
       condition:
       - - operator: isEqualString
