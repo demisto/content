@@ -2442,7 +2442,7 @@ script:
       type: String
     description: Gets a list of the supported time zone codes.
     execution: true
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   script: ''
   subtype: python3
