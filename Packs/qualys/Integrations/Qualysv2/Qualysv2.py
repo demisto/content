@@ -4,9 +4,6 @@ import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('QualysV2', 'start', __line__())
-
-
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
@@ -2190,5 +2187,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-register_module_line('QualysV2', 'end', __line__())
