@@ -59,7 +59,11 @@ def trigger_generic_webhook(options):
     username = options.username
     password = options.password
 
+    print(f"{pr_title=}, {pr_link=}, {pr_body=}")
+
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
+
+    print(issues_in_pr)
 
     body = {
         "name": GENERIC_WEBHOOK_NAME,
@@ -71,7 +75,7 @@ def trigger_generic_webhook(options):
             "JiraIssues": issues_in_pr
         },
     }
-
+    print(body)
     # post to Content Gold
     res = requests.post(JIRA_GITHUB_INTEGRATION_INSTANCE_URL, json=body, auth=(username, password))
 
