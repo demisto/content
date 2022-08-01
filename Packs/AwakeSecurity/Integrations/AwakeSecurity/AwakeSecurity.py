@@ -209,7 +209,6 @@ def lookupDomain():
             "Score": 0,
             "Reliability": reliability,
         }
-        p
     humanReadable = displayTable([contents], humanReadableFields)
     contents["domain"] = lookup_key
     genericContext = {"Domain": {"Name": lookup_key}}
