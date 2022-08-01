@@ -5,8 +5,6 @@ commonfields:
 beta: true
 name: Vectra_Detect
 display: Vectra Detect (Beta)
-# For future use
-# description: This integration allows to create incidents based on Vectra Accounts/Detections/Hosts objects
 description: This integration allows to create incidents based on Vectra Detections/Hosts objects
 category: Network Security
 defaultclassifier: Vectra Detect
@@ -67,29 +65,12 @@ configuration:
   name: fetch_entity_types
   type: 16    # Mutiple select dropdown
   required: false
-  # For future use
-  # additionalinfo: Choose what to fetch - Accounts, Hosts and/or Detections.
-    # (Default - Accounts & Hosts)
   additionalinfo: Choose what to fetch - Hosts and/or Detections.
     (Default - Hosts)
   options:
-  # For future use
-  # - Accounts
   - Hosts
   - Detections
-  # For future use
-  # defaultvalue: Accounts,Hosts
   defaultvalue: Hosts
-
-# For future use
-# - display: Accounts fetch query
-#   name: accounts_fetch_query
-#   type: 0    # Short text
-#   additionalinfo: Only "active" Accounts matching this fetch query will be fetched.
-#     Will be used only if "Accounts" is selected in the "Entity types to fetch".
-#     (default - account.threat:>=50 AND account.certainty:>=50)
-#   required: false
-#   defaultvalue: account.threat:>=50 AND account.certainty:>=50
 
 - display: Hosts fetch query
   name: hosts_fetch_query
@@ -133,7 +114,6 @@ script:
     # Add tags to an account / host / detection
     # Remove tags to an account / host / detection
 
-  # For future use in next release
   # - name: vectra-search-accounts
   #   description: Returns a list of Account objects.
   #     All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
@@ -434,7 +414,6 @@ script:
     #       description: The tags list (comma separated)
     #       isArray: true
 
-  # For future use
   ######
   ### Accounts
   #
