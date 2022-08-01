@@ -52,15 +52,16 @@ def main():
                 data = f.read()
                 if demisto.args()["returnFile"] == "True":
                     demisto.results(fileResult(filename=filePath[filePath.rindex("/") + 1:], data=data))
-            entry = {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['text'],
-                'Contents': data,
-                'ReadableContentsFormat': formats['text'],
-                'HumanReadable': res,
-                'EntryContext': {"SFTP.File.Content": data}
-            }
-            demisto.results(entry)
+                else:
+                    entry = {
+                        'Type': entryTypes['note'],
+                        'ContentsFormat': formats['text'],
+                        'Contents': data,
+                        'ReadableContentsFormat': formats['text'],
+                        'HumanReadable': res,
+                        'EntryContext': {"SFTP.File.Content": data}
+                    }
+                    demisto.results(entry)
         except Exception as ex:
             demisto.error(traceback.format_exc())  # print the traceback
             return_error(f'Error occurred - Error: {str(ex)}')
