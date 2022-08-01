@@ -1270,7 +1270,8 @@ def test_integration_context_during_run(test_case_data, mocker):
         ip_enrich=False,
         asset_enrich=False,
         incident_type=None,
-        mirror_direction=mirror_direction
+        mirror_direction=mirror_direction,
+        first_fetch='3 days'
     )
     expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
