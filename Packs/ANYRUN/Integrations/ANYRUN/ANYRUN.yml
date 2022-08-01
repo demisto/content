@@ -20,6 +20,27 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Create Relationships
+  name: createRelationships
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: If an ANYRUN report contains more than one type of indicator, relationships
+    can be created between them.
+- display: Source Reliability
+  name: integrationReliability
+  defaultvalue: C - Fairly reliable
+  type: 15
+  required: false
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data.
 description: ANY.RUN is a cloud-based sanbox with interactive access.
 display: ANY.RUN
 name: ANYRUN
