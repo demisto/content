@@ -2047,6 +2047,38 @@ Adds ingress rule to a security group.
 There is no context output for this command.
 
 
+`aws-ec2-authorize-security-group-egress-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | The ID of the security group. You must specify either the security group ID or the security group name in the request. For security groups in a nondefault VPC, you must specify the security group ID. | Required | 
+| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| IpPermissionsfromPort | The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes. | Optional | 
+| IpPermissionsIpProtocol | The IP protocol name (tcp, udp, icmp, icmpv6) or number. | Optional | 
+| IpPermissionsToPort | The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6 types, you must specify all codes. | Optional | 
+| IpRangesCidrIp | The IPv4 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv4 address, use the /32 prefix length. | Optional | 
+| IpRangesDesc | A description for the security group rule that references this IPv4 address range.<br/><br/>Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$* | Optional | 
+| Ipv6RangesCidrIp | The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length. | Optional | 
+| Ipv6RangesDesc | A description for the security group rule that references this IPv6 address range.<br/><br/>Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$* | Optional | 
+| PrefixListId | The ID of the prefix. | Optional | 
+| PrefixListIdDesc | A description for the security group rule that references this prefix list ID.<br/><br/>Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$* | Optional | 
+| UserIdGroupPairsDescription | A description for the security group rule that references this user ID group pair.<br/><br/>Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$* | Optional | 
+| UserIdGroupPairsGroupId | The ID of the security group. | Optional | 
+| UserIdGroupPairsGroupName | The name of the security group. In a request, use this parameter for a security group in EC2-Classic or a default VPC only. For a security group in a nondefault VPC, use the security group ID. | Optional | 
+| UserIdGroupPairsPeeringStatus | The status of a VPC peering connection, if applicable. | Optional | 
+| UserIdGroupPairsUserId | The ID of an AWS account. | Optional | 
+| UserIdGroupPairsVpcId | The ID of the VPC for the referenced security group, if applicable. | Optional | 
+| UserIdGroupPairsVpcPeeringConnectionId | The ID of the VPC peering connection, if applicable. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
 ### aws-ec2-revoke-security-group-ingress-rule
 ***
 Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
