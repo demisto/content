@@ -142,7 +142,7 @@ script:
       secret: true
     - default: false
       defaultValue: mail
-      description: Mail attribute to return in the response. Default is "mail".
+      description: Mail attribute to return in the response.
       isArray: false
       name: attribute-mail
       required: false
@@ -155,7 +155,7 @@ script:
       secret: false
     - default: false
       defaultValue: mobile
-      description: Phone attribute to return in the response. Default is "mobile".
+      description: Phone attribute to return in the response.
       isArray: false
       name: attribute-phone
       required: false
@@ -163,8 +163,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Whether to return the name attribute. Possible values are: "true"
-        and "false". Default is "true".'
+      description: 'Whether to return the name attribute.
       isArray: false
       name: attribute-name-pull
       predefined:
@@ -175,8 +174,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Whether to return the mail attribute. Possible values are: "true"
-        and "false". Default is "true".'
+      description: 'Whether to return the mail attribute.
       isArray: false
       name: attribute-mail-pull
       predefined:
@@ -187,8 +185,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to return the phone attribute. Possible values are: "true"
-        and "false". Default is "false".'
+      description: 'Whether to return the phone attribute.
       isArray: false
       name: attribute-phone-pull
       predefined:
