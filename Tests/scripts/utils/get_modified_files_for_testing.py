@@ -4,6 +4,8 @@ This class replaces the old get_modified_files_for_testing function in collect_t
 import glob
 import os
 from typing import Dict, Set, Optional
+from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 import demisto_sdk.commands.common.constants as constants
 from demisto_sdk.commands.common.constants import FileType
@@ -12,6 +14,7 @@ from Tests.scripts.utils.collect_helpers import (
     is_code_test_file, checked_type, SECRETS_WHITE_LIST, LANDING_PAGE_SECTIONS_JSON_PATH,
 )
 from demisto_sdk.commands.common import tools
+install_logging('Collect_Tests_And_Content_Packs.log', logger=logging)
 
 
 class ModifiedFiles:
@@ -167,7 +170,10 @@ def filter_modified_files_for_specific_marketplace_version(files_string: str, id
     for line in files_string.split("\n"):
         if line:
             if 'Tests/scripts/collect_tests' in line:  # quick and dirty, for merging the new collect_tests in
+                logging.info(f'>>> skipping {line}')
                 continue
+            else:
+                logging.info(f'>>> not skipping {line}')
             file_status, file_path = get_status_and_file_path_from_line_in_git_diff(line)
             # ignoring deleted files.
             # also, ignore all files that are not in a pack
