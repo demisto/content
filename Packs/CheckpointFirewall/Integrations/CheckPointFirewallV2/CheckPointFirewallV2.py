@@ -1866,7 +1866,6 @@ def create_ovverides_data(**args):
 
 
 def checkpoint_set_threat_protections_command(client: Client, **args):
-    context_data = {}
     readable_output = ''
 
     if args.get('profiles'):
