@@ -37,7 +37,7 @@ Use OpenLDAP or Active Directory user authentication groups to set user roles in
 
 ## Additional Information
 ---
-**Steps required for setting AD roles Mapping:** (the steps refer to an OpenLDAP server)
+**Steps required for setting AD roles Mapping:** (The steps refer to an OpenLDAP server)
 
 1. Create OpenLDAP child entry of *User Account* template under wanted *Organizational Unit* and *Posix Group*, with *uid* as part of DN:
 ![user](https://user-images.githubusercontent.com/45535078/71556364-722c4980-2a40-11ea-850a-4b556f5f0f4b.png)
