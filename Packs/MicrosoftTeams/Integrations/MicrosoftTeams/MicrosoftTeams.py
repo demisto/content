@@ -44,6 +44,7 @@ MESSAGE_TYPES: dict = {
 }
 
 if '@' in BOT_ID:
+    demisto.debug("setting tenant id in global")
     BOT_ID, tenant_id, service_url = BOT_ID.split('@')
     set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
 
@@ -1423,7 +1424,7 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
     set_integration_context(integration_context)
 
 
-def direct_message_handler(integration_context: dict, request_body: dict, conversation: dict, message: str):
+def direct_message_handler(integration_context: dict, request_body: dict, conversation: dict, message: str, headers):
     """
     Handles a direct message sent to the bot
     :param integration_context: Cached object to retrieve relevant data from
@@ -1574,10 +1575,12 @@ def messages() -> Response:
     try:
         demisto.debug('Processing POST query...')
         headers: dict = cast(Dict[Any, Any], request.headers)
+        demisto.debug(f"post request headers: {headers}")
         if validate_auth_header(headers) is False:
             demisto.info(f'Authorization header failed: {str(headers)}')
         else:
             request_body: dict = request.json
+            demisto.debug(f"post request body: {request_body}")
             integration_context: dict = get_integration_context()
             service_url: str = request_body.get('serviceUrl', '')
             if service_url:
@@ -1609,7 +1612,7 @@ def messages() -> Response:
                 entitlement_handler(integration_context, request_body, value, conversation_id)
             elif conversation_type == 'personal':
                 demisto.info('Got direct message to the bot')
-                direct_message_handler(integration_context, request_body, conversation, formatted_message)
+                direct_message_handler(integration_context, request_body, conversation, formatted_message, headers)
             else:
                 demisto.info('Got message mentioning the bot')
                 message_handler(integration_context, request_body, channel_data, formatted_message)
