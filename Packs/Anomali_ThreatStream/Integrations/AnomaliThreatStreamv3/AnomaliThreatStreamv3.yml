@@ -99,6 +99,17 @@ script:
       - 'False'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: 'Note: if set to true, additional 6 API calls will be performed.'
+      isArray: false
+      name: threat_model_association
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Checks the reputation of the given IP address.
     execution: false
@@ -196,6 +207,17 @@ script:
       description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: 'Note: if set to true, additional 6 API calls will be performed.'
+      isArray: false
+      name: threat_model_association
       predefined:
       - 'True'
       - 'False'
@@ -312,6 +334,17 @@ script:
       description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: 'Note: if set to true, additional 6 API calls will be performed.'
+      isArray: false
+      name: threat_model_association
       predefined:
       - 'True'
       - 'False'

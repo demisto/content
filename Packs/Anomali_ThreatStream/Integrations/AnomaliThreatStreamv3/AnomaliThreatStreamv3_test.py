@@ -57,16 +57,17 @@ class TestReputationCommands:
     """
 
     @pytest.mark.parametrize(
-        argnames="ioc_type,ioc_value,ioc_context_key",
+        argnames="ioc_type,ioc_value,ioc_context_key,threat_model_association",
         argvalues=[
-            ('URL', 'https://test.com,https://test_1.com', 'URL(val.Address && val.Address == obj.Address)'),
-            ('Domain', 'test.com,test_1.com', 'Domain(val.Address && val.Address == obj.Address)'),
+            ('URL', 'https://test.com,https://test_1.com', 'URL(val.Address && val.Address == obj.Address)', False),
+            ('Domain', 'test.com,test_1.com', 'Domain(val.Address && val.Address == obj.Address)', False),
             ('File', '178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1,'
                      '178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1',
-             Common.File.CONTEXT_PATH),
-            ('IP', '1.1.1.1,2.2.2.2', Common.IP.CONTEXT_PATH)
+             Common.File.CONTEXT_PATH, False),
+            ('IP', '1.1.1.1,2.2.2.2', Common.IP.CONTEXT_PATH, False),
+            ('IP', '1.1.1.1,2.2.2.2', Common.IP.CONTEXT_PATH, True)
         ])
-    def test_reputation_commands__happy_path(self, mocker, ioc_type, ioc_value, ioc_context_key):
+    def test_reputation_commands__happy_path(self, mocker, requests_mock, ioc_type, ioc_value, ioc_context_key, threat_model_association):
         """
         Given:
             - Indicators for reputation
@@ -80,10 +81,23 @@ class TestReputationCommands:
 
         # prepare
         command = value_key = ioc_type.lower()
-        mocked_ioc_file_path = f'test_data/mocked_{command}_response.json'
-        mocked_ioc_result = util_load_json(mocked_ioc_file_path)
-        mocker.patch.object(Client, 'http_request', return_value=mocked_ioc_result)
-        mocker.patch.object(demisto, 'args', return_value={value_key: ioc_value, 'status': 'active'})
+        if threat_model_association:
+            mocked_intelligence_file_path = f'test_data/mocked_{command}_response_with_threat_model_association.json'
+            mocked_ioc_file_path = f'test_data/mocked_{command}_response.json'
+            mocked_ioc_result = util_load_json(mocked_ioc_file_path)
+            requests_mock.get('v2/intelligence/', return_value=raw_response)
+
+            mocked_intelligence_file_path = f'test_data/mocked_{command}_response_with_threat_model_association.json'
+            mocked_intelligence_result = util_load_json(mocked_intelligence_file_path)
+            
+
+        else:
+            mocked_ioc_file_path = f'test_data/mocked_{command}_response.json'
+            mocked_ioc_result = util_load_json(mocked_ioc_file_path)
+            mocker.patch.object(Client, 'http_request', return_value=mocked_ioc_result)
+        
+        mocker.patch.object(demisto, 'args', return_value={value_key: ioc_value, 'status': 'active',
+                                                           'threat_model_association': threat_model_association})
         mocker.patch.object(demisto, 'command', return_value=command)
         mocker.patch.object(demisto, 'results')
 
