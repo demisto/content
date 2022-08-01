@@ -2923,7 +2923,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Initiates a new endpoint script execution action using a script from the script library.
+    description: This command will soon be deprecated; prefer xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
     execution: false
     name: xdr-run-script
     outputs:
@@ -2933,6 +2933,106 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+  - arguments:
+    - default: false
+      description: Allows linking the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command.
+      isArray: false
+      name: script_uid
+      required: true
+      secret: false
+    - default: false
+      description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}
+      isArray: false
+      name: parameters
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      defaultValue: '10'
+      isArray: false
+      name: polling_interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: polling_timeout_in_seconds
+      defaultValue: '600'
+      required: false
+      secret: false
+    - default: false
+      description: action ID for polling.
+      isArray: false
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - name: hide_polling_output
+      deprecated: true
+      description: whether to hide the polling result (automatically filled by polling).
+      required: false
+      isArray: false
+    deprecated: false
+    description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
+    execution: false
+    name: xdr-script-run
+    polling: true
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.retrieved_files
+      description: Number of successfully retrieved files.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_ip_address
+      description: Endpoint IP address.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_name
+      description: Number of successfully retrieved files.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.failed_files
+      description: Number of files failed to retrieve.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_status
+      description: Endpoint status.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.domain
+      description: Domain to which the endpoint belongs.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_id
+      description: Endpoint ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.execution_status
+      description: Execution status of this endpoint.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.return_value
+      description: Value returned by the script in case the type is not a dictionary.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.standard_output
+      description: The STDOUT and the STDERR logged by the script during the execution.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.retention_date
+      description: Timestamp in which the retrieved files will be deleted from the server.
+      type: Date
   - arguments:
     - default: false
       description: Allows linking the response action to the incident that triggered it.
