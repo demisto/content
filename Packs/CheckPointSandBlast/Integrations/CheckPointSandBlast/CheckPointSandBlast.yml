@@ -22,7 +22,7 @@ configuration:
   required: false
   type: 8
 description: Uploads files using polling. The service supports Microsoft Office files, as well as PDF, SWF, archives, and executables. 
-Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Query on existing IOCs, file status, analysis, and reports. Download files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x.
+Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Queries on existing IOCs, file status, analysis, and reports. Downloads files from the database. Supports both application and Cloud. Supported Threat Emulation versions are any R80x.
 display: Check Point Threat Emulation (SandBlast)
 name: CheckPointSandBlast
 script:
@@ -203,7 +203,7 @@ script:
       description: The rating of the threat data and its relevance to this instance. It is recommended to block threats with confidence medium and above.
       type: Number
     - contextPath: SandBlast.Query.ThreatEmulation.Score
-      description: The threat emulation score.
+      description: The Threat Emulation score.
       type: Number
     - contextPath: SandBlast.Query.ThreatEmulation.CombinedVerdict
       description: The combined verdict of all the images. Benign reports are not supported for local gateways.
@@ -424,7 +424,7 @@ script:
       description: The rating of the threat data and its relevance to this instance. It is recommended to block threats with confidence medium and above.
       type: Number
     - contextPath: SandBlast.Upload.ThreatEmulation.Score
-      description: The threat emulation score.
+      description: The Threat Emulation score.
       type: Number
     - contextPath: SandBlast.Upload.ThreatEmulation.CombinedVerdict
       description: The combined verdict of all the images. Benign reports are not supported for local gateways.
@@ -433,10 +433,10 @@ script:
       description: The combined severity of threats found. If threats are not found, this field is not shown.
       type: Number
     - contextPath: SandBlast.Upload.ThreatEmulation.Images
-      description: The sandboxes used in threat emulation. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".
+      description: The sandboxes used in Threat Emulation. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".
       type: String
     - contextPath: SandBlast.Upload.ThreatEmulation.Status
-      description: The status of threat emulation on the requested file.
+      description: The status of Threat Emulation on the requested file.
       type: String
   - arguments:
     - description: The ID of the file to download, taken from "Extractedfiledownloadid" from the "Threat Extraction" results.
