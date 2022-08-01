@@ -4,6 +4,7 @@ from enum import Enum
 from ipaddress import ip_address
 from typing import Tuple, Set, Dict
 from urllib import parse
+import dateparser
 
 import pytz
 import urllib3
@@ -1317,7 +1318,8 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
     return [enrich_single_asset(asset) for asset in assets]
 
 
-def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) -> int:
+def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str],
+                            first_fetch: str, client: Client) -> int:
     """
     Receives the highest offense ID saved from last run, and user query.
     Checks if user query has a limitation for a minimum ID.
@@ -1326,10 +1328,13 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) 
     Args:
         highest_offense_id (int): Minimum ID to fetch offenses by from last run.
         user_query (Optional[str]): User query for QRadar service.
+        first_fetch (str): First fetch timestamp.
+        client (Client): Client to perform the API calls.
 
     Returns:
         (int): The Minimum ID to fetch offenses by.
     """
+    user_lowest_offense_id = -1
     if user_query:
         id_query = ID_QUERY_REGEX.search(user_query)
         if id_query:
@@ -1339,8 +1344,46 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) 
             user_offense_id = int(id_query.group(0).split(operator)[1].strip())
             user_lowest_offense_id = user_offense_id if operator == '>' else user_offense_id - 1
             print_debug_msg(f'Found ID in user query: {user_lowest_offense_id}, last highest ID: {highest_offense_id}')
-            return max(highest_offense_id, user_lowest_offense_id)
-    return highest_offense_id
+    if highest_offense_id:
+        return max(highest_offense_id, user_lowest_offense_id)
+    else:
+        first_fetch_min_id = get_min_id_from_first_fetch(first_fetch, client)
+        if id_query:
+            return max(first_fetch_min_id, user_lowest_offense_id)
+        else:
+            return first_fetch_min_id
+
+
+def get_min_id_from_first_fetch(first_fetch: str, client: Client):
+    """
+    Receives first_fetch integration param
+    and retrieve the lowest id (earliest offense) that was created within that time.
+    Args:
+        first_fetch (str): First fetch timestamp.
+        client (Client): Client to perform the API calls.
+
+    Returns:
+        (str): The ID of the earliest offense created within the first_fetch time range.
+    """
+    filter_fetch_query = f'start_time>{str(convert_start_fetch_to_milliseconds(first_fetch))}'
+    raw_offenses = client.offenses_list(filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
+    return raw_offenses[0].get('id') if raw_offenses else '0'
+
+
+def convert_start_fetch_to_milliseconds(fetch_start_time: str):
+    """
+    Convert a timestamp string to milliseconds
+    Args:t
+        fetch_start_time (str): First fetch timestamp.
+
+    Returns:
+        (int): time since (epoch - first_fetch) in milliseconds.
+    """
+    date = dateparser.parse(fetch_start_time, settings={'TIMEZONE': 'UTC'})
+    if date is None:
+        # if d is None it means dateparser failed to parse it
+        raise ValueError(f'Invalid first_fetch format: {fetch_start_time}')
+    return int(date.timestamp() * 1000)
 
 
 def get_offense_enrichment(enrichment: str) -> Tuple[bool, bool]:
@@ -1451,6 +1494,7 @@ def test_module_command(client: Client, params: Dict) -> str:
                 last_highest_id=last_highest_id,
                 incident_type=params.get('incident_type'),
                 mirror_direction=mirror_direction,
+                first_fetch=params.get('first_fetch', '3 days')
             )
         else:
             client.offenses_list(range_="items=0-0")
@@ -1639,7 +1683,8 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
 
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
                                          events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
-                                         last_highest_id: int, incident_type: Optional[str], mirror_direction: Optional[str]) \
+                                         last_highest_id: int, incident_type: Optional[str], mirror_direction: Optional[str],
+                                         first_fetch: str) \
         -> Tuple[Optional[List[Dict]], Optional[int]]:
     """
     Gets offenses from QRadar service, and transforms them to incidents in a long running execution.
@@ -1658,13 +1703,14 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
         last_highest_id (int): The highest ID of all the offenses that have been fetched from QRadar service.
         incident_type (Optional[str]): Incident type.
         mirror_direction (Optional[str]): Whether mirror in is activated or not.
+        first_fetch (str): First fetch timestamp.
 
 
     Returns:
         (List[Dict], int): List of the incidents, and the new highest ID for next fetch.
         (None, None): if reset was triggered
     """
-    offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query)
+    offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query, first_fetch, client)
 
     user_query = update_user_query(user_query)
 
@@ -1808,7 +1854,8 @@ def print_context_data_stats(context_data: dict, stage: str) -> Set[str]:
 
 def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mode: str,
                               user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
-                              asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str]):
+                              asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str],
+                              first_fetch: str):
     is_reset_triggered()
     context_data, _ = get_integration_context_with_version()
     print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
@@ -1821,10 +1868,10 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         events_limit=events_limit,
         ip_enrich=ip_enrich,
         asset_enrich=asset_enrich,
-        last_highest_id=int(context_data.get(LAST_FETCH_KEY, '0')),
+        last_highest_id=int(context_data.get(LAST_FETCH_KEY)),
         incident_type=incident_type,
-        mirror_direction=mirror_direction
-
+        mirror_direction=mirror_direction,
+        first_fetch=first_fetch
     )
     print_debug_msg(f'Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}')
     context_data, ctx_version = get_integration_context_with_version()
@@ -1857,6 +1904,7 @@ def long_running_execution_command(client: Client, params: Dict):
     """
     validate_long_running_params(params)
     fetch_mode = params.get('fetch_mode', '')
+    first_fetch = params.get('first_fetch', '3 days')
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
     offenses_per_fetch = int(params.get('offenses_per_fetch'))  # type: ignore
     user_query = params.get('query', '')
@@ -1879,6 +1927,7 @@ def long_running_execution_command(client: Client, params: Dict):
                 asset_enrich=asset_enrich,
                 incident_type=incident_type,
                 mirror_direction=mirror_direction,
+                first_fetch=first_fetch,
             )
             demisto.updateModuleHealth('')
 
