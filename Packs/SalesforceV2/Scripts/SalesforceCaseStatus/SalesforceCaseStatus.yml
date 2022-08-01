@@ -1,23 +1,14 @@
 comment: |
   Populates the value of the Salesforce status field and displays it in a layout widget.
 commonfields:
-  id: cf716566-1b24-4b70-8ee7-5a9d51ef98db
+  id: SalesforceCaseStatus
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
     fromServerVersion: ""
-    itemVersion: ""
-    packID: 7c316c50-5771-42eb-8a6f-1476d63084fa
-    propagationLabels:
-    - all
-    toServerVersion: ""
-dockerimage: demisto/python3:3.9.1.14969
+dockerimage: demisto/python3:3.10.5.31928
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: SalesforceCaseStatus
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -28,3 +19,6 @@ tags:
 - python
 - salesforce
 type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

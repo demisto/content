@@ -1,5 +1,4 @@
 import json
-import traceback
 from typing import Any, Dict
 
 import demistomock as demisto  # noqa: F401
@@ -28,7 +27,6 @@ MIRROR_DIRECTION = {
 class Client(BaseClient):
     SESSION_DATA = ''
     URI_PREFIX = '/services/data/v39.0/'
-    # get new token
 
     def getNewToken(self):
 
@@ -93,8 +91,8 @@ class Client(BaseClient):
     def getCaseFileById(self, caseNumber, caseFileId):
 
         found = False
-        caseFiles = self.getCaseFiles(None, caseNumber).get('fileInfo')
-        for cf in caseFiles:
+        case_files = self.getCaseFiles(None, caseNumber).get('fileInfo')
+        for cf in case_files:
             if cf.get('id') == caseFileId:
                 found = True
                 response = requests.get(cf.get('url')).content
@@ -112,8 +110,8 @@ class Client(BaseClient):
 
         if len(response) > 0:
             for item in response:
-                if item.get('keyPrefix'):
-                    sobjects[item['keyPrefix']] = item.get('label')
+                if key_prefix := item.get('keyPrefix'):
+                    sobjects[key_prefix] = item.get('label')
             # set the integration object with object prefix
             demisto.setIntegrationContext({'sobjects': sobjects})
 
@@ -161,7 +159,7 @@ class Client(BaseClient):
 
         return self.sendRequestInSession('DELETE', 'sobjects/' + path)
 
-    # Add the capability to get all comment in specific case
+    # Add the capability to get all comments in a specific case
 
     def getCaseComment(self, oid, caseNumber):
 
@@ -359,7 +357,7 @@ def queryToEntry(client, args):
     query = client.queryRaw(args.get('query'))
 
     results = CommandResults(
-        outputs_prefix='SalesForce.Query',
+        outputs_prefix='SalesForce.QueryResults',
         outputs_key_field='',
         readable_output=tableToMarkdown('Query Results', query.get("records")),
         outputs=query.get("records"))
@@ -376,7 +374,7 @@ def commentToEntry(raw_info, title, userMapping):
                 'OwnerId')] if userMapping[raw_info[i].get('OwnerId')] else raw_info[i].get('OwnerId')
 
     results = CommandResults(
-        outputs_prefix='SalesForce.CaseComment',
+        outputs_prefix='SalesForceV2.CaseComment',
         outputs_key_field='ID',
         readable_output=tableToMarkdown(title, raw_info),
         outputs=raw_info)
@@ -387,8 +385,9 @@ def commentToEntry(raw_info, title, userMapping):
 def objectToEntry(client, raw_info):
 
     if isinstance(raw_info, dict):
-        obj_type = client.identifyObjectType(raw_info.get("Id"))
-        title = f"{obj_type} #{raw_info['Id']}:"
+        obj_id = raw_info.get('Id')
+        obj_type = client.identifyObjectType(obj_id)
+        title = f"{obj_type} #{obj_id}:"
     elif isinstance(raw_info, list):
         obj_type = client.identifyObjectType(raw_info[0].get("Id"))
         title = f"{obj_type}"
@@ -399,27 +398,27 @@ def objectToEntry(client, raw_info):
 
         headers = ['ID', 'ParentId', 'IsPublished', 'CommentBody', 'CreatedById', 'CreatedDate',
                    'SystemModstamp', 'LastModifiedDate', 'LastModifiedById', 'IsDeleted']
-        outputs_prefix = 'SalesForce.CaseComment'
+        outputs_prefix = 'SalesForceV2.CaseComment'
         outputs_key_field = 'ID'
 
     elif obj_type == 'Case':
 
         headers = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate', 'ClosedDate', 'OwnerId', 'Priority', 'Origin', 'Status',
                    'Reason', 'IsEscalated', 'SuppliedPhone', 'SuppliedCompany', 'SuppliedEmail', 'ContactEmail', 'ContactId', 'AccountId']
-        outputs_prefix = 'SalesForce.Case'
+        outputs_prefix = 'SalesForceV2.Case'
         outputs_key_field = 'ID'
 
     elif obj_type == 'Contact':
 
         # accountMapping = {} #TODO: implement
         headers = ['ID', 'Name', 'Account', 'Title', 'Phone', 'Mobile', 'Email', 'Owner']
-        outputs_prefix = 'SalesForce.Contact'
+        outputs_prefix = 'SalesForceV2.Contact'
         outputs_key_field = 'ID'
 
     elif obj_type == 'Lead':
 
         headers = ['ID', 'Name', 'Title', 'Company', 'Phone', 'MobilePhone', 'Email', 'OwnerId', 'Status']
-        outputs_prefix = 'SalesForce.Lead'
+        outputs_prefix = 'SalesForceV2.Lead'
         outputs_key_field = 'ID'
 
     elif obj_type == 'Task':
@@ -432,13 +431,13 @@ def objectToEntry(client, raw_info):
     elif obj_type == 'User':
 
         headers = ['ID', 'Name', 'Alias', 'CommunityNickname', 'Title', 'Phone', 'Email', 'FirstName', 'Username']
-        outputs_prefix = 'SalesForce.GetUsers'
+        outputs_prefix = 'SalesForceV2.GetUsers'
         outputs_key_field = 'ID'
 
     else:
 
         headers = []
-        outputs_prefix = 'SalesForce.Result'
+        outputs_prefix = 'SalesForceV2.Result'
         outputs_key_field = ''
 
     # backward compatibility --> capitalize ID
@@ -460,10 +459,10 @@ def objectToEntry(client, raw_info):
 
 def get_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    if demisto.args().get('path', None):
-        result = client.getObject(demisto.args().get('path', None))
-    else:
-        result = client.getObject(demisto.args().get('oid', None))
+    if path := args.get('path'):
+        result = client.getObject(path)
+    elif oid := args.get('oid'):
+        result = client.getObject(oid)
 
     return objectToEntry(client, result)
 
@@ -497,46 +496,46 @@ def get_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         return objectToEntry(client, cases)
 
     else:
-        return_error('You must specify object ID or a Case Number')
+        raise Exception('You must specify object ID or a Case Number')
 
 
 def get_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    response = client.getUser(args.get('oid', None), args.get('caseNumber', None))
+    response = client.getUser(args.get('oid'), args.get('caseNumber'))
     return objectToEntry(client, response)
 
 
 def get_case_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    result = client.getCaseComment(args.get('oid', None), args.get('caseNumber', None))
+    result = client.getCaseComment(args.get('oid'), args.get('caseNumber'))
 
     return objectToEntry(client, result.get('records', []))
 
 
 def get_org_name_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    if args.get('caseNumber', None):
-        condition = f"CaseNumber='{args.get('caseNumber', None)}'"
+    if case_number := args.get('caseNumber'):
+        condition = f"CaseNumber='{case_number}'"
         properties = ['ID', 'CaseNumber', 'AccountId']
         cases = client.queryObjects(properties, 'Case', condition).get("records")
-        conditionA = f"Id='{cases[0].get('AccountId')}'"
-        propertiesA = ['Id', 'Name']
-        usersA = client.queryObjects(propertiesA, "Account", conditionA).get("records")
+        condition_a = f"Id='{cases[0].get('AccountId')}'"
+        properties_a = ['Id', 'Name']
+        users_a = client.queryObjects(properties_a, "Account", condition_a).get("records")
     else:
-        return_error('You must specify a Case Number')
-    return objectToEntry(client, usersA)
+        raise Exception('You must specify a Case Number')
+    return objectToEntry(client, users_a)
 
 
 def post_case_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     results = client.postCaseComment(args.get('public'), args.get(
-        'oid', None), args.get('caseNumber', None), args.get('text', None))
-    if results.get('success', None):
-        caseComment = client.getObject(f"{results.get('id')}")
+        'oid'), args.get('caseNumber'), args.get('text'))
+    if results.get('success'):
+        case_comment = client.getObject(f"{results.get('id')}")
     else:
-        return_results(f"Unable to post case comment. Error Encountered was:{json.dumps(results.get('errors', None))}")
+        raise Exception(f"Unable to post case comment. Error Encountered was:{json.dumps(results.get('errors'))}")
 
-    return objectToEntry(client, caseComment)
+    return objectToEntry(client, case_comment)
 
 
 def create_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -551,55 +550,56 @@ def create_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     }
 
     results = client.createObject('Case', data)
-    if results.get('success', None):
+    if results.get('success'):
         case = client.getObject(f"{results.get('id')}")
     else:
-        return_results(f"Unable to create case. Error Encountered was:{json.dumps(results.get('errors', None))}")
+        raise Exception(f"Unable to create case. Error Encountered was:{json.dumps(results.get('errors'))}")
 
     return objectToEntry(client, case)
 
 
 def update_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    if args.get('oid', None) and args.get('caseNumber', None):
-        return_error('You must specify object ID or a Case Number')
+    case_number = args.get('caseNumber')
+    if args.get('oid') and case_number:
+        raise Exception('You must specify an object ID or a Case Number')
 
-    if args.get('caseNumber', None):
-        condition = f"CaseNumber='{args.get('caseNumber')}'"
+    if case_number:
+        condition = f"CaseNumber='{case_number}'"
         cases = client.queryObjects(['Id'], 'Case', condition).get('records')
         if len(cases) > 0:
             oid = cases[0].get('Id')
         else:
-            return_error('Unable to update case -> Invalid Case Number provided')
+            raise Exception('Unable to update case -> Invalid Case Number provided')
     else:
         oid = args.get('oid')
 
     data = {}
 
-    if 'subject' in args:
-        data['Subject'] = args.get('subject')
+    if subject := args.get('subject'):
+        data['Subject'] = subject
 
-    if 'description' in args:
-        data['Description'] = args.get('description')
+    if description := args.get('description'):
+        data['Description'] = description
 
-    if 'status' in args:
-        data['Status'] = args.get('status')
+    if status := args.get('status'):
+        data['Status'] = status
 
-    if 'origin' in args:
-        data['Origin'] = args.get('origin')
+    if origin := args.get('origin'):
+        data['Origin'] = origin
 
-    if 'priority' in args:
-        data['Priority'] = args.get('priority')
+    if priority := args.get('priority'):
+        data['Priority'] = priority
 
-    if 'caseType' in args:
-        data['Type'] = args.get('caseType')
+    if case_type := args.get('caseType'):
+        data['Type'] = case_type
 
     caseUpdate = client.updateObject(f'Case/{oid}', data)
 
     return get_case_command(client, {'oid': oid})
 
 
-def get_cases_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_cases_command(client: Client) -> CommandResults:
 
     properties = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate',
                   'ClosedDate', 'OwnerID', 'Priority', 'Origin', 'Status', 'Reason']
@@ -615,16 +615,17 @@ def close_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def delete_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    if args.get('oid', None) and args.get('caseNumber', None):
-        return_error('You must specify object ID or a Case Number')
+    case_number = args.get('caseNumber')
+    if args.get('oid') and case_number:
+        raise Exception('You must specify object ID or a Case Number')
 
-    if args.get('caseNumber', None):
-        condition = f"CaseNumber='{args.get('caseNumber')}'"
+    if case_number:
+        condition = f"CaseNumber='{case_number}'"
         cases = client.queryObjects(['Id'], 'Case', condition).get('records')
         if len(cases) > 0:
             oid = cases[0].get('Id')
         else:
-            return_error('Unable to update case -> Invalid Case Number provided')
+            raise Exception('Unable to update case -> Invalid Case Number provided')
     else:
         oid = args.get('oid')
 
@@ -645,20 +646,22 @@ def push_comment_thread_command(client: Client, args: Dict[str, Any]) -> Command
 
 def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    searchRecords = client.sendRequestInSession(
-        'GET', 'search/?q=FIND+%7B' + args.get('pattern') + '%7D', '').get('searchRecords')
-    return searchToEntry(client, searchRecords)
+    search_records = client.sendRequestInSession(
+        'GET', f"search/?q=FIND+%7B{args.get('pattern')}%7D", '').get('searchRecords')
+    return searchToEntry(client, search_records)
 
 
 def list_case_files_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    fileInfo = client.getCaseFiles(args.get('caseoId', None), args.get('caseNumber', None)).get('fileInfo', [])
+    case_oid = args.get('caseoId')
+    case_number = args.get('caseNumber')
+    file_info = client.getCaseFiles(case_oid, case_number).get('fileInfo', [])
 
     results = CommandResults(
-        outputs_prefix='Salesforce.Files',
+        outputs_prefix='SalesforceV2.Files',
         outputs_key_field='id',
-        readable_output=tableToMarkdown(f"Case Files {args.get('caseoId', args.get('caseNumber', None))}", fileInfo),
-        outputs=fileInfo,
+        readable_output=tableToMarkdown(f"Case Files {case_oid} {case_number}", file_info),
+        outputs=file_info,
         ignore_auto_extract=True)
 
     return results
@@ -666,7 +669,7 @@ def list_case_files_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 def get_case_file_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    return client.getCaseFileById(args.get('caseNumber', None), args.get('caseFileId', None))
+    return client.getCaseFileById(args.get('caseNumber'), args.get('caseFileId'))
 
 
 def describe_sobject_field_command(client: Client, args: Dict[str, Any]):
@@ -674,15 +677,16 @@ def describe_sobject_field_command(client: Client, args: Dict[str, Any]):
     found = False
     response = client.sendRequestInSession('GET', 'sobjects/Case/describe/')
 
-    if args.get("field"):
+    if field_to_search := args.get('field'):
         fields = response.get('fields')
         for field in fields:
-            if field['name'] == args.get("field"):
+            if field.get('name') == field_to_search:
                 found = True
                 return field
 
-    if not Found:
-        raise Exception("Field cannot be found in the sobject. Perhaps wrong field name or object name?")
+    if not found:
+        raise Exception(f'The field: {field_to_search} cannot be found in the sobject.'
+                        f' Perhaps wrong field name or object name.')
 
 
 def get_mapping_fields_command(client):
@@ -692,7 +696,7 @@ def get_mapping_fields_command(client):
     fields = client.sendRequestInSession('GET', 'sobjects/Case/describe/').get('fields')
 
     for field in fields:
-        case_incident_type_scheme.add_field(name=field['name'], description='N/A')
+        case_incident_type_scheme.add_field(name=field.get('name'), description='N/A')
 
     mapping_response = GetMappingFieldsResponse()
     mapping_response.add_scheme_type(case_incident_type_scheme)
@@ -941,14 +945,13 @@ def test_module(client):
     if token.get("access_token"):
         return 'ok'
 
+
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
+    """
+        main function, parses params and runs command functions
     """
 
     # get the service API url
@@ -957,7 +960,8 @@ def main() -> None:
     verify_certificate = params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     try:
 
         client = Client(
@@ -972,66 +976,67 @@ def main() -> None:
         if not 'sobjects' in demisto.getIntegrationContext():
             client.getObjectTypes()
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             incidents = fetchIncident(client, demisto.params())
             demisto.incidents(incidents)
-        elif demisto.command() == 'salesforce-search':
+        elif command == 'salesforce-search':
             return_results(search_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-query':
+        elif command == 'salesforce-query':
             return_results(queryToEntry(client, demisto.args()))
-        elif demisto.command() == 'salesforce-get-object':
+        elif command == 'salesforce-get-object':
             return_results(get_object_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-update-object':
+        elif command == 'salesforce-update-object':
             return_results(update_object_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-create-object':
+        elif command == 'salesforce-create-object':
             return_results(create_object_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-get-case':
+        elif command == 'salesforce-get-case':
             return_results(get_case_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-get-user':
+        elif command == 'salesforce-get-user':
             return_results(get_user_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-get-casecomment':
+        elif command == 'salesforce-get-casecomment':
             return_results(get_case_comment_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-get-org':
+        elif command == 'salesforce-get-org':
             return_results(get_org_name_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-post-casecomment':
+        elif command == 'salesforce-post-casecomment':
             return_results(post_case_comment_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-create-case':
+        elif command == 'salesforce-create-case':
             return_results(create_case_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-update-case':
+        elif command == 'salesforce-update-case':
             return_results(update_case_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-get-cases':
+        elif command == 'salesforce-get-cases':
             return_results(get_cases_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-close-case':
+        elif command == 'salesforce-close-case':
             return_results(close_case_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-delete-case':
+        elif command == 'salesforce-delete-case':
             return_results(delete_case_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-push-comment':
+        elif command == 'salesforce-push-comment':
             return_results(push_comment_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-push-comment-threads':
+        elif command == 'salesforce-push-comment-threads':
             return_results(push_comment_thread_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-describe-sobject-field':
+        elif command == 'salesforce-describe-sobject-field':
             return_results(describe_sobject_field_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-list-case-files':
+        elif command == 'salesforce-list-case-files':
             return_results(list_case_files_command(client, demisto.args()))
-        elif demisto.command() == 'salesforce-get-case-file-by-id':
+        elif command == 'salesforce-get-case-file-by-id':
             return_results(get_case_file_by_id_command(client, demisto.args()))
-        elif demisto.command() == 'get-remote-data':
+        elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, demisto.args()))
-        elif demisto.command() == 'get-modified-remote-data':
+        elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args()))
-        elif demisto.command() == 'update-remote-system':
+        elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
-        elif demisto.command() == 'get-mapping-fields':
+        elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
+        else:
+            raise NotImplementedError(f'Command {command} is not implemented')
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

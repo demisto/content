@@ -1,21 +1,12 @@
 commonfields:
-  id: daa527ab-fd1d-4456-8e3f-1687c0dd84c6
+  id: SalesforceCaseStatusPicklist
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
     fromServerVersion: ""
-    itemVersion: ""
-    packID: 7c316c50-5771-42eb-8a6f-1476d63084fa
-    propagationLabels:
-    - all
-    toServerVersion: ""
-dockerimage: demisto/python3:3.10.1.27636
+dockerimage: demisto/python3:3.10.5.31928
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: SalesforceCaseStatusPicklist
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -26,3 +17,6 @@ tags:
 - salesforce
 - field-display
 type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

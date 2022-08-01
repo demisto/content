@@ -4,4 +4,4 @@ Add a new connected App in Salesforce by following the instruction [here](https:
 If you already have a connected App, go to **Setup** -> **App Manager** -> choose the correct App from the list, and press **View**.
 The Consumer Key / Secret is under **API (Enable OAuth Settings)**.
 
-For detailed instructions see the Credentials walkthrough section at [XSOAR support](https://support.demisto.com/hc/en-us/articles/360001848133-Integration-Salesforce).
+For detailed instructions see the Credentials walkthrough section at [XSOAR support](https://xsoar.pan.dev/docs/reference/integrations/salesforce).
