@@ -125,7 +125,7 @@ def test_module_command(client: Client, *_) -> str:
         test_module=True
     )
 
-    if response.status_code == 200 and response.json().get('timestamp'):  # type: ignore
+    if response.status_code == 200:  # type: ignore
         return "ok"
 
     raise DemistoException(f'Test module failed, {response.text}')  # type: ignore
