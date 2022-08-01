@@ -3183,10 +3183,13 @@ script:
   - arguments:
     - description: Record IDs to update
       name: ids
+      required: true
     - description: IPs specified will overwrite existing IPs in the record, and existing
         IPs will be removed
       name: add_ips
+      required: true
     name: qualys-update-unix-record
+    description: Update Unix records for authenticated scans of hosts running on Unix
   dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   script: ''
