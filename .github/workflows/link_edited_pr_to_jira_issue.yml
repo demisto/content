@@ -9,7 +9,7 @@ permissions:
 jobs:
   add_pr_link_to_related_jira_issue:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content' && contains(github.event.pull_request.labels.*.name, "JasTest") && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]'
+    if: github.repository == 'demisto/content' && contains(github.event.pull_request.labels.*.name, 'JasTest') && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
