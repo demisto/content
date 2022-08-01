@@ -147,7 +147,7 @@ def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 ''' Entrypoint '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     api_key: str = demisto.params().get('api_key')
     base_url: str = demisto.params()['server']
     verify_certificate: bool = not demisto.params().get('insecure', False)
