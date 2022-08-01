@@ -99,7 +99,7 @@ create-instances:
     # - !reference [.create-release-notes-and-common-docs]
     - section_start "Create content graph"
     - demisto-sdk content-graph --no-use-docker
-    - cp neo4j/backups/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
+    - cp ./neo4j/backups/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
 
     # - section_start "Create Content Artifacts and Update Conf" --collapsed
     # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
