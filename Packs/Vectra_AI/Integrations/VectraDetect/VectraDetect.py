@@ -1133,6 +1133,7 @@ def fetch_incidents(client: Client, integration_params: Dict):
 
                 api_results = api_response.get('results', {})
                 for event in api_results:
+                    incident_last_run = None
                     if entity_type == 'Accounts':
                         incident, incident_last_run = account_to_incident(event)
                     elif entity_type == 'Hosts':
@@ -1140,7 +1141,8 @@ def fetch_incidents(client: Client, integration_params: Dict):
                     elif entity_type == 'Detections':
                         incident, incident_last_run = detection_to_incident(event)
 
-                    if (incident_last_run.get('last_timestamp') == last_fetched_timestamp) \
+                    if (incident_last_run is not None) \
+                            and (incident_last_run.get('last_timestamp') == last_fetched_timestamp) \
                             and (incident_last_run.get('id') == last_fetched_id):
                         demisto.debug(f"{entity_type} - Object with timestamp : "
                                       f"{last_fetched_timestamp} and ID : {last_fetched_id} "
@@ -1157,6 +1159,7 @@ def fetch_incidents(client: Client, integration_params: Dict):
                                      f"Skipping other objects.")
                         break
 
+                    incident_last_run = None
                     if entity_type == 'Accounts':
                         incident, incident_last_run = account_to_incident(event)
                     elif entity_type == 'Hosts':
@@ -1164,7 +1167,8 @@ def fetch_incidents(client: Client, integration_params: Dict):
                     elif entity_type == 'Detections':
                         incident, incident_last_run = detection_to_incident(event)
 
-                    if (incident_last_run.get('last_timestamp') == last_fetched_timestamp) \
+                    if (incident_last_run is not None) \
+                            and (incident_last_run.get('last_timestamp') == last_fetched_timestamp) \
                             and (incident_last_run.get('id') == last_fetched_id):
                         # Start creating incidents after this one as already fetched during last run
                         start_ingesting_incident = True
