@@ -166,6 +166,8 @@ def filter_modified_files_for_specific_marketplace_version(files_string: str, id
     out_files_string = ''
     for line in files_string.split("\n"):
         if line:
+            if 'Tests/scripts/collect_tests' in line:  # quick and dirty, for merging the new collect_tests in
+                continue
             file_status, file_path = get_status_and_file_path_from_line_in_git_diff(line)
             # ignoring deleted files.
             # also, ignore all files that are not in a pack
