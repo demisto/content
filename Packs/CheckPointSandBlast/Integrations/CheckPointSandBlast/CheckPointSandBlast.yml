@@ -22,7 +22,7 @@ configuration:
   required: false
   type: 8
 description: Uploads files using polling. The service supports Microsoft Office files, as well as PDF, SWF, archives, and executables. 
-Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Queries on existing IOCs, file status, analysis, and reports. Downloads files from the database. Supports both application and Cloud. Supported Threat Emulation versions are any R80x.
+Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Queries on existing IOCs, file status, analysis, and reports. Downloads files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x.
 display: Check Point Threat Emulation (SandBlast)
 name: CheckPointSandBlast
 script:
