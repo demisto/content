@@ -236,6 +236,7 @@ def get_modified_files_for_testing(git_diff: str) -> ModifiedFiles:
     Returns:
         ModifiedFiles instance
     """
+    git_diff = '\n'.join(filter(lambda line: '/collect_tests/' not in line, git_diff))
     types_to_files: Dict[FileType, Set[str]] = create_type_to_file(git_diff)  # Mapping of the files FileType: file path
 
     # Checks if any common file exists in types_to_file
