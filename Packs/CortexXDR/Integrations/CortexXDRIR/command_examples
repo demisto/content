@@ -41,3 +41,4 @@
 !xdr-get-alerts status=connected time_frame=custom start_time=2022-04-09T18:54:12 end_time=2022-04-12T11:34:06
 !xdr-get-contributing-event alert_ids=`[33902 , 33904]`
 !xdr-replace-featured-field field_type=ip_addresses values=`["1.1.1.1"]` comments=`new ip address`
+!xdr-script-run endpoint_ids=1 script_uid=1
