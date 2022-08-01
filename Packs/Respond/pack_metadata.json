@@ -1,6 +1,6 @@
 {
     "name": "Mandiant Automated Defense",
-    "description": "Mandiant Automated Defense Pack. See https://www.mandiant.com/advantage/automated-defense for more information.",
+    "description": "Mandiant Automated Defense Pack",
     "support": "partner",
     "currentVersion": "1.0.3",
     "author": "Mandiant",
