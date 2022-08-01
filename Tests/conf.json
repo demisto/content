@@ -4037,7 +4037,8 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Microsoft Defender Advanced Threat Protection"
-            ]
+            ],
+            "instance_names": "microsoft_defender_atp_test"
         },
         {
             "playbookID": "Polygon-Test",
