@@ -23,11 +23,12 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": -260
+          "x": 1350,
+          "y": 50
         }
       }
     note: false
@@ -85,11 +86,12 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": -60
+          "x": 1350,
+          "y": 195
         }
       }
     note: false
@@ -101,10 +103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f707846a-7396-42fc-8573-a1005da8c985
+    taskid: 4f7b6d3e-16c8-41a2-8d05-2ce2a69740cc
     type: regular
     task:
-      id: f707846a-7396-42fc-8573-a1005da8c985
+      id: 4f7b6d3e-16c8-41a2-8d05-2ce2a69740cc
       version: -1
       name: Panorama query traffic logs
       description: Query logs.
@@ -114,124 +116,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     scriptarguments:
+      interval_in_seconds:
+        simple: "10"
       ip:
         complex:
           root: inputs.ip
       log-type:
         simple: traffic
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 420,
-          "y": 610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 05af0c11-4d31-4d09-8fb7-67f85eaa3bad
-    type: playbook
-    task:
-      id: 05af0c11-4d31-4d09-8fb7-67f85eaa3bad
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      Ids:
-        complex:
-          root: Panorama
-          accessor: Monitor.JobID
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: job_id
-      PollingCommandName:
-        simple: pan-os-check-logs-status
-      Timeout:
-        simple: "10"
-      dt:
-        simple: Panorama.Monitor(val.Status != 'Completed' && val.Status != 'Failed').JobID
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": -700,
-          "y": 1310
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: b1e89a31-b783-4775-8076-8b6b9b42ecdb
-    type: regular
-    task:
-      id: b1e89a31-b783-4775-8076-8b6b9b42ecdb
-      version: -1
-      name: Panorama Get Logs
-      description: Retrieves log query data by job ID.
-      tags:
-      - PanoramaResults
-      script: '|||pan-os-get-logs'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      job_id:
-        complex:
-          root: Panorama
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Panorama.Monitor.Status
-                iscontext: true
-              right:
-                value:
-                  simple: Completed
-          accessor: Monitor.JobID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -700,
-          "y": 1620
+          "x": 50,
+          "y": 690
         }
       }
     note: false
@@ -254,98 +158,12 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 1790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 00f77558-b083-4b8c-8197-323be797a56e
-    type: regular
-    task:
-      id: 00f77558-b083-4b8c-8197-323be797a56e
-      version: -1
-      name: Panorama Check Log Status
-      description: Checks the status of a log query.
-      script: '|||pan-os-check-logs-status'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      job_id:
-        complex:
-          root: Panorama
-          accessor: Monitor.JobID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -700,
-          "y": 1470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 24f322d7-af0e-4c7a-8788-ddd02de8cc13
-    type: condition
-    task:
-      id: 24f322d7-af0e-4c7a-8788-ddd02de8cc13
-      version: -1
-      name: Is there a JobID for a query?
-      description: Is there a JobID for a query?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: Panorama
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Panorama.Monitor.Status
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Pending
-                accessor: Monitor.JobID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -190,
-          "y": 1100
+          "x": 1872.5,
+          "y": 865
         }
       }
     note: false
@@ -357,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 80d6c8b3-ebe9-4fc9-8fcf-d070a430a6a8
+    taskid: 0edea18b-bac7-4ce2-8352-4642b3d4aacf
     type: regular
     task:
-      id: 80d6c8b3-ebe9-4fc9-8fcf-d070a430a6a8
+      id: 0edea18b-bac7-4ce2-8352-4642b3d4aacf
       version: -1
       name: Panorama query threat logs
       description: Query logs
@@ -370,19 +188,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     scriptarguments:
+      interval_in_seconds:
+        simple: "10"
       ip:
         complex:
           root: inputs.ip
       log-type:
         simple: threat
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 610
+          "x": 480,
+          "y": 690
         }
       }
     note: false
@@ -408,11 +233,12 @@ tasks:
       '#none#':
       - "12"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 110
+          "x": 695,
+          "y": 370
         }
       }
     note: false
@@ -452,11 +278,12 @@ tasks:
             value:
               simple: inputs.ip
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 240
+          "x": 695,
+          "y": 515
         }
       }
     note: false
@@ -468,10 +295,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: bb903d3a-ba81-4125-8546-af1c3015dd2f
+    taskid: fa0c0f79-a33a-4183-8c02-a1bd2f2d4b9e
     type: regular
     task:
-      id: bb903d3a-ba81-4125-8546-af1c3015dd2f
+      id: fa0c0f79-a33a-4183-8c02-a1bd2f2d4b9e
       version: -1
       name: Panorama query wildfire logs
       description: Query logs.
@@ -481,19 +308,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     scriptarguments:
+      interval_in_seconds:
+        simple: "10"
       ip:
         complex:
           root: inputs.ip
       log-type:
         simple: wildfire
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 610
+          "x": 910,
+          "y": 690
         }
       }
     note: false
@@ -505,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 19eb4b7b-ee52-469b-812b-ff3b80755677
+    taskid: d2ebfb26-7d3f-4de2-828f-852fc556a14e
     type: regular
     task:
-      id: 19eb4b7b-ee52-469b-812b-ff3b80755677
+      id: d2ebfb26-7d3f-4de2-828f-852fc556a14e
       version: -1
       name: Panorama query data logs
       description: Query logs.
@@ -518,19 +352,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     scriptarguments:
+      interval_in_seconds:
+        simple: "10"
       ip:
         complex:
           root: inputs.ip
       log-type:
         simple: data
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1650,
-          "y": 610
+          "x": 1340,
+          "y": 690
         }
       }
     note: false
@@ -542,10 +383,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 1f844f68-5a2f-4985-8462-33e9b7056665
+    taskid: 5f2a193c-7d79-46ce-83be-6124330eac4e
     type: regular
     task:
-      id: 1f844f68-5a2f-4985-8462-33e9b7056665
+      id: 5f2a193c-7d79-46ce-83be-6124330eac4e
       version: -1
       name: Panorama query url logs
       description: Query logs
@@ -555,19 +396,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     scriptarguments:
+      interval_in_seconds:
+        simple: "10"
       ip:
         complex:
           root: inputs.ip
       log-type:
         simple: url
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2050,
-          "y": 610
+          "x": 1770,
+          "y": 690
         }
       }
     note: false
@@ -593,11 +441,12 @@ tasks:
       '#none#':
       - "21"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -290,
-          "y": 110
+          "x": 2210,
+          "y": 370
         }
       }
     note: false
@@ -633,11 +482,12 @@ tasks:
             value:
               simple: inputs.filedigest
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -290,
-          "y": 240
+          "x": 2210,
+          "y": 515
         }
       }
     note: false
@@ -649,10 +499,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b2f18cd5-7555-4983-888a-b596ca9787ff
+    taskid: f39357ea-7c9d-4496-8550-53fb8f679c90
     type: regular
     task:
-      id: b2f18cd5-7555-4983-888a-b596ca9787ff
+      id: f39357ea-7c9d-4496-8550-53fb8f679c90
       version: -1
       name: Panorama query wildfire logs
       description: Query logs
@@ -662,19 +512,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     scriptarguments:
       filedigest:
         complex:
           root: inputs.filedigest
+      interval_in_seconds:
+        simple: "10"
       log-type:
         simple: wildfire
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 860
+          "x": 2220,
+          "y": 690
         }
       }
     note: false
@@ -700,11 +557,12 @@ tasks:
       '#none#':
       - "25"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1270,
-          "y": 110
+          "x": 2885,
+          "y": 370
         }
       }
     note: false
@@ -742,11 +600,12 @@ tasks:
             value:
               simple: inputs.url
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1270,
-          "y": 240
+          "x": 2885,
+          "y": 515
         }
       }
     note: false
@@ -758,10 +617,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: f2f84fe6-e723-4196-8840-7d36965e817b
+    taskid: f2224ce4-fd22-40af-846c-edce5862825e
     type: regular
     task:
-      id: f2f84fe6-e723-4196-8840-7d36965e817b
+      id: f2224ce4-fd22-40af-846c-edce5862825e
       version: -1
       name: Panorama query threat logs
       description: Query logs
@@ -771,19 +630,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     scriptarguments:
+      interval_in_seconds:
+        simple: "10"
       log-type:
         simple: threat
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
       url:
         complex:
           root: inputs.url
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -2100,
-          "y": 610
+          "x": 2670,
+          "y": 690
         }
       }
     note: false
@@ -795,10 +661,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: aaa97f96-f2bd-4f0e-8b11-b650d33fa2b0
+    taskid: 47029b4e-0d77-4360-83d0-01719da53f8e
     type: regular
     task:
-      id: aaa97f96-f2bd-4f0e-8b11-b650d33fa2b0
+      id: 47029b4e-0d77-4360-83d0-01719da53f8e
       version: -1
       name: Panorama query data logs
       description: Query logs.
@@ -808,19 +674,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     scriptarguments:
+      interval_in_seconds:
+        simple: "10"
       log-type:
         simple: data
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
       url:
         complex:
           root: inputs.url
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1270,
-          "y": 610
+          "x": 3530,
+          "y": 690
         }
       }
     note: false
@@ -832,10 +705,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: c3e6d2d2-e461-454d-829e-e61808fee61e
+    taskid: e008dcb5-0d94-49e1-8d83-539e27b63b2a
     type: regular
     task:
-      id: c3e6d2d2-e461-454d-829e-e61808fee61e
+      id: e008dcb5-0d94-49e1-8d83-539e27b63b2a
       version: -1
       name: Panorama query url logs
       description: Query logs.
@@ -845,19 +718,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     scriptarguments:
+      interval_in_seconds:
+        simple: "10"
       log-type:
         simple: url
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
       url:
         complex:
           root: inputs.url
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1680,
-          "y": 610
+          "x": 3100,
+          "y": 690
         }
       }
     note: false
@@ -875,10 +755,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2115,
-        "width": 4530,
-        "x": -2100,
-        "y": -260
+        "height": 880,
+        "width": 3860,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -887,17 +767,17 @@ inputs:
   value: {}
   required: false
   description: 'URL, for example: "safebrowsing.googleapis.com".'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: filedigest
   value: {}
   required: false
   description: File hash (for WildFire logs only).
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ip
   value: {}
   required: false
   description: Source or destination address
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Panorama.Monitor
   description: Monitor logs object.
