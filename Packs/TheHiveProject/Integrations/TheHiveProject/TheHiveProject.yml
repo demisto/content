@@ -1,8 +1,8 @@
 commonfields:
-  id: TheHive Project
+  id: TheHive Project test
   version: -1
-name: TheHive Project
-display: TheHive Project
+name: TheHive Project test
+display: TheHive Project test
 category: Case Management
 description: Integration with The Hive Project Security Incident Response Platform.
 configuration:
@@ -28,11 +28,6 @@ configuration:
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
-  required: false
-- display: Fetch closed cases
-  name: fetch_closed
-  type: 8
-  defaultvalue: false
   required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -61,6 +56,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
+- display: Fetch closed cases
+  name: fetch_closed
+  type: 8
+  defaultvalue: false
   required: false
 script:
   script: ''
