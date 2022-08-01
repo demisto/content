@@ -5175,6 +5175,11 @@
             "playbookID": "Arkime Test playbook",
             "fromversion": "6.2.0",
             "memory_threshold": 95
+        },
+        {
+            "integrations": "CheckPointDome9",
+            "playbookID": "Dome9",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
@@ -5437,7 +5442,7 @@
         "LogRhythm": "The integration is deprecated",
         "Alibaba Action Trail Event Collector": "XSIAM integration",
         "Salesforce Event Collector": "XSIAM integration",
-        "Github Event Collector" : "XSIAM integration",
+        "Github Event Collector": "XSIAM integration",
         "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration"
     },
     "nightly_integrations": [
