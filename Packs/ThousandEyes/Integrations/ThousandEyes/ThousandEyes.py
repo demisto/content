@@ -116,7 +116,7 @@ def test_module_command(client: Client, *_) -> str:
         DemistoException: If test failed.
     """
 
-    endpoint: str = '/test.json'
+    endpoint: str = '/tests.json'
     method: str = 'GET'
 
     response = client.handle_rate_lmiit_and_make_request(
