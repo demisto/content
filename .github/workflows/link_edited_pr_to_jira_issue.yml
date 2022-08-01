@@ -28,7 +28,7 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_LINK: ${{ github.event.pull_request.html_url }}
           PR_BODY: ${{ github.event.pull_request.body }}
-          IS_MERGED: False
+          IS_MERGED: false
           USERNAME: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_USER }}
           PASSWORD: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_PASSWORD }}
         run: |
