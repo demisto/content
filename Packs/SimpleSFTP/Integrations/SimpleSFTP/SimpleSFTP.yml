@@ -125,7 +125,7 @@ script:
       predefined:
       - "True"
       - "False"
-      description: If specified returns file from sftp server to war room
+      description: Defaults to False where text based file content will be printed. Please specify as True to download the file in case of non-text based files.
       defaultValue: "False"
     description: Copies contents of file specified from the sftp server and prints
       it to the war room
