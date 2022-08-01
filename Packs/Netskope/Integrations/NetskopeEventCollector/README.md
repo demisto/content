@@ -15,8 +15,6 @@ Netskope Event Collector integration.
     | Use system proxy settings |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Max Fetch | The maximum amount of events to retrieve \(up to 10000 events\). | False |
-    | Vendor | The vendor name to be used in the dataset name, in this format &amp;lt;vendor&amp;gt;_&amp;lt;product&amp;gt;_raw. | False |
-    | Product | The product name to be used in the dataset name, in this format &amp;lt;vendor&amp;gt;_&amp;lt;product&amp;gt;_raw. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -35,6 +33,7 @@ Returns events extracted from SaaS traffic and or logs.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of alerts to return (maximum value - 10000). | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. | Optional | 
 
 
 #### Context Output
