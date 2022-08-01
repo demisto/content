@@ -1,6 +1,9 @@
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from SiemApiModule import *  # noqa # pylint: disable=unused-wildcard-import
 
+VENDOR = "gitlab"
+PRODUCT = "gitlab"
+
 
 class Client(IntegrationEventsClient):
 
@@ -167,8 +170,7 @@ def main() -> None:  # pragma: no cover
             should_push_events = True
         if should_push_events:
             demisto.setLastRun(get_events.get_last_run(events, audit, last_run))  # type: ignore
-            send_events_to_xsiam(events + audit, demisto_params.get('vendor', 'gitlab'),
-                                 demisto_params.get('product', 'gitlab'))
+            send_events_to_xsiam(events + audit, vendor=VENDOR, product=PRODUCT)
 
     except Exception as exc:
         return_error(f'Failed to execute {command} command.\nError:\n{str(exc)}', error=exc)

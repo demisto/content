@@ -33,19 +33,6 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: Microsoft 365
-  additionalinfo: The vendor name to be used in the dataset name, in this format <vendor>_<product>_raw.
-  display: Vendor
-  hidden: false
-  name: vendor
-  required: false
-  type: 0
-- defaultvalue: Defender
-  display: Product
-  hidden: false
-  name: product
-  required: false
-  type: 0
 - additionalinfo: The time limit in seconds for fetch alerts to run. Leave this empty to cancel the timeout limit.
   defaultvalue: '30'
   display: Fetch alerts timeout

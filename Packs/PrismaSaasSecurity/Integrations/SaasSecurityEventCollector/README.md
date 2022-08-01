@@ -19,8 +19,6 @@ the challenges of:
     | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
     | Use system proxy settings | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
     | The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to Saas-Security api limitations. Default is 1000. In case this is empty, all available events will be fetched. | False |
-    | The vendor corresponding to the integration that produced the events. | The name of the vendor to name the dataset after. Default is paloaltonetworks | False |
-    | The product corresponding to the integration that produced the events. | The name of the product to name the dataset after. Default is saassecurity | False |
 
 5. Click **Test** to validate the URLs, token, and connection.
 

@@ -14,8 +14,5 @@ Log collecting for AUDIT events using the Duo API https://duo.com/docs/adminapi#
 | Secret key  | API secret key.  | True    |
 | XSIAM request limit  | The maximum number of results to get from the API and to add to XSIAM. | True |
 | Request retries  | The number of retries to perform in the API. (This is necessary because if there are too many retries, the API will return a "too many requests 429" error). | False        |
-| The vendor corresponding to the integration that originated the events  | Product name of the product to name the dataset after.   | False   |
-| The product corresponding to the integration that originated the events | Vendor name of the product to name the dataset after.   | False  |
-
 
 4. Click **Test** to validate the URLs, tokens, and connection.

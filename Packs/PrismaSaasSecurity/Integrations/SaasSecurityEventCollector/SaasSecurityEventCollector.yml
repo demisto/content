@@ -31,15 +31,6 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- display: The vendor corresponding to the integration that produced the events.
-  name: vendor
-  type: 0
-  defaultvalue: paloaltonetworks
-- display: The product corresponding to the integration that produced the events.
-  name: product
-  type: 0
-  defaultvalue: saassecurity
-  required: false
 description: Palo Alto Networks SaaS Security Event Collector integration for XSIAM.
 display: SaaS Security Event Collector
 name: SaaS Security Event Collector
