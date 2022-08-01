@@ -163,7 +163,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Whether to return the name attribute.
+      description: 'Whether to return the name attribute.'
       isArray: false
       name: attribute-name-pull
       predefined:
@@ -174,7 +174,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Whether to return the mail attribute.
+      description: 'Whether to return the mail attribute.'
       isArray: false
       name: attribute-mail-pull
       predefined:
@@ -185,7 +185,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to return the phone attribute.
+      description: 'Whether to return the phone attribute.'
       isArray: false
       name: attribute-phone-pull
       predefined:
