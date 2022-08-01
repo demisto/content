@@ -14,3 +14,4 @@ You can configure the specific vendor and product for this instance.
    - product as product<- FortiGate
 
 
+
