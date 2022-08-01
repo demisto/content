@@ -1,0 +1,67 @@
+category: Utilities
+commonfields:
+  id: Dictionary
+  version: -1
+configuration:
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: ba78b597-76fd-4665-8aee-7dc7dbe5ca19
+    packName: Dictionary Contribution Pack
+    propagationLabels: []
+    toServerVersion: ""
+description: This integration uses nltk to compare with word and Brown corpuses. Use
+  the test command while setting up the integration to download the corpus data.
+display: Dictionary
+name: Dictionary
+script:
+  commands:
+  - arguments:
+    - description: Text input to search English words
+      name: text
+      required: true
+      type: textArea
+    - auto: PREDEFINED
+      description: NLTK Corpus to check against
+      name: corpus
+      predefined:
+      - nltk-words
+      - brown
+      - webtext
+      - reuters
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "Yes"
+      description: Do you want to remove punctuation from the text before comparing
+        with the corpus?
+      name: removePunctuation
+      predefined:
+      - "Yes"
+      - "No"
+    - auto: PREDEFINED
+      default: true
+      defaultValue: "Yes"
+      description: Do you want to lemmatize (contexually remove inflectional endings
+        only and return the base or dictionary form of a word) the text before comparing
+        with the corpus?
+      name: lemmatize
+      predefined:
+      - "Yes"
+      - "No"
+    description: Finds English words in the given text
+    name: find-english-words
+  dockerimage: demisto/nltk:2.0.0.19143
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python

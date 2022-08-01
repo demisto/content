@@ -1,0 +1,17 @@
+{
+    "name": "Dictionary",
+    "description": "This integration uses NLTK to compare with a few pre-defined corpuses. These are as follows:\n1. NLTK Word\n2. Brown\n3. Reuters\n4. Webtext\n\nPlease follow these integrations to setup and use.\n1. Use the test command while setting up the integration to download the corpus data.\n2. Run `!find-english-words` command with the following specifications:\n   1. courpus - Chose the dictionary corpus\n   2. lemmatization - Yes/No\n   3. removePunctuation - Yes/No\n   4. text - The text within which \"English words\" need to be searched\nExample:\n!find-english-words corpus=brown lemmatize=Yes text=\"It was the best of times, it was the worst of times!\" removePunctuation=Yes",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Richa Priyanka",
+    "url": "",
+    "email": "",
+    "created": "2022-08-01T19:03:13Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "rpriyanka-sa"
+    ]
+}
