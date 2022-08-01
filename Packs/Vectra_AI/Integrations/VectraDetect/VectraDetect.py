@@ -1510,7 +1510,7 @@ def vectra_get_host_by_id_command(client: Client, id: str) -> CommandResults:
     return command_result
 
 
-def get_detection_pcap_file_command(client: Client, id: str) -> CommandResults:
+def get_detection_pcap_file_command(client: Client, id: str):
     """
     Downloads a PCAP fileassociated to a detection
 
