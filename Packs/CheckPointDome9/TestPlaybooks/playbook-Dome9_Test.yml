@@ -1,0 +1,1999 @@
+id: Dome9
+name: Dome9
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: dome9-access-lease-list
+      description: ''
+      script: checkpointdome9|||dome9-access-lease-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.cloudAccountId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.region
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.securityGroupId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.length
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.protocol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: dome9-access-lease-delete
+      description: ''
+      script: checkpointdome9|||dome9-access-lease-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: 5
+    taskid: '5'
+    type: regular
+    task:
+      id: '5'
+      version: -1
+      name: dome9-access-lease-invitation-list
+      description: ''
+      script: checkpointdome9|||dome9-access-lease-invitation-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: '6'
+    taskid: '6'
+    type: condition
+    task:
+      id: '6'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.Invitation.length
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.Invitation.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.Invitation.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.AccessLease.Invitation.recipientName
+            iscontext: true
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: 7
+    taskid: '7'
+    type: regular
+    task:
+      id: '7'
+      version: -1
+      name: dome9-access-lease-invitation-delete
+      description: ''
+      script: checkpointdome9|||dome9-access-lease-invitation-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: dome9-findings-search
+      description: ''
+      script: checkpointdome9|||dome9-findings-search
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Findings.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Findings.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Findings.region
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Findings.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Findings.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Findings.alertType
+            iscontext: true
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: dome9-ip-list-create
+      description: ''
+      script: checkpointdome9|||dome9-ip-list-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.items
+            iscontext: true
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: dome9-ip-list-update
+      description: ''
+      script: checkpointdome9|||dome9-ip-list-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: 13
+    taskid: '13'
+    type: regular
+    task:
+      id: '13'
+      version: -1
+      name: dome9-ip-list-get
+      description: ''
+      script: checkpointdome9|||dome9-ip-list-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: '14'
+    taskid: '14'
+    type: condition
+    task:
+      id: '14'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '15'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.items
+            iscontext: true
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: 15
+    taskid: '15'
+    type: regular
+    task:
+      id: '15'
+      version: -1
+      name: dome9-ip-list-delete
+      description: ''
+      script: checkpointdome9|||dome9-ip-list-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: dome9-ip-list-metadata-list
+      description: ''
+      script: checkpointdome9|||dome9-ip-list-metadata-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '17'
+    type: condition
+    task:
+      id: '17'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.cidr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.classificaiton
+            iscontext: true
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: '18'
+    type: regular
+    task:
+      id: '18'
+      version: -1
+      name: dome9-ip-list-metadata-create
+      description: ''
+      script: checkpointdome9|||dome9-ip-list-metadata-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '19'
+    type: condition
+    task:
+      id: '19'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.cidr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.classificaiton
+            iscontext: true
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '20'
+    type: regular
+    task:
+      id: '20'
+      version: -1
+      name: dome9-ip-list-metadata-update
+      description: ''
+      script: checkpointdome9|||dome9-ip-list-metadata-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '21'
+    type: condition
+    task:
+      id: '21'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.cidr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.classificaiton
+            iscontext: true
+    view: '{"position":{"x":50,"y":4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '22'
+    type: regular
+    task:
+      id: '22'
+      version: -1
+      name: dome9-ip-list-metadata-delete
+      description: ''
+      script: checkpointdome9|||dome9-ip-list-metadata-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: 23
+    taskid: '23'
+    type: regular
+    task:
+      id: '23'
+      version: -1
+      name: dome9-compliance-remediation-get
+      description: ''
+      script: checkpointdome9|||dome9-compliance-remediation-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: '24'
+    taskid: '24'
+    type: condition
+    task:
+      id: '24'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '25'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRemediation.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRemediation.ruleLogicHash
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRemediation.ruleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRemediation.ruleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRemediation.logic
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRemediation.rulesetId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRemediation.platform
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRemediation.cloudBots
+            iscontext: true
+    view: '{"position":{"x":50,"y":4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: 25
+    taskid: '25'
+    type: regular
+    task:
+      id: '25'
+      version: -1
+      name: dome9-compliance-remediation-create
+      description: ''
+      script: checkpointdome9|||dome9-compliance-remediation-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: '26'
+    type: regular
+    task:
+      id: '26'
+      version: -1
+      name: dome9-compliance-remediation-update
+      description: ''
+      script: checkpointdome9|||dome9-compliance-remediation-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: 27
+    taskid: '27'
+    type: regular
+    task:
+      id: '27'
+      version: -1
+      name: dome9-compliance-remediation-delete
+      description: ''
+      script: checkpointdome9|||dome9-compliance-remediation-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: '28'
+    type: regular
+    task:
+      id: '28'
+      version: -1
+      name: dome9-compliance-ruleset-list
+      description: ''
+      script: checkpointdome9|||dome9-compliance-ruleset-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: '29'
+    taskid: '29'
+    type: condition
+    task:
+      id: '29'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRuleset.accountId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRuleset.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRuleset.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRuleset.description
+            iscontext: true
+    view: '{"position":{"x":50,"y":5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: 30
+    taskid: '30'
+    type: regular
+    task:
+      id: '30'
+      version: -1
+      name: dome9-compliance-ruleset-rule-list
+      description: ''
+      script: checkpointdome9|||dome9-compliance-ruleset-rule-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: '31'
+    taskid: '31'
+    type: condition
+    task:
+      id: '31'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '32'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRuleset.Rule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRuleset.Rule.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRuleset.Rule.logic
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRuleset.Rule.logicHash
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.ComplianceRuleset.Rule.description
+            iscontext: true
+    view: '{"position":{"x":50,"y":6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: 32
+    taskid: '32'
+    type: regular
+    task:
+      id: '32'
+      version: -1
+      name: dome9-security-group-instance-attach
+      description: ''
+      script: checkpointdome9|||dome9-security-group-instance-attach
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: 33
+    taskid: '33'
+    type: regular
+    task:
+      id: '33'
+      version: -1
+      name: dome9-security-group-service-delete
+      description: ''
+      script: checkpointdome9|||dome9-security-group-service-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: 34
+    taskid: '34'
+    type: regular
+    task:
+      id: '34'
+      version: -1
+      name: dome9-security-group-tags-update
+      description: ''
+      script: checkpointdome9|||dome9-security-group-tags-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: 35
+    taskid: '35'
+    type: regular
+    task:
+      id: '35'
+      version: -1
+      name: dome9-security-group-service-create
+      description: ''
+      script: checkpointdome9|||dome9-security-group-service-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '36'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '36':
+    id: '36'
+    taskid: '36'
+    type: condition
+    task:
+      id: '36'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '37'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.protocolType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.scope
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.description
+            iscontext: true
+    view: '{"position":{"x":50,"y":7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '37':
+    id: 37
+    taskid: '37'
+    type: regular
+    task:
+      id: '37'
+      version: -1
+      name: dome9-security-group-service-update
+      description: ''
+      script: checkpointdome9|||dome9-security-group-service-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '38':
+    id: '38'
+    taskid: '38'
+    type: condition
+    task:
+      id: '38'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '39'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.protocolType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.scopeType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.Service.description
+            iscontext: true
+    view: '{"position":{"x":50,"y":7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '39':
+    id: 39
+    taskid: '39'
+    type: regular
+    task:
+      id: '39'
+      version: -1
+      name: dome9-security-group-instance-detach
+      description: ''
+      script: checkpointdome9|||dome9-security-group-instance-detach
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '40'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '40':
+    id: 40
+    taskid: '40'
+    type: regular
+    task:
+      id: '40'
+      version: -1
+      name: dome9-instance-list
+      description: ''
+      script: checkpointdome9|||dome9-instance-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '41'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '41':
+    id: '41'
+    taskid: '41'
+    type: condition
+    task:
+      id: '41'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '42'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Instance.externalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Instance.region
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Instance.nics
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Instance.name
+            iscontext: true
+    view: '{"position":{"x":50,"y":8200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '42':
+    id: 42
+    taskid: '42'
+    type: regular
+    task:
+      id: '42'
+      version: -1
+      name: dome9-security-group-protection-mode-update
+      description: ''
+      script: checkpointdome9|||dome9-security-group-protection-mode-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '43'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '43':
+    id: 43
+    taskid: '43'
+    type: regular
+    task:
+      id: '43'
+      version: -1
+      name: dome9-cloud-accounts-list
+      description: ''
+      script: checkpointdome9|||dome9-cloud-accounts-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '44'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '44':
+    id: 44
+    taskid: '44'
+    type: regular
+    task:
+      id: '44'
+      version: -1
+      name: dome9-security-group-ip-list-details-get
+      description: ''
+      script: checkpointdome9|||dome9-security-group-ip-list-details-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '45'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '45':
+    id: '45'
+    taskid: '45'
+    type: condition
+    task:
+      id: '45'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '46'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.security_group_id
+            iscontext: true
+    view: '{"position":{"x":50,"y":9000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '46':
+    id: 46
+    taskid: '46'
+    type: regular
+    task:
+      id: '46'
+      version: -1
+      name: dome9-security-group-list
+      description: ''
+      script: checkpointdome9|||dome9-security-group-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '47'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":9200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '47':
+    id: '47'
+    taskid: '47'
+    type: condition
+    task:
+      id: '47'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '48'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.SecurityGroup.security_group_id
+            iscontext: true
+    view: '{"position":{"x":50,"y":9400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '48':
+    id: 48
+    taskid: '48'
+    type: regular
+    task:
+      id: '48'
+      version: -1
+      name: dome9-global-search-get
+      description: ''
+      script: checkpointdome9|||dome9-global-search-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '49'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":9600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '49':
+    id: '49'
+    taskid: '49'
+    type: condition
+    task:
+      id: '49'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '50'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.GlobalSearch.environments
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.GlobalSearch.alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.GlobalSearch.assets
+            iscontext: true
+    view: '{"position":{"x":50,"y":9800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '50':
+    id: 50
+    taskid: '50'
+    type: regular
+    task:
+      id: '50'
+      version: -1
+      name: dome9-cloud-trail-get
+      description: ''
+      script: checkpointdome9|||dome9-cloud-trail-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '51'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":10000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '51':
+    id: '51'
+    taskid: '51'
+    type: condition
+    task:
+      id: '51'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '52'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.CloudTrail.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.CloudTrail.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.CloudTrail.trailArn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.CloudTrail.accountId
+            iscontext: true
+    view: '{"position":{"x":50,"y":10200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '52':
+    id: 52
+    taskid: '52'
+    type: regular
+    task:
+      id: '52'
+      version: -1
+      name: dome9-organizational-unit-view-get
+      description: ''
+      script: checkpointdome9|||dome9-organizational-unit-view-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '53'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":10400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '53':
+    id: '53'
+    taskid: '53'
+    type: condition
+    task:
+      id: '53'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '54'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnitView.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnitView.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnitView.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnitView.children
+            iscontext: true
+    view: '{"position":{"x":50,"y":10600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '54':
+    id: 54
+    taskid: '54'
+    type: regular
+    task:
+      id: '54'
+      version: -1
+      name: dome9-organizational-unit-flat-get
+      description: ''
+      script: checkpointdome9|||dome9-organizational-unit-flat-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '55'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":10800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '55':
+    id: '55'
+    taskid: '55'
+    type: condition
+    task:
+      id: '55'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '56'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnitFlat.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnitFlat.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnitFlat.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnitFlat.parentId
+            iscontext: true
+    view: '{"position":{"x":50,"y":11000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '56':
+    id: 56
+    taskid: '56'
+    type: regular
+    task:
+      id: '56'
+      version: -1
+      name: dome9-organizational-unit-get
+      description: ''
+      script: checkpointdome9|||dome9-organizational-unit-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '57'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":11200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '57':
+    id: '57'
+    taskid: '57'
+    type: condition
+    task:
+      id: '57'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '58'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnit.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnit.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnit.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.OrganizationalUnit.parentId
+            iscontext: true
+    view: '{"position":{"x":50,"y":11400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '58':
+    id: 58
+    taskid: '58'
+    type: regular
+    task:
+      id: '58'
+      version: -1
+      name: dome9-findings-get
+      description: ''
+      script: checkpointdome9|||dome9-findings-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '59'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":11600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '59':
+    id: '59'
+    taskid: '59'
+    type: condition
+    task:
+      id: '59'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '60'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Finding.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Finding.bundleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Finding.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Finding.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Finding.remediation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Finding.region
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.Finding.cloudAccountId
+            iscontext: true
+    view: '{"position":{"x":50,"y":11800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '60':
+    id: 60
+    taskid: '60'
+    type: regular
+    task:
+      id: '60'
+      version: -1
+      name: dome9-findings-bundle-get
+      description: ''
+      script: checkpointdome9|||dome9-findings-bundle-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '61'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":12000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '61':
+    id: '61'
+    taskid: '61'
+    type: condition
+    task:
+      id: '61'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '62'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.FindingsBundle.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.FindingsBundle.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.FindingsBundle.remediation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.FindingsBundle.accountId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.FindingsBundle.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.FindingsBundle.region
+            iscontext: true
+    view: '{"position":{"x":50,"y":12200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '62':
+    id: '62'
+    taskid: '62'
+    type: title
+    task:
+      id: '62'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":12400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []

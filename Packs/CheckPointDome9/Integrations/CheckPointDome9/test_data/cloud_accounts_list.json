@@ -1,0 +1,54 @@
+[
+    {
+        "allowReadOnly": false,
+        "creationDate": "creationDate",
+        "credentials": {
+            "apikey": null,
+            "arn": "arn",
+            "iamUser": null,
+            "isReadOnly": true,
+            "secret": null,
+            "type": "type"
+        },
+        "error": null,
+        "externalAccountNumber": "externalAccountNumber",
+        "fullProtection": false,
+        "iamSafe": {
+            "awsGroupArn": "awsGroupArn",
+            "awsPolicyArn": "awsPolicyArn",
+            "excludedIamEntities": {
+                "rolesArns": [],
+                "usersArns": []
+            },
+            "mode": "mode",
+            "restrictedIamEntities": {
+                "rolesArns": [],
+                "usersArns": []
+            },
+            "state": "state"
+        },
+        "id": "id",
+        "isFetchingSuspended": false,
+        "lambdaScanner": false,
+        "magellan": true,
+        "name": "name",
+        "netSec": {
+            "regions": [
+                {
+                    "name": "name",
+                    "newGroupBehavior": "newGroupBehavior",
+                    "region": "region"
+                }
+            ]
+        },
+        "onboardingMode": "onboardingMode",
+        "organizationalUnitId": null,
+        "organizationalUnitName": "organizationalUnitName",
+        "organizationalUnitPath": "",
+        "serverless": {
+            "codeAnalyzerEnabled": false,
+            "codeDependencyAnalyzerEnabled": false
+        },
+        "vendor": "vendor"
+    }
+]

@@ -1,0 +1,37 @@
+!dome9-access-lease-list
+!dome9-access-lease-delete lease_id=41cf35fc-771e-44cc-a880-e436efd7cf43
+!dome9-access-lease-invitation-list
+!dome9-access-lease-invitation-delete invitation_id=18520fd3-5b72-47d6-9902-ffd477259455
+!dome9-findings-search
+!dome9-ip-list-create description=description2022 name=name31072022
+!dome9-ip-list-update list_id=131881 description=NEW
+!dome9-ip-list-get
+!dome9-ip-list-delete list_id=129921
+!dome9-ip-list-metadata-list
+!dome9-ip-list-metadata-create cidr=10.0.3.3/32 classification=Dmz name=metadata
+!dome9-ip-list-metadata-update classification=Dmz list_metadata_id=270301-196.88.21.3/32 name=NewName
+!dome9-ip-list-metadata-delete account_id=270301 address=196.88.21.3 mask=32
+!dome9-compliance-remediation-get
+!dome9-compliance-remediation-create cloudbots=ami_set_to_private comment=COMMENT rule_logic_hash=0IKN0KBQtd0CmLdd/k4lIw ruleset_id=-49
+!dome9-compliance-remediation-update remediation_id=67178922-83c3-4d58-b422-b773d61d54c6 cloudbots=ami_set_to_private comment=COMMENT rule_logic_hash=aeW4uZDz3l+HqMQKXsPYkw ruleset_id=-51
+!dome9-compliance-remediation-delete remediation_id=32a4d00c-49d6-45d6-a8af-aa0d89fc5e08
+!dome9-compliance-ruleset-list
+!dome9-compliance-ruleset-rule-list rule_id=-41
+!dome9-security-group-instance-attach instance_id=i-0adef6e1787466a89 nic_name=eth0 sg_id=18817113
+!dome9-security-group-service-delete service_id=6-56 sg_id=sg-0d99768c36c68f649
+!dome9-security-group-tags-update key=KEYkey value=VALUEvalue sg_id=sg-0d99768c36c68f649
+!dome9-security-group-service-create name=NewService0107 policy_type=Inbound port=681 protocol_type=TCP sg_id=sg-0d99768c36c68f649
+!dome9-security-group-service-update service_name=ABC policy_type=Inbound port=56 protocol_type=TCP sg_id=sg-0d99768c36c68f649
+!dome9-security-group-instance-detach instance_id=i-0adef6e1787466a89 nic_name=eth0 sg_id=18817113
+!dome9-security-group-protection-mode-update protection_mode=FullManage sg_id=sg-0d99768c36c68f649
+!dome9-cloud-accounts-list
+!dome9-security-group-ip-list-details-get
+!dome9-security-group-list
+!dome9-instance-list
+!dome9-findings-get finding_id=0b3eac90-556b-4ca3-bb0c-8e42265b705c
+!dome9-organizational-unit-get
+!dome9-organizational-unit-flat-get
+!dome9-organizational-unit-view-get
+!dome9-findings-bundle-get bundle_id=-41 rule_logic_hash=aeW4uZDz3l+HqMQKXsPYkw
+!dome9-cloud-trail-get
+!dome9-global-search-get

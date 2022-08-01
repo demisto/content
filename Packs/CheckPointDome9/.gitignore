@@ -1,0 +1,10 @@
+# ignore files
+Integrations/CheckPointDome9/demistomock.py
+Integrations/CheckPointDome9/CommonServerUserPython.py
+Integrations/CheckPointDome9/CommonServerPython.py
+Integrations/CheckPointDome9/.vscode
+CheckpointDome9.collection.json
+integration-CheckPointDome9.yml
+Pipfile
+Pipfile.lock
+.vscode
