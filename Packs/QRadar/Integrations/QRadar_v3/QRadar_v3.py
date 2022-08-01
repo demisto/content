@@ -1318,8 +1318,7 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
     return [enrich_single_asset(asset) for asset in assets]
 
 
-def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str],
-                            first_fetch: str, client: Client) -> int:
+def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) -> int:
     """
     Receives the highest offense ID saved from last run, and user query.
     Checks if user query has a limitation for a minimum ID.
@@ -1328,13 +1327,9 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str],
     Args:
         highest_offense_id (int): Minimum ID to fetch offenses by from last run.
         user_query (Optional[str]): User query for QRadar service.
-        first_fetch (str): First fetch timestamp.
-        client (Client): Client to perform the API calls.
-
     Returns:
         (int): The Minimum ID to fetch offenses by.
     """
-    user_lowest_offense_id = -1
     if user_query:
         id_query = ID_QUERY_REGEX.search(user_query)
         if id_query:
@@ -1344,14 +1339,8 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str],
             user_offense_id = int(id_query.group(0).split(operator)[1].strip())
             user_lowest_offense_id = user_offense_id if operator == '>' else user_offense_id - 1
             print_debug_msg(f'Found ID in user query: {user_lowest_offense_id}, last highest ID: {highest_offense_id}')
-    if highest_offense_id:
-        return max(highest_offense_id, user_lowest_offense_id)
-    else:
-        first_fetch_min_id = get_min_id_from_first_fetch(first_fetch, client)
-        if id_query:
-            return max(first_fetch_min_id, user_lowest_offense_id)
-        else:
-            return first_fetch_min_id
+            return max(highest_offense_id, user_lowest_offense_id)
+    return highest_offense_id
 
 
 def get_min_id_from_first_fetch(first_fetch: str, client: Client):
@@ -1710,7 +1699,9 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
         (List[Dict], int): List of the incidents, and the new highest ID for next fetch.
         (None, None): if reset was triggered
     """
-    offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query, first_fetch, client)
+    if not last_highest_id:
+        last_highest_id = get_min_id_from_first_fetch(first_fetch, client)
+    offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query)
 
     user_query = update_user_query(user_query)
 
