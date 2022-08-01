@@ -1452,6 +1452,7 @@ def get_list_of_files_in_the_pack(path_to_pack):
     file_paths = []
     for root, dirs, files in os.walk(path_to_pack):
         for file in files:
+            print(root, dirs, files)
             file_paths.append(os.path.join(root, file))
     return file_paths
 
