@@ -34,4 +34,5 @@ jobs:
         run: |
           echo "Checking for related Jira issues to PR: $PR_NUMBER"
           cd Utils/github_workflow_scripts/jira_integration_scripts
+          echo --pr_num $PR_NUMBER --pr_link $PR_LINK --pr_title $PR_TITLE --pr_body $PR_BODY --is_merged $IS_MERGED
           poetry run python ./link_pr_to_jira_issue.py --pr_num $PR_NUMBER --pr_link $PR_LINK --pr_title $PR_TITLE --pr_body $PR_BODY --is_merged $IS_MERGED --username $USERNAME --password $PASSWORD
