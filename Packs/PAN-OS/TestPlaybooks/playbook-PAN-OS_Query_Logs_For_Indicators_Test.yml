@@ -104,8 +104,8 @@ tasks:
     task:
       id: 95e13578-3697-422e-8142-aeeebe149b64
       version: -1
-      name: PAN-OS Query Logs For Indicators V2 - URLs
-      playbookName: PAN-OS Query Logs For Indicators V2
+      name: PAN-OS Query Logs For Indicators - URLs
+      playbookName: PAN-OS Query Logs For Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -143,8 +143,8 @@ tasks:
     task:
       id: ffb15ea8-2787-40ed-846f-d350e7a0ffcd
       version: -1
-      name: PAN-OS Query Logs For Indicators V2 - Hashes
-      playbookName: PAN-OS Query Logs For Indicators V2
+      name: PAN-OS Query Logs For Indicators - Hashes
+      playbookName: PAN-OS Query Logs For Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -182,8 +182,8 @@ tasks:
     task:
       id: c8a914b1-649a-4510-8d8e-98ad8a62b2f7
       version: -1
-      name: PAN-OS Query Logs For Indicators V2 - IPs
-      playbookName: PAN-OS Query Logs For Indicators V2
+      name: PAN-OS Query Logs For Indicators - IPs
+      playbookName: PAN-OS Query Logs For Indicators
       type: playbook
       iscommand: false
       brand: ""
