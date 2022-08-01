@@ -3,9 +3,16 @@ import requests
 
 import demistomock as demisto
 import importlib
-from CommonServerPython import DBotScoreReliability
+from CommonServerPython import DBotScoreReliability, ExecutionMetrics
 
 Cisco_umbrella_investigate = importlib.import_module('Cisco-umbrella-investigate')
+
+
+def get_mterics_test(expected_len_of_results):
+    is_supported = ExecutionMetrics.is_supported()
+    if is_supported:
+        return True, expected_len_of_results
+    return False, expected_len_of_results - 1
 
 
 def test_reliability_in_get_domain_security_command(mocker):
@@ -51,9 +58,11 @@ def test_get_domain_command_all_domains_are_valid(mocker):
     }
     mocker.patch.object(Cisco_umbrella_investigate, 'http_request', return_value=domains_info)
     results = Cisco_umbrella_investigate.get_domain_command()
-    metrics = results[3].execution_metrics
-    assert len(results) == 4
-    assert metrics == [{'Type': 'Successful', 'APICallsCount': 3}]
+    metrics_supported, expected_len_of_results = get_mterics_test(4)
+    assert len(results) == expected_len_of_results
+    if metrics_supported:
+        metrics = results[3].execution_metrics
+        assert metrics == [{'Type': 'Successful', 'APICallsCount': 3}]
 
 
 def test_get_domain_command_no_valid_domains(mocker):
@@ -73,9 +82,11 @@ def test_get_domain_command_no_valid_domains(mocker):
     mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=error)
 
     results = Cisco_umbrella_investigate.get_domain_command()
-    metrics = results[2].execution_metrics
-    assert len(results) == 3
-    assert metrics == [{'Type': 'GeneralError', 'APICallsCount': 2}]
+    metrics_supported, expected_len_of_results = get_mterics_test(3)
+    assert len(results) == expected_len_of_results
+    if metrics_supported:
+        metrics = results[2].execution_metrics
+        assert metrics == [{'Type': 'GeneralError', 'APICallsCount': 2}]
 
 
 def test_get_domain_command_quota_error(mocker):
@@ -95,9 +106,11 @@ def test_get_domain_command_quota_error(mocker):
     mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=error)
 
     results = Cisco_umbrella_investigate.get_domain_command()
-    metrics = results[2].execution_metrics
-    assert len(results) == 3
-    assert metrics == [{'Type': 'QuotaError', 'APICallsCount': 2}]
+    metrics_supported, expected_len_of_results = get_mterics_test(3)
+    assert len(results) == expected_len_of_results
+    if metrics_supported:
+        metrics = results[2].execution_metrics
+        assert metrics == [{'Type': 'QuotaError', 'APICallsCount': 2}]
 
 
 def test_get_domain_command_some_valid_domains(mocker):
@@ -114,9 +127,11 @@ def test_get_domain_command_some_valid_domains(mocker):
     mocker.patch.object(Cisco_umbrella_investigate, 'http_request', return_value={"good.com": {"key": "val"}})
 
     results = Cisco_umbrella_investigate.get_domain_command()
-    metrics = results[2].execution_metrics
-    assert len(results) == 3
-    assert metrics == [{'Type': 'Successful', 'APICallsCount': 1}, {'Type': 'GeneralError', 'APICallsCount': 1}]
+    metrics_supported, expected_len_of_results = get_mterics_test(3)
+    assert len(results) == expected_len_of_results
+    if metrics_supported:
+        metrics = results[2].execution_metrics
+        assert metrics == [{'Type': 'Successful', 'APICallsCount': 1}, {'Type': 'GeneralError', 'APICallsCount': 1}]
 
 
 def test_get_whois_command_for_domain(mocker):
@@ -136,9 +151,11 @@ def test_get_whois_command_for_domain(mocker):
     }
     mocker.patch.object(Cisco_umbrella_investigate, 'http_request', return_value=domains_info)
     results_whois_command = Cisco_umbrella_investigate.get_whois_for_domain_command()
-    metrics = results_whois_command[1].execution_metrics
-    assert len(results_whois_command) == 2
-    assert metrics == [{'Type': 'Successful', 'APICallsCount': 1}]
+    metrics_supported, expected_len_of_results = get_mterics_test(2)
+    assert len(results_whois_command) == expected_len_of_results
+    if metrics_supported:
+        metrics = results_whois_command[1].execution_metrics
+        assert metrics == [{'Type': 'Successful', 'APICallsCount': 1}]
 
 
 def test_get_domain_command_non_404_request_exception(mocker):
