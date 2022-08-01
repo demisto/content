@@ -23,7 +23,7 @@ configuration:
   options:
     - v1
     - v2
-- additionalinfo: 'For api version v1, the first fetch can only be: 60 Minutes, 24
+- additionalinfo: 'For API version v1, the first fetch can only be: 60 Minutes, 24
     Hours, 7 days, 30 days, 60 days and 90 days.'
   defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
@@ -54,7 +54,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      description: Set this argument to True in order to create events, otherwise the command will only display the events.
       isArray: false
       name: should_push_events
       predefined:
