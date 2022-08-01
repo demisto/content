@@ -5738,6 +5738,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.MachineID
       description: The machine ID on which the action was executed.
       type: String
+<<<<<<< HEAD
   - arguments:
     - default: true
       description: A comma-separated list of machine IDs to be used for offboarding. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
@@ -5791,6 +5792,9 @@ script:
       description: Troubleshooting information.
       type: String
   dockerimage: demisto/crypto:1.0.0.31715
+=======
+  dockerimage: demisto/crypto:1.0.0.30286
+>>>>>>> 9d65d510b205652251ffecf96fcb15f3fdb1881a
   feed: false
   isfetch: true
   longRunning: false
