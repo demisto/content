@@ -848,7 +848,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk:1.0.0.32388
+  dockerimage: demisto/splunksdk:1.0.0.24033
   feed: false
   isfetch: true
   longRunning: false
