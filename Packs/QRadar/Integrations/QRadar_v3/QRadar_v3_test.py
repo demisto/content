@@ -1304,7 +1304,8 @@ def test_integration_context_during_run(test_case_data, mocker):
         ip_enrich=False,
         asset_enrich=False,
         incident_type=None,
-        mirror_direction=mirror_direction
+        mirror_direction=mirror_direction,
+        first_fetch='3 days'
     )
     second_loop_ctx_not_default_values = test_case_data.get('second_loop_ctx_not_default_values', {})
     for k, v in second_loop_ctx_not_default_values.items():
