@@ -511,9 +511,7 @@ def submit_false_negative_report_command(client, args):
     subject = str(args.get('subject', ''))
     response = client.submit_false_negative_report_request(recipient_email, sender_email, subject)
     command_results = CommandResults(
-        outputs_prefix='AbnormalSecurity.SubmitFalseNegativeReport',
-        outputs_key_field='',
-        outputs=response,
+        readable_output=response,
         raw_response=response
     )
 
@@ -524,9 +522,7 @@ def submit_false_positive_report_command(client, args):
     portal_link = str(args.get('portal_link;', ''))
     response = client.submit_false_positive_report_request(portal_link)
     command_results = CommandResults(
-        outputs_prefix='AbnormalSecurity.SubmitFalsePositiveReport',
-        outputs_key_field='',
-        outputs=response,
+        readable_output= response,
         raw_response=response
     )
 

@@ -560,10 +560,6 @@ script:
       required: true
     description: Submit a False Negative Report
     name: abnormal-security-submit-false-negative-report
-    outputs:
-      - contextPath: AbnormalSecurity.SubmitFalseNegativeReport.detail
-        description: Confirmation of report sent
-        type: String
 
   - arguments:
     - description: URL link of threat log in abnormal security portal
@@ -572,10 +568,6 @@ script:
       required: true
     description: Submit a False Positive Report
     name: abnormal-security-submit-false-positive-report
-    outputs:
-      - contextPath: AbnormalSecurity.SubmitFalsePositiveReport.detail
-        description: Confirmation of report sent
-        type: String
 
   - arguments:
     - description: Returns test data if set to `True`
