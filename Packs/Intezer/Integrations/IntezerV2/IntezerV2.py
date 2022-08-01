@@ -468,7 +468,7 @@ def get_family_info_command(intezer_api: IntezerApi, args: dict) -> CommandResul
 
 # region Enrich DBot
 
-def enrich_dbot_and_display_file_analysis_results(intezer_result: dict, file_metadata: dict):
+def enrich_dbot_and_display_file_analysis_results(intezer_result: dict, file_metadata: dict) -> CommandResults:
     verdict = intezer_result.get('verdict')
     sha256 = intezer_result.get('sha256')
     analysis_id = intezer_result.get('analysis_id')
