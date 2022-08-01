@@ -5561,6 +5561,9 @@ script:
     - contextPath: Panorama.Monitor.Status
       description: The status of the logs query.
       type: String
+    - contextPath: Panorama.Monitor.Message
+      description: The message of the logs query.
+      type: String
     - contextPath: Panorama.Monitor.Logs.Action
       description: The action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
       type: String
