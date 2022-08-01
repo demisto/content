@@ -208,7 +208,7 @@ class Client(BaseClient):
             }
         )
 
-    def download_request(self, file_id: str) -> bytes:
+    def download_request(self, file_id: str) -> requests.Response:
         """
         Return the file saved in the server.
 
@@ -224,7 +224,7 @@ class Client(BaseClient):
             params={
                 'id': file_id
             },
-            resp_type='content'
+            resp_type='response'
         )
 
     def quota_request(self) -> Dict[str, Any]:
@@ -453,9 +453,16 @@ def download_command(client: Client, args: Dict[str, Any]) -> Any:
     file_id = args['file_id']
 
     output = client.download_request(file_id)
-    file_entry = fileResult(filename=file_id, data=output, file_type=EntryType.ENTRY_INFO_FILE)
 
-    return file_entry
+    content_disposition = output.headers.get("Content-Disposition")
+    split_content_disposition = content_disposition.split('"')
+
+    if len(split_content_disposition) < 2:
+        file_name = 'file.pdf'
+    else:
+        file_name = split_content_disposition[1]
+
+    return fileResult(filename=file_name, data=output.content, file_type=EntryType.ENTRY_INFO_FILE)
 
 
 def quota_command(client: Client, args: Dict[str, Any]) -> CommandResults:
