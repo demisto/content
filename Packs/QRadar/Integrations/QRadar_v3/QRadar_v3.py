@@ -1355,6 +1355,7 @@ def get_min_id_from_first_fetch(first_fetch: str, client: Client):
         (int): The ID of the earliest offense created within the first_fetch time range.
     """
     filter_fetch_query = f'start_time>{str(convert_start_fetch_to_milliseconds(first_fetch))}'
+    # print_debug_msg(filter_fetch_query)
     raw_offenses = client.offenses_list(filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
     return int(raw_offenses[0].get('id')) if raw_offenses else 0
 
@@ -1701,6 +1702,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     """
     if not last_highest_id:
         last_highest_id = get_min_id_from_first_fetch(first_fetch, client)
+
     offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query)
 
     user_query = update_user_query(user_query)
@@ -1859,7 +1861,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         events_limit=events_limit,
         ip_enrich=ip_enrich,
         asset_enrich=asset_enrich,
-        last_highest_id=int(context_data.get(LAST_FETCH_KEY)),
+        last_highest_id=int(context_data.get(LAST_FETCH_KEY, '0')),
         incident_type=incident_type,
         mirror_direction=mirror_direction,
         first_fetch=first_fetch
