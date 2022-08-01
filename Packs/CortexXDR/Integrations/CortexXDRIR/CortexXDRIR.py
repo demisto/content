@@ -1339,6 +1339,9 @@ def main():  # pragma: no cover
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args()))
 
+        elif command == 'xdr-script-run':  # used with polling = true always
+            return_results(script_run_polling_command(args, client))
+
         elif command == 'xdr-run-script':
             return_results(run_script_command(client, args))
 

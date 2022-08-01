@@ -1,8 +1,8 @@
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: "This playbook uses the Live Response feature to retrieve a file from an endpoint./nNote that the endpoint id will be set from the incident field \"Device ID\"."
+  contentitemfields: {}
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook uses the Live Response feature to retrieve a file from an endpoint./nNote that the endpoint id will be set from the incident field "DeviceID".
 id: MDE - Retrieve File
 inputs:
 - description: The file paths to be provided.
@@ -106,7 +106,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 720
+          "y": 730
         }
       }
   '3':
@@ -132,24 +132,35 @@ tasks:
               left:
                 iscontext: true
                 value:
-                  simple: File.Info
-              operator: isEqualString
+                  simple: File.Extension
+              operator: containsString
               right:
                 value:
                   simple: gz
+          - - operator: containsString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: Response Result
+              ignorecase: true
           root: File
+          transformers:
+          - operator: LastArrayElement
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Unzips a file using file name or entry ID to specify a file. Unzipped files are loaded to the War Room and names are put into the context.
-      id: 466943ee-d1f6-4264-80a4-d5b3c858d5e2
+      id: e2ab0b64-e4e8-464c-848c-5e1e182224d0
       iscommand: false
       name: Unzip results
       scriptName: UnzipFile
       type: regular
       version: -1
-    taskid: 466943ee-d1f6-4264-80a4-d5b3c858d5e2
+    taskid: e2ab0b64-e4e8-464c-848c-5e1e182224d0
     timertriggers: []
     type: regular
     view: |-
@@ -167,8 +178,6 @@ tasks:
     nexttasks:
       no:
       - '3'
-      yes:
-      - '2'
     note: false
     quietmode: 0
     scriptarguments:
@@ -192,7 +201,7 @@ tasks:
       {
         "position": {
           "x": -60,
-          "y": 350
+          "y": 360
         }
       }
   '5':
@@ -251,7 +260,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 925,
+        "height": 935,
         "width": 842.5,
         "x": -300,
         "y": -140
@@ -261,3 +270,4 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+system: true
