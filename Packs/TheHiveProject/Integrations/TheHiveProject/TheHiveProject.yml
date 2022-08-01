@@ -1,8 +1,8 @@
 commonfields:
-  id: TheHive Project test
+  id: TheHive Project
   version: -1
-name: TheHive Project test
-display: TheHive Project test
+name: TheHive Project
+display: TheHive Project
 category: Case Management
 description: Integration with The Hive Project Security Incident Response Platform.
 configuration:
