@@ -1,9 +1,33 @@
-. $PSScriptRoot\CommonServerPowerShell.ps1
 
 $COMMAND_PREFIX = "o365-defender-safelinks"
 $INTEGRATION_ENTRY_CONTEXT = "O365Defender.SafeLinks"
 
+function CreateContextForReport{
+    Param(
+        $raw_response
+    )
+    $context_data = @{"Data"=$raw_response}
+    if ($raw_response -is [array]) {
+        $context_data.ReportId=$raw_response[0].RunspaceId
+    }
 
+    else {
+        $context_data.ReportId=$raw_response.RunspaceId
+    }
+
+    return $context_data
+}
+<#
+    .DESCRIPTION
+    Create context data for report commands. Where the context is divided to "Data" and "ReportId"
+
+    .PARAMETER arg_value
+    The raw value of the response.
+
+    .EXAMPLE
+    CreateContextForReport {field="data_1";RunspaceId="1"} -> {"Data"={field="data_1";RunspaceId="1"};
+                                                               "ReportId" = "1"}
+    #>
 function EncloseArgWithQuotes {
     Param (
         [string]$arg_value
@@ -1144,10 +1168,8 @@ function GetDetailedReport {
         return "#### No records were found.", @{}, @{}
     }
 
-    $report_id = $raw_response[0].RunspaceId
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.DetailedReport" = @{"ReportId"=$report_id;
-                                                                                "Data"=$raw_response} }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.DetailedReport" = CreateContextForReport $raw_response }
     return $human_readable, $entry_context, $raw_response
 }
 
@@ -1164,10 +1186,8 @@ function GetAggregateReport {
         return "#### No records were found.", @{}, @{}
     }
 
-    $report_id = $raw_response[0].RunspaceId
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AggregateReport" =  @{"ReportId"=$report_id;
-                                                                                "Data"=$raw_response} }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AggregateReport" =  CreateContextForReport $raw_response }
     return $human_readable, $entry_context, $raw_response
 }
 
