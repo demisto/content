@@ -4038,7 +4038,7 @@
             "integrations": [
                 "Microsoft Defender Advanced Threat Protection"
             ],
-            "instance_names": "microsoft_defender_atp_test"
+            "instance_names": "microsoft_defender_atp_prod"
         },
         {
             "playbookID": "Polygon-Test",
