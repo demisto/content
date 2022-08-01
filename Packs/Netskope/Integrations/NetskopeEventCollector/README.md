@@ -8,7 +8,7 @@ Netskope Event Collector integration.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | server URL |  | True |
+    | Server URL |  | True |
     | API token |  | True |
     | API Version | The API version to use \(v1 or v2\). | False |
     | Trust any certificate (not secure) |  | False |
@@ -34,7 +34,7 @@ Returns events extracted from SaaS traffic and or logs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maxismun number of alerts to return (maximum value - 10000). | Optional | 
+| limit | The maximum number of alerts to return (maximum value - 10000). | Optional | 
 
 
 #### Context Output
