@@ -464,7 +464,7 @@ script:
       description: The basic information of the file.
       type: string
   - deprecated: false
-    description: Uses the Quote API to have a client application get the current license and quota status of the API key used in the authorization of the other APIs. For cloud services only.
+    description: Uses the Quota API to have a client application get the current license and quota status of the API key used in the authorization of the other APIs. For cloud services only.
     execution: false
     name: sandblast-quota
     outputs:
