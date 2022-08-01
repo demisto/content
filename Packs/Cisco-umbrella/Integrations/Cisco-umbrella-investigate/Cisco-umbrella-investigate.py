@@ -845,12 +845,14 @@ def get_domain_command():
             })
 
             # Domain reputation + [whois -> whois nameservers -> whois emails] + domain categorization
-            readable = tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers) \
-                       + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
-                                         date_fields=["Last Retrieved"]) \
-                       + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers) \
-                       + tableToMarkdown('Emails:', emails, ['Emails']) \
-                       + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers)
+            readable_domain_reputation = tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain,
+                                                         contents, headers)
+            readable_whois = tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
+                                             date_fields=["Last Retrieved"])
+            readable_name_servers = tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
+            readable_emails = tableToMarkdown('Emails:', emails, ['Emails'])
+            readable_domain = tableToMarkdown('Domain Categorization:', domain_categorization_table, headers)
+            readable = readable_domain_reputation + readable_whois + readable_name_servers + readable_emails + readable_domain
 
             results.append(CommandResults(
                 readable_output=readable,
@@ -897,12 +899,12 @@ def get_domain_command():
                         raw_response=contents
                     ))
             else:
-                if execution_metrics.metrics is not None:
+                if execution_metrics.metrics is not None and execution_metrics.is_supported():
                     results.append(execution_metrics.metrics)
                 return_results(results)
                 return_error(r.response.text)
 
-    if execution_metrics.metrics is not None:
+    if execution_metrics.metrics is not None and execution_metrics.is_supported():
         results.append(execution_metrics.metrics)
     return results
 
@@ -1515,19 +1517,21 @@ def get_whois_for_domain_command():
         return_results(execution_metrics.metrics)
         return_error(r.response.text)
 
+    readable_whois = tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'],
+                                            table_whois,
+                                            headers, date_fields=["Last Retrieved"])  # noqa: W504
+    readable_name_servers = tableToMarkdown('Nameservers: ', contents_nameserver, headers)  # noqa: W504
+    readable_email = tableToMarkdown('Email Addresses: ', contents_email, headers)
+
     results.append(
         CommandResults(
             entry_type=entryTypes['note'],
             content_format=formats['json'],
             raw_response=[table_whois, contents_nameserver, contents_email],
             outputs=context,
-            readable_output=tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'],
-                                            table_whois,
-                                            headers, date_fields=["Last Retrieved"])  # noqa: W504
-                            + tableToMarkdown('Nameservers: ', contents_nameserver, headers)  # noqa: W504
-                            + tableToMarkdown('Email Addresses: ', contents_email, headers),
+            readable_output=readable_whois + readable_name_servers + readable_email
         ))
-    if execution_metrics.metrics is not None:
+    if execution_metrics.metrics is not None and execution_metrics.is_supported():
         results.append(execution_metrics.metrics)
 
     return results
