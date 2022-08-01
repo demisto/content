@@ -37,11 +37,6 @@ configuration:
   - all
   - web
   - git
-- display: The product corresponding to the integration that originated the events.
-  name: product
-  type: 0
-  defaultvalue: 'github-audit'
-  required: true
 - display: Use system proxy settings
   name: proxy
   type: 8

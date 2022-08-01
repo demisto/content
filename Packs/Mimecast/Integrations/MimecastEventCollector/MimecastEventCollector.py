@@ -1,5 +1,5 @@
-from CommonServerPython import * # noqa # pylint: disable=unused-wildcard-import
-import demistomock as demisto # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from SiemApiModule import *  # noqa: E402
 import urllib3
 import json
@@ -12,7 +12,6 @@ from zipfile import ZipFile
 import io
 import tempfile
 import re
-
 
 urllib3.disable_warnings()
 
@@ -29,6 +28,8 @@ LOCAL_LAST_RUN = {SIEM_LAST_RUN: '',
 
 AUDIT_EVENT_PAGE_SIZE = 500
 SIEM_LOG_LIMIT = 350
+VENDOR = "mimecast"
+PRODUCT = "mimecast"
 
 
 class MimecastOptions(IntegrationOptions):
@@ -45,7 +46,7 @@ class MimecastClient(IntegrationEventsClient):
     def __init__(self, request: IntegrationHTTPRequest, options: MimecastOptions):  # pragma: no cover
         super().__init__(request=request, options=options)
 
-    def prepare_headers(self, uri: str):    # pragma: no cover
+    def prepare_headers(self, uri: str):  # pragma: no cover
         """
         Args:
             uri (str): The uri of the end point
@@ -81,7 +82,7 @@ class MimecastClient(IntegrationEventsClient):
     def get_hdr_date():  # pragma: no cover
         return datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S UTC")
 
-    def set_request_filter(self, after: Any):   # noqa: F841  # pragma: no cover
+    def set_request_filter(self, after: Any):  # noqa: F841  # pragma: no cover
         pass
 
 
@@ -239,7 +240,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         Returns all data needed for the siem http request.
         """
         req_obj = {
-            'headers': self.client.prepare_headers(self.uri),   # type: ignore
+            'headers': self.client.prepare_headers(self.uri),  # type: ignore
             'data': self.prepare_siem_request_body(),
             'method': Method.POST,
             'url': self.options.base_url + self.uri,
@@ -357,7 +358,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
         Returns all the parameters needed for the audit API call
         """
         return {
-            'headers': self.client.prepare_headers(self.uri),   # type: ignore
+            'headers': self.client.prepare_headers(self.uri),  # type: ignore
             'data': self.prepare_audit_events_data(),
             'method': Method.POST,
             'url': self.options.base_url + self.uri,
@@ -383,7 +384,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             }
         }
         if self.page_token:
-            payload['meta']['pagination']['pageToken'] = self.page_token    # type: ignore
+            payload['meta']['pagination']['pageToken'] = self.page_token  # type: ignore
 
         return json.dumps(payload)
 
@@ -395,7 +396,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
         """
         regex = r'(?!.*:)'
         find_last_colon = re.search(regex, time_to_convert)
-        index = find_last_colon.start()     # type: ignore
+        index = find_last_colon.start()  # type: ignore
         audit_time_format = time_to_convert[:index - 1] + time_to_convert[index:]
         return audit_time_format
 
@@ -403,7 +404,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
 def handle_last_run_entrance(user_inserted_last_run: str, audit_event_handler: MimecastGetAuditEvents,
                              siem_event_handler: MimecastGetSiemEvents):
     start_time = arg_to_datetime(user_inserted_last_run)
-    start_time_iso = start_time.astimezone().replace(microsecond=0).isoformat()     # type: ignore
+    start_time_iso = start_time.astimezone().replace(microsecond=0).isoformat()  # type: ignore
     if not demisto.getLastRun():
         # first time to enter init with user specified time.
         audit_event_handler.start_time = audit_event_handler.to_audit_time_format(start_time_iso)
@@ -503,7 +504,7 @@ def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run
     return same_time_events
 
 
-def main():      # pragma: no cover
+def main():  # pragma: no cover
     # Args is always stronger. Get last run even stronger
     demisto.info('\n started running main\n')
     demisto_params = demisto.params() | demisto.args()
@@ -533,8 +534,7 @@ def main():      # pragma: no cover
             if command == 'fetch-events':
                 handle_last_run_exit(siem_event_handler, events_audit)
                 events = events_siem + events_audit
-                send_events_to_xsiam(events, demisto_params.get('vendor', 'mimecast'),
-                                     demisto_params.get('product', 'mimecast'))
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
             else:
                 command_results_siem = CommandResults(
@@ -553,8 +553,7 @@ def main():      # pragma: no cover
                 return_results([command_results_siem, command_results_audit])
                 if should_push_events:
                     events = events_siem + events_audit
-                    send_events_to_xsiam(events, demisto_params.get('vendor', 'mimecast'),
-                                         demisto_params.get('product', 'mimecast'))
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
