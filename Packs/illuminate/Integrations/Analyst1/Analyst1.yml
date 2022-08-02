@@ -41,7 +41,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
 - display: ""
   name: feedExpirationPolicy
@@ -620,7 +620,7 @@ script:
       type: String
     description: Queries the Analyst1 REST API and enriches the given URL with Analyst1
       indicator data.
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   subtype: python3
 fromversion: 5.0.0

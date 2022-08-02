@@ -33,7 +33,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
 - display: ""
   name: feedExpirationPolicy
@@ -195,7 +195,7 @@ script:
     - contextPath: Domain.Malicious.Description
       description: A description of the malicious domain.
       type: String
-  dockerimage: demisto/python3:3.10.4.31492
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false
