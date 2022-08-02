@@ -3023,8 +3023,10 @@ The query logs in Panorama.
 | filedigest | The file hash (for WildFire logs only). | Optional | 
 | number_of_logs | The maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. Default is 100. | Optional | 
 | polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| query_log_job_id | Job ID to use in polling commands. (automatically filled by polling). | Optional | 
 | timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
 | interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
+| hide_polling_output | whether to hide the polling result (automatically filled by polling). | Optional | 
 
 
 #### Context Output
@@ -3099,7 +3101,7 @@ enforce the policy. |
 ```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true interval_in_seconds=5 timeout=120```
 #### Human Readable Output
 
->Fetching traffic logs for job ID 1280...
+>Fetching traffic logs for job ID 1284...
 
 ### pan-os-check-logs-status
 ***
