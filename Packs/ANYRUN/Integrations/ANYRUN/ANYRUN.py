@@ -1250,24 +1250,24 @@ def main():
         'anyrun-run-analysis': run_analysis_command,
     }
 
-    #try:
-    command = demisto.command()
-    demisto.info(f'Command being called is {command}')
-    client = Client(
-        base_url=base_url,
-        verify=use_ssl,
-        proxy=proxy,
-        headers=headers
-    )
+    try:
+        command = demisto.command()
+        demisto.info(f'Command being called is {command}')
+        client = Client(
+            base_url=base_url,
+            verify=use_ssl,
+            proxy=proxy,
+            headers=headers
+        )
 
-    if command in commands:
-        return_results(commands[command](args, client))
-    else:
-        raise NotImplementedError(f'{command} command is not implemented.')
+        if command in commands:
+            return_results(commands[command](args, client))
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
 
-    #except Exception as e:
-    #    demisto.error(traceback.format_exc())  # print the traceback
-    #    return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+    except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__builtin__', 'builtins'):
