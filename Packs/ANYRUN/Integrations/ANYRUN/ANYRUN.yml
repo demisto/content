@@ -703,6 +703,21 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason that the vendor made the decision.
       type: String
+    - contextPath: Domain.Name
+      description: Domain name.
+      type: String
+    - contextPath: IP.ASN
+      description: IP ASN.
+      type: String
+    - contextPath: IP.Address
+      description: IP Address.
+      type: String
+    - contextPath: IP.Geo.Country
+      description: Origin country of the IP address.
+      type: String
+    - contextPath: IP.Port
+      description: Port number.
+      type: Number
     - contextPath: ANYRUN.Task.Status
       description: Task analysis status.
       type: String
