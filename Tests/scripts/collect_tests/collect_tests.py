@@ -584,11 +584,14 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
         ))
 
 
-def output(result: CollectionResult):
+def output(result: Optional[CollectionResult]):
     """
     writes to both log and files
     """
-    machines = tuple(sorted(result.machines if result else ()))
+    if not result:
+        raise RuntimeError('Nothing was collected, not even sanity tests')
+
+    machines = tuple(result.machines if result else ())
 
     test_str = '\n'.join(sorted(result.tests))
     pack_str = '\n'.join(sorted(result.packs))
