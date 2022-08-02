@@ -2,31 +2,32 @@ id: CrowdStrike Falcon - SIEM ingestion Get Incident Data
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - SIEM ingestion Get Incident Data
-description: This playbook handles incident ingestion from the SIEM.
-  The user provides the field for the incident ID or detection ID as well as the field indicating whether the ingested item is an incident or detection. 
-  This playbook enables changing the severity scale in Cortex XSOAR as well as fetching CrowdStrike detections based on the CrowdStrike incident type.
-starttaskid: "0"
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook handles incident ingestion from a SIEM.
+  The user provides the field for the incident ID or detection ID and the field indicating whether the ingested item is an incident or detection. This playbook enables changing the severity scale in Cortex XSOAR as well as fetching CrowdStrike detections based on the CrowdStrike incident type.
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 52e83efb-9923-48db-8890-154683292a27
     type: start
     task:
       id: 52e83efb-9923-48db-8890-154683292a27
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 80
+          "y": -80
         }
       }
     note: false
@@ -36,8 +37,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 78c40975-d0c2-4412-8a3c-8401e311a909
     type: condition
     task:
@@ -46,13 +47,13 @@ tasks:
       name: Verify if incident or detection
       type: condition
       iscommand: false
-      brand: ""
-      description: ''
+      brand: ''
+      description: Verify if this is an incident or detection
     nexttasks:
       detection:
-      - "2"
+      - '2'
       incident:
-      - "3"
+      - '3'
     separatecontext: false
     conditions:
     - label: incident
@@ -81,7 +82,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 210
+          "y": 50
         }
       }
     note: false
@@ -91,26 +92,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 5982643f-fda7-4092-8bc9-21a21d96ed0c
     type: regular
     task:
       id: 5982643f-fda7-4092-8bc9-21a21d96ed0c
       version: -1
       name: Get full detection details
-      description: Searches for specific detection details either by using a filter
-        query or by providing the detection IDs.
+      description: Searches for specific detection details either by using a filter query or by providing the detection IDs.
       script: '|||cs-falcon-search-detection'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "20"
+      - '21'
     scriptarguments:
       extended_data:
-        simple: "Yes"
+        simple: Yes
       ids:
         simple: ${inputs.SIEMincidentFieldForID}
     separatecontext: false
@@ -118,7 +118,7 @@ tasks:
       {
         "position": {
           "x": 280,
-          "y": 530
+          "y": 370
         }
       }
     note: false
@@ -198,8 +198,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 5937f18b-8a25-4acb-835a-dda3ba512483
     type: regular
     task:
@@ -210,10 +210,10 @@ tasks:
       script: '|||cs-falcon-list-incident-summaries'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '22'
     scriptarguments:
       ids:
         simple: ${inputs.SIEMincidentFieldForID}
@@ -222,7 +222,7 @@ tasks:
       {
         "position": {
           "x": 690,
-          "y": 380
+          "y": 220
         }
       }
     note: false
@@ -278,8 +278,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 555c6448-233b-491c-84e0-a8e63259243d
     type: title
     task:
@@ -288,7 +288,7 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
@@ -305,8 +305,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 5c22181f-8e83-462c-8893-8becc8d992e2
     type: regular
     task:
@@ -320,7 +320,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       severity:
         complex:
@@ -353,107 +353,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 2bb37186-a026-4de6-803b-ff80e9ee9ce5
-    type: regular
-    task:
-      id: 2bb37186-a026-4de6-803b-ff80e9ee9ce5
-      version: -1
-      name: Get detections for incident
-      description: Gets the detections for a specific incident.
-      script: '|||cs-falcon-get-detections-for-incident'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      incident_id:
-        simple: ${CrowdStrike.Incidents.incident_id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 68f57416-0049-4014-8b8a-27b5b7ca5e86
-    type: regular
-    task:
-      id: 68f57416-0049-4014-8b8a-27b5b7ca5e86
-      version: -1
-      name: Get full detection details
-      description: Searches for specific detection details either by using a filter
-        query or by providing the IDs of the detections.
-      script: '|||cs-falcon-search-detection'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      extended_data:
-        simple: "Yes"
-      ids:
-        simple: ${CrowdStrike.IncidentDetection.detection_ids}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: File Names
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.FileName}
-    - incidentfield: Scenario
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.Scenario}
-    - incidentfield: Process MD5
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.MD5}
-    - incidentfield: Process SHA256
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.SHA256}
-    - incidentfield: Process CMD
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.CommandLine}
-    - incidentfield: External Confidence
-      output:
-        simple: ${CrowdStrike.Detection.MaxConfidence}
-    - incidentfield: Users
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.UserName}
-    - incidentfield: MITRE Technique ID
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.TechniqueId}
-    - incidentfield: MITRE Tactic ID
-      output:
-        simple: ${CrowdStrike.Detection.Behavior.TacticID}
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: ab07910c-703a-4326-80ca-c1f417d42922
     type: regular
     task:
@@ -467,7 +368,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       severity:
         complex:
@@ -500,8 +401,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: 15148b3b-e08d-442b-82a8-0b986467f72f
     type: regular
     task:
@@ -512,10 +413,10 @@ tasks:
       script: '|||endpoint'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       id:
         simple: ${incident.agentsid}
@@ -539,8 +440,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: a3ab8a8f-116c-4471-8912-27cc94fa5234
     type: regular
     task:
@@ -554,7 +455,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       deviceid:
         simple: ${Endpoint.[0].ID}
@@ -588,8 +489,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: ff5eda85-e05b-4c68-833f-dc1eb9d06b7d
     type: title
     task:
@@ -598,11 +499,11 @@ tasks:
       name: Setting and Enrichment
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     separatecontext: false
     view: |-
       {
@@ -618,8 +519,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 71e9866a-5547-409c-842b-2e56ac5bf8c0
     type: title
     task:
@@ -628,11 +529,11 @@ tasks:
       name: Incident Severity
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     separatecontext: false
     view: |-
       {
@@ -648,8 +549,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 4492191a-b69d-4101-8ff6-6e930791c77a
     type: title
     task:
@@ -658,11 +559,11 @@ tasks:
       name: Detection Severity
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     separatecontext: false
     view: |-
       {
@@ -678,8 +579,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: b42ad9f2-b62f-4453-8b35-78a06dada7d0
     type: condition
     task:
@@ -688,15 +589,15 @@ tasks:
       name: Is override SIEM severity enabled?
       type: condition
       iscommand: false
-      brand: ""
-      description: ''
+      brand: ''
+      description: Is override SIEM severity enabled?
     nexttasks:
       '#default#':
-      - "12"
+      - '12'
       Detection:
-      - "15"
+      - '15'
       Incident:
-      - "13"
+      - '13'
     separatecontext: false
     conditions:
     - label: Detection
@@ -708,7 +609,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: 'true'
           ignorecase: true
       - - operator: isEqualString
           left:
@@ -727,7 +628,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: 'true'
       - - operator: isEqualString
           left:
             value:
@@ -750,8 +651,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 0d69e69e-0ac4-489f-823b-f52bf95ea0c0
     type: title
     task:
@@ -760,11 +661,11 @@ tasks:
       name: Override Severity
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     separatecontext: false
     view: |-
       {
@@ -780,15 +681,89 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: 0818fcc6-9969-41de-85f7-7338f8829fc8
+    type: regular
+    task:
+      id: 0818fcc6-9969-41de-85f7-7338f8829fc8
+      version: -1
+      name: Extract Indicators
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments:
+      text:
+        simple: ${CrowdStrike.Detection}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: bef28f61-1669-44d9-8b4f-02bd8b04597a
+    type: playbook
+    task:
+      id: bef28f61-1669-44d9-8b4f-02bd8b04597a
+      version: -1
+      name: CrowdStrike Falcon - Get Detections by Incident
+      playbookName: CrowdStrike Falcon - Get Detections by Incident
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      IncidentID:
+        simple: ${CrowdStrike.Incidents.incident_id}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1945,
+        "height": 2105,
         "width": 830,
         "x": 260,
-        "y": 80
+        "y": -80
       }
     }
   }
@@ -797,7 +772,7 @@ inputs:
   value:
     simple: ${incident.externalcategoryname}
   required: false
-  description: The incident field that determines if this is a detection or an incident.    
+  description: The incident field that determines if this is a detection or an incident.
   playbookInputQuery:
 - key: SIEMincidentFieldForID
   value:
@@ -811,7 +786,7 @@ inputs:
   required: false
   description: |-
     The severity scale in the EDR.
-    For example, CrowdStrike uses values from 0 to 100 
+    For example, CrowdStrike uses values from 0 to 100, 
     so the scale can be divided into ranges such as
     0-20,21-40,41-60,61-80,81-100
   playbookInputQuery:
@@ -828,11 +803,9 @@ inputs:
   playbookInputQuery:
 - key: OverrideSIEMSeverity
   value:
-    simple: "False"
+    simple: 'False'
   required: false
-  description: "Whether to set the severity according to the EDR severity scale\
-    \ and its mapping to Cortex XSOAR (True) or keep the original severity scale as mapped\
-    \ by the SIEM (False)."
+  description: Whether to set the severity according to the EDR severity scale and its mapping to Cortex XSOAR (True) or keep the original severity scale as mapped by the SIEM (False).
   playbookInputQuery:
 outputs:
 - contextPath: CrowdStrike.Detection.Behavior.FileName
@@ -889,5 +862,11 @@ outputs:
 - contextPath: Endpoint
   description: The details of the endpoint.
   type: string
+- contextPath: CrowdStrike.FoundDetections
+  description: Indicates whether detections were found.
+  type: string
 tests:
- -  No tests
+- Test - CrowdStrike Falcon
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

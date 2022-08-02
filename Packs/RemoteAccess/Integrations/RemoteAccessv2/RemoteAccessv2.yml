@@ -3,9 +3,10 @@ commonfields:
   id: RemoteAccess v2
   version: -1
 configuration:
-- display: Default Hostname or IP Address
+- additionalinfo: If not provided, "host" or "system" should be provided in the command's arguments.
+  display: Default Hostname or IP Address
   name: hostname
-  required: true
+  required: false
   type: 0
 - additionalinfo: For example, "root".
   display: User
@@ -56,6 +57,24 @@ script:
       description: Timeout for command in seconds.
       isArray: false
       name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: System to run the command on.
+      isArray: true
+      name: system
+      required: false
+      secret: false
+    - default: false
+      description: Host name to run the command on.
+      isArray: true
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: Port to run the command on.
+      isArray: false
+      name: port
       required: false
       secret: false
     deprecated: false
@@ -117,6 +136,24 @@ script:
       name: entry
       required: false
       secret: false
+    - default: false
+      description: System to run the command on.
+      isArray: true
+      name: system
+      required: false
+      secret: false
+    - default: false
+      description: Host name to run the command on.
+      isArray: true
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: Port to run the command on.
+      isArray: false
+      name: port
+      required: false
+      secret: false
     deprecated: false
     description: Copies the given file from Cortex XSOAR to the remote machine.
     execution: false
@@ -154,6 +191,24 @@ script:
         (Deprecated. Use file_path instead).
       isArray: false
       name: file
+      required: false
+      secret: false
+    - default: false
+      description: System to run the command on.
+      isArray: true
+      name: system
+      required: false
+      secret: false
+    - default: false
+      description: Host name to run the command on.
+      isArray: true
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: Port to run the command on.
+      isArray: false
+      name: port
       required: false
       secret: false
     deprecated: false

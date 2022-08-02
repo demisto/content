@@ -10,7 +10,7 @@ from typing import Dict, Tuple, List, Any
 requests.packages.urllib3.disable_warnings()
 
 """ CONSTANTS """
-INTEGRATION_VERSION = "v1.3.2"
+INTEGRATION_VERSION = "v1.3.3"
 INTEGRATION_PLATFORM = "XSOAR Cortex"
 FIRST_FETCH = "3 days"
 MAX_FETCH = 15
@@ -144,7 +144,7 @@ class Client:
             full_url = self.url + url_suffix
 
         headers = {
-            'Authorization': self.api_key,
+            'Authorization': f"Bearer {self.api_key}",
             'X-FP-IntegrationPlatform': INTEGRATION_PLATFORM,
             'X-FP-IntegrationPlatformVersion': get_demisto_version_as_str(),
             'X-FP-IntegrationVersion': INTEGRATION_VERSION
@@ -1524,7 +1524,7 @@ def email_lookup_command(client, email):
     :param email: email address or subject
     :return: command output
     """
-    query = r'+type:("email-dst", "email-src", "email-src-display-name", "email-subject") +value.\*.keyword:"' \
+    query = r'+type:("email-dst", "email-src", "email-src-display-name", "email-subject", "email") +value.\*.keyword:"' \
             + email + '" '
     resp = client.http_request("GET", url_suffix=get_url_suffix(query))
 

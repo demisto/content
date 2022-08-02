@@ -74,7 +74,6 @@ OUTPUT_PREFIX = {
     "GPS_VM_EXPORT": "RubrikPolaris.GPSVMSnapshotExport",
     "USER_DOWNLOADS": "RubrikPolaris.UserDownload",
     "GPS_SLA_DOMAIN": "RubrikPolaris.GPSSLADomain",
-    "PAGE_TOKEN_SLA_DOMAIN": "RubrikPolaris.PageToken.GPSSLADomain",
     "GPS_SNAPSHOT_CREATE": "RubrikPolaris.GPSOndemandSnapshot",
     "GPS_SNAPSHOT_FILE_DOWNLOAD": "RubrikPolaris.GPSSnapshotFileDownload",
     "GPS_VM_LIVEMOUNT": "RubrikPolaris.GPSVMLiveMount",
@@ -91,7 +90,6 @@ OUTPUT_PREFIX = {
     "RADAR_IOC_SCAN": "RubrikPolaris.RadarIOCScan",
     "GPS_ASYNC_RESULT": "RubrikPolaris.GPSAsyncResult",
     "GPS_CLUSTER": "RubrikPolaris.GPSCluster",
-    "PAGE_TOKEN_GPS_CLUSTER": "RubrikPolaris.PageToken.GPSCluster",
     "GPS_VM_RECOVER_FILES": "RubrikPolaris.GPSVMRecoverFiles"
 }
 
@@ -656,20 +654,19 @@ def prepare_context_hr_user_downloads(nodes: list):
     return nodes, hr_content
 
 
-def prepare_context_hr_sla_domains_list(edges):
+def prepare_context_hr_sla_domains_list(nodes):
     """
     Prepare context output and human readable response for rubrik-sonar-policies-list command.
 
-    :type edges: ``dict``
-    :param edges: edges from the response received from the API
+    :type nodes: ``dict``
+    :param nodes: nodes from the response received from the API
 
     :return: context output and human readable for the command
     """
-    edges = remove_empty_elements(edges)
+    nodes = remove_empty_elements(nodes)
     hr_content = []
     context = []
-    for edge in edges:
-        node = edge.get('node', {})
+    for node in nodes:
         context.append(node)
         base_frequency = node.get("baseFrequency", {})
         replication_specs = node.get("replicationSpecsV2", [])
@@ -1163,19 +1160,18 @@ def prepare_context_hr_radar_ioc_scan_results(data: dict):
     return outputs, readable_output
 
 
-def prepare_context_hr_cluster_list(edges):
+def prepare_context_hr_cluster_list(nodes):
     """
     Prepare context output and human readable response for rubrik-gps-cluster-list command.
 
-    :type edges: ``list``
-    :param edges: edges from the response received from the API
+    :type nodes: ``list``
+    :param nodes: nodes from the response received from the API
 
     :return: context output and human readable for the command
     """
     hr_content = []
     context = []
-    for edge in edges:
-        node = edge.get('node')
+    for node in nodes:
         node = remove_empty_elements(node)
         context.append(node)
         ip_addresses = []
@@ -1548,7 +1544,7 @@ def rubrik_sonar_policies_list_command(client: PolarisClient, args: Dict[str, An
     :return: CommandResult object
     """
     raw_response = client.list_policies()
-    nodes = raw_response.get('data', {}).get('policyConnection', {}).get('nodes', [])
+    nodes = raw_response.get('data', {}).get('policies', {}).get('nodes', [])
     if not nodes:
         return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("sonar policies"))
     context, hr = prepare_context_hr_sonar_policies(nodes)
@@ -1572,7 +1568,7 @@ def rubrik_sonar_policy_analyzer_groups_list_command(client: PolarisClient, args
     :return: CommandResult object
     """
     raw_response = client.list_policy_analyzer_groups()
-    nodes = raw_response.get('data', {}).get('analyzerGroupConnection', {}).get('nodes', [])
+    nodes = raw_response.get('data', {}).get('analyzerGroups', {}).get('nodes', [])
     if not nodes:
         return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("sonar policy analyzer groups"))
     context, hr = prepare_context_hr_sonar_policy_analyzer_groups(nodes)
@@ -2121,8 +2117,6 @@ def rubrik_gps_sla_domain_list(client: PolarisClient, args: Dict[str, Any]) -> C
     cluster_uuid = args.get("cluster_id", "")
     object_type = argToList(args.get("object_type"))
     show_cluster_slas_only = args.get("show_cluster_slas_only", DEFAULT_SHOW_CLUSTER_SLA_ONLY)
-    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
-    next_page_token = args.get('next_page_token')
     sort_order = args.get('sort_order', DEFAULT_SORT_ORDER)
     sort_by = args.get('sort_by', DEFAULT_SORT_BY_SLA_DOMAIN)
     filters = []
@@ -2151,36 +2145,19 @@ def rubrik_gps_sla_domain_list(client: PolarisClient, args: Dict[str, Any]) -> C
             "text": str(show_cluster_slas_only).lower()
         })
 
-    if not limit or limit <= 0 or limit > 1000:
-        raise ValueError(ERROR_MESSAGES['INVALID_LIMIT'].format(limit))
+    nodes = list(client.list_sla_domains(filters=filters, sort_order=sort_order, sort_by=sort_by,
+                                         show_protected_object_count=True))
 
-    response = client.list_sla_domains(after=next_page_token, first=limit,
-                                       filters=filters, sort_order=sort_order,
-                                       sort_by=sort_by, show_protected_object_count=True)
-
-    edges = response.get('data', {}).get('globalSlaConnection', {}).get('edges', [])
-    if not edges:
+    if not nodes:
         return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("sla domains"))
 
-    context, hr = prepare_context_hr_sla_domains_list(edges)
-
-    page_cursor = response.get('data', {}).get('globalSlaConnection', {}).get('pageInfo', {})
-    next_page_context = {
-        "next_page_token": page_cursor.get('endCursor', ''),
-        "name": "rubrik-gps-sla-domain-list",
-        "has_next_page": page_cursor.get('hasNextPage', '')
-    }
-    if next_page_context.get('has_next_page'):
-        hr += f"\n {MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}\n"
-
-    outputs = {
-        f"{OUTPUT_PREFIX['GPS_SLA_DOMAIN']}(val.id == obj.id)": context,
-        f"{OUTPUT_PREFIX['PAGE_TOKEN_SLA_DOMAIN']}(val.name == obj.name)": remove_empty_elements(next_page_context)
-    }
+    context, hr = prepare_context_hr_sla_domains_list(nodes)
 
     return CommandResults(
-        outputs=outputs,
-        raw_response=response,
+        outputs_prefix=OUTPUT_PREFIX["GPS_SLA_DOMAIN"],
+        outputs_key_field="id",
+        outputs=context,
+        raw_response=nodes,
         readable_output=hr
     )
 
@@ -2740,44 +2717,25 @@ def rubrik_gps_cluster_list_command(client: PolarisClient, args: Dict[str, Any])
     """
     name = args.get("name", "")
     cluster_type = args.get("type", "")
-    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     sort_by = args.get('sort_by', DEFAULT_CLUSTER_SORT_BY)
     sort_order = args.get('sort_order', camelize_string(DEFAULT_SORT_ORDER))
-    next_page_token = args.get('next_page_token')
     filters = {}
     if cluster_type:
         filters["type"] = argToList(cluster_type)
     if name:
         filters["name"] = argToList(name)
-    if not limit or limit <= 0 or limit > 1000:
-        raise ValueError(ERROR_MESSAGES['INVALID_LIMIT'].format(limit))
 
-    response = client.list_clusters(first=limit, sort_order=sort_order,
-                                    sort_by=sort_by, after=next_page_token, filters=filters)
-    data = response.get('data', {}).get('clusterConnection', {})
-    edges = data.get('edges', [])
-    if not edges:
+    nodes = list(client.list_clusters(sort_order=sort_order, sort_by=sort_by, filters=filters))
+    if not nodes:
         return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("clusters"))
 
-    context, hr = prepare_context_hr_cluster_list(edges)
-
-    page_cursor = data.get('pageInfo', {})
-    next_page_context = {
-        "next_page_token": page_cursor.get('endCursor', ''),
-        "name": "rubrik-gps-cluster-list",
-        "has_next_page": page_cursor.get('hasNextPage', '')
-    }
-    if next_page_context.get('has_next_page'):
-        hr += f"\n {MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}\n"
-
-    outputs = {
-        f"{OUTPUT_PREFIX['GPS_CLUSTER']}(val.id == obj.id)": context,
-        f"{OUTPUT_PREFIX['PAGE_TOKEN_GPS_CLUSTER']}(val.name == obj.name)": remove_empty_elements(next_page_context)
-    }
+    context, hr = prepare_context_hr_cluster_list(nodes)
 
     return CommandResults(
-        outputs=outputs,
-        raw_response=response,
+        outputs_prefix=OUTPUT_PREFIX['GPS_CLUSTER'],
+        outputs_key_field="id",
+        outputs=context,
+        raw_response=nodes,
         readable_output=hr
     )
 

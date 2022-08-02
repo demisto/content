@@ -39,19 +39,19 @@ get_events = GetEvents(client, options)
 
 
 def test_get_last_run():
-    assert GetEvents.get_last_run(events, {}) == {'groups': '2022-06-17T12:31:36.668000',
-                                                  'projects': '2022-06-17T12:31:36.668000',
-                                                  'events': '2022-06-17T12:31:36.668000'}
+    assert GetEvents.get_last_run(events, [events[0]], {}) == {'events': '2022-04-17T12:31:36.668000',
+                                                               'groups': '2022-06-17T12:31:36.668000',
+                                                               'projects': '2022-06-17T12:31:36.668000'}
 
-    assert GetEvents.get_last_run([], {'groups': '2022-06-17T12:31:36.668000',
-                                       'projects': '2022-06-17T12:31:36.668000',
-                                       'events': '2022-06-17T12:31:36.668000'}) == {
+    assert GetEvents.get_last_run([], [], {'groups': '2022-06-17T12:31:36.668000',
+                                           'projects': '2022-06-17T12:31:36.668000',
+                                           'events': '2022-06-17T12:31:36.668000'}) == {
                'groups': '2022-06-17T12:31:36.668000',  # noqa: E126
                'projects': '2022-06-17T12:31:36.668000',
                'events': '2022-06-17T12:31:36.668000'}
-    assert GetEvents.get_last_run(events[3:], {'groups': '2022-06-17T12:31:36.666000',
-                                               'projects': '2022-06-17T12:31:36.668000',
-                                               'events': '2022-06-17T12:31:36.668000'}) == {
+    assert GetEvents.get_last_run(events[3:], [], {'groups': '2022-06-17T12:31:36.666000',
+                                                   'projects': '2022-06-17T12:31:36.668000',
+                                                   'events': '2022-06-17T12:31:36.668000'}) == {
                'groups': '2022-06-17T12:31:36.666000',  # noqa: E126
                'projects': '2022-06-17T12:31:36.668000',
                'events': '2022-06-17T12:31:36.668000'}
@@ -73,7 +73,7 @@ def test_prepare_time_for_next():
 
 
 def test_get_sorted_events_by_type():
-    assert get_events.get_sorted_events_by_type(events_final, True, 'Group') == [
+    assert get_events.get_sorted_events_by_type(events_final, entity_type='Group') == [
         {'created_at': '2022-04-17T12:31:36.667Z',
          'details': {'action': 'add_aaa',
                      'action_category': 'aaa',
@@ -81,5 +81,3 @@ def test_get_sorted_events_by_type():
                      'add': 'aaa'},
          'entity_type': 'Group',
          'id': '1'}]
-    assert get_events.get_sorted_events_by_type(events, False) == [
-        {'created_at': '2022-06-17T12:31:36.667Z', 'id': '99'}]

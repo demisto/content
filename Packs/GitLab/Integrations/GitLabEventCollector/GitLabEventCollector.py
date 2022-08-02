@@ -31,27 +31,25 @@ class GetEvents(IntegrationGetEvents):
         return temp_time.isoformat()
 
     @staticmethod
-    def get_sorted_events_by_type(events: list, search_in: bool, entity_type: str = '') -> list:
-        if search_in:
-            filtered_events = [event for event in events if event.get('entity_type') == entity_type]
-        else:
-            filtered_events = [event for event in events if 'entity_type' not in event]
+    def get_sorted_events_by_type(events: list, search_in: bool = False, entity_type: str = '') -> list:
+        filtered_events = [event for event in events if search_in or event.get('entity_type') == entity_type]
         filtered_events.sort(key=lambda k: k.get('id'))
         return filtered_events
 
     @staticmethod
-    def get_last_run(events: list, last_run: dict) -> dict:  # type: ignore
+    def get_last_run(events: list, audit: list, last_run: dict) -> dict:  # type: ignore
         """
         Check if the dockerfile has the latest tag and if there is a new version of it.
         Args:
         events (list): list of the event from the api
+        audit (list): list of the instance audit events
         last_run (dict): the dictionary containing the last run times for the event types
         Returns:
         A dictionary with the times for the next run
         """
-        groups = GetEvents.get_sorted_events_by_type(events, True, 'Group')
-        projects = GetEvents.get_sorted_events_by_type(events, True, 'Project')
-        user_events = GetEvents.get_sorted_events_by_type(events, False)
+        groups = GetEvents.get_sorted_events_by_type(events, entity_type='Group')
+        projects = GetEvents.get_sorted_events_by_type(events, entity_type='Project')
+        audit_events = GetEvents.get_sorted_events_by_type(audit, search_in=True)
         if not groups:
             groups_time = last_run['groups']
         else:
@@ -60,15 +58,20 @@ class GetEvents(IntegrationGetEvents):
             projects_time = last_run['projects']
         else:
             projects_time = GetEvents.prepare_time_for_next(projects[-1]['created_at'])
-        if not user_events:
+        if not audit_events:
             events_time = last_run['events']
         else:
-            events_time = GetEvents.prepare_time_for_next(user_events[-1]['created_at'])
+            events_time = GetEvents.prepare_time_for_next(audit_events[-1]['created_at'])
         return {'groups': groups_time, 'projects': projects_time, 'events': events_time}
 
     def _iter_events(self):  # pragma: no cover
         self.client.set_request_filter(None)
-        response = self.call()
+        # If one endpoint fails don't fail everything
+        try:
+            response = self.call()
+        except Exception as exc:
+            demisto.info(f'Failed to get a response from the endpoint: {self.client.request.url}.\nError:\n{str(exc)}')
+            return []
         events: list = response.json()
         events.sort(key=lambda k: k.get('created_at'))
         if not events:
@@ -144,9 +147,9 @@ def main() -> None:  # pragma: no cover
                 get_events.client.event_type = event_type  # type: ignore
                 events.extend(get_events.run())
         get_events.client.event_type = 'events'  # type: ignore
-        get_events.client.request.url = urljoin(url + 'events')
+        get_events.client.request.url = urljoin(url + 'audit_events')
         get_events.client.page = 1  # type: ignore
-        events.extend(get_events.run())
+        audit = (get_events.run())
 
         if command == 'test-module':
             return_results('ok')
@@ -156,15 +159,15 @@ def main() -> None:  # pragma: no cover
 
         if command == 'gitlab-get-events':
             command_results = CommandResults(
-                readable_output=tableToMarkdown('gitlab Logs', events, headerTransform=pascalToSpace),
+                readable_output=tableToMarkdown('gitlab Logs', events + audit, headerTransform=pascalToSpace),
                 raw_response=events,
             )
             return_results(command_results)
         elif command == 'fetch-events':
-            demisto.setLastRun(get_events.get_last_run(events, last_run))  # type: ignore
             should_push_events = True
         if should_push_events:
-            send_events_to_xsiam(events, demisto_params.get('vendor', 'gitlab'),
+            demisto.setLastRun(get_events.get_last_run(events, audit, last_run))  # type: ignore
+            send_events_to_xsiam(events + audit, demisto_params.get('vendor', 'gitlab'),
                                  demisto_params.get('product', 'gitlab'))
 
     except Exception as exc:

@@ -20,7 +20,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''
-MAX_ALERTS_PAGE_SIZE = 10000
+MAX_ALERTS_PAGE_SIZE = 1000
 ALERT_CREATION_TIME = 'alertCreationTime'
 DEFNDER_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 SECURITY_SCOPE = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
@@ -266,6 +266,27 @@ class DefenderClient(IntegrationEventsClient):
 class DefenderGetEvents(IntegrationGetEvents):
     client: DefenderClient
 
+    def _split_evidence(self, org_alerts):
+        """
+        Extract evidence and create new alert entry that will contain the alert & evidence, for each evidence.
+        """
+        res: List[Dict] = []
+        if not org_alerts:
+            return res
+
+        for alert in org_alerts:
+            evidences = alert.pop('evidence', [])
+            if evidences:
+                for evidence in evidences:
+                    updated_alert = alert.copy()
+                    updated_alert['evidence'] = evidence
+                    res.append(updated_alert)
+            else:
+                alert['evidence'] = {}
+                res.append(alert)
+
+        return res
+
     def _iter_events(self):
 
         self.client.authenticate()
@@ -273,6 +294,7 @@ class DefenderGetEvents(IntegrationGetEvents):
 
         response = self.client.call(self.client.request)
         value = response.json().get('value', [])
+        value = self._split_evidence(value)
 
         demisto.debug(f'getting {len(value)} alerts from Defender Api')
         return [value]
@@ -352,7 +374,6 @@ def main(command: str, demisto_params: dict):
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

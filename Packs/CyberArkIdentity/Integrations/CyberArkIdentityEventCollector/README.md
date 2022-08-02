@@ -1,4 +1,4 @@
-CyberArk Identity logs event collector integration for Cortex XSIAM.
+CyberArk Identity log event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 22.4 of CyberArk Identity Event Collector.
 
 ## Configure CyberArk Identity Event Collector on Cortex XSIAM
@@ -7,22 +7,22 @@ This integration was integrated and tested with version 22.4 of CyberArk Identit
 2. Search for CyberArk Identity Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                                                 | **Required** |
-    |---------------------------------------------------------------------------------| --- | --- |
-    | Server URL | CyberArk Identity URL (https://{{tenant}}.my.idaptive.app).                     | True |
-    | App ID | The application ID from where to fetch the logs.                                | True |
-    | User name | The user name (e.g.`admin@example.com`).                                        | True |
-    | Password | The password.                                                                   | True |
-    | The product corresponding to the integration that originated the events | The name of the product to name the dataset after.                              | False        |
-    | The vendor corresponding to the integration that originated the events | The name of the vendor to name the dataset after.                               | False        |
-    | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). Default is 3 days. | The period (in days) to retrieve events from, if no time is saved in the system | True |
-    | The maximum number of events per fetch. Default is 100. | The amount of items to retrieve from CyberArk's API per request.                | True |
-    | Trust any certificate (not secure) | When selected, certificates are not checked.                                    | False |
-    | proxy | Use system proxy settings.                                                      | False |
+    | **Parameter** | **Description**                                                    | **Required** |
+    |------------------------------------------------------------------------------| --- | --- |
+    | Server URL | The CyberArk Identity URL (https://{{tenant}}.my.idaptive.app).       | True |
+    | App ID | The application ID to fetch the logs from.                                | True |
+    | User name | The SIEM user name (for example `admin@example.com`).                  | True |
+    | Password | The SIEM password.                                                      | True |
+    | Product name | The name of the product to name the dataset after.                  | False |
+    | Vendor name | The name of the vendor to name the dataset after.                    | False |
+    | First fetch time  | The period to retrieve events for. <br/>format: &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months. <br/>Default is 3 days. | True |
+    | Maximum number of events per fetch | The number of items to retrieve per request from CyberArk's API. | True |
+    | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
+    | proxy | Use system proxy settings.                                                 | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSIAM Alerts War Room, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM Alerts War Room as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cyberarkidentity-get-events
 ***
@@ -34,11 +34,11 @@ Returns a list of events
 `cyberarkidentity-get-events`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| should_push_events | Set this argument to True in orfer to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
-| limit | The maximum number of incidents per fetch. Default is 100. | Optional | 
-| from | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). Default is 3 days. | Optional | 
+| **Argument Name** | **Description**                                                                                                    | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------| --- |
+| should_push_events | Set this argument to True to create events, otherwise events will only be displayed. Default is False.             | Required |
+| limit | The maximum number of events per fetch. Default is 1000.                                                           | Optional | 
+| from | The first fetch time (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days. | Optional | 
 
 
 #### Context Output
