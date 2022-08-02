@@ -8,7 +8,7 @@ import os
 from unittest import mock
 import pytest
 from CheckPointSandBlast import Client,\
-    query_command, quota_command, upload_command, download_command
+    file_command, query_command, quota_command, upload_command, download_command
 
 
 HOST = 'https://te.checkpoint.com'
@@ -58,6 +58,31 @@ def mock_client() -> Client:
         host=HOST,
         api_key=API_KEY,
     )
+
+
+def test_file_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Use generic file command to find out if a file hash is malicious.
+    Given:
+    -    The user has filled in the required arguments.
+    When:
+    -    file is called.
+    Then:
+    -   Ensure that the score in dbotscore is correct.
+    """
+    mock_response = load_mock_response('query_response.json')
+    requests_mock.post(
+        f'{BASE_URL}{QUERY_PATH}',
+        json=mock_response
+    )
+
+    args = {
+        'file': 'da855ff838250f45d528a5a05692f14e',
+    }
+    command_results = file_command(mock_client, args)
+
+    assert command_results[0].indicator.dbot_score.score == 3
 
 
 def test_query_command(requests_mock, mock_client):

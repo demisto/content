@@ -278,6 +278,81 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
+def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+    Get file_hash list from user input and check if they are in the correct format.
+    Client will make a Query request with every file_hash,
+    if the file_hash exists in the server a dbot_score will be calculated.
+
+    Args:
+        client (Client): Connection to the client class from which we can run the desired request.
+        args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request.
+
+    Raises:
+        ValueError: In case the file_hash isn't
+
+    Returns:
+        List[CommandResults]: Indicator for every file_hash
+    """
+    files = argToList(args['file'])
+    command_results: List[CommandResults] = []
+
+    for file_hash in files:
+        try:
+            hash_type = get_hash_type(file_hash)
+
+            if hash_type not in ('md5', 'sha1', 'sha256'):
+                raise ValueError(f'Hash "{file_hash}" is not of type SHA-256, SHA-1 or MD5')
+
+            raw_response = client.query_request(
+                features=['te', 'av', 'extraction'],
+                reports=['xml', 'summary'],
+                method='pdf',
+                **{hash_type: file_hash}
+            )
+
+            label = dict_safe_get(raw_response, ['response', 'status', 'label'])
+
+            if label not in ('FOUND', 'PARTIALLY_FOUND'):
+                message = dict_safe_get(raw_response, ['response', 'status', 'message'])
+                command_results.append(CommandResults(readable_output=f'File not found: "{file_hash}"\n{message}'))
+                continue
+
+            outputs = remove_empty_elements({
+                'MD5': dict_safe_get(raw_response, ['response', 'md5']),
+                'SHA1': dict_safe_get(raw_response, ['response', 'sha1']),
+                'SHA256': dict_safe_get(raw_response, ['response', 'sha256']),
+                'Malicious': {
+                    'Vendor': 'CheckPointSandBlast',
+                    'Description': dict_safe_get(raw_response, ['response', 'av', 'malware_info']),
+                }
+            })
+            readable_output = tableToMarkdown(
+                f'Results of file hash: "{file_hash}"',
+                outputs,
+                headers=[
+                    'MD5',
+                    'SHA1',
+                    'SHA256',
+                    'Malicious',
+                ]
+            )
+            file_indicator = get_file_indicator(file_hash, hash_type, raw_response)
+
+            command_results.append(CommandResults(
+                readable_output=readable_output,
+                outputs_prefix=outputPaths.get('file'),
+                indicator=file_indicator,
+                outputs=outputs,
+                raw_response=raw_response,
+            ))
+
+        except Exception as e:
+            command_results.append(CommandResults(readable_output=f'Could not process file: "{file_hash}"\n{str(e)}'))
+
+    return command_results
+
+
 def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Query information of a file.
@@ -339,12 +414,10 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     output = raw_output.get('response', {'': ''})
     readable_output = get_analysis_readable_output(features, output, 'Query')
     output = get_analysis_context_output(output)
-    file_indicator = get_file_indicator(file_name, file_hash, digest, raw_output)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='SandBlast.Query',
-        indicator=file_indicator,
         outputs_key_field=['MD5', 'SHA1', 'SHA256'],
         outputs=output,
         raw_response=raw_output,
@@ -778,14 +851,13 @@ def get_dbotscore(response: Dict[str, Any]) -> int:
     return score
 
 
-def get_file_indicator(file_name: str, file_hash: str, digest: str, response: Dict[str, Any]) -> Common.File:
+def get_file_indicator(file_hash: str, hash_type: str, response: Dict[str, Any]) -> Common.File:
     """
     Returns a file indicator that could potentially be malicious and will be checked for reputation.
 
     Args:
-        file_name (str): File name
         file_hash (str): File hash value
-        digest (str): File hash name.
+        hash_type (str): File hash type.
         response (Dict[str, Any]): Response received from the API request.
 
     Returns:
@@ -795,15 +867,23 @@ def get_file_indicator(file_name: str, file_hash: str, digest: str, response: Di
         indicator=file_hash,
         indicator_type=DBotScoreType.FILE,
         integration_name='CheckPointSandBlast',
-        reliability=DBotScoreReliability.B,
+        reliability=DBotScoreReliability.C,
         score=get_dbotscore(response),
     )
+
+    file_name = dict_safe_get(response, ['response', 'file_name'])
+
+    if not file_name:
+        file_type = None
+
+    else:
+        file_type = os.path.splitext(file_name)[1]
 
     file_indicator = Common.File(
         dbot_score=dbot_score,
         name=file_name,
-        file_type=os.path.splitext(file_name)[1],
-        **{digest: file_hash}
+        file_type=file_type,
+        **{hash_type: file_hash}
     )
 
     return file_indicator
