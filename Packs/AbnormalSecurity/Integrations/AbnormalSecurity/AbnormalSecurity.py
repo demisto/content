@@ -522,7 +522,7 @@ def submit_false_positive_report_command(client, args):
     portal_link = str(args.get('portal_link;', ''))
     response = client.submit_false_positive_report_request(portal_link)
     command_results = CommandResults(
-        readable_output= response,
+        readable_output=response,
         raw_response=response
     )
 
