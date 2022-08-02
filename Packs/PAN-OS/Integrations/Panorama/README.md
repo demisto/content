@@ -3131,30 +3131,6 @@ Checks the status of a logs query.
 >| 1283 | Pending |
 
 
-#### Command example
-```!pan-os-query-logs log-type=traffic number_of_logs=1```
-#### Context Example
-```json
-{
-    "Panorama": {
-        "Monitor": {
-            "JobID": "1287",
-            "LogType": "traffic",
-            "Message": "query job enqueued with jobid 1287",
-            "Status": "Pending"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Query Logs:
->|JobID|Status|
->|---|---|
->| 1287 | Pending |
-
-
 #### Base Command
 
 `pan-os-check-logs-status`
