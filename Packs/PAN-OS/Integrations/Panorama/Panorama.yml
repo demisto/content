@@ -1460,14 +1460,14 @@ script:
       name: profile_setting
     - auto: PREDEFINED
       defaultValue: bottom
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument.
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
       - after
       - top
       - bottom
-    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument.
+    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
     description: Creates a policy rule.
     execution: true
@@ -1561,14 +1561,14 @@ script:
       name: tags
     - auto: PREDEFINED
       defaultValue: bottom
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument.
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
       - after
       - top
       - bottom
-    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument.
+    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
     description: Creates a custom block policy rule.
     execution: true
@@ -1604,7 +1604,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument.
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
@@ -1612,7 +1612,7 @@ script:
       - top
       - bottom
       required: true
-    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument.
+    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
     - auto: PREDEFINED
       description: The rule location. Mandatory for Panorama instances.
@@ -4815,14 +4815,14 @@ script:
       name: profile_setting
     - auto: PREDEFINED
       defaultValue: bottom
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument.
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
       - after
       - top
       - bottom
-    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument.
+    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
     description: Creates a policy rule.
     execution: true
@@ -4915,14 +4915,14 @@ script:
       name: tags
     - auto: PREDEFINED
       defaultValue: bottom
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument.
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
       - after
       - top
       - bottom
-    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument.
+    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
     description: Creates a custom block policy rule.
     execution: true
@@ -4957,7 +4957,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument.
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
@@ -4965,7 +4965,7 @@ script:
       - top
       - bottom
       required: true
-    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument.
+    - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
     - auto: PREDEFINED
       description: The rule location. Mandatory for Panorama instances.
