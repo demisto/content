@@ -1146,7 +1146,7 @@ tags:
 - enhancement
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: demisto/python3:3.10.5.31928
 runas: DBotWeakRole
 runonce: false
 tests:

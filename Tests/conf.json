@@ -3168,6 +3168,21 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "playbook-GoogleChronicleBackstoryRetrohunts-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "playbook-GoogleChronicleBackstoryRules-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "playbook-GoogleChronicleBackstoryReferenceList-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_currently__active",
             "playbookID": "playbook-feodotrackeripblock_test_currently__active",

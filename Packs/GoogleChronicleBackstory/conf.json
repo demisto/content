@@ -39,6 +39,21 @@
       "integrations": "Google Chronicle Backstory",
       "playbookID": "Google Chronicle Backstory List Rules - Test",
       "fromversion": "5.0.0"
+    },
+    {
+      "integrations": "Google Chronicle Backstory",
+      "playbookID": "playbook-GoogleChronicleBackstoryRetrohunts-Test",
+      "fromversion": "5.0.0"
+    },
+    {
+      "integrations": "Google Chronicle Backstory",
+      "playbookID": "playbook-GoogleChronicleBackstoryRules-Test",
+      "fromversion": "5.0.0"
+    },
+    {
+      "integrations": "Google Chronicle Backstory",
+      "playbookID": "playbook-GoogleChronicleBackstoryReferenceList-Test",
+      "fromversion": "5.0.0"
     }
   ],
   "skipped_tests": {
