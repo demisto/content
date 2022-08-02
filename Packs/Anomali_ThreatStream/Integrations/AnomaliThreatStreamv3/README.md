@@ -59,6 +59,7 @@ Checks the reputation of the given IP address.
 | ip | The IP to check. | Required | 
 | threshold | If confidence is greater than the threshold the IP address is considered malicious, otherwise it is considered good. This argument overrides the default IP threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
+| threat_model_association | Note: if set to true, additional 6 API calls will be performed. Possible values are: True, False. Default is False. | Optional | 
 
 
 #### Context Output
@@ -112,6 +113,7 @@ Checks the reputation of the given domain name.
 | domain | The domain name to check. | Required | 
 | threshold | If confidence is greater than the threshold the Domain is considered malicious, otherwise it is considered good. This argument overrides the default Domain threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
+| threat_model_association | Note: if set to true, additional 6 API calls will be performed. Possible values are: True, False. Default is False. | Optional | 
 
 
 #### Context Output
@@ -240,6 +242,7 @@ Checks the reputation of the given hash of the file.
 | file | The hash of file to check. | Required | 
 | threshold | If the confidence is greater than the threshold the hash of the file is considered malicious, otherwise it is considered good. This argument overrides the default file threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
+| threat_model_association | Note: if set to true, additional 6 API calls will be performed. Possible values are: True, False. Default is False. | Optional | 
 
 
 #### Context Output
@@ -1355,3 +1358,176 @@ for time in UTC time. |
 - Remove the **default_threshold** integration parameter.
 - Add integration parameter for global threshold in ***ip***, ***domain***, ***file***, ***url***, and ***threatstream-email-reputation*** commands. 
 - Add ***Include inactive results*** checkbox in integration settings for the ability to get inactive results.
+### threatstream-search-intelligence
+***
+Return filtered intelligence from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
+
+
+#### Base Command
+
+`threatstream-search-intelligence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| value | The value of an intelligence. | Optional | 
+| uuid | The uuid of an intelligence. When several uuids stated, an “OR” operator is used. | Optional | 
+| type | The type of an intelligence. Possible values are: domain, email, ip, md5, string, url. | Optional | 
+| itype | The itype of an intelligence. | Optional | 
+| status | The status of an intelligence. Possible values are: active, inactive, falsepos. | Optional | 
+| tags | The tags of an intelligence. Comma-seperated list. When several tags stated, an “OR” operator is used. | Optional | 
+| asn | The ASN of an intelligence. | Optional | 
+| confidence | The confidence of an intelligence. Input will be operator then value, I.e. “gt 65” or “lt 85”. If only value is stated, then we use exact. | Optional | 
+| threat_type | The threat type of an intelligence. | Optional | 
+| is_public | Is the intelligence public or not. | Optional | 
+| query | Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, &lt;, &gt;, and so on) and not the descriptive form (exact, lt, gt, and so on). For more information, see page 19 in API documentation. | Optional | 
+| update_id_gt | If specified, then it is recommended to use order_by=update_id. | Optional | 
+| order_by | How to order the results. | Optional | 
+| limit | The maximum number of results to return from ThreatStream. Default is 50. Default is 50. | Optional | 
+| page | Page number to get result from. Needs to be used with page_size argument. | Optional | 
+| page_size | The page size of the returned results. Needs to be used with the page argument. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.Intelligence.SourceCreated | String | The Source from which the intelligence was created. | 
+| ThreatStream.Intelligence.Status | String | The status of the intelligence. | 
+| ThreatStream.Intelligence.IType | String | The itype of the intelligence. | 
+| ThreatStream.Intelligence.ExpirationTS | String | The Expiration timestamp  of the intelligence. | 
+| ThreatStream.Intelligence.IP | String | The IP  of the intelligence. | 
+| ThreatStream.Intelligence.IsEditable | Boolean | Is the Intelligence editable. | 
+| ThreatStream.Intelligence.FeedID | String | The feed ID of the Intelligence. | 
+| ThreatStream.Intelligence.UpdateID | String | The update ID of the Intelligence | 
+| ThreatStream.Intelligence.Value | String | The value of the Intelligence. | 
+| ThreatStream.Intelligence.IsPublic | Boolean | Is the Intelligence public. | 
+| ThreatStream.Intelligence.ThreatType | String | The threat type of the Intelligence. | 
+| ThreatStream.Intelligence.WorkGroups | String | The work groups of the Intelligence. | 
+| ThreatStream.Intelligence.Confidence | String | The confidence of the Intelligence. | 
+| ThreatStream.Intelligence.UUID | String | The uuid of the Intelligence. | 
+| ThreatStream.Intelligence.RetinaConfidence | String | The retina confidence of the Intelligence. | 
+| ThreatStream.Intelligence.TrustedCircleIDs | String | The trusted circleIDs of the Intelligence. | 
+| ThreatStream.Intelligence.ID | String | The id of the Intelligence. | 
+| ThreatStream.Intelligence.Source | String | The source of the Intelligence. | 
+| ThreatStream.Intelligence.OwnerOrganizationID | String | The owner organization ID of the intelligence. | 
+| ThreatStream.Intelligence.ImportSessionID | String | The ImportSessionID of the Intelligence. | 
+| ThreatStream.Intelligence.SourceModified | Boolean | Is the source modified or not. | 
+| ThreatStream.Intelligence.Type | String | The type of the Intelligence. | 
+| ThreatStream.Intelligence.Description | String | The description of the Intelligence. | 
+| ThreatStream.Intelligence.Tags | String | The tags of the Intelligence. | 
+| ThreatStream.Intelligence.Threatscore | String | The threat score of the Intelligence. | 
+| ThreatStream.Intelligence.Latitude | String | The latitude of the Intelligence. | 
+| ThreatStream.Intelligence.Longitude | String | The longitude of the Intelligence. | 
+| ThreatStream.Intelligence.Modified | String | When was the intelligence modified. | 
+| ThreatStream.Intelligence.Organization | String | the organization of the Intelligence. | 
+| ThreatStream.Intelligence.ASN | Number | The ASN of the intelligence. | 
+| ThreatStream.Intelligence.CreatedTime | String | When was the intelligence created. | 
+| ThreatStream.Intelligence.TLP | String | The TLP of the intelligence. | 
+| ThreatStream.Intelligence.IsAnonymous | Boolean | Is the intelligence anonymous. | 
+| ThreatStream.Intelligence.Country | String | The country of the intelligence. | 
+| ThreatStream.Intelligence.SourceReportedConfidence | String | The confidence of the reported source. | 
+| ThreatStream.Intelligence.Subtype | String | The subtype of the intelligence. | 
+| ThreatStream.Intelligence.ResourceURI | String | The resource URI of the intelligence | 
+| ThreatStream.Intelligence.Severity | String | The severity of the intelligence. | 
+
+#### Command example
+```!threatstream-search-intelligence limit=2 status=inactive value=1.2.4.5```
+#### Context Example
+```json
+{
+    "ThreatStream": {
+        "Intelligence": [
+            {
+                "ASN": "",
+                "Confidence": 100,
+                "Country": null,
+                "CreatedTime": "2022-04-21T14:27:51.242Z",
+                "Description": null,
+                "ExpirationTS": "2022-07-20T14:27:51.041Z",
+                "FeedID": 0,
+                "ID": 355250247,
+                "IP": "1.2.4.5",
+                "IType": "c2_ip",
+                "ImportSessionID": null,
+                "IsAnonymous": false,
+                "IsEditable": false,
+                "IsPublic": true,
+                "Latitude": null,
+                "Longitude": null,
+                "Modified": "2022-07-20T14:30:02.307Z",
+                "Organization": "",
+                "OwnerOrganizationID": 67,
+                "ResourceURI": "/api/v2/intelligence/355250247/",
+                "RetinaConfidence": -1,
+                "Severity": "medium",
+                "Source": "Analyst",
+                "SourceCreated": null,
+                "SourceModified": null,
+                "SourceReportedConfidence": 100,
+                "Status": "inactive",
+                "Subtype": null,
+                "TLP": null,
+                "Tags": "abc,feb3fbcf-d18c-4a1a-89af-fbe054e16f6c,Playboook_source_without_approval_on_cloud",
+                "ThreatType": "c2",
+                "Threatscore": 70,
+                "TrustedCircleIDs": null,
+                "Type": "ip",
+                "UUID": "3e141a49-6fc9-4567-8efb-919565a39752",
+                "UpdateID": 940700580,
+                "Value": "1.2.4.5",
+                "WorkGroups": []
+            },
+            {
+                "ASN": "",
+                "Confidence": 100,
+                "Country": null,
+                "CreatedTime": "2022-04-21T14:18:13.074Z",
+                "Description": null,
+                "ExpirationTS": "2022-07-20T14:18:13.044Z",
+                "FeedID": 0,
+                "ID": 355250241,
+                "IP": "1.2.4.5",
+                "IType": "c2_ip",
+                "ImportSessionID": null,
+                "IsAnonymous": false,
+                "IsEditable": false,
+                "IsPublic": true,
+                "Latitude": null,
+                "Longitude": null,
+                "Modified": "2022-07-20T14:20:02.201Z",
+                "Organization": "",
+                "OwnerOrganizationID": 70,
+                "ResourceURI": "/api/v2/intelligence/355250241/",
+                "RetinaConfidence": -1,
+                "Severity": "high",
+                "Source": "Analyst",
+                "SourceCreated": null,
+                "SourceModified": null,
+                "SourceReportedConfidence": 100,
+                "Status": "inactive",
+                "Subtype": null,
+                "TLP": null,
+                "Tags": "Playboook_source_without_approval_on_cloud",
+                "ThreatType": "c2",
+                "Threatscore": 70,
+                "TrustedCircleIDs": null,
+                "Type": "ip",
+                "UUID": "15cb41a2-3a0a-4bbf-b056-a0b87232807c",
+                "UpdateID": 940700059,
+                "Value": "1.2.4.5",
+                "WorkGroups": []
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### The intelligence results
+>|Confidence|CreatedTime|ExpirationTS|FeedID|ID|IP|IType|IsAnonymous|IsEditable|IsPublic|Modified|OwnerOrganizationID|ResourceURI|RetinaConfidence|Severity|Source|SourceReportedConfidence|Status|Tags|ThreatType|Threatscore|Type|UUID|UpdateID|Value|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 100 | 2022-04-21T14:27:51.242Z | 2022-07-20T14:27:51.041Z | 0 | 355250247 | 1.2.4.5 | c2_ip | false | false | true | 2022-07-20T14:30:02.307Z | 67 | /api/v2/intelligence/355250247/ | -1 | medium | Analyst | 100 | inactive | abc,feb3fbcf-d18c-4a1a-89af-fbe054e16f6c,Playboook_source_without_approval_on_cloud | c2 | 70 | ip | 3e141a49-6fc9-4567-8efb-919565a39752 | 940700580 | 1.2.4.5 |
+>| 100 | 2022-04-21T14:18:13.074Z | 2022-07-20T14:18:13.044Z | 0 | 355250241 | 1.2.4.5 | c2_ip | false | false | true | 2022-07-20T14:20:02.201Z | 70 | /api/v2/intelligence/355250241/ | -1 | high | Analyst | 100 | inactive | Playboook_source_without_approval_on_cloud | c2 | 70 | ip | 15cb41a2-3a0a-4bbf-b056-a0b87232807c | 940700059 | 1.2.4.5 |
+

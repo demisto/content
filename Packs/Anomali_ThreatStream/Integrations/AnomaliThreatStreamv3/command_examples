@@ -1,0 +1,2 @@
+!threatstream-search-intelligence limit=2 status=inactive value=1.2.4.5
+!ip=23.98.23.98 threat_model_association=True
