@@ -1318,7 +1318,7 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
     return [enrich_single_asset(asset) for asset in assets]
 
 
-def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) -> int:
+def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str], first_fetch: str, client: Client) -> int:
     """
     Receives the highest offense ID saved from last run, and user query.
     Checks if user query has a limitation for a minimum ID.
@@ -1327,9 +1327,13 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) 
     Args:
         highest_offense_id (int): Minimum ID to fetch offenses by from last run.
         user_query (Optional[str]): User query for QRadar service.
+        first_fetch (str): First fetch timestamp.
+        client (Client): Client to perform the API calls.
     Returns:
         (int): The Minimum ID to fetch offenses by.
     """
+    if not highest_offense_id:
+        highest_offense_id = get_min_id_from_first_fetch(first_fetch, client)
     if user_query:
         id_query = ID_QUERY_REGEX.search(user_query)
         if id_query:
@@ -1355,7 +1359,6 @@ def get_min_id_from_first_fetch(first_fetch: str, client: Client):
         (int): The ID of the earliest offense created within the first_fetch time range.
     """
     filter_fetch_query = f'start_time>{str(convert_start_fetch_to_milliseconds(first_fetch))}'
-    # print_debug_msg(filter_fetch_query)
     raw_offenses = client.offenses_list(filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
     return int(raw_offenses[0].get('id')) if raw_offenses else 0
 
@@ -1363,7 +1366,7 @@ def get_min_id_from_first_fetch(first_fetch: str, client: Client):
 def convert_start_fetch_to_milliseconds(fetch_start_time: str):
     """
     Convert a timestamp string to milliseconds
-    Args:t
+    Args:
         fetch_start_time (str): First fetch timestamp.
 
     Returns:
@@ -1371,7 +1374,7 @@ def convert_start_fetch_to_milliseconds(fetch_start_time: str):
     """
     date = dateparser.parse(fetch_start_time, settings={'TIMEZONE': 'UTC'})
     if date is None:
-        # if d is None it means dateparser failed to parse it
+        # if date is None it means dateparser failed to parse it
         raise ValueError(f'Invalid first_fetch format: {fetch_start_time}')
     return int(date.timestamp() * 1000)
 
@@ -1700,10 +1703,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
         (List[Dict], int): List of the incidents, and the new highest ID for next fetch.
         (None, None): if reset was triggered
     """
-    if not last_highest_id:
-        last_highest_id = get_min_id_from_first_fetch(first_fetch, client)
-
-    offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query)
+    offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query, first_fetch, client)
 
     user_query = update_user_query(user_query)
 
