@@ -272,5 +272,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- FireEye HX Test
+- FireEyeHX_v2
 fromversion: 5.5.0
