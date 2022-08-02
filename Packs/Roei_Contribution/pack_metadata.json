@@ -1,0 +1,21 @@
+{
+    "name": "Roei_contribution",
+    "description": "Testing indicatorField as incidentField",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "rshunim",
+    "url": "",
+    "email": "",
+    "created": "2022-08-02T10:40:24Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "rshunim"
+    ]
+}
