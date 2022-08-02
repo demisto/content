@@ -119,3 +119,4 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os xpath=“/config/devices/entry[@name=‘localhost.localdomain’]/template/entry[@name=‘test’]/config/devices/entry[@name=‘localhost.localdomain’]/network/profiles/zone-protection-profile/entry[@name=‘test’]/scan-white-list/entry[@name=‘bla’]/ipv4" type=config action=edit element=“<ipv4>1.1.1.1</ipv4>”
 !pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60
 !pan-os-query-logs log-type=traffic number_of_logs=1 polling=true interval_in_seconds=5 timeout=120
+!pan-os-query-logs log-type=traffic number_of_logs=1
