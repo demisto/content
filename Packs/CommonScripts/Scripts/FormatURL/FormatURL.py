@@ -106,35 +106,33 @@ def replace_protocol(url_: str) -> str:
 
 def remove_special_chars_from_start_and_end_of_url(url_: str) -> str:
     """
-    Removes special characters from the beginning and end of URL if there are any.
+    Removes brackets and quotes characters from the beginning and the end of the URL if there are any.
     Args:
         url_ (str): URL to remove the special characters from.
-
     Returns:
-        (str): URL without special characters, if needed to remove, else the URL itself.
+        (str): URL with characters brackets, if needed to remove, else the URL itself.
     """
-    opening_brackets = {
-        "[",
-        "(",
-        "{"
+    brackets = {
+        "[": "]",
+        "(": ")",
+        "{": "}"
     }
-    closing_brackets = {
-        "]",
-        ")",
-        "}"
-    }
+
     quotes = {
         "'": "'",
         '"': '"'
     }
-    while url_[0] in opening_brackets or url_[0] in quotes:
-        if url_[0] in quotes:
-            if url_[-1] == quotes[url_[0]]:
-                url_ = url_[1:-1]
-        elif url_[-1] in closing_brackets:
+    while url_[0] in brackets or url_[0] in quotes:
+        if brackets.get(url_[0]) == url_[-1]:
             url_ = url_[1:-1]
         else:
             url_ = url_[1:]
+
+    if url_.count("/") < 3:
+        # If url has no path only letters are allowed in tld
+        while url_[-1] in brackets.values() or url_ in quotes:
+            url_ = url_[:-1]
+
     return url_
 
 
