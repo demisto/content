@@ -265,8 +265,7 @@ class PackManager:
         yield from self._pack_id_to_pack_metadata.values()
 
     def is_test_skipped_in_pack_ignore(self, test_file_name: str, pack_id: str):
-        ignored_test_playbooks_for_pack = self._pack_id_to_skipped_test_playbooks[pack_id]
-        return test_file_name in ignored_test_playbooks_for_pack
+        return test_file_name in self._pack_id_to_skipped_test_playbooks[pack_id]
 
     @staticmethod
     def relative_to_packs(path: Path | str):
