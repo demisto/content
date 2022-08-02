@@ -64,3 +64,6 @@ ignore=IM111
 
 [file:classifier-Chronicle.json]
 ignore=BA101
+
+[file:conf.json]
+ignore=BA102
