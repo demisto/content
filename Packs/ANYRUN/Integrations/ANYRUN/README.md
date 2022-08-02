@@ -347,6 +347,9 @@ Submit a file or url for analysis.
 | opt_network_connect | Network connection state. Possible values are: true, false. Default is true. | Optional | 
 | opt_kernel_heavyevasion | Heavy evasion option. Possible values are: true, false. Default is false. | Optional | 
 | opt_privacy_type | Privacy settings for generated task. Possible values are: owner, bylink, public. Default is owner. | Optional | 
+| polling | Whether to use polling. | Optional | 
+| interval_in_seconds | The interval (in seconds) of when to next poll for results. | Optional | 
+| timeout | The timeout (in seconds) of the polling. | Optional | 
 
 
 #### Context Output
@@ -421,6 +424,11 @@ Submit a file or url for analysis.
 | File.SSDeep | String | SSDeep hash of the file submitted for analysis. | 
 | File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | String | For malicious files, the reason that the vendor made the decision. | 
+| Domain.Name | String | Domain name | 
+| IP.ASN | String | IP ASN | 
+| IP.Address | String | IP Address | 
+| IP.Geo.Country | String | Origin country of the IP address. | 
+| IP.Port | Number | Port number. | 
 | URL.Data | String | URL data. | 
 | URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. | 
 | URL.Malicious.Description | String | For malicious URLs, the reason that the vendor made the decision. | 
