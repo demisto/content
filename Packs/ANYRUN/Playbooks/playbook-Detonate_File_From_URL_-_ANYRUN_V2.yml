@@ -5,23 +5,24 @@ description: |-
   Detonates one or more remote files using the ANYRUN sandbox integration.
   Returns relevant reports to the War Room and file reputations to the context data.
   This type of analysis works only for direct download links.
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: b04c121d-294e-4dd0-8148-d9fe0f44be04
     type: start
     task:
       id: b04c121d-294e-4dd0-8148-d9fe0f44be04
       version: -1
-      name: ''
+      name: ""
       description: Start
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -36,8 +37,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: f7bcffdc-ba6d-4549-814c-1c2b3bda9eda
     type: regular
     task:
@@ -51,7 +52,7 @@ tasks:
       brand: ANYRUN
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
       interval_in_seconds:
         complex:
@@ -63,11 +64,12 @@ tasks:
           root: inputs.URL
           accessor: Data
       polling:
-        simple: 'true'
+        simple: "true"
       timeout:
         complex:
           root: inputs.Timeout
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -82,8 +84,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 7e59cb60-98d6-49a0-8c7f-522c1247ee73
     type: title
     task:
@@ -93,8 +95,9 @@ tasks:
       description: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -109,8 +112,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: a1d00028-5388-4ea3-8877-cb5b7fb2a5d0
     type: condition
     task:
@@ -120,21 +123,22 @@ tasks:
       description: Look for file URLs to detonate
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '5'
-      yes:
-      - '1'
+      - "5"
+      "yes":
+      - "1"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
             value:
               simple: inputs.URL
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -149,51 +153,32 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
-    taskid: 57c1be55-35b0-4527-83e8-66cc23fc33c9
+  "7":
+    id: "7"
+    taskid: c8fd4c2c-6279-4eb4-8b8a-36b69bb4d578
     type: condition
     task:
-      id: 57c1be55-35b0-4527-83e8-66cc23fc33c9
+      id: c8fd4c2c-6279-4eb4-8b8a-36b69bb4d578
       version: -1
       name: Is ANYRUN sandbox enabled?
-      description: Check if integration instance is enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      '#default#':
-      - '5'
-      yes:
-      - '6'
+      "no":
+      - "5"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: ANY.RUN
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ANYRUN
-                transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: state
-            iscontext: true
-          right:
-            value:
-              simple: active
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -228,19 +213,20 @@ inputs:
       root: URL
   required: false
   description: URL of the web file to detonate.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Interval
   value:
-    simple: '20'
+    simple: "20"
   required: false
   description: Duration for executing the polling (in seconds)
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Timeout
   value:
-    simple: '1300'
+    simple: "1300"
   required: false
-  description: The duration after which to stop polling and to resume the playbook (in seconds)
-  playbookInputQuery:
+  description: The duration after which to stop polling and to resume the playbook
+    (in seconds)
+  playbookInputQuery: null
 outputs:
 - contextPath: ANYRUN.Task.AnalysisDate
   description: Date and time the analysis was executed.
@@ -449,6 +435,3 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
-tests:
-- Detonate File From URL - ANYRUN V2 - Test
-fromversion: 6.2.0

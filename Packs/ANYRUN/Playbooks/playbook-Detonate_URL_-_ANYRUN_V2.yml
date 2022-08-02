@@ -4,23 +4,24 @@ name: Detonate URL - ANYRUN V2
 description: |-
   Detonates one or more URLs using the ANYRUN sandbox integration.
   Returns relevant reports to the War Room and url reputations to the context data.
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 23448fd0-ac86-4add-8c75-4ba42a46b482
     type: start
     task:
       id: 23448fd0-ac86-4add-8c75-4ba42a46b482
       version: -1
-      name: ''
+      name: ""
       description: Start
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -35,8 +36,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 2b572bb6-e675-4c0e-871c-70a7a4778521
     type: regular
     task:
@@ -50,7 +51,7 @@ tasks:
       brand: ANYRUN
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
       interval_in_seconds:
         complex:
@@ -62,11 +63,12 @@ tasks:
           root: inputs.URL
           accessor: Data
       polling:
-        simple: 'true'
+        simple: "true"
       timeout:
         complex:
           root: inputs.Timeout
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -81,8 +83,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 14e8fb5f-ed61-4ceb-83b5-4f76be05996e
     type: title
     task:
@@ -92,8 +94,9 @@ tasks:
       description: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -108,8 +111,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: 0be14bfe-7eaa-497e-8bae-22d012fb21fd
     type: condition
     task:
@@ -119,15 +122,15 @@ tasks:
       description: Look for URLs to detonate
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '5'
-      yes:
-      - '1'
+      - "5"
+      "yes":
+      - "1"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -135,6 +138,7 @@ tasks:
               complex:
                 root: inputs.URL
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -149,51 +153,32 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
-    taskid: 687ef7d7-ea6f-4289-8595-9d493fd94454
+  "7":
+    id: "7"
+    taskid: 23629298-bd44-498a-8d81-bb18c7da692f
     type: condition
     task:
-      id: 687ef7d7-ea6f-4289-8595-9d493fd94454
+      id: 23629298-bd44-498a-8d81-bb18c7da692f
       version: -1
       name: Is ANYRUN sandbox enabled?
-      description: Check if integration instance is enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      '#default#':
-      - '5'
-      yes:
-      - '6'
+      "no":
+      - "5"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: ANY.RUN
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ANYRUN
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -228,19 +213,20 @@ inputs:
       root: URL
   required: false
   description: URL to detonate.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Interval
   value:
-    simple: '20'
+    simple: "20"
   required: false
   description: Duration for executing the polling (in seconds)
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Timeout
   value:
-    simple: '1300'
+    simple: "1300"
   required: false
-  description: The duration after which to stop polling and to resume the playbook (in seconds)
-  playbookInputQuery:
+  description: The duration after which to stop polling and to resume the playbook
+    (in seconds)
+  playbookInputQuery: null
 outputs:
 - contextPath: ANYRUN.Task.AnalysisDate
   description: Date and time the analysis was executed.
@@ -422,6 +408,3 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
-tests:
-- Detonate URL - ANYRUN V2 - Test
-fromversion: 6.2.0
