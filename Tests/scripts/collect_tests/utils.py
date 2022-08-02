@@ -101,7 +101,7 @@ class Machine(Enum):
 
         return tuple(result)
 
-    def __repr__(self):
+    def __str__(self):
         return f'Server {self.value}'
 
 
