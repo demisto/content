@@ -1350,13 +1350,13 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str], 
 def get_min_id_from_first_fetch(first_fetch: str, client: Client):
     """
     Receives first_fetch integration param
-    and retrieve the lowest id (earliest offense) that was created within that time.
+    and retrieve the lowest id (earliest offense) that was created after that time.
     Args:
         first_fetch (str): First fetch timestamp.
         client (Client): Client to perform the API calls.
 
     Returns:
-        (int): The ID of the earliest offense created within the first_fetch time range.
+        (int): The ID of the earliest offense created after first_fetch.
     """
     filter_fetch_query = f'start_time>{str(convert_start_fetch_to_milliseconds(first_fetch))}'
     raw_offenses = client.offenses_list(filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
@@ -1864,7 +1864,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         last_highest_id=int(context_data.get(LAST_FETCH_KEY, '0')),
         incident_type=incident_type,
         mirror_direction=mirror_direction,
-        first_fetch=first_fetch
+        first_fetch=first_fetch,
     )
     print_debug_msg(f'Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}')
     context_data, ctx_version = get_integration_context_with_version()
