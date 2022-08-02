@@ -3022,6 +3022,9 @@ Query logs in Panorama.
 | url | URL, e.g "safebrowsing.googleapis.com". | Optional | 
 | filedigest | File hash (for WildFire logs only). | Optional | 
 | number_of_logs | Maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. | Optional | 
+| polling | Whether to use polling. | Optional | 
+| timeout | The timeout (in seconds) when polling. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. | Optional | 
 
 
 #### Context Output
