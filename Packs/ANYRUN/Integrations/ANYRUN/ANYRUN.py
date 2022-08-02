@@ -1249,9 +1249,8 @@ def main():
         'anyrun-get-report': get_report_command,
         'anyrun-run-analysis': run_analysis_command,
     }
-
+    command = demisto.command()
     try:
-        command = demisto.command()
         demisto.info(f'Command being called is {command}')
         client = Client(
             base_url=base_url,
