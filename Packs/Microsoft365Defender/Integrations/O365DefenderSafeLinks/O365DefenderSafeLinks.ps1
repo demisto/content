@@ -1,4 +1,5 @@
 Import-Module ExchangeOnlineManagement
+. $PSScriptRoot\CommonServerPowerShell.ps1
 
 $COMMAND_PREFIX = "o365-defender-safelinks"
 $INTEGRATION_ENTRY_CONTEXT = "O365Defender.SafeLinks"
