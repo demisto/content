@@ -243,7 +243,7 @@ class PackManager:
     def __init__(self, path_manager: PathManager):
         self.packs_path = path_manager.packs_path
         self.deprecated_packs: set[str] = set()
-        self._pack_id_to_pack_metadata: dict[str, ContentItem] = {}  # NOTE: The ID of a pack is the name of its folder.
+        self._pack_id_to_pack_metadata: dict[str, ContentItem] = {}  # NOTE: The ID of a pack is its folder name
         self._pack_id_to_skipped_test_playbooks: dict[str, set[str]] = {}
 
         for pack_folder in (pack_folder for pack_folder in self.packs_path.iterdir() if pack_folder.is_dir()):
