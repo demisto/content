@@ -2998,7 +2998,7 @@ Returns a list of predefined Security Rules.
 
 ### pan-os-query-logs
 ***
-Query logs in Panorama.
+The query logs in Panorama.
 
 
 #### Base Command
@@ -3008,43 +3008,100 @@ Query logs in Panorama.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log-type | The log type. Can be "threat", "traffic", "wildfire", "url", or "data". | Required | 
+| log-type | The log type. Can be "threat", "traffic", "wildfire", "url", or "data". Possible values are: threat, traffic, wildfire, url, data. | Required | 
 | query | The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. | Optional | 
-| time-generated | The time that the log was generated from the timestamp and prior to it.<br/>e.g "2019/08/11 01:10:44". | Optional | 
-| addr-src | Source address. | Optional | 
-| addr-dst | Destination address. | Optional | 
-| ip | Source or destination IP address. | Optional | 
-| zone-src | Source zone. | Optional | 
-| zone-dst | Destination Source. | Optional | 
-| action | Rule action. | Optional | 
-| port-dst | Destination port. | Optional | 
-| rule | Rule name, e.g "Allow all outbound". | Optional | 
-| url | URL, e.g "safebrowsing.googleapis.com". | Optional | 
-| filedigest | File hash (for WildFire logs only). | Optional | 
-| number_of_logs | Maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. | Optional | 
-| polling | Whether to use polling. | Optional | 
-| timeout | The timeout (in seconds) when polling. | Optional | 
-| interval_in_seconds | The interval (in seconds) when polling. | Optional | 
+| time-generated | The time the log was generated from the timestamp and prior to it.<br/>For example "2019/08/11 01:10:44". | Optional | 
+| addr-src | The source address. | Optional | 
+| addr-dst | The destination address. | Optional | 
+| ip | The source or destination IP address. | Optional | 
+| zone-src | The source zone. | Optional | 
+| zone-dst | The destination source. | Optional | 
+| action | The rule action. | Optional | 
+| port-dst | The destination port. | Optional | 
+| rule | The rule name, for example "Allow all outbound". | Optional | 
+| url | The URL, for example "safebrowsing.googleapis.com". | Optional | 
+| filedigest | The file hash (for WildFire logs only). | Optional | 
+| number_of_logs | The maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. Default is 100. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| query_log_job_id | Job ID to use in polling commands. (automatically filled by polling). | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
+| hide_polling_output | whether to hide the polling result (automatically filled by polling). | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Monitor.JobID | String | Job ID of the logs query. | 
-| Panorama.Monitor.Status | String | Status of the logs query. | 
-| Panorama.Monitor.Message | String | Message of the logs query. | 
+| Panorama.Monitor.JobID | String | The job ID of the logs query. | 
+| Panorama.Monitor.Status | String | The status of the logs query. | 
+| Panorama.Monitor.Message | String | The message of the logs query. | 
+| Panorama.Monitor.Logs.Action | String | The action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url". | 
+| Panorama.Monitor.Logs.Application | String | The application associated with the session. | 
+| Panorama.Monitor.Logs.Category | String | The URL category of the URL subtype. For WildFire subtype, it is the verdict on the file, and can be either "malicious", "phishing", "grayware", or "benign". For other subtypes, the value is "any". | 
+| Panorama.Monitor.Logs.DeviceName | String | The hostname of the firewall on which the session was logged. | 
+| Panorama.Monitor.Logs.DestinationAddress | String | The original session destination IP address. | 
+| Panorama.Monitor.Logs.DestinationUser | String | The username of the user to which the session was destined. | 
+| Panorama.Monitor.Logs.DestinationCountry | String | The destination country or internal region for private addresses. Maximum length is 32 bytes. | 
+| Panorama.Monitor.Logs.DestinationPort | String | The destination port utilized by the session. | 
+| Panorama.Monitor.Logs.FileDigest | String | Only for the WildFire subtype, all other types do not use this field. The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service. | 
+| Panorama.Monitor.Logs.FileName | String | File name or file type when the subtype is file.
+File name when the subtype is virus.
+File name when the subtype is wildfire-virus.
+File name when the subtype is wildfire. | 
+| Panorama.Monitor.Logs.FileType | String | Only for the WildFire subtype, all other types do not use this field.
+Specifies the type of file that the firewall forwarded for WildFire analysis. | 
+| Panorama.Monitor.Logs.FromZone | String | The zone from which the session was sourced. | 
+| Panorama.Monitor.Logs.URLOrFilename | String | The actual URL when the subtype is url.
+The file name or file type when the subtype is file.
+The file name when the subtype is virus.
+The file name when the subtype is wildfire-virus.
+The file name when the subtype is wildfire.
+The URL or file name when the subtype is vulnerability \(if applicable\). | 
+| Panorama.Monitor.Logs.NATDestinationIP | String | The post-NAT destination IP address if destination NAT was performed. | 
+| Panorama.Monitor.Logs.NATDestinationPort | String | The post-NAT destination port. | 
+| Panorama.Monitor.Logs.NATSourceIP | String | The post-NAT source IP address if source NAT was performed. | 
+| Panorama.Monitor.Logs.NATSourcePort | String | The post-NAT source port. | 
+| Panorama.Monitor.Logs.PCAPid | String | The packet capture \(pcap\) ID is a 64 bit unsigned integral denoting
+an ID to correlate threat pcap files with extended pcaps taken as a part of
+that flow. All threat logs will contain either a pcap_id of 0 \(no associated
+pcap\), or an ID referencing the extended pcap file. | 
+| Panorama.Monitor.Logs.IPProtocol | String | The IP protocol associated with the session. | 
+| Panorama.Monitor.Logs.Recipient | String | Only for the WildFire subtype, all other types do not use this field.
+Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall. | 
+| Panorama.Monitor.Logs.Rule | String | The name of the rule that the session matched. | 
+| Panorama.Monitor.Logs.RuleID | String | The ID of the rule that the session matched. | 
+| Panorama.Monitor.Logs.ReceiveTime | String | The time the log was received at the management plane. | 
+| Panorama.Monitor.Logs.Sender | String | Only for the WildFire subtype; all other types do not use this field.
+Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall. | 
+| Panorama.Monitor.Logs.SessionID | String | An internal numerical identifier applied to each session. | 
+| Panorama.Monitor.Logs.DeviceSN | String | The serial number of the firewall on which the session was logged. | 
+| Panorama.Monitor.Logs.Severity | String | The severity associated with the threat. Can be "informational", "low",
+"medium", "high", or "critical". | 
+| Panorama.Monitor.Logs.SourceAddress | String | The original session source IP address. | 
+| Panorama.Monitor.Logs.SourceCountry | String | The source country or internal region for private addresses. Maximum
+length is 32 bytes. | 
+| Panorama.Monitor.Logs.SourceUser | String | The username of the user who initiated the session. | 
+| Panorama.Monitor.Logs.SourcePort | String | The source port utilized by the session. | 
+| Panorama.Monitor.Logs.ThreatCategory | String | The threat categories used to classify different types of
+threat signatures. | 
+| Panorama.Monitor.Logs.Name | String | The Palo Alto Networks identifier for the threat. A description
+string followed by a 64-bit numerical identifier. | 
+| Panorama.Monitor.Logs.ID | String | The Palo Alto Networks ID for the threat. | 
+| Panorama.Monitor.Logs.ToZone | String | The zone to which the session was destined. | 
+| Panorama.Monitor.Logs.TimeGenerated | String | The time the log was generated on the data plane. | 
+| Panorama.Monitor.Logs.URLCategoryList | String | A list of the URL filtering categories the firewall used to
+enforce the policy. | 
+| Panorama.Monitor.Logs.Bytes | String | The total log bytes. | 
+| Panorama.Monitor.Logs.BytesReceived | String | The log bytes received. | 
+| Panorama.Monitor.Logs.BytesSent | String | The log bytes sent. | 
+| Panorama.Monitor.Logs.Vsys | String | The VSYS on the firewall that generated the log. | 
 
-
-#### Command Example
-```!pan-os-query-logs log-type=data query="( addr.src in 192.168.1.12 )" ```
-
+#### Command example
+```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true interval_in_seconds=5 timeout=120```
 #### Human Readable Output
 
->### Query Logs:
->|JobID|Status|
->|---|---|
->| 678 | Pending |
+>Fetching traffic logs for job ID 1280...
 
 ### pan-os-check-logs-status
 ***
