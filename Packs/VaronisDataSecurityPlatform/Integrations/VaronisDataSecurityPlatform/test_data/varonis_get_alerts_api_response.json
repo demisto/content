@@ -9,7 +9,7 @@
       "State": "",
       "Status": "Open",
       "CloseReason": "",
-      "BlacklistLocation": "",
+      "BlacklistLocation": false,
       "AbnormalLocation": "",
       "NumOfAlertedEvents": "1",
       "UserName": "",
@@ -19,15 +19,15 @@
           "Department": "IT"
       },
       "On": {
-          "ContainsFlaggedData": "",
-          "ContainsSensitiveData": "",
+          "ContainsFlaggedData": false,
+          "ContainsSensitiveData": false,
           "Platform": "DNS",
           "Asset": "",
           "FileServerOrDomain": "dns"
       },
       "Device": {
           "Name": "ilhrzrodc01",
-          "ContainMaliciousExternalIP": "No",
+          "ContainMaliciousExternalIP": false,
           "IPThreatTypes": ""
       }
   },
@@ -41,7 +41,7 @@
       "State": "",
       "Status": "Open",
       "CloseReason": "",
-      "BlacklistLocation": "",
+      "BlacklistLocation": false,
       "AbnormalLocation": "",
       "NumOfAlertedEvents": "1",
       "UserName": "",
@@ -51,15 +51,15 @@
           "Department": "IT"
       },
       "On": {
-          "ContainsFlaggedData": "",
-          "ContainsSensitiveData": "",
+          "ContainsFlaggedData": false,
+          "ContainsSensitiveData": false,
           "Platform": "DNS",
           "Asset": "",
           "FileServerOrDomain": "dns"
       },
       "Device": {
           "Name": "ilhrzrodc01",
-          "ContainMaliciousExternalIP": "No",
+          "ContainMaliciousExternalIP": false,
           "IPThreatTypes": ""
       }
   }

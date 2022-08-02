@@ -8,7 +8,7 @@
     "Country": "",
     "State": "",
     "Details": {
-        "IsBlacklist": "",
+        "IsBlacklist": false,
         "Operation": "Request"
     },
     "ByUser": {
@@ -17,26 +17,26 @@
         "UserAccountType": "",
         "SAMAccountName": "",
         "Domain": "",
-        "DisabledAccount": "",
-        "StaleAccount": "",
-        "LockoutAccounts": ""
+        "DisabledAccount": false,
+        "StaleAccount": false,
+        "LockoutAccounts": false
     },
     "SourceIP": "",
-    "IsMaliciousIP": "",
+    "IsMaliciousIP": false,
     "IPReputation": "",
     "IPThreatType": "",
     "OnObject": {
         "Name": "localdb-ip-rtu.brightcloud.com",
         "ObjectType": "Dns",
         "Platform": "DNS",
-        "IsSensitive": "",
+        "IsSensitive": false,
         "FileServerOrDomain": "DNS",
-        "IsDisabledAccount": "",
-        "IsLockOutAccount": "",
+        "IsDisabledAccount": false,
+        "IsLockOutAccount": false,
         "SAMAccountName": "",
         "UserAccountType": "",
         "DestinationIP": "",
         "DestinationDevice": ""
     }
-}
+  }
 ]

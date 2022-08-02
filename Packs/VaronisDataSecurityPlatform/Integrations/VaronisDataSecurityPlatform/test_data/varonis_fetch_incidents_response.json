@@ -1,7 +1,7 @@
 [
     {
-        "Guid": "70FED0AD-8C95-4B52-A8EE-47F9AF72514F",
-        "Id": 151,
+        "ID": "70FED0AD-8C95-4B52-A8EE-47F9AF72514F",
+        "InternalId": 151,
         "Name": "DNS CUSTOM - Copy(2)",
         "Time": "2022-04-13T10:01:35",
         "Severity": "High",
@@ -9,9 +9,10 @@
         "Status": "Open",
         "CloseReason": "",
         "NumOfAlertedEvents": 1,
-        "ContainsFlaggedData": "",
-        "ContainsSensitiveData": "",
-        "ContainMaliciousExternalIP": "No",
+        "ContainsFlaggedData": false,
+        "ContainsSensitiveData": false,
+        "ContainMaliciousExternalIP": false,
+        "EventUTC": "2022-04-13T10:01:35",
         "IPThreatTypes": "",
         "Devices": [
             {
@@ -43,8 +44,8 @@
         ]
     },
     {
-        "Guid": "08CA3B6B-CFC4-45B0-8822-4C0BD007E0B0",
-        "Id": 152,
+        "ID": "08CA3B6B-CFC4-45B0-8822-4C0BD007E0B0",
+        "InternalId": 152,
         "Name": "DNS CUSTOM",
         "Time": "2022-04-13T10:01:33",
         "Severity": "High",
@@ -52,9 +53,10 @@
         "Status": "Open",
         "CloseReason": "",
         "NumOfAlertedEvents": 1,
-        "ContainsFlaggedData": "",
-        "ContainsSensitiveData": "",
-        "ContainMaliciousExternalIP": "No",
+        "ContainsFlaggedData": false,
+        "ContainsSensitiveData": false,
+        "ContainMaliciousExternalIP": false,
+        "EventUTC": "2022-04-13T10:01:33",
         "IPThreatTypes": "",
         "Devices": [
             {

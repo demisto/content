@@ -175,7 +175,7 @@ class Client(BaseClient):
 
         request_params['alertId'] = alerts
         request_params['maxResults'] = count
-        request_params['offset'] = page
+        request_params['offset'] = (page - 1) * count
 
         return self._http_request(
             'GET',
@@ -186,8 +186,8 @@ class Client(BaseClient):
     def varonis_get_alerts(self, threat_models: Optional[List[str]], start_time: Optional[datetime],
                            end_time: Optional[datetime], device_names: Optional[List[str]], last_days: Optional[int],
                            sid_ids: Optional[List[int]], from_alert_id: Optional[int], alert_statuses: Optional[List[str]],
-                           alert_severities: Optional[List[str]], aggregate: bool, offset: int,
-                           max_result: int) -> List[Dict[str, Any]]:
+                           alert_severities: Optional[List[str]], aggregate: bool, count: int,
+                           page: int) -> List[Dict[str, Any]]:
         request_params: Dict[str, Any] = {}
 
         if threat_models and len(threat_models) > 0:
@@ -208,7 +208,7 @@ class Client(BaseClient):
         if sid_ids and len(sid_ids) > 0:
             request_params['sidId'] = sid_ids
 
-        if from_alert_id:
+        if from_alert_id is not None:
             request_params['fromAlertId'] = from_alert_id
 
         if alert_statuses and len(alert_statuses) > 0:
@@ -218,8 +218,8 @@ class Client(BaseClient):
             request_params['severity'] = alert_severities
 
         request_params['aggregate'] = aggregate
-        request_params['offset'] = offset
-        request_params['maxResult'] = max_result
+        request_params['offset'] = (page - 1) * count
+        request_params['maxResult'] = count
 
         return self._http_request(
             'GET',
@@ -345,6 +345,9 @@ def get_sids_by_user_name(client: Client, user_names: List[str], user_domain_nam
     """
     sidIds: List[int] = []
 
+    if not user_names:
+        return sidIds
+
     for user_name in user_names:
         users = client.varonis_get_users_by_user_name(user_name)
 
@@ -352,6 +355,9 @@ def get_sids_by_user_name(client: Client, user_names: List[str], user_domain_nam
             if (strEqual(user['DisplayName'], user_name)
                     and (not user_domain_name or strEqual(user['DomainName'], user_domain_name))):
                 sidIds.append(user['Id'])
+
+    if len(users) == 0:
+        sidIds.append(NON_EXISTENT_SID)
 
     return sidIds
 
@@ -364,12 +370,18 @@ def get_sids_by_sam(client: Client, sam_account_names: List[str]):
     """
     sidIds: List[int] = []
 
+    if not sam_account_names:
+        return sidIds
+
     for sam_account_name in sam_account_names:
         users = client.varonis_get_users_by_sam_account_name(sam_account_name)
 
         for user in users:
             if strEqual(user['SAMAccountName'], sam_account_name):
                 sidIds.append(user['Id'])
+
+    if len(users) == 0:
+        sidIds.append(NON_EXISTENT_SID)
 
     return sidIds
 
@@ -382,12 +394,18 @@ def get_sids_by_email(client: Client, emails: List[str]) -> List[int]:
     """
     sidIds: List[int] = []
 
+    if not emails:
+        return sidIds
+
     for email in emails:
         users = client.varonis_get_users_by_email(email)
 
         for user in users:
             if strEqual(user['Email'], email):
                 sidIds.append(user['Id'])
+
+    if len(users) == 0:
+        sidIds.append(NON_EXISTENT_SID)
 
     return sidIds
 
@@ -503,6 +521,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
 
     if last_fetched_id:
         first_fetch_time = None
+    else:
+        last_fetched_id = 0
+
+    demisto.debug(f'Fetching incidents. Last fetched id: {last_fetched_id}')
 
     statuses = []
     if alert_status:
@@ -519,16 +541,15 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
             severities.remove('medium')
 
     alerts = client.varonis_get_alerts(threat_models, first_fetch_time, None, None, None, None,
-                                       last_fetched_id, statuses, severities, True, 0, max_results)
+                                       last_fetched_id, statuses, severities, True, max_results, 1)
 
     for alert in alerts:
-        id = alert['Id']
+        id = alert['InternalId']
         if not last_fetched_id or id > last_fetched_id:
             last_fetched_id = id
-        guid = alert['Guid']
+        guid = alert['ID']
         name = alert['Name']
-        # TODO: set correct time
-        alert_time = alert['Time']
+        alert_time = alert['EventUTC']
         enrich_with_url(alert, client._base_url, guid)
         incident = {
             'name': f'Varonis alert {name}',
@@ -642,13 +663,15 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     sid_ids = get_sids_by_email(client, emails) + get_sids_by_sam(client, sam_account_names) + \
         get_sids_by_user_name(client, user_names, user_domain_name)
 
-    for severity in alert_severities:
-        if severity.lower() not in ALERT_SEVERITIES:
-            raise ValueError(f'There is no severity {severity}.')
+    if alert_severities:
+        for severity in alert_severities:
+            if severity.lower() not in ALERT_SEVERITIES:
+                raise ValueError(f'There is no severity {severity}.')
 
-    for status in alert_statuses:
-        if status.lower() not in ALERT_STATUSES.keys():
-            raise ValueError(f'There is no status {severity}.')
+    if alert_statuses:
+        for status in alert_statuses:
+            if status.lower() not in ALERT_STATUSES.keys():
+                raise ValueError(f'There is no status {severity}.')
 
     alerts = client.varonis_get_alerts(threat_model_names, start_time, end_time, device_names,
                                        last_days, sid_ids, None, alert_statuses, alert_severities, False, max_results, page)
