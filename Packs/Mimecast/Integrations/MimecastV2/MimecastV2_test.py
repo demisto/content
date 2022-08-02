@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 import MimecastV2
 
@@ -281,11 +281,11 @@ def test_add_users_under_group_in_context_dict__dict(mocker):
     """
     context = {'Mimecast': {'Group': {'ID': 'groupID', 'Users': []}}}
     users_list = [
-        {'Domain': u'demistodev.com', 'Name': u'', 'EmailAddress': u'testing@demistodev.com', 'InternalUser': True,
-         'Type': u'created_manually', 'IsRemoved': False}]
+        {'Domain': 'demistodev.com', 'Name': '', 'EmailAddress': 'testing@demistodev.com', 'InternalUser': True,
+         'Type': 'created_manually', 'IsRemoved': False}]
     expected = [{'ID': 'groupID', 'Users': [
-        {'Domain': u'demistodev.com', 'Name': u'', 'EmailAddress': u'testing@demistodev.com', 'InternalUser': True,
-         'Type': u'created_manually', 'IsRemoved': False}]}]
+        {'Domain': 'demistodev.com', 'Name': '', 'EmailAddress': 'testing@demistodev.com', 'InternalUser': True,
+         'Type': 'created_manually', 'IsRemoved': False}]}]
     mocker.patch.object(demisto, 'context', return_value=context)
     result = MimecastV2.add_users_under_group_in_context_dict(users_list, 'groupID')
     assert result == expected
@@ -310,11 +310,11 @@ def test_add_users_under_group_in_context_dict__list(mocker):
 
     }
     users_list = [
-        {'Domain': u'demistodev.com', 'Name': u'', 'EmailAddress': u'testing@demistodev.com', 'InternalUser': True,
-         'Type': u'created_manually', 'IsRemoved': False}]
+        {'Domain': 'demistodev.com', 'Name': '', 'EmailAddress': 'testing@demistodev.com', 'InternalUser': True,
+         'Type': 'created_manually', 'IsRemoved': False}]
     expected = [{'ID': 'groupID', 'Users': [
-        {'Domain': u'demistodev.com', 'Name': u'', 'EmailAddress': u'testing@demistodev.com', 'InternalUser': True,
-         'Type': u'created_manually', 'IsRemoved': False}]}, {'ID': 'groupID2', 'Users': []}]
+        {'Domain': 'demistodev.com', 'Name': '', 'EmailAddress': 'testing@demistodev.com', 'InternalUser': True,
+         'Type': 'created_manually', 'IsRemoved': False}]}, {'ID': 'groupID2', 'Users': []}]
     mocker.patch.object(demisto, 'context', return_value=context)
     result = MimecastV2.add_users_under_group_in_context_dict(users_list, 'groupID')
     assert result == expected

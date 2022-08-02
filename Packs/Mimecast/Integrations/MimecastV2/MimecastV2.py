@@ -12,7 +12,7 @@ import hashlib
 import requests
 
 from datetime import timedelta
-from urllib2 import HTTPError
+from urllib.error import HTTPError
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -556,7 +556,7 @@ def set_empty_value_args_policy_update(policy_obj, option, policy_id):
      """
     empty_args_list = []
     # Add the empty arguments to empty args list
-    for arg, value in policy_obj.items():
+    for arg, value in list(policy_obj.items()):
         if value == '':
             empty_args_list.append(arg)
     if option == '':

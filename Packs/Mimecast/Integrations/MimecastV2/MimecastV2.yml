@@ -1637,9 +1637,9 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
-  dockerimage: demisto/python:2.7.18.27799
+  dockerimage: demisto/python3:3.10.5.31928
 tests:
 - Mimecast test
 fromversion: 5.0.0
