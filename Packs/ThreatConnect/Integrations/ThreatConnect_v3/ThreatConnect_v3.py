@@ -217,7 +217,7 @@ def get_indicators(client: Client, args_type: str, type_name: str) -> None:  # p
         confidence_threshold = f'AND (confidence > {confidence_threshold}) '
     if owners_query:
         owners_query = f'AND ({owners_query}) '
-    tql = f'typeName EQ "{type_name}" {owners_query}AND ({query}{confidence_threshold}{rating_threshold})'
+    tql = f'typeName LIKE "{type_name}" {owners_query}AND ({query}{confidence_threshold}{rating_threshold})'
     tql = urllib.parse.quote(tql.encode('utf8'))
     url = f'/api/v3/indicators?tql={tql}&resultStart=0&resultLimit=1000'
 
