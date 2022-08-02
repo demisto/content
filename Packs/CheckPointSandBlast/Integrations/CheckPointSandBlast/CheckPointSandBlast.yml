@@ -28,6 +28,7 @@ name: CheckPointSandBlast
 script:
   commands:
   - name: file
+    description: Runs reputation on files.
     arguments:
     - name: file
       required: true
