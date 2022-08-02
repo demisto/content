@@ -591,14 +591,15 @@ def output(result: Optional[CollectionResult]):
     if not result:
         raise RuntimeError('Nothing was collected, not even sanity tests')
 
-    machines = tuple(result.machines if result.machines else ())
+    machines = tuple(result.machines) if result.machines else ()
 
     test_str = '\n'.join(sorted(result.tests, key=lambda x: x.lower()))
     pack_str = '\n'.join(sorted(result.packs, key=lambda x: x.lower()))
+    machine_str = ','.join(str(m) for m in machines)
 
     logger.info(f'collected {len(result.tests)} tests:\n{test_str}')
     logger.info(f'collected {len(result.packs)} packs:\n{pack_str}')
-    logger.info(f'collected {len(machines)} machines: {machines}')
+    logger.info(f'collected {len(machines)} machines: {machine_str}')
 
     PATHS.output_tests_file.write_text(test_str)
     PATHS.output_packs_file.write_text(pack_str)
