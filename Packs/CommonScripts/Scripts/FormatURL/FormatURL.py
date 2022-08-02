@@ -148,7 +148,7 @@ def remove_special_chars_from_start_and_end_of_url(url_: str) -> str:
                 while not url_[-1].isalpha():
                     url_ = url_[:-1]
 
-        else:
+        elif not last_part.isnumeric():
             while not url_[-1].isalpha():
                 url_ = url_[:-1]
 

@@ -315,7 +315,7 @@ class TestFormatURL:
          'https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$'),
         ('(https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$)',
          'https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$'),
-        ('[someURL].', 'someURL].'),
+        ('[someURL].', 'someURL'),
         ('[https://testURL.com)', 'https://testURL.com'),
         ('[https://testURL.com', 'https://testURL.com'),
         ('[(https://testURL.com)]', 'https://testURL.com'),
