@@ -194,4 +194,5 @@ lookback
 subclass
 pagination
 XDM
+ADFS
 TheHive
