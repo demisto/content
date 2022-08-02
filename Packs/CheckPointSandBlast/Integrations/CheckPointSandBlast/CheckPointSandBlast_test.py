@@ -217,4 +217,3 @@ def test_download_command(requests_mock, mock_client):
     assert 'ContentsFormat' in response
     assert 'Type' in response
     assert 'FileID' in response
-    assert response['File'] == 'file_id'

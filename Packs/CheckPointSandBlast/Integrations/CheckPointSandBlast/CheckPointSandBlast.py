@@ -528,7 +528,7 @@ def download_command(client: Client, args: Dict[str, Any]) -> Any:
     output = client.download_request(file_id)
 
     content_disposition = output.headers.get("Content-Disposition")
-    split_content_disposition = content_disposition.split('"')
+    split_content_disposition = content_disposition.split('"') if content_disposition is not None else []
 
     if len(split_content_disposition) < 2:
         file_name = 'file.pdf'
