@@ -129,9 +129,28 @@ def remove_special_chars_from_start_and_end_of_url(url_: str) -> str:
             url_ = url_[1:]
 
     if url_.count("/") < 3:
-        # If url has no path only letters are allowed in tld
-        while url_[-1] in brackets.values() or url_ in quotes:
+        # If url has no path only letters are allowed in tld or port
+
+        while not url_[-1].isalpha() and not url_[-1].isnumeric():
             url_ = url_[:-1]
+
+        last_part = url_.split('.')[-1]  # Get last part of the url
+
+        if ":" in last_part:
+            # Checks for port in URL to handle it as a special case
+            tld = last_part.split(":", 1)[0]
+            port = last_part.split(":", 1)[1]
+
+            if not port.isnumeric() or not tld.isalpha():
+                # Not the correct format, removing all characters but tld
+                url_ = url_.replace(f":{port}", "")
+
+                while not url_[-1].isalpha():
+                    url_ = url_[:-1]
+
+        else:
+            while not url_[-1].isalpha():
+                url_ = url_[:-1]
 
     return url_
 
