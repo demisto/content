@@ -8,7 +8,7 @@ class PathManager:
     """
     Used for getting paths of various files and folders during the test collection process.
     """
-    ARTIFACTS_PATH = Path(getenv('ARTIFACTS_PATH', 'artifacts'))
+    ARTIFACTS_PATH = Path(getenv('ARTIFACTS_PATH', './artifacts'))
 
     def __init__(self, content_path: Path):
         self.content_path = content_path
