@@ -1,7 +1,7 @@
 id: CheckPointSandBlast
 name: CheckPointSandBlast
 version: -1
-fromversion: 6.2.0
+fromversion: 6.5.0
 starttaskid: '0'
 tasks:
   '0':
