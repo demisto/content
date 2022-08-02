@@ -602,7 +602,7 @@ def output(result: Optional[CollectionResult]):
 
     PATHS.output_tests_file.write_text(test_str)
     PATHS.output_packs_file.write_text(pack_str)
-    PATHS.output_machines_file.write_text(json.dumps({machine: (machine in machines) for machine in Machine}))
+    PATHS.output_machines_file.write_text(json.dumps({str(machine): (machine in machines) for machine in Machine}))
 
 
 if __name__ == '__main__':
