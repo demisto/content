@@ -2,7 +2,7 @@
     "defaultIncidentType": "Vectra Detection",
     "description": "Classifies Vectra Detect incidents.",
     "feed": false,
-    "fromVersion": "6.5.0",
+    "fromVersion": "6.2.0",
     "id": "Vectra Detect",
     "keyTypeMap": {
         "COMMAND & CONTROL": "C2Communication",
