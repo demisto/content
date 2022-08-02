@@ -1831,7 +1831,7 @@ script:
     - description: The name of the file to display in the UI.
       name: file_name
       required: true
-    - description: The name of the file.
+    - description: The name of the group.
       name: name
       required: true
     - auto: PREDEFINED

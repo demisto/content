@@ -31,9 +31,10 @@ class Client:
         self.verify = verify
 
     def make_request(self, method: Method, url_suffix: str, payload: dict = {}, params: dict = {},
-                     parse_json=True):  # pragma: no cover # noqa # type: ignore
+                     parse_json=True, content_type=None):  # pragma: no cover # noqa # type: ignore
         headers = self.create_header(url_suffix, method)
-
+        if content_type:
+            headers['Content-Type'] = content_type
         url = urljoin(self.base_url, url_suffix)
         response = requests.request(method=method, url=url, headers=headers, data=payload, params=params,
                                     verify=self.verify)
@@ -855,51 +856,32 @@ def tc_delete_indicator_command(client: Client) -> None:  # pragma: no cover
 
 
 def create_document_group(client: Client) -> None:  # pragma: no cover
-    pass
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # file_name = demisto.args().get('file_name')
-    # name = demisto.args().get('name')
-    # # malware = bool(strtobool(demisto.args().get('malware', 'False')))
-    # password = demisto.args().get('password')
-    # res = demisto.getFilePath(demisto.args()['entry_id'])
-    # owner = demisto.args().get('owner', demisto.params().get('defaultOrg'))
-    # if not owner:
-    #     return_error('You must specify an owner in the command, or by using the Organization parameter.')
-    #
-    # security_label = demisto.args().get('security_label')
-    # description = demisto.args().get('description')
-    #
-    # # open a file handle for a local file and read the contents thereof
-    # f = open(res['path'], 'rb')
-    # contents = f.read()
-    # # TODO: add stream create
-    # # raw_document = create_document_group_request(contents, file_name, name, owner, res, malware, password,
-    # #                                              security_label, description)
-    # # content = {
-    # #     'ID': raw_document.get('id'),
-    # #     'Name': raw_document.get('name'),
-    # #     'Owner': raw_document.get('ownerName'),
-    # #     'EventDate': raw_document.get('eventDate'),
-    # #     'Description': description,
-    # #     'SecurityLabel': security_label
-    # # }
-    # # context = {
-    # #     'TC.Group(val.ID && val.ID === obj.ID)': content
-    # # }
-    # # return_outputs(tableToMarkdown('ThreatConnect document group was created successfully', content, removeNull=True),
-    # #                context,
-    # #                raw_document)
+    name = demisto.args().get('name')
+    security_label = demisto.args().get('securityLabel')
+    description = demisto.args().get('description', '')
+    response, status = create_group(client, security_labels=security_label, name=name, group_type='Document',
+                                    description=description)
+    res = demisto.getFilePath(demisto.args().get('entry_id'))
+    f = open(res['path'], 'rb')
+    contents = f.read()
+    url = f'/api/v3/groups/{response.get("data").get("id")}/upload'
+    payload = f"{contents}"
+    client.make_request(Method.POST, url, payload=payload, content_type='application/octet-stream')
+
+    content = {
+        'ID': response.get('data').get('id'),
+        'Name': response.get('data').get('name'),
+        'Owner': response.get('data').get('ownerName', ''),
+        'EventDate': response.get('data').get('eventDate', ''),
+        'Description': description,
+        'SecurityLabel': security_label
+    }
+    context = {
+        'TC.Group(val.ID && val.ID === obj.ID)': content
+    }
+    return_outputs(tableToMarkdown('ThreatConnect document group was created successfully', content, removeNull=True),
+                   context,
+                   response.get('data'))
 
 
 def tc_create_threat_command(client: Client) -> None:  # pragma: no cover
@@ -918,7 +900,8 @@ def tc_create_threat_command(client: Client) -> None:  # pragma: no cover
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Threat {demisto.args().get("name")} Created Successfully with id: {response.get("data").get("id")}',  # type: ignore  # noqa
+        'HumanReadable': f'Threat {demisto.args().get("name")} Created Successfully with id: {response.get("data").get("id")}',
+        # type: ignore  # noqa
         'EntryContext': {
             'TC.Threat(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
@@ -941,7 +924,8 @@ def tc_create_campaign_command(client: Client) -> None:  # pragma: no cover
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Campaign {demisto.args().get("name")} Created Successfully with id: {response.get("data").get("id")}',  # type: ignore  # noqa
+        'HumanReadable': f'Campaign {demisto.args().get("name")} Created Successfully with id: {response.get("data").get("id")}',
+        # type: ignore  # noqa
         'EntryContext': {
             'TC.Campaign(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
@@ -964,7 +948,8 @@ def tc_create_incident_command(client: Client) -> None:  # pragma: no cover
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Incident {demisto.args().get("name")} Created Successfully with id: {response.get("data").get("id")}',  # type: ignore  # noqa
+        'HumanReadable': f'Incident {demisto.args().get("name")} Created Successfully with id: {response.get("data").get("id")}',
+        # type: ignore  # noqa
         'EntryContext': {
             'TC.Incident(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
@@ -972,7 +957,7 @@ def tc_create_incident_command(client: Client) -> None:  # pragma: no cover
 
 
 def create_group(client: Client, name: str = '', event_date: str = '', group_type: str = '',
-                 status: str = 'New', description: str = '', security_labels: list = [],
+                 status: str = 'New', description: str = '', security_labels: str = '',
                  tags: list = [], first_seen: str = ''):  # pragma: no cover
     args = demisto.args()
     tags = args.get('tags', tags)
@@ -1008,12 +993,14 @@ def create_group(client: Client, name: str = '', event_date: str = '', group_typ
     if first_seen:
         payload['firstSeen'] = first_seen
     if group_type == 'Document':
-        file_name = args.get('file_name', '')
+        del payload['status']
+        file_name = args.get('file_name')
         malware = args.get('malware', 'false')
-        password = args.get('password', '')
         payload['fileName'] = file_name
-        payload['malware'] = malware
-        payload['password'] = password
+        if malware == 'true':
+            password = args.get('password', '')
+            payload['malware'] = malware
+            payload['password'] = password
     url = '/api/v3/groups'
     response, status_code = client.make_request(Method.POST, url, payload=json.dumps(payload))  # type: ignore
     if status_code != 201:
@@ -1153,7 +1140,8 @@ def tc_delete_indicator_tag_command(client: Client) -> None:  # pragma: no cover
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
-            f'removed the tag {demisto.args().get("tags")} from indicator {demisto.args().get("indicator")} successfully',  # type: ignore  # noqa
+            f'removed the tag {demisto.args().get("tags")} from indicator {demisto.args().get("indicator")} successfully',
+            # type: ignore  # noqa
             indicators,
             headerTransform=pascalToSpace),
         'EntryContext': ec
@@ -1170,7 +1158,8 @@ def tc_incident_associate_indicator_command(client: Client) -> None:  # pragma: 
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
-            f'Associated the incident {demisto.args().get("incidentId")} to indicator {demisto.args().get("indicator")} successfully',  # type: ignore  # noqa
+            f'Associated the incident {demisto.args().get("incidentId")} to indicator {demisto.args().get("indicator")} successfully',
+            # type: ignore  # noqa
             indicators,
             headerTransform=pascalToSpace),
         'EntryContext': ec
