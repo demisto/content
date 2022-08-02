@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 from abc import ABC, abstractmethod
@@ -583,6 +584,24 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
         ))
 
 
+def output(result: CollectionResult):
+    """
+    writes to both log and files
+    """
+    machines = tuple(sorted(result.machines if result else ()))
+
+    test_str = '\n'.join(sorted(result.tests))
+    pack_str = '\n'.join(sorted(result.packs))
+
+    logger.info(f'collected {len(result.tests)} tests:\n{test_str}')
+    logger.info(f'collected {len(result.packs)} packs:\n{pack_str}')
+    logger.info(f'collected {len(machines)} machines: {machines}')
+
+    PATHS.output_tests_file.write_text(test_str)
+    PATHS.output_packs_file.write_text(pack_str)
+    PATHS.output_machines_file.write_text(json.dumps({machine: (machine in machines) for machine in Machine}))
+
+
 if __name__ == '__main__':
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
@@ -611,14 +630,4 @@ if __name__ == '__main__':
                 raise ValueError(f"unexpected values of (either) {marketplace=}, {options.nightly=}")
 
     collected = collector.collect(run_nightly=options.nightly)
-    if not collected:
-        logger.error('done collecting, no tests or packs were collected.')
-
-    else:
-        logger.info(f'done collecting, got {len(collected.tests)} tests and {len(collected.packs)} packs')
-
-        logger.info(f'writing output to {str(PATHS.output_tests_file)}, {str(PATHS.output_packs_file)}')
-        PATHS.output_tests_file.write_text('\n'.join(collected.tests))
-        PATHS.output_packs_file.write_text('\n'.join(collected.packs))
-        machines = collected.machines if collected and collected.machines else ()
-        PATHS.output_machines_file.write_text('\n'.join(map(str, machines)))
+    output(collected)  # logs and writes to output files
