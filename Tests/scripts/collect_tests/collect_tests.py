@@ -195,22 +195,22 @@ class TestCollector(ABC):
         pass
 
     def collect(self, run_nightly: bool) -> Optional[CollectionResult]:
-        collected: Optional[CollectionResult] = self._collect()
+        result: Optional[CollectionResult] = self._collect()
 
-        if not collected:
+        if not result:
             logger.warning('Nothing was collected, returning sanity tests only')
-            collected = self.sanity_tests
+            result = self.sanity_tests
 
-        if not collected:  # for unit test cases, where there are no sanity tests
+        if not result:  # for unit test cases, where there are no sanity tests
             return None
 
-        self._validate_tests_in_id_set(collected.tests)
+        self._validate_tests_in_id_set(result.tests)
 
-        if (suitable_machines := Machine.get_suitable_machines(collected.version_range, run_nightly)) is None:
+        if (suitable_machines := Machine.get_suitable_machines(result.version_range, run_nightly)) is None:
             raise EmptyMachineListException()
-        collected.machines = suitable_machines
+        result.machines = suitable_machines
 
-        return collected
+        return result
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
         sanity_tests = self.sanity_tests.tests if self.sanity_tests else set()
@@ -256,15 +256,15 @@ class BranchTestCollector(TestCollector):
         return tuple(path for path in self.private_pack_path.rglob('*') if path.is_file())
 
     def _collect(self) -> Optional[CollectionResult]:
-        collected = []
+        result = []
         paths = self._get_private_pack_files() if self.private_pack_path else self._get_changed_files()
         for path in paths:
             try:
-                collected.append(self._collect_single(PATHS.content_path / path))
+                result.append(self._collect_single(PATHS.content_path / path))
             except NothingToCollectException as e:
                 logger.warning(e.message)
 
-        return CollectionResult.union(tuple(collected))
+        return CollectionResult.union(tuple(result))
 
     def _collect_yml(self, content_item_path: Path) -> CollectionResult:
         """
@@ -442,10 +442,10 @@ class BranchTestCollector(TestCollector):
 class UploadCollector(BranchTestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         # same as BranchTestCollector, but without tests.
-        if collected := super()._collect():
+        if result := super()._collect():
             logger.info('UploadCollector drops collected tests, as they are not required')
-            collected.tests = set()
-        return collected
+            result.tests = set()
+        return result
 
 
 class NightlyTestCollector(TestCollector, ABC):
@@ -460,7 +460,7 @@ class NightlyTestCollector(TestCollector, ABC):
         logger.info(f'collecting test playbooks by their marketplace field, searching for {self.marketplace.value}'
                     f'{postfix}')
 
-        collected = []
+        result = []
 
         for playbook in self.id_set.test_playbooks:
             playbook_marketplaces = playbook.marketplaces or default
@@ -469,7 +469,7 @@ class NightlyTestCollector(TestCollector, ABC):
                 continue
 
             if self.marketplace in playbook_marketplaces:
-                collected.append(CollectionResult(
+                result.append(CollectionResult(
                     test=playbook.id_, pack=playbook.pack_id,
                     reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
                     reason_description=f'({self.marketplace.value})',
@@ -477,11 +477,11 @@ class NightlyTestCollector(TestCollector, ABC):
                     conf=self.conf, id_set=self.id_set)
                 )
 
-        if not collected:
+        if not result:
             logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
             return None
 
-        return CollectionResult.union(tuple(collected))
+        return CollectionResult.union(tuple(result))
 
     def _packs_matching_marketplace_value(self, only_value: bool) -> Optional[CollectionResult]:
         """
@@ -524,7 +524,7 @@ class NightlyTestCollector(TestCollector, ABC):
         logger.info(
             f'collecting content items by their marketplace field, searching for {self.marketplace.value} {postfix}')
 
-        collected = []
+        result = []
 
         for item in self.id_set.artifact_iterator:
             item_marketplaces = item.marketplaces or default
@@ -539,7 +539,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     if not item.path:
                         raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
                     relative_path = PACK_MANAGER.relative_to_packs(item.path)
-                    collected.append(
+                    result.append(
                         CollectionResult(
                             test=None,
                             pack=pack.pack_id,
@@ -555,7 +555,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     if path.name in SKIPPED_CONTENT_ITEMS:
                         logger.info(f'skipping unsupported content item: {str(path)}, not under a pack')
                         continue
-        return CollectionResult.union(tuple(collected))
+        return CollectionResult.union(tuple(result))
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
