@@ -7,7 +7,7 @@ BASE_URL = 'http://testurl.com/'
 CLIENT = Client(BASE_URL, True, True, headers={}, auth=None)
 
 ALARMS_LIST = {'alarmsSearchDetails': [{'alarmId': 2, 'alarmStatus': 1, 'dateInserted': '2021-08-23T15:19:00'},
-               {'alarmId': 1, 'alarmStatus': 1, 'dateInserted': '2021-03-23T15:19:00'}]}
+                                       {'alarmId': 1, 'alarmStatus': 1, 'dateInserted': '2021-03-23T15:19:00'}]}
 
 ALARMS_LIST_BY_ID = {'alarmDetails': {'alarmId': 1, 'alarmStatus': 1, 'dateInserted': '2021-08-23T15:19:00'}}
 
@@ -55,6 +55,10 @@ SEARCH_QUERY_REQUEST_DATA = {"maxMsgsToQuery": 60, "logCacheSize": 10000, "query
                                                                                  "filterMode": 1, "values":
                                                                                      [{"filterType": 17, "valueType": 5,
                                                                                        "value": "127.0.0.1"}]}]}}}
+
+Empty_ALARMS_LIST_BY_ID = {
+    'alarmsSearchDetails': None
+}
 
 
 def test_alarms_list_request_filter_by_alarm_id(requests_mock):
@@ -141,8 +145,8 @@ def test_case_file_evidence_add_request(requests_mock, mocker):
     case_id = '75081347-EB56-4AEA-A6F9-A6EB6662F48E'
     requests_mock.post(f'{BASE_URL}lr-case-api/cases/{case_id}/evidence/file', json={})
     mocker.patch.object(demisto, 'getFilePath', return_value={
-                        'path': 'test_data/test.txt',
-                        'name': 'test.txt'})
+        'path': 'test_data/test.txt',
+        'name': 'test.txt'})
     CLIENT.case_file_evidence_add_request(case_id, '23@32')
     assert requests_mock.last_request.text == FILE_EVIDENCE_REQUEST_BODY
 
@@ -360,3 +364,17 @@ def test_case_evidence_list_request(requests_mock):
     requests_mock.get(f'{BASE_URL}lr-case-api/cases/1/evidence', json={})
     CLIENT.case_evidence_list_request('1', '', 'alarm', 'pending')
     assert requests_mock.last_request.query == 'type=alarm&status=pending'
+
+
+def test_empty_alarmsSearchDetails(requests_mock):
+    """
+    Given:
+    - List of alarms.
+    When:
+    - Running alarms_list_request with alarm_id filter that does not match.
+    Then:
+    - Validate that result is empty.
+    """
+    requests_mock.get(f'{BASE_URL}lr-alarm-api/alarms/', json=Empty_ALARMS_LIST_BY_ID)
+    res, _ = CLIENT.alarms_list_request(created_after="x.x.x")
+    assert not res

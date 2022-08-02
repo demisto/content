@@ -5,7 +5,6 @@ from CommonServerPython import *
 
 import json
 import requests
-import traceback
 from typing import Any, Dict, Tuple, List
 
 # Disable insecure warnings
@@ -235,7 +234,7 @@ def parse_date_to_isoformat(arg: str, arg_name: str):
     if not date:
         return_error(f'invalid date value for: {arg_name}\n{arg} should be in the format of:'
                      f' "2016-07-22T01:51:31.001Z." or "10 minutes"')
-
+    assert date is not None
     date = f'{date.isoformat()}Z'
     return date
 
@@ -645,7 +644,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

@@ -1,0 +1,872 @@
+id: CrowdStrike Falcon - SIEM ingestion Get Incident Data
+version: -1
+fromversion: 6.5.0
+name: CrowdStrike Falcon - SIEM ingestion Get Incident Data
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook handles incident ingestion from a SIEM.
+  The user provides the field for the incident ID or detection ID and the field indicating whether the ingested item is an incident or detection. This playbook enables changing the severity scale in Cortex XSOAR as well as fetching CrowdStrike detections based on the CrowdStrike incident type.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 52e83efb-9923-48db-8890-154683292a27
+    type: start
+    task:
+      id: 52e83efb-9923-48db-8890-154683292a27
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 78c40975-d0c2-4412-8a3c-8401e311a909
+    type: condition
+    task:
+      id: 78c40975-d0c2-4412-8a3c-8401e311a909
+      version: -1
+      name: Verify if incident or detection
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Verify if this is an incident or detection
+    nexttasks:
+      detection:
+      - '2'
+      incident:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: incident
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SIEMincidentFieldForType
+            iscontext: true
+          right:
+            value:
+              simple: incident
+          ignorecase: true
+    - label: detection
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SIEMincidentFieldForType
+            iscontext: true
+          right:
+            value:
+              simple: detection
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 5982643f-fda7-4092-8bc9-21a21d96ed0c
+    type: regular
+    task:
+      id: 5982643f-fda7-4092-8bc9-21a21d96ed0c
+      version: -1
+      name: Get full detection details
+      description: Searches for specific detection details either by using a filter query or by providing the detection IDs.
+      script: '|||cs-falcon-search-detection'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      extended_data:
+        simple: Yes
+      ids:
+        simple: ${inputs.SIEMincidentFieldForID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: File Names
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.FileName}
+    - incidentfield: Scenario
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.Scenario}
+    - incidentfield: Process MD5
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.MD5}
+    - incidentfield: Process SHA256
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.SHA256}
+    - incidentfield: Process CMD
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.CommandLine}
+    - incidentfield: Agents ID
+      output:
+        simple: ${CrowdStrike.Detection.Device.device_id}
+    - incidentfield: Device External IPs
+      output:
+        simple: ${CrowdStrike.Detection.System}
+    - incidentfield: External Severity
+      output:
+        simple: ${CrowdStrike.Detection.MaxSeverity}
+    - incidentfield: External Confidence
+      output:
+        simple: ${CrowdStrike.Detection.MaxConfidence}
+    - incidentfield: External End Time
+      output:
+        simple: ${CrowdStrike.Detection.LastBehavior}
+    - incidentfield: ' External Start Time'
+      output:
+        simple: ${CrowdStrike.Detection.FirstBehavior}
+    - incidentfield: External Status
+      output:
+        simple: ${CrowdStrike.Detection.Status}
+    - incidentfield: Hostnames
+      output:
+        simple: ${CrowdStrike.Detection.Device.hostname}
+    - incidentfield: Device OS Name
+      output:
+        simple: ${CrowdStrike.Detection.Device.platform_name}
+    - incidentfield: Device OS Version
+      output:
+        simple: ${CrowdStrike.Detection.Device.os_version}
+    - incidentfield: MITRE Tactic ID
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.TacticID}
+    - incidentfield: MITRE Tactic Name
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.Tactic}
+    - incidentfield: MITRE Technique ID
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.TechniqueId}
+    - incidentfield: MITRE Technique Name
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.Technique}
+    - incidentfield: Users
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.UserName}
+    - incidentfield: External Category Name
+      output:
+        simple: detection
+    - incidentfield: Device MAC Address
+      output:
+        simple: ${CrowdStrike.Detection.Device.mac_address}
+    - incidentfield: Description
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.Description}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 5937f18b-8a25-4acb-835a-dda3ba512483
+    type: regular
+    task:
+      id: 5937f18b-8a25-4acb-835a-dda3ba512483
+      version: -1
+      name: Get full incident details
+      description: Lists incident summaries.
+      script: '|||cs-falcon-list-incident-summaries'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments:
+      ids:
+        simple: ${inputs.SIEMincidentFieldForID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: External Category Name
+      output:
+        simple: incident
+    - incidentfield: External Status
+      output:
+        simple: ${CrowdStrike.Incidents.status}
+    - incidentfield: Tags
+      output:
+        simple: ${CrowdStrike.Incidents.tags}
+    - incidentfield: External Severity
+      output:
+        simple: ${CrowdStrike.Incidents.fine_score}
+    - incidentfield: ' External Start Time'
+      output:
+        simple: ${CrowdStrike.Incidents.start}
+    - incidentfield: External End Time
+      output:
+        simple: ${CrowdStrike.Incidents.end}
+    - incidentfield: Description
+      output:
+        simple: ${CrowdStrike.Incidents.description}
+    - incidentfield: Agents ID
+      output:
+        simple: ${CrowdStrike.Incidents.hosts.device_id}
+    - incidentfield: Device External IP
+      output:
+        simple: ${CrowdStrike.Incidents.hosts.external_ip}
+    - incidentfield: Hostnames
+      output:
+        simple: ${CrowdStrike.Incidents.hosts.hostname}
+    - incidentfield: Device MAC Address
+      output:
+        simple: ${CrowdStrike.Incidents.hosts.mac_address}
+    - incidentfield: Device OS Version
+      output:
+        simple: ${CrowdStrike.Incidents.hosts.os_version}
+    - incidentfield: Device OS Name
+      output:
+        simple: ${CrowdStrike.Incidents.hosts.platform_name}
+    - incidentfield: MITRE Tactic Name
+      output:
+        simple: ${CrowdStrike.Incidents.tactics}
+    - incidentfield: MITRE Technique Name
+      output:
+        simple: ${CrowdStrike.Incidents.techniques}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 555c6448-233b-491c-84e0-a8e63259243d
+    type: title
+    task:
+      id: 555c6448-233b-491c-84e0-a8e63259243d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 5c22181f-8e83-462c-8893-8becc8d992e2
+    type: regular
+    task:
+      id: 5c22181f-8e83-462c-8893-8becc8d992e2
+      version: -1
+      name: Set Severity
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      severity:
+        complex:
+          root: CrowdStrike.Detection
+          accessor: MaxSeverity
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: inputs.ScaleToSetSeverity
+                iscontext: true
+              map_to:
+                value:
+                  simple: inputs.SeverityValuesMapping
+                iscontext: true
+              sep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: ab07910c-703a-4326-80ca-c1f417d42922
+    type: regular
+    task:
+      id: ab07910c-703a-4326-80ca-c1f417d42922
+      version: -1
+      name: Set Severity
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      severity:
+        complex:
+          root: CrowdStrike.Incidents
+          accessor: fine_score
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: inputs.ScaleToSetSeverity
+                iscontext: true
+              map_to:
+                value:
+                  simple: inputs.SeverityValuesMapping
+                iscontext: true
+              sep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 15148b3b-e08d-442b-82a8-0b986467f72f
+    type: regular
+    task:
+      id: 15148b3b-e08d-442b-82a8-0b986467f72f
+      version: -1
+      name: Enrich endpoint details
+      description: Returns information about an endpoint.
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      id:
+        simple: ${incident.agentsid}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Device Status
+      output:
+        simple: ${Endpoint.IsIsolated}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: a3ab8a8f-116c-4471-8912-27cc94fa5234
+    type: regular
+    task:
+      id: a3ab8a8f-116c-4471-8912-27cc94fa5234
+      version: -1
+      name: Set Endpoint information to layout
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      deviceid:
+        simple: ${Endpoint.[0].ID}
+      devicelocalip:
+        simple: ${Endpoint.[0].IPAddress}
+      devicemacaddress:
+        simple: ${Endpoint.[0].MACAddress}
+      devicename:
+        simple: ${Endpoint.[0].Hostname}
+      deviceosname:
+        simple: ${Endpoint.[0].OS}
+      deviceosversion:
+        simple: ${Endpoint.[0].OSVersion}
+      devicestatus:
+        simple: ${Endpoint.[0].Status}
+      isolated:
+        simple: ${Endpoint.[0].IsIsolated}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: ff5eda85-e05b-4c68-833f-dc1eb9d06b7d
+    type: title
+    task:
+      id: ff5eda85-e05b-4c68-833f-dc1eb9d06b7d
+      version: -1
+      name: Setting and Enrichment
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 71e9866a-5547-409c-842b-2e56ac5bf8c0
+    type: title
+    task:
+      id: 71e9866a-5547-409c-842b-2e56ac5bf8c0
+      version: -1
+      name: Incident Severity
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: 4492191a-b69d-4101-8ff6-6e930791c77a
+    type: title
+    task:
+      id: 4492191a-b69d-4101-8ff6-6e930791c77a
+      version: -1
+      name: Detection Severity
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: b42ad9f2-b62f-4453-8b35-78a06dada7d0
+    type: condition
+    task:
+      id: b42ad9f2-b62f-4453-8b35-78a06dada7d0
+      version: -1
+      name: Is override SIEM severity enabled?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Is override SIEM severity enabled?
+    nexttasks:
+      '#default#':
+      - '12'
+      Detection:
+      - '15'
+      Incident:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: Detection
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.OverrideSIEMSeverity
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SIEMincidentFieldForType
+            iscontext: true
+          right:
+            value:
+              simple: detection
+    - label: Incident
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.OverrideSIEMSeverity
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SIEMincidentFieldForType
+            iscontext: true
+          right:
+            value:
+              simple: incident
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: 0d69e69e-0ac4-489f-823b-f52bf95ea0c0
+    type: title
+    task:
+      id: 0d69e69e-0ac4-489f-823b-f52bf95ea0c0
+      version: -1
+      name: Override Severity
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: 0818fcc6-9969-41de-85f7-7338f8829fc8
+    type: regular
+    task:
+      id: 0818fcc6-9969-41de-85f7-7338f8829fc8
+      version: -1
+      name: Extract Indicators
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments:
+      text:
+        simple: ${CrowdStrike.Detection}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: bef28f61-1669-44d9-8b4f-02bd8b04597a
+    type: playbook
+    task:
+      id: bef28f61-1669-44d9-8b4f-02bd8b04597a
+      version: -1
+      name: CrowdStrike Falcon - Get Detections by Incident
+      playbookName: CrowdStrike Falcon - Get Detections by Incident
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      IncidentID:
+        simple: ${CrowdStrike.Incidents.incident_id}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2105,
+        "width": 830,
+        "x": 260,
+        "y": -80
+      }
+    }
+  }
+inputs:
+- key: SIEMincidentFieldForType
+  value:
+    simple: ${incident.externalcategoryname}
+  required: false
+  description: The incident field that determines if this is a detection or an incident.
+  playbookInputQuery:
+- key: SIEMincidentFieldForID
+  value:
+    simple: ${incident.externalsystemid}
+  required: false
+  description: The incident field that contains the detection ID or incident ID.
+  playbookInputQuery:
+- key: ScaleToSetSeverity
+  value:
+    simple: 0-20,21-40,41-60,61-80,81-100
+  required: false
+  description: |-
+    The severity scale in the EDR.
+    For example, CrowdStrike uses values from 0 to 100, 
+    so the scale can be divided into ranges such as
+    0-20,21-40,41-60,61-80,81-100
+  playbookInputQuery:
+- key: SeverityValuesMapping
+  value:
+    simple: 0.5, 1, 2, 3,4
+  required: false
+  description: |-
+    The mapping from the EDR severity scale to the Cortex XSOAR severity scale.
+    For example: 
+    0.5, 1, 2, 3,4
+    Possible values to use are 0,0.5, 1, 2, 3,4
+    which represent Unknown, Informational, Low, Medium, High, Critical.
+  playbookInputQuery:
+- key: OverrideSIEMSeverity
+  value:
+    simple: 'False'
+  required: false
+  description: Whether to set the severity according to the EDR severity scale and its mapping to Cortex XSOAR (True) or keep the original severity scale as mapped by the SIEM (False).
+  playbookInputQuery:
+outputs:
+- contextPath: CrowdStrike.Detection.Behavior.FileName
+  description: The file name of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.Scenario
+  description: The scenario name of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.MD5
+  description: The MD5 hash of the IOC of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.SHA256
+  description: The SHA256 hash of the IOC of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.IOCType
+  description: The IOC type of the IOC.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.IOCValue
+  description: The value of the IOC.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.CommandLine
+  description: The command line executed in the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.UserName
+  description: The user name related to the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.SensorID
+  description: The sensor ID related to the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.ParentProcessID
+  description: The ID of the parent process.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.ProcessID
+  description: The process ID of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.ID
+  description: The ID of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.System
+  description: The system name of the detection.
+  type: string
+- contextPath: CrowdStrike.Detection.CustomerID
+  description: The ID of the customer (CID).
+  type: string
+- contextPath: CrowdStrike.Detection.MachineDomain
+  description: The name of the domain of the detection machine.
+  type: string
+- contextPath: CrowdStrike.Detection.ID
+  description: The detection ID.
+  type: string
+- contextPath: CrowdStrike.Detection.ProcessStartTime
+  description: The start time of the process that generated the detection.
+  type: string
+- contextPath: Endpoint
+  description: The details of the endpoint.
+  type: string
+- contextPath: CrowdStrike.FoundDetections
+  description: Indicates whether detections were found.
+  type: string
+tests:
+- Test - CrowdStrike Falcon
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

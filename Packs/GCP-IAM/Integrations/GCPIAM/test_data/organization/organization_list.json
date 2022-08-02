@@ -1,0 +1,13 @@
+{
+  "organizations": [
+    {
+      "name": "organizations/xsoar-organization",
+      "displayName": "xsoar.com",
+      "directoryCustomerId": "xsoar-customer-id",
+      "state": "ACTIVE",
+      "createTime": "2021-11-01T10:32:53.855Z",
+      "updateTime": "2021-11-01T10:32:53.855Z",
+      "etag": "TdmlNua+ZCbmiXGBNzldeg=="
+    }
+  ]
+}

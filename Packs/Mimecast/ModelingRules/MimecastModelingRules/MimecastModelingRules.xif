@@ -1,0 +1,28 @@
+[MODEL:model = Audit, dataset = mimecast_mimecast_raw]
+filter xsiem_classifier = "audit_event"
+| alter XDM.Audit.original_event_sub_type = category,
+        XDM.Audit.event_timestamp = eventTime,
+        XDM.Audit.original_event_description = eventInfo,
+        XDM.Audit.original_event_type = auditType,
+        XDM.Audit.TriggeredBy.identity.name = user,
+        XDM.Audit.original_event_id = id;
+
+
+[MODEL:model=Email, dataset=mimecast_mimecast_raw]
+filter xsiem_classifier = "siem_log"
+| alter XDM.Email.Observer.unique_identifier = acc,
+        XDM.Email.original_event_id = aCode,
+        XDM.Email.attachment.filename = AttNames,
+        XDM.Email.event_timestamp = datetime,
+        XDM.Email.Server.host.ipv4_addresses = json_extract_array(coalesce(IP,SourceIP), "$."),
+        XDM.Email.message_id = MsgId,
+        XDM.Email.recipients = json_extract_array(coalesce(Rcpt,Recipient), "$."),
+        XDM.Email.sender = Sender,
+        XDM.Email.subject = Subject,
+        XDM.Email.threat.name = Virus,
+        XDM.Email.attachment.extension = fileExt,
+        XDM.Email.attachment.file_type = fileMime,
+        XDM.Email.attachment.md5 = md5,
+        XDM.Email.attachment.sha256 = sha256,
+        XDM.Email.original_event_description = ScanResultInfo,
+        XDM.Email.original_event_type = coalesce(Action, Act);

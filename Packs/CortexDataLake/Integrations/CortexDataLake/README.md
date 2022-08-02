@@ -31,6 +31,7 @@ The License ID will be used in Step 4.
     * __Severity of events to fetch (Firewall)__: Select from all, Critical, High, Medium,Low, Informational, Unused.
     * __Subtype of events to fetch (Firewall)__: Select from all, attack, url, virus, spyware, vulnerability, file, scan, flood, packet, resource, data, url-content, wildfire, extpcap, wildfire-virus, http-hdr-insert, http-hdr, email-hdr, spyware-dns, spyware-wildfire-dns, spyware-wpc-dns, spyware-custom-dns, spyware-cloud-dns, spyware-raven, spyware-wildfire-raven, spyware-wpc-raven, wpc-virus,sctp
     * __Fetch Fields__: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id". Enter "*" for all possible fields.
+    * __Fetch Filter__: Specify the filter that should be used to fetch incidents. Can not be used in combination with the Subtype and Severity parameters.
     * __Incidents fetched per query__: How many incidents will be fetched per query. Caution: high number could create overload. Default is 10.
     * __proxy__: Use system proxy settings.
     * __insecure__: Trust any certificate (not secure).
@@ -46,7 +47,21 @@ In order for the integration to work, the following URLs need to be accessible:
    - EU: `api.nl.cdl.paloaltonetworks.com`
 
 ## Fetched Incidents Data
-Fetches Firewall threat logs as incidents
+The integration can fetch incidents from the following tables:
+- firewall.auth
+- firewall.decryption
+- firewall.extpcap
+- firewall.file_data
+- firewall.globalprotect
+- firewall.hipmatch
+- firewall.iptag
+- firewall.threat
+- firewall.traffic
+- firewall.url
+- firewall.userid
+- log.system
+- log.config
+
 
 ## CDL Server - API Calls Caching Mechanism
 The integration implements a caching mechanism for repetitive error when requesting access token from CDL server.

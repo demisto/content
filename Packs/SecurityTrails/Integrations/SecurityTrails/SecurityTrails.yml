@@ -16,12 +16,10 @@ configuration:
   - display: Trust any certificate (not secure)
     name: insecure
     required: false
-    defaultvalue: ''
     type: 8
   - display: Use system proxy settings
     name: proxy
     required: false
-    defaultvalue: ''
     type: 8
 description: This integration provides API access to the SecurityTrails platform.
 display: SecurityTrails

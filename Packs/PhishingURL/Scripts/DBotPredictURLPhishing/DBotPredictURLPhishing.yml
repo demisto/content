@@ -86,15 +86,16 @@ outputs:
   description: Probability for the URL to be malicious based only on the URL syntax.
   type: Number
 - contextPath: DBotPredictURLPhishing.BadSEOQuality
-  description: Whether the domain has a good search engine optimization. Malicious domains
-    tend to have a poor SEO.
+  description: Whether the domain has a good search engine optimization. Malicious
+    domains tend to have a poor SEO.
   type: String
 - contextPath: DBotPredictURLPhishing.NewDomain
   description: Whether the domain is younger than 6 months. New domains tend to be
     malicious.
   type: String
 - contextPath: DBotPredictURLPhishing.TopMajesticDomain
-  description: Whether the domain belongs to the top Majestic domain list. If it does, we will always consider this domain as benign.
+  description: Whether the domain belongs to the top Majestic domain list. If it does,
+    we will always consider this domain as benign.
   type: String
 - contextPath: DBotScore.Score
   description: Severity score
@@ -103,10 +104,10 @@ script: '-'
 subtype: python3
 system: false
 tags:
-- ''
-timeout: '0'
+- ml
+timeout: 480ns
 type: python
-dockerimage: demisto/mlurlphishing:1.0.0.26063
+dockerimage: demisto/mlurlphishing:1.0.0.28347
 runas: DBotRole
 runonce: false
 tests:

@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+import PyPDF2
 import subprocess
 import glob
 import os
@@ -8,7 +9,8 @@ import re
 import errno
 import shutil
 import json
-from typing import List
+from typing import List, Set
+from pikepdf import Pdf
 
 URL_EXTRACTION_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+' \
                        r'[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
@@ -95,9 +97,8 @@ def get_images_paths_in_path(path):
     return res
 
 
-def get_pdf_metadata(file_path):
+def get_pdf_metadata(file_path, user_password=None):
     """Gets the metadata from the pdf as a dictionary"""
-    user_password = demisto.args().get('userPassword')
     if user_password:
         metadata_txt = run_shell_command('pdfinfo', '-upw', user_password, file_path)
     else:
@@ -129,11 +130,7 @@ def get_pdf_metadata(file_path):
 
 def get_pdf_text(file_path, pdf_text_output_path):
     """Creates a txt file from the pdf in the pdf_text_output_path and returns the content of the txt file"""
-    user_password = demisto.args().get('userPassword')
-    if user_password:
-        run_shell_command('pdftotext', '-upw', user_password, file_path, pdf_text_output_path)
-    else:
-        run_shell_command('pdftotext', file_path, pdf_text_output_path)
+    run_shell_command('pdftotext', file_path, pdf_text_output_path)
     text = ''
     with open(pdf_text_output_path, 'rb') as f:
         for line in f:
@@ -144,11 +141,7 @@ def get_pdf_text(file_path, pdf_text_output_path):
 def get_pdf_htmls_content(pdf_path, output_folder):
     """Creates an html file and images from the pdf in output_folder and returns the text content of the html files"""
     pdf_html_output_path = f'{output_folder}/PDF.html'
-    user_password = demisto.args().get('userPassword')
-    if user_password:
-        run_shell_command('pdftohtml', '-upw', user_password, pdf_path, pdf_html_output_path)
-    else:
-        run_shell_command('pdftohtml', pdf_path, pdf_html_output_path)
+    run_shell_command('pdftohtml', pdf_path, pdf_html_output_path)
     html_file_names = get_files_names_in_path(output_folder, '*.html')
     html_content = ''
     for file_name in html_file_names:
@@ -242,14 +235,12 @@ def get_urls_from_binary_file(file_path):
     with open(file_path, 'rb') as file:
         # the urls usually appear in the form: '/URI (url)'
         urls = re.findall(r'/URI ?\((.*?)\)', str(file.read()))
-
     binary_file_urls = set()
     # make sure the urls match the url regex
     for url in urls:
         mached_url = re.findall(URL_EXTRACTION_REGEX, url)
         if len(mached_url) != 0:
             binary_file_urls.add(mached_url[0])
-
     return binary_file_urls
 
 
@@ -260,7 +251,6 @@ def get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder):
     Args:
         cpy_file_path (str): the path of the PDF file.
         output_folder (str): the folder output to get the HTML files from.
-
     Returns:
         tuple[set, set]: The URLs and emails that were found.
     """
@@ -268,8 +258,195 @@ def get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder):
     return set(re.findall(URL_EXTRACTION_REGEX, pdf_html_content)), set(re.findall(EMAIL_REGXEX, pdf_html_content))
 
 
+def decrypt_pdf_file(file_path, user_password, path_to_decrypted_file):
+    """
+    Gets a path to an encrypted PDF file and its password, and decrypts the file using pikepdf package.
+    Args:
+        file_path (str): A path to the encrypted PDF file.
+        user_password (str): The password to the encrypted PDF file.
+        path_to_decrypted_file (str): A path to save the decrypted PDF file to.
+
+    Returns: None.
+
+    """
+    pdf_file = Pdf.open(file_path, password=user_password)
+    pdf_file.save(path_to_decrypted_file)
+
+
+def extract_url_from_annot_object(annot_object):
+    """
+    Extracts the URLs from the Annot object (under key: '/A').
+
+    Args:
+        annot_object (PyPDF2.generic.DictionaryObject): An object contains annotations of a PDF.
+
+    Returns:
+         (PyPDF2.generic.TextStringObject): The extracted url if exists, else - None.
+
+    """
+
+    # Extracts the URLs from the Annot object (under key: '/A'):
+    if a := annot_object.get('/A'):
+        if isinstance(a, PyPDF2.generic.IndirectObject):
+            a = a.get_object()
+
+        if url := a.get('/URI'):
+            if isinstance(url, PyPDF2.generic.IndirectObject):
+                url = url.get_object()
+            return url
+
+
+def extract_url(extracted_object):
+    """
+    Extracts URL (if exists) from the extracted object, according to the URL_EXTRACTION_REGEX.
+
+    Args:
+        extracted_object (PyPDF2.generic.TextStringObject): A TextStringObject object contains a url or an email.
+
+    Returns:
+         (str): The extracted url.
+    """
+    match = ''
+    matched_url = re.findall(URL_EXTRACTION_REGEX, extracted_object)
+    if len(matched_url) != 0:
+        match = matched_url[0]
+
+    return match
+
+
+def extract_email(extracted_object):
+    """
+    Extracts Email (if exists) from the extracted object, according to the EMAIL_REGXEX.
+
+    Args:
+        extracted_object (PyPDF2.generic.TextStringObject): A TextStringObject object contains a url or an email.
+
+    Returns:
+         (str): The extracted email.
+    """
+    match = ''
+    matched_email = re.findall(EMAIL_REGXEX, extracted_object)
+    if len(matched_email) != 0:
+        match = matched_email[0]
+
+    return match
+
+
+def extract_urls_and_emails_from_annot_objects(annot_objects):
+    """
+    Extracts URLs and Emails from the Annot objects, and separate them into two different sets.
+
+    Args:
+        annot_objects (List): A list of objects that contain annotations of a PDF.
+
+    Returns:
+         Tuple[set, set]: A set includes the extracted urls, A set includes the extracted emails.
+
+    """
+
+    urls = set()
+    emails = set()
+
+    for annot_object in annot_objects:
+        if isinstance(annot_object, PyPDF2.generic.IndirectObject):
+            try:
+                annot_object = annot_object.get_object()
+            except Exception as e:
+                if "Could not find object" in str(e):
+                    demisto.error(f'annot.get_object() encountered an error: {e}.\n Skipping without failure.')
+                    continue
+                else:
+                    demisto.error(f'annot.get_object() encountered an error: {e}.')
+
+        extracted_object = extract_url_from_annot_object(annot_object)
+        # Separates URLs and Emails:
+        if extracted_object:
+            if url := extract_url(extracted_object):
+                urls.add(url)
+            if email := extract_email(extracted_object):
+                emails.add(email)
+
+    return urls, emails
+
+
+def get_urls_and_emails_from_pdf_annots(file_path):
+    """
+    Extracts the URLs and Emails from the pdf's Annots (Annotations and Commenting) using PyPDF2 package.
+    Args:
+        file_path (str): The path of the PDF file.
+
+    Returns:
+        Tuple[set, set]: A set includes the URLs that were found, A set includes the Emails that were found.
+
+    """
+    all_urls: Set[str] = set()
+    all_emails: Set[str] = set()
+
+    pdf_file = open(file_path, 'rb')
+    pdf = PyPDF2.PdfFileReader(pdf_file)
+    pages_len = len(pdf.pages)
+
+    # Goes over the PDF, page by page, and extracts urls and emails:
+    for page in range(pages_len):
+        page_sliced = pdf.pages[page]
+        page_object = page_sliced.get_object()
+
+        # Extracts the PDF's Annots (Annotations and Commenting):
+        if annots := page_object.get('/Annots'):
+            if not isinstance(annots, PyPDF2.generic.ArrayObject):
+                annots = [annots]
+
+            for annot in annots:
+                annot_objects = annot.get_object()
+                if not isinstance(annot_objects, PyPDF2.generic.ArrayObject):
+                    annot_objects = [annot_objects]
+
+                # Extracts URLs and Emails:
+                urls_set, emails_set = extract_urls_and_emails_from_annot_objects(annot_objects)
+                all_urls = all_urls.union(urls_set)
+                all_emails = all_emails.union(emails_set)
+
+    # Logging:
+    if len(all_urls) == 0:
+        demisto.debug('No URLs were extracted from the PDF.')
+    if len(all_emails) == 0:
+        demisto.debug('No Emails were extracted from the PDF.')
+
+    return all_urls, all_emails
+
+
+def extract_urls_and_emails_from_pdf_file(file_path, output_folder):
+    """
+    Extract URLs and Emails from the PDF file.
+
+    Args:
+        file_path (str): The path of the PDF file.
+        output_folder (str): The output folder for html files.
+    Returns:
+        tuple[set, set]: A set including the URLs and emails that were found, A set including only emails that were
+         extracted from the html content.
+    """
+
+    # Get urls from the binary file:
+    binary_file_urls = get_urls_from_binary_file(file_path)
+
+    # Get URLS + emails:
+    annots_urls, annots_emails = get_urls_and_emails_from_pdf_annots(file_path)
+    html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(file_path, output_folder)
+
+    # This url is always generated with the pdf html file, and that's why we remove it
+    html_urls.remove('http://www.w3.org/1999/xhtml')
+
+    # Unify urls:
+    urls_set = annots_urls.union(html_urls, binary_file_urls)
+    emails_set = annots_emails.union(html_emails)
+
+    return urls_set, emails_set
+
+
 def main():
     entry_id = demisto.args()["entryID"]
+    user_password = str(demisto.args().get('userPassword', ''))
     # File entity
     pdf_file = {
         "EntryID": entry_id
@@ -279,6 +456,7 @@ def main():
     urls_ec = []
     emails_ec = []
     folders_to_remove = []
+
     try:
         path = demisto.getFilePath(entry_id).get('path')
         if path:
@@ -292,33 +470,30 @@ def main():
                 folders_to_remove.append(output_folder)
                 cpy_file_path = f'{output_folder}/ReadPDF.pdf'
                 shutil.copy(path, cpy_file_path)
-                # Get metadata:
-                metadata = get_pdf_metadata(cpy_file_path)
 
-                # Get urls from the binary file
-                binary_file_urls = get_urls_from_binary_file(cpy_file_path)
+                # Get metadata:
+                metadata = get_pdf_metadata(cpy_file_path, user_password)
+
+                if user_password:  # The PDF is encrypted
+                    dec_file_path = f'{output_folder}/DecryptedPDF.pdf'
+                    decrypt_pdf_file(cpy_file_path, user_password, dec_file_path)
+                    cpy_file_path = dec_file_path
 
                 # Get text:
                 pdf_text_output_path = f'{output_folder}/PDFText.txt'
                 text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
                 # Get URLS + emails:
-                urls_set, emails_set = get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder)
-                urls_set = urls_set.union(binary_file_urls)
+                urls_set, emails_set = extract_urls_and_emails_from_pdf_file(cpy_file_path, output_folder)
 
-                # this url is always generated with the pdf html file, and that's why we remove it
-                urls_set.remove('http://www.w3.org/1999/xhtml')
                 for url in urls_set:
-                    if re.match(emailRegex, url):
-                        emails_set.add(url)
-                    else:
-                        urls_ec.append({"Data": url})
-
+                    urls_ec.append({"Data": url})
                 for email in emails_set:
                     emails_ec.append(email)
 
                 # Get images:
                 images = get_images_paths_in_path(output_folder)
+
             except Exception as e:
                 demisto.results({
                     "Type": entryTypes["error"],

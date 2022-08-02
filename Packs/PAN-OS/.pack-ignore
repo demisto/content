@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:Panorama.yml]
-ignore=IN136,IN145,IN124
+ignore=IN136,IN145,IN124,IN154
 
 [file:README.md]
 ignore=RM102,RM106
@@ -21,3 +21,8 @@ ignore=auto-test
 
 [file:PCAP_Parsing_And_Indicator_Enrichment_Test.yml]
 ignore=auto-test
+
+[known_words]
+pcaps
+FW
+dst

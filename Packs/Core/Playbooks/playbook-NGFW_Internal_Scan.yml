@@ -1,0 +1,692 @@
+id: NGFW Internal Scan
+version: -1
+name: NGFW Internal Scan
+description: |
+  This playbook investigates a scan where the source is an internal IP address.
+
+  An attacker might initiate an internal scan for discovery, lateral movement and more.
+
+  **Attacker's Goals:**
+
+  An attacker can leverage a scan for open ports and vulnerable systems on remote endpoints in an attempt to identify the endpoint operating system, firewall configuration, and exploitable services.
+
+  **Investigative Actions:**
+
+  * Endpoint Investigation Plan playbook
+
+  **Response Actions**
+
+  The playbook's response actions are based on the Endpoint Investigation Plan playbook results. In that phase, the playbook will execute:
+
+  * Auto endpoint isolation
+  * Manual block indicators
+  * Manual file quarantine
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3ecd7ed7-c821-46c1-8a4e-dc6250b266ec
+    type: start
+    task:
+      id: 3ecd7ed7-c821-46c1-8a4e-dc6250b266ec
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 87c1a8ec-c2f2-4b91-8721-f44652f1634c
+    type: playbook
+    task:
+      id: 87c1a8ec-c2f2-4b91-8721-f44652f1634c
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Username:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3b1f62bc-537c-469a-89a7-ee93d9235e5b
+    type: playbook
+    task:
+      id: 3b1f62bc-537c-469a-89a7-ee93d9235e5b
+      version: -1
+      name: Get endpoint details - Generic
+      description: "This playbook uses the generic command !endpoint to retrieve details on a specific endpoint.\nThis command currently supports the following integrations:\n- Palo Alto Networks Cortex XDR - Investigation and Response.\n- CrowdStrike Falcon. "
+      playbookName: Get endpoint details - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Endpoint_ip:
+        complex:
+          root: inputs.scannerIP
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8ed375b2-b63e-47b1-8f39-6d90c4bb0dcc
+    type: title
+    task:
+      id: 8ed375b2-b63e-47b1-8f39-6d90c4bb0dcc
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f17016e4-9d9f-4d47-8621-87f10e27c144
+    type: title
+    task:
+      id: f17016e4-9d9f-4d47-8621-87f10e27c144
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f84429f7-dd8d-4b8f-8746-e4f0e34f46e9
+    type: title
+    task:
+      id: f84429f7-dd8d-4b8f-8746-e4f0e34f46e9
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 7dfb9c5d-5ad6-4bdd-881f-bfce33da263c
+    type: playbook
+    task:
+      id: 7dfb9c5d-5ad6-4bdd-881f-bfce33da263c
+      version: -1
+      name: Containment Plan
+      description: |-
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook allows to contain the incident with one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
+      playbookName: Containment Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      AutoContainment:
+        complex:
+          root: inputs.AutoContainment
+      BlockIndicators:
+        simple: "False"
+      ClearUserSessions:
+        simple: "False"
+      EndpointID:
+        complex:
+          root: alert
+          accessor: agentid
+      FileContainment:
+        simple: "False"
+      FileHash:
+        complex:
+          root: foundIncidents.CustomFields
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          accessor: initiatorsha256
+      FilePath:
+        complex:
+          root: foundIncidents.CustomFields.initiatorpath
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+      FileRemediation:
+        simple: Quarantine
+      HostAutoContainment:
+        complex:
+          root: inputs.HostAutoContainment
+      IAMUserDomain:
+        simple: '@xsoar.com'
+      UserContainment:
+        simple: "False"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: adea3df5-fc34-4ca3-83f5-ca3a7e60cec4
+    type: condition
+    task:
+      id: adea3df5-fc34-4ca3-83f5-ca3a7e60cec4
+      version: -1
+      name: Was other activity found for the scanning host?
+      description: Checks if any other activity was found for the scanning host.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundincidents
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 6a4c1876-1b2f-426e-841e-7fa1a9a22df8
+    type: title
+    task:
+      id: 6a4c1876-1b2f-426e-841e-7fa1a9a22df8
+      version: -1
+      name: Review
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 9c06759e-9696-45cd-8a45-78d3e3e552f3
+    type: regular
+    task:
+      id: 9c06759e-9696-45cd-8a45-78d3e3e552f3
+      version: -1
+      name: Manual Review Internal Scan
+      description: Manual review of the investigation.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 14a8536b-2d4e-4124-8712-39d147e4c6d0
+    type: condition
+    task:
+      id: 14a8536b-2d4e-4124-8712-39d147e4c6d0
+      version: -1
+      name: Should close the alert?
+      description: Whether to close the alert automatically or continue with the investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "Yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCloseAlert
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: cdde9f89-b5ae-4db0-85e0-bbcebbb4fd1a
+    type: regular
+    task:
+      id: cdde9f89-b5ae-4db0-85e0-bbcebbb4fd1a
+      version: -1
+      name: Continue with the investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 8bb3b16b-4a01-4e95-81c3-95dafe8c3231
+    type: title
+    task:
+      id: 8bb3b16b-4a01-4e95-81c3-95dafe8c3231
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 2c8a152f-e2e3-4c40-89a7-0eb0be8bc68d
+    type: regular
+    task:
+      id: 2c8a152f-e2e3-4c40-89a7-0eb0be8bc68d
+      version: -1
+      name: Close alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 9f808ed4-3737-4536-8bb2-276ed2c9e330
+    type: playbook
+    task:
+      id: 9f808ed4-3737-4536-8bb2-276ed2c9e330
+      version: -1
+      name: Endpoint Investigation Plan
+      description: |-
+        This playbook handles all the endpoint investigation actions available with Cortex XSIAM.
+        The playbook enables you to investigate and hunt for more information using one of the following tasks:
+        * Pre-defined MITRE Tactics
+        * Host fields (Host ID)
+        * Attacker fields (Attacker IP, External host)
+        * MITRE techniques
+        * File hash (currently, the playbook supports only SHA256)
+
+        The playbook inputs enable you to manipulate the execution flow. Review the inputs description.
+      playbookName: Endpoint Investigation Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      HuntAttacker:
+        simple: "True"
+      HuntCnCTechniques:
+        simple: "False"
+      HuntCollectionTechniques:
+        simple: "False"
+      HuntDefenseEvasionTechniques:
+        simple: "False"
+      HuntDiscoveryTechniques:
+        simple: "False"
+      HuntExecutionTechniques:
+        simple: "False"
+      HuntImpactTechniques:
+        simple: "False"
+      HuntInitialAccessTechniques:
+        simple: "False"
+      HuntLateralMovementTechniques:
+        simple: "False"
+      HuntPersistenceTechniques:
+        simple: "False"
+      HuntPrivilegeEscalationTechniques:
+        simple: "False"
+      HuntReconnaissanceTechniques:
+        simple: "False"
+      agentID:
+        simple: '*'
+      attackerRemoteIP:
+        complex:
+          root: inputs.scannerIP
+      timeRange:
+        simple: 24 hours ago
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_11_yes": 0.57,
+      "15_16_#default#": 0.46,
+      "18_19_#default#": 0.4
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2195,
+        "width": 990,
+        "x": 60,
+        "y": -140
+      }
+    }
+  }
+inputs:
+- key: scannerIP
+  value:
+    complex:
+      root: alert
+      accessor: hostip
+  required: false
+  description: The scanner IP address
+  playbookInputQuery:
+- key: AutoCloseAlert
+  value:
+    simple: "false"
+  required: false
+  description: Whether to close the alert automatically or manually, after an analyst's review.
+  playbookInputQuery:
+- key: AutoContainment
+  value: {}
+  required: false
+  description: |-
+    Whether to execute automatically or manually the containment plan tasks:
+    * Block indicators
+    * Quarantine file
+    * Disable user
+  playbookInputQuery:
+- key: HostAutoContainment
+  value: {}
+  required: false
+  description: Whether to execute endpoint isolation automatically or manually.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+marketplaces: ["marketplacev2"]
+fromversion: 6.6.0

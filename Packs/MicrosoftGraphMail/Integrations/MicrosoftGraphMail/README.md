@@ -5,7 +5,7 @@ For more details about the authentication used in this integration, see [Microso
 
 ### Required Permissions
 * Mail.ReadWrite - Application
-* User.Read - Application
+* User.Read - Delegated
 * Mail.Send - Application
 
 ### OData Usage
@@ -42,6 +42,7 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | proxy | Whether to use system proxy settings. | False |
 | self_deployed | Whether to use a self deployed Azure Application. | False |
 | incidentType | The incident type. | False |
+| display_full_email_body | Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required. | False
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -53,6 +54,12 @@ Using a national cloud endpoint is supported by setting the *Server URL* paramet
 * Microsoft Operated by 21Vianet Endpoint: `https://microsoftgraph.chinacloudapi.cn`
 
 Refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
+
+## Email Attachments Limitations
+* The maximum attachment size to be sent in an email can be 150-MB. [large-attachments](https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http)
+* The larger the attachment, the longer it would take for a command that supports adding attachments to run.
+* Requires the permission of Mail.ReadWrite (Application) - to send attachments > 3mb
+* When sending mails with large attachments, it could take up to 5 minutes for the mail to actually be sent.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -857,6 +864,7 @@ Creates a draft message in the specified user's mailbox.
 **The following permissions are required for this command:**
 - Mail.ReadWrite (Application)
 
+
 ##### Base Command
 
 `msgraph-mail-create-draft`
@@ -949,9 +957,14 @@ Creates a draft message in the specified user's mailbox.
 ***
 Sends an email using Microsoft Graph.
 
+**NOTE:**
+
+Attachments size is limited to 3 MB.
+
 ##### Required Permissions
 **The following permissions are required for this command:**
 - Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 
 ##### Base Command
 
@@ -1031,6 +1044,7 @@ Replies to the recipients of a message.
 ##### Required Permissions
 **The following permissions are required for this command:**
 - Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 
 ##### Base Command
 
@@ -1101,6 +1115,10 @@ There is no context output for this command.
 ***
 Replies to an email using Graph Mail.
 
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 
 #### Base Command
 
@@ -1120,6 +1138,7 @@ Replies to an email using Graph Mail.
 | attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional |
 | from | Email address of the sender. | Optional |
+| replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional |
 
 
 #### Context Output
@@ -1133,6 +1152,7 @@ Replies to an email using Graph Mail.
 | MicrosoftGraph.SentMail.ccRecipients | String | The CC recipients of the email. |
 | MicrosoftGraph.SentMail.bccRecipients | String | The BCC recipients of the email. |
 | MicrosoftGraph.SentMail.ID | String | The immutable ID of the message. |
+| MicrosoftGraph.SentMail.replyTo | String | The replyTo recipients of the email. |
 
 
 #### Command Example

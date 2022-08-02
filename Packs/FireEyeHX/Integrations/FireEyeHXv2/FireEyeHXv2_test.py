@@ -1,5 +1,7 @@
-import json
 import io
+import json
+from pathlib import Path
+
 import pytest
 
 
@@ -1594,3 +1596,311 @@ def test_run_commands_without_polling(mocker, demisto_args, call_count):
     assert search.call_count == call_count["search"]
     assert data_acquisition.call_count == call_count['data_acquisition']
     assert file_acquisition.call_count == call_count['file_acquisition']
+
+
+TEST_DELETE_INDICATOR_ARGS = (204, 'Successfully deleted indicator indicator_name from the category category'), \
+                             (404, 'Failed deleting indicator indicator_name from the category category')
+
+
+@pytest.mark.parametrize('status_code,expected_output', TEST_DELETE_INDICATOR_ARGS)
+def test_delete_indicator_command(mocker, requests_mock, status_code: int, expected_output: str):
+    base_url = 'https://example.com'
+    indicator_name = 'indicator_name'
+    category = 'category'
+    from FireEyeHXv2 import delete_indicator_command, Client
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    request = requests_mock.delete(f"{base_url}/indicators/{category}/{indicator_name}",
+                                   status_code=status_code,
+                                   json={})
+    client = Client(base_url)
+    command_result = delete_indicator_command(client, {'indicator_name': indicator_name, 'category': category})
+    assert command_result.readable_output.split(":")[0] == expected_output
+    assert request.call_count == 1
+
+
+@pytest.mark.parametrize('status_code,expected_output_prefix',
+                         ((204, 'Successfully deleted'), (404, 'Failed deleting'), (418, 'Failed deleting')))
+def test_delete_indicator_condition_command(mocker, requests_mock, status_code: int, expected_output_prefix: str):
+    base_url = 'https://example.com'
+    indicator_name = 'indicator_name'
+    category = 'category'
+    indicator_type = 'type'
+    condition_id = 'condition_id'
+    response_message = 'error message'
+
+    from FireEyeHXv2 import Client, delete_condition_command
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    request = requests_mock.delete(f"{base_url}/indicators/{category}/{indicator_name}/"
+                                   f"conditions/{indicator_type}/{condition_id}",
+                                   status_code=status_code,
+                                   json={'message': response_message})
+    client = Client(base_url)
+    command_result = delete_condition_command(client, {'indicator_name': indicator_name, 'category': category,
+                                                       'type': indicator_type, 'condition_id': condition_id})
+    human_readable_args = f'condition {condition_id} ({indicator_type}) of indicator {indicator_name} ({category})'
+    assert request.call_count == 1
+    readable_parts = command_result.readable_output.split(":")
+
+    assert readable_parts[0] == f'{expected_output_prefix} {human_readable_args}'
+    if status_code >= 400:
+        assert 'message' in readable_parts[1]
+    else:
+        assert len(readable_parts) == 1
+
+
+@pytest.mark.parametrize('file_name,status_code', (('list_indicators_success.json', 200),
+                                                   ('list_indicators_unprocessable.json', 402)))
+def test_list_indicator_categories_command(mocker, requests_mock, file_name: str, status_code: int):
+    base_url = 'https://example.com'
+    test_data_folder = Path(__file__).absolute().parent / 'test_data'
+    mocked_response = json.loads((test_data_folder / 'responses' / file_name).read_text())
+    expected_context = json.loads((test_data_folder / 'expected_context' / file_name).read_text())
+
+    from FireEyeHXv2 import list_indicator_categories_command, Client
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    request = requests_mock.get(f'{base_url}/indicator_categories', status_code=status_code, json=mocked_response)
+    client = Client(base_url)
+    command_result = list_indicator_categories_command(client, {'search': 'foo', 'limit': 49})
+    assert command_result.to_context() == expected_context
+    assert request.called_once
+    assert request.last_request._url_parts.query == 'limit=49&search=foo'
+
+
+def test_delete_host_set_command(mocker):
+    """
+    Given:
+        - host set id
+
+    When:
+        - Calling the delete_host_set_request
+
+    Then:
+        - ensure the command ran successfully
+    """
+    from FireEyeHXv2 import delete_host_set_command, Client
+    base_url = 'https://example.com'
+    args = {'host_set_id': 'host_set_id'}
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    mocker.patch.object(Client, 'delete_host_set_request', return_value='')
+
+    client = Client(base_url)
+    command_result = delete_host_set_command(client, args)
+    assert command_result.readable_output == 'Host set host_set_id was deleted successfully'
+
+
+def test_create_static_host_set_command(mocker):
+    """
+    Given:
+        - Host set name, host set ids
+
+    When:
+        - Calling the update_static_host_set_command
+
+    Then:
+        - ensure the command ran successfully
+    """
+    from FireEyeHXv2 import create_static_host_set_command, Client
+    base_url = 'https://example.com'
+    args = {'host_set_name': 'host_set_name',
+            'hosts_ids': 'hosts_ids'}
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    mocker.patch.object(Client, 'create_static_host_set_request', return_value={'data':
+                                                                                {'_id': 'host_set_id',
+                                                                                 '_revision': '20220719071022107807465576'}})
+
+    client = Client(base_url)
+    command_result = create_static_host_set_command(client, args)
+    assert command_result.readable_output == 'Static Host Set host_set_name with id host_set_id was created successfully.'
+
+
+def test_create_dynamic_host_set_command(mocker):
+    """
+    Given:
+        - Host set name, query
+
+    When:
+        - Calling the create_dynamic_host_set command
+
+    Then:
+        - ensure the command ran successfully
+    """
+    from FireEyeHXv2 import create_dynamic_host_set_command, Client
+    base_url = 'https://example.com'
+    args = {'host_set_name': 'host_set_name',
+            'query': 'query'}
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    mocker.patch.object(Client, 'create_dynamic_host_set_request', return_value={'data':
+                                                                                 {'_id': 'host_set_id',
+                                                                                  '_revision': '20220719071022107807465576'}})
+
+    client = Client(base_url)
+    command_result = create_dynamic_host_set_command(client, args)
+    assert command_result.readable_output == 'Dynamic Host Set host_set_name with id host_set_id was created successfully.'
+
+
+@pytest.mark.parametrize('args, expected_results', [({'host_set_name': 'host_set_name',
+                                                      'query': 'query',
+                                                      'query_key': 'query_key'},
+                                                     'Cannot use free text query with other query operators, Please use one.'),
+                                                    ({'host_set_name': 'host_set_name'},
+                                                     'Please provide a free text query,'
+                                                     ' or add all of the query operators toghether.')])
+def test_create_dynamic_host_set_command_failed(args, expected_results):
+    """
+    Given:
+        - Host set name, query or query_key
+
+    When:
+        - Calling the create_dynamic_host_set command
+
+    Then:
+        - failing when missing required data
+    """
+    from FireEyeHXv2 import create_dynamic_host_set_command
+
+    client = ""
+
+    with pytest.raises(Exception) as e:
+        create_dynamic_host_set_command(client, args)
+    assert str(e.value) == expected_results
+
+
+def test_update_static_host_set_command(mocker):
+    """
+    Given:
+        - Host set name, host set id, hosts set to add and host sets to remove
+
+    When:
+        - Calling the update_static_host_set_command
+
+    Then:
+        - ensure the command ran successfully
+    """
+    from FireEyeHXv2 import update_static_host_set_command, Client
+    base_url = 'https://example.com'
+    args = {
+        'host_set_id': 'host_set_id',
+        'host_set_name': 'host_set_name',
+        'add_host_ids': 'add_host_ids',
+        'remove_host_ids': 'remove_host_ids'
+    }
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    mocker.patch.object(Client, 'update_static_host_set_request', return_value={'data':
+                                                                                {'_id': 'host_set_id',
+                                                                                 '_revision': '20220719071022107807465576'}})
+
+    client = Client(base_url)
+    command_result = update_static_host_set_command(client, args)
+    assert command_result.readable_output == 'Static Host Set host_set_name was updated successfully.'
+
+
+def test_update_dynamic_host_set_command(mocker):
+    """
+    Given:
+        - Host set name, query and host set id
+
+    When:
+        - Calling the update_dynamic_host_set command
+
+    Then:
+        - ensure the command ran successfully
+    """
+    from FireEyeHXv2 import update_dynamic_host_set_command, Client
+    base_url = 'https://example.com'
+    args = {'host_set_name': 'host_set_name',
+            'host_set_id': 'host_set_id',
+            'query': 'query'}
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    mocker.patch.object(Client, 'update_dynamic_host_set_request', return_value={'data':
+                                                                                 {'_id': 'host_set_id',
+                                                                                  '_revision': '20220719071022107807465576'}})
+
+    client = Client(base_url)
+    command_result = update_dynamic_host_set_command(client, args)
+    assert command_result.readable_output == 'Dynamic Host Set host_set_name was updated successfully.'
+
+
+@pytest.mark.parametrize('args, expected_results', [({'host_set_name': 'host_set_name',
+                                                      'query': 'query',
+                                                      'query_key': 'query_key'},
+                                                     'Cannot use free text query with other query operators, Please use one.'),
+                                                    ({'host_set_name': 'host_set_name'},
+                                                     'Please provide a free text query,'
+                                                     ' or add all of the query operators toghether.')])
+def test_update_dynamic_host_set_command_failed(args, expected_results):
+    """
+    Given:
+        - Host set name, query or query_key
+
+    When:
+        - Calling the update_dynamic_host_set command
+
+    Then:
+        - failing when missing required data
+    """
+    from FireEyeHXv2 import update_dynamic_host_set_command
+    client = ""
+
+    with pytest.raises(Exception) as e:
+        update_dynamic_host_set_command(client, args)
+    assert str(e.value) == expected_results
+
+
+def test_create_dynamic_host_request_body(mocker):
+    """
+    Given:
+        - Host set name, query or query arguments
+
+    When:
+        - Calling the update_dynamic_host_set command
+
+    Then:
+        - ensure the command ran successfully
+    """
+    from FireEyeHXv2 import Client
+    host_set_name = 'host_set_name'
+    query = {'query': 'query'}
+    query_key = 'query_key'
+    query_value = 'query_value'
+    query_operator = 'query_operator'
+    base_url = 'https://example.com'
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    client = Client(base_url)
+    result = client.create_dynamic_host_request_body(host_set_name, query, '', '', '')
+    assert result == {'name': 'host_set_name', 'query': {'query': 'query'}}
+
+    result = client.create_dynamic_host_request_body(host_set_name, '', query_key, query_value, query_operator)
+    assert result == {'name': 'host_set_name', 'query': {'key': 'query_key',
+                                                         'operator': 'query_operator',
+                                                         'value': 'query_value'}}
+
+
+def test_create_static_host_request_body(mocker):
+    """
+    Given:
+        - Host set name, host set id, hosts set to add and host sets to remove
+
+    When:
+        - Calling the create_static_host_request_body
+
+    Then:
+        - ensure the command ran successfully
+    """
+    from FireEyeHXv2 import Client
+    host_set_name = 'host_set_name'
+    host_ids_to_add = 'host_ids_to_add'
+    host_ids_to_remove = 'host_ids_to_remove'
+
+    base_url = 'https://example.com'
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    client = Client(base_url)
+    result = client.create_static_host_request_body(host_set_name, host_ids_to_add, host_ids_to_remove)
+    assert result == {'changes': [{'add': 'host_ids_to_add', 'command': 'change', 'remove': 'host_ids_to_remove'}],
+                      'name': 'host_set_name'}

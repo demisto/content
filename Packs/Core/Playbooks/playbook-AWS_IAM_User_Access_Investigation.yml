@@ -1,0 +1,653 @@
+id: AWS IAM User Access Investigation
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: AWS IAM User Access Investigation
+description: "Investigate and respond to Cortex XSIAM alerts where an AWS IAM\
+  \ user`s access key is used suspiciously to access the cloud environment. \nThe\
+  \ following alerts are supported for AWS environments.\n- Penetration testing tool\
+  \ attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor\
+  \ exit node\n This is a beta playbook, which lets you implement and test pre-release\
+  \ software. Although AWS is supported, we are working towards multi-cloud support.\
+  \ As the playbook is beta, it might contain bugs. Updates to the playbook during\
+  \ the beta phase might include non-backward compatible features. We encourage\
+  \ feedback on the quality and usability of the content to help us identify and fix issues,\
+  \ so we can continually improve the content.\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 40b4c735-392d-4c86-8ab3-6d49441a813d
+    type: start
+    task:
+      id: 40b4c735-392d-4c86-8ab3-6d49441a813d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c48a2862-f3e1-4dd3-89b7-8590f645298b
+    type: title
+    task:
+      id: c48a2862-f3e1-4dd3-89b7-8590f645298b
+      version: -1
+      name: 'Remediation '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 1e498a1e-df55-4805-8fa9-973ba6554ac1
+    type: title
+    task:
+      id: 1e498a1e-df55-4805-8fa9-973ba6554ac1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: f452a1bf-3fc3-40db-8d4a-1666372f6a82
+    type: condition
+    task:
+      id: f452a1bf-3fc3-40db-8d4a-1666372f6a82
+      version: -1
+      name: Manual decision making - true/false-positive alert
+      description: Based on the collected data investigation and the verdict established
+        by the "Enrichment for Verdict" playbook, is this a true positive event?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      False Positive:
+      - "64"
+      True positive:
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 043b96c8-7870-4754-823d-3a0658690cf2
+    type: title
+    task:
+      id: 043b96c8-7870-4754-823d-3a0658690cf2
+      version: -1
+      name: False Positive - Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 99d6201c-337d-4da6-82a1-bcd06c48573b
+    type: title
+    task:
+      id: 99d6201c-337d-4da6-82a1-bcd06c48573b
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: cee3b559-fdae-4404-863c-39f9dd375566
+    type: title
+    task:
+      id: cee3b559-fdae-4404-863c-39f9dd375566
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 65900bdd-a39d-4848-8edc-4a3026a5360c
+    type: playbook
+    task:
+      id: 65900bdd-a39d-4848-8edc-4a3026a5360c
+      version: -1
+      name: AWS IAM User Access Investigation - Remediation
+      description: "Investigate and respond to Cortex XSIAM alerts where an AWS\
+        \ IAM user`s access key is used suspiciously to access the cloud environment.\
+        \ \nThe following alerts are supported for AWS environments.\n- Penetration\
+        \ testing tool attempt\n- Penetration testing tool activity\n- Suspicious\
+        \ API call from a Tor exit node\n This is a beta playbook, which lets you\
+        \ implement and test pre-release software. Although AWS is supported, we\
+        \ are working towards multi-cloud support. As the playbook is beta, it\
+        \ might contain bugs. Updates to the playbook during the beta phase might\
+        \ include non-backward compatible features. We encourage feedback on\
+        \ the quality and usability of the content to help us identify and fix issues,\
+        \ sp we can continually improve content.\n"
+      playbookName: AWS IAM User Access Investigation - Remediation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      AutoBlockIP:
+        complex:
+          root: inputs.AutoBlockIP
+      AutoDeleteProfile:
+        complex:
+          root: inputs.AutoDeleteProfile
+      DAG:
+        complex:
+          root: inputs.DAG
+      IP:
+        complex:
+          root: alert
+          accessor: hostip
+      IndicatorTag:
+        complex:
+          root: inputs.IndicatorTag
+      accessKeyId:
+        complex:
+          root: Core.OriginalAlert.event.identity_orig
+          accessor: accessKeyId
+      userName:
+        complex:
+          root: alert
+          accessor: username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 9bc32470-1e47-447a-8a0b-f41a4049394c
+    type: condition
+    task:
+      id: 9bc32470-1e47-447a-8a0b-f41a4049394c
+      version: -1
+      name: Close the alert and finish the investigation?
+      description: "Close the alert and finish the investigation?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      "yes":
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 2c77b9cd-84ff-48cc-86cd-a3cb3f439314
+    type: regular
+    task:
+      id: 2c77b9cd-84ff-48cc-86cd-a3cb3f439314
+      version: -1
+      name: Close alert after remediation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: c3ea602e-9306-4e1c-8934-38df053af2f0
+    type: playbook
+    task:
+      id: c3ea602e-9306-4e1c-8934-38df053af2f0
+      version: -1
+      name: Enrichment for Verdict
+      playbookName: Enrichment for Verdict
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      CloseReason:
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved -
+          Known Issue
+      Domain:
+        complex:
+          root: alert
+          accessor: domainname
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+      IP:
+        complex:
+          root: alert
+          accessor: hostip
+      URL:
+        complex:
+          root: alert
+          accessor: url
+      User:
+        complex:
+          root: alert
+          accessor: username
+      awsUser:
+        complex:
+          root: alert
+          accessor: username
+      query:
+        simple: (username:${inputs.awsUser} or hostip:${inputs.IP}) and alertsource:${alert.sourceBrand}
+          and alertname:${alert.name}
+      threshold:
+        simple: "5"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 6c5bcd44-dde7-429a-8838-d0e78c895537
+    type: regular
+    task:
+      id: 6c5bcd44-dde7-429a-8838-d0e78c895537
+      version: -1
+      name: Get cloud original alert
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 8eded0e7-c70b-40a6-8515-6a3215682533
+    type: playbook
+    task:
+      id: 8eded0e7-c70b-40a6-8515-6a3215682533
+      version: -1
+      name: Handle False Positive Alerts
+      description: |
+        This playbook handles false positive alerts.
+      playbookName: Handle False Positive Alerts
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      ShouldCloseAutomatically:
+        complex:
+          root: inputs.ShouldCloseAutomatically
+      alertName:
+        complex:
+          root: alert
+          accessor: name
+      sourceIP:
+        complex:
+          root: alert
+          accessor: hostip
+      username:
+        complex:
+          root: alert
+          accessor: username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 62cfaa81-81fb-4166-8f73-e3e903c5e3c5
+    type: regular
+    task:
+      id: 62cfaa81-81fb-4166-8f73-e3e903c5e3c5
+      version: -1
+      name: Continue the investigation
+      description: "Continue the investigation."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: ac7a9b9c-0d3c-494a-8def-9884ca58aadf
+    type: condition
+    task:
+      id: ac7a9b9c-0d3c-494a-8def-9884ca58aadf
+      version: -1
+      name: Is it a suspicious or Tor IP?
+      description: "Is it a suspicious or Tor IP?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: alert.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious API call from a Tor exit node
+        - operator: isEqualString
+          left:
+            value:
+              simple: IPVerdict
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "21_64_False Positive": 0.54,
+      "21_8_True positive": 0.48,
+      "57_58_yes": 0.82,
+      "66_8_yes": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1885,
+        "width": 1250,
+        "x": -90,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: AutoDeleteProfile
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically delete the user login profile if it exists (True/False).
+  playbookInputQuery:
+- key: AutoBlockIP
+  value:
+    simple: "False"
+  required: false
+  description: 'Whether to initiate block IP playbook automatically (True/False). '
+  playbookInputQuery:
+- key: IndicatorTag
+  value: {}
+  required: false
+  description: |-
+    The tag name for bad reputation IP addresses investigated in the incident.
+    Use this when the EDL service is configured to add indicators to block in PANW PAN-OS.
+    If the indicator verdict (Malicious/Bad) is used to add indicators to Cortex XSIAM EDL you don't need to use the tag. Indicators are set as malicious, automatically in the incident.
+  playbookInputQuery:
+- key: DAG
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
+    Specify the Dynamic Address Group tag name for IP handling.
+  playbookInputQuery:
+- key: ShouldCloseAutomatically
+  value: {}
+  required: false
+  description: Whether to close alerts automatically as a false positive (True/False).
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0

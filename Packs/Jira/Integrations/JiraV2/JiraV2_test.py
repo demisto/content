@@ -442,7 +442,6 @@ def test_get_new_attachment_return_result(requests_mock):
     from dateparser import parse
 
     requests_mock.get('https://localhost/rest/attachment/content/14848', json={})
-    requests_mock.get('https://localhost/rest/attachment/14848', json={'filename': 'download.png'})
     res = get_attachments(JIRA_ATTACHMENT, parse("1996-11-25T16:29:35.277764067Z"))
     assert res[0]["File"] == "download.png"
 
@@ -1295,31 +1294,180 @@ def test_get_attachment_data_request(mocker, requests_mock):
         - Ensure the command does not fail due to a wrong url.
     """
     from JiraV2 import get_attachment_data
-    from test_data.raw_response import ATTACHMENT
+    from test_data.raw_response import ATTACHMENTS
 
     mocker.patch.object(demisto, "params", return_value=integration_params)
     requests_mock.get('https://localhost/rest/api/2/attachment/content/16188', json={})
-    requests_mock.get('https://localhost/rest/api/2/attachment/16188', json={'filename': 'filename'})
 
-    assert get_attachment_data(ATTACHMENT), 'There was a request to the wrong url'
+    assert get_attachment_data(ATTACHMENTS['cloud_attachment']), 'There was a request to the wrong url'
 
 
-def test_get_attachment_data_url_processing(mocker, requests_mock):
+@pytest.mark.parametrize('attachment_to_extract,expected_link', [
+    ('cloud_attachment', '/rest/api/2/attachment/content/16188'),
+    ('on_prem_attachment', '/secure/attachment/18447/filename')])
+def test_get_attachment_data_url_processing(mocker, requests_mock, attachment_to_extract, expected_link):
     """
     Given:
-        - An attachment data.
+        - Case a: An attachment data from jira cloud instance.
+        - Case b: An attachment data from jira on prem instance.
     When
         - Running the get_attachment_data command.
     Then
-        - Ensure the filename output is correct, and the req_path is correct.
+        - Ensure the filename output is correct, and the req_path correspond to the right type of system.
     """
     from JiraV2 import get_attachment_data
-    from test_data.raw_response import ATTACHMENT
-
-    request = requests_mock.get('https://localhost/rest/api/2/attachment/content/16188', json={})
-    requests_mock.get('https://localhost/rest/api/2/attachment/16188', json={'filename': 'filename'})
+    from test_data.raw_response import ATTACHMENTS
+    attachment = ATTACHMENTS[attachment_to_extract]
+    url_to_mock = attachment.get('content')
+    request = requests_mock.get(url_to_mock, json={})
     mocker.patch.object(demisto, "params", return_value=integration_params)
-    filename, _ = get_attachment_data(ATTACHMENT)
+
+    filename, _ = get_attachment_data(attachment)
 
     assert filename == 'filename'
-    assert request.last_request.path == '/rest/api/2/attachment/content/16188'
+    assert request.last_request.path == expected_link
+
+
+attribute_mock_response_email_exists = [
+    {'self': 'https://test.atlassian.net',
+     'accountId': 'TEST-ID',
+     'accountType': 'atlassian',
+     'emailAddress': 'some_email@mail.com',
+     'avatarUrls': {},
+     'displayName': 'some user',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     }]
+
+attribute_mock_response_no_email = [
+    {'self': 'https://test.atlassian.net',
+     'accountId': 'TEST-ID',
+     'accountType': 'atlassian',
+     'emailAddress': '',
+     'avatarUrls': {},
+     'displayName': 'some user',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     }]
+
+attribute_mock_response_no_email_multiple = [
+    {'self': 'https://test1.atlassian.net',
+     'accountId': 'TEST-ID1',
+     'accountType': 'atlassian',
+     'emailAddress': '',
+     'avatarUrls': {},
+     'displayName': 'some user1',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     },
+    {'self': 'https://test2.atlassian.net',
+     'accountId': 'TEST-ID2',
+     'accountType': 'atlassian',
+     'emailAddress': '',
+     'avatarUrls': {},
+     'displayName': 'some user2',
+     'active': True,
+     'timeZone': 'Asia',
+     'locale': 'en_US'
+     }
+]
+
+
+@pytest.mark.parametrize('mock_response, expected_output', [(attribute_mock_response_email_exists, 'TEST-ID'),
+                                                            (attribute_mock_response_no_email, 'TEST-ID'),
+                                                            (attribute_mock_response_no_email_multiple,
+                                                             'Multiple account IDs found')])
+def test_get_account_id_from_attribute_valid_attribute_match(mocker, mock_response, expected_output):
+    """
+    Given:
+        - An email attribute.
+    When
+        - Running the get_account_id_from_attribute command when:
+         1. email matches the email in the response.
+         2. email in the response is hidden but there is only one option.
+         3. email in the response is hidden and there are multiple options.
+    Then
+        - Ensure the attribute was found and the output is correct.
+    """
+    from JiraV2 import get_account_id_from_attribute
+
+    mocker.patch('JiraV2.search_user', return_value=mock_response)
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    res = get_account_id_from_attribute(attribute='some_email@mail.com')
+    if len(mock_response) == 2:  # case number three
+        assert expected_output in res
+    else:
+        assert expected_output == res.outputs['AccountID']
+
+
+def test_get_account_id_from_attribute_attribute_do_not_match(mocker):
+    """
+    Given:
+        - An email attribute.
+    When
+        - Running the get_account_id_from_attribute command.
+    Then
+        - Ensure the attribute was found but no match for the email.
+    """
+    from JiraV2 import get_account_id_from_attribute
+    mock_response = [
+        {'self': 'https://test.atlassian.net',
+         'accountId': 'TEST-ID',
+         'accountType': 'atlassian',
+         'emailAddress': '',
+         'avatarUrls': {},
+         'displayName': 'some user',
+         'active': True,
+         'timeZone': 'Asia',
+         'locale': 'en_US'
+         }]
+    mocker.patch('JiraV2.search_user', return_value=mock_response)
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    res = get_account_id_from_attribute(attribute='some_email@mail.com')
+
+    assert res.outputs['AccountID'] == 'TEST-ID'
+
+
+def test_append_to_empty_field_command(mocker):
+    """
+    Given:
+        - The issue ID, a json of field and new values
+    When
+        - Running the append_to_field_command
+    Then
+        - Ensure appending is working as excpected
+    """
+    from test_data.raw_response import GET_ISSUE_RESPONSE
+    from JiraV2 import append_to_field_command
+
+    mocker.patch('JiraV2.jira_req', return_value=GET_ISSUE_RESPONSE)
+    mocker.patch('JiraV2.__get_field_type', return_value='string')
+    mock_update = mocker.patch('JiraV2._update_fields')
+
+    _, outputs, _ = append_to_field_command('id', field_json='{"labels":"New"}')
+
+    mock_update.assert_called_with('id', {'labels': 'New'})
+
+
+def test_append_to_existing_field_command(mocker):
+    """
+    Given:
+        - The issue ID, a json of field and new values
+    When
+        - Running the append_to_field_command
+    Then
+        - Ensure appending is working as excpected
+    """
+    from test_data.raw_response import GET_ISSUE_RESPONSE_WITH_LABELS
+    from JiraV2 import append_to_field_command
+
+    mocker.patch('JiraV2.jira_req', return_value=GET_ISSUE_RESPONSE_WITH_LABELS)
+    mocker.patch('JiraV2.__get_field_type', return_value='array')
+    mock_update = mocker.patch('JiraV2._update_fields')
+
+    _, outputs, _ = append_to_field_command('id', field_json='{"labels":"New"}')
+
+    mock_update.assert_called_with('id', {'labels': ['test', 'New']})

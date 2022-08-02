@@ -104,6 +104,7 @@ def date_string_to_iso_format_parsing(date_str):
     :rtype: ``str``
     """
     parsed_date_format = dateparser.parse(date_str, date_formats=[SOCRADAR_DATE_FORMAT], settings={'TIMEZONE': 'UTC'})
+    assert parsed_date_format is not None, f'could not parse {date_str}'
     return parsed_date_format.strftime(DATE_FORMAT)
 
 

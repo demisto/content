@@ -1,0 +1,115 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Forescout EyeInspect mapper",
+    "mapping": {
+        "Forescout EyeInspect": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Destination MAC Address": {
+                    "complex": null,
+                    "simple": "dst_mac"
+                },
+                "Event Names": {
+                    "complex": null,
+                    "simple": "event_type_names"
+                },
+                "Event Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "event_type_ids",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Forescout EyeInspect Engine": {
+                    "complex": null,
+                    "simple": "engine"
+                },
+                "Forescout EyeInspect L2 Protocol": {
+                    "complex": null,
+                    "simple": "l2_proto"
+                },
+                "Forescout EyeInspect L3 Protocol": {
+                    "complex": null,
+                    "simple": "l3_proto"
+                },
+                "Forescout EyeInspect L4 Protocol": {
+                    "complex": null,
+                    "simple": "l4_proto"
+                },
+                "Forescout EyeInspect L7 Protocol": {
+                    "complex": null,
+                    "simple": "l7_proto"
+                },
+                "Forescout EyeInspect Sensor ID": {
+                    "complex": null,
+                    "simple": "sensor_id"
+                },
+                "Sensor Name": {
+                    "complex": null,
+                    "simple": "sensor_name"
+                },
+                "Source MAC Address": {
+                    "complex": null,
+                    "simple": "src_mac"
+                },
+                "Source Status": {
+                    "complex": null,
+                    "simple": "status"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "alert_id"
+                },
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "event_type_names.[0]"
+                },
+                "Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "Destination IP": {
+                    "complex": null,
+                    "simple": "dst_ip"
+                },
+                "Destination Port": {
+                    "complex": null,
+                    "simple": "dst_port"
+                },
+                "Source IP": {
+                    "complex": null,
+                    "simple": "src_ip"
+                },
+                "Source Port": {
+                    "complex": null,
+                    "simple": "src_port"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "timestamp"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "xsoar_severity"
+                }
+            }
+        }
+    },
+    "name": "Forescout EyeInspect mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.1.0"
+}

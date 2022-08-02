@@ -343,12 +343,16 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     })
     all_alerts = raw_response.get('alert')
 
+    ten_minutes = dateparser.parse('10 minutes')
+    assert ten_minutes is not None
     if not all_alerts:
         demisto.info(f'{INTEGRATION_NAME} no alerts were fetched from FireEye server at: {str(next_run)}')
         # as no alerts occurred in the window of 48 hours from the given start time, update last_run window to the next
         # 48 hours. If it is later than now -10 minutes take the latter (to avoid missing events).
-        two_days_from_last_search = (dateparser.parse(next_run['time']) + timedelta(hours=48))
-        now_minus_ten_minutes = dateparser.parse('10 minutes').astimezone(two_days_from_last_search.tzinfo)
+        next_run_time_date = dateparser.parse(str(next_run['time']))
+        assert next_run_time_date is not None
+        two_days_from_last_search = (next_run_time_date + timedelta(hours=48))
+        now_minus_ten_minutes = ten_minutes.astimezone(two_days_from_last_search.tzinfo)
         next_search = min(two_days_from_last_search, now_minus_ten_minutes)
         next_run = {
             'time': next_search.isoformat(),
@@ -364,9 +368,11 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     for alert in alerts:
         alert_id = str(alert.get('id'))
         if alert_id not in last_alert_ids:  # check that event was not fetched in the last fetch
+            occurred_date = dateparser.parse(alert.get('occurred'))
+            assert occurred_date is not None, f"could not parse {alert.get('occurred')}"
             incident = {
                 'name': f'{INTEGRATION_NAME} Alert: {alert_id}',
-                'occurred': dateparser.parse(alert.get('occurred')).strftime(DATE_FORMAT),
+                'occurred': occurred_date.strftime(DATE_FORMAT),
                 'severity': alert_severity_to_dbot_score(alert.get('severity')),
                 'rawJSON': json.dumps(alert)
             }
@@ -378,8 +384,10 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         # As no incidents were collected, we know that all the fetched alerts for 48 hours starting in the 'start_time'
         # already exists in our system, thus update last_run time to look for the next 48 hours. If it is later than
         # now -10 minutes take the latter (to avoid missing events)
-        two_days_from_last_incident = dateparser.parse(alerts[-1].get('occurred')) + timedelta(hours=48)
-        now_minus_ten_minutes = dateparser.parse('10 minutes').astimezone(two_days_from_last_incident.tzinfo)
+        parsed_date = dateparser.parse(alerts[-1].get('occurred'))
+        assert parsed_date is not None, f"could not parse {alerts[-1].get('occurred')}"
+        two_days_from_last_incident = parsed_date + timedelta(hours=48)
+        now_minus_ten_minutes = ten_minutes.astimezone(two_days_from_last_incident.tzinfo)
         next_search = min(two_days_from_last_incident, now_minus_ten_minutes)
         next_run['time'] = next_search.isoformat()
         demisto.info(f'{INTEGRATION_NAME} Setting next_run to: {next_run["time"]}')
@@ -450,7 +458,6 @@ def main() -> None:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(err), err)
 
 

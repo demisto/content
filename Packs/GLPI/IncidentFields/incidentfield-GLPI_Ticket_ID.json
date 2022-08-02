@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GLPI Incident",
+        "GLPI Request"
+    ],
+    "caseInsensitive": true,
+    "cliName": "glpiticketid",
+    "closeForm": false,
+    "content": true,
+    "description": "GLPI ticket id",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_glpiticketid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GLPI Ticket ID",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

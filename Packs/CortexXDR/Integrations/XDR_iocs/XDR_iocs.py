@@ -30,6 +30,18 @@ demisto_score_to_xdr: Dict[int, str] = {
 }
 
 
+def batch_iocs(generator, batch_size=200):
+    current_batch = []
+    for indicator in generator:
+        current_batch.append(indicator)
+        if len(current_batch) >= batch_size:
+            yield current_batch
+            current_batch = []
+
+    if current_batch:
+        yield current_batch
+
+
 class Client:
     severity: str = ''
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
@@ -60,8 +72,12 @@ class Client:
                             headers=self._headers,
                             **requests_kwargs)
 
-        if res.status_code in self.error_codes:
-            raise DemistoException(self.error_codes[res.status_code], res=res)
+        if not res.ok:
+            status_code = res.status_code
+            if status_code in self.error_codes:
+                raise DemistoException(self.error_codes[res.status_code], res=res)
+            raise DemistoException(f'{status_code}: {res.text}')
+
         try:
             return res.json()
         except json.decoder.JSONDecodeError as e:
@@ -128,7 +144,7 @@ def create_file_iocs_to_keep(file_path, batch_size: int = 200):
 
 def create_file_sync(file_path, batch_size: int = 200):
     with open(file_path, 'w') as _file:
-        for ioc in map(lambda x: demisto_ioc_to_xdr(x), get_iocs_generator(size=batch_size)):
+        for ioc in map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size)):
             if ioc:
                 _file.write(json.dumps(ioc) + '\n')
 
@@ -147,8 +163,10 @@ def get_iocs_generator(size=200, query=None) -> Iterable:
 def demisto_expiration_to_xdr(expiration) -> int:
     if expiration and not expiration.startswith('0001'):
         try:
-            return int(parse(expiration).astimezone(timezone.utc).timestamp() * 1000)
-        except ValueError:
+            expiration_date = parse(expiration)
+            assert expiration_date is not None, f'could not parse {expiration}'
+            return int(expiration_date.astimezone(timezone.utc).timestamp() * 1000)
+        except (ValueError, AssertionError):
             pass
     return -1
 
@@ -291,8 +309,11 @@ def tim_insert_jsons(client: Client):
         iocs = get_indicators(indicators)
     if iocs:
         path = 'tim_insert_jsons/'
-        requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_xdr(ioc), iocs)))
-        client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+        for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
+            demisto.debug(f'push batch: {i}')
+            requests_kwargs: Dict = get_requests_kwargs(_json=list(
+                map(demisto_ioc_to_xdr, single_batch_iocs)))
+            client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     return_outputs('push done.')
 
 

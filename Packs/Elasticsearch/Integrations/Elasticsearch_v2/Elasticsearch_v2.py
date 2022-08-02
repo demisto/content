@@ -566,7 +566,7 @@ def results_to_incidents_datetime(response, last_fetch):
 
                 incidents.append(inc)
 
-    return incidents, format_to_iso(last_fetch.isoformat())
+    return incidents, last_fetch.isoformat()
 
 
 def format_to_iso(date_string):
@@ -578,6 +578,9 @@ def format_to_iso(date_string):
     Returns:
         str. A date string in the format: YYYY-MM-DDThh:mm:ssZ
     """
+    if '.' in date_string:
+        date_string = date_string.split('.')[0]
+
     if len(date_string) > 19 and not date_string.endswith('Z'):
         date_string = date_string[:-6]
 

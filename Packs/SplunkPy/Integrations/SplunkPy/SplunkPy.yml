@@ -51,7 +51,7 @@ configuration:
   name: parseNotableEventsRaw
   required: false
   type: 8
-- defaultvalue: false
+- defaultvalue: 'false'
   display: Replace with Underscore in Incident Fields
   name: replaceKeys
   required: false
@@ -193,6 +193,29 @@ configuration:
   required: false
   additionalinfo: Use this parameter to specify a list of comma separated fields, which
     together are a unique identifier for the events you wish to fetch.
+- display: Enable user mapping
+  defaultvalue: 'false'
+  name: userMapping
+  required: false
+  type: 8
+- display: Users Lookup table name
+  additionalinfo: The name of the lookup table in splunk, containing the username's mapping data.
+  defaultvalue: splunk_xsoar_users
+  name: user_map_lookup_name
+  required: false
+  type: 0
+- display: XSOAR user key
+  additionalinfo: The name of the lookup column containing the xsoar username.
+  defaultvalue: xsoar_username
+  name: xsoar_user_field
+  required: false
+  type: 0
+- display: SPLUNK user key
+  additionalinfo: The name of the lookup table containing the Splunk username.
+  defaultvalue: splunk_username
+  name: splunk_user_field
+  required: false
+  type: 0
 description: Runs queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -807,7 +830,25 @@ script:
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
     description: Resets the enrichment mechanism of fetched notables.
-  dockerimage: demisto/splunksdk:1.0.0.24033
+  - arguments:
+      - default: true
+        description: Xsoar username to match in splunk's usernames records.
+        isArray: true
+        name: xsoar_username
+        required: true
+        secret: false
+    deprecated: false
+    description: Returns the Splunk's username matching the given Xsoar's username.
+    execution: false
+    name: splunk-get-username-by-xsoar-user
+    outputs:
+    - contextPath: Splunk.UserMapping.XsoarUser
+      description: xsoar user mapping.
+      type: String
+    - contextPath: Splunk.UserMapping.SplunkUser
+      description: splunk user mapping.
+      type: String
+  dockerimage: demisto/splunksdk:1.0.0.32388
   feed: false
   isfetch: true
   longRunning: false

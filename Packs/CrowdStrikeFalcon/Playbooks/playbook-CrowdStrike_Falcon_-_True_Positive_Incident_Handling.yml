@@ -1,0 +1,1318 @@
+id: CrowdStrike Falcon - True Positive Incident Handling
+version: -1
+fromversion: 6.5.0
+name: CrowdStrike Falcon - True Positive Incident Handling
+description:
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook handles a CrowdStrike incident that was determined to be a true positive by the analyst.
+  Actions include isolating the host, blocking the indicator by the EDR, and tagging it.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 60d8e1b7-506b-4eb4-8fda-18bad595c297
+    type: start
+    task:
+      id: 60d8e1b7-506b-4eb4-8fda-18bad595c297
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+      - '46'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 528230b6-5ae3-48cf-8606-2352301ca550
+    type: title
+    task:
+      id: 528230b6-5ae3-48cf-8606-2352301ca550
+      version: -1
+      name: IT remediation
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1210,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 4a6c8a03-1490-4bb8-8807-ecacd73aea2c
+    type: condition
+    task:
+      id: 4a6c8a03-1490-4bb8-8807-ecacd73aea2c
+      version: -1
+      name: Is ticketing system input defined?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      JIRA:
+      - '22'
+      SNOW:
+      - '21'
+    separatecontext: false
+    conditions:
+    - label: SNOW
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.TicketingSystemToUse
+            iscontext: true
+          right:
+            value:
+              simple: SNOW
+          ignorecase: true
+    - label: JIRA
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.TicketingSystemToUse
+            iscontext: true
+          right:
+            value:
+              simple: JIRA
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -1210,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: caccc895-7127-4fa4-8110-845a64208b14
+    type: regular
+    task:
+      id: caccc895-7127-4fa4-8110-845a64208b14
+      version: -1
+      name: Open Snow ticket
+      description: |-
+        This script wraps the generic create-record command in ServiceNow.
+        You can add fields you want to create the record with as script arguments or in the
+        code.
+      scriptName: ServiceNowCreateIncident
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      description:
+        simple: ${inputs.TicketDescription}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1420,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 637c7650-e6bc-4d8b-87ef-f30dc0aea1e3
+    type: title
+    task:
+      id: 637c7650-e6bc-4d8b-87ef-f30dc0aea1e3
+      version: -1
+      name: Done IT Remediation
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1210,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 8487b040-6d7c-4baf-85e9-07f0d6e7aed0
+    type: title
+    task:
+      id: 8487b040-6d7c-4baf-85e9-07f0d6e7aed0
+      version: -1
+      name: Block Indicators
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '45'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 161ac39a-06c1-4fc7-87c0-a6cee8d13ad2
+    type: regular
+    task:
+      id: 161ac39a-06c1-4fc7-87c0-a6cee8d13ad2
+      version: -1
+      name: Block IOC globally
+      description: Uploads an indicator for CrowdStrike to monitor.
+      script: '|||cs-falcon-upload-custom-ioc'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      action:
+        simple: prevent
+      applied_globally:
+        simple: 'true'
+      description:
+        simple: due to XSOAR incident ${incident.id}
+      ioc_type:
+        simple: sha256
+      platforms:
+        simple: mac,windows,linux
+      value:
+        simple: ${Indicators to block.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 4e6cdd2e-5ef1-49a9-8905-aa8088bbc0c0
+    type: regular
+    task:
+      id: 4e6cdd2e-5ef1-49a9-8905-aa8088bbc0c0
+      version: -1
+      name: Tag Indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      indicatorsValues:
+        simple: ${Indicators to block.Answers.0}
+      tags:
+        simple: ${inputs.BlockIOCTagName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: c3de6e2f-bbdf-4188-8e76-abe9627130e1
+    type: title
+    task:
+      id: c3de6e2f-bbdf-4188-8e76-abe9627130e1
+      version: -1
+      name: Done Block Indicators
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 4f69a906-a3df-4079-8d61-f40be028eeb7
+    type: title
+    task:
+      id: 4f69a906-a3df-4079-8d61-f40be028eeb7
+      version: -1
+      name: True Positive Incident Closing
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: d0c30917-314b-4f3c-8334-befe4a17b7cc
+    type: title
+    task:
+      id: d0c30917-314b-4f3c-8334-befe4a17b7cc
+      version: -1
+      name: Done True Positive
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: bfacf224-5d44-475f-8704-2a208fc11e17
+    type: regular
+    task:
+      id: bfacf224-5d44-475f-8704-2a208fc11e17
+      version: -1
+      name: Resolve CS incident
+      description: Resolves the CrowdStrike Falcon incident.
+      script: '|||cs-falcon-resolve-incident'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      ids:
+        simple: ${incident.externalsystemid}
+      status:
+        simple: Closed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: 91e0201f-ece7-46ad-8708-c95cf1ac8399
+    type: regular
+    task:
+      id: 91e0201f-ece7-46ad-8708-c95cf1ac8399
+      version: -1
+      name: Resolve CS detection
+      description: Resolves and updates a CrowdStrike Falcon detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place.
+      script: '|||cs-falcon-resolve-detection'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      comment:
+        simple: ${inputs.CloseNotes}
+      ids:
+        simple: ${incident.externalsystemid}
+      status:
+        simple: true_positive
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: 13e4742d-d344-4795-874e-bfe7f3d19013
+    type: condition
+    task:
+      id: 13e4742d-d344-4795-874e-bfe7f3d19013
+      version: -1
+      name: Was this an incident or alert?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      detection:
+      - '15'
+      incident:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: incident
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.externalcategoryname
+            iscontext: true
+          right:
+            value:
+              simple: incident
+    - label: detection
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.externalcategoryname
+            iscontext: true
+          right:
+            value:
+              simple: detection
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: 90d0d8ac-75b4-41ce-81ce-f6639d1c695f
+    type: condition
+    task:
+      id: 90d0d8ac-75b4-41ce-81ce-f6639d1c695f
+      version: -1
+      name: Is ServiceNow Available?
+      description: Returns 'yes' if the ServiceNow integration is enabled.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '5'
+      yes:
+      - '3'
+    scriptarguments:
+      brandname:
+        simple: ServiceNow v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1420,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: ee436f66-fde3-4caa-8730-2ddf0425a959
+    type: condition
+    task:
+      id: ee436f66-fde3-4caa-8730-2ddf0425a959
+      version: -1
+      name: Is Jira Available?
+      description: Returns 'yes' if the Jira integration is available.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '5'
+      yes:
+      - '38'
+    scriptarguments:
+      brandname:
+        simple: jira-v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1000,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '23':
+    id: '23'
+    taskid: ea9fd0b1-fd0a-4987-89d3-5432b5ef7e74
+    type: regular
+    task:
+      id: ea9fd0b1-fd0a-4987-89d3-5432b5ef7e74
+      version: -1
+      name: Remove file
+      description: Batch executes RTR active-responder remove file across the hosts mapped to a specific batch ID.
+      script: '|||cs-falcon-rtr-remove-file'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments:
+      file_path:
+        simple: ${Select the file path to remove.Answers.0}
+      host_ids:
+        simple: ${inputs.HostID}
+      os:
+        simple: ${inputs.OperatingSystemToRemoveFrom}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1960,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '24':
+    id: '24'
+    taskid: 12197a47-0fc1-47bb-84fa-566e4b2b066c
+    type: title
+    task:
+      id: 12197a47-0fc1-47bb-84fa-566e4b2b066c
+      version: -1
+      name: Remove File
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '26':
+    id: '26'
+    taskid: d8b21ec7-c705-41d5-8ecc-1ea808f01ce9
+    type: collection
+    task:
+      id: d8b21ec7-c705-41d5-8ecc-1ea808f01ce9
+      version: -1
+      name: Allow to remove file
+      type: collection
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '50'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Provide path to remove file from
+      methods: []
+      format: ''
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Yes
+      - No
+    form:
+      questions:
+      - id: '0'
+        label: ''
+        labelarg:
+          simple: Select the file path to remove
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${inputs.PathsForFilesToRemove}
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
+        readonly: false
+      title: Select the file path to remove
+      description: ''
+      sender: ''
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
+    taskid: 4ff0b30c-fdfa-46e5-80bc-aa7382e45ddb
+    type: title
+    task:
+      id: 4ff0b30c-fdfa-46e5-80bc-aa7382e45ddb
+      version: -1
+      name: Done File Removal
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '28':
+    id: '28'
+    taskid: e8f22502-f0dd-4c13-899a-9f94b25f38b3
+    type: playbook
+    task:
+      id: e8f22502-f0dd-4c13-899a-9f94b25f38b3
+      version: -1
+      name: Crowdstrike Falcon - Isolate Endpoint
+      description: This playbook auto isolates endpoints by the device ID provided in the playbook.
+      playbookName: Crowdstrike Falcon - Isolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments:
+      Device_id:
+        simple: ${inputs.HostID}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: 30545134-219f-4588-8646-c807f9cc56f1
+    type: title
+    task:
+      id: 30545134-219f-4588-8646-c807f9cc56f1
+      version: -1
+      name: 'Isolate '
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '30':
+    id: '30'
+    taskid: 8e581b19-c104-4a84-8851-61776c01bd69
+    type: condition
+    task:
+      id: 8e581b19-c104-4a84-8851-61776c01bd69
+      version: -1
+      name: Is auto isolation allowed?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '31'
+      yes:
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoIsolation
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '31':
+    id: '31'
+    taskid: e3b76903-336e-4ae4-8c55-d65c7601a0ed
+    type: title
+    task:
+      id: e3b76903-336e-4ae4-8c55-d65c7601a0ed
+      version: -1
+      name: Done Isolation
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '38':
+    id: '38'
+    taskid: 952f7817-17c5-4136-8935-7d8aa53729b4
+    type: regular
+    task:
+      id: 952f7817-17c5-4136-8935-7d8aa53729b4
+      version: -1
+      name: Create Jira issue
+      description: Creates a new issue in Jira.
+      script: '|||jira-create-issue'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      description:
+        complex:
+          root: inputs.TicketDescription
+      projectKey:
+        complex:
+          root: inputs.TicketProjectName
+      summary:
+        simple: ${inputs.TicketDescription}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1000,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '41':
+    id: '41'
+    taskid: cc973a32-27d9-40c0-8906-5f60c3c0aa41
+    type: condition
+    task:
+      id: cc973a32-27d9-40c0-8906-5f60c3c0aa41
+      version: -1
+      name: Is IOC allowed to be added globally?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '10'
+      Globally:
+      - '8'
+      Host Group:
+      - '43'
+    separatecontext: false
+    conditions:
+    - label: Globally
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.BlockMaliciousIOCGlobally
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+          ignorecase: true
+    - label: Host Group
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: inputs.BlockMaliciousIOCGlobally
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.BlockHostGroupName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '43':
+    id: '43'
+    taskid: 41a97e56-51c9-4a73-8c81-fc993dd7d9b7
+    type: regular
+    task:
+      id: 41a97e56-51c9-4a73-8c81-fc993dd7d9b7
+      version: -1
+      name: Block IOC for host group
+      description: Uploads an indicator for CrowdStrike to monitor.
+      script: '|||cs-falcon-upload-custom-ioc'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      action:
+        simple: prevent
+      description:
+        simple: due to XSOAR incident ${incident.id}
+      host_groups:
+        simple: ${inputs.BlockHostGroupName}
+      ioc_type:
+        simple: sha256
+      platforms:
+        simple: mac,windows,linux
+      value:
+        simple: ${Indicators to block.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '45':
+    id: '45'
+    taskid: 4d39776a-0a20-4914-8ce7-b9278e6af590
+    type: collection
+    task:
+      id: 4d39776a-0a20-4914-8ce7-b9278e6af590
+      version: -1
+      name: Confirm Indicators to block
+      type: collection
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '49'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ''
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: '0'
+        label: ''
+        labelarg:
+          simple: Mark the indicators to block
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${inputs.Sha256}
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
+        readonly: false
+      title: Indicators to block
+      description: ''
+      sender: ''
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '46':
+    id: '46'
+    taskid: 92924aa3-2576-4329-80f0-a1ff829ff6bf
+    type: title
+    task:
+      id: 92924aa3-2576-4329-80f0-a1ff829ff6bf
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '29'
+      - '6'
+      - '24'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '49':
+    id: '49'
+    taskid: bea75fc0-ea15-4515-80d9-d8b09c67948e
+    type: condition
+    task:
+      id: bea75fc0-ea15-4515-80d9-d8b09c67948e
+      version: -1
+      name: Were are values provided?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '10'
+      yes:
+      - '41'
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: '1'
+            iscontext: true
+          right:
+            value:
+              simple: '1'
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '50':
+    id: '50'
+    taskid: 4bfee436-6d61-427f-8c34-e17faa6ea6ba
+    type: condition
+    task:
+      id: 4bfee436-6d61-427f-8c34-e17faa6ea6ba
+      version: -1
+      name: Were are values provided?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '27'
+      yes:
+      - '23'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Select the file path to remove.Answers.0
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "41_10_#default#": 0.6
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2095,
+        "width": 3980,
+        "x": -1420,
+        "y": -280
+      }
+    }
+  }
+inputs:
+- key: TicketingSystemToUse
+  value: {}
+  required: false
+  description: The name of the ticketing system to use, for example Jira or ServiceNow.
+  playbookInputQuery:
+- key: BlockIOCTagName
+  value: {}
+  required: false
+  description: The tag to assign for indicators to block.
+  playbookInputQuery:
+- key: HostID
+  value: {}
+  required: false
+  description: The ID of the host to use.
+  playbookInputQuery:
+- key: AutoIsolation
+  value:
+    simple: 'false'
+  required: false
+  description: |
+    Whether automatic host isolation is allowed.
+  playbookInputQuery:
+- key: TicketProjectName
+  value: {}
+  required: false
+  description: The ticket project name (required for Jira).
+  playbookInputQuery:
+- key: BlockMaliciousIOCGlobally
+  value:
+    simple: 'True'
+  required: false
+  description: |-
+    Whether adding to block list is global.
+    If False, provide an input for the BlockHostGroup input with the group name.
+  playbookInputQuery:
+- key: BlockHostGroupName
+  value: {}
+  required: false
+  description: The name of the allow list group to apply if BlockMaliciousIOCGlobally is set to False.
+  playbookInputQuery:
+- key: TicketDescription
+  value: {}
+  required: false
+  description: The description to be used by the ticketing system.
+  playbookInputQuery:
+- key: CloseNotes
+  value: {}
+  required: false
+  description: Provide the close notes to be listed in CrowdStrike.
+  playbookInputQuery:
+- key: Sha256
+  value: {}
+  required: false
+  description: The SHA256 value to manage.
+  playbookInputQuery:
+- key: PathsForFilesToRemove
+  value: {}
+  required: false
+  description: Provide the path for the file to remove.
+  playbookInputQuery:
+- key: OperatingSystemToRemoveFrom
+  value: {}
+  required: false
+  description: |-
+    Values can be
+    Windows, Linux, Mac
+  playbookInputQuery:
+outputs: []
+tests:
+ -  No tests

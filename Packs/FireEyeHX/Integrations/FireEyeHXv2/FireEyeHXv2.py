@@ -1,19 +1,11 @@
-
-import demistomock as demisto
-from CommonServerPython import *
-
-import base64
-import json
-import os
-import re
 import urllib.parse
-import requests
-import traceback
-from typing import Dict, Any, Tuple, Pattern
+from json import JSONDecodeError
+from typing import Tuple, Pattern
+
+from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
 
 ''' CONSTANTS '''
 
@@ -680,7 +672,8 @@ class Client(BaseClient):
 
         headers = {'Accept': 'application/json'}
 
-        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=range(200, 205), headers=headers, auth=auth)
+        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=tuple(range(200, 205)), headers=headers,
+                         auth=auth)
 
         self._headers['X-FeApi-Token'] = self.get_token_request()
 
@@ -709,7 +702,8 @@ class Client(BaseClient):
     POLICIES REQUEST
     """
 
-    def list_policy_request(self, offset: int, limit: int, policy_id: str = None, name: str = None, enabled: bool = None):
+    def list_policy_request(self, offset: int, limit: int, policy_id: str = None, name: str = None,
+                            enabled: bool = None):
 
         params = assign_params(_id=policy_id, name=name, offset=offset, limit=limit, enabled=enabled)
 
@@ -837,6 +831,84 @@ class Client(BaseClient):
         )
 
     """
+    HOST SETS
+    """
+
+    def delete_host_set_request(self, host_set_id: str):
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f'host_sets/{host_set_id}',
+            return_empty_response=True
+        )
+
+    def create_static_host_set_request(self, host_set_name: str, hosts_ids: List[str]):
+        body = self.create_static_host_request_body(host_set_name, hosts_ids, [])
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/host_sets/static',
+            json_data=body
+        )
+
+    def update_static_host_set_request(self, host_set_id, host_set_name, add_host_ids, remove_host_ids):
+        body = self.create_static_host_request_body(host_set_name, add_host_ids, remove_host_ids)
+
+        return self._http_request(
+            method='PUT',
+            url_suffix=f'/host_sets/static/{host_set_id}',
+            json_data=body
+        )
+
+    def create_dynamic_host_set_request(self, host_set_name, query, query_key, query_value, query_operator):
+        body = self.create_dynamic_host_request_body(host_set_name, query, query_key, query_value, query_operator)
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/host_sets/dynamic',
+            json_data=body
+        )
+
+    def update_dynamic_host_set_request(self, host_set_id, host_set_name, query, query_key, query_value, query_operator):
+        body = self.create_dynamic_host_request_body(host_set_name, query, query_key, query_value, query_operator)
+
+        return self._http_request(
+            method='PUT',
+            url_suffix=f'/host_sets/dynamic/{host_set_id}',
+            json_data=body
+        )
+
+    @staticmethod
+    def create_static_host_request_body(host_set_name: str, host_ids_to_add: list, host_ids_to_remove: list):
+        body = {
+            'name': host_set_name,
+            'changes': [
+                {
+                    'command': 'change',
+                    'add': host_ids_to_add,
+                    'remove': host_ids_to_remove
+                }
+            ]
+        }
+
+        return body
+
+    @staticmethod
+    def create_dynamic_host_request_body(host_set_name: str, query: str, query_key: str, query_value: str, query_operator: str):
+        body: Dict[str, Any] = {
+            'name': host_set_name,
+        }
+
+        if query:
+            body['query'] = safe_load_json(query)
+        else:
+            body['query'] = {'key': query_key,
+                             'value': query_value,
+                             'operator': query_operator
+                             }
+
+        return body
+
+    """
     ACQUISITION REQUEST
     """
 
@@ -871,7 +943,8 @@ class Client(BaseClient):
             resp_type='content'
         )
 
-    def file_acquisition_request(self, agent_id, file_name, file_path, comment=None, external_id=None, req_use_api=None):
+    def file_acquisition_request(self, agent_id, file_name, file_path, comment=None, external_id=None,
+                                 req_use_api=None):
 
         body = assign_params(req_path=file_path, req_filename=file_name,
                              comment=comment, external_id=external_id, req_use_api=req_use_api)
@@ -914,7 +987,8 @@ class Client(BaseClient):
 
     def get_alerts_request(self, has_share_mode=None, resolution=None, agent_id=None,
                            condition_id=None, limit=None, offset=None, sort=None, min_id=None,
-                           event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None, filter_query=None):
+                           event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None,
+                           filter_query=None):
         """
 
         returns the response body on successful request
@@ -989,10 +1063,11 @@ class Client(BaseClient):
         try:
             return self._http_request(
                 method='GET',
-                url_suffix=f"/indicators/{category}/{name}"
+                url_suffix=f"/indicators/{category}/{name}",
+                raise_on_status=True
             )["data"]
-        except Exception as e:
-            if '404' in str(e):
+        except DemistoException as e:
+            if e.res and e.res.response_code == 404:
                 raise ValueError(f"The indicator '{name}' was not found")
             else:
                 raise ValueError(e)
@@ -1010,13 +1085,17 @@ class Client(BaseClient):
             demisto.debug(str(e))
             raise ValueError('Failed to parse response body')
 
-    def get_indicator_conditions_request(self, category, name, offset):
+    def get_indicator_conditions_request(self, category: str, name: str, offset: int, enabled: Optional[bool] = True):
         """
         returns a list of json objects, each representing an indicator condition
         if no results are found- returns None
 
+        the enabled argument is only passed to FireEye if not None.
         """
-        params = {'offset': offset, 'enabled': True}
+        params = {'offset': offset}
+
+        if enabled is not None:
+            params['enabled'] = enabled
 
         try:
             return self._http_request(
@@ -1038,6 +1117,14 @@ class Client(BaseClient):
             data=body
         )
 
+    def delete_condition(self, indicator_name: str, category: str, condition_type: str, condition_id: str):
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"/indicators/{category}/{indicator_name}/conditions/{condition_type}/{condition_id}",
+            ok_codes=(200, 204),
+            raise_on_status=True,
+        )
+
     def new_indicator_request(self, category):
         """
         Create a new indicator
@@ -1051,6 +1138,47 @@ class Client(BaseClient):
         except Exception as e:
             demisto.debug(str(e))
             raise ValueError('Failed to parse response body, unexpected response structure from the server.')
+
+    def delete_indicator(self, indicator_name: str, category: str):
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"/indicators/{category}/{indicator_name}",
+            ok_codes=(204,),
+            raise_on_status=True,
+            resp_type='response'
+        )
+
+    def list_indicator_categories(self,
+                                  search: Optional[str],
+                                  name: Optional[str],
+                                  display_name: Optional[str],
+                                  retention_policy: Optional[str],
+                                  ui_edit_policy: Optional[str],
+                                  ui_signature_enabled: Optional[bool],
+                                  ui_source_alerts_enabled: Optional[bool],
+                                  share_mode: Optional[str],
+                                  limit: int = 50,
+                                  offset: int = 0,
+                                  ):
+        params = {'limit': limit, 'offset': offset}
+        params.update(assign_params(
+            search=search,
+            name=name,
+            display_name=display_name,
+            retention_policy=retention_policy,
+            ui_edit_policy=ui_edit_policy,
+            ui_signature_enabled=ui_signature_enabled,
+            ui_source_alerts_enabled=ui_source_alerts_enabled,
+            share_mode=share_mode,
+        ))
+
+        return self._http_request(
+            method="GET",
+            url_suffix="/indicator_categories",
+            params=params,
+            ok_codes=(200,),
+            raise_on_status=True,
+        )
 
     """
     SEARCHES REQUEST
@@ -1121,7 +1249,6 @@ class Client(BaseClient):
 
 
 def get_alerts(client: Client, args: Dict[str, Any]) -> List:
-
     offset = 0
     alerts = []  # type: List[Dict[str, str]]
 
@@ -1157,7 +1284,6 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> List:
 
 
 def get_agent_id_by_host_name(client: Client, host_name: str):
-
     return client.get_hosts_request(host_name=host_name, limit=1)["data"]["entries"][0]["_id"]
 
 
@@ -1170,7 +1296,6 @@ def host_set_entry(host_sets: List[Dict]) -> List[Dict]:
 
 
 def general_context_from_event(alert: Dict):
-
     def file_context(values: Dict):
         dbot = Common.DBotScore(values.get('fileWriteEvent/md5'), DBotScoreType.FILE,
                                 integration_name="FireEye-HX", score=Common.DBotScore.NONE)
@@ -1183,7 +1308,6 @@ def general_context_from_event(alert: Dict):
         )
 
     def ip_context(values: Dict):
-
         dbot = Common.DBotScore(
             values.get("ipv4NetworkEvent/remoteIP"),
             DBotScoreType.IP,
@@ -1204,7 +1328,6 @@ def general_context_from_event(alert: Dict):
 
 
 def oneFromList(list_of_args, args):
-
     checker = 0
     for arg in list_of_args:
         if args.get(arg):
@@ -1243,7 +1366,6 @@ def organize_search_body_host(client: Client, arg: Tuple, body: Dict):
 
 
 def organize_search_body_query(argForQuery: Tuple, args: Dict):
-
     query = []
     if argForQuery[0] == "fieldSearchName":
         if not args.get("fieldSearchOperator") or not args.get("fieldSearchValue"):
@@ -1251,7 +1373,8 @@ def organize_search_body_query(argForQuery: Tuple, args: Dict):
 
         fieldSearchValue = argToList(args.get("fieldSearchValue", ""))
         for searchValue in fieldSearchValue:
-            query.append(assign_params(field=argForQuery[1], operator=args.get("fieldSearchOperator"), value=searchValue))
+            query.append(
+                assign_params(field=argForQuery[1], operator=args.get("fieldSearchOperator"), value=searchValue))
 
     else:
         if not args.get(f"{argForQuery[0]}Operator"):
@@ -1274,7 +1397,6 @@ def organize_search_body_query(argForQuery: Tuple, args: Dict):
 
 
 def get_collect_endpoint_contxt(host: Dict):
-
     return {
         'Hostname': host.get('hostname'),
         'ID': host.get('_id'),
@@ -1287,7 +1409,6 @@ def get_collect_endpoint_contxt(host: Dict):
 
 
 def get_data_acquisition(client: Client, args: Dict[str, Any]) -> Dict:
-
     host_name = args.get("hostName", "")
     agent_id = args.get("agentId")
     script = args.get("script", "")
@@ -1321,7 +1442,6 @@ def get_data_acquisition(client: Client, args: Dict[str, Any]) -> Dict:
 
 
 def get_alert_entry(alert: Dict):
-
     alert_entry = {
         'Alert ID': alert.get('_id'),
         'Reported': alert.get('reported_at'),
@@ -1333,7 +1453,6 @@ def get_alert_entry(alert: Dict):
 
 
 def get_indicator_entry(indicator: Dict):
-
     indicator_entry = {
         'OS': ', '.join(indicator.get('platforms', [])),
         'Name': indicator.get('name'),
@@ -1349,16 +1468,15 @@ def get_indicator_entry(indicator: Dict):
 
 
 def get_indicator_command_result(alert: Dict[str, Any]) -> CommandResults:
-
     if alert.get("event_type") == 'fileWriteEvent':
         indicator = general_context_from_event(alert)
         event_values: Dict[str, Any] = alert.get('event_values', {})
         md_table = tableToMarkdown(
             name="File",
             t={'Name': event_values.get('fileWriteEvent/fileName'),
-                'md5': event_values.get('fileWriteEvent/md5'),
-                'Extension': event_values.get('fileWriteEvent/fileExtension'),
-                 'Path': event_values.get('fileWriteEvent/fullPath')},
+               'md5': event_values.get('fileWriteEvent/md5'),
+               'Extension': event_values.get('fileWriteEvent/fileExtension'),
+               'Path': event_values.get('fileWriteEvent/fullPath')},
             headers=['Name', 'md5', 'Extension', 'Path']
         )
         return CommandResults(
@@ -1382,7 +1500,6 @@ def get_indicator_command_result(alert: Dict[str, Any]) -> CommandResults:
 
 
 def get_condition_entry(condition: Dict):
-
     indicator_entry = {
         'Event Type': condition.get('event_type'),
         'Operator': condition.get('tests', {})[0].get('operator'),
@@ -1395,11 +1512,11 @@ def get_condition_entry(condition: Dict):
 def get_all_indicators(client: Client, category=None, search=None,
                        share_mode=None, sort=None, created_by=None,
                        alerted=None, limit=None):
-
     max_records = limit or float('inf')
-    indicators = []   # type: List[Dict[str, str]]
+    indicators = []  # type: List[Dict[str, str]]
 
-    params = assign_params(category=category, search=search, sort=sort, created_by=created_by, offset=0, limit=limit or 100)
+    params = assign_params(category=category, search=search, sort=sort, created_by=created_by, offset=0,
+                           limit=limit or 100)
 
     if share_mode:
         params["category.share_mode"] = share_mode
@@ -1423,16 +1540,16 @@ def get_all_indicators(client: Client, category=None, search=None,
 
 
 def get_all_enabled_conditions(client: Client, indicator_category, indicator_name):
-
     offset = 0
-    conditions = []   # type: List[Dict[str, str]]
+    conditions = []  # type: List[Dict[str, str]]
 
     # get all results
     while True:
         conditions_partial_results = client.get_indicator_conditions_request(
             indicator_category,
             indicator_name,
-            offset=offset
+            offset=offset,
+            enabled=True,
         )['data']['entries']
         if not conditions_partial_results:
             break
@@ -1473,7 +1590,6 @@ def get_indicator_conditions(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def organize_reported_at(reported_at):
-
     milisecond = int(reported_at[-4:-1]) + 1
     if milisecond == 1000:
         reported_at = date_to_timestamp(reported_at[:-5], date_format=DATE_FORMAT) + 1000
@@ -1490,12 +1606,12 @@ def organize_reported_at(reported_at):
 
 
 def query_fetch(reported_at=None, first_fetch: str = None):
-
     query = '{"operator":"between","arg":['
     if reported_at:
         query += '"' + reported_at + '"' + ','
     else:
-        query += '"' + timestamp_to_datestring(parse_date_range(first_fetch, to_timestamp=True, utc=False)[0]) + '"' + ','
+        query += '"' + timestamp_to_datestring(
+            parse_date_range(first_fetch, to_timestamp=True, utc=False)[0]) + '"' + ','
     query += '"' + timestamp_to_datestring(parse_date_range("1 days", to_timestamp=True,
                                                             utc=False)[1]) + '"' + '],"field":"reported_at"}'
 
@@ -1503,7 +1619,6 @@ def query_fetch(reported_at=None, first_fetch: str = None):
 
 
 def parse_alert_to_incident(alert: Dict, pattern: Pattern) -> Dict:
-
     event_type = alert.get('event_type')
     event_type = 'NewEvent' if not event_type else event_type
     event_values = alert.get('event_values', {})
@@ -1534,7 +1649,6 @@ def parse_alert_to_incident(alert: Dict, pattern: Pattern) -> Dict:
 
 
 def run_commands_without_polling(client: Client, args: Dict[str, Any]):
-
     if args.get('cmd') == 'fireeye-hx-search':
         return start_search_command(client, args)[0]
     if args.get('cmd') == 'fireeye-hx-data-acquisition':
@@ -1545,14 +1659,12 @@ def run_commands_without_polling(client: Client, args: Dict[str, Any]):
 
 ''' COMMAND FUNCTIONS '''
 
-
 """
 POLICIES
 """
 
 
 def list_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     offset = args.get('offset', 0)
     limit = args.get('limit', 50)
     name = args.get('policyName')
@@ -1564,13 +1676,13 @@ def list_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.list_policy_request(offset=offset, limit=limit, policy_id=policy_id, name=name, enabled=enabled)
 
-    for_table = []
-    for entry in response['data']["entries"]:
-        for_table.append({"Policy Id": entry["_id"],
-                          "Policy Name": entry["name"],
-                          "Description": entry["description"],
-                          "Priority": entry["priority"],
-                          "Enabled": entry["enabled"]})
+    for_table = [{
+        "Policy Id": entry["_id"],
+        "Policy Name": entry["name"],
+        "Description": entry["description"],
+        "Priority": entry["priority"],
+        "Enabled": entry["enabled"],
+    } for entry in response['data']['entries']]
     headers_for_table = ["Policy Name", "Policy Id", "Description", "Priority", "Enabled"]
 
     md = tableToMarkdown(name="FireEye HX List Policies", t=for_table, headers=headers_for_table)
@@ -1588,7 +1700,6 @@ def list_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def list_host_set_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     offset = args.get("offset", 0)
     limit = args.get("limit", 50)
     host_set_id = args.get("hostSetId")
@@ -1620,7 +1731,6 @@ def list_host_set_policy_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def assign_host_set_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     host_set_id = args.get("hostSetId")
     policy_id = args.get("policyId")
 
@@ -1649,7 +1759,6 @@ def assign_host_set_policy_command(client: Client, args: Dict[str, Any]) -> Comm
 
 
 def delete_host_set_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     host_set_id = int(args.get('hostSetId', ''))
     policy_id = args.get('policyId')
 
@@ -1672,7 +1781,6 @@ HOST INFORMAITION
 
 
 def get_all_hosts_information_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     offset = int(args.get('offset', 0))
     hosts = []
     limit = int(args.get('limit', 1000))
@@ -1721,7 +1829,6 @@ def get_all_hosts_information_command(client: Client, args: Dict[str, Any]) -> C
 
 
 def get_host_information_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     agent_id = args.get("agentId")
     host_name = args.get("hostName")
 
@@ -1787,7 +1894,7 @@ def get_host_set_information_command(client: Client, args: Dict[str, Any]) -> Co
 
     response = client.get_host_set_information_request(body, host_set_id)
 
-    host_set = []  # type: List[Dict[str, str]]
+    host_set = []  # type: List[Dict[str, Any]]
     try:
         if host_set_id:
             data = response['data']
@@ -1807,6 +1914,9 @@ def get_host_set_information_command(client: Client, args: Dict[str, Any]) -> Co
             headers=['Name', 'ID', 'Type']
         )
 
+    for entry in host_set:
+        entry['deleted'] = False
+
     return CommandResults(
         outputs_prefix="FireEyeHX.HostSets",
         outputs_key_field="_id",
@@ -1821,7 +1931,6 @@ HOST CONTAINMENT
 
 
 def get_list_containment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     state_update_time = args.get("state_update_time", "")
     offset = args.get("offset", 0)
     limit = args.get("limit", 50)
@@ -1832,7 +1941,6 @@ def get_list_containment_command(client: Client, args: Dict[str, Any]) -> Comman
 
     for_table = []
     for entry in response:
-
         for_table.append({
             "Id": entry["_id"],
             "State": entry["state"],
@@ -1856,7 +1964,6 @@ def get_list_containment_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def host_containment_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-
     agent_id = args.get("agentId")
     host_name = args.get("hostName", "")
 
@@ -1877,8 +1984,8 @@ def host_containment_command(client: Client, args: Dict[str, Any]) -> List[Comma
         message = "Containment request for the host was sent and approved successfully"
     except Exception as e:
         if '422' in str(e):
-            message = "You do not have the required permissions for containment approve\n"\
-                "The containment request sent, but it is not approve."
+            message = "You do not have the required permissions for containment approve\n" \
+                      "The containment request sent, but it is not approve."
         elif '409' in str(e):
             message = "This host may already in containment"
         else:
@@ -1890,11 +1997,11 @@ def host_containment_command(client: Client, args: Dict[str, Any]) -> List[Comma
         outputs_prefix="FireEyeHX.Hosts",
         outputs_key_field="_id",
         outputs=host['data'],
-        readable_output=message), CommandResults(outputs_prefix="Endpoint", outputs=get_collect_endpoint_contxt(host["data"]))]
+        readable_output=message),
+        CommandResults(outputs_prefix="Endpoint", outputs=get_collect_endpoint_contxt(host["data"]))]
 
 
 def approve_containment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     agent_id = args.get("agentId")
 
     if not agent_id:
@@ -1915,7 +2022,6 @@ def approve_containment_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def cancel_containment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     agent_id = args.get("agentId")
     host_name = args.get("hostName", "")
 
@@ -1938,12 +2044,186 @@ def cancel_containment_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 """
+HOST SETS
+"""
+
+
+def delete_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_id: str = args.get('host_set_id', '')
+
+    outputs = {}
+    try:
+        client.delete_host_set_request(host_set_id)
+        message = f'Host set {host_set_id} was deleted successfully'
+        outputs = {'deleted': True, '_id': host_set_id}
+    except Exception as e:
+        if '404' in str(e):
+            message = f'Host set id - {host_set_id} Not Found'
+        else:
+            raise ValueError(e)
+
+    return CommandResults(outputs_prefix='FireEyeHX.HostSets',
+                          outputs_key_field="_id",
+                          outputs=outputs,
+                          readable_output=message)
+
+
+def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_name = args.get('host_set_name', '')
+    hosts_ids = argToList(args.get('hosts_ids'))
+
+    data = {}
+    try:
+        response = client.create_static_host_set_request(host_set_name, hosts_ids)
+        if data := response.get('data'):
+            data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
+            host_set_id = data.get('_id')
+            message = f'Static Host Set {host_set_name} with id {host_set_id} was created successfully.'
+    except Exception as e:
+        response = {}
+        if '409' in str(e):
+            message = 'Another host set with the same name was found, please use a different one.'
+        elif 'Referenced entity not found' in str(e):
+            message = "Referenced entity not found, check if one of the host ids that were given does not exists."
+        else:
+            demisto.debug(str(e))
+            message = 'Creating Host Set failed, check if you have the necessary permissions.'
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field='_id',
+        outputs=data,
+        readable_output=message,
+        raw_response=response
+    )
+
+
+def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_id = args.get('host_set_id')
+    host_set_name = args.get('host_set_name')
+    add_host_ids = argToList(args.get('add_host_ids'))
+    remove_host_ids = argToList(args.get('remove_host_ids'))
+
+    if not add_host_ids and not remove_host_ids:
+        message = 'Nothing to update, no host ids to add or to remove were given.'
+        return CommandResults(readable_output=message)
+
+    data: Dict[str, Any] = {}
+    try:
+        response = client.update_static_host_set_request(host_set_id, host_set_name, add_host_ids, remove_host_ids)
+        if data := response.get('data'):
+            data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
+            message = f'Static Host Set {host_set_name} was updated successfully.'
+    except Exception as e:
+        response = {}
+        if '409' in str(e):
+            message = 'Another host set with the same name was found, please use a different one.'
+        elif 'Referenced entity not found' in str(e):
+            message = "Referenced entity not found, Check if one of the host ids that was given does not exists."
+        elif '404' in str(e):
+            message = 'Host set was not found.'
+        else:
+            demisto.debug(str(e))
+            message = 'Updating Host Set failed, check if you have the necessary permissions.'
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=message,
+        raw_response=response
+    )
+
+
+def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_name = args.get('host_set_name')
+    query = args.get('query')
+    query_key = args.get('query_key')
+    query_value = args.get('query_value')
+    query_operator = args.get('query_operator')
+
+    if query and (query_key or query_value or query_operator):
+        raise ValueError('Cannot use free text query with other query operators, Please use one.')
+    elif not (query_key and query_value and query_operator) and not query:
+        raise ValueError('Please provide a free text query, or add all of the query operators toghether.')
+
+    data: Dict[str, Any] = {}
+    try:
+        response = client.create_dynamic_host_set_request(host_set_name, query, query_key, query_value, query_operator)
+        if data := response.get('data'):
+            data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
+            host_set_id = data.get('_id')
+            message = f'Dynamic Host Set {host_set_name} with id {host_set_id} was created successfully.'
+    except Exception as e:
+        response = {}
+        if '409' in str(e):
+            message = 'Another host set with the same name was found, please use a different one.'
+        else:
+            demisto.debug(str(e))
+            message = "Creating Host Set failed, check if you have the necessary permissions."
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=message,
+        raw_response=response
+    )
+
+
+def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_name = args.get('host_set_name')
+    host_set_id = args.get('host_set_id')
+    query = args.get('query')
+    query_key = args.get('query_key')
+    query_value = args.get('query_value')
+    query_operator = args.get('query_operator')
+
+    if query and (query_key or query_value or query_operator):
+        raise ValueError('Cannot use free text query with other query operators, Please use one.')
+    elif not (query_key and query_value and query_operator) and not query:
+        raise ValueError('Please provide a free text query, or add all of the query operators toghether.')
+
+    data = {}
+    try:
+        response = client.update_dynamic_host_set_request(host_set_id, host_set_name, query, query_key, query_value,
+                                                          query_operator)
+        if data := response.get('data'):
+            data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
+            message = f'Dynamic Host Set {host_set_name} was updated successfully.'
+    except Exception as e:
+        response = {}
+        if '409' in str(e):
+            message = 'Another host set with the same name was found, please use a different one.'
+        elif '404' in str(e):
+            message = 'Host set was not found.'
+        else:
+            demisto.debug(str(e))
+            message = "Updating Host Set failed, check if you have the necessary permissions"
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=message,
+        raw_response=response
+    )
+
+
+"""
 ACQUISITION
 """
 
 
 def data_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
-
     if 'acquisition_id' not in args:
         acquisition_info = get_data_acquisition(client, args)
         acquisition_id = acquisition_info.get('_id')
@@ -1954,15 +2234,16 @@ def data_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[Comm
 
     if acquisition_info.get('state') != 'COMPLETE':
         return CommandResults(
-            readable_output=f'Acquisition request was successful\nAcquisition ID: {acquisition_id}'), False, str(acquisition_id)
+            readable_output=f'Acquisition request was successful\nAcquisition ID: {acquisition_id}'), False, str(
+            acquisition_id)
 
     args['acquisition_info'] = acquisition_info
     return CommandResults(
-        readable_output=f'Acquisition request was successful\nAcquisition ID: {acquisition_id}'), True, str(acquisition_id)
+        readable_output=f'Acquisition request was successful\nAcquisition ID: {acquisition_id}'), True, str(
+        acquisition_id)
 
 
 def data_acquisition_with_polling_command(client: Client, args: Dict[str, Any]):
-
     return run_polling_command(
         client,
         args,
@@ -1973,7 +2254,6 @@ def data_acquisition_with_polling_command(client: Client, args: Dict[str, Any]):
 
 
 def result_data_acquisition(client: Client, args: Dict[str, Any]) -> List:
-
     demisto.debug('Acquisition process has been complete. Fetching mans file.')
 
     message = f'{args.get("fileName")} acquired successfully'
@@ -1991,7 +2271,6 @@ def result_data_acquisition(client: Client, args: Dict[str, Any]) -> List:
 
 
 def delete_data_acquisition_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     if "acquisitionId" not in args:
         raise ValueError("Acquisition Id is required")
 
@@ -2003,7 +2282,6 @@ def delete_data_acquisition_command(client: Client, args: Dict[str, Any]) -> Com
 
 
 def file_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
-
     if "acquisition_id" not in args:
         if not args.get('hostName') and not args.get('agentId'):
             raise ValueError('Please provide either agentId or hostName')
@@ -2037,7 +2315,6 @@ def file_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[Comm
 
 
 def file_acquisition_with_polling_command(client: Client, args: Dict[str, Any]):
-
     return run_polling_command(
         client,
         args,
@@ -2048,7 +2325,6 @@ def file_acquisition_with_polling_command(client: Client, args: Dict[str, Any]):
 
 
 def result_file_acquisituon(client: Client, args: Dict[str, Any]) -> List:
-
     demisto.debug('acquisition process has been complete. Fetching zip file.')
 
     acquired_file = client.file_acquisition_package_request(args.get('acquisition_id'))
@@ -2062,7 +2338,7 @@ def result_file_acquisituon(client: Client, args: Dict[str, Any]) -> List:
         outputs_key_field="_id",
         outputs=args.get('acquisition_info'),
         readable_output=f"{message}\nacquisition ID: {args.get('acquisition_id')}"
-    ), fileResult(f"{os.path.splitext(args.get('fileName',''))[0]}.zip", acquired_file)]
+    ), fileResult(f"{os.path.splitext(args.get('fileName', ''))[0]}.zip", acquired_file)]
 
 
 def get_data_acquisition_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -2120,7 +2396,6 @@ def get_data_acquisition_command(client: Client, args: Dict[str, Any]) -> List[C
 
 
 def initiate_data_acquisition_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     acquisition_info: Dict = get_data_acquisition(client, args)
 
     # Add hostname to the host info of acquisition_info
@@ -2231,7 +2506,6 @@ def get_all_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 def get_alert_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-
     alert_id = int(args.get('alertId', ""))
     alert: Dict = client.get_alert_request(alert_id)["data"]
 
@@ -2295,7 +2569,6 @@ INDICATORS
 
 
 def get_indicators_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     sort_map = {
         'category': 'category',
         'activeSince': 'active_since',
@@ -2303,12 +2576,12 @@ def get_indicators_command(client: Client, args: Dict[str, Any]) -> CommandResul
         'alerted': 'stats.alerted_agents'
     }
 
-    if args.get('limit'):
-        args['limit'] = int(args['limit'])
-    if args.get('alerted'):
-        args['alerted'] = args['alerted'] == 'yes'
-    if args.get('sort'):
-        args['sort'] = sort_map.get(args.get('sort', ''))
+    if limit := args.get('limit'):
+        args['limit'] = int(limit)
+    if alerted := args.get('alerted'):
+        args['alerted'] = alerted == 'yes'
+    if sort := args.get('sort'):
+        args['sort'] = sort_map.get(sort)
 
     # get all results
     indicators = get_all_indicators(
@@ -2342,7 +2615,6 @@ def get_indicators_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 def get_indicator_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-
     if not args.get("category") or not args.get("name"):
         raise ValueError("The category and name arguments are required")
 
@@ -2366,6 +2638,79 @@ def get_indicator_command(client: Client, args: Dict[str, Any]) -> List[CommandR
         outputs=indicator,
         readable_output=md_table
     ), get_indicator_conditions(client, args)]
+
+
+def delete_indicator_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    # XSOAR yml makes sure the args exist
+    indicator_name = args['indicator_name']
+    category = args['category']
+
+    human_readable_args = f'indicator {indicator_name} from the {category} category'
+
+    try:
+        client.delete_indicator(indicator_name, category)  # raises on error
+        human_readable = f'Successfully deleted {human_readable_args}'
+
+    except DemistoException as e:
+        message = None
+        try:
+            message = e.res.json().get('message')
+        except JSONDecodeError:
+            pass
+        if not message:
+            message = str(e)
+
+        human_readable = f'Failed deleting {human_readable_args}: {message}'
+
+    return CommandResults(readable_output=human_readable)
+
+
+def list_indicator_categories_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    # The following may be None or int
+    if limit := args.get('limit'):
+        limit = int(limit)
+    if offset := args.get('offset'):
+        offset = int(offset)
+
+    # The following may be None or bool
+    if ui_signature_enabled := args.get('ui_signature_enabled'):
+        ui_signature_enabled = argToBoolean(ui_signature_enabled)
+    if ui_source_alerts_enabled := args.get('ui_source_alerts_enabled'):
+        ui_source_alerts_enabled = argToBoolean(ui_source_alerts_enabled)
+    try:
+        response = client.list_indicator_categories(
+            search=args.get('search'),
+            name=args.get('name'),
+            display_name=args.get('display_name'),
+            retention_policy=args.get('retention_policy'),
+            ui_edit_policy=args.get('ui_edit_policy'),
+            ui_signature_enabled=ui_signature_enabled,
+            ui_source_alerts_enabled=ui_source_alerts_enabled,
+            share_mode=args.get('share_mode'),
+            offset=offset,
+            limit=limit,
+        )
+
+        data = response.get('data', {})
+        entries = data.get('entries', [])
+
+        readable_entries = [{
+            'Policy ID': entry.get('_id'),
+            'Name': entry.get('name'),
+        } for entry in entries]
+
+        return CommandResults(
+            outputs_prefix='FireEyeHX.IndicatorCategory',
+            outputs=entries,
+            readable_output=tableToMarkdown(f'{len(readable_entries)} Indicator categories found', readable_entries),
+            raw_response=response
+        )
+    except DemistoException as e:
+        if message := (e.res or {}).get('message'):
+            readable_output = f'Could not list categories. Error: {message}'
+        else:
+            readable_output = f'Could not list categories. Error: {e}'
+        return CommandResults(readable_output=readable_output, raw_response=e.res)
 
 
 def append_conditions_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -2397,6 +2742,36 @@ def append_conditions_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
+def delete_condition_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    # Mandatory args - always exist
+    indicator_name = args['indicator_name']
+    category = args['category']
+    condition_type = args['type']
+    condition_id = args['condition_id']
+
+    human_readable_args = f'condition {condition_id} ({condition_type}) of indicator {indicator_name} ({category})' \
+        .replace('\'', '')
+    response = None
+
+    try:
+        response = client.delete_condition(indicator_name, category, condition_type, condition_id)  # raises on failure
+        human_readable = f'Successfully deleted {human_readable_args}'
+
+    except DemistoException as e:
+        message = None
+        if e.res:
+            response = e.res
+            try:
+                message = response.json().get('message')
+            except (JSONDecodeError, AttributeError):
+                pass
+        if not message:
+            message = str(e)
+        human_readable = f'Failed deleting {human_readable_args}: {message}'
+
+    return CommandResults(readable_output=human_readable, raw_response=response)
+
+
 def create_indicator_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Get new indicator details
@@ -2423,12 +2798,12 @@ SEARCHES
 
 
 def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
-
     if 'searchId' not in args:
         list_of_args = ["agentsIds", "hostsNames", "hostSet", "hostSetName"]
         arg = oneFromList(list_of_args=list_of_args, args=args)
         if arg is False:
-            raise ValueError("One of the following arguments is required -> [agentsIds, hostsNames, hostSet, hostSetName]")
+            raise ValueError(
+                "One of the following arguments is required -> [agentsIds, hostsNames, hostSet, hostSetName]")
 
         # orgenized the search body, the function checks if provided only one argument,
         # and returns dict with key of Host_name or Hosts
@@ -2459,14 +2834,13 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandR
     pending = searchInfo.get('stats', {}).get('search_state', {}).get('PENDING', 0)
 
     if searchInfo.get("state") != "STOPPED" and matched < int(args.get('limit', '')) and pending != 0:
-
         return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), False, search_id
 
     return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), True, search_id
 
 
-def start_search_with_polling_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, List[CommandResults]]:
-
+def start_search_with_polling_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults,
+                                                                                     List[CommandResults]]:
     return run_polling_command(
         client,
         args,
@@ -2477,7 +2851,6 @@ def start_search_with_polling_command(client: Client, args: Dict[str, Any]) -> U
 
 
 def get_search_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     if args.get("searchId"):
 
         searches_ids = sorted(args.get("searchId", "").split(","), reverse=True)
@@ -2537,7 +2910,6 @@ def get_search_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def search_stop_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     if not args.get("searchId"):
         raise ValueError("Search Id is must be")
 
@@ -2561,7 +2933,6 @@ def search_stop_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-
     if not args.get("searchId"):
         raise ValueError("Search Id is must be")
 
@@ -2597,6 +2968,7 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
             ))
 
     if 'stopSearch' in args:
+        message = ''
         try:
             if args.get('stopSearch') == 'stop':
                 message = 'Failed to stop search'
@@ -2615,7 +2987,6 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
 
 
 def search_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     search_ids = argToList(str(args.get('searchId')))
 
     message = 'Results'
@@ -2639,7 +3010,6 @@ FETCH INCIDENT
 
 
 def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
-
     last_run = demisto.getLastRun()
     alerts = []  # type: List[Dict[str, str]]
     fetch_limit = min([int(args.get('max_fetch') or '50'), 50])
@@ -2686,7 +3056,6 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
 
 
 def run_polling_command(client, args, cmd, post_func, get_func, t):
-
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 60))
     _, is_ready, item_id = post_func(client, args)
@@ -2752,8 +3121,15 @@ def main() -> None:
         "fireeye-hx-assign-host-set-policy": assign_host_set_policy_command,
         "fireeye-hx-delete-host-set-policy": delete_host_set_policy_command,
         "fireeye-hx-approve-containment": approve_containment_command,
-        "fireeye-hx-list-containment": get_list_containment_command
-
+        "fireeye-hx-list-containment": get_list_containment_command,
+        'fireeye-hx-delete-indicator': delete_indicator_command,
+        'fireeye-hx-list-indicator-category': list_indicator_categories_command,
+        'fireeye-hx-delete-indicator-condition': delete_condition_command,
+        'fireeye-hx-delete-host-set': delete_host_set_command,
+        'fireeye-hx-create-host-set-static': create_static_host_set_command,
+        'fireeye-hx-update-host-set-static': update_static_host_set_command,
+        'fireeye-hx-create-host-set-dynamic': create_dynamic_host_set_command,
+        'fireeye-hx-update-host-set-dynamic': update_dynamic_host_set_command,
     }
 
     params = demisto.params()
@@ -2802,7 +3178,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

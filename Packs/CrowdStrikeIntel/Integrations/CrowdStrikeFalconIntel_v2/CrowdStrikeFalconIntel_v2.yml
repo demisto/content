@@ -26,6 +26,20 @@ configuration:
   - low
   - medium
   - high
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -35,7 +49,7 @@ configuration:
   type: 8
   required: false
 script:
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.5.31928
   type: python
   subtype: python3
   script: '-'
@@ -49,7 +63,7 @@ script:
     - name: file
       required: true
       default: true
-      description: A comma-separated list of file hashes (MD5/SHA1/SHA256) to check. 
+      description: A comma-separated list of file hashes (MD5/SHA1/SHA256) to check.
       isArray: true
     outputs:
     - contextPath: File.MD5
@@ -130,7 +144,7 @@ script:
     - name: url
       required: true
       default: true
-      description: A comma-separated list of URLs to check. 
+      description: A comma-separated list of URLs to check.
       isArray: true
     outputs:
     - contextPath: URL.Data
@@ -280,7 +294,7 @@ script:
     - name: ip
       required: true
       default: true
-      description: A comma-separated list of IP addresses to check. 
+      description: A comma-separated list of IP addresses to check.
       isArray: true
     outputs:
     - contextPath: IP.Address

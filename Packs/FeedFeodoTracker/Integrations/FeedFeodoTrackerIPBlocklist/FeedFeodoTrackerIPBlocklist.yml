@@ -8,14 +8,6 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: Feed Source
-  hidden: false
-  name: feed_source
-  options:
-  - Last 30 Days
-  - Currently Active
-  required: true
-  type: 16
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Bad
@@ -114,7 +106,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: feodotracker-ipblocklist-get-indicators
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.5.31928
   feed: true
   isfetch: false
   longRunning: false

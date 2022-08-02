@@ -3,7 +3,7 @@
 If you don't have [PhishUp](https://phishup.co) Api Key please create an account on PhishUp and get a free Api Key. 
 Also you can visit and test [PhishUp Web Demo](https://phishup.co).
 
-If you have any question feel free to concat us: [info@phishup.com](info@phishup.co)
+If you have any question feel free to concat us: [info@phishup.com](mailto:info@phishup.co)
 
 ## Configure PhishUp on Cortex XSOAR
 
@@ -44,6 +44,11 @@ PhishUp Url investigation
 | PhishUp.Url | String | Incoming Url |
 | PhishUp.Result | String | response types "Clean", "Phish" | 
 | PhishUp.Score | Number | Phishup Engine Url Score | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| URL.Data | String | The URL | 
 
 
 #### Base Command

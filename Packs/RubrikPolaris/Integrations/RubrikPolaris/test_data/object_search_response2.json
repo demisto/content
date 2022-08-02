@@ -1,0 +1,71 @@
+{
+  "raw_response": {
+    "data": {
+      "globalSearchResults": {
+        "edges": [
+          {
+            "node": {
+              "id": "0f667954-9052-42c8-ac20-2149da4d0ec4",
+              "name": "Hoang-Admin Nguyen",
+              "objectType": "O365Mailbox",
+              "physicalPath": [],
+              "effectiveSlaDomain": {
+                "id": "UNPROTECTED",
+                "name": "UNPROTECTED",
+                "description": ""
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3e5d0800-71f6-4e42-badc-ae8b98c8a808",
+              "name": "Admin o365",
+              "objectType": "O365Mailbox",
+              "physicalPath": [],
+              "effectiveSlaDomain": {
+                "id": "UNPROTECTED",
+                "name": "UNPROTECTED",
+                "description": ""
+              }
+            }
+          }
+        ],
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOmludDox",
+          "startCursor": "Y3Vyc29yOmludDow",
+          "hasNextPage": true,
+          "hasPreviousPage": false
+        }
+      }
+    }
+  },
+  "outputs": [
+    {
+      "id": "0f667954-9052-42c8-ac20-2149da4d0ec4",
+      "name": "Hoang-Admin Nguyen",
+      "objectType": "O365Mailbox",
+      "physicalPath": [],
+      "effectiveSlaDomain": {
+        "id": "UNPROTECTED",
+        "name": "UNPROTECTED",
+        "description": ""
+      }
+    },
+    {
+      "id": "3e5d0800-71f6-4e42-badc-ae8b98c8a808",
+      "name": "Admin o365",
+      "objectType": "O365Mailbox",
+      "physicalPath": [],
+      "effectiveSlaDomain": {
+        "id": "UNPROTECTED",
+        "name": "UNPROTECTED",
+        "description": ""
+      }
+    }
+  ],
+  "page_token": {
+    "next_page_token": "Y3Vyc29yOmludDox",
+    "name": "rubrik-polaris-object-search",
+    "has_next_page": true
+  }
+}

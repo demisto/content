@@ -1,4 +1,4 @@
-Note: Support for this pack will be moving to the partner around March, 20, 2022.
+Note: Support for this pack moved to the partner on March, 22, 2022.
 
 Digital Shadows minimizes digital risk by identifying unwanted exposure and protecting against external threats. The award-winning SearchLight solution provides ongoing monitoring of a customer's unique assets and exposure across the open, deep, and dark web. This enables clients to detect data loss, brand impersonation, infrastructure risks, cyber threats, and much more.
 
@@ -50,10 +50,10 @@ Vulnerability/Exploit Monitoring
   Digital Shadows monitors for the exposure of these assets across the open, deep, and dark web. This includes code-sharing sites, file-sharing sites, criminal forums, chat messages, social media, and search engines. For additional enrichment and incident response, users can search across many of these sources via "Shadow Search". Furthermore, our Collections and Closed Sources teams focus on continually adding to these sources.
 
 - Risk Identification
-  Our technology reduces the mentions of these assets to only those instances that constitute a risk to your business. On average, this combination of technology and human analysis removes more than 95% of the total mentions of an organization's assets. Each alert has a risk score, ensuring your team is not overwhelmed by irrelevant mentions and can easily prioritize alerts. 
+  Our technology reduces the mentions of these assets to only those instances that constitute a risk to your business. On average, this combination of technology and human analysis removes more than 95% of the total mentions of an organization's assets. Each alert has a risk score, ensuring your team is not overwhelmed by irrelevant mentions and can easily prioritize alerts.
 
 - Take Action and Protect  
-  Alerts provide you all the context you need to make quicker, better decisions. Users also benefit from playbooks for remediating the risk, including the ability to launch takedowns. 
+  Alerts provide you all the context you need to make quicker, better decisions. Users also benefit from playbooks for remediating the risk, including the ability to launch takedowns.
 
 Email: info@digitalshadows.com
 Call us at US 1-888-889-4143, UK +44 (0)203 393 7001

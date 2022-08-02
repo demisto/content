@@ -1,6 +1,5 @@
 import asyncio
 import concurrent
-import json
 import ssl
 import threading
 from distutils.util import strtobool
@@ -776,14 +775,14 @@ def mirror_investigation():
     demisto.results(f'Investigation mirrored successfully, channel: {conversation_name}')
 
 
-async def long_running_loop():
+def long_running_loop():
     while True:
         error = ''
         try:
             if MIRRORING_ENABLED:
                 check_for_mirrors()
             check_for_unanswered_questions()
-            await asyncio.sleep(15)
+            time.sleep(15)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
         except Exception as e:
@@ -1055,8 +1054,10 @@ async def start_listening():
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
     try:
-        tasks = [asyncio.ensure_future(slack_loop()), asyncio.ensure_future(long_running_loop())]
-        await asyncio.gather(*tasks)
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        loop = asyncio.get_running_loop()
+        loop.run_in_executor(executor, long_running_loop)
+        await slack_loop()
     except Exception as e:
         demisto.error(f"An error has occurred while gathering the loop tasks. {e}")
 
@@ -1905,8 +1906,7 @@ def handle_tags_in_message_sync(message: str) -> str:
             message = message.replace(match.group(0), f"<@{slack_user.get('id')}>")
         else:
             message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
-    resolved_message = re.sub(URL_EXPRESSION, r'\1', message)
-    return resolved_message
+    return message
 
 
 def send_message(destinations: list, entry: str, ignore_add_url: bool, integration_context: dict, message: str,
@@ -2210,22 +2210,21 @@ def close_channel():
     channel = demisto.args().get('channel')
     channel_id = demisto.args().get('channel_id', '')
 
-    if not channel:
-        mirror = find_mirror_by_investigation()
-        if mirror:
-            channel_id = mirror.get('channel_id', '')
-            # We need to update the topic in the mirror
-            integration_context = get_integration_context(SYNC_CONTEXT)
-            mirrors = json.loads(integration_context['mirrors'])
-            channel_id = mirror['channel_id']
-            # Check for mirrors on the archived channel
-            channel_mirrors = list(filter(lambda m: channel_id == m['channel_id'], mirrors))
-            for mirror in channel_mirrors:
-                mirror['remove'] = True
-                demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
-                                            mirror['auto_close'])
+    mirror = find_mirror_by_investigation()
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    if mirror:
+        channel_id = mirror.get('channel_id', '')
+        # We need to update the topic in the mirror
+        mirrors = json.loads(integration_context['mirrors'])
+        channel_id = mirror['channel_id']
+        # Check for mirrors on the archived channel
+        channel_mirrors = list(filter(lambda m: channel_id == m['channel_id'], mirrors))
+        for mirror in channel_mirrors:
+            mirror['remove'] = True
+            demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
+                                        mirror['auto_close'])
 
-            set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     if channel and not channel_id:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id') if not channel_id else channel_id
@@ -2236,8 +2235,22 @@ def close_channel():
         'channel': channel_id
     }
     send_slack_request_sync(CLIENT, 'conversations.archive', body=body)
-
+    remove_channel_from_context(channel_id=channel_id, integration_context=integration_context)
     demisto.results('Channel successfully archived.')
+
+
+def remove_channel_from_context(channel_id: str, integration_context: dict):
+    """
+    :param channel_id: The channel_id to remove.
+    :param integration_context: The integration_context object.
+    Removes a channel from the integration context
+    """
+    if 'conversations' in integration_context:
+        conversations = json.loads(integration_context['conversations'])
+        updated_conversations = [conversation for conversation in conversations if conversation.get('id') != channel_id]
+        set_to_integration_context_with_retries({'conversations': updated_conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        demisto.debug('Channel successfully removed from context.')
+    demisto.debug('Channel was not stored in the context. No need to delete.')
 
 
 def create_channel():
@@ -2550,14 +2563,14 @@ def init_globals(command_name: str = ''):
                      ' to find the channel.'
     CHANNEL_NOT_FOUND_ERROR_MSG = error_str
 
-    # Handle Long-Running Specific Globals
-    if command_name == 'long-running-execution':
-        # Start event loop for long running
+    if command_name != 'long-running-execution':
         loop = asyncio.get_event_loop()
         if not loop._default_executor:  # type: ignore[attr-defined]
             demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
             loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
 
+    # Handle Long-Running Specific Globals
+    if command_name == 'long-running-execution':
         # Bot identification
         integration_context = get_integration_context(SYNC_CONTEXT)
         if integration_context.get('bot_user_id'):
@@ -2582,9 +2595,8 @@ def print_thread_dump():
         demisto.info(f'{threadId} stack: {stack_str}')
 
 
-def loop_info(loop: asyncio.AbstractEventLoop):
-    if not loop:
-        return "loop is None"
+def loop_info():
+    loop = asyncio.get_event_loop()
     info = f'loop: {loop}. id: {id(loop)}.'
     info += f'executor: {loop._default_executor} id: {id(loop._default_executor)}'  # type: ignore[attr-defined]
     if loop._default_executor:  # type: ignore[attr-defined]
@@ -2594,7 +2606,35 @@ def loop_info(loop: asyncio.AbstractEventLoop):
 
 
 def slack_get_integration_context():
+    context_statistics = {}
     integration_context = get_integration_context()
+    # Mirrors Data
+    if integration_context.get('mirrors'):
+        mirrors = json.loads(integration_context.get('mirrors'))
+        context_statistics['Mirrors Count'] = len(mirrors)
+        context_statistics['Mirror Size In Bytes'] = sys.getsizeof(integration_context.get('mirrors', []))
+    # Conversations Data
+    if integration_context.get('conversations'):
+        conversations = json.loads(integration_context.get('conversations'))
+        context_statistics['Conversations Count'] = len(conversations)
+        context_statistics['Conversations Size In Bytes'] = sys.getsizeof(integration_context.get('conversations', []))
+    # Users Data
+    if integration_context.get('users'):
+        users = json.loads(integration_context.get('users'))
+        context_statistics['Users Count'] = len(users)
+        context_statistics['Users Size In Bytes'] = sys.getsizeof(integration_context.get('users', []))
+    # Questions Data
+    if integration_context.get('questions'):
+        questions = json.loads(integration_context.get('questions'))
+        context_statistics['Questions Count'] = len(questions)
+        context_statistics['Questions Size In Bytes'] = sys.getsizeof(integration_context.get('questions', []))
+    readable_stats = tableToMarkdown(name='Long Running Context Statistics', t=context_statistics)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'HumanReadable': readable_stats,
+        'ContentsFormat': EntryFormat.MARKDOWN,
+        'Contents': readable_stats,
+    })
     return_results(fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
 
 
@@ -2636,8 +2676,9 @@ def main() -> None:
         LOG(e)
         return_error(str(e))
     finally:
-        demisto.info(
-            f'{command_name} completed.')
+        demisto.info(f'{command_name} completed. loop: {loop_info()}')  # type: ignore
+        if is_debug_mode():
+            print_thread_dump()
 
 
 ''' ENTRY POINT '''

@@ -233,7 +233,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     modified = handle_multiple_dates_in_one_field('modified', indicator_json.get('modified'))  # type: ignore
 
     kill_chain_phases_mitre = [chain.get('phase_name', '') for chain in indicator_json.get('kill_chain_phases', [])]
-    kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_phases_mitre]
+    kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) or phase for phase in kill_chain_phases_mitre]
 
     publications = []
     for external_reference in indicator_json.get('external_references', []):
@@ -303,7 +303,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         }
     }
-    generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))
+    generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))  # type: ignore
     return generic_mapping_fields
 
 
@@ -455,6 +455,7 @@ def build_command_result(value, score, md, attack_obj):
     )
     attack_context = Common.AttackPattern(
         stix_id=attack_obj.get('stixid'),
+        value=value,
         kill_chain_phases=attack_obj.get('killchainphases'),
         first_seen_by_source=attack_obj.get('firstseenbysource'),
         description=attack_obj.get('description'),
@@ -482,7 +483,7 @@ def attack_pattern_reputation_command(client, args):
             filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', name)]
             mitre_data = get_mitre_data_by_filter(client, filter_by_name)
             if not mitre_data:
-                break
+                continue
 
             value = mitre_data.get('name')
 
@@ -496,7 +497,7 @@ def attack_pattern_reputation_command(client, args):
             filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', parent)]
             mitre_data = get_mitre_data_by_filter(client, filter_by_name)
             if not mitre_data:
-                break
+                continue
             indicator_json = json.loads(str(mitre_data))
             parent_mitre_id = [external.get('external_id') for external in
                                indicator_json.get('external_references', [])
@@ -508,7 +509,7 @@ def attack_pattern_reputation_command(client, args):
             filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', sub)]
             mitre_data = get_mitre_data_by_filter(client, filter_by_name)
             if not mitre_data:
-                break
+                continue
             indicator_json = json.loads(str(mitre_data))
             sub_mitre_id = [external.get('external_id') for external in
                             indicator_json.get('external_references', [])
@@ -521,14 +522,15 @@ def attack_pattern_reputation_command(client, args):
                             Filter("type", "=", "attack-pattern")]
             mitre_data = get_mitre_data_by_filter(client, mitre_filter)
             if not mitre_data:
-                break
+                continue
 
             value = f'{parent_name}: {mitre_data.get("name")}'
 
         attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
         custom_fields = attack_obj or {}
         score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
-        md = f"## {[value]}: {attack_obj.get('mitreid')}\n {custom_fields.get('description', '')}"
+        md = f"## MITRE ATTACK \n ## Name: {value} - ID: " \
+             f"{attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
         command_results.append(build_command_result(value, score, md, attack_obj))
 
     return command_results

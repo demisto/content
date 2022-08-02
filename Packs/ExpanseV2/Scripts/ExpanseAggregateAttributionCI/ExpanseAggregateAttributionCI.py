@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 from typing import Dict, Any, Tuple, Optional
-import traceback
 
 
 ''' STANDALONE FUNCTION '''
@@ -94,7 +93,6 @@ def main():
     try:
         return_results(aggregate_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExpanseAggregateAttributionCI. Error: {str(ex)}')
 
 

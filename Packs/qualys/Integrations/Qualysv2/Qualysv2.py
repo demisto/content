@@ -1,9 +1,8 @@
-from typing import Dict, Tuple, Callable
+from typing import Callable, Dict, Tuple
 
+import demistomock as demisto  # noqa: F401
 import requests
-
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *  # noqa: F401
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
@@ -230,6 +229,10 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
         'table_name': 'Host updated',
         'json_path': ['HOST_UPDATE_OUTPUT', 'RESPONSE'],
     },
+    'qualys-update-unix-record': {
+        'table_name': 'Update Unix Record',
+        'json_path': ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
+    },
     'qualys-asset-group-add': {
         'table_name': 'Asset Group Add',
         'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
@@ -418,6 +421,10 @@ COMMANDS_CONTEXT_DATA = {
     },
     'qualys-host-update': {
         'context_prefix': 'Qualys.Endpoint.Update',
+        'context_key': 'ID',
+    },
+    'qualys-update-unix-record': {
+        'context_prefix': 'Qualys.UnixRecord',
         'context_key': 'ID',
     },
     'qualys-asset-group-add': {
@@ -649,6 +656,11 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
     },
     'qualys-host-update': {
         'api_route': API_SUFFIX + 'asset/host/?action=update',
+        'call_method': 'POST',
+        'resp_type': 'text',
+    },
+    'qualys-update-unix-record': {
+        'api_route': API_SUFFIX + 'auth/unix/?action=update',
         'call_method': 'POST',
         'resp_type': 'text',
     },
@@ -941,6 +953,9 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             ['ids', 'ips', ]
         ],
     },
+    'qualys-update-unix-record': {
+        'args': ['ids', 'add_ips'],
+    },
     'qualys-asset-group-add': {
         'args': ['title', 'network_id', 'ips', 'domains', 'dns_names', 'netbios_names', 'cvss_enviro_td',
                  'cvss_enviro_cr', 'cvss_enviro_ir', 'cvss_enviro_ar', 'appliance_ids', ]
@@ -972,7 +987,7 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
         'args': ['id', 'scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'frequency_days', 'weekdays',
                  'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
                  'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
-                 'scanners_in_ag', 'active', 'observe_dst', ],
+                 'scanners_in_ag', 'active', 'observe_dst', 'target_from', 'iscanner_name', ],
         'default_added_depended_args': {'frequency_days': {'occurrence': 'daily', },
                                         'frequency_weeks': {'occurrence': 'weekly', },
                                         'frequency_months': {'occurrence': 'monthly', },
@@ -1729,7 +1744,7 @@ def build_multiple_values_parsed_output(**kwargs) -> Tuple[List[Any], str]:
 
 
 @logger
-def build_host_list_detection_outputs(kwargs) -> Tuple[List[Any], str]:
+def build_host_list_detection_outputs(**kwargs) -> Tuple[List[Any], str]:
     """
     Builds the outputs and readable output for host list detection.
     Args:
@@ -1746,26 +1761,30 @@ def build_host_list_detection_outputs(kwargs) -> Tuple[List[Any], str]:
         asset_collection = handled_result
     original_amount = None
     limit_msg = ''
-    parsed_output: List[Any] = generate_list_dicts(asset_collection)
-
+    parsed_output = generate_list_dicts(asset_collection)
+    parsed_output = parsed_output if isinstance(parsed_output, List) else [parsed_output]
     if 'limit' in inner_args_values and inner_args_values['limit'] and isinstance(parsed_output, list):
         original_amount = len(parsed_output)
         parsed_output = limit_result(parsed_output, inner_args_values['limit'])
 
     if original_amount and original_amount > int(inner_args_values['limit']):
         limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
-    readable_outputs = []
+    readable = ''
     for output in parsed_output:
+        headers = ['ID', 'IP', 'DNS_DATA']
+        ip = output.get('IP')
         readable_output = {
             'ID': output.get('ID'),
-            'IP': output.get('IP'),
+            'IP': ip,
             'DNS_DATA': {k: v for k, v in output.get('DNS_DATA', {}).items() if v is not None}
         }
         if detections := output.get('DETECTION_LIST', {}).get('DETECTION', []):
-            readable_output['DETECTIONS'] = [{'QID': detection.get('QID'), 'RESULTS': detection.get('RESULTS')} for
-                                             detection in detections]
-        readable_outputs.append(readable_output)
-    readable = tableToMarkdown(f'Host Detection List\n{limit_msg}', readable_outputs, removeNull=True)
+            detections = detections if isinstance(detections, List) else [detections]
+            for detection in detections:
+                qid = 'QID: ' + detection.get('QID')
+                headers.append(qid)
+                readable_output[qid] = detection.get('RESULTS')
+        readable += tableToMarkdown(f'Host Detection List - {ip}\n{limit_msg}', readable_output, removeNull=True, headers=headers)
     return parsed_output, readable
 
 
@@ -2098,6 +2117,10 @@ def main():
             'output_builder': build_single_text_output,
         },
         'qualys-host-update': {
+            'result_handler': handle_general_result,
+            'output_builder': build_single_text_output,
+        },
+        'qualys-update-unix-record': {
             'result_handler': handle_general_result,
             'output_builder': build_single_text_output,
         },

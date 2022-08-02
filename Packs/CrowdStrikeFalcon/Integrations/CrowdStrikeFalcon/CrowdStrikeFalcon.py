@@ -313,7 +313,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 )
             elif safe:
                 return None
-            return_error(err_msg)
+            raise DemistoException(err_msg)
         return res if no_json else res.json()
     except ValueError as exception:
         raise ValueError(
@@ -1634,8 +1634,13 @@ def get_behaviors_by_incident(incident_id: str, params: dict = None) -> dict:
 
 
 def get_detections_by_behaviors(behaviors_id):
-    body = {'ids': behaviors_id}
-    return http_request('POST', '/incidents/entities/behaviors/GET/v1', data=body)
+    try:
+
+        body = {'ids': behaviors_id}
+        return http_request('POST', '/incidents/entities/behaviors/GET/v1', json=body)
+    except Exception as e:
+        demisto.error(f'Error occurred when trying to get detections by behaviors: {str(e)}')
+        return {}
 
 
 ''' MIRRORING COMMANDS '''
@@ -1818,6 +1823,7 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
     remote_args = GetModifiedRemoteDataArgs(args)
 
     last_update_utc = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    assert last_update_utc is not None, f"could not parse{remote_args.last_update}"
     last_update_timestamp = last_update_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
@@ -3621,7 +3627,7 @@ def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command,
 
 def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str, get_session_function: Callable,
                                  write_to_context=True) -> \
-        list[CommandResults, dict]:  # type:ignore
+        List[Union[CommandResults, dict]]:  # type:ignore
     """
     General function to run RTR commands depending on the given command.
     """
@@ -3791,7 +3797,6 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
         })
     return CommandResults(outputs_prefix='CrowdStrike.IncidentDetection',
                           outputs=outputs,
-                          outputs_key_field='incident_id',
                           readable_output=tableToMarkdown('Detection For Incident', outputs),
                           raw_response=detection_res)
 

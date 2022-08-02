@@ -40,7 +40,7 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
 
 DEFAULT_LIMIT = 50
 
-DEFAULT_SOURCE = 'Azure Sentinel'
+DEFAULT_SOURCE = 'Microsoft Sentinel'
 
 THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
 
@@ -203,7 +203,8 @@ def incident_data_to_xsoar_format(inc_data):
         'BookmarksCount': properties.get('additionalData', {}).get('bookmarksCount'),
         'CommentsCount': properties.get('additionalData', {}).get('commentsCount'),
         'AlertProductNames': properties.get('additionalData', {}).get('alertProductNames'),
-        'Tactics': properties.get('tactics'),
+        'Tactics': properties.get('additionalData', {}).get('tactics'),
+        'Techniques': properties.get('additionalData', {}).get('techniques'),
         'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),
         'LastActivityTimeGenerated': format_date(properties.get('lastActivityTimeGenerated')),
         'Etag': inc_data.get('etag'),
@@ -295,7 +296,9 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
     classification_comment = args.get('classification_comment')
     classification_reason = args.get('classification_reason')
     assignee_email = args.get('assignee_email')
+    user_principal_name = args.get('user_principal_name')
     labels = argToList(args.get('labels', ''))
+    owner = demisto.get(fetched_incident_data, 'properties.owner', {})
 
     if not title:
         title = demisto.get(fetched_incident_data, 'properties.title')
@@ -305,8 +308,10 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
         severity = demisto.get(fetched_incident_data, 'properties.severity')
     if not status:
         status = demisto.get(fetched_incident_data, 'properties.status')
-    if not assignee_email:
-        assignee_email = demisto.get(fetched_incident_data, 'properties.owner.email')
+    if user_principal_name:
+        owner = {'userPrincipalName': user_principal_name}
+    if assignee_email:
+        owner['email'] = assignee_email
 
     existing_labels = demisto.get(fetched_incident_data, 'properties.labels')
     if not labels:  # not provided as arg
@@ -326,7 +331,7 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
             'classificationComment': classification_comment,
             'classificationReason': classification_reason,
             'labels': labels_formatted,
-            'owner': {'email': assignee_email}
+            'owner': owner
         }
     }
     remove_nulls_from_dictionary(incident_data['properties'])
@@ -906,6 +911,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
             latest_created_time = dateparser.parse(last_fetch_time_str)
         else:
             latest_created_time = dateparser.parse(last_fetch_time)
+        assert latest_created_time, f'Got empty latest_created_time. {last_fetch_time_str=} {last_fetch_time=}'
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
         command_args = {
             'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
@@ -916,13 +922,16 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
     else:
         demisto.debug("handle via id")
         latest_created_time = dateparser.parse(last_fetch_time)
+        assert latest_created_time is not None, f"dateparser.parse(last_fetch_time):" \
+                                                f" {dateparser.parse(last_fetch_time)} couldnt be parsed"
         command_args = {
             'filter': f'properties/incidentNumber gt {last_incident_number}',
             'orderby': 'properties/incidentNumber asc',
         }
         raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
-    return process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time, last_incident_number)
+    return process_incidents(raw_incidents, last_fetch_ids, min_severity,
+                             latest_created_time, last_incident_number)  # type: ignore[attr-defined]
 
 
 def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
@@ -948,20 +957,25 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
         incident_severity = severity_to_level(incident.get('Severity'))
         demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
 
-        # fetch only incidents that weren't fetched in the last run and their severity is at least min_severity
-        if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity:
+        # create incident only for incidents that weren't fetched in the last run and their severity is at least min_severity
+        if incident.get('ID') not in last_fetch_ids:
             incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
-            xsoar_incident = {
-                'name': '[Azure Sentinel] ' + incident.get('Title'),
-                'occurred': incident.get('CreatedTimeUTC'),
-                'severity': incident_severity,
-                'rawJSON': json.dumps(incident)
-            }
-
-            incidents.append(xsoar_incident)
             current_fetch_ids.append(incident.get('ID'))
+            if incident_severity >= min_severity:
+                xsoar_incident = {
+                    'name': '[Azure Sentinel] ' + incident.get('Title'),
+                    'occurred': incident.get('CreatedTimeUTC'),
+                    'severity': incident_severity,
+                    'rawJSON': json.dumps(incident)
+                }
+                incidents.append(xsoar_incident)
+            else:
+                demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
+                              "due to the {incident_severity=} is lower then {min_severity=}")
 
             # Update last run to the latest fetch time
+            assert incident_created_time is not None, f"incident.get('CreatedTimeUTC') : " \
+                                                      f"{incident.get('CreatedTimeUTC')} couldnt be parsed"
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
             if incident.get('IncidentNumber') > last_incident_number:
@@ -983,7 +997,7 @@ def threat_indicators_data_to_xsoar_format(ind_data):
     """
 
     properties = ind_data.get('properties', {})
-    pattern = properties.get('parsedPattern', [])[0]
+    pattern = properties.get('parsedPattern', [])[0] if properties.get('parsedPattern', []) else {}
 
     formatted_data = {
         'ID': ind_data.get('id'),
@@ -1007,20 +1021,19 @@ def threat_indicators_data_to_xsoar_format(ind_data):
             'KillChainName': phase.get('killChainName'),
             'PhaseName': phase.get('phaseName')
         } for phase in properties.get('KillChainPhases', [])],
-
         'ParsedPattern': {
             'PatternTypeKey': pattern.get('patternTypeKey'),
             'PatternTypeValues': {
-                'Value': pattern.get('patternTypeValues')[0].get('value'),
-                'ValueType': pattern.get('patternTypeValues')[0].get('valueType')
+                'Value': dict_safe_get(pattern, ['patternTypeValues', 0, 'value']),
+                'ValueType': dict_safe_get(pattern, ['patternTypeValues', 0, 'valueType']),
             }
-        },
+        } if pattern else None,
 
         'Pattern': properties.get('pattern', ''),
         'PatternType': properties.get('patternType', ''),
         'ValidFrom': format_date(properties.get('validFrom', '')),
         'ValidUntil': format_date(properties.get('validUntil', '')),
-        'Values': pattern.get('patternTypeValues')[0].get('value'),
+        'Values': dict_safe_get(pattern, ['patternTypeValues', 0, 'value']),
         'Deleted': False
     }
     remove_nulls_from_dictionary(formatted_data)
@@ -1060,18 +1073,17 @@ def build_query_filter(args):
     return filtering_args
 
 
-def build_threat_indicator_data(args):
+def build_threat_indicator_data(args, source):
     value = args.get('value')
 
     data = {
-        'patternType': value,
         'displayName': args.get('display_name'),
         'description': args.get('description'),
         'revoked': args.get('revoked', ''),
         'confidence': arg_to_number(args.get('confidence')),
         'threatTypes': argToList(args.get('threat_types')),
         'includeDisabled': args.get('include_disabled', ''),
-        'source': DEFAULT_SOURCE,
+        'source': source,
         'threatIntelligenceTags': argToList(args.get('tags')),
         'validFrom': format_date(args.get('valid_from', '')),
         'validUntil': format_date(args.get('valid_until', '')),
@@ -1080,20 +1092,20 @@ def build_threat_indicator_data(args):
 
     indicator_type = args.get('indicator_type')
     if indicator_type == 'ipv4':
-        indicator_type = 'ipv4-address'
+        indicator_type = 'ipv4-addr'
     elif indicator_type == 'ipv6':
-        indicator_type = 'ipv6-address'
+        indicator_type = 'ipv6-addr'
     elif indicator_type == 'domain':
         indicator_type = 'domain-name'
 
-    data['patternTypes'] = indicator_type
+    data['patternType'] = indicator_type
 
     if indicator_type == 'file':
         hash_type = args.get('hash_type')
         data['hashType'] = hash_type
-        data['pattern'] = f"[file:hashes.'{hash_type}' = {value}]"
+        data['pattern'] = f"[file:hashes.'{hash_type}' = '{value}']"
     else:
-        data['pattern'] = f'[{indicator_type}:value = {value}]'
+        data['pattern'] = f"[{indicator_type}:value = '{value}']"
 
     data['killChainPhases'] = []
 
@@ -1111,7 +1123,9 @@ def build_threat_indicator_data(args):
 
 def build_updated_indicator_data(new_ind_data, original_ind_data):
     original_extracted_data = extract_original_data_from_indicator(original_ind_data.get('properties'))
-    new_data = build_threat_indicator_data(new_ind_data)
+    # When updating an indicator, one can not change the original source
+    source = original_extracted_data.get('source')
+    new_data = build_threat_indicator_data(new_ind_data, source)
 
     original_extracted_data.update(new_data)
 
@@ -1132,7 +1146,7 @@ def extract_original_data_from_indicator(original_data):
         'created': original_data.get('created', ''),
         'externalId': original_data.get('externalId'),
         'displayName': original_data.get('displayName'),
-        'source': original_data.get('source')
+        'source': original_data.get('source', DEFAULT_SOURCE)
     }
 
     remove_nulls_from_dictionary(extracted_data)
@@ -1221,7 +1235,7 @@ def query_threat_indicators_command(client, args):
 def create_threat_indicator_command(client, args):
     url_suffix = 'threatIntelligence/main/createIndicator'
 
-    data = {'kind': 'indicator', 'properties': build_threat_indicator_data(args)}
+    data = {'kind': 'indicator', 'properties': build_threat_indicator_data(args, source=DEFAULT_SOURCE)}
 
     result = client.http_request('POST', url_suffix, data=data)
 
@@ -1417,7 +1431,6 @@ def main():
             return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(
             f'Failed to execute {demisto.command()} command. Error: {str(e)}'
         )

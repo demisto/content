@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
-import traceback
 import copy
 import json
 import base64
@@ -585,7 +584,8 @@ class Client(BaseClient):
                             and (re := rri[0].get('registryEntities'))
                             and isinstance(re, list)
                     ):
-                        ml_feature_list.extend(set(r['formattedName'] for r in re if 'formattedName' in r))
+                        ml_feature_list.extend(set(r['formattedName']
+                                                   for r in re if 'formattedName' in r))  # pylint: disable=E1133
 
                 elif a.get('assetType') == "Certificate":
                     # for Certificate collect issuerOrg, issuerName,
@@ -735,6 +735,7 @@ def convert_priority_to_xsoar_severity(priority: str) -> int:
 
 def datestring_to_timestamp_us(ds: str) -> int:
     dt = parse(ds)
+    assert dt is not None
     ts = int(dt.timestamp()) * 1000000 + dt.microsecond
     return ts
 
@@ -831,7 +832,7 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
                 updated_date=whois.get('updatedDate'),
                 expiration_date=whois.get('registryExpiryDate'),
                 name_servers=whois.get('nameServers'),
-                domain_status=domain_statuses[0],
+                domain_status=domain_statuses[0] if domain_statuses else [],
                 organization=admin.get('organization'),
                 admin_name=admin.get('name'),
                 admin_email=admin.get('emailAddress'),
@@ -1081,16 +1082,16 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     sort = ','.join(arg_list)
 
     d = args.get('created_before', None)
-    created_before = parse(d).strftime(DATE_FORMAT) if d else None
+    created_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('created_after', None)
-    created_after = parse(d).strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('modified_before', None)
-    modified_before = parse(d).strftime(DATE_FORMAT) if d else None
+    modified_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('modified_after', None)
-    modified_after = parse(d).strftime(DATE_FORMAT) if d else None
+    modified_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issues = list(
         islice(
@@ -1263,7 +1264,7 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
         raise ValueError(f'Invalid update_type: {update_types}. Must include: {",".join(ISSUE_UPDATE_TYPES.keys())}')
 
     d = args.get('created_after')
-    created_after = parse(d).strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issue_updates = [
         {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
@@ -1293,7 +1294,7 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
         raise ValueError('issue_id not specified')
 
     d = args.get('created_after')
-    created_after = parse(d).strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issue_comments = [
         {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
@@ -1509,6 +1510,7 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, Any]) -> Ge
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+    assert last_update_utc is not None, f'could not parse {last_update}'
     modified_after = last_update_utc.strftime(DATE_FORMAT)
 
     modified_incidents = client.get_issues(
@@ -1539,7 +1541,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
             ),
             MAX_UPDATES
         ),
-        key=lambda k: k.get('created')
+        key=lambda k: k.get('created')  # type: ignore
     )
 
     new_entries: List = []
@@ -2783,7 +2785,6 @@ def main() -> None:
         #  To be compatible with 6.1
         if 'not implemented' in str(e):
             raise e
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(
             f"Failed to execute {command} command.\nError:\n{str(e)}"
         )

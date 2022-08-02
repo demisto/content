@@ -24,11 +24,29 @@
                     },
                     "simple": ""
                 },
+                "BitSight Comments": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "comments",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "BitSight Evidence Key": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
                         "root": "evidence_key",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Related Findings": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "related_findings",
                         "transformers": []
                     },
                     "simple": ""
@@ -127,8 +145,28 @@
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "severity",
-                        "transformers": []
+                        "root": "severity_category",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "minor,moderate,material,severe"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Low,Medium,High,Critical"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
                     },
                     "simple": ""
                 }

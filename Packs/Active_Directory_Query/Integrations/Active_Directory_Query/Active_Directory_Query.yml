@@ -24,7 +24,6 @@ configuration:
   required: true
 - display: NTLM authentication
   name: ntlm
-  defaultvalue: ""
   type: 8
   required: false
 - display: Base DN (for example "dc=company,dc=com")
@@ -48,7 +47,6 @@ configuration:
   - TLS
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
   type: 8
   required: false
 - additionalinfo: Used in the IAM commands.
@@ -253,6 +251,13 @@ script:
     - name: base-dn
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured
         for the instance is used.
+    - name: restore_user
+      default: false
+      auto: PREDEFINED
+      predefined:
+       - 'true'
+       - 'false'
+      description: "If true, the command will enable the user with his restored options"
     description: Enables a previously disabled Active Directory account.
   - name: ad-unlock-account
     arguments:
@@ -779,7 +784,21 @@ script:
       name: basedn
     description: Updates attributes of an existing Active Directory group.
     name: ad-update-group
-  dockerimage: demisto/py3-tools:0.0.1.26536
+  - name: ad-modify-password-never-expire
+    arguments:
+    - name: username
+      required: true
+      description: The sAMAccountName of the user to modify.
+    - name: value
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Value to set "Password Never Expire".
+    description: 'Modifies the AD account attribute "Password Never Expire".'
+    execution: true                                 
+  dockerimage: demisto/py3-tools:1.0.0.31193
   runonce: false
   ismappable: true
   isremotesyncout: true

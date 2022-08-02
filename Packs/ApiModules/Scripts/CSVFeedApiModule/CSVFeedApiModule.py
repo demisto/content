@@ -184,7 +184,7 @@ class Client(BaseClient):
             try:
                 r.raise_for_status()
             except Exception:
-                return_error('Exception in request: {} {}'.format(r.status_code, r.content))
+                return_error(f'Exception in request: {r.status_code} {r.content.decode("utf-8")}')
                 raise
 
             response = self.get_feed_content_divided_to_lines(url, r)
@@ -295,6 +295,7 @@ def date_format_parsing(date_string):
     :return: ISO-8601 date string
     """
     formatted_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
+    assert formatted_date is not None, f"failed parsing {date_string}"
     return formatted_date.strftime(DATE_FORMAT)
 
 

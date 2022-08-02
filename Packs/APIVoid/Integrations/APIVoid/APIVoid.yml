@@ -40,12 +40,10 @@ configuration:
   additionalinfo: Consider the indicator malicious if either "suspicious" or "bad"
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ''
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ''
   type: 8
   required: false
 script:
@@ -1587,7 +1585,7 @@ script:
       description: ''
       type: boolean
     description: A smart API that accurately checks a website's trustworthiness.
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.4.31492
   runonce: false
   subtype: python3
 fromversion: 5.0.0

@@ -1,0 +1,16 @@
+{
+    "total_count": 1,
+    "results": [
+        {
+            "id": 1,
+            "src_host_id": 1,
+            "dst_host_id": 2,
+            "proto": "MODBUSTCP (TCP)",
+            "tx_bytes": 35680158,
+            "rx_bytes": 147286245,
+            "first_seen": "1970-01-01T01:00:00.000+01:00",
+            "last_seen": "1970-01-01T01:00:00.000+01:00",
+            "ports": [502, 32067]
+        }
+    ]
+}

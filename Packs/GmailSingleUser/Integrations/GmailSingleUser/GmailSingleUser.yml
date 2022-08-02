@@ -58,12 +58,10 @@ configuration:
   name: insecure
   required: false
   type: 8
-  defaultvalue: ''
   additionalinfo:
 - name: proxy
   display: Use system proxy settings
   required: false
-  defaultvalue: ''
   type: 8
   additionalinfo:
 description: Gmail API using OAuth 2.0.
@@ -232,7 +230,7 @@ script:
     arguments: []
     description: Tests that Gmail auth is configured properly. Use this command after completing the OAuth2 authentication process.
     outputs: []
-  dockerimage: demisto/google-api-py3:1.0.0.27547
+  dockerimage: demisto/google-api-py3:1.0.0.32234
   isfetch: true
   longRunning: false
   longRunningPort: false

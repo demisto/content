@@ -5,7 +5,8 @@ import pytest
 
 # Import local packages
 from AlienVault_OTX_v2 import \
-    calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command, delete_duplicated_entities
+    calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command, \
+    delete_duplicated_entities
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -56,8 +57,7 @@ FILE_EC_WITH_ANALYSIS = {
         'Malicious': {'PulseIDs': []}},
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
     ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
-        'Indicator': {
-            'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}, 'Type': 'file',
+        'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Type': 'file',
         'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'
     }]
 }
@@ -66,14 +66,20 @@ FILE_EC_WITHOUT_ANALYSIS = {
     'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||'
     ' val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||'
     ' val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH ||'
-    ' val.SSDeep && val.SSDeep == obj.SSDeep)': {
-        'MD5': None, 'SHA1': None, 'SHA256': None, 'SSDeep': None, 'Size': None, 'Type': None,
-        'Malicious': {'PulseIDs': []}},
+    ' val.SSDeep && val.SSDeep == obj.SSDeep)': [
+        {'SHA1': '6c5360d41bd2b14b1565f5b18e5c203cf512e493',
+         'Hashes': [
+             {
+                 'type': 'SHA1',
+                 'value': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'
+             }
+         ]
+         }
+    ],
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
-    ' val.Type == obj.Type)': [{
-        'Indicator': {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}, 'Type': 'file',
-        'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'
-    }]
+    ' val.Type == obj.Type)': [{'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Type': 'file',
+                                'Vendor': '', 'Score': 0, 'Reliability': 'C - Fairly reliable',
+                                'Message': 'No results found.'}]
 }
 
 URL_RAW_RESPONSE = {
@@ -594,7 +600,7 @@ def test_file_command(mocker, raw_response_general, raw_response_analysis, expec
     - Validate that the File and DBotScore entry context have the proper values.
     """
     mocker.patch.object(client, 'query', side_effect=[raw_response_analysis, raw_response_general])
-    command_results = file_command(client, {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'})
+    command_results = file_command(client, file='6c5360d41bd2b14b1565f5b18e5c203cf512e493')
     # results is CommandResults list
     context = command_results[0].to_context()['EntryContext']
     assert expected == context
@@ -642,12 +648,12 @@ def test_url_command_not_found(mocker):
           'Q1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9' \
           'TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFOqG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8' \
           'cirtcm1_CG8NVhvfc5wnattncML1PF6zctl5JVX3kUHZZJoc2uUHbADiLAJ6K3mEHmH4EbS9oEFs10MF8BvT7n'
-    expected_result = f'No matches for URL {url}'
+    expected_result = 0
     mocker.patch.object(client, 'query', return_value=404)
 
     command_results = url_command(client, url)
 
-    assert command_results[0].to_context()['HumanReadable'] == expected_result
+    assert command_results[0].indicator.dbot_score.score == expected_result
 
 
 def test_url_command_uppercase_protocol(requests_mock):
@@ -726,7 +732,7 @@ def test_ip_command(mocker, ip_, raw_response, url_raw_response, file_raw_respon
 
 
 @pytest.mark.parametrize('ip_,raw_response,expected', [
-    ('8.8.88.8', IP_404_RAW_RESPONSE, 'IP 8.8.88.8 could not be found.'),
+    ('8.8.88.8', IP_404_RAW_RESPONSE, 0),
 ])
 def test_ip_command_on_404(mocker, ip_, raw_response, expected):
     """
@@ -741,7 +747,7 @@ def test_ip_command_on_404(mocker, ip_, raw_response, expected):
         """
     mocker.patch.object(client, 'query', side_effect=[raw_response])
     command_results = ip_command(client, ip_, 'IPv4')
-    assert command_results[0].readable_output == expected
+    assert command_results[0].indicator.dbot_score.score == expected
 
 
 @pytest.mark.parametrize('entities_list,field_name,expected_results', [

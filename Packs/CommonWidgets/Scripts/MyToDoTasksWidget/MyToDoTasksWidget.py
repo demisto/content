@@ -30,6 +30,7 @@ def get_open_to_do_tasks_of_current_user() -> List[Dict]:
                 clickable_incident_id = f'[{incident_id}]({os.path.join("#/Custom/caseinfoid", incident_id)})'
                 if sla := task.get('dueDate', ''):
                     sla_dt = parse(sla)
+                    assert sla_dt is not None, f'could not parse {sla}'
                     sla = sla_dt.strftime('%Y-%m-%d %H:%M:%S%z')
                 opened_by = task.get('dbotCreatedBy', '')
                 table.append({
@@ -59,7 +60,6 @@ def main():
         return_results(cmd_results)
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute MyToDoTasksWidget Script. Error: {str(e)}', e)
 
 

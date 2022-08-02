@@ -96,7 +96,7 @@ Please note that with every submitted document of type .pptx, .docx or .pdf you 
 | --- | --- | --- |
 | DeepL.DocumentSubmission | string | Translated Document | 
 | DeepL.DocumentSubmission.document_id | string | Document ID returned | 
-| DeepL.DocumentSubmission. document_key | string | Document Key returned | 
+| DeepL.DocumentSubmission.document_key | string | Document Key returned | 
 
 ### deepl-check-document-status
 ***

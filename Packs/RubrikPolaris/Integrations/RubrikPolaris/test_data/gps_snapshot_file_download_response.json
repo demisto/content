@@ -1,0 +1,27 @@
+{
+  "empty_response": {
+    "data": {}
+  },
+  "raw_response": {
+    "data": {
+        "vsphereVMDownloadSnapshotFiles": {
+            "id": "dummy_id",
+            "status": "QUEUED",
+            "links": [
+                {
+                    "href": "dummy_url",
+                    "rel": "self"
+                }
+            ]
+        }
+    }
+},
+  "outputs": {
+    "id": "dummy_id",
+    "status": "QUEUED",
+    "links": {
+      "href": "dummy_url",
+      "rel": "self"
+    }
+  }
+}

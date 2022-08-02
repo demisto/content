@@ -3,11 +3,10 @@ import io
 import json
 import random
 
-import dateparser
 from datetime import datetime, timedelta
 
 import pytest
-from AzureADIdentityProtection import (AADClient, OUTPUTS_PREFIX,
+from AzureADIdentityProtection import (AADClient, OUTPUTS_PREFIX, DATE_FORMAT,
                                        azure_ad_identity_protection_risk_detection_list_command,
                                        azure_ad_identity_protection_risky_users_list_command,
                                        azure_ad_identity_protection_risky_users_history_list_command,
@@ -173,13 +172,11 @@ def test_fetch_all_incidents(mocker):
     last_run = {
         'latest_detection_found': '2021-07-10T11:02:54Z'
     }
-    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, {})
-    incidents, last_item_time = detections_to_incidents(
-        test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
+    last_fetch = get_last_fetch_time(last_run, {})
+    incidents, last_item_time = detections_to_incidents(test_incidents.get('value', []), last_fetch)
     assert len(incidents) == 10
-    assert incidents[0].get(
-        'name') == 'Azure AD: 17 newCountry adminDismissedAllRiskForUser'
-    assert last_item_time == dateparser.parse('2021-07-17T14:11:57Z').replace(tzinfo=None)
+    assert incidents[0].get('name') == 'Azure AD: 17 newCountry adminDismissedAllRiskForUser'
+    assert last_item_time == '2021-07-17T14:11:57Z'
 
 
 def test_fetch_new_incidents(mocker):
@@ -196,13 +193,11 @@ def test_fetch_new_incidents(mocker):
     last_run = {
         'latest_detection_found': '2021-07-20T11:02:54Z'
     }
-    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, {})
-    incidents, last_item_time = detections_to_incidents(
-        test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
+    last_fetch = get_last_fetch_time(last_run, {})
+    incidents, last_item_time = detections_to_incidents(test_incidents.get('value', []), last_fetch)
     assert len(incidents) == 10
-    assert incidents[0].get(
-        'name') == 'Azure AD: 17 newCountry adminDismissedAllRiskForUser'
-    assert last_item_time == dateparser.parse('2021-07-20T11:02:54Z').replace(tzinfo=None)
+    assert incidents[0].get('name') == 'Azure AD: 17 newCountry adminDismissedAllRiskForUser'
+    assert last_item_time == '2021-07-20T11:02:54Z'
 
 
 # set time to 2021-07-29 11:10:00
@@ -214,7 +209,8 @@ def test_first_fetch_start_time():
     }
     expected_datetime = datetime.now() - timedelta(days=2)
 
-    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, params)
+    last_fetch = get_last_fetch_time(last_run, params)
+    last_fetch_datetime = datetime.strptime(last_fetch.removesuffix('Z'), DATE_FORMAT)
 
     assert expected_datetime - timedelta(minutes=1) < last_fetch_datetime < expected_datetime + timedelta(minutes=1)
 
@@ -227,40 +223,39 @@ def test_non_first_fetch_start_time():
     params = {
         "first_fetch": "2 days"
     }
-    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, params)
-    assert last_fetch == '2021-07-28T00:10:00.000'
+    last_fetch = get_last_fetch_time(last_run, params)
+    assert last_fetch == '2021-07-28T00:10:00.000Z'
 
 
 def test_filter_creation_with_user_filter():
     from AzureADIdentityProtection import build_filter
-    last_fetch = '2021-07-28T00:10:00.000'
+    last_fetch = '2021-07-28T00:10:00.000Z'
     params = {
-        "first_fetch": "2 days",
         "fetch_filter_expression": "id gt 1234"
     }
 
     user_filter = params['fetch_filter_expression']
     constructed_filter = build_filter(last_fetch, params)
-    assert constructed_filter == f"{user_filter} and detectedDateTime gt {last_fetch}Z"
+    assert constructed_filter == f"({user_filter}) and detectedDateTime gt {last_fetch}"
 
 
 def test_filter_creation_without_user_filter():
     from AzureADIdentityProtection import build_filter
-    last_fetch = '2021-07-28T00:10:00.000'
+    last_fetch = '2021-07-28T00:10:00.000Z'
     params = {
         "first_fetch": "2 days",
         "fetch_filter_expression": ""
     }
 
     constructed_filter = build_filter(last_fetch, params)
-    assert constructed_filter == f"detectedDateTime gt {last_fetch}Z"
+    assert constructed_filter == f"detectedDateTime gt {last_fetch}"
 
     params = {
         "first_fetch": "2 days",
     }
 
     constructed_filter = build_filter(last_fetch, params)
-    assert constructed_filter == f"detectedDateTime gt {last_fetch}Z"
+    assert constructed_filter == f"detectedDateTime gt {last_fetch}"
 
 
 @pytest.mark.parametrize('date_to_test', [('2021-07-28T00:10:00.000Z'), ('2021-07-28T00:10:00Z')])
@@ -334,22 +329,21 @@ def test_detections_to_incident():
     Then:
     - Both calls return 10 incidents, and the latest detection time among the detections.
     """
-    from AzureADIdentityProtection import detections_to_incidents, DATE_FORMAT
+    from AzureADIdentityProtection import detections_to_incidents
     detections_in_order = util_load_json('test_data/incidents.json')['value']
     detections_out_of_order = copy.deepcopy(detections_in_order)
     random.shuffle(detections_out_of_order)
-    last_fetch_datetime = datetime.strptime('2019-07-28T00:10:00.123456', DATE_FORMAT)
-    incidents, latest_incident_time = detections_to_incidents(detections_in_order, last_fetch_datetime)
-    latest_incident_time = latest_incident_time.strftime(DATE_FORMAT)
+    last_fetch = '2019-07-28T00:10:00.123456'
+
+    incidents, latest_incident_time = detections_to_incidents(detections_in_order, last_fetch)
 
     assert len(incidents) == 10
-    assert latest_incident_time == '2021-07-17T14:11:57.000000'
+    assert latest_incident_time == '2021-07-17T14:11:57Z'
 
-    incidents, latest_incident_time = detections_to_incidents(detections_out_of_order, last_fetch_datetime)
-    latest_incident_time = latest_incident_time.strftime(DATE_FORMAT)
+    incidents, latest_incident_time = detections_to_incidents(detections_out_of_order, last_fetch)
 
     assert len(incidents) == 10
-    assert latest_incident_time == '2021-07-17T14:11:57.000000'
+    assert latest_incident_time == '2021-07-17T14:11:57Z'
 
 
 def mock_list_detections(limit, filter_expression, user_id, user_principal_name):
@@ -395,15 +389,12 @@ def mock_get_last_fetch_time(last_run, params):
         last_fetch (str): the date of the time to start the fetch from.
         last_fetch_datetime (str): the datetime of the time to start the fetch from.
     """
-    from AzureADIdentityProtection import DATE_FORMAT, date_str_to_azure_format
     last_fetch = last_run.get('latest_detection_found')
     if not last_fetch:
         # To handle the fact that we can't freeze the time and still parse relative time expressions such as 2 days
-        last_fetch = "2021-07-16T11:08:55.000"
+        last_fetch = "2021-07-16T11:08:55.000Z"
 
-    last_fetch = date_str_to_azure_format(last_fetch)
-    last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
-    return last_fetch, last_fetch_datetime
+    return last_fetch
 
 
 def test_fetch_complete_flow(mocker, client):
@@ -453,7 +444,7 @@ def test_fetch_complete_flow(mocker, client):
     first_incident = incidents[0].get('name')
     assert first_incident == 'Azure AD: 37 newCountry adminDismissedAllRiskForUser'
     assert len(incidents) == 5
-    assert last_run['latest_detection_found'] == '2021-07-17T14:09:54.000000'
+    assert last_run['latest_detection_found'] == '2021-07-17T14:09:54Z'
 
     mocker.patch('demistomock.getLastRun', return_value=last_run)
 
@@ -461,10 +452,10 @@ def test_fetch_complete_flow(mocker, client):
     first_incident = incidents[0].get('name')
     assert first_incident == 'Azure AD: 87 newCountry adminDismissedAllRiskForUser'
     assert len(incidents) == 3
-    assert last_run['latest_detection_found'] == '2021-07-17T14:11:57.000000'
+    assert last_run['latest_detection_found'] == '2021-07-17T14:11:57Z'
 
     mocker.patch('demistomock.getLastRun', return_value=last_run)
 
     incidents, last_run = fetch_incidents(client, mock_params)
     assert len(incidents) == 0
-    assert last_run['latest_detection_found'] == '2021-07-17T14:11:57.000000'
+    assert last_run['latest_detection_found'] == '2021-07-17T14:11:57Z'

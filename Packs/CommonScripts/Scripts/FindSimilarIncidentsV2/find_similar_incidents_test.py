@@ -458,6 +458,24 @@ def test_build_incident_query_without_extra_query():
     assert res == '(-id:826) and (-status:Closed)'
 
 
+def test_build_incident_query_without_similar_keys_query_and_ignore_closed():
+    """
+    Given:
+        - Fields for creating query without similar_keys_query and ignore_closed flag.
+
+    When:
+        - Building incident query using 'build_incident_query' function.
+
+    Then:
+        - Ensure the query was created correctly and that the query string got the values needed
+          from the formating.
+    """
+    from FindSimilarIncidentsV2 import build_incident_query
+    res = build_incident_query('', False, '826', '')
+
+    assert res == '(-id:826)'
+
+
 def dt_res(context, keys_to_search):
 
     keys_list = keys_to_search.split('.')

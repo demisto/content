@@ -44,10 +44,11 @@ class Email(object):
         self.headers = email_object.headers
         self.raw_body = email_object.body if include_raw_body else None
         # According to the mailparser documentation the datetime object is in utc
-        self.date = email_object.date.replace(tzinfo=timezone.utc)
+        self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None
         self.raw_json = self.generate_raw_json()
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
+        self.message_id = email_object.message_id
 
     @staticmethod
     def handle_message_slashes(message_bytes: bytes) -> bytes:
@@ -231,6 +232,7 @@ def fetch_incidents(client: IMAPClient,
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
+    logger(fetch_incidents)
     uid_to_fetch_from = last_run.get('last_uid', 1)
     time_to_fetch_from = parse(last_run.get('last_fetch', f'{first_fetch_time} UTC'), settings={'TIMEZONE': 'UTC'})
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
@@ -309,10 +311,13 @@ def fetch_mails(client: IMAPClient,
         if not message_bytes:
             continue
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-        if (not time_to_fetch_from or time_to_fetch_from < email_message_object.date) and \
+        if (not time_to_fetch_from or (email_message_object.date and time_to_fetch_from < email_message_object.date)) and \
                 int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)
+        elif email_message_object.date is None:
+            demisto.error(f"Skipping email with ID {email_message_object.message_id},"
+                          f" it doesn't include a date field that shows when was it received.")
         else:
             demisto.debug(f'Skipping {email_message_object.id} with date {email_message_object.date}. '
                           f'uid_to_fetch_from: {uid_to_fetch_from}, first_fetch_time: {time_to_fetch_from}')
@@ -369,6 +374,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     Returns:
         A list with arguments for the email search query
     """
+    logger(generate_search_query)
     permitted_from_addresses_list = argToList(permitted_from_addresses)
     permitted_from_domains_list = argToList(permitted_from_domains)
     messages_query = ''

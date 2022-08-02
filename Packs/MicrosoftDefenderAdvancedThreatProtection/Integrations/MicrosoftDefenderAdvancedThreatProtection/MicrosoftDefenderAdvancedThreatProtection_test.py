@@ -9,9 +9,12 @@ import pytest
 from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
-    get_live_response_file_action, put_live_response_file_action
+    get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
+    get_machine_users_command, get_machine_alerts_command
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
+with open('test_data/expected_hunting_queries.json') as expected_json:
+    EXPECTED_HUNTING_QUERIES = json.load(expected_json)
 
 
 def mock_demisto(mocker):
@@ -126,6 +129,16 @@ def test_get_machine_investigation_package_command(mocker):
     mocker.patch.object(atp, 'get_machine_action_data', return_value=INVESTIGATION_ACTION_DATA)
     _, res, _ = get_machine_investigation_package_command(client_mocker, {'machine_id': '123', 'comment': 'test'})
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == INVESTIGATION_ACTION_DATA
+
+
+def test_offboard_machine_command(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import offboard_machine_command
+    mocker.patch.object(client_mocker, 'offboard_machine', return_value=MACHINE_OFFBOARD_API_RESPONSE)
+    args = {'machine_id': '9b898e79b0ed2173cc87577a158d1dba5f61d7a7', 'comment': 'Testing Offboarding'}
+    result = offboard_machine_command(client_mocker, args)
+    assert result.outputs[0]['ID'] == '947a677a-a11a-4240-ab6q-91277e2386b9'
+    assert result.outputs[0]['Status'] == 'Pending'
+    assert result.outputs[0]['Type'] == 'Offboard'
 
 
 def test_get_investigation_package_sas_uri_command(mocker):
@@ -733,6 +746,100 @@ MACHINE_DATA = {
     'ExposureLevel': "Medium"
 }
 
+MACHINE_USER_DATA = {
+    "@odata.context": "https://api.securitycenter.microsoft.com/api/$metadata#Users",
+    "value": [
+        {
+            "id": "contoso\\user1",
+            "accountName": "user1",
+            "accountDomain": "contoso",
+            "firstSeen": "2019-12-18T08:02:54Z",
+            "lastSeen": "2020-01-06T08:01:48Z",
+            "logonTypes": "Interactive",
+            "isDomainAdmin": True,
+            "isOnlyNetworkUser": False
+        }
+    ]
+}
+
+MACHINE_USER_OUTPUT = {
+    "AccountName": "user1",
+    "AccountDomain": "contoso",
+    'AccountSID': None,
+    "DomainAdmin": True,
+    "FirstSeen": "2019-12-18T08:02:54Z",
+    "ID": "contoso\\user1",
+    "LastSeen": "2020-01-06T08:01:48Z",
+    'LeastPrevalentMachineID': None,
+    'LogonCount': None,
+    "LogonTypes": "Interactive",
+    'MachineID': '123abc',
+    'MostPrevalentMachineID': None,
+    "NetworkUser": False,
+}
+
+MACHINE_ALERTS_OUTPUT = {
+    'AADTenantID': None,
+    'AlertCreationTime': '2019-11-03T23:49:45.3823185Z',
+    'AssignedTo': 'test@test.com',
+    "Category": "CommandAndControl",
+    "Classification": "TruePositive",
+    'Comments': [
+        {
+            'Comment': None,
+            'CreatedBy': None,
+            'CreatedTime': None
+        }
+    ],
+    'ComputerDNSName': None,
+    "Description": "A network connection was made to a risky host which has exhibited malicious activity.",
+    'DetectionSource': 'WindowsDefenderAtp',
+    'DetectorID': None,
+    'Determination': None,
+    'Evidence': None,
+    'FirstEventTime': '2019-11-03T23:47:16.2288822Z',
+    "ID": "123",
+    "IncidentID": 123456,
+    'InvestigationID': 654321,
+    'InvestigationState': 'Running',
+    'LastEventTime': '2019-11-03T23:47:51.2966758Z',
+    'LastUpdateTime': '2019-11-03T23:55:52.6Z',
+    "MachineID": "123abc",
+    'MitreTechniques': None,
+    'RBACGroupName': None,
+    'RelatedUser': None,
+    'ResolvedTime': None,
+    "Severity": "Low",
+    "Status": "New",
+    "ThreatFamilyName": None,
+    'ThreatName': None,
+    "Title": "Network connection to a risky host",
+}
+
+MACHINE_OFFBOARD_API_RESPONSE = {
+    "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#MachineActions/$entity",
+    "id": "947a677a-a11a-4240-ab6q-91277e2386b9",
+    "type": "Offboard",
+    "title": None,
+    "requestor": "cbceb30b-f2b1-488e-893e-62907e4fe6d5",
+    "requestorComment": "Testing Offboarding",
+    "status": "Pending",
+    "machineId": None,
+    "computerDnsName": None,
+    "creationDateTimeUtc": "2022-07-12T14:39:19.6103056Z",
+    "lastUpdateDateTimeUtc": "2022-07-12T14:39:19.610309Z",
+    "cancellationRequestor": None,
+    "cancellationComment": None,
+    "cancellationDateTimeUtc": None,
+    "errorHResult": 0,
+    "scope": None,
+    "externalId": None,
+    "requestSource": "PublicApi",
+    "relatedFileInfo": None,
+    "commands": [],
+    "troubleshootInfo": None
+}
+
 
 def tests_get_future_time(mocker):
     from datetime import datetime
@@ -1232,3 +1339,979 @@ def test_get_incidents_query_params(status, severity, limit, evidence, last_fetc
 
     query = _get_incidents_query_params(client, fetch_evidence=evidence, last_fetch_time=last_fetch_time)
     assert query == expected_result
+
+
+class TestHuntingQueryBuilder:
+    class TestHelperMethods:
+        def test_get_time_range_query__invalid_and_empty(self):
+            """
+            Tests invalid and empty time_range cases
+
+            Given:
+                - empty / Invalid time_range
+            When:
+                - calling get_time_range_query
+            Then:
+                - return empty str
+            """
+            expected = ""
+            # empty case:
+            assert HuntingQueryBuilder.get_time_range_query(None) == expected
+            assert HuntingQueryBuilder.get_time_range_query('') == expected
+
+            # invalid case:
+            assert HuntingQueryBuilder.get_time_range_query('invalid') == expected
+
+        def test_get_time_range_query__valid(self):
+            """
+            Tests valid time_range
+
+            Given:
+                - time_range of 1 day ago
+            When:
+                - calling get_time_range_query
+            Then:
+                - return a time_query of
+            """
+            expected = 'Timestamp > ago(1440m)'
+            assert HuntingQueryBuilder.get_time_range_query('1 day') == expected
+
+        def test_rebuild_query_with_time_range__table_only(self):
+            """
+            Tests case for table name only
+
+            Given:
+                - query with table name only
+            When:
+                - calling rebuild_query_with_time_range
+            Then:
+                - returns a query with time_range
+            """
+            query = 'tableName'
+            time_range = '2 days'
+            expected = 'tableName | where Timestamp > ago(2880m)'
+            assert HuntingQueryBuilder.rebuild_query_with_time_range(query, time_range) == expected
+
+        def test_rebuild_query_with_time_range__full_query(self):
+            """
+            Tests full query
+
+            Given:
+                - query with table name only
+            When:
+                - calling rebuild_query_with_time_range
+            Then:
+                - returns a query with time_range
+            """
+            query = 'tableName | where a | where b'
+            time_range = '2 days'
+            expected = 'tableName | where Timestamp > ago(2880m) | where a | where b'
+            assert HuntingQueryBuilder.rebuild_query_with_time_range(query, time_range) == expected
+
+        def test_list_to_filter_values__empty(self):
+            """
+            Tests list_to_filter empty case
+
+            Given:
+                - empty list
+            When:
+                - calling list_to_filter_values
+            Then:
+                - return an empty str
+            """
+            assert HuntingQueryBuilder.get_filter_values([]) is None
+
+        def test_list_to_filter_values__invalid(self):
+            """
+            Tests list_to_filter invalid case
+
+            Given:
+                - non list item
+            When:
+                - calling list_to_filter_values
+            Then:
+                - return an empty str
+            """
+            assert HuntingQueryBuilder.get_filter_values(42) is None
+
+        def test_list_to_filter_values__list(self):
+            """
+            Tests list_to_filter empty case
+
+            Given:
+                - list of 1 item
+                - list of 3 items
+            When:
+                - calling list_to_filter_values
+            Then:
+                - return a string representation of the lists
+            """
+            list_input = ['a', 'b', 'c']
+            assert HuntingQueryBuilder.get_filter_values(list_input) == '("a","b","c")'
+            assert HuntingQueryBuilder.get_filter_values(list_input[:1]) == '("a")'
+
+        def test_build_generic_query(self):
+            """
+
+            :return:
+            """
+            query_params = assign_params(
+                a='("1")',
+                b='("1","2")',
+                c='',
+                d=None,
+                e=('test_op', '"1","2"')
+            )
+            actual = HuntingQueryBuilder.build_generic_query('some query', ' suffix', query_params, 'or', 'in')
+            assert len(actual) == 75
+            assert actual[:12] == 'some query ('
+            assert '(a in ("1"))' in actual
+            assert '(b in ("1","2"))' in actual
+            assert 'or' in actual and 'in' in actual
+            assert 'e test_op "1","2"' in actual
+            assert ' suffix' in actual
+
+    class TestLateralMovementEvidence:
+        def test_build_network_connections_query(self):
+            """
+            Tests network connection query
+
+            Given:
+                - LateralMovementEvidence inited with sha1
+            When:
+                - calling build_network_connections_query
+            Then:
+                - return a network_connections query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['network_connections']
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = lme.build_network_connections_query()
+            assert actual == expected
+
+        def test_build_smb_connections_query(self):
+            """
+            Tests smb connections query
+
+            Given:
+                - LateralMovementEvidence inited with md5
+            When:
+                - calling build_smb_connections_query
+            Then:
+                - return a smb_connections query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['smb_connections']
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit='1',
+                query_operation='and',
+                md5='1,2',
+                page='1',
+            )
+            actual = lme.build_smb_connections_query()
+            assert actual == expected
+
+        def test_build_smb_connections_query__with_remote_ip_count(self):
+            """
+            Tests smb connections query with remote_ip_count
+
+            Given:
+                - LateralMovementEvidence inited with md5 and remote_ip_count
+            When:
+                - calling build_smb_connections_query
+            Then:
+                - return a smb_connections query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['smb_connections_w_remote_ip_count']
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit='1',
+                query_operation='and',
+                md5='1,2',
+                remote_ip_count=25,
+                page='1',
+            )
+            actual = lme.build_smb_connections_query()
+            assert actual == expected
+
+        def test_build_credential_dumping_query(self):
+            """
+            Tests credential dumping query
+
+            Given:
+                - LateralMovementEvidence inited with device_name
+            When:
+                - calling build_credential_dumping_query
+            Then:
+                - return a valid credential dumping query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['credential_dumping']
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit=10,
+                query_operation='or',
+                device_name='1',
+                page='1',
+            )
+            actual = lme.build_credential_dumping_query()
+            assert actual == expected
+
+        def test_build_rdp_attempts_query(self):
+            """
+            Tests build_rdp_attempts_query
+
+            Given:
+                - LateralMovementEvidence inited with device_name
+            When:
+                - calling build_rdp_attempts_query
+            Then:
+                - return a valid rdp attempts query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['rdp_attempts']
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit=10,
+                query_operation='or',
+                device_name='1',
+                page='1',
+            )
+            actual = lme.build_management_connection_query()
+            assert actual == expected
+
+    class TestPersistenceEvidence:
+        def test_build_scheduled_job_query(self):
+            """
+            Tests scheduled job query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_scheduled_job_query
+            Then:
+                - return a scheduled_job query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['scheduled_job']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='scheduled_job',
+                page='1',
+            )
+            actual = pe.build_scheduled_job_query()
+            assert actual == expected
+
+        def test_registry_entry_query__no_process_cmd(self):
+            """
+            Tests registry entry query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+                - PersistenceEvidence inited with query_purpose registry_entry
+                - PersistenceEvidence inited without process_cmd
+            When:
+                - calling build_registry_entry_query
+            Then:
+                - return a registry_entry query
+            """
+            with pytest.raises(DemistoException):
+                HuntingQueryBuilder.PersistenceEvidence(
+                    limit='1',
+                    query_operation='and',
+                    sha1='1,2',
+                    query_purpose='registry_entry',
+                    page='1',
+                )
+
+        def test_registry_entry_query(self):
+            """
+            Tests registry entry query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+                - PersistenceEvidence inited with query_purpose registry_entry
+                - PersistenceEvidence inited with process_cmd
+            When:
+                - calling build_registry_entry_query
+            Then:
+                - return a registry_entry query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['registry_entry']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='registry_entry',
+                process_cmd='something',
+                page='1',
+            )
+            actual = pe.build_registry_entry_query()
+            assert actual == expected
+
+        def test_build_startup_folder_changes_query(self):
+            """
+            Tests startup_folder_changes query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_startup_folder_changes_query
+            Then:
+                - return a startup_folder_changes query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['startup_folder_changes']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='startup_folder_changes',
+                page='1',
+            )
+            actual = pe.build_startup_folder_changes_query()
+            assert actual == expected
+
+        def test_build_new_service_created_query(self):
+            """
+            Tests new_service_created query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_new_service_created_query
+            Then:
+                - return a new_service_created query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['new_service_created']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='new_service_created',
+                page='1',
+            )
+            actual = pe.build_new_service_created_query()
+            assert actual == expected
+
+        def test_build_service_updated_query(self):
+            """
+            Tests service_updated query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_service_updated_query
+            Then:
+                - return a service_updated query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['service_updated']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='service_updated',
+                page='1',
+            )
+            actual = pe.build_service_updated_query()
+            assert actual == expected
+
+        def test_build_file_replaced_query(self):
+            """
+            Tests file_replaced query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_file_replaced_query
+            Then:
+                - return a file_replaced query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['file_replaced']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='file_replaced',
+                page='1',
+            )
+            actual = pe.build_file_replaced_query()
+            assert actual == expected
+
+        def test_build_new_user_query(self):
+            """
+            Tests new_user query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_new_user_query
+            Then:
+                - return a new_user query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['new_user']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='new_user',
+                page='1',
+            )
+            actual = pe.build_new_user_query()
+            assert actual == expected
+
+        def test_build_new_group_query(self):
+            """
+            Tests new_group query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_new_group_query
+            Then:
+                - return a new_group query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['new_group']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='new_group',
+                page='1',
+            )
+            actual = pe.build_new_group_query()
+            assert actual == expected
+
+        def test_build_group_user_change_query(self):
+            """
+            Tests group_user_change query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_group_user_change_query
+            Then:
+                - return a group_user_change query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['group_user_change']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='group_user_change',
+                page='1',
+            )
+            actual = pe.build_group_user_change_query()
+            assert actual == expected
+
+        def test_build_local_firewall_change_query(self):
+            """
+            Tests local_firewall_change query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_local_firewall_change_query
+            Then:
+                - return a local_firewall_change query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['local_firewall_change']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='local_firewall_change',
+                page='1',
+            )
+            actual = pe.build_local_firewall_change_query()
+            assert actual == expected
+
+        def test_build_host_file_change_query(self):
+            """
+            Tests host_file_change query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_host_file_change_query
+            Then:
+                - return a host_file_change query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['host_file_change']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='host_file_change',
+                page='1',
+            )
+            actual = pe.build_host_file_change_query()
+            assert actual == expected
+
+    class TestFileOrigin:
+        def test_build_file_origin_query(self):
+            """
+            Tests file origin generic query
+
+            Given:
+                - FileOrigin inited with sha1
+            When:
+                - calling build_file_origin_query
+            Then:
+                - return a file origin query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['FileOrigin']
+            fo = HuntingQueryBuilder.FileOrigin(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = fo.build_file_origin_query()
+            assert actual == expected
+
+    class TestProcessDetails:
+        def test_build_parent_process_query(self):
+            """
+            Tests parent process query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_parent_process_query
+            Then:
+                - return a parent process query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['parent_process']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = pd.build_parent_process_query()
+            assert actual == expected
+
+        def test_build_grandparent_process_query(self):
+            """
+            Tests grandparent process query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_grandparent_process_query
+            Then:
+                - return a grandparent process query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['grandparent_process']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = pd.build_grandparent_process_query()
+            assert actual == expected
+
+        def test_build_process_details_query(self):
+            """
+            Tests process query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_process_details_query
+            Then:
+                - return a process query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['process']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = pd.build_process_details_query()
+            assert actual == expected
+
+        def test_build_beaconing_evidence_query(self):
+            """
+            Tests beaconing evidence query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_beaconing_evidence_query
+            Then:
+                - return a beaconing evidence query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['beaconing_evidence']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = pd.build_beaconing_evidence_query()
+            assert actual == expected
+
+        def test_build_process_excecution_powershell_query(self):
+            """
+            Tests process_excecution_powershell
+
+            Given:
+                - ProcessDetails inited with sha1 and device_id
+            When:
+                - calling build_process_excecution_powershell_query
+            Then:
+                - return a process_excecution_powershell query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['process_excecution_powershell']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                device_id='1',
+                query_purpose='process_excecution_powershell',
+                page='1',
+            )
+            actual = pd.build_process_excecution_powershell_query()
+            assert actual == expected
+
+        def test_build_powershell_execution_unsigned_files_query(self):
+            """
+            Tests powershell_execution_unsigned_files query
+
+            Given:
+                - NetworkConnections inited with no query arg
+            When:
+                - calling build_powershell_execution_unsigned_files_query
+            Then:
+                - return a powershell_execution_unsigned_files query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['powershell_execution_unsigned_files']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                query_purpose='powershell_execution_unsigned_files',
+                page='1',
+            )
+            actual = pd.build_powershell_execution_unsigned_files_query()
+            assert actual == expected
+
+        def test_build_powershell_execution_unsigned_files_query__with_md5(self):
+            """
+            Tests powershell_execution_unsigned_files query
+
+            Given:
+                - NetworkConnections inited with md5 query arg
+            When:
+                - calling build_powershell_execution_unsigned_files_query
+            Then:
+                - return a powershell_execution_unsigned_files query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['powershell_execution_unsigned_files__md5']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                query_purpose='powershell_execution_unsigned_files',
+                md5='1',
+                page='1',
+            )
+            actual = pd.build_powershell_execution_unsigned_files_query()
+            assert actual == expected
+
+    class TestNetworkConnections:
+        def test_build_external_addresses_query(self):
+            """
+            Tests external_addresses query
+
+            Given:
+                - NetworkConnections inited with sha1
+            When:
+                - calling build_external_addresses_query
+            Then:
+                - return a external_addresses query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['external_addresses']
+            nc = HuntingQueryBuilder.NetworkConnections(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='external_addresses',
+                page='1',
+            )
+            actual = nc.build_external_addresses_query()
+            assert actual == expected
+
+        def test_build_dns_query(self):
+            """
+            Tests dns_query query
+
+            Given:
+                - NetworkConnections inited with sha1
+            When:
+                - calling build_dns_query
+            Then:
+                - return a dns_query query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['dns_query']
+            nc = HuntingQueryBuilder.NetworkConnections(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='dns_query',
+                page='1',
+            )
+            actual = nc.build_dns_query()
+            assert actual == expected
+
+        def test_build_encoded_commands_query(self):
+            """
+            Tests encoded_commands query
+
+            Given:
+                - NetworkConnections inited with md5 and device_id
+            When:
+                - calling build_encoded_commands_query
+            Then:
+                - return a encoded_commands query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['encoded_commands']
+            nc = HuntingQueryBuilder.NetworkConnections(
+                limit='1',
+                query_operation='and',
+                md5='1',
+                device_id='1',
+                query_purpose='encoded_commands',
+                page='1',
+            )
+            actual = nc.build_encoded_commands_query()
+            assert actual == expected
+
+    class TestPrivilegeEscalation:
+        def test_build_query(self):
+            """
+            Tests query
+
+            Given:
+                - PrivilegeEscalation inited with device_id
+            When:
+                - calling build_query
+            Then:
+                - return a PrivilegeEscalation query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PrivilegeEscalation']
+            pe = HuntingQueryBuilder.PrivilegeEscalation(
+                limit='1',
+                query_operation='and',
+                device_id='1',
+                page='1',
+            )
+            actual = pe.build_query()
+            assert actual == expected
+
+    class TestTampering:
+        def test_build_external_addresses_query(self):
+            """
+            Tests external_addresses query
+
+            Given:
+                - Tampering inited with device_id
+            When:
+                - calling build_query
+            Then:
+                - return a Tampering query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['Tampering']['with_device']
+            t = HuntingQueryBuilder.Tampering(
+                limit='1',
+                query_operation='and',
+                device_id='1',
+                page='1',
+            )
+            actual = t.build_query()
+            assert actual == expected
+
+        def test_build_external_addresses_query__no_device(self):
+            """
+            Tests external_addresses query
+
+            Given:
+                - Tampering inited without device
+            When:
+                - calling build_query
+            Then:
+                - return a Tampering query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['Tampering']['no_device']
+            t = HuntingQueryBuilder.Tampering(
+                limit='1',
+                query_operation='and',
+                page='1',
+            )
+            actual = t.build_query()
+            assert actual == expected
+
+    class TestCoverUp:
+        def test_build_file_deleted_query(self):
+            """
+            Tests file_deleted query
+
+            Given:
+                - CoverUp inited with sha1
+            When:
+                - calling build_file_deleted_query
+            Then:
+                - return a file_deleted query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['file_deleted']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='file_deleted',
+                page='1',
+            )
+            actual = cu.build_file_deleted_query()
+            assert actual == expected
+
+        def test_build_event_log_cleared_query(self):
+            """
+            Tests event_log query
+
+            Given:
+                - CoverUp inited with device_id
+            When:
+                - calling build_event_log_cleared_query
+            Then:
+                - return a event_log query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['event_log']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                device_id='12',
+                query_purpose='event_log_cleared',
+                page='1',
+            )
+            actual = cu.build_event_log_cleared_query()
+            assert actual == expected
+
+        def test_build_compromised_information_query(self):
+            """
+            Tests compromised_information query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_compromised_information_query
+            Then:
+                - return a compromised_information query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['compromised_information']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='compromised_information',
+                page='1',
+            )
+            actual = cu.build_compromised_information_query()
+            assert actual == expected
+
+        def test_build_connected_devices_query(self):
+            """
+            Tests connected_devices query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_connected_devices_query
+            Then:
+                - return a connected_devices query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['connected_devices']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='connected_devices',
+                page='1',
+            )
+            actual = cu.build_connected_devices_query()
+            assert actual == expected
+
+        def test_build_action_types_query(self):
+            """
+            Tests action_types query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_action_types_query
+            Then:
+                - return a action_types query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['action_types']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='action_types',
+                page='1',
+            )
+            actual = cu.build_action_types_query()
+            assert actual == expected
+
+        def test_build_common_files_query(self):
+            """
+            Tests common_files query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_common_files_query
+            Then:
+                - return a common_files query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['common_files']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='common_files',
+                page='1',
+            )
+            actual = cu.build_common_files_query()
+            assert actual == expected
+
+
+def test_get_machine_users_command(mocker):
+    """
+    Tests conversion of user response
+
+    Given:
+        - user response as json
+    When:
+        - calling for machine users
+    Then:
+        - return user data dict
+    """
+    mocker.patch.object(client_mocker, 'get_machine_users', return_value=MACHINE_USER_DATA)
+    results = get_machine_users_command(client_mocker, {'machine_id': "123abc"})
+    assert results.outputs[0] == MACHINE_USER_OUTPUT
+
+
+def test_get_machine_alerts_command(mocker):
+    """
+    Tests conversion of alert response
+
+    Given:
+        - alert response as json
+    When:
+        - calling for machine alerts
+    Then:
+        - return alert data dict
+    """
+    mocker.patch.object(client_mocker, 'get_machine_alerts', return_value=ALERTS_API_RESPONSE)
+    results = get_machine_alerts_command(client_mocker, {'machine_id': "123abc"})
+    assert results.outputs[0] == MACHINE_ALERTS_OUTPUT

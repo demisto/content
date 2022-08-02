@@ -7,7 +7,7 @@ from datetime import datetime
 import json
 import time
 
-import dateparser
+import dateparser  # type: ignore
 from luminateapi.luminate_python import LuminateV2Client
 
 ''' CONSTS '''

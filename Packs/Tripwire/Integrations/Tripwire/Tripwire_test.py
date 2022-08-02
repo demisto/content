@@ -1,107 +1,118 @@
 from datetime import datetime
 
-from Tripwire import Client, fetch_incidents, prepare_fetch, filter_nodes, filter_elements, filter_rules, \
+from Tripwire import Client, fetch_incidents, get_fetch_start_time, filter_nodes, filter_elements, filter_rules, \
     filter_versions
 from test_data.raw_response import VERSIONS_RAW_RESPONSE
 import demistomock as demisto
 
 
-def test_first_fetch(mocker):
-    """Unit test
-        Given
-        - fetch incidents command
-        - command args
-        - command raw response
-        When
-        - mock the Clients's get session token function.
-        - mock the Clients's get_versions function.
-        Then
-        - run the fetch incidents command using the Client
-        Validate The length of the results.
-        Validate that the first run of fetch incidents runs correctly using the occurred time.
-        """
+"""
+Fetch cases:
+1. time progress - the time_detected of the last alert will be used for the next fetch
+2. paging progress - page_start should be != 0
+"""
+
+
+def test_page_start_progress_fetch(mocker):
+    """
+    Given -
+        alerts with the same timeDetected value
+    When -
+        search for versions
+    Then -
+        validate that the next run object contains the correct page_start
+    """
+    limit = 2
+    last_run_date = '2020-10-20T14:17:59Z'
     mocker.patch.object(Client, 'get_session_token')
-    mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
-    fetch_filter = 'ruleId=-1:1&timeReceivedRange=2020-10-19T14:20:41Z,2020-11-17T14:20:41Z'
-    params = {}
-    mocker.patch('Tripwire.prepare_fetch', return_value=(params, fetch_filter, "2020-10-19T14:20:41Z"))
+    mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE[:limit])
+    mocker.patch.object(demisto, 'getLastRun', return_value={"lastRun": last_run_date})
+
     client = Client(base_url="http://test.com", auth=("admin", "123"), verify=False, proxy=False)
 
-    _, incidents = fetch_incidents(client=client, max_results=2, params=params)
-    assert len(incidents) == 2
-    for incident in incidents:
-        assert datetime.strptime(incident.get('occurred'), '%Y-%m-%dT%H:%M:%SZ') >= datetime.strptime(
-            "2020-10-19T14:20:41Z", '%Y-%m-%dT%H:%M:%SZ')
+    last_run, incidents = fetch_incidents(client=client, max_results=limit, params={})
+
+    fetch_filter = Client.get_versions.call_args[0][0]
+    assert f'pageLimit={limit}' in fetch_filter
+    assert 'pageStart' not in fetch_filter
+    assert last_run['lastRun'] == last_run_date
+    assert last_run['page_start'] == len(incidents)
+    assert last_run['fetched_ids'] == [version['id'] for version in VERSIONS_RAW_RESPONSE[:limit]]
 
 
-def test_second_fetch(mocker):
-    """Unit test
-        Given
-        - fetch incidents command
-        - command args
-        - command raw response
-        When
-        - mock the Clients's get session token function.
-        - mock the Clients's get_versions function.
-        Then
-        - run the fetch incidents command using the Client
-        Validate The length of the results.
-        Validate that the second run of fetch incidents runs correctly using the occured time and last fetch.
-        """
+def test_time_progress_fetch(mocker):
+    """
+    Given -
+        alerts with different timeDetected value
+    When -
+        search for versions
+    Then -
+        validate that the next run object contains the correct page_start
+    """
+    limit = 3
+    last_run_date = '2020-10-20T14:17:59Z'
     mocker.patch.object(Client, 'get_session_token')
-    mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
-    fetch_filter = 'ruleId=-1:1&timeReceivedRange=2020-10-21T09:20:41Z,2020-11-17T14:20:41Z'
-    params = {}
-    mocker.patch('Tripwire.prepare_fetch', return_value=(params, fetch_filter, "2020-10-21T09:20:41Z"))
+    mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE[:limit])
+    mocker.patch.object(demisto, 'getLastRun', return_value={"lastRun": last_run_date})
+
     client = Client(base_url="http://test.com", auth=("admin", "123"), verify=False, proxy=False)
 
-    _, incidents = fetch_incidents(client=client, max_results=4, params=params)
-    # there are 4 returned incidents however only 2 occured after last fetch
-    assert len(incidents) == 2
+    last_run, incidents = fetch_incidents(client=client, max_results=limit, params={})
+
+    fetch_filter = Client.get_versions.call_args[0][0]
+    assert f'pageLimit={limit}' in fetch_filter
+    assert 'pageStart' not in fetch_filter
+    expected_last_run = datetime.strptime(VERSIONS_RAW_RESPONSE[limit - 1]['timeDetected'], '%Y-%m-%dT%H:%M:%S.000Z')
+    datetime.strptime(last_run['lastRun'], '%Y-%m-%dT%H:%M:%SZ') == expected_last_run
+    assert last_run['page_start'] == 0
+    assert last_run['fetched_ids'] == [version['id'] for version in VERSIONS_RAW_RESPONSE[:limit]]
 
 
-def test_empty_fetch(mocker):
-    """Unit test
-        Given
-        - fetch incidents command
-        - command args
-        - command raw response
-        When
-        - mock the Clients's get session token function.
-        - mock the Clients's get_versions function.
-        Then
-        - run the fetch incidents command using the Client
-        Validate The length of the results which should equal zero as there should be not results.
-        """
+def test_pagination_fetch(mocker):
+    """
+    Given -
+        get alerts with the same timeDetected value in second fetch after getting alerts with same timeDetected value
+    When -
+        search for versions
+    Then -
+        validate the pageStart are in the filter
+    """
+    limit = 2
+    page_start = 3
+    last_run_date = '2020-10-20T14:17:59Z'
     mocker.patch.object(Client, 'get_session_token')
-    mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
-    fetch_filter = 'ruleId=-1:1&timeReceivedRange=2020-10-30T09:20:41Z,2020-11-17T14:20:41Z'
-    params = {}
-    mocker.patch('Tripwire.prepare_fetch', return_value=(params, fetch_filter, "2020-10-30T09:20:41Z"))
+    mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE[:limit])
+    mocker.patch.object(demisto, 'getLastRun', return_value={"lastRun": last_run_date, 'page_start': page_start})
+
     client = Client(base_url="http://test.com", auth=("admin", "123"), verify=False, proxy=False)
 
-    _, incidents = fetch_incidents(client=client, max_results=2, params=params)
-    assert len(incidents) == 0
+    last_run, incidents = fetch_incidents(client=client, max_results=limit, params={})
+
+    fetch_filter = Client.get_versions.call_args[0][0]
+    assert f'pageLimit={limit}' in fetch_filter
+    assert f'pageStart={page_start}' in fetch_filter
+    expected_last_run = datetime.strptime(VERSIONS_RAW_RESPONSE[limit - 1]['timeDetected'], '%Y-%m-%dT%H:%M:%S.000Z')
+    datetime.strptime(last_run['lastRun'], '%Y-%m-%dT%H:%M:%SZ') == expected_last_run
+    assert last_run['page_start'] == page_start + len(incidents)
+    assert last_run['fetched_ids'] == [version['id'] for version in VERSIONS_RAW_RESPONSE[:limit]]
 
 
 #   ------------------ helper fucntions -------------------
 
-def test_prepare_fetch(mocker):
+def test_get_fetch_start_time(mocker):
     """Unit test
         Given
-            - fetch params - rule oids , node oids and fetch time
-            - expected returned string.
+            -
         When
-            - the prepare fetch function is activated.
+            - the get_fetch_start_time is activated.
         Then
-            - run the prepare fetch helper function.
-            - Validate the rule_id, node_id and range time to detect is in the filters string.
+            - Validate the result are correct (the same as of the getLastRun obj).
         """
-    params = {'rule_oids': '-1:1', 'node_oids': '-1:2'}
-    mocker.patch.object(demisto, 'getLastRun', return_value={"lastRun": "2018-10-24T14:13:20Z"})
-    params, fetch_filter, _ = prepare_fetch(params, '1 day ago')
-    expected_filter = 'ruleId=-1:1&nodeId=-1:2&timeDetectedRange=2018-10-24T14:13:20Z,'
-    assert expected_filter in fetch_filter
+    expected_start_detected_time = "2018-10-24T14:13:20Z"
+    last_run_obj = {"lastRun": expected_start_detected_time}
+    mocker.patch.object(demisto, 'getLastRun', return_value=last_run_obj)
+    start_detected_time = get_fetch_start_time({}, last_run_obj)
+    assert start_detected_time == expected_start_detected_time
 
 
 def test_filter_nodes():

@@ -2,11 +2,12 @@
     "name": "SecurityScorecard",
     "description": "Provides security scorecards and alerts for domains.",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.4",
     "author": "SecurityScorecard",
     "url": "https://securityscorecard.com/contact-us",
     "email": "support@securityscorecard.io",
     "categories": [
+        "Data Enrichment & Threat Intelligence",
         "Vulnerability Management"
     ],
     "tags": [

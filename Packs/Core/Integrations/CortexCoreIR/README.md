@@ -13,8 +13,6 @@ The Cortex Core IR integration uses the Cortex API for detection and response, b
     | API Key ID |  | False |
     | API Key |  | False |
     | HTTP Timeout | The timeout of the HTTP requests sent to Cortex API \(in seconds\). | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -101,7 +99,7 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 | sort_by | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". Possible values are: first_seen, last_seen. | Optional | 
 | sort_order | The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc. Possible values are: asc, desc. Default is asc. | Optional | 
 | status | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Optional | 
-
+| username | The usernames to query for, accepts a single user, or comma-separated list of usernames. | Optional |
 
 #### Context Output
 
@@ -1376,6 +1374,8 @@ Retrieve the results of a script execution action.
 | Core.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
 | Core.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
 | Core.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
+| Core.ScriptResult.results.command | String | The command that was executed by the script. | 
+| Core.ScriptResult.results.command_output | Array | The output of the command executed by the script. | 
 
 ### core-get-script-execution-result-files
 ***
@@ -1855,3 +1855,361 @@ Get a list of the alerts exclusion.
 >|ALERT_WHITELIST_BACKWARDS_SCAN_STATUS|ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP|ALERT_WHITELIST_COMMENT|ALERT_WHITELIST_HITS|ALERT_WHITELIST_ID|ALERT_WHITELIST_INDICATOR|ALERT_WHITELIST_INDICATOR_TEXT|ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS|ALERT_WHITELIST_MODIFY_TIME|ALERT_WHITELIST_NAME|ALERT_WHITELIST_PRETTY_USER|ALERT_WHITELIST_STATUS|ALERT_WHITELIST_USER|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| DISABLED |  |  | 0 | 45 | filter: {"AND": [{"SEARCH_FIELD": "alert_category", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "Phishing"}]} | {'pretty_name': 'category', 'data_type': 'TEXT', 'render_type': 'attribute', 'entity_map': None, 'dml_type': None},<br/>{'pretty_name': '!=', 'data_type': None, 'render_type': 'operator', 'entity_map': None},<br/>{'pretty_name': 'Phishing', 'data_type': None, 'render_type': 'value', 'entity_map': None} | 0 | 1645102011552 | test1 | Public API - 3 | ENABLED | N/A |
+
+### core-get-cloud-original-alerts
+***
+Returns information about each alert ID.
+
+
+#### Base Command
+
+`core-get-cloud-original-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | A comma-separated list of alert IDs. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.OriginalAlert.event._time | String | The timestamp of the occurence of the event. | 
+| Core.OriginalAlert.event.vendor | String | Vendor name. | 
+| Core.OriginalAlert.event.event_timestamp | Number | Event timestamp. | 
+| Core.OriginalAlert.event.event_type | Number | Event type \(static 500\). | 
+| Core.OriginalAlert.event.cloud_provider | String | The cloud provider - GCP, AZURE, or AWS. | 
+| Core.OriginalAlert.event.project | String | The project in which the event occurred. | 
+| Core.OriginalAlert.event.cloud_provider_event_id | String | The ID given to the event by the cloud provider, if the ID exists. | 
+| Core.OriginalAlert.event.cloud_correlation_id | String | The ID the cloud provider is using to aggregate events that are part of the same general event. | 
+| Core.OriginalAlert.event.operation_name_orig | String | The name of the operation that occurred, as supplied by the cloud provider. | 
+| Core.OriginalAlert.event.operation_name | String | The normalized name of the operation performed by the event. | 
+| Core.OriginalAlert.event.identity_orig | String | Contains the original identity related fields as provided by the cloud provider. | 
+| Core.OriginalAlert.event.identity_name | String | The name of the identity that initiated the action. | 
+| Core.OriginalAlert.event.identity_uuid | String | Same as identity_name but also contains the UUID of the identity if it exists. | 
+| Core.OriginalAlert.event.identity_type | String | An enum representing the type of the identity. | 
+| Core.OriginalAlert.event.identity_sub_type | String | An enum representing the sub-type of the identity, respective to its identity_type. | 
+| Core.OriginalAlert.event.identity_invoked_by_name | String | The name of the identity that invoked the action as it appears in the log. | 
+| Core.OriginalAlert.event.identity_invoked_by_uuid | String | The UUID of the identity that invoked the action as it appears in the log. | 
+| Core.OriginalAlert.event.identity_invoked_by_type | String | An enum that represents the type of identity event that invoked the action. | 
+| Core.OriginalAlert.event.identity_invoked_by_sub_type | String | An enum that represents the respective sub_type of the type of identity \(identity_type\) that has invoked the action. | 
+| Core.OriginalAlert.event.operation_status | String | Status of whether the operation has succeed or failed, if provided. | 
+| Core.OriginalAlert.event.operation_status_orig | String | The operation status code as it appears in the log, including lookup from code number to code name. | 
+| Core.OriginalAlert.event.operation_status_orig_code | String | The operation status code as it appears in the log. | 
+| Core.OriginalAlert.event.operation_status_reason_provided | String | Description of the error, if the log record indicates an error and the cloud provider supplied the reason. | 
+| Core.OriginalAlert.event.resource_type | String | The normalized type of the service that emitted the log row. | 
+| Core.OriginalAlert.event.resource_type_orig | String | The type of the service that omitted the log as provided by the cloud provider. | 
+| Core.OriginalAlert.event.resource_sub_type | String | The sub-type respective to the resource_type field, normalized across all cloud providers. | 
+| Core.OriginalAlert.event.resource_sub_type_orig | String | The sub-type of the service that emitted this log row as provided by the cloud provider. | 
+| Core.OriginalAlert.event.region | String | The cloud region of the resource that emitted the log. | 
+| Core.OriginalAlert.event.zone | String | The availability zone of the resource that emitted the log. | 
+| Core.OriginalAlert.event.referenced_resource | String | The cloud resource referenced in the audit log. | 
+| Core.OriginalAlert.event.referenced_resource_name | String | Same as referenced_resource but provides only the substring that represents the resource name instead of the full asset ID. | 
+| Core.OriginalAlert.event.referenced_resources_count | Number | The number of extracted resources referenced in this audit log. | 
+| Core.OriginalAlert.event.user_agent | String | The user agent provided in the call to the API of the cloud provider. | 
+| Core.OriginalAlert.event.caller_ip | String | The IP of the caller that performed the action in the log. | 
+| Core.OriginalAlert.event.caller_ip_geolocation | String | The geolocation associated with the caller_ip's value. | 
+| Core.OriginalAlert.event.caller_ip_asn | Number | The ASN of the caller_ip's value. | 
+| Core.OriginalAlert.event.caller_project | String | The project of the caller entity. | 
+| Core.OriginalAlert.event.raw_log | Unknown | The raw log that is being normalized. | 
+| Core.OriginalAlert.event.log_name | String | The name of the log that contains the log row. | 
+| Core.OriginalAlert.event.caller_ip_asn_org | String | The organization associated with the ASN of the caller_ip's value. | 
+| Core.OriginalAlert.event.event_base_id | String | Event base ID. | 
+| Core.OriginalAlert.event.ingestion_time | String | Ingestion time. | 
+
+### core-get-dynamic-analysis
+***
+Returns dynamic analysis of each alert ID.
+
+
+#### Base Command
+
+`core-get-dynamic-analysis`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | A comma-separated list of alert IDs. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.DynamicAnalysis.causalityId | String |  | 
+| Core.DynamicAnalysis.internals.name | String |  | 
+| Core.DynamicAnalysis.internals.factName | String |  | 
+| Core.DynamicAnalysis.internals.timestamp | Date |  | 
+| Core.DynamicAnalysis.internals.eventId | String |  | 
+| Core.DynamicAnalysis.internals.attributes.user_presence | String |  | 
+| Core.DynamicAnalysis.internals.attributes.shellcode_address | String |  | 
+| Core.DynamicAnalysis.internals.attributes.tid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.parent_pid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.is_sign | String |  | 
+| Core.DynamicAnalysis.internals.attributes.sync_action | String |  | 
+| Core.DynamicAnalysis.internals.attributes.is_remote_session | String |  | 
+| Core.DynamicAnalysis.internals.attributes.peb | String |  | 
+| Core.DynamicAnalysis.internals.attributes.process_image_path | String |  | 
+| Core.DynamicAnalysis.internals.attributes.command_line | String |  | 
+| Core.DynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_allocation_base_buffer | String |  | 
+| Core.DynamicAnalysis.internals.attributes.page_base_shellcode_buffer | String |  | 
+| Core.DynamicAnalysis.internals.attributes.os_sig_status | String |  | 
+| Core.DynamicAnalysis.internals.attributes.file_info_legal_copyright | String |  | 
+| Core.DynamicAnalysis.internals.attributes.user_name | String |  | 
+| Core.DynamicAnalysis.internals.attributes.is_heavens_gate | String |  | 
+| Core.DynamicAnalysis.internals.attributes.is_impersonated | String |  | 
+| Core.DynamicAnalysis.internals.attributes.os_parent_instance_id | String |  | 
+| Core.DynamicAnalysis.internals.attributes.file_info_internal_name | String |  | 
+| Core.DynamicAnalysis.internals.attributes.stack_trace | String |  | 
+| Core.DynamicAnalysis.internals.attributes.is_injected | String |  | 
+| Core.DynamicAnalysis.internals.attributes.pid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.thread_context_eip_image_path | String |  | 
+| Core.DynamicAnalysis.internals.attributes.image_path_sha256 | String |  | 
+| Core.DynamicAnalysis.internals.attributes.montepi_err | String |  | 
+| Core.DynamicAnalysis.internals.attributes.file_info_company_name | String |  | 
+| Core.DynamicAnalysis.internals.attributes.file_info_original_name | String |  | 
+| Core.DynamicAnalysis.internals.attributes.instance_id | String |  | 
+| Core.DynamicAnalysis.internals.attributes.yara_file_scan_result | String |  | 
+| Core.DynamicAnalysis.internals.attributes.file_obj_flags | String |  | 
+| Core.DynamicAnalysis.internals.attributes.should_obfuscate | String |  | 
+| Core.DynamicAnalysis.internals.attributes.file_size | String |  | 
+| Core.DynamicAnalysis.internals.attributes.file_info_is_dot_net | String |  | 
+| Core.DynamicAnalysis.internals.attributes.call_region_shellcode_buffer | String |  | 
+| Core.DynamicAnalysis.internals.attributes.allocation_base_shellcode_buffer | String |  | 
+| Core.DynamicAnalysis.internals.attributes.signer_name | String |  | 
+| Core.DynamicAnalysis.internals.attributes.original_command_line | String |  | 
+| Core.DynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_page_base_buffer | String |  | 
+| Core.DynamicAnalysis.internals.attributes.rpc_interface_uuid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.rpc_interface_minor_version | String |  | 
+| Core.DynamicAnalysis.internals.attributes.telem | String |  | 
+| Core.DynamicAnalysis.internals.attributes.is_trusted_signer | String |  | 
+| Core.DynamicAnalysis.internals.attributes.thread_context_eip | String |  | 
+| Core.DynamicAnalysis.internals.attributes.requested_parent_instance_id | String |  | 
+| Core.DynamicAnalysis.internals.attributes.is_cgo | String |  | 
+| Core.DynamicAnalysis.internals.attributes.parent_cid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.enabled_privileges | Date |  | 
+| Core.DynamicAnalysis.internals.attributes.peb32 | String |  | 
+| Core.DynamicAnalysis.internals.attributes.is_embedded_sign | String |  | 
+| Core.DynamicAnalysis.internals.attributes.rpc_function_opnum | String |  | 
+| Core.DynamicAnalysis.internals.attributes.parent_thread_instance_id | String |  | 
+| Core.DynamicAnalysis.internals.attributes.remote_causality_actor_ip | String |  | 
+| Core.DynamicAnalysis.internals.attributes.canonized_process_image_path | String |  | 
+| Core.DynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_call_region_buffer | String |  | 
+| Core.DynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_allocation_base_buffer | String |  | 
+| Core.DynamicAnalysis.internals.attributes.entry_point_rva | String |  | 
+| Core.DynamicAnalysis.internals.attributes.is_stack_pivot | String |  | 
+| Core.DynamicAnalysis.internals.attributes.os_parent_pid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.image_path_md5 | String |  | 
+| Core.DynamicAnalysis.internals.attributes.causality_actor_type | String |  | 
+| Core.DynamicAnalysis.internals.attributes.timestamp | String |  | 
+| Core.DynamicAnalysis.internals.attributes.is_in_transaction | String |  | 
+| Core.DynamicAnalysis.internals.attributes.cid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.integrity_level | String |  | 
+| Core.DynamicAnalysis.internals.attributes.actor_type | String |  | 
+| Core.DynamicAnalysis.internals.attributes.file_info_description | String |  | 
+| Core.DynamicAnalysis.internals.attributes.chisq_prob | String |  | 
+| Core.DynamicAnalysis.internals.attributes.parent_tid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.rpc_interface_major_version | String |  | 
+| Core.DynamicAnalysis.internals.attributes.dse_internal | String |  | 
+| Core.DynamicAnalysis.internals.attributes.telem_bit_mask | String |  | 
+| Core.DynamicAnalysis.internals.attributes.process_image_name | String |  | 
+| Core.DynamicAnalysis.internals.attributes.parent_instance_id | String |  | 
+| Core.DynamicAnalysis.internals.attributes.entropy | String |  | 
+| Core.DynamicAnalysis.internals.attributes.call_region_base_address | String |  | 
+| Core.DynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_call_region_buffer | String |  | 
+| Core.DynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_page_base_buffer | String |  | 
+| Core.DynamicAnalysis.internals.attributes.image_base | String |  | 
+| Core.DynamicAnalysis.internals.attributes.sync_id | String |  | 
+| Core.DynamicAnalysis.internals.attributes.effective_user_sid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.requested_parent_pid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.event_id | String |  | 
+| Core.DynamicAnalysis.internals.attributes.rpc_protocol | String |  | 
+| Core.DynamicAnalysis.internals.processIdx | Number |  | 
+| Core.DynamicAnalysis.internals.instanceId | String |  | 
+| Core.DynamicAnalysis.internals.attributes.scriptblock_text | String |  | 
+| Core.DynamicAnalysis.internals.attributes.script_path | String |  | 
+| Core.DynamicAnalysis.internals.attributes.actor_pid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.actor_instance_id | String |  | 
+| Core.DynamicAnalysis.internals.attributes.actor_thread_instance_id | String |  | 
+| Core.DynamicAnalysis.internals.attributes.etw_event_id | String |  | 
+| Core.DynamicAnalysis.internals.attributes.actor_tid | String |  | 
+| Core.DynamicAnalysis.internals.attributes.suspicious_strings | String |  | 
+| Core.DynamicAnalysis.internals.attributes.suspicious_strings_context | String |  | 
+| Core.DynamicAnalysis.internals.attributes.content_version | String |  | 
+| Core.DynamicAnalysis.internals.attributes.script_hash | String |  | 
+| Core.DynamicAnalysis.internals.attributes.dotnet_callstack | String |  | 
+| Core.DynamicAnalysis.internals.attributes.hook_type | String |  | 
+| Core.DynamicAnalysis.internals.attributes.appdomain_id | String |  | 
+| Core.DynamicAnalysis.internals.attributes.ps_assembly_version | String |  | 
+| Core.DynamicAnalysis.internals.attributes.original_length | String |  | 
+| Core.DynamicAnalysis.internals.attributes.invoke_expression_count | String |  | 
+| Core.DynamicAnalysis.internals.attributes.file_path | String |  | 
+| Core.DynamicAnalysis.internals.attributes.content | String |  | 
+| Core.DynamicAnalysis.internals.attributes.edr_assembly_version | String |  | 
+| Core.DynamicAnalysis.internals.attributes.expression_tree_scan_result | String |  | 
+| Core.DynamicAnalysis.internals.attributes.content_length | String |  | 
+| Core.DynamicAnalysis.internals.attributes.local_analysis_verdict | String |  | 
+| Core.DynamicAnalysis.internals.attributes.clr_version | String |  | 
+| Core.DynamicAnalysis.internals.attributes.powershell_version | String |  | 
+| Core.DynamicAnalysis.internals.attributes.script_source | String |  | 
+| Core.DynamicAnalysis.internals.attributes.prio | String |  | 
+| Core.DynamicAnalysis.internals.attributes.build_timestamp | Date |  | 
+| Core.DynamicAnalysis.potentialPreventionActionOverride | Boolean |  | 
+| Core.DynamicAnalysis.isBiocRule | Boolean |  | 
+| Core.DynamicAnalysis.biocId | Number |  | 
+| Core.DynamicAnalysis.additionalData | String |  | 
+| Core.DynamicAnalysis.biocRuleName | String |  | 
+| Core.DynamicAnalysis.reachedMaxActivationsPerRule | Boolean |  | 
+| Core.DynamicAnalysis.syncActionStatus | Number |  | 
+| Core.DynamicAnalysis.spawnerImagePath | String |  | 
+| Core.DynamicAnalysis.spawnerCmdline | String |  | 
+| Core.DynamicAnalysis.spawnerSigner | String |  | 
+| Core.DynamicAnalysis.osSpawnerImagePath | String |  | 
+| Core.DynamicAnalysis.osSpawnerCmdline | String |  | 
+| Core.DynamicAnalysis.osSpawnerSigner | String |  | 
+
+### core-get-hash-analytics-prevalence
+***
+Get the prevalence of a file, identified by sha256.
+
+
+#### Base Command
+
+`core-get-hash-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sha256 | The sha256 of a file. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Hash.value | Boolean | Whether the hash is prevalent or not. | 
+| Core.AnalyticsPrevalence.Hash.data.global_prevalence.value | Number | The global prevalence of the hash. | 
+| Core.AnalyticsPrevalence.Hash.data.local_prevalence.value | Number | The local prevalence of the hash. | 
+| Core.AnalyticsPrevalence.Hash.data.prevalence.value | Number | The prevalence of the hash. | 
+
+### core-get-IP-analytics-prevalence
+***
+Get the prevalence of an ip, identified by ip_address.
+
+
+#### Base Command
+
+`core-get-IP-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip_address | The IP address. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Ip.value | Boolean | Whether the IP address is prevalent or not. | 
+| Core.AnalyticsPrevalence.Ip.data.global_prevalence.value | Number | The global prevalence of the IP. | 
+| Core.AnalyticsPrevalence.Ip.data.local_prevalence.value | Number | The local prevalence of the IP. | 
+| Core.AnalyticsPrevalence.Ip.data.prevalence.value | Number | The prevalence of the IP. | 
+
+### core-get-domain-analytics-prevalence
+***
+Get the prevalence of a domain, identified by domain_name.
+
+
+#### Base Command
+
+`core-get-domain-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_name | The domain name. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Domain.value | Boolean | Whether the domain is prevalent or not. | 
+| Core.AnalyticsPrevalence.Domain.data.global_prevalence.value | Number | The global prevalence of the domain. | 
+| Core.AnalyticsPrevalence.Domain.data.local_prevalence.value | Number | The local prevalence of the domain. | 
+| Core.AnalyticsPrevalence.Domain.data.prevalence.value | Number | The prevalence of the domain. | 
+
+### core-get-process-analytics-prevalence
+***
+Get the prevalence of a process, identified by process_name.
+
+
+#### Base Command
+
+`core-get-process-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| process_name | The process name. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Process.value | Boolean | Whether the process is prevalent or not. | 
+| Core.AnalyticsPrevalence.Process.data.global_prevalence.value | Number | The global prevalence of the process. | 
+| Core.AnalyticsPrevalence.Process.data.local_prevalence.value | Number | The local prevalence of the process. | 
+| Core.AnalyticsPrevalence.Process.data.prevalence.value | Number | The prevalence of the process. | 
+
+### core-get-registry-analytics-prevalence
+***
+Get the prevalence of a registry_path, identified by key_name, value_name.
+
+
+#### Base Command
+
+`core-get-registry-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| key_name | The key name of a registry path. | Required | 
+| value_name | The value name of a registry path. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Registry.value | Boolean | Whether the registry is prevalent or not. | 
+| Core.AnalyticsPrevalence.Registry.data.global_prevalence.value | Number | The global prevalence of the registry. | 
+| Core.AnalyticsPrevalence.Registry.data.local_prevalence.value | Number | The local prevalence of the registry. | 
+| Core.AnalyticsPrevalence.Registry.data.prevalence.value | Number | The prevalence of the registry. | 
+
+### core-get-cmd-analytics-prevalence
+***
+Get the prevalence of a process_command_line, identified by process_command_line.
+
+
+#### Base Command
+
+`core-get-cmd-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| process_command_line | The process command line. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Cmd.value | Boolean | Whether the CMD is prevalent or not. | 
+| Core.AnalyticsPrevalence.Cmd.data.global_prevalence.value | Number | The global prevalence of the CMD. | 
+| Core.AnalyticsPrevalence.Cmd.data.local_prevalence.value | Number | The local prevalence of the CDM. | 
+| Core.AnalyticsPrevalence.Cmd.data.prevalence.value | Number | The prevalence of the Cmd. | 

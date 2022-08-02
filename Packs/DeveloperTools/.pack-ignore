@@ -15,3 +15,6 @@ ignore=E9003
 
 [file:CreateMockFeed_image.png]
 ignore=IM111
+
+[file:README.md]
+ignore=BA114

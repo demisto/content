@@ -1,0 +1,15 @@
+{
+  "roles": [
+    {
+      "name": "roles/accessapproval.approver",
+      "title": "Access Approval Approver",
+      "description": "Ability to view or act on access approval requests and view configuration"
+    },
+    {
+      "name": "roles/accessapproval.configEditor",
+      "title": "Access Approval Config Editor",
+      "description": "Ability update the Access Approval configuration"
+    }
+  ],
+  "nextPageToken": "CgoHBdMwcnRhbEFkbWlu"
+}

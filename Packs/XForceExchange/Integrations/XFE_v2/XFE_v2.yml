@@ -543,7 +543,7 @@ script:
     - contextPath: XFE.CVESearch.Bookmark
       description: Bookmark used to page through results.
       type: String
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetch: false
   longRunning: false
@@ -553,3 +553,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- Test_XFE_v2
