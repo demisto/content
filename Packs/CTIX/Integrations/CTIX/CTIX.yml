@@ -43,7 +43,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
 - display: ""
   name: feedExpirationPolicy
@@ -835,7 +835,7 @@ script:
       - contextPath: CTIX.Intel.status
         description: Status code returned from the api.
         type: String
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   subtype: python3
 tests:
