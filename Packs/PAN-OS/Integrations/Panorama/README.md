@@ -3098,10 +3098,10 @@ enforce the policy. |
 | Panorama.Monitor.Logs.Vsys | String | The VSYS on the firewall that generated the log. | 
 
 #### Command example
-```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true interval_in_seconds=5 timeout=120```
+```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true```
 #### Human Readable Output
 
->Fetching traffic logs for job ID 1284...
+>Fetching traffic logs for job ID 1291...
 
 ### pan-os-check-logs-status
 ***
@@ -3129,6 +3129,30 @@ Checks the status of a logs query.
 >|JobID|Status|
 >|---|---|
 >| 1283 | Pending |
+
+
+#### Command example
+```!pan-os-query-logs log-type=traffic number_of_logs=1```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Monitor": {
+            "JobID": "1287",
+            "LogType": "traffic",
+            "Message": "query job enqueued with jobid 1287",
+            "Status": "Pending"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Query Logs:
+>|JobID|Status|
+>|---|---|
+>| 1287 | Pending |
 
 
 #### Base Command
