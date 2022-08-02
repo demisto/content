@@ -169,20 +169,22 @@ class TestCollector(ABC):
 
     @property
     def sanity_tests(self) -> Optional[CollectionResult]:
-        match self.marketplace:
-            case MarketplaceVersions.MarketplaceV2:
-                test_names = self.conf['test_marketplacev2']
-            case MarketplaceVersions.XSOAR:
-                test_names = XSOAR_SANITY_TEST_NAMES
-            case _:
-                raise RuntimeError(f'unexpected marketplace value {self.marketplace.value}')
-
         return CollectionResult.union(tuple(
             CollectionResult(test=test, pack=None, reason=CollectionReason.SANITY_TESTS,
                              version_range=None, reason_description=str(self.marketplace.value),
                              conf=self.conf, id_set=self.id_set, is_sanity=True)
-            for test in test_names)
+            for test in self._sanity_test_names)
         )
+
+    @property
+    def _sanity_test_names(self) -> tuple[str, ...]:
+        match self.marketplace:
+            case MarketplaceVersions.MarketplaceV2:
+                return tuple(self.conf['test_marketplacev2'])
+            case MarketplaceVersions.XSOAR:
+                return XSOAR_SANITY_TEST_NAMES
+            case _:
+                raise RuntimeError(f'unexpected marketplace value {self.marketplace.value}')
 
     @abstractmethod
     def _collect(self) -> Optional[CollectionResult]:
