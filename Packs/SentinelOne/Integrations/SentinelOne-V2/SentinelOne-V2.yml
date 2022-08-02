@@ -1531,7 +1531,7 @@ script:
       description: A comma-separated list of threat IDs.
       isArray: true
     description: Updates the analyst verdict to a group of threats that match
-      the specified input filter.
+      the specified input filter. Relevant for API version 2.1
     name: sentinelone-update-threats-verdict
     outputs:
     - contextPath: SentinelOne.Threat.ID
@@ -1540,7 +1540,7 @@ script:
     - contextPath: SentinelOne.Threat.Updated
       description: Whether the threat was successfully updated the analyst verdict.
       type: Boolean
-    - contextPath: SentinelOne.Threat.Updation.Action
+    - contextPath: SentinelOne.Threat.Update.Action
       description: Name of the analyst verdict action performed on the threats.
       type: String
   - arguments:
@@ -1559,7 +1559,7 @@ script:
       description: A comma-separated list of alert IDs.
       isArray: true
     description: Updates the analyst verdict to a group of alerts that match
-      the specified input filter.
+      the specified input filter. Relevant for API version 2.1
     name: sentinelone-update-alerts-verdict
     outputs:
     - contextPath: SentinelOne.Alert.ID
@@ -1568,7 +1568,7 @@ script:
     - contextPath: SentinelOne.Alert.Updated
       description: Whether the alert was successfully updated the analyst verdict.
       type: Boolean
-    - contextPath: SentinelOne.Alert.Updation.Action
+    - contextPath: SentinelOne.Alert.Update.Action
       description: Name of the analyst verdict action performed on the alerts.
       type: String
   - arguments:
@@ -1631,7 +1631,7 @@ script:
       - Suspicious
       - UNDEFINED
       description: The treatAsThreat. Can be "Malicious", "Suspicious" and "UNDEFINED"
-    description: 'Creates a custom STAR rule.'
+    description: 'Creates a custom STAR rule. Relevant for API version 2.1'
     name: sentinelone-create-star-rule
     outputs:
     - contextPath: SentinelOne.StarRule.ID
@@ -1705,7 +1705,7 @@ script:
     - name: siteIds
       description: 'List of Site IDs to filter by. Example: "225494730938493804,225494730938493915".'
     name: sentinelone-get-star-rules
-    description: Get a list of Custom Detection Rules for a given scope.
+    description: Get a list of Custom Detection Rules for a given scope. Relevant for API version 2.1
     outputs:
     - contextPath: SentinelOne.StarRule.ID
       description: The Star Rule ID
@@ -1803,7 +1803,7 @@ script:
       - Suspicious
       - UNDEFINED
       description: The treatAsThreat. Can be "Malicious", "Suspicious" and "UNDEFINED"
-    description: 'Updates a custom STAR rule.'
+    description: 'Updates a custom STAR rule. Relevant for API version 2.1'
     name: sentinelone-update-star-rule
     outputs:
     - contextPath: SentinelOne.StarRule.ID
@@ -1847,7 +1847,7 @@ script:
       required: true
       description: A comma-separated list of star rule IDs.
       isArray: true
-    description: Activate Custom Detection Rules that match the specified input filter.
+    description: Activate Custom Detection Rules that match the specified input filter. Relevant for API version 2.1
     name: sentinelone-enable-star-rules
     outputs:
     - contextPath: SentinelOne.StarRule.ID
@@ -1861,7 +1861,7 @@ script:
       required: true
       description: A comma-separated list of star rule IDs.
       isArray: true
-    description: Disable Custom Detection Rules that match the specified input filter.
+    description: Disable Custom Detection Rules that match the specified input filter. Relevant for API version 2.1
     name: sentinelone-disable-star-rules
     outputs:
     - contextPath: SentinelOne.StarRule.ID
@@ -1875,7 +1875,7 @@ script:
       required: true
       description: A comma-separated list of star rule IDs.
       isArray: true
-    description: Deletes Custom Detection Rules that match the specified input filter.
+    description: Deletes Custom Detection Rules that match the specified input filter. Relevant for API version 2.1
     name: sentinelone-delete-star-rule
     outputs:
     - contextPath: SentinelOne.StarRule.ID
@@ -2014,7 +2014,7 @@ script:
     - name: note
       required: true
       description: Threat Note Text
-    description: Add a threat note to one or more threats..
+    description: Add a threat note to one or more threats. Relevant for API version 2.1
     name: sentinelone-write-threat-note
     outputs:
     - contextPath: SentinelOne.Threat.ID
@@ -2065,7 +2065,7 @@ script:
       description: The unique identifier of the indicator as provided by the Threat Intelligence source
     - name: description
       description: Description of the Threat Intelligence indicator
-    description: Add an IoC to the Threat Intelligence database.
+    description: Add an IoC to the Threat Intelligence database. Relevant for API version 2.1
     name: sentinelone-create-ioc
     outputs:
     - contextPath: SentinelOne.IOC.UUID
@@ -2109,7 +2109,7 @@ script:
     - name: uuids
       required: true
       description: UUID of threat Intelligence indicator.
-    description: Delete an IoC from the Threat Intelligence database that matches a filter.
+    description: Delete an IoC from the Threat Intelligence database that matches a filter. Relevant for API version 2.1
     name: sentinelone-delete-ioc
     outputs:
     - contextPath: SentinelOne.IOC.UUID
@@ -2170,7 +2170,7 @@ script:
       description: 'Creation Time as set by the user greater or equal than. Example: "2021-07-13T20:33:29.007906Z".' 
     - name: creation_time_lte
       description: 'Creation Time as set by the user lessthan or equal than. Example: "2021-07-13T20:33:29.007906Z".' 
-    description: Get the IOCs of a specified Account that match the filter.
+    description: Get the IOCs of a specified Account that match the filter. Relevant for API version 2.1
     name: sentinelone-get-iocs
     outputs:
     - contextPath: SentinelOne.IOC.UUID
@@ -2215,13 +2215,13 @@ script:
       description: Events created before or at this timestamp
     - name: limit
       description: Limit number of returned items (1-100000).
-    description: Start a Deep Visibility Power Query, get back status and potential results (ping afterwards using the queryId if query has not finished)
+    description: Start a Deep Visibility Power Query, get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1
     name: sentinelone-create-power-query
   - arguments:
     - name: queryId
       required: true
       description: QueryId.
-    description: Ping a Deep Visibility Power Query using the queryId if results have not returned from an initial Power Query or a previous ping
+    description: Ping a Deep Visibility Power Query using the queryId if results have not returned from an initial Power Query or a previous ping. Relevant for API version 2.1
     name: sentinelone-ping-power-query
   - arguments:
     - name: status
@@ -2237,7 +2237,7 @@ script:
       description: A comma-separated list of threat IDs.
       isArray: true
     description: Updates the incident status to a group of threats that match
-      the specified input filter.
+      the specified input filter. Relevant for API version 2.1
     name: sentinelone-update-threats-status
     outputs:
     - contextPath: SentinelOne.Threat.ID
@@ -2263,7 +2263,7 @@ script:
       description: A comma-separated list of alert IDs.
       isArray: true
     description: Updates the incident status to a group of alerts that match
-      the specified input filter.
+      the specified input filter. Relevant for API version 2.1
     name: sentinelone-update-alerts-status
     outputs:
     - contextPath: SentinelOne.Alert.ID
@@ -2334,8 +2334,8 @@ script:
     - contextPath: SentinelOne.Threat.Downloadable
       description: The file is downlable or not
       type: Boolean
-    - contextPath: SentinelOne.Threat.Download URL
-      description: Download URL for the fetched threat file.
+    - contextPath: SentinelOne.Threat.ZippedFile
+      description: Details of the zipped folder.
       type: String
   - arguments:
     - name: created_from
@@ -2357,7 +2357,7 @@ script:
     - name: site_ids
       description: 'List of Site IDs to filter by. Example: "225494730938493804,225494730938493915".'
     name: sentinelone-get-alerts
-    description: Get the list of alerts that matches the filter provided.
+    description: Get the list of alerts that matches the filter provided. Relevant for API version 2.1
     outputs:
     - contextPath: SentinelOne.Alert.EventType
       description: Event type

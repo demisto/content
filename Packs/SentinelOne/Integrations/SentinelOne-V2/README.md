@@ -466,7 +466,7 @@ Returns threats according to the specified filters.
 
 ### sentinelone-threat-summary
 ***
-Returns a dashboard threat summary. And Existent only at API V1
+Returns a dashboard threat summary.  Can only be used with API V1
 
 
 #### Base Command
@@ -526,7 +526,7 @@ Returns a dashboard threat summary. And Existent only at API V1
 
 ### sentinelone-mark-as-threat
 ***
-Marks suspicious threats as threats. And Existent only at API V2.0
+Marks suspicious threats as threats. Can only be used with API V2.0
 
 
 #### Base Command
@@ -590,7 +590,7 @@ Applies a mitigation action to a group of threats that match the specified input
 
 ### sentinelone-resolve-threat
 ***
-Resolves threats using the threat ID. And Existent only at API V2.0
+Resolves threats using the threat ID. Can only be used with API V2.0
 
 
 #### Base Command
@@ -1957,7 +1957,7 @@ Updates the analyst verdict to a group of threats that match the specified input
 | --- | --- | --- |
 | SentinelOne.Threat.ID | String | The threat ID. |
 | SentinelOne.Threat.Updated | Boolean | Whether the threat was successfully updated the analyst verdict. |
-| SentinelOne.Threat.Updation.Action | String | Name of the analyst verdict action performed on the threats. |
+| SentinelOne.Threat.Update.Action | String | Name of the analyst verdict action performed on the threats. |
 
 #### Command Example
 ```!sentinelone-update-threats-verdict threat_ids="14417837215288624" action=false_positive```
@@ -1984,7 +1984,7 @@ Updates the analyst verdict to a group of alerts that match the specified input 
 | --- | --- | --- |
 | SentinelOne.Alert.ID | String | The alert ID. | 
 | SentinelOne.Alert.Updated | Boolean | Whether the alert was successfully updated the analyst verdict. | 
-| SentinelOne.Alert.Updation.Action | String | Name of the analyst verdict action performed on the alerts. | 
+| SentinelOne.Alert.Update.Action | String | Name of the analyst verdict action performed on the alerts. | 
 
 #### Command Example
 ```!sentinelone-update-alerts-verdict threat_ids="14417837215288624" action=false_positive```
@@ -2449,7 +2449,7 @@ Fetch a file associated with the threat that matches the filter.
 | --- | --- | --- |
 | SentinelOne.Threat.ID | String | The threat ID. | 
 | SentinelOne.Threat.Downloadable | Boolean | The file is downlable or not | 
-| SentinelOne.Threat.Download URL | String | Download URL for the fetched threat file. |
+| SentinelOne.Threat.ZippedFile | String | Details of the zipped folder. |
 
 #### Command Example
 ```!sentinelone-fetch-threat-file threat_ids=106802961889425793 password=Mypassword1!```

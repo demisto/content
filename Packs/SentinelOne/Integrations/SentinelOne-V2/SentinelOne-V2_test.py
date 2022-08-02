@@ -279,7 +279,7 @@ def test_update_threat_analyst_verdict(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Updation': {'Action': 'true_positive'}}]
+    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Update': {'Action': 'true_positive'}}]
 
 
 def test_update_alert_analyst_verdict(mocker, requests_mock):
@@ -299,7 +299,7 @@ def test_update_alert_analyst_verdict(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Updation': {'Action': 'true_positive'}}]
+    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Update': {'Action': 'true_positive'}}]
 
 
 def test_update_threat_status(mocker, requests_mock):
