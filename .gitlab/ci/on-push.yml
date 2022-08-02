@@ -98,7 +98,7 @@ create-instances:
     # - !reference [.create-id-set-xsoar]
     # - !reference [.create-release-notes-and-common-docs]
     - section_start "Create content graph"
-    - demisto-sdk content-graph --no-use-docker
+    - demisto-sdk create-content-graph --no-use-docker
     - cp ./neo4j/backups/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
 
     # - section_start "Create Content Artifacts and Update Conf" --collapsed
