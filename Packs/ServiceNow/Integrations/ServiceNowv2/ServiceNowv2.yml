@@ -135,6 +135,7 @@ configuration:
   name: close_incident
   required: false
   type: 8
+  hidden: true
 - additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
   defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
