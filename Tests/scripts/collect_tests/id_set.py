@@ -14,6 +14,7 @@ class IdSetItem(DictBased):
     Represents an ID-Set item (pack or content item).
     See the IdSet class to see how it's parsed.
     """
+
     def __init__(self, id_: Optional[str], dict_: dict):
         super().__init__(dict_)
         self.id_: Optional[str] = id_  # None for packs, as they don't have it.
@@ -53,6 +54,7 @@ class IdSet(DictFileBased):
     """
     Allows access to the IdSet and the content it holds (using IdSetItem objects)
     """
+
     def __init__(self, marketplace: MarketplaceVersions, id_set_path: Path):
         super().__init__(id_set_path, is_infrastructure=True)
         self.marketplace = marketplace
@@ -101,14 +103,14 @@ class IdSet(DictFileBased):
                     item = IdSetItem(id_, value)
 
                     if item.pack_id in PackManager.skipped_packs:
-                        logger.info(f'skipping {id_=} as the {item.pack_id} pack is skipped')
+                        logger.debug(f'skipping {id_=} as the {item.pack_id} pack is skipped')
                         continue
 
                     if existing := result.get(id_):
                         # Some content items have multiple copies, each supporting different versions. We use the newer.
                         if item.to_version <= existing.to_version and item.from_version <= existing.from_version:
-                            logger.info(f'skipping duplicate of {item.name} as its version range {item.version_range} '
-                                        f'is older than of the existing one, {existing.version_range}')
+                            logger.debug(f'skipping duplicate of {item.name} as its version range {item.version_range} '
+                                         f'is older than of the existing one, {existing.version_range}')
                             continue
 
                     result[id_] = item
