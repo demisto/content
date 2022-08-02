@@ -1,6 +1,6 @@
-id: Create Incident and get Active Tasks
+id: BreachRx - Create Incident and get Active Tasks
 version: -1
-name: Create Incident and get Active Tasks
+name: BreachRx - Create Incident and get Active Tasks
 starttaskid: "0"
 description: This Playbook creates a privacy Incident on the BreachRx platform, and pulls in all tasks from that created privacy Incident into the Cortex XSOAR Incident.
 tasks:
