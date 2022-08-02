@@ -1,0 +1,78 @@
+args:
+- description: The data of a pcap in base64 to extract streams.
+  name: value
+- description: The context path to the pcap.
+  name: path
+- auto: PREDEFINED
+  defaultValue: auto
+  description: The data type of the pcap data.
+  name: pcap_type
+  predefined:
+  - auto
+  - libpcap
+  - cdl-pcap
+- auto: PREDEFINED
+  defaultValue: text-based-protocol
+  description: The mode of how to convert the binary to text.
+  name: bin2txt_mode
+  predefined:
+  - text-based-protocol
+  - human-readable
+- description: 'Filter to apply on pcap. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html'
+  name: pcap_filter
+- description: The RSA decryption key in base64.
+  name: rsa_decrypt_key
+- description: The WPA password. By providing the password you will be able to decrypt encrypted traffic data.
+  name: wpa_password
+- description: Keys of output items by which to filter them.
+  name: filter_keys
+- auto: PREDEFINED
+  defaultValue: abort
+  description: The action on error to parsing pcap. 
+  name: error_action
+  predefined:
+  - abort
+  - ignore
+  - keep
+- defaultValue: 1-49151
+  description: Default server port numbers by which to decide the direction.
+  name: server_ports
+comment: |-
+  Extract payloads of each stream from a pcap.
+  The payloads will be retrieved with an array of dictionaries of these keys:
+  - protocol
+  - client_ip
+  - client_port
+  - server_ip
+  - server_port
+  - stream_size
+  - stream_text
+  - stream_base64
+  - outgoing_size
+  - outgoing_text
+  - outgoing_base64
+  - incoming_size
+  - incoming_text
+  - incoming_base64
+commonfields:
+  id: PcapExtractStreams
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/pcap-miner:1.0.0.32154
+enabled: true
+name: PcapExtractStreams
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- pcap
+- Utility
+- transformer
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

@@ -141,6 +141,22 @@ def build_outputs(parsed_res, res: requests.Response) -> Dict:
             'Headers': dict(res.headers)}
 
 
+def parse_headers(headers: str) -> Dict:
+    """
+        Parsing headers from str type to dict.
+        The allowed format are:
+        1. {"key": "value"}
+        2. "key": "value"
+    """
+    if not headers.startswith('{') and not headers.endswith('}'):
+        headers = '{' + headers + '}'
+    try:
+        headers_dict = json.loads(headers)
+    except json.decoder.JSONDecodeError:
+        raise DemistoException("Make sure the headers are in one of the allowed formats.")
+    return headers_dict
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -155,6 +171,8 @@ def main():
         parse_response_as = args.get('parse_response_as', RAW_RESPONSE)
         params = args.get('params', {})
         headers = args.get('headers', {})
+        if isinstance(headers, str):
+            headers = parse_headers(headers)
         headers = create_headers(headers, request_content_type, response_content_type)
         auth = tuple(argToList(args.get('auth_credentials', None)))
         save_as_file = args.get('save_as_file', 'no')

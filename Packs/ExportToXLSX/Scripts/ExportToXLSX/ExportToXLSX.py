@@ -1,7 +1,6 @@
 from typing import List, Optional, Union
 from CommonServerPython import *
 import demistomock as demisto
-import traceback
 
 from xlsxwriter import Workbook
 from xlsxwriter.format import Format
@@ -98,7 +97,6 @@ def main():
         return_results(file_result_existing_file(file_name))
 
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExportToXLSX script. Error: {str(ex)}')
 
 

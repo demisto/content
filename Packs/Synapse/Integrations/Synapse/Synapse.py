@@ -1,7 +1,6 @@
 import asyncio
 import ipaddress
 import json
-import traceback
 
 import aiohttp
 import pytz
@@ -841,11 +840,15 @@ def main() -> None:
     password = demisto.params().get('credentials').get('password')
     port = demisto.params().get('port')
     base = demisto.params()['url'].rstrip('/') + ':' + str(port)
-    base_url = urljoin(base, '/api/v1')
     use_ssl = not demisto.params().get('insecure', False)
     use_proxy = demisto.params().get('proxy', False)
     good_tag = demisto.params().get('good_tag')
     bad_tag = demisto.params().get('bad_tag')
+    use_optic = demisto.params().get('use_optic', False)
+    if use_optic:
+        base_url = urljoin(base, '/api/v1/optic')
+    else:
+        base_url = urljoin(base, '/api/v1')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -895,7 +898,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

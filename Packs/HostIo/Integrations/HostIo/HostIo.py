@@ -204,7 +204,6 @@ def main() -> None:
             return_results(search_command(client, demisto.args()))
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

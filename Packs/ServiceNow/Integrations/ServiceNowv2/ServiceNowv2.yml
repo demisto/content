@@ -97,8 +97,14 @@ configuration:
   type: 0
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in ServiceNow.
   defaultvalue: ForServiceNow
-  display: File Entry Tag
+  display: File Entry Tag To ServiceNow
   name: file_tag
+  required: false
+  type: 0
+- additionalinfo: Choose the tag to add to an entry to mirror it as a file from ServiceNow.
+  defaultvalue: FromServiceNow
+  display: File Entry Tag From ServiceNow
+  name: file_tag_from_service_now
   required: false
   type: 0
 - additionalinfo: According to the timestamp in this field, records will be queried
@@ -170,7 +176,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -179,6 +185,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
     - description: Ticket number to retrieve.
       name: number
     - auto: PREDEFINED
@@ -1373,7 +1380,7 @@ script:
       required: true
     - auto: PREDEFINED
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item".
+        "sc_task", "sc_req_item", or "sn_si_incident".
       name: ticket_type
       predefined:
       - incident
@@ -1382,6 +1389,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
     description: Deletes a ticket from ServiceNow.
     name: servicenow-delete-ticket
   - arguments:
@@ -1391,7 +1399,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1400,6 +1408,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
     - description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       name: query
     - defaultValue: '0'
@@ -1461,7 +1470,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1469,6 +1478,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
     - description: The actual link to publish in ServiceNow ticket, in a valid URL
         format, for example, http://www.demisto.com.
       name: link
@@ -1487,7 +1497,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1495,6 +1505,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
     - description: Comment to add.
       name: comment
       required: true
@@ -1515,7 +1526,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1523,6 +1534,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
     - description: War Room entry ID that includes the file.
       name: file_id
       required: true
@@ -1594,21 +1606,21 @@ script:
     description: Queries the specified table in ServiceNow.
     name: servicenow-query-table
     outputs:
-    - contextPath: ServiceNow.Results.ID
+    - contextPath: ServiceNow.Record.ID
       description: The unique record identifier for the record.
       type: string
-    - contextPath: ServiceNow.Results.UpdatedBy
+    - contextPath: ServiceNow.Record.UpdatedBy
       description: A string field that indicates the user who most recently updated
         the record.
       type: string
-    - contextPath: ServiceNow.Results.UpdatedAt
+    - contextPath: ServiceNow.Record.UpdatedAt
       description: A time-stamp field that indicates the date and time of the most
         recent update.
       type: date
-    - contextPath: ServiceNow.Results.CreatedBy
+    - contextPath: ServiceNow.Record.CreatedBy
       description: A string field that indicates the user who created the record.
       type: string
-    - contextPath: ServiceNow.Results.CreatedOn
+    - contextPath: ServiceNow.Record.CreatedOn
       description: A time-stamp field that indicates when a record was created.
       type: date
   - arguments:
@@ -1906,7 +1918,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1915,6 +1927,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
     description: Adds a tag to a ticket. The added tag entry will be visible in the
       label_entry table and can be retrieved using the "!servicenow-query-table table_name=label_entry
       fields=title,table,sys_id,id_display,id_type" command.
@@ -2178,7 +2191,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   ismappable: true
   isremotesyncin: true

@@ -1,15 +1,15 @@
-from typing import Callable
+import io
+import json
+import zipfile
+from typing import Callable, List, Optional, Tuple
 
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
+from dateutil.parser import parse
 
 ''' IMPORTS '''
 
-import json
-import requests
-import traceback
-
-from dateutil.parser import parse
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -84,12 +84,88 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
+    def remove_hash_from_blocklist_request(self, hash_id) -> dict:
+        body = {
+            "data": {
+                "ids": [hash_id]
+            }
+        }
+        response = self._http_request(method='DELETE', url_suffix='restrictions', json_data=body)
+        return response.get('data') or {}
+
+    def add_hash_to_blocklist_request(self, value, os_type, description='', source='') -> dict:
+        """
+        Only supports adding to the Global block list
+        """
+        # We do not use the assign_params function, because if these values are empty or None, we still want them
+        # sent to the server
+
+        data = {
+            'value': value,
+            'source': source,
+            'osType': os_type,
+            'type': "black_hash",
+            'description': description
+        }
+
+        filt = {
+            'tenant': True
+        }
+
+        body = {
+            'data': data,
+            'filter': filt
+        }
+
+        response = self._http_request(method='POST', url_suffix='restrictions', json_data=body)
+        return response.get('data') or {}
+
+    def get_blocklist_request(self, tenant: bool, group_ids: str = None, site_ids: str = None, account_ids: str = None,
+                              skip: int = None, limit: int = None, os_type: str = None, sort_by: str = None,
+                              sort_order: str = None, value_contains: str = None) -> List[dict]:
+        """
+        We use the `value_contains` instead of `value` parameter because in our testing
+        (API 2.1) the `value` parameter is case sensitive. So if an analyst put in the hash with uppercase entries
+        and it's searched using lowercase, this search will not find it
+        """
+        params = assign_params(
+            tenant=tenant,
+            groupIds=group_ids,
+            siteIds=site_ids,
+            accountIds=account_ids,
+            skip=skip,
+            limit=limit,
+            osTypes=os_type,
+            sortBy=sort_by,
+            sortOrder=sort_order,
+            value__contains=value_contains,
+        )
+
+        response = self._http_request(method='GET', url_suffix='restrictions', params=params)
+        return response.get('data', [])
+
+    def fetch_file_request(self, agent_id, file_path, password) -> dict:
+        body = {
+            "data": {
+                "password": password,
+                "files": [
+                    file_path
+                ]
+            }
+        }
+
+        response = self._http_request(method='POST', url_suffix=f'agents/{agent_id}/actions/fetch-files', json_data=body)
+        return response.get('data', {})
+
+    def download_fetched_file_request(self, agent_id, activity_id) -> bytes:
+        return self._http_request(method='GET', url_suffix=f'agents/{agent_id}/uploads/{activity_id}', resp_type='content')
+
     def get_activities_request(self, created_after: str = None, user_emails: str = None, group_ids=None,
                                created_until: str = None,
                                activities_ids=None, include_hidden: str = None, created_before: str = None,
                                threats_ids=None,
                                activity_types=None, user_ids=None, created_from: str = None,
-                               created_between: str = None, agent_ids=None,
+                               created_between: str = None, agent_ids: str = None, sort_by: str = None, sort_order: str = None,
                                limit: str = '50'):
         params = assign_params(
             created_at__gt=created_after,
@@ -105,6 +181,8 @@ class Client(BaseClient):
             created_at__gte=created_from,
             createdAt_between=created_between,
             agentIds=argToList(agent_ids),
+            sortBy=sort_by,
+            sortOrder=sort_order,
             limit=int(limit), )
         response = self._http_request(method='GET', url_suffix='activities', params=params)
         return response.get('data', {})
@@ -1241,6 +1319,211 @@ def get_processes(client: Client, args: dict) -> CommandResults:
         outputs=contents,
         raw_response=processes)
 
+# Blocklist commands
+
+
+def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
+    """
+    Add a hash to the blocklist (SentinelOne Term: Blacklist)
+    """
+    sha1 = args.get('sha1')
+    if not sha1:
+        raise DemistoException("You must specify a valid SHA1 hash")
+
+    try:
+        result = client.add_hash_to_blocklist_request(value=sha1, description=args.get('description'),
+                                                      os_type=args.get('os_type'), source=args.get('source'))
+        status = {
+            'hash': sha1,
+            'status': "Added to blocklist"
+        }
+    except DemistoException as e:
+        # When adding a hash to the blocklist that is already on the blocklist,
+        # SentinelOne returns an error code, resuliting in the request raising an exception
+        #
+        # This section examines the error code returned. If the error is due to the hash
+        # already being on the list, it is ignored and the returned status is updated
+        js = e.res.json()
+        errors = js.get("errors")
+        if (errors and len(errors) == 1
+                and (error := errors[0]).get('code') == 4000030
+                and error.get('title') == "Already Exists Error"):
+            status = {
+                'hash': sha1,
+                'status': "Already on blocklist"
+            }
+            result = js
+        else:
+            raise e
+
+    return CommandResults(
+        readable_output=f"{sha1}: {status['status']}.",
+        outputs_prefix='SentinelOne.AddHashToBlocklist',
+        outputs_key_field='Value',
+        # `status` instead of `result` because we modify status based on the error/exception comments above
+        outputs=status,
+        raw_response=result)
+
+
+def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None) -> List[Optional[str]]:
+    """
+    Return the IDs of the hash from the blocklist. Helper function for remove_hash_from_blocklist
+
+    A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
+    """
+    PAGE_SIZE = 4
+    block_list = client.get_blocklist_request(tenant=True, skip=0, limit=PAGE_SIZE, os_type=os_type,
+                                              sort_by="updatedAt", sort_order="asc", value_contains=sha1)
+
+    ret = []
+
+    # Validation check first
+    if len(block_list) > 3:
+        raise DemistoException("Recieved More than 3 results when querying by hash. This condition should not occur")
+
+    for block_entry in block_list:
+        # Second validation. E.g. if user passed in a hash value shorter than SHA1 length
+        if (value := block_entry.get('value')) and value.lower() == sha1.lower():
+            ret.append(block_entry.get('id'))
+
+    return ret
+
+
+def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
+    """
+    Remove a hash from the blocklist (SentinelOne Term: Blacklist)
+    """
+    sha1 = args.get('sha1')
+    if not sha1:
+        raise DemistoException("You must specify a valid Sha1 hash")
+    os_type = args.get('os_type', None)
+
+    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type)
+
+    if not hash_ids:
+        status = {
+            'hash': sha1,
+            'status': "Not on blocklist"
+        }
+        result = None
+    else:
+        result = []
+        numRemoved = 0
+        for hash_id in hash_ids:
+            numRemoved += 1
+            result.append(client.remove_hash_from_blocklist_request(hash_id=hash_id))
+
+        status = {
+            'hash': sha1,
+            'status': f"Removed {numRemoved} entries from blocklist"
+        }
+
+    return CommandResults(
+        readable_output=f"{sha1}: {status['status']}.",
+        outputs_prefix='SentinelOne.RemoveHashFromBlocklist',
+        outputs_key_field='Value',
+        outputs=status,
+        raw_response=result)
+
+
+def get_blocklist(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieve the blocklist (SentinelOne Term: Blacklist)
+    """
+    tenant_str = args.get('global', 'false')
+    tenant = tenant_str.lower() == 'true'
+
+    sort_by = "updatedAt"
+    sort_order = "desc"
+
+    offset = arg_to_number(int(args.get('offset', "0")))
+    limit = arg_to_number(int(args.get('limit', "100")))
+    group_ids = args.get('group_ids', None)
+    site_ids = args.get('site_ids', None)
+    account_ids = args.get('account_ids', None)
+
+    contents = []
+
+    block_list = client.get_blocklist_request(tenant=tenant, group_ids=group_ids, site_ids=site_ids,
+                                              account_ids=account_ids, skip=offset, limit=limit,
+                                              sort_by=sort_by, sort_order=sort_order)
+    for block in block_list:
+        contents.append({
+            'CreatedAt': block.get('createdAt'),
+            'Description': block.get('description'),
+            'ID': block.get('id'),
+            'OSType': block.get('osType'),
+            'ScopeName': block.get('scopeName'),
+            'ScopePath': block.get('scopePath'),
+            'Source': block.get('source'),
+            'Type': block.get('type'),
+            'UpdatedAt': block.get('updatedAt'),
+            'UserId': block.get('userId'),
+            'Value': block.get('value')
+        })
+
+    return CommandResults(
+        readable_output=tableToMarkdown('SentinelOne Blocklist', contents, removeNull=True),
+        outputs_prefix='SentinelOne.Blocklist',
+        outputs_key_field='Value',
+        outputs=contents,
+        raw_response=block_list)
+
+# File Fetch Commands
+
+
+def fetch_file(client: Client, args: dict) -> str:
+    """
+    Initiate a file fetch request on an agent
+    """
+    agent_id = args.get('agent_id')
+    file_path = args.get('file_path')
+    password = args.get('password')
+
+    client.fetch_file_request(agent_id, file_path, password)
+    return f"Intiated fetch-file action for {file_path} on Agent {agent_id}"
+
+
+def extract_sentinelone_zip_file(zip_file_data: bytes, password: str) -> Tuple[str, bytes]:
+    """
+    Helper funciton for `download_fetched_file`
+    """
+    file_archive = io.BytesIO(zip_file_data)
+    zip_file = zipfile.ZipFile(file_archive)
+
+    # Each .zip file returned by SentinelOne has a manifest.json file. Then it
+    # Re-creates the folder paths inside the zip, and stores the collected file
+    # (e.g. C/path/to/file.txt inside the zip)
+    #
+    # We assume only one file was collected, since that's how our integration commands are
+    # implemented
+
+    file_names = [name for name in zip_file.namelist() if name != "manifest.json"]
+    if len(file_names) < 1:
+        raise DemistoException("No file found in upload from agent. Perhaps the path submitted is wrong?")
+
+    file_name = file_names[0]
+    file_data = zip_file.read(file_name, password.encode('utf-8'))
+    return file_name, file_data
+
+
+def download_fetched_file(client: Client, args: dict) -> List[CommandResults]:
+    """
+    Download a file that has been requested by `fetch-file`
+    """
+    agent_id = args.get('agent_id')
+    activity_id = args.get('activity_id')
+    password = args.get('password')
+    assert isinstance(password, str)
+
+    zip_file_data = client.download_fetched_file_request(agent_id, activity_id)
+    path, file_data = extract_sentinelone_zip_file(zip_file_data, password)
+    return [CommandResults(readable_output=f"Successfully downloaded file `{path}`",
+                           outputs_prefix='SentinelOne.Download',
+                           outputs_key_field='Path',
+                           outputs={'Path': path}),
+            fileResult(f"{path.replace('/', '_')}", file_data)]
+
 
 def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_threat_rank: int, fetch_site_ids: str):
     last_run = demisto.getLastRun()
@@ -1345,6 +1628,11 @@ def main():
         },
         '2.1': {
             'sentinelone-threat-summary': get_threat_summary_command,
+            'sentinelone-add-hash-to-blocklist': add_hash_to_blocklist,
+            'sentinelone-remove-hash-from-blocklist': remove_hash_from_blocklist,
+            'sentinelone-get-blocklist': get_blocklist,
+            'sentinelone-fetch-file': fetch_file,
+            'sentinelone-download-fetched-file': download_fetched_file,
         },
     }
 
@@ -1374,7 +1662,6 @@ def main():
                 raise NotImplementedError(f'The {command} command is not supported for API version {api_version}')
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

@@ -1,0 +1,770 @@
+{
+    "id": "VirusTotal API Execution Metrics",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 7,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "VirusTotal API Execution Metrics",
+    "layout": [
+        {
+            "id": "870b0d20-e0df-11ec-a7f6-39e12e3bcb7a",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "870b0d20-e0df-11ec-a7f6-39e12e3bcb7a",
+            "w": 12,
+            "h": 2,
+            "widget": {
+                "id": "bf5f197c-60ab-41c7-8634-1940207e08f1",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2022-05-31T12:45:15.383916281Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Successful vs. Rate Limited API Calls for VirusTotal",
+                "prevName": "Successful vs. Rate Limited API Calls by Integration",
+                "dataType": "metrics",
+                "widgetType": "bar",
+                "query": "type:integration and instance:\"VirusTotal (API v3)_instance_1\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            "Quota Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "QuotaError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Quota Error"
+                            },
+                            "Success": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "Successful",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Success"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "name",
+                        "apiResponseType"
+                    ],
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#229D80",
+                            "name": "VirusTotal (API v3)"
+                        },
+                        {
+                            "color": "#ce5050",
+                            "name": "Quota Error"
+                        },
+                        {
+                            "color": "#4fa327",
+                            "name": "Success"
+                        }
+                    ],
+                    "limitType": "top",
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "1d296130-e0e0-11ec-a7f6-39e12e3bcb7a",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "1d296130-e0e0-11ec-a7f6-39e12e3bcb7a",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "03b886ce-b254-4c70-8630-74231edf1170",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2022-05-31T12:49:27.330990346Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Rate Limited VirusTotal API Calls",
+                "prevName": "Rate Limited API Calls",
+                "dataType": "metrics",
+                "widgetType": "number",
+                "query": "type:integration and apiResponseType:QuotaError and instance:\"VirusTotal (API v3)_instance_1\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "7f0bd220-e0e0-11ec-a7f6-39e12e3bcb7a",
+            "forceRange": false,
+            "x": 9,
+            "y": 4,
+            "i": "7f0bd220-e0e0-11ec-a7f6-39e12e3bcb7a",
+            "w": 3,
+            "h": 3,
+            "widget": {
+                "id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
+                "version": 4,
+                "cacheVersn": 0,
+                "sequenceNumber": 409396,
+                "primaryTerm": 2,
+                "modified": "2022-04-27T15:34:53.64268093Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "VirusTotal API Metrics for !url",
+                "prevName": "API Call Results for VirusTotal",
+                "dataType": "metrics",
+                "widgetType": "line",
+                "query": "type:integration and instance:\"VirusTotal (API v3)_instance_1\" and command:\"url\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Other": {
+                                "name": "Other"
+                            },
+                            "Quota Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "QuotaError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Quota Error"
+                            },
+                            "Success": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "Successful",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Success"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "modified(h)",
+                        "apiResponseType"
+                    ],
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "referenceLine": {},
+                    "timeFrame": "hours",
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "Time",
+                    "yAxisLabel": "Request Counts"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "4603f290-e0e1-11ec-a7f6-39e12e3bcb7a",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "4603f290-e0e1-11ec-a7f6-39e12e3bcb7a",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "vt-api-execution-metrics-enrichment-commands",
+                "version": 2,
+                "cacheVersn": 0,
+                "modified": "2022-05-31T12:57:46.243309208Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "shouldCommit": true,
+                "size": 5,
+                "Cache": null,
+                "name": "VirusTotal API Metrics For Enrichment Commands",
+                "dataType": "metrics",
+                "widgetType": "column",
+                "query": "type:integration and command:domain or command:url or command:ip or command:file and instance:\"VirusTotal (API v3)_instance_1\"",
+                "isPredefined": false,
+                "description": "API Metric information for all VirusTotalV3 enrichment commands.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 0,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Quota Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "QuotaError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Quota Error"
+                            },
+                            "Success": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "Successful",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Success"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "command",
+                        "apiResponseType"
+                    ],
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "referenceLine": {},
+                    "showGraphValues": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "regular",
+                    "xAxisLabel": "Enrichment Command Name",
+                    "yAxisLabel": "API Call Count"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "5e91f1b0-e639-11ec-97de-51f10ca01fc4",
+            "forceRange": false,
+            "x": 6,
+            "y": 4,
+            "i": "5e91f1b0-e639-11ec-97de-51f10ca01fc4",
+            "w": 3,
+            "h": 3,
+            "widget": {
+                "id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
+                "version": 4,
+                "cacheVersn": 0,
+                "sequenceNumber": 409396,
+                "primaryTerm": 2,
+                "modified": "2022-04-27T15:34:53.64268093Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "VirusTotal API Metrics for !domain",
+                "dataType": "metrics",
+                "widgetType": "line",
+                "query": "type:integration and instance:\"VirusTotal (API v3)_instance_1\" and command:\"domain\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Other": {
+                                "name": "Other"
+                            },
+                            "Quota Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "QuotaError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Quota Error"
+                            },
+                            "Success": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "Successful",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Success"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "modified(h)",
+                        "apiResponseType"
+                    ],
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "referenceLine": {},
+                    "timeFrame": "hours",
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "Time",
+                    "yAxisLabel": "Request Counts"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "7199c530-e639-11ec-97de-51f10ca01fc4",
+            "forceRange": false,
+            "x": 3,
+            "y": 4,
+            "i": "7199c530-e639-11ec-97de-51f10ca01fc4",
+            "w": 3,
+            "h": 3,
+            "widget": {
+                "id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
+                "version": 4,
+                "cacheVersn": 0,
+                "sequenceNumber": 409396,
+                "primaryTerm": 2,
+                "modified": "2022-04-27T15:34:53.64268093Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "VirusTotal API Metrics for !file",
+                "dataType": "metrics",
+                "widgetType": "line",
+                "query": "type:integration and instance:\"VirusTotal (API v3)_instance_1\" and command:\"file\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Other": {
+                                "name": "Other"
+                            },
+                            "Quota Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "QuotaError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Quota Error"
+                            },
+                            "Success": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "Successful",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Success"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "modified(h)",
+                        "apiResponseType"
+                    ],
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "referenceLine": {},
+                    "timeFrame": "hours",
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "Time",
+                    "yAxisLabel": "Request Counts"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "858ce310-e639-11ec-97de-51f10ca01fc4",
+            "forceRange": false,
+            "x": 0,
+            "y": 4,
+            "i": "858ce310-e639-11ec-97de-51f10ca01fc4",
+            "w": 3,
+            "h": 3,
+            "widget": {
+                "id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
+                "version": 4,
+                "cacheVersn": 0,
+                "sequenceNumber": 409396,
+                "primaryTerm": 2,
+                "modified": "2022-04-27T15:34:53.64268093Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "VirusTotal API Metrics for !ip",
+                "dataType": "metrics",
+                "widgetType": "line",
+                "query": "type:integration and instance:\"VirusTotal (API v3)_instance_1\" and command:\"ip\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Other": {
+                                "name": "Other"
+                            },
+                            "Quota Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "QuotaError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Quota Error"
+                            },
+                            "Success": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "Successful",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Success"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "modified(h)",
+                        "apiResponseType"
+                    ],
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "referenceLine": {},
+                    "timeFrame": "hours",
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "Time",
+                    "yAxisLabel": "API Call Counts"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        }
+    ],
+    "fromVersion": "6.8.0",
+    "description": "Provides insight into API usage for the VirusTotal (API v3) integration.",
+    "isPredefined": true
+}

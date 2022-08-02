@@ -774,12 +774,35 @@ script:
       description: ID of the newly created search.
       type: String
     arguments:
+    - name: offense_id
+      required: false
+      type: Number
+      description: The ID of the offense to retrieve. Mutually exclusive with query_expression and saved_search_id.
+    - name: events_limit
+      required: false
+      type: Number
+      description: The number of events to return. Mutually exclusive with query_expression and saved_search_id.
+    - name: events_columns
+      required: false
+      type: String
+      description: Comma separated list of columns to return. Mutually exclusive with query_expression and saved_search_id.
+    - name: fetch_mode
+      type: PREDEFINED
+      predefined:
+        - Fetch With All Events
+        - Fetch Correlation Events Only
+      required: false
+      description: The mode to use when fetching events. Mutually exclusive with query_expression and saved_search_id.
+    - name: start_time
+      required: false
+      type: Date
+      description: The start time of the search.
     - name: query_expression
       required: false
-      description: The AQL query to execute. Mutually exclusive with saved_search_id.
+      description: The AQL query to execute. Mutually exclusive with all other arguments.
     - name: saved_search_id
       required: false
-      description: Saved search ID to execute. Mutually exclusive with query_expression. Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list' command.
+      description: Saved search ID to execute. Mutually exclusive with all other arguments. Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list' command.
   - name: qradar-search-status-get
     description: Retrieves status information for a search, based on the search ID.
     outputs:
@@ -2668,11 +2691,58 @@ script:
     - contextPath: QRadar.LocalDestinationIP.SourceAddressIDs
       description: List of source address IDs associated with the destination address.
       type: Unknown
+  - arguments:
+    - name: offense_id
+      required: false
+      type: Number
+      description: The ID of the offense to retrieve. Mutually exclusive with query_expression.
+    - name: events_limit
+      required: false
+      type: Number
+      description: The number of events to return. Mutually exclusive with query_expression.
+    - name: events_columns
+      required: false
+      type: String
+      description: Comma separated list of columns to return. Mutually exclusive with query_expression.
+    - name: fetch_mode
+      type: PREDEFINED
+      predefined:
+        - Fetch With All Events
+        - Fetch Correlation Events Only
+      required: false
+      description: The mode to use when fetching events. Mutually exclusive with query_expression.
+    - name: start_time
+      required: false
+      type: Date
+      description: The start time of the search. Mutually exclusive with query_expression
+    - name: query_expression
+      required: false
+      type: String
+      description: The AQL query to execute. Mutually exclusive with the other arguments.
+    - name: interval_in_seconds
+      required: false
+      type: Number
+      description: The interval in seconds to use when polling events.
+    - name: search_id
+      required: false
+      type: String
+      description: The search id to query the results.
+    deprecated: false
+    description: Polling command to search for events of a specific offense.
+    name: qradar-search-retrieve-events
+    polling: true
+    outputs:
+    - contextPath: QRadar.SearchEvents.ID
+      description: The search id of the query.
+      type: Unknown
+    - contextPath: QRadar.SearchEvents.Events
+      description: The events from QRadar search.
+      type: Unknown
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   isremotesyncin: true

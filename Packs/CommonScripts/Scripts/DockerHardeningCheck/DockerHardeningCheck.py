@@ -5,6 +5,7 @@ from multiprocessing import Process
 import resource
 import re
 import time
+from os.path import exists
 
 
 def big_string(size):
@@ -37,7 +38,7 @@ def check_memory(target_mem: str, check_type: str) -> str:
         str -- error string if failed
     """
     size = mem_size_to_bytes(target_mem)
-    if check_type == "allocation":
+    if check_type == "allocate":
         LOG("starting process to check memory of size: {}".format(size))
         p = Process(target=big_string, args=(size, ))
         p.start()
@@ -47,7 +48,16 @@ def check_memory(target_mem: str, check_type: str) -> str:
             return ("Succeeded allocating memory of size: {}. "
                     "It seems that you haven't limited the available memory to the docker container.".format(target_mem))
     else:
-        cgroup_file = "/sys/fs/cgroup/memory/memory.limit_in_bytes"
+        cgroup_file_v1 = "/sys/fs/cgroup/memory/memory.limit_in_bytes"
+        cgroup_file_v2 = "/sys/fs/cgroup/memory.max"
+        if exists(cgroup_file_v1):
+            cgroup_file = cgroup_file_v1
+        elif exists(cgroup_file_v2):
+            cgroup_file = cgroup_file_v2
+        else:
+            return ('Failed checking cgroup file, memory_check set to cgroup but neither v1 or v2'
+                    ' cgroup files found, verify cgroups is enabled.')
+
         try:
             with open(cgroup_file, "r") as f:
                 mem_bytes = int(f.read().strip())

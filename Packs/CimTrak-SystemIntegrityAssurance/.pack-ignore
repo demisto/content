@@ -17,3 +17,6 @@ mappings
 uuid
 Raws
 Negatate
+
+[file:classifier-CimTrak_-_Classification.json]
+ignore=BA101

@@ -2,3 +2,4 @@ name: JiraEventCollector
 id: JiraEventCollector
 fromversion: 3.3.0
 rules: ''
+schema: ''

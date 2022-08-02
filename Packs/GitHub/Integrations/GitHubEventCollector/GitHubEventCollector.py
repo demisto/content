@@ -40,13 +40,13 @@ class GithubParams(BaseModel):
 class GithubEventsRequestConfig(IntegrationHTTPRequest):
     url = AnyUrl
     method = Method.GET
-    params: GithubParams
+    params: GithubParams  # type: ignore
 
 
 class GithubClient(IntegrationEventsClient):
     def set_request_filter(self, after: str):
         if self.request.params:
-            self.request.params.after = get_github_timestamp_format(after)
+            self.request.params.after = get_github_timestamp_format(after)  # type: ignore
 
 
 class GithubGetEvents(IntegrationGetEvents):

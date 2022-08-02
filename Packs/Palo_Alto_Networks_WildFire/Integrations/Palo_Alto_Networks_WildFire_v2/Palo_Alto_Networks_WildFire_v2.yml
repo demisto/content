@@ -1392,7 +1392,7 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false

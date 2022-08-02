@@ -1,6 +1,6 @@
 {
-    "name": "Deprecated Content",
-    "description": "Deprecated Cortex XSOAR content pack.",
+    "name": "Deprecated Content (Deprecated)",
+    "description": "Deprecated. No available replacement.",
     "support": "xsoar",
     "currentVersion": "1.6.15",
     "author": "Cortex XSOAR",
