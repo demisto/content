@@ -2,8 +2,6 @@ version: '3'
 services:
   neo4j:
     image: neo4j:latest
-    hostname: neo4j
-    container_name: neo4j-content
     ports:
       - "7474:7474"
       - "7687:7687"
