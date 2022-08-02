@@ -27,7 +27,7 @@ configuration:
   - medium
   - high
 - additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: C - Fairly reliable
+  defaultvalue: B - Usually reliable
   display: Source Reliability
   name: integrationReliability
   options:
@@ -40,6 +40,11 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
