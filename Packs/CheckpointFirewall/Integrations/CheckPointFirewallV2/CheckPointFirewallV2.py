@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -363,6 +364,35 @@ class Client(BaseClient):
         body = {'policy-package': policy_package, }
         return self._http_request(method='POST', url_suffix='verify-policy',
                                   headers=self.headers, json_data=body)
+
+    def show_threat_protection(self, uid: str, name: str, properties: bool, profiles: bool):
+        body = {
+            'show-ips-additional-properties': properties,
+            'show-profiles': profiles
+        }
+        if uid:
+            body['uid'] = uid
+
+        elif name:
+            body['name'] = name
+        return self._http_request(method='POST', url_suffix='show-threat-protection',
+                                  headers=self.headers, json_data=body)
+
+    def show_threat_protections(self, args):
+        return self._http_request(method='POST', url_suffix='show-threat-protections',
+                                  headers=self.headers, json_data=args)
+
+    def add_threat_profile(self, args):
+        return self._http_request(method='POST', url_suffix='add-threat-profile',
+                                  headers=self.headers, json_data=args)
+
+    def delete_threat_protections(self, args):
+        return self._http_request(method='POST', url_suffix='delete-threat-protections',
+                                  headers=self.headers, json_data=args)
+
+    def set_threat_protection(self, args):
+        return self._http_request(method='POST', url_suffix='set-threat-protection',
+                                  headers=self.headers, json_data=args)
 
 
 def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> CommandResults:
@@ -1703,6 +1733,160 @@ def checkpoint_delete_objects_batch_command(client: Client, object_type: str, na
     return command_results
 
 
+def checkpoint_show_threat_protection_command(client: Client, **args):
+    context_data = {}
+    readable_output = ''
+    uid = args.get('uid')
+    name = args.get('name')
+    properties = False if args.get('properties') == 'false' else True
+    profiles = False if args.get('profiles') == 'false' else True
+    result = client.show_threat_protection(uid, name, properties, profiles)
+
+    if result:
+        context_data = {'uid': result}
+        readable_output = tableToMarkdown('CheckPoint data for show threat protection command:',
+                                          result)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ShowThreatProtection',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=context_data,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_show_threat_protections_command(client: Client, **args):
+    context_data = {}
+    readable_output = ''
+    result = client.show_threat_protections(args)
+
+    if result:
+        context_data = result.get('protections', [])
+        readable_output = tableToMarkdown('CheckPoint data for show threate protections command:',
+                                          result.get('protections', []))
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ShowThreatProtections',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=context_data,
+        raw_response=result
+    )
+    return command_results
+
+
+def ip_settings(**args):
+    keys = args.keys()
+    args['ips-settings'] = {}
+    if 'exclude-protection-with-performance-impact' in keys:
+        args['ips-settings']['exclude-protection-with-performance-impact'] = args['exclude-protection-with-performance-impact']
+        args.pop('exclude-protection-with-performance-impact')
+
+    if 'exclude-protection-with-performance-impact-mode' in keys:
+        args['ips-settings']['exclude-protection-with-performance-impact-mode'] = args['exclude-protection-with-performance-impact-mode']
+        args.pop('exclude-protection-with-performance-impact-mode')
+
+    if 'exclude-protection-with-severity' in keys:
+        args['ips-settings']['exclude-protection-with-severity'] = args['exclude-protection-with-severity']
+        args.pop('exclude-protection-with-severity')
+
+    if 'exclude-protection-with-severity-mode' in keys:
+        args['ips-settings']['exclude-protection-with-severity-mode'] = args['exclude-protection-with-severity-mode']
+        args.pop('exclude-protection-with-severity-mode')
+
+    if 'newly-updated-protections' in keys:
+        args['ips-settings']['newly-updated-protections'] = args['newly-updated-protections']
+        args.pop('newly-updated-protections')
+
+    return args
+
+
+def checkpoint_add_threat_profile_command(client: Client, **args):
+    body = {f'{k.replace("_", "-")}': v for k, v in args.items()}
+
+    body = ip_settings(**body)
+    readable_output = ''
+
+    result = client.add_threat_profile(body)
+
+    if result:
+
+        readable_output = tableToMarkdown('CheckPoint data for add threat profile command:',
+                                          result)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AddedThreatProfiles',
+        outputs_key_field='task-id',
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_delete_threat_protections_command(client: Client, packageFormat):
+    body = {}
+    body["package-format"] = args.get('packageFormat')
+    result = client.delete_threat_protections(body)
+
+    if result:
+
+        readable_output = tableToMarkdown('CheckPoint data for delete threat protections command:',
+                                          result)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.DeletedThreatProtections',
+        outputs_key_field='task-id',
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result
+    )
+    return command_results
+
+
+def create_ovverides_data(**args):
+    profiles = args.get('profiles').split(',')
+    profiles = [x.rstrip() for x in profiles]
+
+    if args.get('track'):
+        args['track'] = args['track'].replace('-', ' ')
+    obj = []
+
+    for profile in profiles:
+        obj.append({
+            'profile': profile,
+            'action': args.get('action'),
+            'track': args.get('track'),
+            'capture-packets': args.get('caputurePackets')
+        })
+    args['overrides'] = obj
+    args.pop('profiles', None)
+    args.pop('action', None)
+    args.pop('track', None)
+    args.pop('capturePackets', None)
+    return args
+
+
+def checkpoint_set_threat_protections_command(client: Client, **args):
+    readable_output = ''
+
+    if args.get('profiles'):
+        args = create_ovverides_data(**args)
+
+    body = {f'{k.replace("_", "-")}': v for k, v in args.items()}
+    result = client.set_threat_protection(body)
+
+    if result:
+        readable_output = tableToMarkdown('CheckPoint data for set threat protection command:',
+                                          result)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.SetThreatProtections',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result
+    )
+    return command_results
+
+
 def checkpoint_install_policy_command(client: Client, policy_package: str, targets,
                                       access: bool) -> CommandResults:
     """
@@ -2038,6 +2222,20 @@ def main():  # pragma: no cover
         elif command == 'checkpoint-delete-objects-batch':
             return_results(checkpoint_delete_objects_batch_command(client, **demisto.args()))
 
+        elif command == 'checkpoint-show-threat-protection':
+            return_results(checkpoint_show_threat_protection_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-show-threat-protections':
+            return_results(checkpoint_show_threat_protections_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-add-threat-profile':
+            return_results(checkpoint_add_threat_profile_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-delete-threat-protections':
+            return_results(checkpoint_delete_threat_protections_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-set-threat-protection':
+            return_results(checkpoint_set_threat_protections_command(client, **demisto.args()))
         else:
             raise NotImplementedError(f"Unknown command {demisto.command()}.")
 
