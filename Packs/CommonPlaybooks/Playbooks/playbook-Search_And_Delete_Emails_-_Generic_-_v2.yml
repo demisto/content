@@ -764,11 +764,6 @@ inputs:
   description: Used only in O365. Text search string or a query that is formatted
     using the Keyword Query Language (KQL).
   playbookInputQuery:
-- key: O365Description
-  value: {}
-  required: false
-  description: Used only in O365. Description of the compliance search.
-  playbookInputQuery:
 - key: O365AllowNotFoundExchangeLocations
   value:
     simple: "false"
