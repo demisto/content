@@ -5,6 +5,7 @@ var privateKey = params.privateKey;
 var acceptVersion = params.version;
 var insecure = params.insecure;
 var proxy = params.proxy;
+var integrationReliability = params.integrationReliability
 
 var VENDOR_NAME = 'FireEye iSIGHT';
 
@@ -138,7 +139,8 @@ var basicSearchIP = function(ip) {
                     Indicator: ip,
                     Type: 'IP',
                     Vendor: VENDOR_NAME,
-                    Score: 0
+                    Score: 0,
+                    Reliability: integrationReliability
                 }
             }
         };
@@ -174,7 +176,8 @@ var basicSearchDomain = function(domain) {
                     Indicator: domain,
                     Type: 'domain',
                     Vendor: VENDOR_NAME,
-                    Score: 0
+                    Score: 0,
+                    Reliability: integrationReliability
                 }
             }
         };
@@ -210,7 +213,8 @@ var basicSearchfile = function(key, value) {
                     Indicator: value,
                     Type: 'file',
                     Vendor: VENDOR_NAME,
-                    Score: 0
+                    Score: 0,
+                    Reliability: integrationReliability
                 }
             }
         };
