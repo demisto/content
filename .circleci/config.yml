@@ -94,7 +94,7 @@ references:
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.30555  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.32589  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -264,8 +264,8 @@ references:
       name: Create ID Set
       when: always
       command: |
-        demisto-sdk create-id-set -o ./Tests/id_set.json --fail-duplicates
-        cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
+        demisto-sdk create-content-graph
+        cp ./neo4j/backups/content-graph.dump $CIRCLE_ARTIFACTS
 
   merge_public_and_private_id_sets: &merge_public_and_private_id_sets
     run:
