@@ -31,6 +31,9 @@ CLOSE_REASONS = {
     'legitimate activity': 5,
     'other': 6
 }
+DISPLAY_NAME_KEY = 'DisplayName'
+SAM_ACCOUNT_NAME_KEY = 'SAMAccountName'
+EMAIL_KEY = 'Email'
 
 
 ''' CLIENT CLASS '''
@@ -86,53 +89,17 @@ class Client(BaseClient):
         }
         return response
 
-    def varonis_get_users_by_user_name(self, user_name: str) -> List[Any]:
-        """Search users by user name
-
-        :type user_name: ``str``
-        :param user_name: user name to search by
-
-        :return: The list of users
-        :rtype: ``Dict[str, Any]``
-        """
-        return self.varonis_get_users(user_name, '[\'ObjName\']')
-
-    def varonis_get_users_by_sam_account_name(self, sam_account_name: str) -> List[Any]:
-        """Search users by sam account name
-
-        :type sam_account_name: ``str``
-        :param sam_account_name: sam account name to search by
-
-        :return: The list of users
-        :rtype: ``Dict[str, Any]``
-        """
-        return self.varonis_get_users(sam_account_name, '[\'SamAccountName\']')
-
-    def varonis_get_users_by_email(self, email: str) -> List[Any]:
-        """Search users by email
-
-        :type email: ``str``
-        :param email: email to search by
-
-        :return: The list of users
-        :rtype: ``Dict[str, Any]``
-        """
-        return self.varonis_get_users(email, '[\'Email\']')
-
-    def varonis_get_users(self, search_string: str, columns: str) -> List[Any]:
+    def varonis_get_users(self, search_string: str) -> List[Any]:
         """Search users by search string
 
         :type search_string: ``str``
         :param search_string: search string
 
-        :type columns: ``str``
-        :param columns: columns to search by
-
         :return: The list of users
         :rtype: ``Dict[str, Any]``
         """
         request_params: Dict[str, Any] = {}
-        request_params['columns'] = columns
+        request_params['columns'] = '[\'SamAccountName\',\'Email\',\'DomainName\',\'ObjName\']'
         request_params['searchString'] = search_string
         request_params['limit'] = 1000
 
@@ -255,6 +222,22 @@ def convert_to_demisto_severity(severity: Optional[str]) -> int:
     }[severity]
 
 
+def get_excluded_severitires(severity: Optional[str]) -> List[str]:
+    if not severity:
+        return []
+
+    severities = ALERT_SEVERITIES.copy()
+
+    if severity.lower() == 'medium':
+        severities.remove('low')
+
+    if severity.lower() == 'high':
+        severities.remove('low')
+        severities.remove('medium')
+
+    return severities
+
+
 def validate_threat_models(client: Client, threat_models: List[str]):
     """ Validates if threat models exist in Varonis
 
@@ -334,7 +317,7 @@ def enrich_with_url(output: Dict[str, Any], baseUrl: str, id: str) -> Dict[str, 
     return output
 
 
-def get_sids_by_user_name(client: Client, user_names: List[str], user_domain_name: str):
+def get_sids(client: Client, values: List[str], user_domain_name: Optional[str], key: str) -> List[int]:
     """Add alert user names filter to the search query
 
     :type user_names: ``List[str]``
@@ -345,45 +328,42 @@ def get_sids_by_user_name(client: Client, user_names: List[str], user_domain_nam
     """
     sidIds: List[int] = []
 
-    if not user_names:
+    if not values:
         return sidIds
 
-    for user_name in user_names:
-        users = client.varonis_get_users_by_user_name(user_name)
+    for value in values:
+        users = client.varonis_get_users(value)
 
         for user in users:
-            if (strEqual(user['DisplayName'], user_name)
+            if (strEqual(user[key], value)
                     and (not user_domain_name or strEqual(user['DomainName'], user_domain_name))):
                 sidIds.append(user['Id'])
 
-    if len(users) == 0:
+    if len(sidIds) == 0:
         sidIds.append(NON_EXISTENT_SID)
 
     return sidIds
 
 
-def get_sids_by_sam(client: Client, sam_account_names: List[str]):
+def get_sids_by_user_name(client: Client, user_names: List[str], user_domain_name: str) -> List[int]:
+    """Add alert user names filter to the search query
+
+    :type user_names: ``List[str]``
+    :param user_names: A list of user names
+
+    :type user_domain_name: ``str``
+    :param user_domain_name: User domain name
+    """
+    return get_sids(client, user_names, user_domain_name, DISPLAY_NAME_KEY)
+
+
+def get_sids_by_sam(client: Client, sam_account_names: List[str]) -> List[int]:
     """Add alert sam account name filter to the search query
 
     :type sam_account_names: ``List[str]``
     :param sam_account_names: A list of sam account names
     """
-    sidIds: List[int] = []
-
-    if not sam_account_names:
-        return sidIds
-
-    for sam_account_name in sam_account_names:
-        users = client.varonis_get_users_by_sam_account_name(sam_account_name)
-
-        for user in users:
-            if strEqual(user['SAMAccountName'], sam_account_name):
-                sidIds.append(user['Id'])
-
-    if len(users) == 0:
-        sidIds.append(NON_EXISTENT_SID)
-
-    return sidIds
+    return get_sids(client, sam_account_names, None, SAM_ACCOUNT_NAME_KEY)
 
 
 def get_sids_by_email(client: Client, emails: List[str]) -> List[int]:
@@ -392,22 +372,7 @@ def get_sids_by_email(client: Client, emails: List[str]) -> List[int]:
     :type emails: ``List[str]``
     :param emails: A list of emails
     """
-    sidIds: List[int] = []
-
-    if not emails:
-        return sidIds
-
-    for email in emails:
-        users = client.varonis_get_users_by_email(email)
-
-        for user in users:
-            if strEqual(user['Email'], email):
-                sidIds.append(user['Id'])
-
-    if len(users) == 0:
-        sidIds.append(NON_EXISTENT_SID)
-
-    return sidIds
+    return get_sids(client, emails, None, EMAIL_KEY)
 
 
 def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, alert_ids: list) -> bool:
@@ -530,15 +495,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
     if alert_status:
         statuses.append(alert_status)
 
-    severities = ALERT_SEVERITIES
-
-    if severity:
-        if severity.lower() == 'medium':
-            severities.remove('low')
-
-        if severity.lower() == 'high':
-            severities.remove('low')
-            severities.remove('medium')
+    severities = get_excluded_severitires(severity)
 
     alerts = client.varonis_get_alerts(threat_models, first_fetch_time, None, None, None, None,
                                        last_fetched_id, statuses, severities, True, max_results, 1)
