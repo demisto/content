@@ -425,7 +425,7 @@ def objectToEntry(client, raw_info):
 
         # leadMapping = {} # TODO: implement
         headers = ['ID', 'Subject', 'WhoId', 'RelatedTo', 'ActivityDate']
-        outputs_prefix = 'SalesForce.Task'
+        outputs_prefix = 'SalesForceV2.Task'
         outputs_key_field = 'ID'
 
     elif obj_type == 'User':

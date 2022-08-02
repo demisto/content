@@ -1036,6 +1036,21 @@ script:
       description: ''
     description: Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging purposes.
     name: get-modified-remote-data
+  - arguments:
+      - name: data
+        required: true
+        description: The data to send to the remote system.
+      - name: entries
+        required: false
+        description: The entries to send to the remote system.
+      - name: incident_changed
+        required: false
+        description: Boolean that is telling us if the local incident indeed changed or not.
+      - name: remote_incident_id
+        required: false
+        description: the remote incident id
+    description: Available from Cortex XSOAR version 6.1.0. This command pushes local changes to the remote system.
+    name: update-remote-system
   - arguments: []
     description: Returns the list of fields for an incident type.
     name: get-mapping-fields
