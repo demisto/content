@@ -975,8 +975,7 @@ class ExchangeOnlineClient {
         .LINK
         https://docs.microsoft.com/en-us/powershell/module/exchange/get-safelinksaggregatereport?view=exchange-ps
         #>
-    } 
-
+    }
 }
 
 function TestModuleCommand {
@@ -1180,7 +1179,6 @@ function GetAggregateReport {
         [Parameter(Mandatory)][ExchangeOnlineClient]$client,
         [hashtable]$kwargs
     )
-    
     $raw_response = $client.GetSafeLinksAggregateReport($kwargs)
     if (!$raw_response){
         return "#### No records were found.", @{}, @{}

@@ -870,10 +870,64 @@ Update a given Safe Links rule.
 | O365Defender.SafeLinks.Rule.State | String | The state of the rule. | 
 | O365Defender.SafeLinks.Rule.WhenChanged | Date | The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss\+00:00. | 
 
+#### Command Example
+```!o365-defender-safelinks-rule-update name=XSOAR Rule safe_links_policy=XSOAR Policy comments="Description of the updated rule" ```
+#### Context Example
+```json
+{
+  "O365Defender.SafeLinks.Rule(obj.Guid === val.Guid)": {
+    "Comments": "Description of the updated rule",
+    "Conditions": [
+      "Microsoft.Exchange.MessagingPolicies.Rules.Tasks.SentToPredicate"
+    ],
+    "Description": "If the message:\r\n\tIs sent to 'xsoartest@xsoar.onmicrosoft.com'\r\nTake the following actions:\r\n\tApply safe links policy \"XSOAR Policy\".\r\n",
+    "DistinguishedName": "CN=XSOAR Policy,CN=SafeLinksVersioned,CN=Rules,CN=Transport Settings,CN=Configuration,CN=xsoartest.onmicrosoft.com,CN=ConfigurationUnits,DC=EURPR07A123,DC=PROD,DC=OUTLOOK,DC=COM",
+    "ExceptIfRecipientDomainIs": null,
+    "ExceptIfSentTo": null,
+    "ExceptIfSentToMemberOf": null,
+    "Exceptions": null,
+    "ExchangeVersion": "0.1 (8.0.535.0)",
+    "Guid": "e5764de3-5495-4512-93f5-fe96d579fbd9",
+    "Identity": "XSOAR Policy",
+    "ImmutableId": "e5764de3-5495-4512-93f5-fe96d579fbd9",
+    "IsValid": true,
+    "Name": "XSOAR Rule",
+    "ObjectState": "Unchanged",
+    "OrganizationId": "EURPR07A123.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/xsoartest.onmicrosoft.com - EURPR07A123.PROD.OUTLOOK.COM/ConfigurationUnits/xsoartest.onmicrosoft.com/Configuration",
+    "PSComputerName": "outlook.office365.com",
+    "PSShowComputerName": false,
+    "Priority": 2,
+    "RecipientDomainIs": null,
+    "RuleVersion": {
+      "Build": 0,
+      "Major": 14,
+      "MajorRevision": 0,
+      "Minor": 0,
+      "MinorRevision": 0,
+      "Revision": 0
+    },
+    "RunspaceId": "72b57693-0ddb-45b0-a44f-4d722a352635",
+    "SafeLinksPolicy": "XSOAR Policy",
+    "SentTo": [
+      "xsoartest@xsoar.onmicrosoft.com"
+    ],
+    "SentToMemberOf": null,
+    "State": "Enabled",
+    "WhenChanged": "2021-10-21T12:49:40+00:00"
+  }
+}
+ 
+```
+
+#### Human Readable Output
+>### Results of o365-defender-safelinks-rule-update
+>| Comments | Conditions | Description | DistinguishedName | ExceptIfRecipientDomainIs | ExceptIfSentTo | ExceptIfSentToMemberOf | Exceptions | ExchangeVersion | Guid | Identity | ImmutableId | IsValid | Name | ObjectState | OrganizationId | Priority | PSComputerName | PSShowComputerName | RecipientDomainIs | RuleVersion | RunspaceId | SafeLinksPolicy | SentTo | SentToMemberOf | State | WhenChanged
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| Changed recipients | "Microsoft.Exchange.MessagingPolicies.Rules.Tasks.SentToPredicate" | If the message: Is sent to 'xsoartest@xsoar.onmicrosoft.com'\ Take the following actions: Apply safe links policy "XSOAR Policy".\  | CN=XSOAR Policy,CN=SafeLinksVersioned,CN=Rules,CN=Transport Settings,CN=Configuration,CN=xsoartest.onmicrosoft.com,CN=ConfigurationUnits,DC=EURPR07A123,DC=PROD,DC=OUTLOOK,DC=COM |  |  |  |  | 0.1 (8.0.535.0) | {"value":"e5764de3-5495-4512-93f5-fe96d579fbd9","Guid":"e5764de3-5495-4512-93f5-fe96d579fbd9"} | XSOAR Policy | {"value":"e5764de3-5495-4512-93f5-fe96d579fbd9","Guid":"e5764de3-5495-4512-93f5-fe96d579fbd9"} | true | XSOAR Policy | Unchanged | EURPR07A123.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/xsoartest.onmicrosoft.com - EURPR07A123.PROD.OUTLOOK.COM/ConfigurationUnits/xsoartest.onmicrosoft.com/Configuration | 2 | outlook.office365.com | false |  | {"Major":14,"Minor":0,"Build":0,"Revision":0,"MajorRevision":0,"MinorRevision":0} | {"value":"72b57693-0ddb-45b0-a44f-4d722a352635","Guid":"72b57693-0ddb-45b0-a44f-4d722a352635"} | XSOAR Policy | "xsoartest@xsoar.onmicrosoft.com" |  | Enabled | {"value":"2021-10-21T12:49:40+00:00","DateTime":"Thursday, October 21, 2021 12:49:40 PM"}
+
 ### o365-defender-safelinks-detailed-report-get
 ***
 Get detailed information about Safe Links results for the last 7 days. Yesterday is the most recent date that you can specify.
-
 
 #### Base Command
 

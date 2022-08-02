@@ -440,7 +440,6 @@ class ExchangeOnlinePowershellV2Client {
         https://docs.microsoft.com/en-us/powershell/module/exchange/get-safelinksdetailreport?view=exchange-ps
         #>
     }
-    
     [PSObject]
     GetSafeLinksAggregateReport(
         [hashtable]$kwargs
@@ -483,8 +482,7 @@ class ExchangeOnlinePowershellV2Client {
         .LINK
         https://docs.microsoft.com/en-us/powershell/module/exchange/get-safelinksaggregatereport?view=exchange-ps
         #>
-    } 
-
+    }
 }
 
 
