@@ -298,7 +298,7 @@ def fetch_mails(client: IMAPClient,
         demisto.debug(f'Searching for email messages with criteria: {messages_query}')
         messages_uids = client.search(messages_query)
         # first fetch takes last page only (workaround as first_fetch filter is date accurate)
-        if message_id == 1:
+        if uid_to_fetch_from == 1:
             messages_uids = messages_uids[limit * -1:]
         else:
             messages_uids = messages_uids[:limit]
