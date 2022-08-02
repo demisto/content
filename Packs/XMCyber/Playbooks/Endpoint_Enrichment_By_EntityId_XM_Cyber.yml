@@ -1,18 +1,16 @@
-id: Endpoint Enrichment - XM Cyber
+id: Endpoint Enrichment By EntityId - XM Cyber
 version: -1
 fromversion: 6.0.0
-name: Endpoint Enrichment - XM Cyber
-description:
-  Enrich an endpoint by hostname using XM Cyber integration.
-  Outputs include affected assets, affected entities, complexity of compromise, and more
+name: Endpoint Enrichment By EntityId - XM Cyber
+description: Enrich an endpoint by entityId using XM Cyber integration. Outputs include affected assets, affected entities, complexity of compromise, and more
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: dae7230b-2735-4d7b-82a4-6733dffdf2a9
+    taskid: 9c3f54b8-eaf3-47cb-9fa0-5c5c22514fd0
     type: start
     task:
-      id: dae7230b-2735-4d7b-82a4-6733dffdf2a9
+      id: 9c3f54b8-eaf3-47cb-9fa0-5c5c22514fd0
       version: -1
       name: ""
       description: Start
@@ -36,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 09ad5af3-b0aa-4d63-873c-1a92c465e8bd
+    taskid: 0e2116eb-9151-4063-9d18-c69051113331
     type: title
     task:
-      id: 09ad5af3-b0aa-4d63-873c-1a92c465e8bd
+      id: 0e2116eb-9151-4063-9d18-c69051113331
       version: -1
       name: XM Cyber Available
       description: XM Cyber Available
@@ -64,13 +62,13 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: fc5e6318-734f-43e3-8976-ff07b155f187
+    taskid: 687e0ff2-38ce-4632-810c-35489b99a6a4
     type: condition
     task:
-      id: fc5e6318-734f-43e3-8976-ff07b155f187
+      id: 687e0ff2-38ce-4632-810c-35489b99a6a4
       version: -1
       name: Is there an endpoint to enrich?
-      description: Checks whether there is at least one endpoint to enrich (by hostname).
+      description: Checks whether there is at least one endpoint to enrich (by entityId).
       type: condition
       iscommand: false
       brand: ""
@@ -81,7 +79,7 @@ tasks:
       - "5"
     scriptarguments:
       value:
-        simple: ${inputs.Hostname}
+        simple: ${incident.labels.entityId}
     separatecontext: false
     conditions:
     - label: "yes"
@@ -89,7 +87,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: inputs.Hostname
+              simple: incident.labels.entityId
             iscontext: true
     view: |-
       {
@@ -105,10 +103,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: cc78c060-e37f-4f4c-8b00-d79084cc4596
+    taskid: 23f94e06-7812-422c-9318-bed961d50db0
     type: title
     task:
-      id: cc78c060-e37f-4f4c-8b00-d79084cc4596
+      id: 23f94e06-7812-422c-9318-bed961d50db0
       version: -1
       name: Done
       description: Done
@@ -130,14 +128,13 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 2c1135cf-179a-45cc-854c-26f5140e4947
+    taskid: 2fb636de-458e-4f8f-9b58-1e16661a868d
     type: condition
     task:
-      id: 2c1135cf-179a-45cc-854c-26f5140e4947
+      id: 2fb636de-458e-4f8f-9b58-1e16661a868d
       version: -1
       name: Is XM Cyber Available
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -167,14 +164,14 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 844bb768-085d-495d-8d7b-3f066d96ccba
+    taskid: b1041642-9370-413e-9cc5-66905ab2a2f4
     type: regular
     task:
-      id: 844bb768-085d-495d-8d7b-3f066d96ccba
+      id: b1041642-9370-413e-9cc5-66905ab2a2f4
       version: -1
-      name: Enrich Hostname
-      description: Return data on Entity by hostname from XM Cyber
-      script: '|||xmcyber-hostname'
+      name: Enrich from entityId
+      description: Return data on Entity by entityId from XM Cyber
+      script: '|||xmcyber-enrich-from-entityId'
       type: regular
       iscommand: true
       brand: ""
@@ -182,8 +179,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      hostname:
-        simple: ${inputs.Hostname}
+      entityId:
+        simple: ${incident.labels.entityId}
     separatecontext: false
     view: |-
       {
@@ -230,14 +227,13 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 35d3b3c3-614e-4d0e-8caf-b78ac83c0cad
+    taskid: 7b1bbf43-0de6-4e85-b0ce-1061394c7afd
     type: regular
     task:
-      id: 35d3b3c3-614e-4d0e-8caf-b78ac83c0cad
+      id: 7b1bbf43-0de6-4e85-b0ce-1061394c7afd
       version: -1
       name: Get Critical Assets At Risk
-      description: List critical assets at risk from an entity and the complexity
-        of the attack
+      description: List critical assets at risk from an entity and the complexity of the attack
       script: '|||xmcyber-affected-critical-assets-list'
       type: regular
       iscommand: true
@@ -268,14 +264,13 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: a11f1e7e-bb04-454d-8561-3523e1ad054e
+    taskid: 447cf206-cc15-447c-bdac-f1dbb0ac3726
     type: regular
     task:
-      id: a11f1e7e-bb04-454d-8561-3523e1ad054e
+      id: 447cf206-cc15-447c-bdac-f1dbb0ac3726
       version: -1
       name: Get Entities At Risk
-      description: List all entities at risk from an entity and the complexity of
-        the attack
+      description: List all entities at risk from an entity and the complexity of the attack
       script: '|||xmcyber-affected-entities-list'
       type: regular
       iscommand: true
@@ -306,10 +301,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: f1439131-3559-49f0-8a94-6fbfc2992e80
+    taskid: f4877cce-8cea-4696-b319-7fcc79097533
     type: condition
     task:
-      id: f1439131-3559-49f0-8a94-6fbfc2992e80
+      id: f4877cce-8cea-4696-b319-7fcc79097533
       version: -1
       name: Found Entity?
       type: condition
@@ -366,7 +361,7 @@ inputs:
       - operator: uniq
   required: false
   description: The hostname of the endpoint to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Endpoint
   description: The endpoint object of the endpoint that was enriched.
@@ -405,4 +400,4 @@ outputs:
   description: Entities at risk from this entity
   type: unknown
 tests:
- -  No tests
+- No tests

@@ -1,4 +1,4 @@
-Enrich an endpoint by hostname using XM Cyber integration. Outputs include affected assets, affected entities, complexity of compromise, and more
+Enrich an endpoint by entityId using XM Cyber integration. Outputs include affected assets, affected entities, complexity of compromise, and more
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,7 +13,7 @@ This playbook does not use any sub-playbooks.
 * IsIntegrationAvailable
 
 ### Commands
-* hostname
+* xmcyber-enrich-from-entityId
 * xmcyber-affected-critical-assets-list
 * xmcyber-affected-entities-list
 
@@ -22,7 +22,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Hostname | The hostname of the endpoint to enrich. | Endpoint.Hostname | Optional |
+| EntityId | The entityId of the endpoint to enrich. | Endpoint.EntityId | Optional |
 
 ## Playbook Outputs
 ---
@@ -44,4 +44,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Endpoint Enrichment - XM Cyber](https://github.com/matan-xmcyber/content/blob/master/docs/images/playbooks/Endpoint_Enrichment_XM_Cyber.png)
+![Endpoint Enrichment By EntityId - XM Cyber](../doc_files/Endpoint_Enrichment_By_EntityId_-_XM_Cyber.png)
