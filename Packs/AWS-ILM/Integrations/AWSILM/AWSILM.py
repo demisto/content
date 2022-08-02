@@ -1,7 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
 import traceback
+
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -14,7 +15,7 @@ ERROR_CODES_TO_SKIP = [
     404
 ]
 SUPPORTED_GET_USER_IAM_ATTRIBUTES = ['id', 'userName']
-
+# contrib to integration
 AWS_DEFAULT_SCHEMA_MAPPING = {
     'id': 'id',
     'userName': 'userName',
