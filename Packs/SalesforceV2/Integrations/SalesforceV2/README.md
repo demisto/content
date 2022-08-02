@@ -643,6 +643,7 @@ Gets remote data from a remote incident. This method is only used for debugging 
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 ***
 Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging purposes.
@@ -661,6 +662,29 @@ Available from Cortex XSOAR version 6.1.0. This command queries for incidents th
 #### Context Output
 
 There is no context output for this command.
+
+### update-remote-system
+***
+Available from Cortex XSOAR version 6.1.0. This command pushes local changes to the remote system.
+
+
+#### Base Command
+
+`update-remote-system`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| data | The data to send to the remote system. | Required | 
+| entries | The entries to send to the remote system. | Optional | 
+| incident_changed | Boolean that is telling us if the local incident indeed changed or not. | Optional | 
+| remote_incident_id | the remote incident id. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
 ### get-mapping-fields
 ***
 Returns the list of fields for an incident type.
