@@ -468,7 +468,7 @@ class MicrosoftClient(BaseClient):
             data['grant_type'] = DEVICE_CODE
             if integration_context:
                 data['code'] = integration_context.get('device_code')
-
+        print(data)
         response_json: dict = {}
         try:
             response = requests.post(self.token_retrieval_url, data, verify=self.verify)
@@ -614,6 +614,7 @@ class MicrosoftClient(BaseClient):
         except Exception as e:
             return_error(f'Error in Microsoft authorization: {str(e)}')
         set_integration_context({'device_code': response_json.get('device_code')})
+        print(get_integration_context())
         return response_json
 
     def start_auth(self, complete_command: str) -> str:
