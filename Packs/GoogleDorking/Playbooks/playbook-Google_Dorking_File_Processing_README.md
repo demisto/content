@@ -38,7 +38,3 @@ This playbook does not use any integrations.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Google Dorking File Processing](../doc_files/Google_Dorking_File_Processing.png)
