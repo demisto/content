@@ -1,3 +1,6 @@
+import demistomock as demisto
+from CommonServerPython import *
+
 import paramiko
 import traceback
 
@@ -65,6 +68,7 @@ def main():
         except Exception as ex:
             demisto.error(traceback.format_exc())  # print the traceback
             return_error(f'Error occurred - Error: {str(ex)}')
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
