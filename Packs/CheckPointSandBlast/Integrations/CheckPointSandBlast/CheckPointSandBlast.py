@@ -535,7 +535,7 @@ def download_command(client: Client, args: Dict[str, Any]) -> Any:
     else:
         file_name = split_content_disposition[1]
 
-    return fileResult(filename=file_name, data=output.content, file_type=EntryType.ENTRY_INFO_FILE)
+    return fileResult(filename=file_name, data=output.content)
 
 
 def quota_command(client: Client, args: Dict[str, Any]) -> CommandResults:

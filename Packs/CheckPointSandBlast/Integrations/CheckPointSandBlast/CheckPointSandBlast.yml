@@ -21,11 +21,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: "Uploads files using polling. The service supports Microsoft Office files, as well as PDF, SWF, archives, 
-and executables. Active content will be cleaned from any documents that you upload 
-(Microsoft Office and PDF files only). Queries on existing IOCs, file status, analysis, and reports. 
-Downloads files from the database. Supports both appliance and cloud. 
-Supported Threat Emulation versions are any R80x."
+description: "Uploads files using polling. The service supports Microsoft Office files, as well as PDF, SWF, archives, and executables. Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Queries on existing IOCs, file status, analysis, and reports. Downloads files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x."
 display: Check Point Threat Emulation (SandBlast)
 name: CheckPointSandBlast
 script:
@@ -180,13 +176,7 @@ script:
       description: The method that was used.
       type: String
     - contextPath: SandBlast.Query.ThreatExtraction.ExtractResult
-      description: "The result from the Threat Extraction engine. \
-      Default is CP_EXTRACT_RESULT_UNKNOWN \
-      (returned if the POD did not receive an answer from the Threat Extraction engine in 60 seconds). 
-      Possible values: CP_EXTRACT_RESULT_UNKNOWN, CP_EXTRACT_RESULT_SUCCESS, CP_EXTRACT_RESULT_FAILURE, 
-      CP_EXTRACT_RESULT_TIMEOUT, CP_EXTRACT_RESULT_UNSUPPORTED_FILE, CP_EXTRACT_RESULT_NOT_SCRUBBED, 
-      CP_EXTRACT_RESULT_INTERNAL_ERROR, CP_EXTRACT_RESULT_DISK_LIMIT_REACHED, CP_EXTRACT_RESULT_ENCRYPTED_FILE, 
-      CP_EXTRACT_RESULT_DOCSEC_FILE, CP_EXTRACT_RESULT_OUT_OF_MEMORY."
+      description: "The result from the Threat Extraction engine. Default is CP_EXTRACT_RESULT_UNKNOWN (returned if the POD did not receive an answer from the Threat Extraction engine in 60 seconds). Possible values: CP_EXTRACT_RESULT_UNKNOWN, CP_EXTRACT_RESULT_SUCCESS, CP_EXTRACT_RESULT_FAILURE, CP_EXTRACT_RESULT_TIMEOUT, CP_EXTRACT_RESULT_UNSUPPORTED_FILE, CP_EXTRACT_RESULT_NOT_SCRUBBED, CP_EXTRACT_RESULT_INTERNAL_ERROR, CP_EXTRACT_RESULT_DISK_LIMIT_REACHED, CP_EXTRACT_RESULT_ENCRYPTED_FILE, CP_EXTRACT_RESULT_DOCSEC_FILE, CP_EXTRACT_RESULT_OUT_OF_MEMORY."
       type: String
     - contextPath: SandBlast.Query.ThreatExtraction.ExtractedFileDownloadId
       description: The download ID of the extracted file, for download request. Only sent when extract_result = CP_EXTRACT_RESULT_SUCCESS.
@@ -294,8 +284,7 @@ script:
       - All
       required: false
     - auto: PREDEFINED
-      description: 'The ID of available OS images. An image is an operating system configuration. Inputs must be of same length as image_revisions and will be paired according to position. 
-      Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".'
+      description: 'The ID of available OS images. An image is an operating system configuration. Inputs must be of same length as image_revisions and will be paired according to position. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".'
       isArray: true
       name: image_ids
       predefined:
@@ -355,9 +344,7 @@ script:
       - Summary Properties
       required: false
     deprecated: false
-    description: "Uses the Upload API to have a client application request for Check Point Threat Prevention modules to scan and analyze a file. 
-    When you upload a file to the service, the file is encrypted. It is un-encrypted during analysis and then deleted. This command uses polling with query. 
-    The stages of polling are 'UPLOAD_SUCCESS', 'PENDING' and ends with 'FOUND' or 'PARTIALLY_FOUND'. Once the command is done polling, it returns analyzed information about the file."
+    description: "Uses the Upload API to have a client application request for Check Point Threat Prevention modules to scan and analyze a file. When you upload a file to the service, the file is encrypted. It is un-encrypted during analysis and then deleted. This command uses polling with query. The stages of polling are 'UPLOAD_SUCCESS', 'PENDING' and ends with 'FOUND' or 'PARTIALLY_FOUND'. Once the command is done polling, it returns analyzed information about the file."
     execution: false
     name: sandblast-upload
     polling: true
@@ -405,9 +392,7 @@ script:
       description: The method that was used.
       type: String
     - contextPath: SandBlast.Upload.ThreatExtraction.ExtractResult
-      description: 'The result from the Threat Extraction engine. Default is CP_EXTRACT_RESULT_UNKNOWN (returned if the POD did not receive an answer from the Threat Extraction engine in 60 seconds). 
-      Possible values: CP_EXTRACT_RESULT_UNKNOWN, CP_EXTRACT_RESULT_SUCCESS, CP_EXTRACT_RESULT_FAILURE, CP_EXTRACT_RESULT_TIMEOUT, CP_EXTRACT_RESULT_UNSUPPORTED_FILE, CP_EXTRACT_RESULT_NOT_SCRUBBED, CP_EXTRACT_RESULT_INTERNAL_ERROR, 
-      CP_EXTRACT_RESULT_DISK_LIMIT_REACHED, CP_EXTRACT_RESULT_ENCRYPTED_FILE, CP_EXTRACT_RESULT_DOCSEC_FILE, CP_EXTRACT_RESULT_OUT_OF_MEMORY.'
+      description: 'The result from the Threat Extraction engine. Default is CP_EXTRACT_RESULT_UNKNOWN (returned if the POD did not receive an answer from the Threat Extraction engine in 60 seconds). Possible values: CP_EXTRACT_RESULT_UNKNOWN, CP_EXTRACT_RESULT_SUCCESS, CP_EXTRACT_RESULT_FAILURE, CP_EXTRACT_RESULT_TIMEOUT, CP_EXTRACT_RESULT_UNSUPPORTED_FILE, CP_EXTRACT_RESULT_NOT_SCRUBBED, CP_EXTRACT_RESULT_INTERNAL_ERROR, CP_EXTRACT_RESULT_DISK_LIMIT_REACHED, CP_EXTRACT_RESULT_ENCRYPTED_FILE, CP_EXTRACT_RESULT_DOCSEC_FILE, CP_EXTRACT_RESULT_OUT_OF_MEMORY.'
       type: String
     - contextPath: SandBlast.Upload.ThreatExtraction.ExtractedFileDownloadId
       description: The download ID of the extracted file, for download request. Only sent when extract_result = CP_EXTRACT_RESULT_SUCCESS.
@@ -494,21 +479,36 @@ script:
     execution: false
     name: sandblast-download
     outputs:
-    - contextPath: InfoFile.Name
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
       description: The name of the file.
-      type: string
-    - contextPath: InfoFile.EntryID
-      description: The EntryID of the report.
-      type: string
-    - contextPath: InfoFile.Size
-      description: The file size.
-      type: number
-    - contextPath: InfoFile.Type
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
       description: The file type.
-      type: string
-    - contextPath: InfoFile.Info
-      description: The basic information of the file.
-      type: string
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
   - deprecated: false
     description: Uses the Quota API to have a client application get the current license and quota status of the API key used in the authorization of the other APIs. For cloud services only.
     execution: false
@@ -579,4 +579,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 6.2.0
+fromversion: 6.5.0
