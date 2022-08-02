@@ -135,7 +135,7 @@ class TestReputationCommands:
         intelligence_relationships, outputs = get_intelligence(client, INDICATOR[0], FeedIndicatorType.IP)
 
         # validate
-        assert outputs.get('Threat Actor')
+        assert outputs.get('Actor')
         assert not outputs.get('Campaign')
         assert intelligence_relationships
 

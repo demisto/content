@@ -196,6 +196,12 @@ INTELLIGENCE_TYPE_TO_ENTITY_TYPE = {'actor': ThreatIntel.ObjectsNames.THREAT_ACT
                                   'tipreport': 'Publication',
                                   'campaign': ThreatIntel.ObjectsNames.CAMPAIGN}
 
+INTELLIGENCE_TYPE_TO_CONTEXT = {'actor': 'Actor',
+                                  'signature': 'Signature',
+                                  'vulnerability': 'Vulnerability',
+                                  'ttp': 'TTP',
+                                  'tipreport': 'ThreatBulletin',
+                                  'campaign': 'Campaign'}
 ''' HELPER FUNCTIONS '''
 
 
@@ -605,7 +611,7 @@ def get_intelligence(client: Client, indicator, ioc_type):
         if intelligence_relationships:
             relationships.extend(intelligence_relationships)
 
-        intelligence_outputs[INTELLIGENCE_TYPE_TO_ENTITY_TYPE[intelligence_type]] = intelligence_output
+        intelligence_outputs[INTELLIGENCE_TYPE_TO_CONTEXT[intelligence_type]] = intelligence_output
 
     return relationships, intelligence_outputs
 
