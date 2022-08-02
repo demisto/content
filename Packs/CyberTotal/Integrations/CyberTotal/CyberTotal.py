@@ -295,7 +295,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
             indicator_type=DBotScoreType.IP,
             integration_name='CyberTotal',
             score=score,
-            malicious_description=f'CyberTotal returned reputation {reputation}'
+            malicious_description=f'CyberTotal returned reputation {reputation}',
+            reliability=demisto.params().get('integrationReliability')
         )
 
         ip_standard_context = Common.IP(
@@ -384,7 +385,8 @@ def url_reputation_command(client: Client, args: Dict[str, Any], default_thresho
             indicator_type=DBotScoreType.URL,
             integration_name='CyberTotal',
             score=score,
-            malicious_description=f'CyberTotal returned reputation {reputation}'
+            malicious_description=f'CyberTotal returned reputation {reputation}',
+            reliability=demisto.params().get('integrationReliability')
         )
 
         url_standard_context = Common.URL(
@@ -473,7 +475,8 @@ def file_reputation_command(client: Client, args: Dict[str, Any], default_thresh
             indicator_type=DBotScoreType.FILE,
             integration_name='CyberTotal',
             score=score,
-            malicious_description=f'CyberTotal returned reputation {reputation}'
+            malicious_description=f'CyberTotal returned reputation {reputation}',
+            reliability=demisto.params().get('integrationReliability')
         )
 
         hash_standard_context = Common.File(
@@ -565,7 +568,8 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
             integration_name='CyberTotal',
             indicator_type=DBotScoreType.DOMAIN,
             score=score,
-            malicious_description=f'CyberTotal returned reputation {reputation}'
+            malicious_description=f'CyberTotal returned reputation {reputation}',
+            reliability=demisto.params().get('integrationReliability')
         )
 
         domain_standard_context = Common.Domain(
