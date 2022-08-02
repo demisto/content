@@ -5,7 +5,8 @@ from tempfile import mkdtemp
 from AnomaliThreatStreamv3 import main, get_indicators, \
     REPUTATION_COMMANDS, Client, DEFAULT_INDICATOR_MAPPING, \
     FILE_INDICATOR_MAPPING, INDICATOR_EXTENDED_MAPPING, get_model_description, import_ioc_with_approval, \
-    import_ioc_without_approval, create_model, update_model, submit_report, add_tag_to_model, file_name_to_valid_string
+    import_ioc_without_approval, create_model, update_model, submit_report, add_tag_to_model, file_name_to_valid_string, \
+    get_intelligence, search_intelligence
 from CommonServerPython import *
 import pytest
 
@@ -57,17 +58,16 @@ class TestReputationCommands:
     """
 
     @pytest.mark.parametrize(
-        argnames="ioc_type,ioc_value,ioc_context_key,threat_model_association",
+        argnames="ioc_type,ioc_value,ioc_context_key",
         argvalues=[
-            ('URL', 'https://test.com,https://test_1.com', 'URL(val.Address && val.Address == obj.Address)', False),
-            ('Domain', 'test.com,test_1.com', 'Domain(val.Address && val.Address == obj.Address)', False),
+            ('URL', 'https://test.com,https://test_1.com', 'URL(val.Address && val.Address == obj.Address)'),
+            ('Domain', 'test.com,test_1.com', 'Domain(val.Address && val.Address == obj.Address)'),
             ('File', '178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1,'
                      '178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1',
-             Common.File.CONTEXT_PATH, False),
-            ('IP', '1.1.1.1,2.2.2.2', Common.IP.CONTEXT_PATH, False),
-            ('IP', '1.1.1.1,2.2.2.2', Common.IP.CONTEXT_PATH, True)
+             Common.File.CONTEXT_PATH),
+            ('IP', '1.1.1.1,2.2.2.2', Common.IP.CONTEXT_PATH)
         ])
-    def test_reputation_commands__happy_path(self, mocker, requests_mock, ioc_type, ioc_value, ioc_context_key, threat_model_association):
+    def test_reputation_commands__happy_path(self, mocker, ioc_type, ioc_value, ioc_context_key):
         """
         Given:
             - Indicators for reputation
@@ -81,23 +81,10 @@ class TestReputationCommands:
 
         # prepare
         command = value_key = ioc_type.lower()
-        if threat_model_association:
-            mocked_intelligence_file_path = f'test_data/mocked_{command}_response_with_threat_model_association.json'
-            mocked_ioc_file_path = f'test_data/mocked_{command}_response.json'
-            mocked_ioc_result = util_load_json(mocked_ioc_file_path)
-            requests_mock.get('v2/intelligence/', return_value=raw_response)
-
-            mocked_intelligence_file_path = f'test_data/mocked_{command}_response_with_threat_model_association.json'
-            mocked_intelligence_result = util_load_json(mocked_intelligence_file_path)
-            
-
-        else:
-            mocked_ioc_file_path = f'test_data/mocked_{command}_response.json'
-            mocked_ioc_result = util_load_json(mocked_ioc_file_path)
-            mocker.patch.object(Client, 'http_request', return_value=mocked_ioc_result)
-        
-        mocker.patch.object(demisto, 'args', return_value={value_key: ioc_value, 'status': 'active',
-                                                           'threat_model_association': threat_model_association})
+        mocked_ioc_file_path = f'test_data/mocked_{command}_response.json'
+        mocked_ioc_result = util_load_json(mocked_ioc_file_path)
+        mocker.patch.object(Client, 'http_request', return_value=mocked_ioc_result)
+        mocker.patch.object(demisto, 'args', return_value={value_key: ioc_value, 'status': 'active'})
         mocker.patch.object(demisto, 'command', return_value=command)
         mocker.patch.object(demisto, 'results')
 
@@ -117,6 +104,41 @@ class TestReputationCommands:
             assert all(expected_value in threat_stream_context for expected_value in expected_values)
             assert f'{ioc_type} reputation for: {iocs[i]}' in human_readable
             assert mocked_ioc == contents
+
+    def mocked_http_request(self, method,url_suffix, params=None,data=None, headers=None,files=None, json=None,
+                        resp_type='json'):
+        if 'actor' in url_suffix:
+            mocked_actor_result = util_load_json('test_data/mocked_actor_response.json')
+            return mocked_actor_result
+        else:
+            mocked_empty_result = util_load_json('test_data/mocked_empty_response.json')
+            return mocked_empty_result
+
+
+    def test_get_intelligence_command(self, mocker):
+        """
+        Given:
+            - Client, indicator, and indicator type
+
+        When:
+            - Call the get_intelligence command
+
+        Then:
+            - Validate that the outputs and the relationship were created
+        """
+
+        # prepare
+        mocker.patch.object(Client, 'http_request', side_effect=self.mocked_http_request)
+        client = mock_client()
+
+        # run
+        intelligence_relationships, outputs = get_intelligence(client, INDICATOR[0], FeedIndicatorType.IP)
+
+        # validate
+        assert outputs.get('Threat Actor')
+        assert not outputs.get('Campaign')
+        assert intelligence_relationships
+
 
     @pytest.mark.parametrize(
         argnames='confidence, threshold, exp_dbot_score',
@@ -854,3 +876,31 @@ class TestGetIndicators:
         results = get_indicators(client, limit='7000')
 
         assert len(results.outputs) == 7000
+
+
+def test_search_intelligence(mocker):
+    """
+    Given:
+        - Various parameters to search intelligence by
+
+    When:
+        - Call search_intelligence command
+
+    Then:
+        - Validate the expected values was returned
+    """
+
+    # prepare
+
+    mocked_ip_result = util_load_json('test_data/mocked_ip_response.json')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_ip_result)
+
+    args = {'uuid': '9807794e-3de0-4340-91ca-cd82dd7b6d24',
+            'itype': 'apt_ip'}
+    client = mock_client()
+
+    #run
+    result = search_intelligence(client, **args)
+
+    assert result.outputs[0].get('IType') == 'c2_ip'
+    assert result.outputs_prefix == 'ThreatStream.Intelligence'
