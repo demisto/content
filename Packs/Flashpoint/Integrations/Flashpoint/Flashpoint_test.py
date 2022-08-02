@@ -1,3 +1,4 @@
+"""Flashpoint Test File."""
 import demistomock as demisto
 import pytest
 import json
@@ -40,18 +41,19 @@ def util_load_json(path: str) -> dict:
 
 
 class MyTestCase(unittest.TestCase):
+    """Test case class."""
+
     client = Client(API_KEY, "url", False, None, True)
 
     @patch("Flashpoint.Client.http_request")
     def test_test_module(self, mocker):
+        """Test test_module."""
         from Flashpoint import test_module
         test_module(client=self.client, params={})
 
     @patch("Flashpoint.Client.http_request")
     def test_max_fetch_limit_failure(self, mocker):
-        """
-        Tests max_fetch parameter failure scenario.
-        """
+        """Tests max_fetch parameter failure scenario."""
         from Flashpoint import test_module
         with pytest.raises(ValueError) as error1:
             test_module(self.client, {"isFetch": True, "max_fetch": 0})
@@ -59,9 +61,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_max_fetch_value_failure(self, mocker):
-        """
-        Tests max_fetch parameter failure scenario.
-        """
+        """Tests max_fetch parameter failure scenario."""
         from Flashpoint import test_module
         with pytest.raises(ValueError) as error2:
             test_module(self.client, {"isFetch": True, "max_fetch": "a"})
@@ -69,9 +69,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_first_fetch_failure(self, mocker):
-        """
-        Tests first_fetch parameter failure scenario.
-        """
+        """Tests first_fetch parameter failure scenario."""
         from Flashpoint import test_module
         with pytest.raises(ValueError) as error3:
             test_module(self.client, {"isFetch": True, "first_fetch": "abc"})
@@ -79,6 +77,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_domain(self, mocker):
+        """Test domain_lookup_command."""
         from Flashpoint import domain_lookup_command
 
         with open("./TestData/domain_response.json", encoding='utf-8') as f:
@@ -101,6 +100,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_ip(self, mocker):
+        """Test ip_lookup_command."""
         from Flashpoint import ip_lookup_command
 
         with open("./TestData/ip_response.json", encoding='utf-8') as f:
@@ -123,6 +123,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_filename(self, mocker):
+        """Test filename_lookup_command."""
         from Flashpoint import filename_lookup_command
 
         with open("./TestData/filename_response.json", encoding='utf-8') as f:
@@ -143,6 +144,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_url(self, mocker):
+        """Test url_lookup_command."""
         from Flashpoint import url_lookup_command
 
         with open("./TestData/url_response.json", encoding='utf-8') as f:
@@ -165,6 +167,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_file(self, mocker):
+        """Test file_lookup_command."""
         from Flashpoint import file_lookup_command
 
         with open("./TestData/file_response.json", encoding='utf-8') as f:
@@ -187,6 +190,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_email(self, mocker):
+        """Test email_lookup_command."""
         from Flashpoint import email_lookup_command
 
         with open("./TestData/email_response.json", encoding='utf-8') as f:
@@ -207,26 +211,32 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_report_search_by_keyword(self, mocker):
+        """Test get_reports_command."""
         from Flashpoint import get_reports_command
 
         with open("./TestData/report_search_by_keyword_response.json", encoding='utf-8') as f:
             expected = json.load(f)
-
+        args = {
+            'report_search': TEST_SCAN_REPORT_KEYWORD
+        }
         mocker.return_value = expected
-        hr, ec, resp = get_reports_command(self.client, TEST_SCAN_REPORT_KEYWORD)
+        hr, ec, resp = get_reports_command(self.client, args)
 
         assert resp['data'][0]['title'] == TEST_SCAN_REPORT_KEYWORD
         assert expected == resp
 
     @patch("Flashpoint.Client.http_request")
     def test_report_search_by_id(self, mocker):
+        """Test get_report_by_id_command."""
         from Flashpoint import get_report_by_id_command
 
         with open("./TestData/report_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
-
+        args = {
+            'report_id': TEST_SCAN_REPORT_ID
+        }
         mocker.return_value = expected
-        hr, ec, resp = get_report_by_id_command(self.client, TEST_SCAN_REPORT_ID)
+        hr, ec, resp = get_report_by_id_command(self.client, args)
 
         with open("./TestData/report_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -237,13 +247,16 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_event_search_by_id(self, mocker):
+        """Test get_event_by_id_command."""
         from Flashpoint import get_event_by_id_command
 
         with open("./TestData/event_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
-
+        args = {
+            'event_id': TEST_SCAN_EVENT_ID
+        }
         mocker.return_value = expected
-        hr, ec, resp = get_event_by_id_command(self.client, TEST_SCAN_EVENT_ID)
+        hr, ec, resp = get_event_by_id_command(self.client, args)
 
         with open("./TestData/event_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -254,13 +267,16 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_event_search_by_id_when_no_malware_description_found(self, mocker):
+        """Test get_event_by_id_command."""
         from Flashpoint import get_event_by_id_command
 
         with open("./TestData/event_search_by_id_response_no_malware_description.json", encoding='utf-8') as f:
             expected = json.load(f)
-
+        args = {
+            'event_id': TEST_SCAN_EVENT_ID
+        }
         mocker.return_value = expected
-        hr, ec, resp = get_event_by_id_command(self.client, TEST_SCAN_EVENT_ID)
+        hr, ec, resp = get_event_by_id_command(self.client, args)
 
         with open("./TestData/event_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -273,13 +289,17 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_search_by_id(self, mocker):
+        """Test get_forum_details_by_id_command."""
         from Flashpoint import get_forum_details_by_id_command
 
         with open("./TestData/forum_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
+        args = {
+            'forum_id': TEST_SCAN_FORUM_ID
+        }
         mocker.return_value = expected
-        hr, ec, resp = get_forum_details_by_id_command(self.client, TEST_SCAN_FORUM_ID)
+        hr, ec, resp = get_forum_details_by_id_command(self.client, args)
 
         with open("./TestData/forum_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -290,13 +310,16 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_room_search_by_id(self, mocker):
+        """Test get_room_details_by_id_command."""
         from Flashpoint import get_room_details_by_id_command
 
         with open("./TestData/forum_room_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
-
+        args = {
+            'room_id': TEST_SCAN_FORUM_ROOM_ID
+        }
         mocker.return_value = expected
-        hr, ec, resp = get_room_details_by_id_command(self.client, TEST_SCAN_FORUM_ROOM_ID)
+        hr, ec, resp = get_room_details_by_id_command(self.client, args)
 
         with open("./TestData/forum_room_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -307,13 +330,16 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_user_search_by_id(self, mocker):
+        """Test get_user_details_by_id_command."""
         from Flashpoint import get_user_details_by_id_command
 
         with open("./TestData/forum_user_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
-
+        args = {
+            'user_id': TEST_SCAN_FORUM_USER_ID
+        }
         mocker.return_value = expected
-        hr, ec, resp = get_user_details_by_id_command(self.client, TEST_SCAN_FORUM_USER_ID)
+        hr, ec, resp = get_user_details_by_id_command(self.client, args)
 
         with open("./TestData/forum_user_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -324,13 +350,16 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_post_search_by_id(self, mocker):
+        """Test get_post_details_by_id_command."""
         from Flashpoint import get_post_details_by_id_command
 
         with open("./TestData/forum_post_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
-
+        args = {
+            'post_id': TEST_SCAN_FORUM_POST_ID
+        }
         mocker.return_value = expected
-        hr, ec, resp = get_post_details_by_id_command(self.client, TEST_SCAN_FORUM_POST_ID)
+        hr, ec, resp = get_post_details_by_id_command(self.client, args)
 
         with open("./TestData/forum_post_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -341,49 +370,57 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_search_events(self, mocker):
+        """Test get_events_command."""
         from Flashpoint import get_events_command
 
         with open("./TestData/events_search_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        limit = 5
-        report_fpid = None
-        attack_id = None
-        time_period = None
-
-        hr, ec, resp = get_events_command(self.client, limit, report_fpid, attack_id, time_period)
+        args = {
+            "limit": 5,
+            "report_fpid": None,
+            "attack_id": None,
+            "time_period": None,
+        }
+        hr, ec, resp = get_events_command(self.client, args)
 
         assert expected == resp
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_site_search(self, mocker):
+        """Test get_forum_sites_command."""
         from Flashpoint import get_forum_sites_command
 
         with open("./TestData/forum_site_search_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-
-        hr, ec, resp = get_forum_sites_command(self.client, TEST_SITE_SEARCH_KEYWORD)
+        args = {
+            'site_search': TEST_SITE_SEARCH_KEYWORD
+        }
+        hr, ec, resp = get_forum_sites_command(self.client, args)
 
         assert expected == resp
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_post_search(self, mocker):
+        """Test get_forum_posts_command."""
         from Flashpoint import get_forum_posts_command
 
         with open("./TestData/forum_post_search_response.json", encoding='utf-8') as f:
             expected = json.load(f)
-
+        args = {
+            'post_search': TEST_POST_SEARCH_KEYWORD
+        }
         mocker.return_value = expected
 
-        hr, ec, resp = get_forum_posts_command(self.client, TEST_POST_SEARCH_KEYWORD)
+        hr, ec, resp = get_forum_posts_command(self.client, args)
 
         assert expected == resp
 
     def test_validate_alert_list_args_when_valid_args_are_provided(self):
-        """ Test case scenario when the arguments provided are valid. """
+        """Test case scenario when the arguments provided are valid."""
         from Flashpoint import validate_alert_list_args
 
         args = {
@@ -400,7 +437,7 @@ class MyTestCase(unittest.TestCase):
         assert validate_alert_list_args(args) == fetch_args
 
     def test_validate_alert_list_args_when_size_is_invalid(self):
-        """ Test case scenario when the argument named size is invalid. """
+        """Test case scenario when the argument named size is invalid."""
         from Flashpoint import validate_alert_list_args
 
         with pytest.raises(ValueError) as err:
@@ -412,7 +449,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['SIZE_ERROR'].format('101')
 
     def test_validate_alert_list_args_when_since_is_invalid(self):
-        """ Test case scenario when the argument named since is invalid. """
+        """Test case scenario when the argument named since is invalid."""
         from Flashpoint import validate_alert_list_args
 
         with pytest.raises(ValueError) as err:
@@ -420,7 +457,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == INVALID_DATE_MESSAGE
 
     def test_validate_alert_list_args_when_until_is_invalid(self):
-        """ Test case scenario when the argument named until is invalid. """
+        """Test case scenario when the argument named until is invalid."""
         from Flashpoint import validate_alert_list_args
 
         with pytest.raises(ValueError) as err:
@@ -429,7 +466,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_alert_list_command_when_valid_response_is_returned(self, mocker):
-        """ Test case scenario when valid response is returned. """
+        """Test case scenario when valid response is returned."""
         from Flashpoint import flashpoint_alert_list_command
 
         response = util_load_json("TestData/alert_list_response.json")
@@ -447,7 +484,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_alert_list_command_when_empty_response_is_returned(self, mocker):
-        """ Test case scenario when empty response is returned. """
+        """Test case scenario when empty response is returned."""
         from Flashpoint import flashpoint_alert_list_command
 
         mocker.return_value = {}
@@ -458,7 +495,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_alert_list_command_when_invalid_response_is_returned(self, mocker):
-        """ Test case scenario when empty response is returned. """
+        """Test case scenario when empty response is returned."""
         from Flashpoint import prepare_hr_for_alerts
 
         alerts = {
@@ -472,7 +509,7 @@ class MyTestCase(unittest.TestCase):
         assert str(er.value) == MESSAGES['MISSING_DATA'].format('Alerts')
 
     def test_validate_compromised_credentials_list_args_when_valid_args_are_provided(self):
-        """ Test case scenario when the arguments provided are valid. """
+        """Test case scenario when the arguments provided are valid."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         args = {
@@ -497,7 +534,7 @@ class MyTestCase(unittest.TestCase):
         assert validate_compromised_credentials_list_args(args) == params
 
     def test_validate_compromised_credentials_list_args_when_page_size_is_invalid(self):
-        """ Test case scenario when the argument named page_size is invalid. """
+        """Test case scenario when the argument named page_size is invalid."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -509,7 +546,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['PAGE_SIZE_ERROR'].format('1001', MAX_PAGE_SIZE)
 
     def test_validate_compromised_credentials_list_args_when_page_number_is_invalid(self):
-        """ Test case scenario when the argument named page_number is invalid. """
+        """Test case scenario when the argument named page_number is invalid."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -517,7 +554,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['PAGE_NUMBER_ERROR'].format('0')
 
     def test_validate_compromised_credentials_list_args_when_product_is_invalid(self):
-        """ Test case scenario when the product of page_size and page_number is invalid. """
+        """Test case scenario when the product of page_size and page_number is invalid."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -525,7 +562,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['PRODUCT_ERROR'].format(MAX_PRODUCT, 20000)
 
     def test_validate_compromised_credentials_list_args_when_start_date_is_invalid(self):
-        """ Test case scenario when the argument named start_date is invalid. """
+        """Test case scenario when the argument named start_date is invalid."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -533,7 +570,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == INVALID_DATE_MESSAGE
 
     def test_validate_compromised_credentials_list_args_when_end_date_is_invalid(self):
-        """ Test case scenario when the argument named end_date is invalid. """
+        """Test case scenario when the argument named end_date is invalid."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -541,7 +578,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == '"def days" is not a valid date'
 
     def test_validate_compromised_credentials_list_args_when_start_date_is_not_provided(self):
-        """ Test case scenario when the argument named end_date is provided but start_date is not provided. """
+        """Test case scenario when the argument named end_date is provided but start_date is not provided."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -549,7 +586,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['START_DATE_ERROR']
 
     def test_validate_compromised_credentials_list_args_when_filter_date_is_invalid(self):
-        """ Test case scenario when the argument named filter_date is invalid. """
+        """Test case scenario when the argument named filter_date is invalid."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -557,8 +594,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['FILTER_DATE_ERROR'].format('indexed_at', FILTER_DATE_VALUES)
 
     def test_validate_compromised_credentials_list_args_when_dates_are_missing(self):
-        """ Test case scenario when the argument named filter_date is provided but
-        start_date and end_date is missing. """
+        """Test case scenario when filter_date is provided but start_date and end_date is missing."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -566,8 +602,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['MISSING_DATE_ERROR']
 
     def test_validate_compromised_credentials_list_args_when_filter_date_is_missing(self):
-        """ Test case scenario when the argument named start_date and end_date are provided but
-        filter_date is missing. """
+        """Test case scenario when start_date and end_date are provided but filter_date is missing."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -575,7 +610,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['MISSING_FILTER_DATE_ERROR']
 
     def test_validate_compromised_credentials_list_args_when_sort_date_is_invalid(self):
-        """ Test case scenario when the argument named sort_date is invalid. """
+        """Test case scenario when the argument named sort_date is invalid."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -583,7 +618,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['SORT_DATE_ERROR'].format('indexed_at', SORT_DATE_VALUES)
 
     def test_validate_compromised_credentials_list_args_when_sort_order_is_invalid(self):
-        """ Test case scenario when the argument named sort_order is invalid. """
+        """Test case scenario when the argument named sort_order is invalid."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -591,8 +626,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['SORT_ORDER_ERROR'].format('none', SORT_ORDER_VALUES)
 
     def test_validate_compromised_credentials_list_args_when_sort_date_is_missing(self):
-        """ Test case scenario when the argument named sort_order is provided but
-        sort_date is missing. """
+        """Test case scenario when the sort_order is provided but sort_date is missing."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -600,7 +634,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['MISSING_SORT_DATE_ERROR']
 
     def test_validate_compromised_credentials_list_args_when_is_fresh_is_invalid(self):
-        """ Test case scenario when the argument named is_fresh is invalid. """
+        """Test case scenario when the argument named is_fresh is invalid."""
         from Flashpoint import validate_compromised_credentials_list_args
 
         with pytest.raises(ValueError) as err:
@@ -609,7 +643,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_compromised_credentials_list_command_when_valid_response_is_returned(self, mocker):
-        """ Test case scenario when valid response is returned. """
+        """Test case scenario when valid response is returned."""
         from Flashpoint import flashpoint_compromised_credentials_list_command
 
         response = util_load_json("TestData/compromised_credentials_list_response.json")
@@ -627,7 +661,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_compromised_credentials_list_command_when_empty_response_is_returned(self, mocker):
-        """ Test case scenario when empty response is returned. """
+        """Test case scenario when empty response is returned."""
         from Flashpoint import flashpoint_compromised_credentials_list_command
 
         mocker.return_value = {}
@@ -637,7 +671,7 @@ class MyTestCase(unittest.TestCase):
         assert result.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('compromised credentials')
 
     def test_prepare_args_for_alerts_when_valid_args_are_provided(self):
-        """ Test case scenario when the arguments provided are valid. """
+        """Test case scenario when the arguments provided are valid."""
         from Flashpoint import prepare_args_for_fetch_alerts
 
         last_run = {
@@ -655,7 +689,7 @@ class MyTestCase(unittest.TestCase):
         assert args == expected_args
 
     def test_prepare_args_for_alerts_when_max_fetch_is_invalid(self):
-        """ Test case scenario when argument named max_fetch is invalid """
+        """Test case scenario when argument named max_fetch is invalid."""
         from Flashpoint import prepare_args_for_fetch_alerts
 
         with pytest.raises(ValueError) as err:
@@ -663,7 +697,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['INVALID_MAX_FETCH'].format(-1)
 
     def test_prepare_args_for_compromised_credentials_when_valid_args_are_provided(self):
-        """ Test case scenario when the arguments provided are valid. """
+        """Test case scenario when the arguments provided are valid."""
         from Flashpoint import prepare_args_for_fetch_compromised_credentials
 
         end_date = arg_to_datetime('now')
@@ -679,12 +713,10 @@ class MyTestCase(unittest.TestCase):
         args = prepare_args_for_fetch_compromised_credentials(max_fetch=15, start_time=START_DATE,
                                                               is_fresh=True, last_run={})
 
-        assert args.get('limit') == expected_args.get('limit')
-        assert args.get('skip') == expected_args.get('skip')
-        assert args.get('sort') == expected_args.get('sort')
+        assert args == expected_args
 
     def test_prepare_args_for_compromised_credentials_when_max_fetch_is_invalid(self):
-        """ Test case scenario when argument named max_fetch is invalid """
+        """Test case scenario when argument named max_fetch is invalid."""
         from Flashpoint import prepare_args_for_fetch_compromised_credentials
 
         with pytest.raises(ValueError) as err:
@@ -692,7 +724,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['INVALID_MAX_FETCH'].format(0)
 
     def test_validate_fetch_incidents_params_when_valid_params_are_provided(self):
-        """ Test case scenario when the arguments provided are valid. """
+        """Test case scenario when the arguments provided are valid."""
         from Flashpoint import validate_fetch_incidents_params
 
         params = {
@@ -737,7 +769,7 @@ class MyTestCase(unittest.TestCase):
         assert validate_fetch_incidents_params(params, last_run) == expected_params
 
     def test_validate_fetch_incidents_params_when_first_fetch_is_invalid(self):
-        """ Test case scenario when argument named first_fetch is invalid """
+        """Test case scenario when argument named first_fetch is invalid."""
         from Flashpoint import validate_fetch_incidents_params
 
         with pytest.raises(ValueError) as err:
@@ -749,7 +781,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['INVALID_FIRST_FETCH']
 
     def test_validate_fetch_incidents_params_when_max_fetch_is_invalid(self):
-        """ Test case scenario when argument named max_fetch is invalid """
+        """Test case scenario when argument named max_fetch is invalid."""
         from Flashpoint import validate_fetch_incidents_params
 
         with pytest.raises(ValueError) as err:
@@ -761,7 +793,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['INVALID_MAX_FETCH'].format('None')
 
     def test_remove_duplicate_records(self):
-        """ Test case scenario when there are duplicate records. """
+        """Test case scenario when there are duplicate records."""
         from Flashpoint import remove_duplicate_records
 
         alerts = util_load_json("TestData/fetch_alert_list.json")
@@ -778,7 +810,7 @@ class MyTestCase(unittest.TestCase):
         assert remove_duplicate_records(alerts, "Alerts", next_run) == expected_alerts
 
     def test_prepare_incidents_from_alerts_data_when_valid_response_is_returned(self):
-        """ Test case scenario when the given data is valid. """
+        """Test case scenario when the given data is valid."""
         from Flashpoint import prepare_incidents_from_alerts_data
 
         start_time = '2021-06-16T02:22:14Z'
@@ -799,7 +831,7 @@ class MyTestCase(unittest.TestCase):
         assert incidents == expected_incidents
 
     def test_prepare_incidents_from_alerts_data_when_empty_response_is_returned(self):
-        """ Test case scenario when empty response is returned. """
+        """Test case scenario when empty response is returned."""
         from Flashpoint import prepare_incidents_from_alerts_data
 
         expected_next_run = {
@@ -813,7 +845,7 @@ class MyTestCase(unittest.TestCase):
         assert incidents == []
 
     def test_prepare_incidents_from_compromised_credentials_data_when_valid_response_is_returned(self):
-        """ Test case scenario when the given data is valid. """
+        """Test case scenario when the given data is valid."""
         from Flashpoint import prepare_incidents_from_compromised_credentials_data
 
         response = util_load_json('TestData/compromised_credentials_list_response.json')
@@ -862,7 +894,7 @@ class MyTestCase(unittest.TestCase):
         assert next_run == expected_next_run
 
     def test_prepare_incidents_from_compromised_credentials_data_when_empty_response_is_returned(self):
-        """ Test case scenario when empty response is returned. """
+        """Test case scenario when empty response is returned."""
         from Flashpoint import prepare_incidents_from_compromised_credentials_data
 
         next_run = {
@@ -882,7 +914,7 @@ class MyTestCase(unittest.TestCase):
         assert incidents == []
 
     def test_prepare_incidents_from_compromised_credentials_data_when_email_is_not_present(self):
-        """ Test case scenario when email key is not present in the response. """
+        """Test case scenario when email key is not present in the response."""
         from Flashpoint import prepare_incidents_from_compromised_credentials_data
 
         next_run = {
@@ -898,7 +930,7 @@ class MyTestCase(unittest.TestCase):
         assert incidents == expected_incidents
 
     def test_prepare_incidents_from_compromised_credentials_data_when_fpid_is_not_present(self):
-        """ Test case scenario when email key is not present in the response. """
+        """Test case scenario when email key is not present in the response."""
         from Flashpoint import prepare_incidents_from_compromised_credentials_data
 
         next_run = {
@@ -916,7 +948,7 @@ class MyTestCase(unittest.TestCase):
         assert incidents == expected_incidents
 
     def test_prepare_incidents_from_compromised_credentials_data_when_records_are_more_than_limit(self):
-        """ Test case scenario when the records are more than 10k. """
+        """Test case scenario when the records are more than 10k."""
         from Flashpoint import prepare_incidents_from_compromised_credentials_data
 
         response = util_load_json("TestData/compromised_credentials_list_response.json")
@@ -929,7 +961,7 @@ class MyTestCase(unittest.TestCase):
         assert str(err.value) == MESSAGES['TIME_RANGE_ERROR'].format(total)
 
     def test_prepare_incidents_from_compromised_credentials_data_when_duplicate_records_are_present(self):
-        """ Test case scenario when the records are duplicate. """
+        """Test case scenario when the records are duplicate."""
         from Flashpoint import prepare_incidents_from_compromised_credentials_data
 
         end_time = '2021-08-16T12:50:00Z'
@@ -970,7 +1002,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_fetch_incidents_when_valid_response_is_returned(self, mocker):
-        """ Test case scenario for successful execution of fetch_incident. """
+        """Test case scenario for successful execution of fetch_incident."""
         from Flashpoint import fetch_incidents
 
         response = util_load_json('TestData/compromised_credentials_list_response.json')
@@ -994,6 +1026,7 @@ class MyTestCase(unittest.TestCase):
         assert incidents == expected_incidents
 
     def get_result(self, resp):
+        """Get result."""
         resp = resp[0]
         type = resp['Attribute']['type']
         name = resp['Attribute']['value'][type]

@@ -22,6 +22,16 @@ BASE_PACK_DEPENDENCY_DICT = {
 
 
 SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule']
+XSIAM_MP = "marketplacev2"
+XSOAR_MP = "xsoar"
+XSIAM_START_TAG = "<~XSIAM>"
+XSIAM_END_TAG = "</~XSIAM>"
+XSOAR_START_TAG = "<~XSOAR>"
+XSOAR_END_TAG = "</~XSOAR>"
+TAGS_BY_MP = {
+    XSIAM_MP: (XSIAM_START_TAG, XSIAM_END_TAG),
+    XSOAR_MP: (XSOAR_START_TAG, XSOAR_END_TAG)
+}
 
 
 class BucketUploadFlow(object):
@@ -248,6 +258,36 @@ class PackIgnored(object):
     NESTED_DIRS = [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value]
 
 
+PACK_FOLDERS_TO_ID_SET_KEYS = {
+    PackFolders.SCRIPTS.value: 'scripts',
+    PackFolders.INTEGRATIONS.value: 'integrations',
+    PackFolders.PLAYBOOKS.value: "playbooks",
+    PackFolders.TEST_PLAYBOOKS.value: "TestPlaybooks",
+    PackFolders.CLASSIFIERS.value: "Classifiers",
+    PackFolders.INCIDENT_FIELDS.value: "IncidentFields",
+    PackFolders.INCIDENT_TYPES.value: "IncidentTypes",
+    PackFolders.INDICATOR_FIELDS.value: "IndicatorFields",
+    PackFolders.INDICATOR_TYPES.value: "IndicatorTypes",
+    PackFolders.LISTS.value: "Lists",
+    PackFolders.JOBS.value: "Jobs",
+    PackFolders.GENERIC_TYPES.value: "GenericTypes",
+    PackFolders.GENERIC_FIELDS.value: "GenericFields",
+    PackFolders.GENERIC_MODULES.value: "GenericModules",
+    PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
+    PackFolders.LAYOUTS.value: "Layouts",
+    PackFolders.REPORTS.value: "Reports",
+    PackFolders.WIDGETS.value: "Widgets",
+    PackFolders.DASHBOARDS.value: "Dashboards",
+    PackFolders.PARSING_RULES.value: "ParsingRules",
+    PackFolders.MODELING_RULES.value: "ModelingRules",
+    PackFolders.CORRELATION_RULES.value: "CorrelationRules",
+    PackFolders.XSIAM_DASHBOARDS.value: "XSIAMDashboards",
+    PackFolders.XSIAM_REPORTS.value: "XSIAMReports",
+    PackFolders.TRIGGERS.value: "Triggers",
+    PackFolders.WIZARDS.value: "Wizards"
+}
+
+
 class PackStatus(enum.Enum):
     """ Enum of pack upload status, is used in printing upload summary.
 
@@ -273,7 +313,9 @@ class PackStatus(enum.Enum):
                           " which should be encrypted, seems not to be encrypted."
     FAILED_METADATA_REFORMATING = "Failed to reparse and create metadata.json when missing dependencies"
     NOT_RELEVANT_FOR_MARKETPLACE = "Pack is not relevant for current marketplace."
-    FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING = "Failed signing pack while creating dependencies zip"
+    CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE = "Pack changes are not relevant for current marketplace."
+    FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING = "Failed creating dependencies zip since a depending pack or this " \
+                                               "pack failed signing or zipping"
     FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Failed uploading pack while creating dependencies zip"
 
 
@@ -281,6 +323,7 @@ SKIPPED_STATUS_CODES = {
     PackStatus.PACK_ALREADY_EXISTS.name,
     PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
     PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
+    PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name,
 }
 
 
@@ -292,3 +335,35 @@ class Changelog(object):
     RELEASE_NOTES = 'releaseNotes'
     DISPLAY_NAME = 'displayName'
     RELEASED = 'released'
+    PULL_REQUEST_NUMBERS = 'pullRequests'
+
+
+RN_HEADER_BY_PACK_FOLDER = {
+    PackFolders.PLAYBOOKS.value: 'Playbooks',
+    PackFolders.INTEGRATIONS.value: 'Integrations',
+    PackFolders.SCRIPTS.value: 'Scripts',
+    PackFolders.INCIDENT_FIELDS.value: 'Incident Fields',
+    PackFolders.INDICATOR_FIELDS.value: 'Indicator Fields',
+    PackFolders.INDICATOR_TYPES.value: 'Indicator Types',
+    PackFolders.INCIDENT_TYPES.value: 'Incident Types',
+    PackFolders.PREPROCESS_RULES.value: 'PreProcess Rules',
+    PackFolders.CLASSIFIERS.value: 'Classifiers',
+    PackFolders.LAYOUTS.value: 'Layouts',
+    PackFolders.REPORTS.value: 'Reports',
+    PackFolders.WIDGETS.value: 'Widgets',
+    PackFolders.DASHBOARDS.value: 'Dashboards',
+    PackFolders.CONNECTIONS.value: 'Connections',
+    PackFolders.GENERIC_DEFINITIONS.value: 'Objects',
+    PackFolders.GENERIC_MODULES.value: 'Modules',
+    PackFolders.GENERIC_TYPES.value: 'Object Types',
+    PackFolders.GENERIC_FIELDS.value: 'Object Fields',
+    PackFolders.LISTS.value: 'Lists',
+    PackFolders.JOBS.value: 'Jobs',
+    PackFolders.PARSING_RULES.value: 'Parsing Rules',
+    PackFolders.MODELING_RULES.value: 'Modeling Rules',
+    PackFolders.CORRELATION_RULES.value: 'Correlation Rules',
+    PackFolders.XSIAM_DASHBOARDS.value: 'XSIAM Dashboards',
+    PackFolders.XSIAM_REPORTS.value: 'XSIAM Reports',
+    PackFolders.TRIGGERS.value: 'Triggers Recommendations',  # https://github.com/demisto/etc/issues/48153#issuecomment-1111988526
+    PackFolders.WIZARDS.value: 'Wizards',
+}

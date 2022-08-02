@@ -948,7 +948,6 @@ def main():
         else:
             raise NotImplementedError(f'The command {command} does not exist!')
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{e}')
 
 

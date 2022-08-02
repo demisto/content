@@ -5,7 +5,7 @@
     "name": "Proofpoint TAP Subject",
     "ownerOnly": false,
     "cliName": "proofpointtapsubject",
-    "type": "longText",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,

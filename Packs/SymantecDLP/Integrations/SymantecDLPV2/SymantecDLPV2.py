@@ -4,7 +4,6 @@ from CommonServerUserPython import *  # noqa
 import dateparser
 
 import requests
-import traceback
 from typing import Dict, Any
 
 # Disable insecure warnings
@@ -850,7 +849,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

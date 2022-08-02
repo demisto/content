@@ -1,0 +1,7 @@
+name: Apache Web Server
+id: Apache_Web_Server
+fromversion: 6.8.0
+tags: Apache Web Server
+rules: ''
+schema: ''
+

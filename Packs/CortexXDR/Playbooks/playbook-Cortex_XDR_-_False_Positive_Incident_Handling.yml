@@ -1,0 +1,562 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Cortex XDR - False Positive Incident Handling
+inputs:
+- description: Add comment to close this incident.
+  key: Comment
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'XSOAR Incident #${incident.id}'
+- description: Choose From - "Unknown" / "TruePositive" / "FalsePositive"
+  key: Reason
+  playbookInputQuery:
+  required: false
+  value:
+    simple: FalsePositive
+- description: The approving tag name for found indicators.
+  key: AllowTag
+  playbookInputQuery:
+  required: false
+  value:
+    simple: AllowTag
+- description: |-
+    Whether automatic unisolation is allowed.
+  key: AutoUnisolation
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+- description: The ID of the host for running an un-isolation process.
+  key: HostID
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${incident.deviceid}
+- description: The File SHA256 you want to block.
+  key: FileSha256
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${incident.filesha256}
+name: Cortex XDR - False Positive Incident Handling
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 8b0086d0-9ebb-4369-8321-36545b6dada6
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 8b0086d0-9ebb-4369-8321-36545b6dada6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": -340
+        }
+      }
+  '3':
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 3c963ac6-062d-43ad-82d3-e32d2345e793
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 3c963ac6-062d-43ad-82d3-e32d2345e793
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 765
+        }
+      }
+  '4':
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 95e97d87-0448-492c-8170-0ec11c604b99
+      iscommand: false
+      name: Unisolate host
+      type: title
+      version: -1
+      description: ''
+    taskid: 95e97d87-0448-492c-8170-0ec11c604b99
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": -180
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Approve unisolation
+      cc:
+      format: ''
+      methods: []
+      replyOptions:
+      - Yes
+      - No
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#default#':
+      - '8'
+      Yes:
+      - '69'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 82c575e9-5484-4d95-8728-6cd14c71d448
+      iscommand: false
+      name: Approve unisolation
+      description: Approve unisolation.
+      type: condition
+      version: -1
+    taskid: 82c575e9-5484-4d95-8728-6cd14c71d448
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 130
+        }
+      }
+  '7':
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: ${inputs.Comment}
+      closeReason:
+        simple: ${inputs.Reason}
+      id:
+        complex:
+          accessor: id
+          root: foundIncidents
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: incident.id
+            operator: append
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 6cd2cc29-a623-45c8-8275-070b232df358
+      iscommand: true
+      name: Close  XSOAR incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 6cd2cc29-a623-45c8-8275-070b232df358
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 615
+        }
+      }
+  '8':
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 3bfba053-05d1-4bb9-8a41-c1815043ab44
+      iscommand: false
+      name: False positive Incident closing
+      type: title
+      version: -1
+      description: ''
+    taskid: 3bfba053-05d1-4bb9-8a41-c1815043ab44
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 475
+        }
+      }
+  '9':
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: ada72dde-d968-4766-8009-b3f6eff1c1e2
+      iscommand: false
+      name: Allow indicators
+      type: title
+      version: -1
+      description: ''
+    taskid: ada72dde-d968-4766-8009-b3f6eff1c1e2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": -180
+        }
+      }
+  '14':
+    form:
+      description: ''
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '0'
+        label: ''
+        labelarg:
+          simple: Mark IOCs to be approved
+        options: []
+        optionsarg:
+        - simple: ${incident.filesha256}
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: multiSelect
+      sender: ''
+      title: Indicators to Allow
+      totalanswers: 0
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ''
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - '71'
+      - '15'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c45a1727-d309-446d-850b-b9fffb2dfc1e
+      iscommand: false
+      name: Choose the marked IOC to be added to approve list
+      description: Choose the marked IOC to be added to approve list.
+      type: collection
+      version: -1
+    taskid: c45a1727-d309-446d-850b-b9fffb2dfc1e
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": -50
+        }
+      }
+  '15':
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicatorsValues:
+        simple: ${Indicators to block.Questions.0}
+      tags:
+        simple: ${inputs.AllowTag}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicators
+      id: 81ac51cd-e033-40c6-82f2-95ba8a9468ab
+      iscommand: true
+      name: Tag Indicators
+      script: Builtin|||setIndicators
+      type: regular
+      version: -1
+    taskid: 81ac51cd-e033-40c6-82f2-95ba8a9468ab
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 300
+        }
+      }
+  '16':
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 6950430d-209b-4dee-8c7c-7c9aa063e2fa
+      iscommand: false
+      name: Done approving indicators
+      type: title
+      version: -1
+      description: ''
+    taskid: 6950430d-209b-4dee-8c7c-7c9aa063e2fa
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 475
+        }
+      }
+  '18':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.AutoUnisolate
+          operator: isEqualString
+          right:
+            value:
+              simple: 'true'
+      label: yes
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '69'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 1b32f8b2-6624-465f-8f1e-20369a23503b
+      iscommand: false
+      name: Auto-Unisolate?
+      description: Auto-unisolate?
+      type: condition
+      version: -1
+    taskid: 1b32f8b2-6624-465f-8f1e-20369a23503b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": -50
+        }
+      }
+  '69':
+    id: '69'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Endpoint_ID:
+        simple: ${Endpoint.ID}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e9dfb706-0a59-4e5a-8cd0-99f3b55d5cac
+      iscommand: false
+      name: Cortex XDR - Unisolate Endpoint
+      playbookId: Cortex XDR - Unisolate Endpoint
+      type: playbook
+      version: -1
+      description: ''
+    taskid: e9dfb706-0a59-4e5a-8cd0-99f3b55d5cac
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 300
+        }
+      }
+  '71':
+    id: '71'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      comment:
+        simple: 'Added by Cortex XSOAR - Incident #${incident.id}'
+      hash_list:
+        simple: ${Indicators to Allow.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Adds requested files to allow list if they are not already on block list or allow list.
+      id: a6fc15d7-73c2-4c11-89b9-e09c69258d18
+      iscommand: true
+      name: Create IOCs in Cortex XDR - Approved Hashes
+      script: '|||xdr-allowlist-files'
+      type: regular
+      version: -1
+    taskid: a6fc15d7-73c2-4c11-89b9-e09c69258d18
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 130
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1170,
+        "width": 1050,
+        "x": -110,
+        "y": -340
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook handles false-positive incident closures for Cortex XDR - Malware investigation.

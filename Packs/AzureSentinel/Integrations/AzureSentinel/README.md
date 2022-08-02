@@ -608,18 +608,19 @@ Updates a single incident in Azure Sentinel.
 `azure-sentinel-update-incident`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | The incident ID. | Required | 
-| title | The incident's title. | Optional | 
-| description | Description of the incident. | Optional | 
-| severity | The incident severity. Possible values are: High, Medium, Low, Informational. | Optional | 
-| status | The incident status. Possible values are: New, Active, Closed. | Optional | 
-| classification | The reason the incident was closed. Required when updating the status to Closed.  Possible values are: BenignPositive, FalsePositive, TruePositive, Undetermined. | Optional | 
-| classification_comment | Describes the reason the incident was closed. | Optional | 
-| classification_reason | The classification reason the incident was closed with. Required when updating the status to Closed and the classification is determined. Possible values are: InaccurateData, IncorrectAlertLogic, SuspiciousActivity, SuspiciousButExpected. | Optional | 
-| assignee_email | The email address of the incident assignee. Note that the updated API field is `owner.email`. | Optional | 
-| labels | Incident labels. Note that all labels will be set as labelType='User'. | Optional | 
+| **Argument Name**      | **Description**                                                                                                                                                                                                                                | **Required** |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| incident_id            | The incident ID.                                                                                                                                                                                                                               | Required | 
+| title                  | The incident's title.                                                                                                                                                                                                                          | Optional | 
+| description            | Description of the incident.                                                                                                                                                                                                                   | Optional | 
+| severity               | The incident severity. Possible values are: High, Medium, Low, Informational.                                                                                                                                                                  | Optional | 
+| status                 | The incident status. Possible values are: New, Active, Closed.                                                                                                                                                                                 | Optional | 
+| classification         | The reason the incident was closed. Required when updating the status to Closed.  Possible values are: BenignPositive, FalsePositive, TruePositive, Undetermined.                                                                              | Optional | 
+| classification_comment | Describes the reason the incident was closed.                                                                                                                                                                                                  | Optional | 
+| classification_reason  | The classification reason the incident was closed with. Required when updating the status to Closed and the classification is determined. Possible values are: InaccurateData, IncorrectAlertLogic, SuspiciousActivity, SuspiciousButExpected. | Optional | 
+| assignee_email         | The email address of the incident assignee. It is recommended to update *user_principal_name* instead of this field. Note that the updated API field is `owner.email`.                                                                         | Optional | 
+| user_principal_name    | The user principal name of the client. Note that the updated API field is `owner.userPrincipalName`.                                                                                                                                           | Optional | 
+| labels                 | Incident labels. Note that all labels will be set as labelType='User'.                                                                                                                                                                         | Optional | 
 
 
 #### Context Output

@@ -2,12 +2,12 @@
   cache:
     key:
       files:
-        - "dev-requirements-py3.txt"
+        - "poetry.lock"
         - "package-lock.json"
-      prefix: $CI_COMMIT_REF_SLUG
+      prefix: dev-content
     paths:
       - $PIP_CACHE_DIR
-      - venv/
+      - .venv/
       - node_modules/
       - .npm/
     policy: pull
@@ -26,6 +26,14 @@
   - section_start "Create ID Set" --collapsed
   - demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log
   - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+  - section_end "Create ID Set"
+
+.create-id-set-xsoar: &create-id-set-xsoar
+  - section_start "Create ID Set" --collapsed
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xsoar" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
+  - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
+  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
   - section_end "Create ID Set"
 
 .create-id-set-mp-v2: &create-id-set-mp-v2
@@ -55,8 +63,9 @@
       echo "running nightly or bucket upload, skipping files up-to-date validation"
     else
       ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
-      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CI_COMMIT_BRANCH
-      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CI_COMMIT_BRANCH
+      # we want to checkout if it's not up-to-date
+      ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CI_COMMIT_BRANCH true
+      ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CI_COMMIT_BRANCH true
     fi
   - section_end "Check Build Files Are Up To Date"
 
@@ -91,13 +100,14 @@
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
   - |
-    if [ -f "./venv/bin/activate" ]; then
+    if [ -f "./.venv/bin/activate" ]; then
       echo "found venv"
     else
       echo "installing venv"
-      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+      NO_HOOKS=1 .hooks/bootstrap | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+      npm ci --cache .npm --prefer-offline | tee --append $ARTIFACTS_FOLDER/logs/installations.log
     fi
-  - source ./venv/bin/activate
+  - source ./.venv/bin/activate
   - |
     if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
       echo "Installing SDK from $SDK_REF" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
@@ -105,10 +115,8 @@
       pip3 install "git+https://github.com/demisto/demisto-sdk@${SDK_REF}#egg=demisto-sdk" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
     fi
   - |
-      python --version | tee -a $ARTIFACTS_FOLDER/python2_list.txt
-      python3 --version | tee -a $ARTIFACTS_FOLDER/python3_list.txt
-      python -m pip list | tee -a $ARTIFACTS_FOLDER/python2_list.txt
-      python3 -m pip list | tee -a $ARTIFACTS_FOLDER/python3_list.txt
+      python3 --version | tee -a $ARTIFACTS_FOLDER/installed_python_libraries.txt
+      python3 -m pip list | tee -a $ARTIFACTS_FOLDER/installed_python_libraries.txt
   - section_end "Installing Virtualenv"
 
 .install_ssh_keys: &install_ssh_keys
@@ -147,7 +155,6 @@
     - python --version
     - python2 --version
     - python3 --version
-    - pip2 --version
     - pip3 --version
     - node --version
     - npm --version
@@ -233,7 +240,7 @@
             export COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq -r ".\"commit\"")
             demisto-sdk lint -vvv -p 8 -g --prev-ver $COMMIT_HASH_COMPARE_TO -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -idp $ARTIFACTS_FOLDER/id_set.json -cdam
           else
-            demisto-sdk lint -vvv -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+            echo "Skipping, Should run on circleCi."
           fi
         fi
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then

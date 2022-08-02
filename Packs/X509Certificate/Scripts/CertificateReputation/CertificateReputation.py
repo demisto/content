@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
 
-import traceback
 import dateparser
 from datetime import timedelta
 from enum import Enum
@@ -306,7 +305,6 @@ def main():
     try:
         return_results(certificate_reputation_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute CertificateReputation. Error: {str(ex)}')
 
 

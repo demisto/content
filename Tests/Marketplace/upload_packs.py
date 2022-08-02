@@ -952,18 +952,21 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                         task_status = sign_and_zip_pack(current_pack, signature_key)
                         if not task_status:
                             # modify the pack's status to indicate the failure was in the dependencies zip step
-                            current_pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
+                            pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
                             logging.debug(f"Skipping uploading {pack.name} since failed zipping {current_pack.name}.")
-                            continue
+                            break
                     shutil.copy(current_pack.zip_path, os.path.join(pack_with_dep_path, current_pack.name + ".zip"))
-                logging.info(f"Zipping {pack_name} with its dependencies")
-                Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
-                shutil.rmtree(pack_with_dep_path)
-                logging.info(f"Uploading {pack_name} with its dependencies")
-                task_status, _, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
-                                                           storage_base_path, overridden_upload_path=upload_path)
-                logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} "
-                             f"uploaded successfully")
+                if pack.status == PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name:
+                    break
+                else:
+                    logging.info(f"Zipping {pack_name} with its dependencies")
+                    Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
+                    shutil.rmtree(pack_with_dep_path)
+                    logging.info(f"Uploading {pack_name} with its dependencies")
+                    task_status, _, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
+                                                               storage_base_path, overridden_upload_path=upload_path)
+                    logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} "
+                                 f"uploaded successfully")
                 if not task_status:
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()
@@ -1072,7 +1075,7 @@ def main():
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
     )
 
-    if not option.override_all_packs:
+    if not override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
 
@@ -1119,7 +1122,8 @@ def main():
             continue
 
         # upload author and integration images
-        if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list):
+        if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
+                                  override_all_packs):
             continue
 
         # detect if the pack is modified and return modified RN files
@@ -1130,6 +1134,13 @@ def main():
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
             continue
+
+        if is_bucket_upload_flow:
+            task_status, modified_files_data = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths)
+
+            if not task_status:
+                pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
+                continue
 
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
@@ -1148,17 +1159,19 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
-                                                                    modified_rn_files_paths)
-        if not task_status:
-            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
-            pack.cleanup()
-            continue
+        if is_bucket_upload_flow:
+            task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
+                                                                        modified_rn_files_paths,
+                                                                        modified_files_data, marketplace)
 
-        if not_updated_build:
-            pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
-            pack.cleanup()
-            continue
+            if not task_status:
+                pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+                pack.cleanup()
+                continue
+
+            if not_updated_build:
+                pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
+                continue
 
         sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
 

@@ -1,0 +1,17 @@
+{
+    "name": "CIRCL hashlookup (hashlookup.circl.lu)",
+    "description": "CIRCL hash lookup is a public API to lookup hash values against known database of files. NSRL RDS database is included and many others are also included. The API is accessible via HTTP ReST API and the API is also described as an OpenAPI. The service is free and served as a best-effort basis.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Harri Ruuttila",
+    "url": "",
+    "email": "",
+    "created": "2022-06-15T11:57:43Z",
+    "categories": ["Data Enrichment & Threat Intelligence"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Hruuttila"
+    ]
+}

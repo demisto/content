@@ -1,0 +1,524 @@
+id: MetricsTestCaseValidation
+version: -1
+name: MetricsTestCaseValidation
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 0fb259b7-988d-468c-8011-a42edb4b3f3a
+    type: start
+    task:
+      id: 0fb259b7-988d-468c-8011-a42edb4b3f3a
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 2b5b6f62-cb0a-47ec-8a60-27d8af0ecc56
+    type: regular
+    task:
+      id: 2b5b6f62-cb0a-47ec-8a60-27d8af0ecc56
+      version: -1
+      name: Execute Scenario One
+      description: Test Scenario One - All 10 Pass on first try
+      script: MetricsValidator|||test-scenario-one
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '2'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 4ad78bc1-8aad-4626-8ccd-21fe4818b835
+    type: regular
+    task:
+      id: 4ad78bc1-8aad-4626-8ccd-21fe4818b835
+      version: -1
+      name: Execute Scenario Two
+      description: Test Scenario Two - 5 Pass on first try, 5 error on quota and are scheduled
+      script: MetricsValidator|||test-scenario-two
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '3'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 7567eb5f-c231-4c41-8a44-f7a7d157ea2e
+    type: regular
+    task:
+      id: 7567eb5f-c231-4c41-8a44-f7a7d157ea2e
+      version: -1
+      name: Execute Scenario Three
+      description: Test Scenario Three - 5 Fail on second try
+      script: MetricsValidator|||test-scenario-three
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '4'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 6f6d34d2-71f7-415d-84d0-8d06e3d1c5e7
+    type: regular
+    task:
+      id: 6f6d34d2-71f7-415d-84d0-8d06e3d1c5e7
+      version: -1
+      name: Execute Scenario Four
+      description: Test Scenario Four - 2 Succeed, 3 Fail on retry
+      script: MetricsValidator|||test-scenario-four
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '5'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: ea63beef-f42e-472f-8f9d-ee82907e8e3f
+    type: regular
+    task:
+      id: ea63beef-f42e-472f-8f9d-ee82907e8e3f
+      version: -1
+      name: Execute Scenario Five
+      description: Test Scenario Five - 10 IPs as a string, 1 success
+      script: MetricsValidator|||test-scenario-five
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '6'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 00de25fb-f1d2-4024-8e83-ac1629528e3b
+    type: regular
+    task:
+      id: 00de25fb-f1d2-4024-8e83-ac1629528e3b
+      version: -1
+      name: Execute Scenario Six
+      description: Test Scenario Six - 10 items are in 1 call. 1 fail.
+      script: MetricsValidator|||test-scenario-six
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '7'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 2b6086ba-86a0-45c4-86cb-8b4985230a57
+    type: regular
+    task:
+      id: 2b6086ba-86a0-45c4-86cb-8b4985230a57
+      version: -1
+      name: Execute Scenario Seven
+      description: Test Scenario Seven - 10 items are in 1 call. 1 fail. No metrics are returned.
+      script: MetricsValidator|||test-scenario-seven
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '8'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 279f02f3-b602-4a9b-8e21-d90520ec13c6
+    type: regular
+    task:
+      id: 279f02f3-b602-4a9b-8e21-d90520ec13c6
+      version: -1
+      name: Execute Scenario Eight
+      description: Test Scenario Eight - 10 items are in 1 call. 1 fail. No metrics returned. Timeout.
+      script: MetricsValidator|||test-scenario-eight
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '9'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 53bcf939-76fe-4102-81f7-b6684ee1ad42
+    type: regular
+    task:
+      id: 53bcf939-76fe-4102-81f7-b6684ee1ad42
+      version: -1
+      name: Test Scenario Nine
+      description: This is the test PB scenario
+      script: MetricsValidator|||test-scenario-nine
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      retry-count:
+        simple: '5'
+      retry-interval:
+        simple: '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: fa4039fc-3be6-4075-8fa9-4c1ae0cd6fd1
+    type: title
+    task:
+      id: fa4039fc-3be6-4075-8fa9-4c1ae0cd6fd1
+      version: -1
+      name: Beginning Scenario Ten
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: a845d21d-e72f-4a0d-8389-f90db5f914f2
+    type: regular
+    task:
+      id: a845d21d-e72f-4a0d-8389-f90db5f914f2
+      version: -1
+      name: First Run
+      description: This command is executed five times in the PB
+      script: MetricsValidator|||test-scenario-ten
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '12'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: d3ecebb1-5845-4354-8fd8-991a8f01895f
+    type: regular
+    task:
+      id: d3ecebb1-5845-4354-8fd8-991a8f01895f
+      version: -1
+      name: Second Run
+      description: This command is executed five times in the PB
+      script: MetricsValidator|||test-scenario-ten
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '14'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 6635d3af-f53a-4a18-8d66-d7f038a524c8
+    type: regular
+    task:
+      id: 6635d3af-f53a-4a18-8d66-d7f038a524c8
+      version: -1
+      name: Fourth Run
+      description: This command is executed five times in the PB
+      script: MetricsValidator|||test-scenario-ten
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '15'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: b079306e-6448-4ead-879c-e2d7323e0470
+    type: regular
+    task:
+      id: b079306e-6448-4ead-879c-e2d7323e0470
+      version: -1
+      name: Third Run
+      description: This command is executed five times in the PB
+      script: MetricsValidator|||test-scenario-ten
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    nexttasks:
+      '#none#':
+      - '13'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: 4de977fc-753c-4714-8bd9-e763b1ab6042
+    type: regular
+    task:
+      id: 4de977fc-753c-4714-8bd9-e763b1ab6042
+      version: -1
+      name: Final Run
+      description: This command is executed five times in the PB
+      script: MetricsValidator|||test-scenario-ten
+      type: regular
+      iscommand: true
+      brand: MetricsValidator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2655,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.8.0
+description: This playbook will execute all of the test scenarios to verify metrics are reported correctly

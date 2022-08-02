@@ -2,7 +2,7 @@
     "name": "CrowdStrike Falcon",
     "description": "The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.",
     "support": "xsoar",
-    "currentVersion": "1.7.4",
+    "currentVersion": "1.8.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,5 +15,59 @@
     "keywords": [],
     "marketplaces": [
         "xsoar"
+    ],
+    "dependencies": {
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
+        "Jira": {
+            "mandatory": false,
+            "display_name": "Atlassian Jira"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "MalwareInvestigationAndResponse": {
+            "mandatory": true,
+            "display_name": "Malware Investigation and Response"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "Malware": {
+            "mandatory": false,
+            "display_name": "Malware"
+        },
+        "FeedMitreAttackv2": {
+            "mandatory": true,
+            "display_name": "MITRE ATT&CK v2"
+        }
+    },
+    "displayedImages": [
+        "ServiceNow",
+        "Jira",
+        "FiltersAndTransformers",
+        "CommonTypes",
+        "CommonScripts",
+        "MalwareInvestigationAndResponse",
+        "CoreAlertFields",
+        "CommonPlaybooks",
+        "Malware",
+        "FeedMitreAttackv2"
     ]
 }
