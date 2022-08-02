@@ -1113,7 +1113,7 @@ def get_report_command(args: Dict, client: Client):
     formatted_contents = travel_object(contents)
     formatted_contents['Reports'] = reports
 
-    dbot_scores: List = generate_dbotscore(response)
+    dbot_scores: List[CommandResults] = generate_dbotscore(response)
     returned_results = []
     returned_results.append(CommandResults(     # noqa: E9007
         outputs_prefix='ANYRUN.Task',
