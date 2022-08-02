@@ -2,7 +2,7 @@
 Threat Emulation performs remote analysis by uploading files to a virtual SandBox. Uploaded files are monitored in multiple OS and microsoft office application versions. Malicious files are saved in the ThreatCloud. Safe files are available for download after inspection.
 
 Upload files using polling, the service supports Microsoft Office files, as well as PDF, SWF, archives and executables. Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Query on existing IOCs, file status, analysis, reports. Download files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x.
-This integration was integrated and tested with version xx of CheckPointSandBlast
+This integration was integrated and tested with version v1 of CheckPointSandBlast
 
 ## Configure Check Point Threat Emulation (SandBlast) on Cortex XSOAR
 
