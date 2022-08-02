@@ -205,10 +205,7 @@ class PanosResponse():
             """
             If an AttributeError is raised, this method is called, if the attr was not found, Returns None.
             """
-            if attr == 'entry':
-                return []
-            else:
-                return None
+            return [] if attr == 'entry' else None
 
     def __init__(self, response: dict, ignored_keys: set = None, illegal_chars: set = None):
         self.raw = response
@@ -4508,7 +4505,7 @@ def panorama_get_traffic_logs(job_id: str):
     result = http_request(
         URL,
         'GET',
-        params=params
+        params=params,
     )
 
     return result
@@ -4750,7 +4747,7 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_
     result = http_request(
         URL,
         'GET',
-        params=params
+        params=params,
     )
 
     return result
