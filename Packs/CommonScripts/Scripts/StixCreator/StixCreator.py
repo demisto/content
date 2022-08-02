@@ -54,6 +54,7 @@ def hash_type(value: str) -> str:
         return 'sha256'
     if length == 128:
         return 'sha512'
+    return ''
 
 
 def main():
