@@ -26,7 +26,7 @@ configuration:
   type: 8
   required: false
   additionalinfo: If an ANYRUN report contains more than one type of indicator, relationships
-    can be created between them.
+    will be created between them.
 - display: Source Reliability
   name: integrationReliability
   defaultvalue: C - Fairly reliable
