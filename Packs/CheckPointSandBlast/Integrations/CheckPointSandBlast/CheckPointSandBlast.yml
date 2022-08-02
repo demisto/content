@@ -250,6 +250,9 @@ script:
     - contextPath: SandBlast.Query.ThreatEmulation.Images
       description: The sandboxes used in Threat Emulation. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".
       type: String
+    - contextPath: SandBlast.Query.ThreatEmulation.Confidence
+      description: Rating of the threat data and its relevance to this instance. It is recommended to block threats with confidence 2 and above. 1 - low, 2 - medium, 3 - high.
+      type: Number
     - contextPath: SandBlast.Query.ThreatEmulation.Status
       description: The status of Threat Emulation on the requested file.
       type: String

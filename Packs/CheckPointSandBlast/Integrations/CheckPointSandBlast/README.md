@@ -122,11 +122,6 @@ Use the Query API to have a client application look for either the analysis repo
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Name | String | The full file name \(including file extension\). | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
-| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
 | SandBlast.Query.Status | String | Status of requested features. | 
 | SandBlast.Query.MD5 | String | The file's MD5. | 
 | SandBlast.Query.SHA1 | String | The file's SHA1. | 
