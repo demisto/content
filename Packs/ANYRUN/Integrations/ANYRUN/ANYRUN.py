@@ -43,8 +43,9 @@ class Client(BaseClient):
         -------
         None
         """
+        self.handle_metrics(response)
         message = response.json().get('message')
-        return F"API rate limit: {message}"
+        return_error(F"There was an error: {message}")
 
     def handle_metrics(self, response: Response):
         """Handles any 429 errors associated with API limitations
@@ -65,17 +66,14 @@ class Client(BaseClient):
 
         """
 
-        if not response:
-            return response
-        execution_metrics = ExecutionMetrics()
-        if response.status_code == 429:
-            execution_metrics.quota_error += 1
-            return_results(execution_metrics.metrics)
-            return_error(self.handle_error(response))
-        else:
-            execution_metrics.success += 1
-            return_results(execution_metrics.metrics)
-        return response.json()
+        if response:
+            execution_metrics = ExecutionMetrics()
+            if response.status_code == 429:
+                execution_metrics.quota_error += 1
+                return_results(execution_metrics.metrics)
+            else:
+                execution_metrics.success += 1
+                return_results(execution_metrics.metrics)
 
     def get_history(self, args: Dict) -> Dict:
         """Make API call to ANYRUN to get analysis history
@@ -190,12 +188,13 @@ class Client(BaseClient):
                 json_data=args,
                 files=files,
                 resp_type='response',
-                ok_codes=[200, 201, 429]
+                error_handler=self.handle_error
             )
+            self.handle_metrics(response)
         except ValueError:
             err_msg = 'Invalid entryID - File not found for the given entryID'
             return_error(err_msg)
-        return self.handle_metrics(response)
+        return response.json()
 
     def get_images_from_report(self, response: Dict) -> List:
         """Retrieve images from an ANYRUN report
@@ -440,6 +439,13 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
         exif = info.get('exif', {})
         main_entity = hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5')
         main_entity_type = FeedIndicatorType.File
+        file_outputs = {
+            "MD5": hashes.get('md5'),
+            "SHA1": hashes.get('sha1'),
+            "SHA256": hashes.get('sha256'),
+            "Name": main_object.get('filename'), 
+
+        }
         dbot_score = Common.DBotScore(
             indicator=main_entity,
             indicator_type=DBotScoreType.FILE,
@@ -447,7 +453,15 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
             score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE,
             reliability=source_reliability
         )
+        if dbot_score.score >= Common.DBotScore.SUSPICIOUS:
+            file_outputs['Malicious'] = {
+                'Vendor': 'ANYRUN',
+                'Description': threat_text
+            }
         returned_data.append(CommandResults(
+            outputs_prefix='File',
+            outputs_key_field=['SHA256'],
+            outputs=file_outputs,
             indicator=Common.File(
                 dbot_score=dbot_score,
                 md5=hashes.get('md5'),
@@ -455,7 +469,8 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                 sha256=hashes.get('sha256'),
                 file_type=file_type,
                 associated_file_names=exif.get('OriginalFileName')
-            )
+            ),
+            readable_output=tableToMarkdown(f"{file_outputs['SHA256']}:", file_outputs)
         ))
 
     else:
@@ -483,7 +498,8 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
             indicator=Common.URL(
                 url=main_entity,
                 dbot_score=dbot_score
-            )
+            ),
+            readable_output=tableToMarkdown(f"{url_outputs['Data']}:", url_outputs)
         ))
 
     # Check if network information is available in the report
@@ -530,7 +546,6 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                             source_reliability=source_reliability
                         )]
                         ip_indicator.relationships = ip_indicator_relationships
-                        ip_connection_command_results.relationships=ip_indicator_relationships
 
                     returned_data.append(ip_connection_command_results)
 
@@ -570,7 +585,7 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                             brand="ANYRUN",
                             source_reliability=source_reliability
                         )]
-                        domain_command_results.relationships=domain_relationships
+                        domain_indicator.relationships = domain_relationships
                     returned_data.append(domain_command_results)
 
                     if "IP" in current_dnsRequests:
@@ -605,7 +620,6 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                                     source_reliability=source_reliability
                                 )]
                                 domain_ip_indicator.relationships = domain_ip_relationships
-                                domain_ip_command_results.relationships = domain_ip_relationships
                             returned_data.append(domain_ip_command_results)
 
         # Then add all the network-related indicators - 'httpRequests'
@@ -646,9 +660,8 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                             source_reliability=source_reliability
                         )]
                         url_indicator.relationships=url_relationships
-                        url_command_results.relationships=url_relationships
                     
-                    returned_data.append(url_indicator)
+                    returned_data.append(url_command_results)
 
     if 'mitre' in data:
         mitre_data = data.get('mitre')
@@ -676,7 +689,7 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                     entity_b_type='Attack Pattern',
                     source_reliability=source_reliability
                 )]
-                attack_command_results.relationships=attack_relationships
+                #attack_command_results.relationships=attack_relationships
             
             returned_data.append(attack_command_results)
 
@@ -1161,7 +1174,6 @@ def run_analysis_command(args: Dict, client: Client):
         outputs = {
             'ID': task_id
         }
-        continue_to_poll = polling
         poll_result = PollResult(
             response=CommandResults(
                 outputs_prefix='ANYRUN.Task',
@@ -1170,7 +1182,7 @@ def run_analysis_command(args: Dict, client: Client):
                 readable_output=tableToMarkdown('Task:', outputs),
                 raw_response=response
             ),
-            continue_to_poll=continue_to_poll,
+            continue_to_poll=polling,
             args_for_next_run={
                 'task_id': task_id,
                 'polling': True
@@ -1183,7 +1195,6 @@ def run_analysis_command(args: Dict, client: Client):
     else:
         response = client.get_report(task_id)
         status = response.get('data', {}).get('status')
-        continue_to_poll = True if status != 'done' else False
         contents = contents_from_report(response)
         formatted_contents = travel_object(contents)
         reports = response.get('data', {}).get('analysis', {}).get('reports')
@@ -1213,7 +1224,7 @@ def run_analysis_command(args: Dict, client: Client):
 
         poll_result = PollResult(
             response=submit_output,
-            continue_to_poll=continue_to_poll,
+            continue_to_poll=True if status != 'done' else False,
             args_for_next_run={
                 'task_id': task_id,
                 'polling': True,
@@ -1250,23 +1261,23 @@ def main():
         'anyrun-run-analysis': run_analysis_command,
     }
     command = demisto.command()
-    try:
-        demisto.info(f'Command being called is {command}')
-        client = Client(
-            base_url=base_url,
-            verify=use_ssl,
-            proxy=proxy,
-            headers=headers
-        )
+    #try:
+    demisto.info(f'Command being called is {command}')
+    client = Client(
+        base_url=base_url,
+        verify=use_ssl,
+        proxy=proxy,
+        headers=headers
+    )
 
-        if command in commands:
-            return_results(commands[command](args, client))
-        else:
-            raise NotImplementedError(f'{command} command is not implemented.')
+    if command in commands:
+        return_results(commands[command](args, client))
+    else:
+        raise NotImplementedError(f'{command} command is not implemented.')
 
-    except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+    #except Exception as e:
+    #    demisto.error(traceback.format_exc())  # print the traceback
+    #    return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__builtin__', 'builtins'):
