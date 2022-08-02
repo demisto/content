@@ -264,7 +264,7 @@ references:
       name: Create ID Set
       when: always
       command: |
-        sudo demisto-sdk create-content-graph --no-use-docker
+        demisto-sdk create-content-graph --no-use-docker
         cp ./neo4j/backups/content-graph.dump $CIRCLE_ARTIFACTS
 
   merge_public_and_private_id_sets: &merge_public_and_private_id_sets
