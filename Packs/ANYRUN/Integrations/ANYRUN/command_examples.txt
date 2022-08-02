@@ -1,0 +1,2 @@
+!anyrun-get-report task=45b62ba4-931a-472b-b604-e43879a473fd
+!anyrun-run-analysis file=5333@26c80993-f6f1-476d-89fa-6acd574d0ab2 polling=true timeout=1300 interval_in_seconds=10
