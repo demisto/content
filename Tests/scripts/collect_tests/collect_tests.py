@@ -591,7 +591,7 @@ def output(result: Optional[CollectionResult]):
     if not result:
         raise RuntimeError('Nothing was collected, not even sanity tests')
 
-    machines = tuple(result.machines if result else ())
+    machines = tuple(result.machines)
 
     test_str = '\n'.join(sorted(result.tests))
     pack_str = '\n'.join(sorted(result.packs))
