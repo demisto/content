@@ -297,6 +297,12 @@ def fetch_mails(client: IMAPClient,
                                                uid_to_fetch_from)
         demisto.debug(f'Searching for email messages with criteria: {messages_query}')
         messages_uids = client.search(messages_query)
+        # first fetch takes last page only (workaround as first_fetch filter is date accurate)
+        if message_id == 1:
+            messages_uids = messages_uids[limit * -1:]
+        else:
+            messages_uids = messages_uids[:limit]
+
     mails_fetched = []
     messages_fetched = []
     demisto.debug(f'Messages to fetch: {messages_uids}')
@@ -315,8 +321,6 @@ def fetch_mails(client: IMAPClient,
                 int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)
-            if len(mails_fetched) >= limit:
-                break
         elif email_message_object.date is None:
             demisto.error(f"Skipping email with ID {email_message_object.message_id},"
                           f" it doesn't include a date field that shows when was it received.")
