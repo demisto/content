@@ -1734,7 +1734,8 @@
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy_KV_commands_requests_handler",
             "memory_threshold": 200,
-            "instance_names": "use_python_requests_handler"
+            "instance_names": "use_python_requests_handler",
+            "is_mockable": false
         },
         {
             "integrations": "McAfee NSM",
@@ -5315,8 +5316,7 @@
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
-        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
-        "SplunkPy_KV_commands_requests_handler": "CIAC-3669"
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
