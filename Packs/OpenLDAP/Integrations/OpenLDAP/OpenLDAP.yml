@@ -4,7 +4,7 @@ commonfields:
   id: OpenLDAP
   version: -1
 configuration:
-- additionalinfo: The LDAP server to authenticate with.
+- additionalinfo: The LDAP vendor to authenticate with.
   defaultvalue: OpenLDAP
   display: LDAP Server Type
   hidden: false
