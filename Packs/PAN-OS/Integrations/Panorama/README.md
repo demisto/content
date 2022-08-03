@@ -3097,17 +3097,39 @@ enforce the policy. |
 | Panorama.Monitor.Logs.BytesSent | String | The log bytes sent. | 
 | Panorama.Monitor.Logs.Vsys | String | The VSYS on the firewall that generated the log. | 
 
-#### Command example
+#### Command example with polling
 ```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true```
+
+### Context example
+```json
+{
+    "Panorama": {
+        "Monitor": {
+            "JobID": "1291",
+            "LogType": "traffic",
+            "Logs": {
+              "TimeGenerated": "2019/07/24 08:50:24",
+              "SourceAddress": "1.1.1.1",
+              "DestinationAddress": "2.3.4.5",
+              "Application": "web-browsing",
+              "Action": "deny",
+              "Rule": "any - any accept"
+            },
+            "Status": "Completed"
+        }
+    }
+}
+```
+
 #### Human Readable Output
-
 >Fetching traffic logs for job ID 1291...
+> >### Query traffic Logs:
+>|TimeGenerated|SourceAddress|DestinationAddress|Application|Action|Rule|
+>|---|---|---|---|---|---|
+>| 2019/07/24 08:50:24 | 1.1.1.1 | 2.3.4.5 | web-browsing | deny | any - any accept |
 
-### pan-os-check-logs-status
-***
-Checks the status of a logs query.
 
-#### Command example
+#### Command example without polling 
 ```!pan-os-query-logs log-type=traffic number_of_logs=1```
 #### Context Example
 ```json
@@ -3124,12 +3146,15 @@ Checks the status of a logs query.
 ```
 
 #### Human Readable Output
-
 >### Query Logs:
 >|JobID|Status|
 >|---|---|
 >| 1283 | Pending |
 
+
+### pan-os-check-logs-status
+***
+Checks the status of a logs query.
 
 #### Base Command
 

@@ -4812,7 +4812,7 @@ def panorama_query_logs_command(args: dict):
             outputs_prefix='Panorama.Monitor',
             outputs_key_field='JobID',
             outputs=query_logs_output,
-            readable_output=tableToMarkdown('Query Logs:',query_logs_output, ['JobID', 'Status'], removeNull=True)
+            readable_output=tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True)
         )
 
         poll_result = PollResult(
