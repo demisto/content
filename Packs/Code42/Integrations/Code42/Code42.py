@@ -23,6 +23,7 @@ from py42.sdk.queries.fileevents.filters import (
 from py42.sdk.queries.fileevents.util import FileEventFilterStringField
 from py42.sdk.queries.alerts.alert_query import AlertQuery
 from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
+from py42.exceptions import Py42NotFoundError
 
 
 class EventId(FileEventFilterStringField):
@@ -154,10 +155,9 @@ class Code42Client(BaseClient):
         self._sdk = sdk
 
         if not proxy:
-            _clear_env_var_if_exists('HTTP_PROXY')
-            _clear_env_var_if_exists('HTTPS_PROXY')
-            _clear_env_var_if_exists('http_proxy')
-            _clear_env_var_if_exists('https_proxy')
+            for var in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"):
+                if os.environ.get(var):
+                    del os.environ[var]
 
         py42.settings.set_user_agent_suffix("Cortex XSOAR")
         py42.settings.verify_ssl_certs = verify
@@ -166,13 +166,15 @@ class Code42Client(BaseClient):
     def sdk(self):
         if self._sdk is None:
             def api_client_provider():
-                uri = f"https://{self._base_url}/api/v3/oauth/token"
-                params = {"grant_type": "client_credentials"}
-                r = requests.post(uri, params=params, auth=self._auth)
+                r = requests.post(
+                    f"https://{self._base_url}/api/v3/oauth/token",
+                    params={"grant_type": "client_credentials"},
+                    auth=self._auth
+                )
                 r.raise_for_status()
                 return r.json()["access_token"]
 
-            self._sdk = py42.sdk.from_jwt_provider(self._base_url, api_client_provider)
+            self._sdk = py42.sdk.SDKClient.from_jwt_provider(self._base_url, api_client_provider)
         return self._sdk
 
     # Departing Employee methods (deprecated, replaced by Watchlist methods)
@@ -262,19 +264,16 @@ class Code42Client(BaseClient):
         return res.data.get("alerts")
 
     def get_alert_details(self, alert_id):
-        py42_res = self.sdk.alerts.get_details(alert_id)
-        res = py42_res.data.get("alerts")
-        if not res:
+        try:
+            py42_res = self.sdk.alerts.get_details(alert_id)
+            res = py42_res.data.get("alerts")
+            return res[0]
+        except Py42NotFoundError:
             raise Code42AlertNotFoundError(alert_id)
-        return res[0]
 
     def resolve_alert(self, id):
         self.sdk.alerts.resolve(id)
         return id
-
-    def get_current_user(self):
-        res = self.sdk.usercontext.get_current_tenant_id()
-        return res
 
     def get_user(self, username):
         py42_res = self.sdk.users.get_by_username(username)
@@ -407,9 +406,10 @@ class Code42OrgNotFoundError(Exception):
 
 class Code42InvalidWatchlistTypeError(Exception):
     def __init__(self, watchlist):
-        super().__init__(
-            f"Invalid Watchlist type: {watchlist}, run !code42-watchlists-list to get a list of available Watchlists."
+        msg = "Invalid Watchlist type: {0}, run !code42-watchlists-list to get a list of available Watchlists.".format(
+            watchlist
         )
+        super().__init__(msg)
 
 
 class Code42UnsupportedHashError(Exception):
@@ -561,18 +561,6 @@ def get_file_category_value(key):
     return category_map.get(key, "UNCATEGORIZED")
 
 
-def _convert_date_arg_to_epoch(date_arg):
-    date_arg = date_arg[:25]
-    return (
-        datetime.strptime(date_arg, "%Y-%m-%dT%H:%M:%S.%f") - datetime.utcfromtimestamp(0)
-    ).total_seconds()
-
-
-def _clear_env_var_if_exists(var):
-    if os.environ.get(var):
-        del os.environ[var]
-
-
 @logger
 def map_to_code42_event_context(obj):
     code42_context = _map_obj_to_context(obj, CODE42_EVENT_CONTEXT_FIELD_MAPPER)
@@ -605,8 +593,9 @@ def _map_obj_to_context(obj, context_mapper):
 @logger
 def alert_get_command(client, args):
     code42_securityalert_context = []
-    alert = client.get_alert_details(args.get("id"))
-    if not alert:
+    try:
+        alert = client.get_alert_details(args.get("id"))
+    except Code42AlertNotFoundError:
         return CommandResults(
             readable_output="No results found",
             outputs={"Results": []},
@@ -1107,7 +1096,6 @@ def add_user_to_watchlist_command(client, args):
     watchlist = args.get("watchlist")
     user = client.get_user(username)
     user_id = user["userUid"]
-    demisto.log(user_id)
     try:
         UUID(hex=watchlist)
         resp = client.sdk.watchlists.add_included_users_by_watchlist_id(user_id, watchlist)
@@ -1126,7 +1114,6 @@ def remove_user_from_watchlist_command(client, args):
     watchlist = args.get("watchlist")
     user = client.get_user(username)
     user_id = user["userUid"]
-    demisto.log(user_id)
     try:
         UUID(hex=watchlist)
         resp = client.sdk.watchlists.remove_included_users_by_watchlist_id(user_id, watchlist)
@@ -1282,7 +1269,7 @@ def fetch_incidents(
 def test_module(client):
     try:
         # Will fail if unauthorized
-        client.get_current_user()
+        client.sdk.usercontext.get_current_tenant_id()
         return "ok"
     except Exception:
         return (

@@ -9,6 +9,7 @@ configuration:
   required: true
   type: 0
 - display: API Client ID
+  displaypassword: API Client Secret
   name: credentials
   required: true
   type: 9
@@ -46,7 +47,7 @@ configuration:
   type: 8
 - name: incidentFetchInterval
   display: Incidents Fetch Interval
-  defaultvalue: '3'
+  defaultvalue: "3"
   required: false
   type: 19
 description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
@@ -796,15 +797,15 @@ script:
   - name: code42-watchlists-list
     description: List all existing watchlists in your environment.
     outputs:
-    - contextPath: Code42.Watchlists.ListType
-      description: The Type of Watchlist.
-      type: string
-    - contextPath: Code42.Watchlists.Id
-      description: The ID of the Watchlist.
-      type: string
-    - contextPath: Code42.Watchlists.IncludedUserCount
-      description: The count of included users on the Watchlist.
-      type: integer
+      - contextPath: Code42.Watchlists.ListType
+        description: The Type of Watchlist.
+        type: string
+      - contextPath: Code42.Watchlists.Id
+        description: The ID of the Watchlist.
+        type: string
+      - contextPath: Code42.Watchlists.IncludedUserCount
+        description: The count of included users on the Watchlist.
+        type: integer
   - name: code42-watchlists-add-user
     description: Add a user to a watchlist.
     arguments:
@@ -821,60 +822,60 @@ script:
       secret: false
       isArray: false
     outputs:
-    - contextPath: Code42.UsersAddedToWatchlists.Watchlist
-      description: The ID/Type of the watchlist user was added to.
-      type: string
-    - contextPath: Code42.UsersAddedToWatchlists.Username
-      description: The username added to watchlist.
-      type: string
-    - contextPath: Code42.UsersAddedToWatchlists.Success
-      description: If the user was added successfully.
-      type: boolean
+      - contextPath: Code42.UsersAddedToWatchlists.Watchlist
+        description: The ID/Type of the watchlist user was added to.
+        type: string
+      - contextPath: Code42.UsersAddedToWatchlists.Username
+        description: The username added to watchlist.
+        type: string
+      - contextPath: Code42.UsersAddedToWatchlists.Success
+        description: If the user was added successfully.
+        type: boolean
   - name: code42-watchlists-remove-user
     description: Remove a user from a watchlist.
     arguments:
-    - name: username
-      default: false
-      required: true
-      description: Email id of the user to add to Watchlist.
-      secret: false
-      isArray: false
-    - name: watchlist
-      default: false
-      required: true
-      description: WatchlistID or WatchlistType to remove user from.
-      secret: false
-      isArray: false
+      - name: username
+        default: false
+        required: true
+        description: Email id of the user to add to Watchlist.
+        secret: false
+        isArray: false
+      - name: watchlist
+        default: false
+        required: true
+        description: WatchlistID or WatchlistType to remove user from.
+        secret: false
+        isArray: false
     outputs:
-    - contextPath: Code42.UsersRemovedFromWatchlists.Watchlist
-      description: The ID/Type of the watchlist user was removed from.
-      type: string
-    - contextPath: Code42.UsersRemovedFromWatchlists.Username
-      description: The username removed from watchlist.
-      type: string
-    - contextPath: Code42.UsersRemovedFromWatchlists.Success
-      description: If the user was removed successfully.
-      type: boolean
+      - contextPath: Code42.UsersRemovedFromWatchlists.Watchlist
+        description: The ID/Type of the watchlist user was removed from.
+        type: string
+      - contextPath: Code42.UsersRemovedFromWatchlists.Username
+        description: The username removed from watchlist.
+        type: string
+      - contextPath: Code42.UsersRemovedFromWatchlists.Success
+        description: If the user was removed successfully.
+        type: boolean
   - name: code42-watchlists-list-included-users
     description: List all users who have been explicitly added to a given watchlist.
     arguments:
-    - name: watchlist
-      description: The WatchlistID or WatchlistType to get a list of included users for.
-      required: true
-      secret: false
-      isArray: false
-      default: false
+     - name: watchlist
+       description: The WatchlistID or WatchlistType to get a list of included users for.
+       required: true
+       secret: false
+       isArray: false
+       default: false
     outputs:
-    - contextPath: Code42.WatchlistUsers.WatchlistID
-      description: The ID of the Watchlist.
-      type: string
-    - contextPath: Code42.WatchlistUsers.Username
-      description: The username on the watchlist.
-      type: string
-    - contextPath: Code42.WatchlistUsers.AddedTime
-      description: The datetime the user was added to the watchlist.
-      type: datetime
-  dockerimage: demisto/py42:1.0.0.31507
+      - contextPath: Code42.WatchlistUsers.WatchlistID
+        description: The ID of the Watchlist.
+        type: string
+      - contextPath: Code42.WatchlistUsers.Username
+        description: The username on the watchlist.
+        type: string
+      - contextPath: Code42.WatchlistUsers.AddedTime
+        description: The datetime the user was added to the watchlist.
+        type: datetime
+  dockerimage: demisto/py42:1.0.0.32511
   feed: false
   isfetch: true
   longRunning: false
