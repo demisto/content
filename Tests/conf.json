@@ -5318,6 +5318,7 @@
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
     },
     "skipped_integrations": {
+        "EclecticIQ Test": "~~~ NO INSTANCE ~~~",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
         "Azure Firewall": "No instance",
