@@ -26,7 +26,7 @@ Playbook for the Cֹonfiguration Setup incident type.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| InstanceName | Demisto REST API instance name to use. |  | Optional |
+| InstanceName | Cortex XSOAR REST API instance name to use. |  | Optional |
 
 ## Playbook Outputs
 ---
