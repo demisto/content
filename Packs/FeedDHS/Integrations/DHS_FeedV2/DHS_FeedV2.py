@@ -166,7 +166,7 @@ def get_first_fetch(first_fetch_string: str) -> str:
         raise DemistoException('first_fetch is not in the correct format (e.g. <number> <time unit>).')
 
 
-def build_client(base_url, collection, crt, key, proxies, tags, verify_certificate):
+def build_client(base_url, default_api_root, collection, crt, key, proxies, tags, verify_certificate):
     try:
         if not verify_certificate:
             demisto.debug(f'{verify_certificate=}, setting it with env vars')
@@ -185,7 +185,9 @@ def build_client(base_url, collection, crt, key, proxies, tags, verify_certifica
                                   objects_to_fetch=['indicator'],
                                   tags=tags,
                                   certificate=crt,
-                                  key=key)
+                                  key=key,
+                                  default_api_root=default_api_root,
+                                  )
         client.initialise()
 
     except Exception as error:
@@ -198,7 +200,9 @@ def build_client(base_url, collection, crt, key, proxies, tags, verify_certifica
                                   objects_to_fetch=['indicator'],
                                   tags=tags,
                                   certificate=crt,
-                                  key=key)
+                                  key=key,
+                                  default_api_root=default_api_root,
+                                  )
         client.initialise()
         demisto.debug('fix_rsa_data on key worked, proceeding')
 
@@ -212,11 +216,12 @@ def main():
     collection = params.get('collection')
     tags = argToList(params['tags']) if params.get('tags') else None
     base_url = params.get('base_url', 'https://ais2.cisa.dhs.gov/taxii2/')
+    default_api_root = params.get('default_api_root', 'public')
     verify_certificate = not params.get('insecure', False)
     proxies = handle_proxy()
 
     try:
-        client = build_client(base_url, collection, crt, key, proxies, tags, verify_certificate)
+        client = build_client(base_url, default_api_root, collection, crt, key, proxies, tags, verify_certificate)
 
         command = demisto.command()
         demisto.info(f"Command being called is {command}")

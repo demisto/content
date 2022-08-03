@@ -106,6 +106,12 @@ configuration:
   name: feedIncremental
   required: false
   type: 8
+- additionalinfo: The Default API Root to use (e.g. public, federal).
+  defaultvalue: 'public'
+  display: Default API Root to use
+  name: default_api_root
+  required: false
+  type: 0
 description: The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, to the Federal Government community.
 display: DHS Feed v2
 name: DHS Feed v2
