@@ -1,5 +1,3 @@
-import traceback
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -24,7 +22,6 @@ def main():
         count = list(res[0].get('EntryContext').values())[0].get('count')
         return_results(count)
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute XDRDisconnectedEndpoints. Error: {str(ex)}')
 
 
