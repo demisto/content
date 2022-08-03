@@ -194,8 +194,7 @@ lookback
 subclass
 pagination
 XDM
-<<<<<<< HEAD
 Fortinet
-=======
 ADFS
->>>>>>> master
+yml
+Jira
