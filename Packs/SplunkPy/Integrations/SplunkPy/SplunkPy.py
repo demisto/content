@@ -2625,7 +2625,6 @@ def main():
         connection_args['password'] = password
         connection_args['autologin'] = True
         connection_args['basic'] = True
-        # This line was added for trig the required playbook -- kv_command_request_handler
 
     if use_requests_handler:
         handle_proxy()
