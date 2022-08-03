@@ -1,5 +1,6 @@
 import json
 import pytest
+import io
 from py42.sdk.queries.fileevents.filters import FileCategory
 from requests import Response
 from py42.sdk import SDKClient
@@ -11,9 +12,7 @@ from Code42 import (
     Code42InvalidLegalHoldMembershipError,
     get_file_category_value,
     build_query_payload,
-    map_observation_to_security_query,
     map_to_code42_event_context,
-    map_to_code42_alert_context,
     map_to_file_context,
     alert_get_command,
     alert_resolve_command,
@@ -33,6 +32,9 @@ from Code42 import (
     user_reactivate_command,
     legal_hold_add_user_command,
     legal_hold_remove_user_command,
+    list_watchlists_command,
+    list_watchlists_included_users,
+    add_user_to_watchlist_command,
     download_file_command,
     fetch_incidents,
     highriskemployee_get_command,
@@ -435,6 +437,131 @@ MOCK_ALERTS_RESPONSE = """{
   "problems": []
 }"""
 
+
+MOCK_ALERT_AGGREGATE_RESPONSE = r"""
+{
+    "type$": "ALERT_DETAILS_IN_AGGREGATE_V2_RESPONSE",
+    "alert": {
+        "type$": "ALERT_DETAILS_AGGREGATE_V2",
+        "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+        "type": "FED_COMPOSITE",
+        "name": "Test",
+        "description": "XSOAR Test Alert",
+        "actor": "user_a@example.com",
+        "actorId": "1028099692739127370",
+        "target": "N/A",
+        "severity": "HIGH",
+        "riskSeverity": "CRITICAL",
+        "ruleId": "04170662-692c-4fbd-89ac-74149771f501",
+        "id": "4cbda753-8821-4898-94b8-b51aff393e23",
+        "createdAt": "2022-05-31T18:49:32.2066350Z",
+        "state": "OPEN",
+        "observations": [
+            {
+                "type$": "OBSERVATION_AGGREGATE",
+                "observedAt": "2022-05-31T18:20:00.0000000Z",
+                "type": "FedEndpointExfiltration",
+                "data": "{\"type$\":\"OBSERVED_ENDPOINT_ACTIVITY\",\"id\":\"d1988297-fab0-41c3-8ae8-ee42e4d9ef3f\",\"sources\":[\"Endpoint\"],\"exposureTypes\":[\"RemovableMedia\"],\"exposureTypeIsSignificant\":true,\"firstActivityAt\":\"2022-05-31T18:20:00.0000000Z\",\"lastActivityAt\":\"2022-05-31T18:40:00.0000000Z\",\"fileCount\":501,\"totalFileSize\":92263889,\"fileCategories\":[{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Archive\",\"fileCount\":92,\"totalFileSize\":920000},{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Document\",\"fileCount\":312,\"totalFileSize\":24004555},{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Image\",\"fileCount\":5,\"totalFileSize\":7220885},{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Pdf\",\"fileCount\":60,\"totalFileSize\":60000000},{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Spreadsheet\",\"fileCount\":19,\"totalFileSize\":89933},{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Uncategorized\",\"fileCount\":13,\"totalFileSize\":28516}],\"fileCategoryIsSignificant\":false,\"files\":[{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_347\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (78).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:33.0600000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_351\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (81).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:36.5400000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_361\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (90).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:40.8840000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_352\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (82).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:36.6250000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_339\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (70).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:06.7300000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_337\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (69).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:03.9050000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_360\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (9).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:39.9330000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_353\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (83).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:37.5250000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_362\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (91).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:40.9540000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_356\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (86).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:38.7740000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_12\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (13).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:44.8780000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_14\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (15).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:52.8360000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_8\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (1).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:21.4650000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_10\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (11).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:37.8520000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_15\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (16).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:25:16.6160000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_16\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (17).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:25:41.0840000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_11\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (12).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:43.7080000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_13\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (14).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:48.1960000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_9\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (10).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:23.5150000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_289\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (25).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:26:23.9130000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_204\",\"path\":\"H:/TestDataUGTesting/\",\"name\":\"MyTestData285-020522D (11).pdf\",\"category\":\"Pdf\",\"size\":1000000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":6,\"severity\":\"MODERATE\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"PDF\",\"weight\":0}]},\"observedAt\":\"2022-05-31T18:30:56.0860000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_255\",\"path\":\"H:/TestDataUGTesting/\",\"name\":\"MyTestData285-020522D (45).pdf\",\"category\":\"Pdf\",\"size\":1000000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":6,\"severity\":\"MODERATE\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"PDF\",\"weight\":0}]},\"observedAt\":\"2022-05-31T18:32:18.4180000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_275\",\"path\":\"H:/TestDataUGTesting/\",\"name\":\"MyTestData285-020522D (7).pdf\",\"category\":\"Pdf\",\"size\":1000000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":6,\"severity\":\"MODERATE\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"PDF\",\"weight\":0}]},\"observedAt\":\"2022-05-31T18:32:37.8390000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_254\",\"path\":\"H:/TestDataUGTesting/\",\"name\":\"MyTestData285-020522D (44).pdf\",\"category\":\"Pdf\",\"size\":1000000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":6,\"severity\":\"MODERATE\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"PDF\",\"weight\":0}]},\"observedAt\":\"2022-05-31T18:32:18.2720000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_226\",\"path\":\"H:/TestDataUGTesting/\",\"name\":\"MyTestData285-020522D (21).pdf\",\"category\":\"Pdf\",\"size\":1000000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":6,\"severity\":\"MODERATE\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"PDF\",\"weight\":0}]},\"observedAt\":\"2022-05-31T18:31:38.4060000Z\"}],\"riskSeverityIsSignificant\":false,\"riskSeveritySummary\":[{\"type$\":\"RISK_SEVERITY_SUMMARY\",\"severity\":\"CRITICAL\",\"numEvents\":92,\"summarizedRiskIndicators\":[{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Zip\",\"numEvents\":92},{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Removable media\",\"numEvents\":92}]},{\"type$\":\"RISK_SEVERITY_SUMMARY\",\"severity\":\"MODERATE\",\"numEvents\":409,\"summarizedRiskIndicators\":[{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"PDF\",\"numEvents\":60},{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Removable media\",\"numEvents\":409},{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Document\",\"numEvents\":312},{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Image\",\"numEvents\":5},{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Spreadsheet\",\"numEvents\":19}]}],\"syncToServices\":[],\"sendingIpAddresses\":[\"50.159.105.116\"],\"isRemoteActivity\":false,\"destinationIsSignificant\":false}"
+            }
+        ],
+        "firstObservationAt": "2022-05-31T18:20:00.0000000Z",
+        "lastObservationAt": "2022-05-31T18:40:00.0000000Z",
+        "fileCount": 501,
+        "totalFileSize": 92263889,
+        "fileCategories": [
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Archive",
+                "fileCount": 92,
+                "totalFileSize": 920000
+            },
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Document",
+                "fileCount": 312,
+                "totalFileSize": 24004555
+            },
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Image",
+                "fileCount": 5,
+                "totalFileSize": 7220885
+            },
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Pdf",
+                "fileCount": 60,
+                "totalFileSize": 60000000
+            },
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Spreadsheet",
+                "fileCount": 19,
+                "totalFileSize": 89933
+            },
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Uncategorized",
+                "fileCount": 13,
+                "totalFileSize": 28516
+            }
+        ],
+        "riskSeveritySummary": [
+            {
+                "type$": "RISK_SEVERITY_SUMMARY",
+                "severity": "CRITICAL",
+                "numEvents": 92,
+                "summarizedRiskIndicators": [
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Zip",
+                        "numEvents": 92
+                    },
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Removable media",
+                        "numEvents": 92
+                    }
+                ]
+            },
+            {
+                "type$": "RISK_SEVERITY_SUMMARY",
+                "severity": "MODERATE",
+                "numEvents": 409,
+                "summarizedRiskIndicators": [
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Removable media",
+                        "numEvents": 409
+                    },
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Document",
+                        "numEvents": 312
+                    },
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "PDF",
+                        "numEvents": 60
+                    },
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Spreadsheet",
+                        "numEvents": 19
+                    },
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Image",
+                        "numEvents": 5
+                    }
+                ]
+            }
+        ],
+        "ffsUrlEndpoint": "https://console.us.code42.com/app/#/alerts/investigate-alert?alertId=4cbda753-8821-4898-94b8-b51aff393e23&observationType=FedEndpointExfiltration",
+        "alertUrl": "https://console.us.code42.com/app/#/alerts/review-alerts?t0=alertId&q0=IS&v0=4cbda753-8821-4898-94b8-b51aff393e23"
+    }
+}
+"""  # noqa: E501
 MOCK_ALERT_DETAILS_RESPONSE = """{
   "type$": "ALERT_DETAILS_RESPONSE",
   "alerts": [
@@ -448,6 +575,7 @@ MOCK_ALERT_DETAILS_RESPONSE = """{
       "actorId": "912098363086307495",
       "target": "N/A",
       "severity": "HIGH",
+      "riskSeverity": "CRITICAL",
       "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
       "ruleSource": "Alerting",
       "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
@@ -623,6 +751,42 @@ MOCK_ALERT_DETAILS_RESPONSE = """{
           }
         }
       ]
+    },
+    {
+      "type$": "ALERT_DETAILS",
+      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+      "type": "FED_CLOUD_SHARE_PERMISSIONS",
+      "name": "High-Risk Employee Alert",
+      "description": "Cortex XSOAR is 2cool.",
+      "actor": "user2@example.com",
+      "actorId": "912098363086307495",
+      "target": "N/A",
+      "severity": "MEDIUM",
+      "riskSeverity": "MODERATE",
+      "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
+      "ruleSource": "Alerting",
+      "id": "18ac641d-7d9c-4d37-a48f-c89396c07d03",
+      "createdAt": "2019-10-02T17:02:24.2071980Z",
+      "state": "OPEN",
+      "observations": []
+    },
+    {
+      "type$": "ALERT_DETAILS",
+      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+      "type": "FED_ENDPOINT_EXFILTRATION",
+      "name": "Custom Alert 1",
+      "description": "Cortex XSOAR is 3cool.",
+      "actor": "user3@example.com",
+      "actorId": "912098363086307495",
+      "target": "N/A",
+      "severity": "LOW",
+      "riskSeverity": "LOW",
+      "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
+      "ruleSource": "Alerting",
+      "id": "3137ff1b-b824-42e4-a476-22bccdd8ddb8",
+      "createdAt": "2019-10-02T17:03:28.2885720Z",
+      "state": "OPEN",
+      "observations": []
     }
   ]
 }"""
@@ -633,7 +797,7 @@ MOCK_CODE42_ALERT_CONTEXT = [
         "Name": "Departing Employee Alert",
         "Description": "Cortex XSOAR is cool.",
         "Occurred": "2019-10-02T17:02:23.5867670Z",
-        "Severity": "HIGH",
+        "Severity": "CRITICAL",
         "State": "OPEN",
         "Type": "FED_ENDPOINT_EXFILTRATION",
         "Username": "user1@example.com",
@@ -641,8 +805,9 @@ MOCK_CODE42_ALERT_CONTEXT = [
     {
         "ID": "18ac641d-7d9c-4d37-a48f-c89396c07d03",
         "Name": "High-Risk Employee Alert",
+        "Description": "Cortex XSOAR is 2cool.",
         "Occurred": "2019-10-02T17:02:24.2071980Z",
-        "Severity": "MEDIUM",
+        "Severity": "MODERATE",
         "State": "OPEN",
         "Type": "FED_CLOUD_SHARE_PERMISSIONS",
         "Username": "user2@example.com",
@@ -650,6 +815,7 @@ MOCK_CODE42_ALERT_CONTEXT = [
     {
         "ID": "3137ff1b-b824-42e4-a476-22bccdd8ddb8",
         "Name": "Custom Alert 1",
+        "Description": "Cortex XSOAR is 3cool.",
         "Occurred": "2019-10-02T17:03:28.2885720Z",
         "Severity": "LOW",
         "State": "OPEN",
@@ -1090,6 +1256,104 @@ MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE = """
 }
 """
 
+MOCK_WATCHLISTS_RESPONSE = """
+{
+    "watchlists": [
+        {
+            "listType": "DEPARTING_EMPLOYEE",
+            "watchlistId": "b55978d5-2d50-494d-bec9-678867f3830c",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 3
+            }
+        },
+        {
+            "listType": "SUSPICIOUS_SYSTEM_ACTIVITY",
+            "watchlistId": "2870bd73-ce1f-4704-a7f7-a8d11b19908e",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 11
+            }
+        },
+        {
+            "listType": "FLIGHT_RISK",
+            "watchlistId": "d2abb9f2-8c27-4f95-b7e2-252f191a4a1d",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 4
+            }
+        },
+        {
+            "listType": "PERFORMANCE_CONCERNS",
+            "watchlistId": "a21b2bbb-ed16-42eb-9983-32076ba417c0",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 3
+            }
+        },
+        {
+            "listType": "CONTRACT_EMPLOYEE",
+            "watchlistId": "c9557acf-4141-4162-b767-c129d3e668d4",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 2
+            }
+        },
+        {
+            "listType": "HIGH_IMPACT_EMPLOYEE",
+            "watchlistId": "313c388e-4c63-4071-a6fc-d6270e04c350",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 4
+            }
+        },
+        {
+            "listType": "ELEVATED_ACCESS_PRIVILEGES",
+            "watchlistId": "b49c938f-8f13-45e4-be17-fa88eca616ec",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 3
+            }
+        },
+        {
+            "listType": "POOR_SECURITY_PRACTICES",
+            "watchlistId": "534fa6a4-4b4c-4712-9b37-2f81c652c140",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 2
+            }
+        },
+        {
+            "listType": "NEW_EMPLOYEE",
+            "watchlistId": "5a39abda-c672-418a-82a0-54485bd59b7b",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {}
+        }
+    ],
+    "totalCount": 9
+}"""
+
+MOCK_WATCHLISTS_INCLUDED_USERS_RESPONSE = """
+{
+    "includedUsers": [
+        {
+            "userId": "921286907298179098",
+            "username": "user_a@example.com",
+            "addedTime": "2022-02-26T18:41:45.766005"
+        },
+        {
+            "userId": "990572034162882387",
+            "username": "user_b@example.com",
+            "addedTime": "2022-03-31T20:41:47.2985"
+        },
+        {
+            "userId": "987210998131391466",
+            "username": "user_c@example.com",
+            "addedTime": "2022-03-31T14:43:48.059325"
+        }
+    ],
+    "totalCount": 3
+}"""
 
 MOCK_CREATE_USER_RESPONSE = """
 {
@@ -1199,6 +1463,12 @@ MOCK_GET_ALL_MATTER_CUSTODIANS_RESPONSE = """
 }
 """
 
+
+def util_load_json(path: str):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
 _TEST_USER_ID = "123412341234123412"  # value found in GET_USER_RESPONSE
 _TEST_USERNAME = "user1@example.com"
 _TEST_ORG_NAME = "TestCortexOrg"
@@ -1243,6 +1513,8 @@ def code42_users_mock(code42_sdk_mock, mocker):
 def create_alerts_mock(c42_sdk_mock, mocker):
     alert_details_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
     c42_sdk_mock.alerts.get_details.return_value = alert_details_response
+    alert_aggregate_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_AGGREGATE_RESPONSE)
+    c42_sdk_mock.alerts.get_aggregate_data.return_value = alert_aggregate_response
     alerts_response = create_mock_code42_sdk_response(mocker, MOCK_ALERTS_RESPONSE)
     c42_sdk_mock.alerts.search.return_value = alerts_response
     return c42_sdk_mock
@@ -1274,6 +1546,28 @@ def code42_high_risk_employee_mock(code42_sdk_mock, mocker):
     )
     code42_sdk_mock.detectionlists.high_risk_employee.get_all.return_value = (
         all_high_risk_employees_response
+    )
+    return code42_sdk_mock
+
+
+@pytest.fixture
+def code42_watchlists_mock(code42_sdk_mock, mocker):
+    all_watchlists_response = create_mock_code42_sdk_response_generator(
+        mocker, [MOCK_WATCHLISTS_RESPONSE]
+    )
+    code42_sdk_mock.watchlists.get_all.return_value = (
+        all_watchlists_response
+    )
+    return code42_sdk_mock
+
+
+@pytest.fixture
+def code42_watchlists_included_users_mock(code42_sdk_mock, mocker):
+    included_users_response = create_mock_code42_sdk_response_generator(
+        mocker, [MOCK_WATCHLISTS_INCLUDED_USERS_RESPONSE]
+    )
+    code42_sdk_mock.watchlists.get_all_included_users.return_value = (
+        included_users_response
     )
     return code42_sdk_mock
 
@@ -1311,6 +1605,8 @@ def code42_legal_hold_mock(code42_sdk_mock, mocker):
 def create_mock_code42_sdk_response(mocker, response_text):
     response_mock = mocker.MagicMock(spec=Response)
     response_mock.text = response_text
+    response_mock.status_code = 200
+    response_mock._content_consumed = False
     return Py42Response(response_mock)
 
 
@@ -1403,7 +1699,7 @@ def test_get_file_category_value_handles_hyphenated_case():
 
 
 def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
-    sdk_factory_mock = mocker.patch("py42.sdk.from_local_account")
+    sdk_factory_mock = mocker.patch("py42.sdk.from_jwt_provider")
     response_json_mock = """{"total": 1, "users": [{"username": "Test"}]}"""
     code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(
         mocker, response_json_mock
@@ -1492,33 +1788,12 @@ def test_build_query_payload():
     assert json.loads((str(query))) == MOCK_FILE_EVENT_QUERY_PAYLOAD
 
 
-def test_map_observation_to_security_query():
-    response = json.loads(MOCK_ALERT_DETAILS_RESPONSE)
-    alert = response["alerts"][0]
-    actor = alert["actor"]
-    observations = alert["observations"]
-    actual_queries = [
-        json.loads(str(map_observation_to_security_query(o, actor))) for o in observations
-    ]
-    assert actual_queries[0] == MOCK_OBSERVATION_QUERIES[0]
-    assert actual_queries[1] == MOCK_OBSERVATION_QUERIES[1]
-    assert actual_queries[2] == MOCK_OBSERVATION_QUERIES[2]
-
-
 def test_map_to_code42_event_context():
     response = json.loads(MOCK_SECURITY_EVENT_RESPONSE)
     file_events = response["fileEvents"]
     for i in range(0, len(file_events)):
         context = map_to_code42_event_context(file_events[i])
         assert context == MOCK_CODE42_EVENT_CONTEXT[i]
-
-
-def test_map_to_code42_alert_context():
-    response = json.loads(MOCK_ALERT_DETAILS_RESPONSE)
-    alerts = response["alerts"]
-    for i in range(0, len(alerts)):
-        context = map_to_code42_alert_context(alerts[i])
-        assert context == MOCK_CODE42_ALERT_CONTEXT[i]
 
 
 def test_map_to_file_context():
@@ -1998,27 +2273,60 @@ def test_download_file_when_given_other_hash_raises_unsupported_hash(code42_sdk_
         _ = download_file_command(client, {"hash": _hash})
 
 
-def test_fetch_when_no_significant_file_categories_ignores_filter(
-    code42_fetch_incidents_mock, mocker
-):
-    response_text = MOCK_ALERT_DETAILS_RESPONSE.replace(
-        '"isSignificant": true', '"isSignificant": false'
-    )
-    alert_details_response = create_mock_code42_sdk_response(mocker, response_text)
-    code42_fetch_incidents_mock.alerts.get_details.return_value = alert_details_response
-    client = create_client(code42_fetch_incidents_mock)
-    _, _, _ = fetch_incidents(
-        client=client,
-        last_run={"last_fetch": None},
-        first_fetch_time=MOCK_FETCH_TIME,
-        event_severity_filter=None,
-        fetch_limit=10,
-        include_files=True,
-        integration_context=None,
-    )
-    actual_query = str(code42_fetch_incidents_mock.securitydata.search_file_events.call_args[0][0])
-    assert "fileCategory" not in actual_query
-    assert "IMAGE" not in actual_query
+def test_list_watchlists_command(code42_watchlists_mock):
+    client = create_client(code42_watchlists_mock)
+    cmd_res = list_watchlists_command(client, {})
+    expected_response = json.loads(MOCK_WATCHLISTS_RESPONSE)["watchlists"]
+    actual_response = cmd_res.raw_response
+    assert cmd_res.outputs_key_field == "WatchlistID"
+    assert cmd_res.outputs_prefix == "Code42.Watchlists"
+    assert code42_watchlists_mock.watchlists.get_all.call_count == 1
+    assert len(expected_response) == len(actual_response)
+    for i in range(0, len(actual_response)):
+        assert actual_response[i]["WatchlistID"] == expected_response[i]["watchlistId"]
+        assert actual_response[i]["IncludedUsersCount"] == expected_response[i]["stats"].get("includedUsersCount", 0)
+
+
+def test_list_watchlists_included_users_calls_by_id_when_watchlist_type_arg_provided_looks_up_watchlist_id(code42_watchlists_included_users_mock):  # noqa: E501
+    watchlist_id = "b55978d5-2d50-494d-bec9-678867f3830c"
+    code42_watchlists_included_users_mock.watchlists._watchlists_service.watchlist_type_id_map.get.return_value = watchlist_id
+    client = create_client(code42_watchlists_included_users_mock)
+    cmd_res = list_watchlists_included_users(client, {"watchlist": "DEPARTING_EMPLOYEE"})
+    actual_response = cmd_res.raw_response
+    expected_response = json.loads(MOCK_WATCHLISTS_INCLUDED_USERS_RESPONSE)["includedUsers"]
+    assert code42_watchlists_included_users_mock.watchlists.get_all_included_users.called_once_with(watchlist_id)
+    assert cmd_res.outputs_prefix == "Code42.WatchlistUsers"
+    assert len(expected_response) == len(actual_response)
+    for i in range(0, len(actual_response)):
+        assert actual_response[i]["Username"] == expected_response[i]["username"]
+        assert actual_response[i]["AddedTime"] == expected_response[i]["addedTime"]
+        assert actual_response[i]["WatchlistID"] == watchlist_id
+
+
+def test_add_user_to_watchlist_command_with_UUID_calls_add_by_id_method(code42_sdk_mock, mocker):
+    watchlist_id = "b55978d5-2d50-494d-bec9-678867f3830c"
+    user_id = "1234"
+    response_text = f'{{"users": [{{"userUid": "{user_id}"}}]}}'
+    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, response_text)
+    code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.return_value = create_mock_code42_sdk_response(mocker, "")
+    client = create_client(code42_sdk_mock)
+    cmd_res = add_user_to_watchlist_command(client, {"watchlist": watchlist_id, "username": "user_a@example.com"})
+    assert code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.called_once_with(user_id, watchlist_id)
+    assert cmd_res.raw_response == {
+        'Watchlist': 'b55978d5-2d50-494d-bec9-678867f3830c', 'Username': 'user_a@example.com', 'Success': True
+    }
+
+
+def test_add_user_to_watchlist_command_with_watchlist_type_calls_add_by_type_method(code42_sdk_mock, mocker):
+    watchlist_type = "DEPARTING_EMPLOYEE"
+    user_id = "1234"
+    response_text = f'{{"users": [{{"userUid": "{user_id}"}}]}}'
+    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, response_text)
+    code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.return_value = create_mock_code42_sdk_response(mocker, "")
+    client = create_client(code42_sdk_mock)
+    cmd_res = add_user_to_watchlist_command(client, {"watchlist": watchlist_type, "username": "user_a@example.com"})
+    assert code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.called_once_with(user_id, watchlist_type)
+    assert cmd_res.raw_response == {'Watchlist': 'DEPARTING_EMPLOYEE', 'Username': 'user_a@example.com', 'Success': True}
 
 
 def test_fetch_incidents_handles_single_severity(code42_fetch_incidents_mock):

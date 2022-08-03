@@ -3,7 +3,6 @@
     "associatedTypes": [
         "Code42 Security Alert"
     ],
-    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "code42fileevents",
     "closeForm": false,
@@ -327,9 +326,7 @@
         {},
         {}
     ],
-    "description": "",
     "editForm": true,
-    "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
     "id": "incident_code42fileevents",
@@ -338,19 +335,14 @@
     "name": "Code42 File Events",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "placeholder": "",
     "required": false,
-    "script": "",
-    "selectValues": [],
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
     "threshold": 72,
     "type": "grid",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
-    "validationRegex": "",
     "version": -1,
     "fromVersion": "5.0.0"
 }

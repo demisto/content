@@ -8,22 +8,26 @@ import requests
 import py42.sdk
 import py42.settings
 from datetime import datetime
+from uuid import UUID
 from py42.services.detectionlists.departing_employee import DepartingEmployeeFilters
 from py42.services.detectionlists.high_risk_employee import HighRiskEmployeeFilters
 from py42.sdk.queries.fileevents.file_event_query import FileEventQuery
 from py42.sdk.queries.fileevents.filters import (
     MD5,
     SHA256,
-    Actor,
-    EventTimestamp,
     OSHostname,
     DeviceUsername,
     ExposureType,
-    EventType,
     FileCategory,
 )
+from py42.sdk.queries.fileevents.util import FileEventFilterStringField
 from py42.sdk.queries.alerts.alert_query import AlertQuery
 from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
+
+
+class EventId(FileEventFilterStringField):
+    _term = "eventId"
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -76,7 +80,7 @@ CODE42_ALERT_CONTEXT_FIELD_MAPPER = {
     "name": "Name",
     "state": "State",
     "type": "Type",
-    "severity": "Severity",
+    "riskSeverity": "Severity",
 }
 
 FILE_CONTEXT_FIELD_MAPPER = {
@@ -145,14 +149,9 @@ class Code42Client(BaseClient):
 
     def __init__(self, sdk, base_url, auth, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy)
-        # Allow sdk parameter for unit testing.
-        # Otherwise, lazily load the SDK so that the TEST Command can effectively check auth.
+        self._base_url = base_url
+        self._auth = auth
         self._sdk = sdk
-        self._sdk_factory = (
-            lambda: py42.sdk.from_local_account(base_url, auth[0], auth[1])
-            if not self._sdk
-            else None
-        )
 
         if not proxy:
             _clear_env_var_if_exists('HTTP_PROXY')
@@ -163,61 +162,82 @@ class Code42Client(BaseClient):
         py42.settings.set_user_agent_suffix("Cortex XSOAR")
         py42.settings.verify_ssl_certs = verify
 
-    def _get_sdk(self):
+    @property
+    def sdk(self):
         if self._sdk is None:
-            self._sdk = self._sdk_factory()
+            def api_client_provider():
+                uri = f"https://{self._base_url}/api/v3/oauth/token"
+                params = {"grant_type": "client_credentials"}
+                r = requests.post(uri, params=params, auth=self._auth)
+                r.raise_for_status()
+                return r.json()["access_token"]
+
+            self._sdk = py42.sdk.from_jwt_provider(self._base_url, api_client_provider)
         return self._sdk
+
+    # Departing Employee methods (deprecated, replaced by Watchlist methods)
+
+    def get_departing_employee(self, username):
+        user_id = self._get_user_id(username)
+        response = self.sdk.detectionlists.departing_employee.get(user_id)
+        return response.data
 
     def add_user_to_departing_employee(self, username, departure_date=None, note=None):
         user_id = self._get_user_id(username)
-        self._get_sdk().detectionlists.departing_employee.add(
+        self.sdk.detectionlists.departing_employee.add(
             user_id, departure_date=departure_date
         )
         if note:
-            self._get_sdk().detectionlists.update_user_notes(user_id, note)
+            self.sdk.detectionlists.update_user_notes(user_id, note)
         return user_id
 
     def remove_user_from_departing_employee(self, username):
         user_id = self._get_user_id(username)
-        self._get_sdk().detectionlists.departing_employee.remove(user_id)
+        self.sdk.detectionlists.departing_employee.remove(user_id)
         return user_id
 
     def get_all_departing_employees(self, results, filter_type):
         res = []
         results = int(results) if results else 50
         filter_type = filter_type if filter_type else DepartingEmployeeFilters.OPEN
-        pages = self._get_sdk().detectionlists.departing_employee.get_all(filter_type=filter_type)
+        pages = self.sdk.detectionlists.departing_employee.get_all(filter_type=filter_type)
         for page in pages:
-            page_json = json.loads(page.text)
-            employees = page_json.get("items") or []
+            employees = page.data.get("items") or []
             for employee in employees:
                 res.append(employee)
                 if results and len(res) == results:
                     return res
         return res
 
+    # High Risk Employee methods (deprecated, replaced by Watchlist methods)
+
+    def get_high_risk_employee(self, username):
+        user_id = self._get_user_id(username)
+        response = self.sdk.detectionlists.high_risk_employee.get(user_id)
+        return response.data
+
     def add_user_to_high_risk_employee(self, username, note=None):
         user_id = self._get_user_id(username)
-        self._get_sdk().detectionlists.high_risk_employee.add(user_id)
+        self.sdk.detectionlists.high_risk_employee.add(user_id)
         if note:
-            self._get_sdk().detectionlists.update_user_notes(user_id, note)
+            self.sdk.detectionlists.update_user_notes(user_id, note)
         return user_id
 
     def remove_user_from_high_risk_employee(self, username):
         user_id = self._get_user_id(username)
-        self._get_sdk().detectionlists.high_risk_employee.remove(user_id)
+        self.sdk.detectionlists.high_risk_employee.remove(user_id)
         return user_id
 
     def add_user_risk_tags(self, username, risk_tags):
         risk_tags = argToList(risk_tags)
         user_id = self._get_user_id(username)
-        self._get_sdk().detectionlists.add_user_risk_tags(user_id, risk_tags)
+        self.sdk.detectionlists.add_user_risk_tags(user_id, risk_tags)
         return user_id
 
     def remove_user_risk_tags(self, username, risk_tags):
         risk_tags = argToList(risk_tags)
         user_id = self._get_user_id(username)
-        self._get_sdk().detectionlists.remove_user_risk_tags(user_id, risk_tags)
+        self.sdk.detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
     def get_all_high_risk_employees(self, risk_tags, results, filter_type):
@@ -225,70 +245,71 @@ class Code42Client(BaseClient):
         results = int(results) if results else 50
         filter_type = filter_type if filter_type else HighRiskEmployeeFilters.OPEN
         res = []
-        pages = self._get_sdk().detectionlists.high_risk_employee.get_all(filter_type=filter_type)
+        pages = self.sdk.detectionlists.high_risk_employee.get_all(filter_type=filter_type)
         for page in pages:
-            page_json = json.loads(page.text)
-            employees = _get_all_high_risk_employees_from_page(page_json, risk_tags)
+            employees = _get_all_high_risk_employees_from_page(page.data, risk_tags)
             for employee in employees:
                 res.append(employee)
                 if results and len(res) == results:
                     return res
         return res
 
+    # Alert methods
+
     def fetch_alerts(self, start_time, event_severity_filter):
         query = _create_alert_query(event_severity_filter, start_time)
-        res = self._get_sdk().alerts.search(query)
-        return json.loads(res.text).get("alerts")
+        res = self.sdk.alerts.search(query)
+        return res.data.get("alerts")
 
     def get_alert_details(self, alert_id):
-        py42_res = self._get_sdk().alerts.get_details(alert_id)
-        res = json.loads(py42_res.text).get("alerts")
+        py42_res = self.sdk.alerts.get_details(alert_id)
+        res = py42_res.data.get("alerts")
         if not res:
             raise Code42AlertNotFoundError(alert_id)
         return res[0]
 
     def resolve_alert(self, id):
-        self._get_sdk().alerts.resolve(id)
+        self.sdk.alerts.resolve(id)
         return id
 
     def get_current_user(self):
-        res = self._get_sdk().users.get_current()
+        res = self.sdk.usercontext.get_current_tenant_id()
         return res
 
     def get_user(self, username):
-        py42_res = self._get_sdk().users.get_by_username(username)
-        res = json.loads(py42_res.text).get("users")
+        py42_res = self.sdk.users.get_by_username(username)
+        res = py42_res.data.get("users")
         if not res:
             raise Code42UserNotFoundError(username)
         return res[0]
 
     def create_user(self, org_name, username, email):
         org_uid = self._get_org_id(org_name)
-        response = self._get_sdk().users.create_user(org_uid, username, email)
-        return json.loads(response.text)
+        response = self.sdk.users.create_user(org_uid, username, email)
+        return response.data
 
     def block_user(self, username):
         user_id = self._get_legacy_user_id(username)
-        self._get_sdk().users.block(user_id)
+        self.sdk.users.block(user_id)
         return user_id
 
     def unblock_user(self, username):
         user_id = self._get_legacy_user_id(username)
-        self._get_sdk().users.unblock(user_id)
+        self.sdk.users.unblock(user_id)
         return user_id
 
     def deactivate_user(self, username):
         user_id = self._get_legacy_user_id(username)
-        self._get_sdk().users.deactivate(user_id)
+        self.sdk.users.deactivate(user_id)
         return user_id
 
     def reactivate_user(self, username):
         user_id = self._get_legacy_user_id(username)
-        self._get_sdk().users.reactivate(user_id)
+        self.sdk.users.reactivate(user_id)
         return user_id
 
     def get_legal_hold_matter(self, matter_name):
-        matter_pages = self._get_sdk().legalhold.get_all_matters(name=matter_name)
+        matter_pages = self.sdk.legalhold.get_all_matters(name=matter_name)
         for matter_page in matter_pages:
             matters = matter_page["legalHolds"]
             for matter in matters:
@@ -298,35 +319,34 @@ class Code42Client(BaseClient):
     def add_user_to_legal_hold_matter(self, username, matter_name):
         user_uid = self._get_user_id(username)
         matter_id = self._get_legal_hold_matter_id(matter_name)
-        response = self._get_sdk().legalhold.add_to_matter(user_uid, matter_id)
-        return json.loads(response.text)
+        response = self.sdk.legalhold.add_to_matter(user_uid, matter_id)
+        return response.data
 
     def remove_user_from_legal_hold_matter(self, username, matter_name):
         user_uid = self._get_user_id(username)
         matter_id = self._get_legal_hold_matter_id(matter_name)
         membership_id = self._get_legal_hold_matter_membership_id(user_uid, matter_id)
         if membership_id:
-            self._get_sdk().legalhold.remove_from_matter(membership_id)
+            self.sdk.legalhold.remove_from_matter(membership_id)
             return user_uid, matter_id
 
         raise Code42InvalidLegalHoldMembershipError(username, matter_name)
 
     def get_org(self, org_name):
-        org_pages = self._get_sdk().orgs.get_all()
+        org_pages = self.sdk.orgs.get_all()
         for org_page in org_pages:
-            page_json = json.loads(org_page.text)
-            orgs = page_json.get("orgs")
+            orgs = org_page.data.get("orgs")
             for org in orgs:
                 if org.get("orgName", "") == org_name:
                     return org
         raise Code42OrgNotFoundError(org_name)
 
     def search_file_events(self, payload):
-        py42_res = self._get_sdk().securitydata.search_file_events(payload)
-        return json.loads(py42_res.text).get("fileEvents")
+        py42_res = self.sdk.securitydata.search_file_events(payload)
+        return py42_res.data.get("fileEvents")
 
     def download_file(self, hash_arg):
-        security_module = self._get_sdk().securitydata
+        security_module = self.sdk.securitydata
         if _hash_is_md5(hash_arg):
             return security_module.stream_file_by_md5(hash_arg)
         elif _hash_is_sha256(hash_arg):
@@ -352,23 +372,12 @@ class Code42Client(BaseClient):
             return org_uid
         raise Code42OrgNotFoundError(org_name)
 
-    def get_departing_employee(self, username):
-        user_id = self._get_user_id(username)
-        response = self._get_sdk().detectionlists.departing_employee.get(user_id)
-        return json.loads(response.text)
-
-    def get_high_risk_employee(self, username):
-        user_id = self._get_user_id(username)
-        response = self._get_sdk().detectionlists.high_risk_employee.get(user_id)
-        return json.loads(response.text)
-
     def _get_legal_hold_matter_id(self, matter_name):
         matter_id = self.get_legal_hold_matter(matter_name).get("legalHoldUid")
         return matter_id
 
     def _get_legal_hold_matter_membership_id(self, user_id, matter_id):
-        member_pages = self._get_sdk().legalhold.get_all_matter_custodians(legal_hold_uid=matter_id,
-                                                                           user_uid=user_id)
+        member_pages = self.sdk.legalhold.get_all_matter_custodians(legal_hold_uid=matter_id, user_uid=user_id)
         for member_page in member_pages:
             members = member_page["legalHoldMemberships"]
             for member in members:
@@ -393,6 +402,13 @@ class Code42OrgNotFoundError(Exception):
     def __init__(self, org_name):
         super(Code42OrgNotFoundError, self).__init__(
             "No organization found with name {0}.".format(org_name)
+        )
+
+
+class Code42InvalidWatchlistTypeError(Exception):
+    def __init__(self, watchlist):
+        super().__init__(
+            f"Invalid Watchlist type: {watchlist}, run !code42-watchlists-list to get a list of available Watchlists."
         )
 
 
@@ -545,117 +561,6 @@ def get_file_category_value(key):
     return category_map.get(key, "UNCATEGORIZED")
 
 
-class ObservationToSecurityQueryMapper(object):
-    """Class to simplify the process of mapping observation data to query objects."""
-
-    # Exfiltration consts
-    _ENDPOINT_TYPE = "FedEndpointExfiltration"
-    _CLOUD_TYPE = "FedCloudSharePermissions"
-
-    # Query consts
-    _PUBLIC_SEARCHABLE = "PublicSearchableShare"
-    _PUBLIC_LINK = "PublicLinkShare"
-    _OUTSIDE_TRUSTED_DOMAINS = "SharedOutsideTrustedDomain"
-
-    exposure_type_map = {
-        "PublicSearchableShare": ExposureType.IS_PUBLIC,
-        "PublicLinkShare": ExposureType.SHARED_VIA_LINK,
-        "SharedOutsideTrustedDomain": ExposureType.OUTSIDE_TRUSTED_DOMAINS,
-    }
-
-    def __init__(self, observation, actor):
-        self._obs = observation
-        self._actor = actor
-
-    @property
-    def _observation_data(self):
-        return self._obs.get("data")
-
-    @property
-    def _exfiltration_type(self):
-        return self._obs.get("type")
-
-    @property
-    def _is_endpoint_exfiltration(self):
-        return self._exfiltration_type == self._ENDPOINT_TYPE
-
-    @property
-    def _is_cloud_exfiltration(self):
-        return self._exfiltration_type == self._CLOUD_TYPE
-
-    def _create_user_filter(self):
-        return (
-            DeviceUsername.eq(self._actor)
-            if self._is_endpoint_exfiltration
-            else Actor.eq(self._actor)
-        )
-
-    def map(self):
-        search_args = self._create_search_args()
-        query = search_args.to_all_query()
-        LOG("Alert Observation Query: {}".format(query))
-        return query
-
-    def _create_search_args(self):
-        filters = FileEventQueryFilters()
-        exposure_types = self._observation_data.get("exposureTypes")
-        first_activity = self._observation_data.get("firstActivityAt")
-        last_activity = self._observation_data.get("lastActivityAt")
-        filters.append(self._create_user_filter())
-        if first_activity:
-            begin_time = _convert_date_arg_to_epoch(first_activity)
-            if begin_time:
-                filters.append(EventTimestamp.on_or_after(begin_time))
-        if last_activity:
-            end_time = _convert_date_arg_to_epoch(last_activity)
-            if end_time:
-                filters.append(EventTimestamp.on_or_before(end_time))
-        filters.extend(self._create_exposure_filters(exposure_types))
-        filters.append(self._create_file_category_filters())
-        return filters
-
-    @logger
-    def _create_exposure_filters(self, exposure_types):
-        """Determine exposure types based on alert type"""
-        exp_types = []
-        if self._is_cloud_exfiltration:
-            for t in exposure_types:
-                exp_type = self.exposure_type_map.get(t)
-                if exp_type:
-                    exp_types.append(exp_type)
-                else:
-                    LOG("Received unsupported exposure type {0}.".format(t))
-            if exp_types:
-                return [ExposureType.is_in(exp_types)]
-            else:
-                # If not given a support exposure type, search for all unsupported exposure types
-                supported_exp_types = list(self.exposure_type_map.values())
-                return [ExposureType.not_in(supported_exp_types)]
-        elif self._is_endpoint_exfiltration:
-            return [
-                EventType.is_in([EventType.CREATED, EventType.MODIFIED, EventType.READ_BY_APP]),
-                ExposureType.is_in(exposure_types),
-            ]
-        return []
-
-    def _create_file_category_filters(self):
-        """Determine if file categorization is significant"""
-        observed_file_categories = self._observation_data.get("fileCategories")
-        if observed_file_categories:
-            categories = [
-                get_file_category_value(c.get("category"))
-                for c in observed_file_categories
-                if c.get("isSignificant") and c.get("category")
-            ]
-            if categories:
-                return FileCategory.is_in(categories)
-
-
-def map_observation_to_security_query(observation, actor):
-    mapper = ObservationToSecurityQueryMapper(observation, actor)
-    return mapper.map()
-
-
 def _convert_date_arg_to_epoch(date_arg):
     date_arg = date_arg[:25]
     return (
@@ -692,10 +597,6 @@ def map_to_file_context(obj):
 @logger
 def _map_obj_to_context(obj, context_mapper):
     return {v: obj.get(k) for k, v in context_mapper.items() if obj.get(k)}
-
-
-def create_command_error_message(cmd, ex):
-    return "Failed to execute command {0} command. Error: {1}".format(cmd, str(ex))
 
 
 """Commands"""
@@ -1144,14 +1045,104 @@ def download_file_command(client, args):
     return fileResult(filename, data=b"".join(file_chunks))
 
 
+@logger
+def list_watchlists_command(client, args):
+    watchlists_context = []
+    for page in client.sdk.watchlists.get_all():
+        for watchlist in page["watchlists"]:
+            watchlists_context.append(
+                {
+                    "WatchlistID": watchlist["watchlistId"],
+                    "WatchlistType": watchlist["listType"],
+                    "IncludedUsersCount": watchlist["stats"].get("includedUsersCount", 0)
+                }
+            )
+
+    if not watchlists_context:
+        CommandResults(
+            readable_output="No results found",
+            outputs_prefix="Code42.Watchlists",
+            outputs_key_field="WatchlistID",
+            outputs={"Results": []},
+            raw_response={},
+        )
+
+    readable_outputs = tableToMarkdown("Watchlists", watchlists_context)
+    return CommandResults(
+        outputs_prefix="Code42.Watchlists",
+        outputs_key_field="WatchlistID",
+        outputs=watchlists_context,
+        readable_output=readable_outputs,
+        raw_response=watchlists_context,
+    )
+
+
+@logger
+def list_watchlists_included_users(client, args):
+    watchlist = args.get("watchlist")
+    try:
+        UUID(hex=watchlist)
+        watchlist_id = watchlist
+    except ValueError:
+        watchlist_id = client.sdk.watchlists._watchlists_service.watchlist_type_id_map.get(watchlist)
+        if watchlist_id is None:
+            raise Code42InvalidWatchlistTypeError(watchlist)
+    included_users_context = []
+    for page in client.sdk.watchlists.get_all_included_users(watchlist_id):
+        for user in page["includedUsers"]:
+            included_users_context.append(
+                {"Username": user["username"], "AddedTime": user["addedTime"], "WatchlistID": watchlist_id}
+            )
+    readable_outputs = tableToMarkdown("Watchlists", included_users_context)
+    return CommandResults(
+        outputs_prefix="Code42.WatchlistUsers",
+        outputs=included_users_context,
+        readable_output=readable_outputs,
+    )
+
+
+@logger
+def add_user_to_watchlist_command(client, args):
+    username = args.get("username")
+    watchlist = args.get("watchlist")
+    user = client.get_user(username)
+    user_id = user["userUid"]
+    demisto.log(user_id)
+    try:
+        UUID(hex=watchlist)
+        resp = client.sdk.watchlists.add_included_users_by_watchlist_id(user_id, watchlist)
+    except ValueError:
+        resp = client.sdk.watchlists.add_included_users_by_watchlist_type(user_id, watchlist)
+    return CommandResults(
+        outputs_prefix="Code42.UsersAddedToWatchlists",
+        outputs_key_field="Watchlist",
+        outputs={"Watchlist": watchlist, "Username": username, "Success": resp.status_code == 200},
+    )
+
+
+@logger
+def remove_user_from_watchlist_command(client, args):
+    username = args.get("username")
+    watchlist = args.get("watchlist")
+    user = client.get_user(username)
+    user_id = user["userUid"]
+    demisto.log(user_id)
+    try:
+        UUID(hex=watchlist)
+        resp = client.sdk.watchlists.remove_included_users_by_watchlist_id(user_id, watchlist)
+    except ValueError:
+        resp = client.sdk.watchlists.remove_included_users_by_watchlist_type(user_id, watchlist)
+    return CommandResults(
+        outputs_prefix="Code42.UsersRemovedFromWatchlists",
+        outputs_key_field="Watchlist",
+        outputs={"Watchlist": watchlist, "Username": username, "Success": resp.status_code == 200},
+    )
+
+
 """Fetching"""
 
 
-def _create_incident_from_alert_details(details):
-    return {"name": "Code42 - {}".format(details.get("name")), "occurred": details.get("createdAt")}
-
-
-def _stringify_lists_if_needed(event):
+def _process_event_from_observation(event):
     # We need to convert certain fields to a stringified list else React.JS will throw an error
     shared_with = event.get("sharedWith")
     private_ip_addresses = event.get("privateIpAddresses")
@@ -1161,10 +1152,6 @@ def _stringify_lists_if_needed(event):
     if private_ip_addresses:
         event["privateIpAddresses"] = str(private_ip_addresses)
     return event
-
-
-def _process_event_from_observation(event):
-    return _stringify_lists_if_needed(event)
 
 
 class Code42SecurityIncidentFetcher(object):
@@ -1228,8 +1215,11 @@ class Code42SecurityIncidentFetcher(object):
         return self._client.fetch_alerts(start_query_time, self._event_severity_filter)
 
     def _create_incident_from_alert(self, alert):
-        details = self._client.get_alert_details(alert.get("id"))
-        incident = _create_incident_from_alert_details(details)
+        response = self._client.sdk.alerts.get_aggregate_data(alert.get("id"))
+        details = response.data.get("alert")
+        details["alertId"] = alert.get("id")
+        self._format_summary(details)
+        incident = {"name": "Code42 - {}".format(details.get("name")), "occurred": details.get("createdAt")}
         if self._include_files:
             details = self._relate_files_to_alert(details)
         incident["rawJSON"] = json.dumps(details)
@@ -1239,15 +1229,30 @@ class Code42SecurityIncidentFetcher(object):
         observations = alert_details.get("observations")
         if not observations:
             alert_details["fileevents"] = []
-            return
-        for obs in observations:
-            file_events = self._get_file_events_from_alert_details(obs, alert_details)
-            alert_details["fileevents"] = [_process_event_from_observation(e) for e in file_events]
+            return alert_details
+        event_ids = []
+        for o in observations:
+            data = json.loads(o["data"])
+            files = data.get("files")
+            if files:
+                for file in files:
+                    event_ids.append(file["eventId"])
+        if not event_ids:
+            alert_details["fileevents"] = []
+            return alert_details
+        query = FileEventQuery(EventId.is_in(event_ids))
+        events = self._client.search_file_events(query)
+        alert_details["fileevents"] = [_process_event_from_observation(e) for e in events]
         return alert_details
 
-    def _get_file_events_from_alert_details(self, observation, alert_details):
-        security_data_query = map_observation_to_security_query(observation, alert_details.get("actor"))
-        return self._client.search_file_events(security_data_query)
+    def _format_summary(self, alert_details):
+        summary = alert_details["riskSeveritySummary"]
+        string_list = []
+        for s in summary:
+            string_list.append(f"{s['numEvents']} {s['severity']} events:")
+            for indicator in s["summarizedRiskIndicators"]:
+                string_list.append(f"\t- {indicator['numEvents']} {indicator['name']}")
+        alert_details["risksummary"] = "\n".join(string_list)
 
 
 def fetch_incidents(
@@ -1287,38 +1292,6 @@ def test_module(client):
         )
 
 
-def get_command_map():
-    return {
-        "code42-alert-get": alert_get_command,
-        "code42-alert-resolve": alert_resolve_command,
-        "code42-securitydata-search": securitydata_search_command,
-        "code42-departingemployee-add": departingemployee_add_command,
-        "code42-departingemployee-remove": departingemployee_remove_command,
-        "code42-departingemployee-get-all": departingemployee_get_all_command,
-        "code42-departingemployee-get": departingemployee_get_command,
-        "code42-highriskemployee-add": highriskemployee_add_command,
-        "code42-highriskemployee-remove": highriskemployee_remove_command,
-        "code42-highriskemployee-get-all": highriskemployee_get_all_command,
-        "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
-        "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
-        "code42-highriskemployee-get": highriskemployee_get_command,
-        "code42-user-create": user_create_command,
-        "code42-user-block": user_block_command,
-        "code42-user-unblock": user_unblock_command,
-        "code42-user-deactivate": user_deactivate_command,
-        "code42-user-reactivate": user_reactivate_command,
-        "code42-legalhold-add-user": legal_hold_add_user_command,
-        "code42-legalhold-remove-user": legal_hold_remove_user_command,
-        "code42-download-file": download_file_command,
-    }
-
-
-def handle_test_command(client):
-    # This is the call made when pressing the integration Test button.
-    result = test_module(client)
-    demisto.results(result)
-
-
 def handle_fetch_command(client):
     integration_context = demisto.getIntegrationContext()
     # Set and define the fetch incidents command to run after activated via integration settings.
@@ -1346,11 +1319,14 @@ def run_command(command):
         for result in results:
             return_results(result)
     except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+        msg = "Failed to execute command {0} command. Error: {1}".format(demisto.command(), e)
+        return_error(msg)
 
 
 def create_client():
-    username = demisto.params().get("credentials").get("identifier")
+    api_client_id = demisto.params().get("credentials").get("identifier")
+    if not api_client_id.startswith("key-") or "@" in api_client_id:
+        raise Exception(f"Got invalid API Client ID: {api_client_id}")
     password = demisto.params().get("credentials").get("password")
     base_url = demisto.params().get("console_url")
     verify_certificate = not demisto.params().get("insecure", False)
@@ -1358,7 +1334,7 @@ def create_client():
     return Code42Client(
         base_url=base_url,
         sdk=None,
-        auth=(username, password),
+        auth=(api_client_id, password),
         verify=verify_certificate,
         proxy=proxy,
     )
@@ -1366,11 +1342,39 @@ def create_client():
 
 def main():
     client = create_client()
-    commands = get_command_map()
     command_key = demisto.command()
+    # switch case
+    commands = {
+        "code42-alert-get": alert_get_command,
+        "code42-alert-resolve": alert_resolve_command,
+        "code42-securitydata-search": securitydata_search_command,
+        "code42-departingemployee-add": departingemployee_add_command,
+        "code42-departingemployee-remove": departingemployee_remove_command,
+        "code42-departingemployee-get-all": departingemployee_get_all_command,
+        "code42-departingemployee-get": departingemployee_get_command,
+        "code42-highriskemployee-add": highriskemployee_add_command,
+        "code42-highriskemployee-remove": highriskemployee_remove_command,
+        "code42-highriskemployee-get-all": highriskemployee_get_all_command,
+        "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
+        "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
+        "code42-highriskemployee-get": highriskemployee_get_command,
+        "code42-user-create": user_create_command,
+        "code42-user-block": user_block_command,
+        "code42-user-unblock": user_unblock_command,
+        "code42-user-deactivate": user_deactivate_command,
+        "code42-user-reactivate": user_reactivate_command,
+        "code42-legalhold-add-user": legal_hold_add_user_command,
+        "code42-legalhold-remove-user": legal_hold_remove_user_command,
+        "code42-download-file": download_file_command,
+        "code42-watchlists-list": list_watchlists_command,
+        "code42-watchlists-list-included-users": list_watchlists_included_users,
+        "code42-watchlists-add-user": add_user_to_watchlist_command,
+        "code42-watchlists-remove-user": remove_user_from_watchlist_command,
+    }
     LOG("Command being called is {0}.".format(command_key))
     if command_key == "test-module":
-        handle_test_command(client)
+        result = test_module(client)
+        demisto.results(result)
     elif command_key == "fetch-incidents":
         handle_fetch_command(client)
     elif command_key in commands:
