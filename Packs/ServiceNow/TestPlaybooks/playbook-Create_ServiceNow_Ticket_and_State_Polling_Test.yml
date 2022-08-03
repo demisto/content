@@ -579,7 +579,7 @@ inputs:
   playbookInputQuery:
 - key: PollingTimeout
   value:
-    simple: "20"
+    simple: "10"
   required: false
   description: |-
     Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
