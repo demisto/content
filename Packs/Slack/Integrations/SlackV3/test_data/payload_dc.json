@@ -1,0 +1,217 @@
+{
+    "ok": true,
+    "channel": "A00AAAA8AAA",
+    "ts": "1659030992.356289",
+    "message": {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "This content can't be displayed.",
+        "ts": "1659030992.356289",
+        "username": "Cortex XSOAR",
+        "bot_id": "BMWFS6KSA",
+        "app_id": "AMU4M2QL8",
+        "team": "B0110VVVV",
+        "bot_profile": {
+            "id": "B00BBB1BBJ1",
+            "app_id": "AMU4M2QL8",
+            "name": "Cortex XSOAR Dev",
+            "deleted": false,
+            "updated": 1649890452,
+            "team_id": "T1111AABB"
+        },
+        "blocks": [
+            {
+                "type": "section",
+                "block_id": "kRdC",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "\nMy first DC\n",
+                    "verbatim": false
+                }
+            },
+            {
+                "type": "divider",
+                "block_id": "y1h"
+            },
+            {
+                "type": "input",
+                "block_id": "xsoar_dc-0",
+                "label": {
+                    "type": "plain_text",
+                    "text": "Is it the first question (single select)?",
+                    "emoji": true
+                },
+                "hint": {
+                    "type": "plain_text",
+                    "text": "Help Message",
+                    "emoji": true
+                },
+                "optional": false,
+                "dispatch_action": false,
+                "element": {
+                    "type": "radio_buttons",
+                    "action_id": "xsoar_data_collection-0-action",
+                    "options": [
+                        {
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Yes",
+                                "emoji": true
+                            },
+                            "value": "Yes"
+                        },
+                        {
+                            "text": {
+                                "type": "plain_text",
+                                "text": "No",
+                                "emoji": true
+                            },
+                            "value": "No"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "input",
+                "block_id": "xsoar_dc-1",
+                "label": {
+                    "type": "plain_text",
+                    "text": "Is it the second question (short text)",
+                    "emoji": true
+                },
+                "hint": {
+                    "type": "plain_text",
+                    "text": "HELPMESSAGE",
+                    "emoji": true
+                },
+                "optional": false,
+                "dispatch_action": false,
+                "element": {
+                    "type": "plain_text_input",
+                    "action_id": "xsoar_dc-1-action",
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "PLACEHOLDER",
+                        "emoji": true
+                    },
+                    "dispatch_action_config": {
+                        "trigger_actions_on": [
+                            "on_enter_pressed"
+                        ]
+                    }
+                }
+            },
+            {
+                "type": "input",
+                "block_id": "xsoar_dc-2",
+                "label": {
+                    "type": "plain_text",
+                    "text": "Is it the third question (number)?",
+                    "emoji": true
+                },
+                "hint": {
+                    "type": "plain_text",
+                    "text": "Please enter a number value",
+                    "emoji": true
+                },
+                "optional": false,
+                "dispatch_action": false,
+                "element": {
+                    "type": "plain_text_input",
+                    "action_id": "xsoar_data_collection-2-action",
+                    "dispatch_action_config": {
+                        "trigger_actions_on": [
+                            "on_enter_pressed"
+                        ]
+                    }
+                }
+            },
+            {
+                "type": "input",
+                "block_id": "xsoar_dc-3",
+                "label": {
+                    "type": "plain_text",
+                    "text": "Is it the fourth question (Multiselect)",
+                    "emoji": true
+                },
+                "optional": false,
+                "dispatch_action": false,
+                "element": {
+                    "type": "checkboxes",
+                    "action_id": "xsoar_data_collection-3-action",
+                    "options": [
+                        {
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Philippe",
+                                "emoji": true
+                            },
+                            "value": "Philippe"
+                        },
+                        {
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Tom",
+                                "emoji": true
+                            },
+                            "value": "Tom"
+                        },
+                        {
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Tim",
+                                "emoji": true
+                            },
+                            "value": "Tim"
+                        },
+                        {
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Ted",
+                                "emoji": true
+                            },
+                            "value": "Ted"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "input",
+                "block_id": "xsoar_dc-4",
+                "label": {
+                    "type": "plain_text",
+                    "text": "Is it the sixth question (longtext)?",
+                    "emoji": true
+                },
+                "optional": false,
+                "dispatch_action": false,
+                "element": {
+                    "type": "plain_text_input",
+                    "action_id": "xsoar_dc-4-action",
+                    "multiline": true,
+                    "dispatch_action_config": {
+                        "trigger_actions_on": [
+                            "on_enter_pressed"
+                        ]
+                    }
+                }
+            },
+            {
+                "type": "actions",
+                "block_id": "xsoar_dc",
+                "elements": [
+                    {
+                        "type": "button",
+                        "action_id": "xsoar_dc-action",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Submit",
+                            "emoji": true
+                        },
+                        "value": "17714@11"
+                    }
+                ]
+            }
+        ]
+    }
+}

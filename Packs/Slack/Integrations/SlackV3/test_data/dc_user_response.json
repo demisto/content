@@ -1,0 +1,191 @@
+{
+  "envelope_id": "72ac90c6-75f3-4ab7-b156-16b89f6094db",
+  "payload": {
+    "type": "block_actions",
+    "user": {
+      "id": "U012A3CDE",
+      "username": "spengler",
+      "name": "spengler",
+      "team_id": "A0250AAAA"
+    },
+    "api_app_id": "A00AAA1AAAA",
+    "token": "fff7aaBBBB11aaAb1aaaCM",
+    "container": {
+      "type": "message",
+      "message_ts": "1655533966.725679",
+      "channel_id": "C00AB000RDJ",
+      "is_ephemeral": false
+    },
+    "trigger_id": "3687628418706.2170895473.3c71cc566566a2ef84d9b7576ac4887d",
+    "team": {
+      "id": "T012AB3C4",
+      "domain": "slack",
+      "enterprise_id": "AAAAAAAA",
+      "enterprise_name": "Slack, Inc."
+    },
+    "enterprise": {
+      "id": "E00EEEE9EEE",
+      "name": "Slack, Inc."
+    },
+    "is_enterprise_install": false,
+    "channel": {
+      "id": "A00AA000BBB",
+      "name": "privategroup"
+    },
+    "message": {
+      "bot_id": "BMWFS6KSA",
+      "type": "message",
+      "text": "New message from SOC Bot",
+      "user": "U02GZ6ZMK6H",
+      "ts": "1655533966.725679",
+      "app_id": "A00AAA0BBBB",
+      "team": "A0250AAAA",
+      "blocks": [
+        {
+          "type": "section",
+          "block_id": "pXY8",
+          "text": {
+            "type": "mrkdwn",
+            "text": " test ",
+            "verbatim": false
+          }
+        },
+        {
+          "type": "divider",
+          "block_id": "sulH"
+        },
+        {
+          "type": "input",
+          "block_id": "0",
+          "label": {
+            "type": "plain_text",
+            "text": "test single select",
+            "emoji": true
+          },
+          "optional": false,
+          "dispatch_action": false,
+          "element": {
+            "type": "radio_buttons",
+            "action_id": "0-action",
+            "options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Yes",
+                  "emoji": true
+                },
+                "value": "Yes"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "No",
+                  "emoji": true
+                },
+                "value": "No"
+              }
+            ]
+          }
+        },
+        {
+          "type": "input",
+          "block_id": "1",
+          "label": {
+            "type": "plain_text",
+            "text": "test input",
+            "emoji": true
+          },
+          "optional": false,
+          "dispatch_action": false,
+          "element": {
+            "type": "plain_text_input",
+            "action_id": "1-action",
+            "dispatch_action_config": {
+              "trigger_actions_on": [
+                "on_enter_pressed"
+              ]
+            }
+          }
+        },
+        {
+          "type": "actions",
+          "block_id": "xsoar_dc",
+          "elements": [
+            {
+              "type": "button",
+              "action_id": "xsoar_dc-action",
+              "text": {
+                "type": "plain_text",
+                "text": "Submit",
+                "emoji": true
+              },
+              "value": "b9a7d051-e00f-4b3a-85a2-5cdb6687f43a@11"
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "values": {
+        "0": {
+          "0-action": {
+            "type": "radio_buttons",
+            "selected_option": {
+              "text": {
+                "type": "plain_text",
+                "text": "Yes",
+                "emoji": true
+              },
+              "value": "Yes"
+            }}
+        },
+        "1":
+        {
+          "1-action":
+          {
+            "type": "plain_text_input",
+            "value": "DEBUG SLACK"
+          }
+        },
+        "2":
+        {
+          "2-action":
+          {
+            "type": "plain_text_input",
+            "value": "long long long text long long long textlong long long textlong long long textlong long long text long long long textlong long long textlong long long textlong long long textlong long long textlong long long textlong long long textlong long long textlong long long textlong long long textlong long long textlong long long text\nnew line"
+          }
+        },
+        "xsoar_dc":
+        {
+          "datepicker_3":
+          {
+            "type": "datepicker",
+            "selected_date": "2022-01-29"
+          },
+          "timepicker_3":
+          {
+            "type": "timepicker",
+            "selected_time": "07:00"
+          }
+        }
+      }
+    },
+    "response_url": "https://hooks.slack.com/actions/T0250SBDX/3690025930500/j24V7a3zwGAKuXe1NPjkGDvC",
+    "actions": [
+      {
+        "action_id": "xsoar_dc_action",
+        "block_id": "xsoar_dc",
+        "text": {
+          "type": "plain_text",
+          "text": "Submit",
+          "emoji": true
+        },
+        "value": "b9a7d051-e00f-4b3a-85a2-5cdb6687f43a@11",
+        "type": "button",
+        "action_ts": "1655533972.143417"
+      }
+    ]
+  },
+  "type": "interactive",
+  "accepts_response_payload": false
+}

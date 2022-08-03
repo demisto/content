@@ -1,0 +1,69 @@
+{
+  "questions":
+  [
+    {
+      "id": "0",
+      "label": "Is it the first question (single select)?",
+      "labelArg": null,
+      "required": false,
+      "type": "singleSelect",
+      "options":
+      [
+        "",
+        "Yes",
+        "No"
+      ],
+      "tooltip": "Help Message",
+      "readOnly": false
+    },
+    {
+      "id": "1",
+      "label": "Is it the second question (short text)",
+      "labelArg": null,
+      "required": false,
+      "type": "shortText",
+      "placeholder": "PLACEHOLDER",
+      "tooltip": "HELPMESSAGE",
+      "readOnly": false
+    },
+    {
+      "id": "2",
+      "label": "Is it the third question (number)?",
+      "labelArg": null,
+      "required": false,
+      "type": "number",
+      "readOnly": false
+    },
+    {
+      "id": "3",
+      "label": "Is it the fourth question (Multiselect)",
+      "labelArg": null,
+      "required": false,
+      "type": "multiSelect",
+      "options":
+      [
+        "Philippe",
+        "Chris",
+        "Nikki",
+        "Chad"
+      ],
+      "readOnly": false
+    },
+    {
+      "id": "4",
+      "label": "Is it the sixth question (longtext)?",
+      "labelArg": null,
+      "required": false,
+      "type": "longText",
+      "readOnly": false
+    }
+  ],
+  "title": "This is the Survey Title",
+  "description": "This is the short description",
+  "sender": "Your SOC team",
+  "formDisplay": null,
+  "user": "spengler@ghostbusters.example.com",
+  "requireConfirmation": true,
+  "authenticated": false,
+  "selectedOption": ""
+}
