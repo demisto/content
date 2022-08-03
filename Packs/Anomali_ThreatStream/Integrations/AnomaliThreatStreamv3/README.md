@@ -299,26 +299,26 @@ Checks the reputation of the given IP address.
 | ThreatStream.IP.Campaign.uuid | String | The UUID of the campaign. | 
 
 #### Command example
-```!ip ip=23.98.23.98 threat_model_association=True```
+```!ip ip=1.1.1.1 threat_model_association=True```
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "23.98.23.98",
+        "Indicator": "1.1.1.1",
         "Reliability": "B - Usually reliable",
         "Score": 3,
         "Type": "ip",
         "Vendor": "Anomali ThreatStream v3 May"
     },
     "IP": {
-        "Address": "23.98.23.98",
+        "Address": "1.1.1.1",
         "Malicious": {
             "Description": null,
             "Vendor": "Anomali ThreatStream v3 May"
         },
         "Relationships": [
             {
-                "EntityA": "23.98.23.98",
+                "EntityA": "1.1.1.1",
                 "EntityAType": "IP",
                 "EntityB": "Test Investigation",
                 "EntityBType": "Campaign",
@@ -340,7 +340,7 @@ Checks the reputation of the given IP address.
         "IP": {
             "ASN": "",
             "Actor": [],
-            "Address": "23.98.23.98",
+            "Address": "1.1.1.1",
             "Campaign": [
                 {
                     "assignee_user": {
@@ -414,10 +414,10 @@ Checks the reputation of the given IP address.
 
 #### Human Readable Output
 
->### IP reputation for: 23.98.23.98
+>### IP reputation for: 1.1.1.1
 >|ASN|Address|Confidence|Country|IType|Modified|Organization|Severity|Source|Status|Tags|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | 23.98.23.98 | 100 |  | apt_ip | 2022-08-01T09:46:41.715Z |  | very-high | Analyst | active | apt, PANW_Test | ip |
+>|  | 1.1.1.1 | 100 |  | apt_ip | 2022-08-01T09:46:41.715Z |  | very-high | Analyst | active | apt, PANW_Test | ip |
 >### Actor details:
 >**No entries.**
 >### Signature details:
@@ -717,7 +717,7 @@ for time in UTC time. |
     ],
     "Domain": {
         "CreationDate": "2021-03-31T10:17:13.553Z",
-        "DNS": "144.76.162.245",
+        "DNS": "1.1.1.1",
         "Geo": {
             "Country": "DE",
             "Location": "51.2993,9.491"
@@ -728,7 +728,7 @@ for time in UTC time. |
             {
                 "EntityA": "y.gp",
                 "EntityAType": "Domain",
-                "EntityB": "144.76.162.245",
+                "EntityB": "1.1.1.1",
                 "EntityBType": "IP",
                 "Relationship": "resolved-from"
             }
@@ -751,7 +751,7 @@ for time in UTC time. |
                     "positives": 1,
                     "scan_date": "2019-11-03 20:08:55",
                     "total": 71,
-                    "url": "http://y.gp/u"
+                    "url": "url"
                 }
             ],
             "DownloadedHashes": [],
@@ -1059,15 +1059,15 @@ for time in UTC time. |
             ],
             "Resolutions": [
                 {
-                    "ip_address": "138.201.129.184",
+                    "ip_address": "1.1.1.1",
                     "last_resolved": "2022-02-25 08:37:14"
                 },
                 {
-                    "ip_address": "144.76.162.245",
+                    "ip_address": "1.1.1.1",
                     "last_resolved": "2019-12-12 23:53:56"
                 },
                 {
-                    "ip_address": "188.40.138.148",
+                    "ip_address": "1.1.1.1",
                     "last_resolved": "2013-04-14 00:00:00"
                 }
             ],
@@ -1376,20 +1376,7 @@ for time in UTC time. |
                     "total": 76
                 }
             ],
-            "Whois": "Admin Email : 4babf6fcc6f7794as@kv.de
-Admin ID: SM568-NTG
-Billing Email : 4babf6fcc6f7794as@kv.de
-Domain: y.gp
-Expiration date: 2021-01-31
-Handler Email : 4babf6fcc6f7794as@kv.de
-Handler ID: KV2465-NTG
-Laste update: 2008-07-24
-Name server: ns1.subdomain.com
-Name server: ns2.subdomain.com
-Register date: 2008-07-22
-Status: ACTIVE
-Tech Email : 4babf6fcc6f7794as@kv.de
-Tech ID: SM568-NTG"
+            "Whois": "Admin Email : mail"
         },
         "WHOIS": {
             "CreationDate": "2021-03-31T10:17:13.553Z",
@@ -3257,19 +3244,11 @@ for time in UTC time. |
         "PositiveDetections": 0,
         "VirusTotal": {
             "ScanID": "264ffc62c96d2672a4b3b1e2641067bf7c1b9928f672573f40e0aecd137d7dca-1626005775",
-            "vtLink": "https://www.virustotal.com/gui/url/264ffc62c96d2672a4b3b1e2641067bf7c1b9928f672573f40e0aecd137d7dca/detection/u-264ffc62c96d2672a4b3b1e2641067bf7c1b9928f672573f40e0aecd137d7dca-1626005775"
+            "vtLink": "link"
         }
     }
 }
 ```
-
-#### Human Readable Output
-
->## VirusTotal URL Reputation for: http:<span>//</span>www.ujhy1.com/
->Last scan date: *2021-07-11 12:16:15*
->Total scans: **88**
->Positive scans: **0**
->VT Link: [http:<span>//</span>www.ujhy1.com/](https:<span>//</span>www.virustotal.com/gui/url/264ffc62c96d2672a4b3b1e2641067bf7c1b9928f672573f40e0aecd137d7dca/detection/u-264ffc62c96d2672a4b3b1e2641067bf7c1b9928f672573f40e0aecd137d7dca-1626005775)
 
 
 ## Additional Considerations for this version
@@ -3350,7 +3329,7 @@ Return filtered intelligence from ThreatStream. If a query is defined, it overri
 | ThreatStream.Intelligence.Severity | String | The severity of the intelligence. | 
 
 #### Command example
-```!threatstream-search-intelligence limit=2 status=inactive value=1.2.4.5```
+```!threatstream-search-intelligence limit=2 status=inactive value=1.1.1.1```
 #### Context Example
 ```json
 {
@@ -3365,7 +3344,7 @@ Return filtered intelligence from ThreatStream. If a query is defined, it overri
                 "ExpirationTS": "2022-07-20T14:27:51.041Z",
                 "FeedID": 0,
                 "ID": 355250247,
-                "IP": "1.2.4.5",
+                "IP": "1.1.1.1",
                 "IType": "c2_ip",
                 "ImportSessionID": null,
                 "IsAnonymous": false,
@@ -3393,7 +3372,7 @@ Return filtered intelligence from ThreatStream. If a query is defined, it overri
                 "Type": "ip",
                 "UUID": "3e141a49-6fc9-4567-8efb-919565a39752",
                 "UpdateID": 940700580,
-                "Value": "1.2.4.5",
+                "Value": "1.1.1.1",
                 "WorkGroups": []
             },
             {
@@ -3405,7 +3384,7 @@ Return filtered intelligence from ThreatStream. If a query is defined, it overri
                 "ExpirationTS": "2022-07-20T14:18:13.044Z",
                 "FeedID": 0,
                 "ID": 355250241,
-                "IP": "1.2.4.5",
+                "IP": "1.1.1.1",
                 "IType": "c2_ip",
                 "ImportSessionID": null,
                 "IsAnonymous": false,
@@ -3433,7 +3412,7 @@ Return filtered intelligence from ThreatStream. If a query is defined, it overri
                 "Type": "ip",
                 "UUID": "15cb41a2-3a0a-4bbf-b056-a0b87232807c",
                 "UpdateID": 940700059,
-                "Value": "1.2.4.5",
+                "Value": "1.1.1.1",
                 "WorkGroups": []
             }
         ]
@@ -3446,6 +3425,6 @@ Return filtered intelligence from ThreatStream. If a query is defined, it overri
 >### The intelligence results
 >|Confidence|CreatedTime|ExpirationTS|FeedID|ID|IP|IType|IsAnonymous|IsEditable|IsPublic|Modified|OwnerOrganizationID|ResourceURI|RetinaConfidence|Severity|Source|SourceReportedConfidence|Status|Tags|ThreatType|Threatscore|Type|UUID|UpdateID|Value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 100 | 2022-04-21T14:27:51.242Z | 2022-07-20T14:27:51.041Z | 0 | 355250247 | 1.2.4.5 | c2_ip | false | false | true | 2022-07-20T14:30:02.307Z | 67 | /api/v2/intelligence/355250247/ | -1 | medium | Analyst | 100 | inactive | abc,feb3fbcf-d18c-4a1a-89af-fbe054e16f6c,Playboook_source_without_approval_on_cloud | c2 | 70 | ip | 3e141a49-6fc9-4567-8efb-919565a39752 | 940700580 | 1.2.4.5 |
->| 100 | 2022-04-21T14:18:13.074Z | 2022-07-20T14:18:13.044Z | 0 | 355250241 | 1.2.4.5 | c2_ip | false | false | true | 2022-07-20T14:20:02.201Z | 70 | /api/v2/intelligence/355250241/ | -1 | high | Analyst | 100 | inactive | Playboook_source_without_approval_on_cloud | c2 | 70 | ip | 15cb41a2-3a0a-4bbf-b056-a0b87232807c | 940700059 | 1.2.4.5 |
+>| 100 | 2022-04-21T14:27:51.242Z | 2022-07-20T14:27:51.041Z | 0 | 355250247 | 1.1.1.1 | c2_ip | false | false | true | 2022-07-20T14:30:02.307Z | 67 | /api/v2/intelligence/355250247/ | -1 | medium | Analyst | 100 | inactive | abc,feb3fbcf-d18c-4a1a-89af-fbe054e16f6c,Playboook_source_without_approval_on_cloud | c2 | 70 | ip | 3e141a49-6fc9-4567-8efb-919565a39752 | 940700580 | 1.1.1.1 |
+>| 100 | 2022-04-21T14:18:13.074Z | 2022-07-20T14:18:13.044Z | 0 | 355250241 | 1.1.1.1 | c2_ip | false | false | true | 2022-07-20T14:20:02.201Z | 70 | /api/v2/intelligence/355250241/ | -1 | high | Analyst | 100 | inactive | Playboook_source_without_approval_on_cloud | c2 | 70 | ip | 15cb41a2-3a0a-4bbf-b056-a0b87232807c | 940700059 | 1.1.1.1 |
 
