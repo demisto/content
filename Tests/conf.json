@@ -619,6 +619,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Whois",
+            "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0",
@@ -2140,11 +2145,6 @@
             "integrations": "LogRhythm",
             "playbookID": "LogRhythm-Test-Playbook",
             "timeout": 200
-        },
-        {
-            "integrations": "FireEye HX",
-            "playbookID": "FireEye HX Test",
-            "timeout": 800
         },
         {
             "integrations": "FireEyeFeed",
@@ -5316,7 +5316,8 @@
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
-        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
+        "SplunkPy_KV_commands_requests_handler": "CIAC-3669"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -5676,6 +5677,6 @@
         "Sanity Test - Playbook with integration",
         "Sanity Test - Playbook with no integration",
         "Sanity Test - Playbook with mocked integration",
-        "Sanity Test - Playbook with Unmockable Integration"
+        "Sanity Test - Playbook with Unmockable Whois Integration"
     ]
 }

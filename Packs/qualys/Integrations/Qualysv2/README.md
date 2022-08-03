@@ -21684,3 +21684,23 @@ Update host attributes using new update parameters.
 #### Human Readable Output
 
 >Assets successfully updated
+
+### qualys-update-unix-record
+***
+Update Unix records for authenticated scans of hosts running on Unix
+
+
+#### Base Command
+
+`qualys-update-unix-record`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | Record IDs to update. | Required | 
+| add_ips | IPs specified will overwrite existing IPs in the record, and existing IPs will be removed. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
