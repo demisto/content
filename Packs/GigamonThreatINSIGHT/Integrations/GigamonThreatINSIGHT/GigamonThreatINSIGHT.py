@@ -66,14 +66,6 @@ def sendRequest(method, api, endpoint=None, data=None, args=None):
         demisto.results(response.reason)
 
 
-def getArgs():
-    args = demisto.args()
-    arguments = {}
-    for arg in args:
-        arguments[arg] = demisto.getArg(arg)
-    return arguments
-
-
 def encodeArgsToURL(args):
     url = ''
     first = True
@@ -389,17 +381,21 @@ def commandCreateTask(args):
 def main():
     # get command and args
     command = demisto.command()
-    args = getArgs()
+    params = demisto.params()
+
+    args: Dict[str, Any] = demisto.args()
 
     # initialize common args
-    api_key = demisto.params().get('api_key')
-    account_uuid = demisto.params().get('account_uuid')
+    api_key = params.get('api_key')
+    account_uuid = params.get('account_uuid')
+
     global HEADERS
     HEADERS = {
         'Authorization': 'IBToken ' + api_key,
         'User-Agent': 'Cortex_Insight.v3',
         'Content-Type': 'application/json',
     }
+
     # attempt command execution
     try:
         if command == 'test-module':
@@ -410,7 +406,7 @@ def main():
             # default first fetch to -7days
             first_fetch_time = datetime.now() - timedelta(days=7)
             max_results = arg_to_number(
-                arg=demisto.params().get('max_fetch'),
+                arg=params.get('max_fetch'),
                 arg_name='max_fetch',
                 required=False
             )
