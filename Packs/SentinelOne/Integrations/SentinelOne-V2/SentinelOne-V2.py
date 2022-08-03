@@ -716,9 +716,12 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=query_params,
                                       retries=3, backoff_factor=5, status_list_to_retry=[200, 202])
         urls_found = []
-        for i in range(len(response["data"])):
-            if response['data'][i]['data'].get('downloadUrl') is not None:
-                urls_found.append(response['data'][i]['data'].get('downloadUrl'))
+        data = []
+        if response["data"] is not None:
+            data = response["data"]
+        for i in data:
+            if i['data'].get('downloadUrl') is not None:
+                urls_found.append(i['data'].get('downloadUrl'))
         for item in urls_found:
             if item[:8] == "/agents/":
                 return item
@@ -728,6 +731,27 @@ class Client(BaseClient):
         endpoint_url = 'cloud-detection/alerts'
 
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=query_params)
+        alerts = response.get('data', {})
+        pagination = response.get('pagination')
+        return alerts, pagination
+
+    def download_threat_file_request(self, endpoint_url):
+        return self._http_request(method='GET', url_suffix=endpoint_url, resp_type='content')
+
+    def get_installed_applications_request(self, query_params):
+        endpoint_url = 'agents/applications'
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=query_params)
+        return response.get('data', [])
+
+    def initiate_endpoint_scan_request(self, agent_ids):
+        endpoint_url = 'agents/actions/initiate-scan'
+        payload = {
+            "filter": {
+                "ids": agent_ids
+            },
+            "data": {}
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
 
@@ -1053,7 +1077,7 @@ def update_threat_analyst_verdict(client: Client, args: dict) -> CommandResults:
         context_entries.append({
             'Updated': updated,
             'ID': threat_id,
-            'Updation': {
+            'Update': {
                 'Action': action
             },
         })
@@ -1069,7 +1093,7 @@ def update_threat_analyst_verdict(client: Client, args: dict) -> CommandResults:
 
 def update_alert_analyst_verdict(client: Client, args: dict) -> CommandResults:
     """
-    Apply a update analyst verdict action to a group of aleerts. Relevant for API version 2.1
+    Apply a update analyst verdict action to a group of alerts. Relevant for API version 2.1
     """
     contents = []
     context_entries = []
@@ -1097,7 +1121,7 @@ def update_alert_analyst_verdict(client: Client, args: dict) -> CommandResults:
         context_entries.append({
             'Updated': updated,
             'ID': alert_id,
-            'Updation': {
+            'Update': {
                 'Action': action
             },
         })
@@ -1576,20 +1600,22 @@ def ping_power_query(client: Client, args: dict) -> CommandResults:
     )
 
     response = client.ping_power_query_request(query_params)
-    if response.get('data') is not None:
+    if response.get('data'):
         for row in response['data']:
             temp = {}
             for i in range(len(row)):
                 temp.update({response['columns'][i]['name']: row[i]})
             context_entries.append(temp)
-
-    return CommandResults(
-        readable_output=tableToMarkdown('Sentinel One - Ping the Power Query', context_entries, removeNull=True,
-                                        metadata='Provides summary information and details aboput the power query and its id '
-                                        ' your search criteria.', headerTransform=pascalToSpace),
-        outputs_prefix='SentinelOne.PowerQuery',
-        outputs=context_entries,
-        raw_response=response)
+        return CommandResults(
+            readable_output=tableToMarkdown('Sentinel One - Ping the Power Query', context_entries, removeNull=True,
+                                            metadata='Provides summary information and details aboput the power query and its id '
+                                            ' your search criteria.', headerTransform=pascalToSpace),
+            outputs_prefix='SentinelOne.PowerQuery',
+            outputs=context_entries,
+            raw_response=response)
+    else:
+        return CommandResults(readable_output='There is no data returned by the id that you provided,'
+                              ' please re-check the id to ping')
 
 
 def update_threat_status(client: Client, args: dict) -> CommandResults:
@@ -1703,7 +1729,7 @@ def expire_site(client: Client, args: dict) -> CommandResults:
         raw_response=Expired_site)
 
 
-def fetch_threat_file(client: Client, args: dict) -> CommandResults:
+def fetch_threat_file(client: Client, args: dict) -> List[CommandResults]:
     """
     Fetches the threat file. Relevent to both API Versions
     """
@@ -1721,24 +1747,25 @@ def fetch_threat_file(client: Client, args: dict) -> CommandResults:
     else:
         downloadable = False
         meta = 'No threats were downloaded'
-
+    files = []
     for threat_id in threat_ids:
-        download_url = ""
         threat_file_download_endpoint = client.download_url_request(threat_id)
         if threat_file_download_endpoint != "-1":
-            server = demisto.params().get('url').rstrip('/')
-            download_url = f'{server}/web/api/v2.1{threat_file_download_endpoint}'
+            zip_file_data = client.download_threat_file_request(threat_file_download_endpoint)
+            files.append(fileResult(filename=f"{threat_id}.zip", data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
         context_entries.append({
             'Downloadable': downloadable,
             'ID': threat_id,
-            'Download URL': download_url,
+            'ZippedFile': fileResult(filename=f"{threat_id}.zip", data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
         })
-    return CommandResults(
+    return [CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Fetch threat file', context_entries, metadata=meta, removeNull=False),
         outputs_prefix='SentinelOne.Threat',
         outputs_key_field='ID',
         outputs=context_entries,
-        raw_response=downloaded_files)
+        raw_response=downloaded_files),
+        *files
+    ]
 
 
 def get_alerts(client: Client, args: dict) -> CommandResults:
@@ -1760,7 +1787,11 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
         siteIds=args.get('site_ids'),
     )
 
-    alerts = client.get_alerts_request(query_params)
+    alerts, pagination = client.get_alerts_request(query_params)
+
+    if pagination['nextCursor'] is not None:
+        demisto.results("Use the below cursor value to get the next page alerts \n {}". format(pagination['nextCursor']))
+
     if alerts:
         for alert in alerts:
             alert_info = alert.get('alertInfo')
@@ -1843,6 +1874,65 @@ def resolve_threat_command(client: Client, args: dict) -> CommandResults:
         outputs_key_field='ID',
         outputs=context_entries,
         raw_response=resolved_threats)
+
+
+def get_installed_applications(client: Client, args: dict) -> CommandResults:
+    """
+    Get installed applications from agent.
+    """
+    context_entries = []
+    headers = ['Name', 'Publisher', 'Size', 'Version', 'InstalledOn']
+    query_params = assign_params(
+        ids=argToList(args.get('agent_ids'))
+    )
+
+    applications = client.get_installed_applications_request(query_params)
+    if applications:
+        for app in applications:
+            context_entries.append({
+                "Name": app.get("name"),
+                "Publisher": app.get("publisher"),
+                "Size": app.get("size"),
+                "Version": app.get("version"),
+                "InstalledOn": app.get("installedDate")
+            })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Getting Installed Applications', context_entries, removeNull=True,
+                                        metadata='Provides summary information and details for all installed applications'
+                                        ' that matched your search criteria.',
+                                        headers=headers, headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.Application',
+        outputs_key_field='Name',
+        outputs=context_entries,
+        raw_response=applications)
+
+
+def initiate_endpoint_scan(client: Client, args: dict) -> CommandResults:
+    """
+    Initiate the endpoint virus scan on provided agent IDs
+    """
+    context_entries = []
+
+    agent_ids = argToList(args.get('agent_ids'))
+    initiated = client.initiate_endpoint_scan_request(agent_ids)
+    if initiated.get('affected') and int(initiated.get('affected')) > 0:
+        updated = True
+        meta = f'Total of {initiated.get("affected")} provided agents were successfully initiated the scan'
+    else:
+        updated = False
+        meta = 'No agents scan was initiated'
+    for agent_id in agent_ids:
+        context_entries.append({
+            "Agent ID": agent_id,
+            "Initiated": updated
+        })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Initiate endpoint scan on provided Agent ID',
+                                        context_entries, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.Agent',
+        outputs_key_field='Agent ID',
+        outputs=context_entries,
+        raw_response=initiated)
 
 
 def get_white_list_command(client: Client, args: dict) -> CommandResults:
@@ -2700,6 +2790,8 @@ def main():
             'sentinelone-uninstall-agent': uninstall_agent,
             'sentinelone-expire-site': expire_site,
             'sentinelone-fetch-threat-file': fetch_threat_file,
+            'sentinelone-get-installed-applications': get_installed_applications,
+            'sentinelone-initiate-endpoint-scan': initiate_endpoint_scan,
         },
         '2.0': {
             'sentinelone-mark-as-threat': mark_as_threat_command,
