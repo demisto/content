@@ -860,7 +860,7 @@ script:
       required: false
       description: Properties of the issue.
     description: Update an issue.
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false
