@@ -968,12 +968,12 @@ def test_module(client: Client):
         return res.text
 
 
-def fetch_incidents(client: Client):
+def fetch_incidents(client: Client, fetch_closed: bool = False):
     last_run = demisto.getLastRun()
     last_timestamp = int(last_run.get('timestamp', 0))
     res = client.get_cases()
     demisto.debug(f"number of returned cases from the api:{len(res)}")
-    if demisto.params().get('fetch_closed', True):
+    if fetch_closed:
         res[:] = [x for x in res if x['createdAt'] > last_timestamp]
     else:
         res[:] = [x for x in res if x['createdAt'] > last_timestamp and x['status'] == 'Open']
@@ -1051,7 +1051,7 @@ def main() -> None:
 
         elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
-            incidents = fetch_incidents(client)
+            incidents = fetch_incidents(client, demisto.params().get('fetch_closed', True))
             demisto.incidents(incidents)
 
         elif command in command_map:
