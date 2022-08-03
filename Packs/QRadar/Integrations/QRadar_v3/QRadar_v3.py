@@ -3449,7 +3449,7 @@ def qradar_search_retrieve_events_command(client: Client,
     Returns:
         CommandResults: The results of the command.
     """
-    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    interval_in_secs = int(args.get('interval_in_seconds', 30))
     search_id = args.get('search_id')
     if not search_id:
         try:

@@ -2843,3 +2843,119 @@ class TestGetAlertByFilter:
                "'SEARCH_VALUE': '172800000'}, " \
                "{'OR': [{'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ'," \
                " 'SEARCH_VALUE': '222'}]}]}" in request_data_log.call_args[0][0]
+
+
+class TestPollingCommands:
+
+    @staticmethod
+    def create_mocked_responses(status_count):
+
+        response_queue = [  # xdr-run-script response
+            {
+                "reply": {
+                    "action_id": 1,
+                    "status": 1,
+                    "endpoints_count": 1
+                }
+            }
+        ]
+
+        for i in range(status_count):
+            if i == status_count - 1:
+                general_status = 'COMPLETED_SUCCESSFULLY'
+            elif i < 2:
+                general_status = 'PENDING'
+            else:
+                general_status = 'IN_PROGRESS'
+
+            response_queue.append(
+                {
+                    "reply": {  # get script status response
+                        "general_status": general_status,
+                        "endpoints_pending": 1 if i < 2 else 0,
+                        "endpoints_in_progress": 0 if i < 2 else 1,
+                    }
+                }
+            )
+            response_queue.append(
+                {
+                    "reply": {   # get script execution result response
+                        "script_name": "snippet script",
+                        "error_message": "",
+                        "results": [
+                            {
+                                "endpoint_name": "test endpoint",
+                                "endpoint_ip_address": [
+                                    "1.1.1.1"
+                                ],
+                                "endpoint_status": "STATUS_010_CONNECTED",
+                                "domain": "aaaa",
+                                "endpoint_id": "1",
+                                "execution_status": "COMPLETED_SUCCESSFULLY",
+                                "failed_files": 0,
+                            }
+                        ]
+                    }
+                }
+            )
+
+        return response_queue
+
+    @pytest.mark.parametrize(argnames='status_count', argvalues=[1, 3, 7, 9, 12, 15])
+    def test_script_run_command(self, mocker, status_count):
+        """
+        Given -
+            xdr-script-run command arguments including polling true where each time a different amount of response
+            is returned.
+
+        When -
+            Running the xdr-script-run
+
+        Then
+            - Make sure the readable output is returned to war-room only once indicating on polling.
+            - Make sure the correct context output is returned once the command finished polling
+            - Make sure context output is returned only at the end of polling.
+            - Make sure the readable output is returned only in the first run.
+            - Make sure the correct output prefix is returned.
+        """
+        from CoreIRApiModule import script_run_polling_command
+        from CommonServerPython import ScheduledCommand
+
+        client = CoreClient(base_url='https://test_api.com/public_api/v1', headers={})
+
+        mocker.patch.object(client, '_http_request', side_effect=self.create_mocked_responses(status_count))
+        mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
+        command_result = script_run_polling_command({'endpoint_ids': '1', 'script_uid': '1'}, client)
+
+        assert command_result.readable_output == "Waiting for the script to " \
+                                                 "finish running on the following endpoints: ['1']..."
+        assert not command_result.outputs
+
+        polling_args = {
+            'endpoint_ids': '1', 'script_uid': '1', 'action_id': '1', 'hide_polling_output': True
+        }
+
+        command_result = script_run_polling_command(polling_args, client)
+        # if scheduled_command is set, it means that command should still poll
+        while not isinstance(command_result, list) and command_result.scheduled_command:
+            # if command result is a list, it means command execution finished
+            assert not command_result.readable_output  # make sure that indication of polling is printed only once
+            assert not command_result.outputs  # make sure no context output is being returned to war-room during polling
+            command_result = script_run_polling_command(polling_args, client)
+
+        assert command_result[0].outputs == {
+            'action_id': 1,
+            'results': [
+                {
+                    'endpoint_name': 'test endpoint',
+                    'endpoint_ip_address': ['1.1.1.1'],
+                    'endpoint_status': 'STATUS_010_CONNECTED',
+                    'domain': 'aaaa',
+                    'endpoint_id': '1',
+                    'execution_status': 'COMPLETED_SUCCESSFULLY',
+                    'failed_files': 0
+                }
+            ]
+        }
+        assert command_result[0].outputs_prefix == 'PaloAltoNetworksXDR.ScriptResult'
