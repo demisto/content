@@ -117,6 +117,16 @@ script:
       - 'False'
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Whether to include the URL bar in the returned screenshot.
+      isArray: false
+      name: include_url
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Converts the contents of a URL to an image file or a PDF file.
     execution: false
@@ -434,7 +444,7 @@ script:
       - contextPath: InfoFile.Type
         description: The type of the image/pdf file
         type: string
-  dockerimage: demisto/chromium:1.0.0.31156
+  dockerimage: devdemisto/chromium:1.0.0.32624
   feed: false
   isfetch: false
   longRunning: false
