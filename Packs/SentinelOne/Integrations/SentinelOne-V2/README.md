@@ -2527,6 +2527,7 @@ Get a list of alerts for a given scope
 | alert_ids | A comma-separated list of alert IDs. | Optional |
 | limit | Limit number of returned items (1-1000). Example: "10". But defaulted to 1000 | Optional |
 | site_ids | List of Site IDs to filter by. Example: "225494730938493804,225494730938493915". | Optional | 
+| cursor | Cursor position returned by the last request. Should be used for iterating over more than 1000 items. Example: "YWdlbnRfaWQ6NTgwMjkzODE=". | Optional |
 
 
 #### Context Output
