@@ -13,7 +13,7 @@
     "id": "incident_salesforcesubject",
     "isReadOnly": false,
     "locked": false,
-    "name": "Salesforce Subject",
+    "name": "SalesforceV2 Subject",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

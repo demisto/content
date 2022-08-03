@@ -4,7 +4,7 @@ from typing import Any, Dict
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
-
+from dateparser import parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -47,7 +47,7 @@ class Client(BaseClient):
             self.SESSION_DATA = response
             self._base_url = self.SESSION_DATA.get('instance_url')  # type: ignore
             self._headers = {
-                'Authorization': f'Bearer {self.SESSION_DATA.get("access_token")}', # type: ignore
+                'Authorization': f'Bearer {self.SESSION_DATA.get("access_token")}',  # type: ignore
                 'Content-Type': 'application/json'
             }
 
@@ -257,7 +257,7 @@ def getUserNames(client):
 
 def searchToEntry(client, searchRecords):
     if len(searchRecords) == 0:
-        return_error('No records matched the search.')
+        raise Exception('No records matched the search.')
 
     case_ids = []
     contact_ids = []
@@ -269,31 +269,31 @@ def searchToEntry(client, searchRecords):
     get_org = []
 
     for record in searchRecords:
-        _type = record.get('attributes', {}).get('type')
-        if _type == 'CaseComment':
-            case_comment.append(item.get('Id'))
+        record_type = record.get('attributes', {}).get('type')
+        if record_type == 'CaseComment':
+            case_comment.append(record.get('Id'))
             break
-        elif _type == 'getOrgName':
-            get_org.append(item.get('Id'))
+        elif record_type == 'getOrgName':
+            get_org.append(record.get('Id'))
             break
-        elif _type == 'Case':
-            case_ids.append(item.get('Id'))
+        elif record_type == 'Case':
+            case_ids.append(record.get('Id'))
             break
-        elif _type == 'Contact':
-            contact_ids.append(item.Id)
+        elif record_type == 'Contact':
+            contact_ids.append(record.get('id'))
             break
-        elif _type == 'Lead':
-            lead_ids.append(item.get('Id'))
+        elif record_type == 'Lead':
+            lead_ids.append(record.get('Id'))
             break
-        elif _type == 'Task':
-            task_ids.append(item.get('Id'))
+        elif record_type == 'Task':
+            task_ids.append(record.get('Id'))
             break
-        elif _type == 'User':
-            user_ids.append(item.get('Id'))
+        elif record_type == 'User':
+            user_ids.append(record.get('Id'))
             break
         else:
             # in case we don't know how to parse the object
-            general.append(item)
+            general.append(record)
             break
 
     condition = None
@@ -308,7 +308,7 @@ def searchToEntry(client, searchRecords):
         # entries.append(client.orgToEntry(cases, 'Account:', userMapping))
 
     if len(case_ids) > 0:
-        condition = "ID IN ('" + case_ids.join("','") + "')"
+        condition = "ID IN ('" + "','".join(case_ids) + "')"
         properties = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate',
                       'ClosedDate', 'OwnerID', 'Priority', 'Origin', 'Status', 'Reason',
                       'IsEscalated', 'SuppliedPhone', 'SuppliedCompany', 'SuppliedEmail', 'ContactEmail',
@@ -317,7 +317,7 @@ def searchToEntry(client, searchRecords):
         entries.append(objectToEntry(client, cases))
 
     if len(case_comment) > 0:
-        condition = "ID IN ('" + case_comment.join("','") + "')"
+        condition = "ID IN ('" + "','".join(case_comment) + "')"
         properties = ['ID', 'CommentBody', 'CreatedDate', 'CreatedById',
                       'IsPublished', 'SystemModstamp', 'LastModifiedById', 'LastModifiedDate']
         cases_comment = client.queryObjects(properties, "CaseComment", condition).get('records')
@@ -412,7 +412,6 @@ def objectToEntry(client, raw_info):
 
     elif obj_type == 'Contact':
 
-        # accountMapping = {} #TODO: implement
         headers = ['ID', 'Name', 'Account', 'Title', 'Phone', 'Mobile', 'Email', 'Owner']
         outputs_prefix = 'SalesForceV2.Contact'
         outputs_key_field = 'ID'
@@ -425,7 +424,6 @@ def objectToEntry(client, raw_info):
 
     elif obj_type == 'Task':
 
-        # leadMapping = {} # TODO: implement
         headers = ['ID', 'Subject', 'WhoId', 'RelatedTo', 'ActivityDate']
         outputs_prefix = 'SalesForceV2.Task'
         outputs_key_field = 'ID'
@@ -471,9 +469,9 @@ def get_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def update_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    result = client.updateObject(args.get('path'), args.get('json'))
+    client.updateObject(args.get('path'), args.get('json'))
     # return updated object
-    return get_object_command(args.get('path'))
+    return get_object_command(client, args)
 
 
 def create_object_command(client: Client) -> CommandResults:
@@ -563,8 +561,9 @@ def create_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def update_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     case_number = args.get('caseNumber')
-    if args.get('oid') and case_number:
-        raise Exception('You must specify an object ID or a Case Number')
+    oid = args.get('oid')
+    if oid and case_number:
+        raise Exception('You must specify an object ID or a Case Number (not both)')
 
     if case_number:
         condition = f"CaseNumber='{case_number}'"
@@ -573,8 +572,6 @@ def update_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             oid = cases[0].get('Id')
         else:
             raise Exception('Unable to update case -> Invalid Case Number provided')
-    else:
-        oid = args.get('oid')
 
     data = {}
 
@@ -596,7 +593,7 @@ def update_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if case_type := args.get('caseType'):
         data['Type'] = case_type
 
-    caseUpdate = client.updateObject(f'Case/{oid}', data)
+    client.updateObject(f'Case/{oid}', data)
 
     return get_case_command(client, {'oid': oid})
 
@@ -662,7 +659,7 @@ def list_case_files_command(client: Client, args: Dict[str, Any]) -> CommandResu
     results = CommandResults(
         outputs_prefix='SalesforceV2.Files',
         outputs_key_field='id',
-        readable_output=tableToMarkdown(f"Case Files {case_oid} {case_number}", file_info),
+        readable_output=tableToMarkdown(f"Case Files {case_oid or case_number}", file_info),
         outputs=file_info,
         ignore_auto_extract=True)
 
@@ -764,13 +761,11 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
 
 
 def get_data(client, remote_incident_id, last_update):
-    case = {}
     last_update_sfdc = parse(last_update).isoformat().split("+")[0].split(".")[0] + "Z"
     properties = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate', 'ClosedDate',
                   'OwnerID', 'Priority', 'Origin', 'Status', 'Reason', 'LastModifiedDate']
     cases = client.queryObjects(
         properties, 'Case', f"LastModifiedDate >= {last_update_sfdc} AND Id='{remote_incident_id}'").get('records')
-    comments = []
     if len(cases) == 1:
         case = cases[0]
         del case['attributes']  # remove attributes
@@ -783,6 +778,9 @@ def get_data(client, remote_incident_id, last_update):
 
         for index, comment in enumerate(comments):
             comments[index]['Owner'] = client.getObject(comment.get('CreatedById'))
+
+    else:  # we have more that 1 case or none
+        raise Exception('Invalid remote incident ID provided.')
 
     return case, comments
 
