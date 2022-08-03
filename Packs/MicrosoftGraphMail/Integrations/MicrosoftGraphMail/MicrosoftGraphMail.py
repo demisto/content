@@ -734,7 +734,6 @@ class MsGraphClient:
 
         return new_emails, excluded_ids_for_nextrun
 
-
     @staticmethod
     def _parse_item_as_dict(email):
         """
