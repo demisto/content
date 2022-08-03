@@ -11,7 +11,7 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 from CommonServerPython import *
-from Armorblox import Client, get_incident_message_ids, get_remediation_action, get_incidents_list, get_page_token, \
+from Armorblox import Client, get_incident_message_ids, get_remediation_action, get_incidents_list, \
     fetch_incidents_command
 import io
 import json
@@ -80,7 +80,7 @@ def test_get_remediation_action(requests_mock):
 
 
 def test_get_incidents_list(requests_mock):
-    """Tests the fetch_incidents_command command function.
+    """Tests the get_incidents_list command function.
     Configures requests_mock instance to generate the appropriate
     get_alert API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
@@ -92,22 +92,8 @@ def test_get_incidents_list(requests_mock):
     mock_response_for_incident_id = util_load_json("test_data/test_response_for_6484.json")
     requests_mock.get(url + '/6484', json=mock_response_for_incident_id)
     client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
-    response = get_incidents_list(client, pageToken=51, first_fetch="lastDay")
+    response, pageToken = get_incidents_list(client, pageToken=51, first_fetch="lastDay")
     assert response == util_load_json("test_data/test_response_for_get_incidents_list.json")['incidents']
-
-
-def test_get_page_token(requests_mock):
-    """Tests the get_page_token command function.
-    Configures requests_mock instance to generate the appropriate
-    get_alert API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
-    """
-
-    mock_response = util_load_json("test_data/test_get_incidents_list.json")
-    requests_mock.get(url + '?orderBy=ASC', json=mock_response)
-    client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
-    response = get_page_token(client)
-    assert response == "1"
 
 
 def test_fetch_incidents_command(requests_mock):
