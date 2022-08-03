@@ -48,7 +48,7 @@ configuration:
   - Bearer Token
   required: false
   type: 15
-- display: ""
+- display: "<api credetials>"
   name: api_credentials
   required: false
   type: 9
