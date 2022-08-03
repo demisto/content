@@ -306,7 +306,7 @@ def format_results(client, uuid):
     # Scan Lists sometimes returns empty
     num_of_attempts = 0
     relationships = []
-    response, metric_results, _ = urlscan_submit_request(client, uuid)
+    response, _, _ = urlscan_submit_request(client, uuid)
     scan_lists = response.get('lists')
     while scan_lists is None:
         try:
