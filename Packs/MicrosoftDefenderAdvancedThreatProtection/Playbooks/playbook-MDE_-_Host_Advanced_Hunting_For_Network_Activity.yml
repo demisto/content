@@ -1,20 +1,10 @@
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.
+  contentitemfields: {}
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.
 id: MDE - Host Advanced Hunting For Network Activity
 inputs:
-- description: A comma-separated list of IPs to hunt.
-  key: IP
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: detectedips
-      root: incident
-      transformers:
-      - operator: uniq
 - description: A comma-separated list of host names to hunt.
   key: DeviceName
   playbookInputQuery:
@@ -22,16 +12,6 @@ inputs:
   value:
     complex:
       accessor: hostnames
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of file names to hunt.
-  key: FileName
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filenames
       root: incident
       transformers:
       - operator: uniq
@@ -45,16 +25,6 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: A comma-separated list of file MD5 hashes to hunt.
-  key: FileMd5
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filemd5
-      root: incident
-      transformers:
-      - operator: uniq
 - description: A comma-separated list of file SHA256 hashes to hunt.
   key: FileSha256
   playbookInputQuery:
@@ -65,18 +35,53 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: A comma-separated list of file SHA1 hashes to hunt.
-  key: FileSha1
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filesha1
-      root: incident
-      transformers:
-      - operator: uniq
 name: MDE - Host Advanced Hunting For Network Activity
-outputs: []
+outputs:
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result
+  description: The query results for Hunt Network Connections.
+  type: unknown
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
+  description: The query results for external_addresses query_purpose.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.dns_query
+  description: The query results for dns_query query_purpose.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.encoded_commands
+  description: The query results for encoded_commands query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
+  description: The query results for Hunt Lateral Movement Evidence.
+  type: unknown
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
+  description: The query results for network_connections query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
+  description: The query results for smb_connections query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
+  description: The query results for credential_dumping query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
+  description: The query results for management_connection query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
+  description: The query results for Hunt Persistence Evidence.
+  type: unknown
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
+  description: The query results for scheduled_job query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry
+  description: The query results for registry_entry query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes
+  description: The query results for startup_folder_changes query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created
+  description: The query results for new_service_created query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.service_updated
+  description: The query results for service_updated query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced
+  description: The query results for file_replaced query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_user
+  description: The query results for new_user query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_group
+  description: The query results for new_group query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change
+  description: The query results for group_user_change query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
+  description: The query results for local_firewall_change query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
+  description: The query results for host_file_change query_purpose.
 starttaskid: '0'
 tasks:
   '0':
@@ -87,7 +92,7 @@ tasks:
     nexttasks:
       '#none#':
       - '4'
-      - '3'
+      - "48"
     note: false
     quietmode: 0
     separatecontext: false
@@ -105,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3280,
-          "y": 410
+          "x": 4300,
+          "y": 260
         }
       }
   '1':
@@ -128,8 +133,6 @@ tasks:
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
-      device_name:
-        simple: ${inputs.DeviceName}
       query_operation:
         simple: and
       query_purpose:
@@ -141,13 +144,13 @@ tasks:
     task:
       brand: ''
       description: Network connections investigation. By selecting a “query_purpose” argument, a designated query template will be used.
-      id: 17ce36af-0594-4d89-867a-00a06d96c884
+      id: 322ac899-ca1c-4774-893c-7de1e66191b6
       iscommand: true
       name: Is there any network activity initiated by the file?
       script: '|||microsoft-atp-advanced-hunting-network-connections'
       type: regular
       version: -1
-    taskid: 17ce36af-0594-4d89-867a-00a06d96c884
+    taskid: 322ac899-ca1c-4774-893c-7de1e66191b6
     timertriggers: []
     type: regular
     view: |-
@@ -157,6 +160,7 @@ tasks:
           "y": 845
         }
       }
+    reputationcalc: 2
   '2':
     evidencedata:
       customfields: {}
@@ -198,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 1460,
-          "y": 845
+          "y": 860
         }
       }
   '3':
@@ -228,7 +232,7 @@ tasks:
       {
         "position": {
           "x": 4080,
-          "y": 560
+          "y": 705
         }
       }
   '4':
@@ -238,9 +242,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '36'
-      - '37'
-      - '39'
+      - "45"
     note: false
     quietmode: 0
     separatecontext: false
@@ -259,8 +261,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2710,
-          "y": 560
+          "x": 2180,
+          "y": 400
         }
       }
   '5':
@@ -303,8 +305,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1870,
-          "y": 845
+          "x": 1880,
+          "y": 860
         }
       }
   '6':
@@ -459,8 +461,6 @@ tasks:
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
-      device_name:
-        simple: ${inputs.DeviceName}
       query_operation:
         simple: and
       query_purpose:
@@ -472,19 +472,19 @@ tasks:
     task:
       brand: ''
       description: Network connections investigation. By selecting a “query_purpose” argument, a designated query template will be used.
-      id: eec728f7-127b-4b50-81b9-d9b2d049eb51
+      id: 89b8860f-9a10-4d34-826c-e5991ce6f1c3
       iscommand: true
-      name: Are there any DNS requests initiated ?
+      name: Are there any DNS requests initiated?
       script: '|||microsoft-atp-advanced-hunting-network-connections'
       type: regular
       version: -1
-    taskid: eec728f7-127b-4b50-81b9-d9b2d049eb51
+    taskid: 89b8860f-9a10-4d34-826c-e5991ce6f1c3
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1020,
+          "x": 4530,
           "y": 845
         }
       }
@@ -527,7 +527,7 @@ tasks:
       {
         "position": {
           "x": 4080,
-          "y": 1190
+          "y": 1010
         }
       }
   '11':
@@ -543,29 +543,37 @@ tasks:
     scriptarguments:
       ip:
         complex:
-          accessor: RemoteIP
-          root: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
+          root: IP.Address
           transformers:
           - operator: uniq
+          filters:
+          - - operator: IsNotInCidrRanges
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: 127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
     separatecontext: false
     skipunavailable: true
     task:
       brand: ''
       description: Checks the reputation of an IP address.
-      id: 8e9ce9af-4247-454d-89f1-ef84e03fc897
+      id: 2a864409-9282-43e4-8b99-7c3b73cdbe57
       iscommand: true
       name: Enrich IPs
       script: '|||ip'
       type: regular
       version: -1
-    taskid: 8e9ce9af-4247-454d-89f1-ef84e03fc897
+    taskid: 2a864409-9282-43e4-8b99-7c3b73cdbe57
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 3630,
-          "y": 1670
+          "x": 3690,
+          "y": 1700
         }
       }
   '12':
@@ -574,11 +582,18 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: Indicators.Score
-          operator: greaterThanOrEqual
-          right:
-            value:
-              simple: '2'
+              complex:
+                root: IP
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: IP.Malicious
+                      iscontext: true
+                accessor: Address
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
       label: yes
     id: '12'
     ignoreworker: false
@@ -596,49 +611,19 @@ tasks:
     task:
       brand: ''
       description: Any suspicious or malicious IPs?
-      id: 92e61de8-13b3-47ce-8a68-032af12a7d43
+      id: 63828416-b4a9-4f49-88ab-86f070a3de0e
       iscommand: false
       name: Any suspicious or malicious IPs
       type: condition
       version: -1
-    taskid: 92e61de8-13b3-47ce-8a68-032af12a7d43
+    taskid: 63828416-b4a9-4f49-88ab-86f070a3de0e
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 3630,
-          "y": 1835
-        }
-      }
-  '13':
-    id: '13'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '11'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 7e8d3071-aca9-41e0-8d22-83fc88518f8a
-      iscommand: false
-      name: Any IP artifacts to work with
-      type: title
-      version: -1
-      description: ''
-    taskid: 7e8d3071-aca9-41e0-8d22-83fc88518f8a
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 3630,
-          "y": 1535
+          "x": 3690,
+          "y": 1850
         }
       }
   '14':
@@ -676,7 +661,7 @@ tasks:
       {
         "position": {
           "x": 3420,
-          "y": 1190
+          "y": 1180
         }
       }
   '15':
@@ -734,8 +719,8 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '13'
-      - '43'
+      - "43"
+      - "49"
     note: false
     quietmode: 0
     reputationcalc: 2
@@ -760,7 +745,7 @@ tasks:
       {
         "position": {
           "x": 3420,
-          "y": 1360
+          "y": 1350
         }
       }
   '18':
@@ -798,7 +783,7 @@ tasks:
       {
         "position": {
           "x": 3520,
-          "y": 2025
+          "y": 2030
         }
       }
   '19':
@@ -872,7 +857,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#default#':
-      - '29'
+      - "28"
       yes:
       - '22'
     note: false
@@ -893,8 +878,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 1040
+          "x": 4530,
+          "y": 1010
         }
       }
   '21':
@@ -941,7 +926,7 @@ tasks:
       {
         "position": {
           "x": 1670,
-          "y": 1030
+          "y": 1040
         }
       }
   '22':
@@ -959,25 +944,27 @@ tasks:
         complex:
           accessor: Name
           root: Domain
+          transformers:
+          - operator: uniq
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ''
       description: Checks the reputation of a domain.
-      id: 7d225ba5-14c5-4aa9-81d4-e2cc09d7e18a
+      id: 17f04a0c-415a-4b67-85ab-0d583b975a6c
       iscommand: true
       name: Enrich DNS
       script: '|||domain'
       type: regular
       version: -1
-    taskid: 7d225ba5-14c5-4aa9-81d4-e2cc09d7e18a
+    taskid: 17f04a0c-415a-4b67-85ab-0d583b975a6c
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1260,
-          "y": 1295
+          "x": 4530,
+          "y": 1350
         }
       }
   '23':
@@ -987,32 +974,17 @@ tasks:
             iscontext: true
             value:
               complex:
-                accessor: Score
-                root: Indicators
-          operator: greaterThanOrEqual
-          right:
-            value:
-              simple: '2'
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              simple: Indicators.Type
-          operator: isEqualString
-          right:
-            value:
-              simple: Domain
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: Value
-                root: Indicators
-          operator: isEqualString
-          right:
-            iscontext: true
-            value:
-              simple: Domain.Name
+                accessor: Name
+                root: Domain
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: Domain.Malicious
+                      iscontext: true
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
       label: yes
     id: '23'
     ignoreworker: false
@@ -1020,7 +992,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#default#':
-      - '29'
+      - "28"
       yes:
       - '25'
     note: false
@@ -1030,19 +1002,19 @@ tasks:
     task:
       brand: ''
       description: Any suspicious or malicious DNS?
-      id: 19c0e48d-3418-4240-84c0-c080d3d9455a
+      id: 5e8e0cf4-2f34-4783-8db6-b178a87eab4f
       iscommand: false
       name: Any suspicious or malicious DNS
       type: condition
       version: -1
-    taskid: 19c0e48d-3418-4240-84c0-c080d3d9455a
+    taskid: 5e8e0cf4-2f34-4783-8db6-b178a87eab4f
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 1260,
-          "y": 1710
+          "x": 4530,
+          "y": 1690
         }
       }
   '25':
@@ -1052,7 +1024,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '29'
+      - "28"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1079,8 +1051,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1430,
-          "y": 1930
+          "x": 4530,
+          "y": 2030
         }
       }
   '28':
@@ -1109,38 +1081,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4080,
+          "x": 4300,
           "y": 2200
-        }
-      }
-  '29':
-    id: '29'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '33'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: b20442f9-2c9b-4fca-854f-223146d85d86
-      iscommand: false
-      name: Done
-      type: title
-      version: -1
-      description: ''
-    taskid: b20442f9-2c9b-4fca-854f-223146d85d86
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 1020,
-          "y": 2115
         }
       }
   '30':
@@ -1176,7 +1118,7 @@ tasks:
       {
         "position": {
           "x": 1670,
-          "y": 1505
+          "y": 1835
         }
       }
   '31':
@@ -1269,7 +1211,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1680,
+          "x": 1670,
           "y": 705
         }
       }
@@ -1299,7 +1241,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
+          "x": 4530,
           "y": 705
         }
       }
@@ -1367,8 +1309,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1260,
-          "y": 1505
+          "x": 4530,
+          "y": 1520
         }
       }
   '41':
@@ -1450,7 +1392,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2790,
+          "x": 2750,
           "y": 1180
         }
       }
@@ -1487,7 +1429,7 @@ tasks:
       {
         "position": {
           "x": 3100,
-          "y": 2025
+          "y": 2030
         }
       }
   '44':
@@ -1497,7 +1439,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '13'
+      - "49"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1523,9 +1465,153 @@ tasks:
       {
         "position": {
           "x": 3840,
-          "y": 1360
+          "y": 1350
         }
       }
+  "45":
+    id: "45"
+    taskid: 88124d1e-6223-43c8-89b1-264076f46201
+    type: condition
+    task:
+      id: 88124d1e-6223-43c8-89b1-264076f46201
+      version: -1
+      name: Check if device information was provided
+      description: Check if device information was provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "36"
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceName
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: fd8e6713-5106-4527-82c0-dc6970184e36
+    type: condition
+    task:
+      id: fd8e6713-5106-4527-82c0-dc6970184e36
+      version: -1
+      name: Are DeviceID and FileName provided?
+      description: Are DeviceID and FileName provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "3"
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FileSha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 4300,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 30ead09e-f404-43ef-8d76-65c3bcbea294
+    type: condition
+    task:
+      id: 30ead09e-f404-43ef-8d76-65c3bcbea294
+      version: -1
+      name: Are there any valid IPs to check?
+      description: Are there any valid IPs to check?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP.Address
+                filters:
+                - - operator: IsNotInCidrRanges
+                    left:
+                      value:
+                        simple: IP.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3840,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
@@ -1536,13 +1622,14 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2005,
-        "width": 3440,
-        "x": 1020,
-        "y": 410
+        "height": 2155,
+        "width": 3450,
+        "x": 1460,
+        "y": 260
       }
     }
   }
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+system: true
