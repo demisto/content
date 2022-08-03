@@ -11298,26 +11298,26 @@ def main():
         elif command == 'url':
             if USE_URL_FILTERING:  # default is false
                 panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
-                                                    additional_suspicious=additional_suspicious,
-                                                    additional_malicious=additional_malicious)
+                                                  additional_suspicious=additional_suspicious,
+                                                  additional_malicious=additional_malicious)
             # do not error out
 
         elif command == 'panorama-get-url-category' or command == 'pan-os-get-url-category':
             panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
-                                                additional_suspicious=additional_suspicious,
-                                                additional_malicious=additional_malicious,
-                                                target=args.get('target'),
-                                                )
+                                              additional_suspicious=additional_suspicious,
+                                              additional_malicious=additional_malicious,
+                                              target=args.get('target'),
+                                              )
 
         elif command == 'panorama-get-url-category-from-cloud' or command == 'pan-os-get-url-category-from-cloud':
             panorama_get_url_category_command(url_cmd='url-info-cloud', url=args.get('url'),
-                                                additional_suspicious=additional_suspicious,
-                                                additional_malicious=additional_malicious)
+                                              additional_suspicious=additional_suspicious,
+                                              additional_malicious=additional_malicious)
 
         elif command == 'panorama-get-url-category-from-host' or command == 'pan-os-get-url-category-from-host':
             panorama_get_url_category_command(url_cmd='url-info-host', url=args.get('url'),
-                                                additional_suspicious=additional_suspicious,
-                                                additional_malicious=additional_malicious)
+                                              additional_suspicious=additional_suspicious,
+                                              additional_malicious=additional_malicious)
 
         # URL Filter
         elif command == 'panorama-get-url-filter' or command == 'pan-os-get-url-filter':
