@@ -4812,15 +4812,16 @@ def test_send_data_collection(requests_mock, mocker):
     user_email = SlackV3.get_user_by_name('spengler').get('profile').get('email')
     calls = slack_sdk.WebClient.api_call.call_args_list
     chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
-    msgs = [x[1].get('json').get('blocks') for x in chat_call if 'blocks' in x[1].get('json').keys()]
-    dc_blockformated = js.loads(PAYLOAD_DC).get('message').get('blocks')
-    msg_tid = [elm.get('value') for msg in msgs for d in msg if d.get('type') == "actions" for elm in d.get('elements')
-               if elm.get('type') == "button"][0]
-    dc_tid = [elm.get('value') for d in dc_blockformated if d.get('type') == "actions" for elm in d.get('elements')
-              if elm.get('type') == "button"][0]
+    msgs_blk = [x[1].get('json').get('blocks') for x in chat_call if 'blocks' in x[1].get('json').keys()]
+    dc_blk = js.loads(PAYLOAD_DC).get('message').get('blocks')
+    msg_action = [elm for msg in msgs_blk for d in msg if d.get('type') == "actions" for elm in d.get('elements')
+                  if elm.get('type') == "button"][0]
+    dc_action = [elm for d in dc_blk if d.get('type') == "actions" for elm in d.get('elements')
+                 if elm.get('type') == "button"][0]
 
-    assert msg_tid == dc_tid
-    assert len(msgs[0]) == len(dc_blockformated)
+    assert msg_action.get('value') == dc_action.get('value')
+    assert msg_action.get('block_id') == dc_action.get('block_id')
+    assert len(msgs_blk[0]) == len(dc_blk)
     assert user_email == bytes.decode(base64.decodebytes(SlackV3.binascii.unhexlify(user_encoded)), "ascii")
 
 
@@ -4860,7 +4861,10 @@ def test_create_slack_block():
     for q in questions:
         blocks.append(create_slack_block(q))
     type_button = {x.get('type') for x in blocks}
+    ids_q = sorted({q.get('id') for q in questions})
+    ids_blocks = sorted({b.get('block_id') for b in blocks})
     assert type_button == {"input"}
+    assert ids_q == ids_blocks
 
 
 def test_get_state_values_wdate(mocker):
