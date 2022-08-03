@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0bbd4a17-0c28-45ab-8ff3-0d8119a00e0e
+    taskid: cd117e74-8f4b-4059-8da1-46f804c19c8d
     type: start
     task:
-      id: 0bbd4a17-0c28-45ab-8ff3-0d8119a00e0e
+      id: cd117e74-8f4b-4059-8da1-46f804c19c8d
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -29,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 774f375d-aced-4240-8322-19160d45460e
+    taskid: b828c10c-d1db-41f1-83ba-f2c8145289cb
     type: regular
     task:
-      id: 774f375d-aced-4240-8322-19160d45460e
+      id: b828c10c-d1db-41f1-83ba-f2c8145289cb
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -48,10 +51,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -65,12 +64,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 82bd701c-147f-4f98-87c2-ba327fac53a9
+    taskid: ed1f4ed4-289a-48f5-86f3-128bd9cce85b
     type: regular
     task:
-      id: 82bd701c-147f-4f98-87c2-ba327fac53a9
+      id: ed1f4ed4-289a-48f5-86f3-128bd9cce85b
       version: -1
       name: ad-groups
       script: '|||ad-groups'
@@ -78,7 +79,8 @@ tasks:
       iscommand: true
       brand: ""
     scriptarguments:
-      specific-groups: {}
+      extend-context:
+        simple: Groups=.
     separatecontext: false
     view: |-
       {
@@ -92,12 +94,81 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    nexttasks:
+      '#none#':
+      - "3"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 86f2f697-4d14-4fa7-86a6-78c6da5023a2
+    type: condition
+    task:
+      id: 86f2f697-4d14-4fa7-86a6-78c6da5023a2
+      version: -1
+      name: Verify ad-groups command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Groups
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: cd5a40f2-a412-4e4f-8e7c-aafc5825aff0
+    type: title
+    task:
+      id: cd5a40f2-a412-4e4f-8e7c-aafc5825aff0
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 415,
+        "height": 785,
         "width": 380,
         "x": 50,
         "y": 50
@@ -107,3 +178,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''
