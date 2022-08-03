@@ -867,7 +867,7 @@ def get_domain_command():
                 execution_metrics.quota_error += 1
                 results.append(
                     CommandResults(
-                        readable_output=f"Quota exceeded for domain {domain}",
+                        readable_output=f"Quota exceeded.",
                         entry_type=entryTypes['note'],
                         content_format=formats['json'],
                         outputs=context,
