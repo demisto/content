@@ -325,8 +325,6 @@ class LdapClient:
 
         # Reverse the lists to conform Active Directory Authentication integration's output:
         # TODO: Consider removing it - because it is meaningless - need to consult with Judah.
-        referrals.reverse()
-        entries.reverse()
 
         return referrals, entries
 
