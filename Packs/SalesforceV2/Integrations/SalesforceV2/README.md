@@ -1,5 +1,4 @@
 CRM Services
-This integration was integrated and tested with version xx of SalesforceV2
 
 ## Configure Salesforce V2 on Cortex XSOAR
 

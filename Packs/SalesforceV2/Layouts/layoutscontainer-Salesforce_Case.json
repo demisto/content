@@ -515,7 +515,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Case Status",
-                        "query": "cf716566-1b24-4b70-8ee7-5a9d51ef98db",
+                        "query": "SalesforceCaseStatus",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",

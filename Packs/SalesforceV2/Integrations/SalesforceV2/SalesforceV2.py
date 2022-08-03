@@ -749,9 +749,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
             if entry.get('type', 0) != 3:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
-                key = ''
-                if params.get('comment_tag') in tags:
-                    key = 'comments'
                 user = entry.get('user', 'dbot')
                 text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
                 public = 'true' if 'public' in tags else 'false'
@@ -861,12 +858,10 @@ def fetchIncident(client, params):
     lastRun = demisto.getLastRun()
     if not lastRun.get("last_case_time"):
         lastRun = {}
-        current_time = datetime.now().isoformat().split(".")[0]
         first_fetch_time = params.get('firstFetchTime', '3 days').strip()
         lastRun['last_case_time'] = parse(f'{first_fetch_time} UTC').isoformat().split("+")[0].split(".")[0] + "Z"
         demisto.setLastRun(lastRun)
 
-    condition = ''
     incidents = []
 
     if len(params.get('fetchFields', [])) > 1:

@@ -1,4 +1,4 @@
-comment: ''
+comment: 'Retrieves and displays the case status values from Salesforce.'
 commonfields:
   id: SalesforceCaseStatusPicklist
   version: -1

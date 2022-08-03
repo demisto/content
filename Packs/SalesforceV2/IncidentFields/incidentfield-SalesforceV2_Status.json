@@ -8,7 +8,7 @@
     "closeForm": false,
     "content": true,
     "editForm": true,
-    "fieldCalcScript": "daa527ab-fd1d-4456-8e3f-1687c0dd84c6",
+    "fieldCalcScript": "SalesforceCaseStatusPicklist",
     "group": 0,
     "hidden": false,
     "id": "incident_salesforcestatus",
