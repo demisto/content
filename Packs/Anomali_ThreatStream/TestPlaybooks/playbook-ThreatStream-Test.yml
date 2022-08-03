@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -117,9 +118,7 @@ tasks:
       id: 8da949ba-e939-4a9c-830e-fdff167f5c34
       version: -1
       name: Import IOC to Threat Stream
-      description: Imports indicators (observables) into ThreatStream. Approval is
-        not required for the imported data. You must have the Approve Intel user permission
-        to import without approval using the API.
+      description: Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the Approve Intel user permission to import without approval using the API.
       script: '|||threatstream-import-indicator-without-approval'
       type: regular
       iscommand: true
@@ -508,6 +507,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -531,8 +531,7 @@ tasks:
       id: 03f5d9cd-a68a-48d0-85ff-3cd5fcf1bd75
       version: -1
       name: Get Indicator by ID
-      description: Return filtered indicators from ThreatStream. If query is defined,
-        it overides all othe arguments that were passed to the command.
+      description: Return filtered indicators from ThreatStream. If query is defined, it overides all othe arguments that were passed to the command.
       script: Anomali ThreatStream v3|||threatstream-get-indicators
       type: regular
       iscommand: true
@@ -686,8 +685,7 @@ tasks:
       id: 3eaadf02-9952-4985-894a-b6e5feefc550
       version: -1
       name: Get Indicator By Model Actor
-      description: Returns a list of indecators associated with the specified model
-        and model's id.
+      description: Returns a list of indecators associated with the specified model and model's id.
       script: Anomali ThreatStream v3|||threatstream-get-indicators-by-model
       type: regular
       iscommand: true
@@ -861,8 +859,7 @@ tasks:
       id: ca8dcc22-5987-48c9-81ce-5e2e78a49015
       version: -1
       name: Get Indicator By Model Campaing
-      description: Returns a list of indecators associated with the specified model
-        and model's id.
+      description: Returns a list of indecators associated with the specified model and model's id.
       script: Anomali ThreatStream v3|||threatstream-get-indicators-by-model
       type: regular
       iscommand: true
@@ -1017,8 +1014,7 @@ tasks:
       id: 31d2e740-d3ea-4042-836b-0bdea96ed84f
       version: -1
       name: threatstream-search-intelligence
-      description: Return filtered intelligence from ThreatStream. If a query is defined,
-        it overrides all other arguments that were passed to the command.
+      description: Return filtered intelligence from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
       script: Anomali ThreatStream v3|||threatstream-search-intelligence
       type: regular
       iscommand: true
@@ -1095,10 +1091,7 @@ tasks:
       id: c62f8294-052e-45a2-8815-19f582b53895
       version: -1
       name: ValidateContent
-      description: Runs validation and linting using the Demisto SDK on content items,
-        such as integrations, automations and content packs. This automation script
-        is used as part of the content validation that runs as part of the contribution
-        flow.
+      description: Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs. This automation script is used as part of the content validation that runs as part of the contribution flow.
       type: condition
       iscommand: false
       brand: ""
@@ -1138,7 +1131,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1153,3 +1145,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+system: true
+description: ''
