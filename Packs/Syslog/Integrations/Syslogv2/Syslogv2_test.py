@@ -492,3 +492,34 @@ def test_rfc_3164_long_message():
                                           timestamp='2022-07-26T01:29:23',
                                           version=None,
                                           occurred=None)
+
+
+@freeze_time("2022-7-21 21:00:00")
+def test_rfc_3164_short_message():
+    """
+    Given:
+        - A RFC 3164 message with less then 1024 bytes.
+
+    When:
+        - Parsing incoming messages.
+
+    Then:
+        - Parses the message and returns the responding SyslogMessageExtract.
+    """
+    inline_msg = 'message with enough chars ' * 20
+    msg = "<13>Jul 26 01:29:23 %{host} " + inline_msg
+    data = msg.encode()
+    assert len(data) <= 1024
+
+    parsed = parse_rfc_3164_format(data)
+    assert parsed == SyslogMessageExtract(app_name=None,
+                                          facility='user',
+                                          host_name='%{host}',
+                                          msg=inline_msg,
+                                          msg_id=None,
+                                          process_id=None,
+                                          sd={},
+                                          severity='notice',
+                                          timestamp='2022-07-26T01:29:23',
+                                          version=None,
+                                          occurred=None)
