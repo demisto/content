@@ -4771,6 +4771,7 @@ def test_slack_get_integration_context(mocker):
 
 def test_send_data_collection(requests_mock, mocker):
     import SlackV3
+    user_encoded = '6333426c626d64735a584a415a3268766333526964584e305a584a7a4c6d5634595731776247557559323974'
     slack_response_mock = SlackResponse(
         client=None,
         http_verb='',
@@ -4782,7 +4783,7 @@ def test_send_data_collection(requests_mock, mocker):
     )
     requests_mock.get(
         'https://test-address:8443/form?key=4d5463334d5452414d54453d'
-        '&user=6347687062476c77634755756247467762334a305a55423163484e3059584a304c6d4e7662513d3d',
+        f'&user={user_encoded}',
         json=js.loads(SURVEY_RESPONSE)
     )
 
@@ -4791,11 +4792,14 @@ def test_send_data_collection(requests_mock, mocker):
             return {'channel': {'id': 'im_channel'}}
         elif method == 'chat.postMessage':
             return slack_response_mock
+        elif method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            return users
         return {}
     SlackV3.CACHE_EXPIRY = EXPIRED_TIMESTAMP
 
     base = "https://test-address:8443/#/external/form/"
-    url = f"{base}4d5463334d5452414d54453d/6347687062476c77634755756247467762334a305a55423163484e3059584a304c6d4e7662513d3d"
+    url = f"{base}4d5463334d5452414d54453d/{user_encoded}"
     msg = f'\nMy first DC\n{url}'
     mocker.patch.object(demisto, 'params', return_value={'overwrite_data_collection_survey': True})
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
@@ -4805,6 +4809,7 @@ def test_send_data_collection(requests_mock, mocker):
                                                        'blocks': None, 'channel_id': ''})
     SlackV3.slack_send()
     SlackV3.extract_awaiting_dc()
+    user_email = SlackV3.get_user_by_name('spengler').get('profile').get('email')
     calls = slack_sdk.WebClient.api_call.call_args_list
     chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
     msgs = [x[1].get('json').get('blocks') for x in chat_call if 'blocks' in x[1].get('json').keys()]
@@ -4816,24 +4821,36 @@ def test_send_data_collection(requests_mock, mocker):
 
     assert msg_tid == dc_tid
     assert len(msgs[0]) == len(dc_blockformated)
+    assert user_email == bytes.decode(base64.decodebytes(SlackV3.binascii.unhexlify(user_encoded)), "ascii")
 
 
 def test_add_dcq_to_context(mocker):
-    import SlackV3
+    from SlackV3 import get_user_by_name, add_dcq_to_context
+
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            return users
+    return {}
 
     base = "https://test-address:8443/#/external/form/"
-    url = f"{base}4d5463334d5452414d54453d/6347687062476c77634755756247467762334a305a55423163484e3059584a304c6d4e7662513d3d"
+    user_encoded = '6333426c626d64735a584a415a3268766333526964584e305a584a7a4c6d5634595731776247557559323974'
+    url = f"{base}4d5463334d5452414d54453d/{user_encoded}"
     msg = f'\nMy first DC\n{url}'
+
     mocker.patch.object(demisto, 'params', return_value={'overwrite_data_collection_survey': True})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
 
-    SlackV3.add_dcq_to_context({'to': 'spengler', 'channel': '', 'group': '', 'entry': '', 'ignore_add_url': 'true',
-                                'thread_id': '', 'message': msg, 'blocks': None, 'channel_id': ''})
+    add_dcq_to_context({'to': 'spengler', 'channel': '', 'group': '', 'entry': '', 'ignore_add_url': 'true',
+                        'thread_id': '', 'message': msg, 'blocks': None, 'channel_id': ''})
     dc_questions = get_integration_context().get('dcquestion')
     json_dc_message = js.loads(dc_questions)
+    user_email = get_user_by_name('spengler').get('profile').get('email')
 
     assert json_dc_message[0].get('message') == msg
     assert json_dc_message[0].get('to') == 'spengler'
+    assert user_email == bytes.decode(base64.decodebytes(SlackV3.binascii.unhexlify(user_encoded)), "ascii")
 
 
 def test_create_slack_block():
