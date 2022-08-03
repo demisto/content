@@ -1307,10 +1307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 1cf34ecf-0c43-457a-8799-e39f163c7182
+    taskid: 72616323-5fe2-44a6-878a-91f674ee97a3
     type: condition
     task:
-      id: 1cf34ecf-0c43-457a-8799-e39f163c7182
+      id: 72616323-5fe2-44a6-878a-91f674ee97a3
       version: -1
       name: Assert logged on users
       type: condition
@@ -1323,14 +1323,22 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: startWith
+      - - operator: containsGeneral
           left:
             value:
-              simple: MicrosoftATP.Machine.ID
+              simple: MicrosoftATP.MachineUser.ID
             iscontext: true
           right:
             value:
-              simple: "489903"
+              simple: demisto
+      - - operator: startWith
+          left:
+            value:
+              simple: MicrosoftATP.MachineUser.MachineID
+            iscontext: true
+          right:
+            value:
+              simple: "4899036"
     view: |-
       {
         "position": {
