@@ -36,6 +36,7 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
             'Tests',
             '.gitlab',
             'Documentation',
+            'Tests/scripts/collect_tests',
         )
     )
     not_excluded = glob(
@@ -44,7 +45,6 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
             'Tests/scripts/infrastructure_tests',
             'Tests/Marketplace/Tests',
             'Tests/tests',
-            'Tests/scripts/collect_tests',
             'Tests/setup',
             'Tests/sdknightly',
             'Tests/known_words.txt',
