@@ -135,12 +135,11 @@ configuration:
   name: close_incident
   required: false
   type: 8
-  hidden: true
 - additionalinfo: Define how to close the mirrored tickets,
     choose 'resolve' to enable reopening from the UI.
   defaultvalue: None
   display: Close Mirrored XSOAR Incident
-  name: close_incident_multiple_options
+  name: close_ticket_multiple_options
   options:
   - None
   - closed
@@ -153,6 +152,7 @@ configuration:
   name: close_ticket
   required: false
   type: 8
+  hidden: true
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
