@@ -991,7 +991,7 @@ tasks:
     task:
       id: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
       version: -1
-      name: If there is no Source Provided, then no Custom Packs should be Installed.
+      name: If there is no source provided, then no custom packs should be installed.
       description: Checks whether there are custom packs to install when no source is provided. In that case, the playbook will stop with an error.
       type: condition
       iscommand: false
@@ -1040,7 +1040,7 @@ inputs:
 - key: InstanceName
   value: {}
   required: false
-  description: Demisto REST API instance name to use.
+  description: Cortex XOAR REST API instance name to use.
   playbookInputQuery: null
 outputs: []
 tests:
