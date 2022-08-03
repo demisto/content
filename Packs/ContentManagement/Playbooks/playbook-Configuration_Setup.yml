@@ -1040,7 +1040,7 @@ inputs:
 - key: InstanceName
   value: {}
   required: false
-  description: Cortex XOAR REST API instance name to use.
+  description: Demisto REST API instance name to use.
   playbookInputQuery: null
 outputs: []
 tests:
