@@ -1730,7 +1730,7 @@ def slack_send():
     thread_id = args.get('threadID', '')
     severity = args.get('severity')  # From server
     blocks = args.get('blocks')
-    reply_broadcast = args.get('reply_broadcast')
+    reply_broadcast = argToBoolean(args.get('reply_broadcast'))
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
 
