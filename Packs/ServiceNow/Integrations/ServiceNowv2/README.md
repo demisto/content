@@ -90,6 +90,7 @@ If MFA is enabled for your user, follow the next steps:
 | comment_tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
 | work_notes_tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
 | file_tag | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
+| file_tag_from_service_now | Choose the tag to add to an entry to mirror it as a file from ServiceNow. | False |
 | update_timestamp_field | Timestamp field to query for updates as part of the mirroring flow. | False |
 | mirror_limit | The maximum number of incidents to mirror incoming each time | False |
 | close_incident | Close XSOAR Incident. When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
@@ -133,10 +134,11 @@ To set up incident mirroring you need to:
 To use ServiceNow on Cortex XSOAR, ensure your service account has the following roles required to make API calls:  
 - Rest_api_explorer
 - Snc_platform_rest_api_access
-- Itil (Needed to access the sys_journal_field to allow comments, work notes, and files to be mirrored in and out.)  
+- Itil (Needed to access the sys_journal_field to allow comments, work notes, and files to be mirrored in and out. Incoming mirroring queries sys_journal_field for comments and worknotes and therefore, access to sys_journal_table is also required.)  
 **Note:**  
 If your organization does not allow assigning the Itil role, you need to give service account elevated
-privileges to the sys_journal_field (see this ServiceNow community link for [giving elevated read access](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc) and potential risks).   
+privileges to the sys_journal_field (see this ServiceNow community link for [giving elevated read access](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc) and potential risks).
+- Read access to sys_journal_field is required for incoming mirroring.
 
 You then need to add to your user account the specific tables you want to have access to.  
 These permissions may not suffice for managing records in some tables. Make sure you
@@ -169,7 +171,7 @@ custom mapping, follow the instructions in STEP 3 and then select the custom map
     - **Out** - Mirrors changes on the Cortex XSOAR ticket to the ServiceNow ticket.
     - **Both** - Mirrors changes both in and out on both tickets.
 11. Set the Timestamp field to query as part of the mirroring flow. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
-12. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, and **File Entry Tag** values.  
+12. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.  
 These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room.  
 **Note:**  
 These tags work only for mirroring comments, work notes, and files from Cortex XSOAR to ServiceNow.
@@ -267,7 +269,7 @@ You can set up any source integration to create a ServiceNow ticket based on a f
     - **Out** - Mirrors changes on the Cortex XSOAR ticket to the ServiceNow ticket.
     - **Both** - Mirrors changes both in and out on both tickets.
 13. Set the **Timestamp field to query as part of the mirroring flow**. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
-14. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, and **File Entry Tag** values.  
+14. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.
 These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room.  
 **Note:**  
 These tags work only for mirroring comments from Cortex XSOAR to ServiceNow.
@@ -295,7 +297,8 @@ Any modifications require that the mappers be cloned before any changes can be a
     - **dbotMirrorInstance** - determines the ServiceNow instance with which to mirror. This should match the instance configuration.
     - **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
     - **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to ServiceNow. They should be copied from the tags in the instance configuration. These are also the tags that must be put on the War Room record in order for it to sync.
-      - To mirror files, use the **ForServiceNow** tag. 
+      - To mirror files from XSOAR to ServiceNow, use the **ForServiceNow** tag. 
+      - Mirrored files from ServiceNow to XSOAR will be tagged by *default* with the **FromServiceNow** tag.
       - To mirror general notes, use the **comments** tag.
       - To mirror private notes that can be read only by users with the necessary permissions, use the **work_notes** tag.
     - Configure any custom fields you want mapped to Cortex XSOAR. Custom fields start with “u_” and are available for ServiceNow v2 version 2.2.10 and later. These must be added to the integration instance **Custom Fields to Mirror** setting.  
@@ -1145,11 +1148,11 @@ Queries the specified table in ServiceNow.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ServiceNow.Results.ID | string | The unique record identifier for the record. | 
-| ServiceNow.Results.UpdatedBy | string | A string field that indicates the user who most recently updated the record. | 
-| ServiceNow.Results.UpdatedAt | date | A time\-stamp field that indicates the date and time of the most recent update. | 
-| ServiceNow.Results.CreatedBy | string | A string field that indicates the user who created the record. | 
-| ServiceNow.Results.CreatedOn | date | A time\-stamp field that indicates when a record was created. | 
+| ServiceNow.Record.ID | string | The unique record identifier for the record. | 
+| ServiceNow.Record.UpdatedBy | string | A string field that indicates the user who most recently updated the record. | 
+| ServiceNow.Record.UpdatedAt | date | A time\-stamp field that indicates the date and time of the most recent update. | 
+| ServiceNow.Record.CreatedBy | string | A string field that indicates the user who created the record. | 
+| ServiceNow.Record.CreatedOn | date | A time\-stamp field that indicates when a record was created. | 
 
 
 #### Command Example
