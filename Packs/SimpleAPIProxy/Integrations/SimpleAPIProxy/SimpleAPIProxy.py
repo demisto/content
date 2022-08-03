@@ -101,41 +101,10 @@ def make_api_request(url: str, method: str, data: Optional[dict] = None, paramet
     if isinstance(data, dict):
         isjson = True
 
-    if method.upper() == "GET":
-        if isjson:
-            response = requests.get(url, json=data, params=parameters, auth=http_basic_creds_to_pass,
-                                    headers=headers_to_pass, verify=False)
-        else:
-            response = requests.get(url, data=data, params=parameters, auth=http_basic_creds_to_pass,
-                                    headers=headers_to_pass, verify=False)
-    elif method.upper() == "POST":
-        if isjson:
-            response = requests.post(url, json=data, params=parameters, auth=http_basic_creds_to_pass,
-                                     headers=headers_to_pass, verify=False)
-        else:
-            response = requests.post(url, data=data, params=parameters, auth=http_basic_creds_to_pass,
-                                     headers=headers_to_pass, verify=False)
-    elif method.upper() == "PUT":
-        if isjson:
-            response = requests.put(url, json=data, params=parameters, auth=http_basic_creds_to_pass,
-                                    headers=headers_to_pass, verify=False)
-        else:
-            response = requests.put(url, data=data, params=parameters, auth=http_basic_creds_to_pass,
-                                    headers=headers_to_pass, verify=False)
-    elif method.upper() == "DELETE":
-        if isjson:
-            response = requests.delete(url, json=data, params=parameters, auth=http_basic_creds_to_pass,
-                                       headers=headers_to_pass, verify=False)
-        else:
-            response = requests.delete(url, data=data, params=parameters, auth=http_basic_creds_to_pass,
-                                       headers=headers_to_pass, verify=False)
-    elif method.upper() == "HEAD":
-        if isjson:
-            response = requests.head(url, json=data, params=parameters, auth=http_basic_creds_to_pass,
-                                     headers=headers_to_pass, verify=False)
-        else:
-            response = requests.head(url, data=data, params=parameters, auth=http_basic_creds_to_pass,
-                                     headers=headers_to_pass, verify=False)
+    if isjson:
+        response = requests.request(method.upper(), url, json=data, params=parameters, auth=http_basic_creds_to_pass, headers=headers_to_pass, verify=False)
+    else:
+        response = requests.request(method.upper(), url, data=data, params=parameters, auth=http_basic_creds_to_pass, headers=headers_to_pass, verify=False)
 
     demisto.debug(f'Requests Request Headers: {response.request.headers}')
     demisto.debug(f'Requests Response: {response.text}')
