@@ -443,14 +443,6 @@ def parse_intelligence_list(intelligence_list):
     """
     intelligence_context = []
     for intelligence in intelligence_list:
-        if intelligence.get('type', '') == 'md5':
-            intelligence['type'] = intelligence.get('subtype', '')
-
-        intelligence['severity'] = demisto.get(intelligence, 'meta.severity') or 'low'
-
-        tags = intelligence.get('tags') or []
-        intelligence['tags'] = ",".join(tag.get('name', '') for tag in tags)
-
         intelligence_context.append({key: intelligence.get(intelligence_key)
                                      for (key, intelligence_key) in INTELLIGENCE_EXTENDED_MAPPING.items()})
 
@@ -1367,8 +1359,8 @@ def search_intelligence(client: Client, **kwargs):
         Returns filtered indicators by parameters from ThreatStream.
         By default the limit of indicators result is set to 50.
     """
-    page = kwargs['page'] = int(kwargs.get('page', 0))
-    page_size = kwargs['page_size'] = int(kwargs.get('page_size', 0))
+    page =  int(kwargs.pop('page', 0))
+    page_size = int(kwargs.pop('page_size', 0))
     if page_size > 0:
         limit = kwargs['limit'] = page_size
     else:
@@ -1382,19 +1374,6 @@ def search_intelligence(client: Client, **kwargs):
         return 'No intelligence found from ThreatStream'
 
     intelligence_context = parse_intelligence_list(intelligence_list)
-
-    # handle the issue that the API does not return more than 1000 indicators.
-    if limit > 1000:
-        while len(intelligence_context) < limit:
-            offset += len(intelligence_list)
-            kwargs['limit'] = limit
-            kwargs['offset'] = offset
-            intelligence_list = client.http_request("GET", url, params=kwargs).get('objects', None)
-            if intelligence_list:
-                intelligence_context.extend(parse_intelligence_list(intelligence_list))
-            else:
-                break
-
     intelligence_table = tableToMarkdown('The intelligence results', intelligence_context, removeNull=True)
 
     return CommandResults(
