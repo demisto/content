@@ -123,7 +123,15 @@ class Client(BaseClient):
 
         url = 'query/'
         params = {"q": query}
+        records = []
         response = self.sendRequestInSession('GET', url, '', params)
+        records += response.get('records')
+
+        while response.get('done') is False:
+            response = self.sendRequestInSession('GET', url + response.get('nextRecordsUrl').split("/")[5], '', {})
+            records += response.get('records')
+
+        response['records'] = records
 
         return response
 
@@ -757,16 +765,23 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     return object_id
 
 
-def get_data(client, remote_incident_id, last_update):
-    last_update_sfdc = parse(last_update).isoformat().split("+")[0].split(".")[0] + "Z"
-    properties = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate', 'ClosedDate',
-                  'OwnerID', 'Priority', 'Origin', 'Status', 'Reason', 'LastModifiedDate']
+def get_data(client, remote_incident_id, last_update, params):
+    case = {}
+    if len(params.get('fetchFields', [])) > 1:
+        properties = params.get('fetchFields', []).split(",")
+    else:
+        properties = []
+    properties += ['Id', 'CaseNumber', 'Subject', 'Description', 'CreatedDate',
+                   'ClosedDate', 'OwnerId', 'Priority', 'Origin', 'Status',
+                   'Reason', 'LastModifiedDate', 'MilestoneStatus', 'isEscalated']
     cases = client.queryObjects(
-        properties, 'Case', f"LastModifiedDate >= {last_update_sfdc} AND Id='{remote_incident_id}'").get('records')
+        list(set(properties)), 'Case', f"LastModifiedDate >= {last_update} AND Id='{remote_incident_id}'").get('records')
+    comments = []
     if len(cases) == 1:
         case = cases[0]
+        case['OwnerDetails'] = client.getObject(case.get('OwnerId'))
         del case['attributes']  # remove attributes
-        condition = f"LastModifiedDate >= {last_update_sfdc} AND ParentId='{case.get('Id')}' ORDER BY LastModifiedDate DESC"
+        condition = f"LastModifiedDate >= {last_update} AND ParentId='{case.get('Id')}' ORDER BY LastModifiedDate DESC"
         properties = ['ID', 'CommentBody', 'CreatedDate', 'CreatedById',
                       'IsPublished', 'SystemModstamp', 'LastModifiedById', 'LastModifiedDate']
         comments = client.queryObjects(properties, "CaseComment", condition).get('records')
@@ -782,35 +797,41 @@ def get_data(client, remote_incident_id, last_update):
     return case, comments
 
 
-def get_modified_remote_data_command(client, args):
+def get_modified_remote_data_command(client, args, params):
     modified_records_ids = []
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = remote_args.last_update
-    last_update_sfdc = parse(last_update).isoformat().split("+")[0].split(".")[0] + "Z"
-    demisto.debug(f'SalesforceV2 : * START * Performing get-modified-remote-data command. Last update is: {last_update}')
+    last_update = parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).isoformat().split(".")[0] + "Z"
+    demisto.debug(f'SalesforcePy : * START * Performing get-modified-remote-data command. Last update is:'
+                  f' {last_update}')
 
-    cases = client.queryObjects(['Id'], 'Case', f"LastModifiedDate >= {last_update_sfdc}").get('records')
+    cases = client.queryObjects(['Id'], 'Case',
+                                f"{params.get('mirroring_condition')}".replace("AND ", "")).get('records')
+
     for item in cases:
         modified_records_ids.append(item['Id'])
 
     demisto.debug(
-        f"SalesforceV2 : * END * Performing get-modified-remote-data command. Results: {','.join(modified_records_ids)}")
+        f"SalesforcePy : * END * Performing get-modified-remote-data command."
+        f" Results: {','.join(modified_records_ids)}")
 
     return GetModifiedRemoteDataResponse(modified_records_ids)
 
 
-def get_remote_data_command(client, args):
+def get_remote_data_command(client, args, params):
     parsed_args = GetRemoteDataArgs(args)
     new_incident_data = {}
     entries = []
+    lastcomment_date = []
+    last_update_sfdc = parse(parsed_args.last_update, settings={'TIMEZONE': 'UTC'}).isoformat().split(".")[0] + "Z"
     try:
-        new_incident_data, case_comments = get_data(client, parsed_args.remote_incident_id, parsed_args.last_update)
+        new_incident_data, case_comments = get_data(client, parsed_args.remote_incident_id, last_update_sfdc, params)
         new_incident_data['id'] = parsed_args.remote_incident_id
         new_incident_data['in_mirror_error'] = ''
 
         if len(case_comments) > 0:
             for cc in case_comments:
                 owner = cc.get('Owner', '')
+                lastcomment_date.append(cc.get('LastModifiedDate', '').split(".")[0] + "Z")
                 entries.append({
                     'Type': EntryType.NOTE,
                     'Contents': f"# Case Comment From Salesforce on {cc.get('LastModifiedDate', '')}\n*Created By*:"
@@ -821,7 +842,10 @@ def get_remote_data_command(client, args):
                     'Note': True,
                     'IgnoreAutoExtract': True
                 })
-
+        # setup last comment date to track tickets
+        if len(lastcomment_date) > 0:
+            new_incident_data['lastcomment_date'] = max(lastcomment_date)
+        # end
         # close xsoar incident when SFDC case is closed
         if new_incident_data.get('Status') == 'Closed':
             if demisto.params().get('close_incident'):
@@ -953,6 +977,7 @@ def main() -> None:
 
     # get the service API url
     params = demisto.params()
+    args = demisto.args()
     base_url = params.get('InstanceURL')
     verify_certificate = params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -978,54 +1003,54 @@ def main() -> None:
             return_results(test_module(client))
 
         elif command == 'fetch-incidents':
-            incidents = fetchIncident(client, demisto.params())
+            incidents = fetchIncident(client, params)
             demisto.incidents(incidents)
         elif command == 'salesforce-search':
-            return_results(search_command(client, demisto.args()))
+            return_results(search_command(client, args))
         elif command == 'salesforce-query':
-            return_results(queryToEntry(client, demisto.args()))
+            return_results(queryToEntry(client, args))
         elif command == 'salesforce-get-object':
-            return_results(get_object_command(client, demisto.args()))
+            return_results(get_object_command(client, args))
         elif command == 'salesforce-update-object':
-            return_results(update_object_command(client, demisto.args()))
+            return_results(update_object_command(client, args))
         elif command == 'salesforce-create-object':
             return_results(create_object_command(client))
         elif command == 'salesforce-get-case':
-            return_results(get_case_command(client, demisto.args()))
+            return_results(get_case_command(client, args))
         elif command == 'salesforce-get-user':
-            return_results(get_user_command(client, demisto.args()))
+            return_results(get_user_command(client, args))
         elif command == 'salesforce-get-casecomment':
-            return_results(get_case_comment_command(client, demisto.args()))
+            return_results(get_case_comment_command(client, args))
         elif command == 'salesforce-get-org':
-            return_results(get_org_name_command(client, demisto.args()))
+            return_results(get_org_name_command(client, args))
         elif command == 'salesforce-post-casecomment':
-            return_results(post_case_comment_command(client, demisto.args()))
+            return_results(post_case_comment_command(client, args))
         elif command == 'salesforce-create-case':
-            return_results(create_case_command(client, demisto.args()))
+            return_results(create_case_command(client, args))
         elif command == 'salesforce-update-case':
-            return_results(update_case_command(client, demisto.args()))
+            return_results(update_case_command(client, args))
         elif command == 'salesforce-get-cases':
             return_results(get_cases_command(client))
         elif command == 'salesforce-close-case':
-            return_results(close_case_command(client, demisto.args()))
+            return_results(close_case_command(client, args))
         elif command == 'salesforce-delete-case':
-            return_results(delete_case_command(client, demisto.args()))
+            return_results(delete_case_command(client, args))
         elif command == 'salesforce-push-comment':
-            return_results(push_comment_command(client, demisto.args()))
+            return_results(push_comment_command(client, args))
         elif command == 'salesforce-push-comment-threads':
-            return_results(push_comment_thread_command(client, demisto.args()))
+            return_results(push_comment_thread_command(client, args))
         elif command == 'salesforce-describe-sobject-field':
-            return_results(describe_sobject_field_command(client, demisto.args()))
+            return_results(describe_sobject_field_command(client, args))
         elif command == 'salesforce-list-case-files':
-            return_results(list_case_files_command(client, demisto.args()))
+            return_results(list_case_files_command(client, args))
         elif command == 'salesforce-get-case-file-by-id':
-            return_results(get_case_file_by_id_command(client, demisto.args()))
+            return_results(get_case_file_by_id_command(client, args))
         elif command == 'get-remote-data':
-            return_results(get_remote_data_command(client, demisto.args()))
+            return_results(get_remote_data_command(client, args, params))
         elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client, demisto.args()))
+            return_results(get_modified_remote_data_command(client, args, params))
         elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
+            return_results(update_remote_system_command(client, args, params))
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
         else:
