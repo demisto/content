@@ -60,7 +60,6 @@ configuration:
 - display: Fetch closed cases
   name: fetch_closed
   type: 8
-  defaultvalue: 'false'
   required: false
 script:
   script: ''
