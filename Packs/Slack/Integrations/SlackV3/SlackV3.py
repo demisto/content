@@ -1417,8 +1417,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
     if req.envelope_id:
         response = SocketModeResponse(envelope_id=req.envelope_id)
         await client.send_socket_mode_response(response)
-    if req.retry_attempt and IGNORE_RETRIES:
-        if req.retry_attempt > 0:
+    if req.retry_attempt:
+        if req.retry_attempt > 0 and IGNORE_RETRIES:
             demisto.debug("Slack is resending the message. To prevent double posts, the retry is ignored.")
             return
         else:
