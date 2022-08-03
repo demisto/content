@@ -1,8 +1,6 @@
 
-from pathlib import Path
 import subprocess
 import sys
-import tempfile
 
 import demisto_client
 from demisto_sdk.commands.common.tools import (get_demisto_version,
@@ -10,6 +8,7 @@ from demisto_sdk.commands.common.tools import (get_demisto_version,
 
 class e2e_tests_utils:
 
+    @staticmethod
     def git_clone_demisto_sdk(destination_folder: str, sdk_git_branch: str = 'master'):
         '''Clone demisto-sdk from GitHub and add it to sys.path
         '''
@@ -18,6 +17,7 @@ class e2e_tests_utils:
         e2e_tests_utils.cli(git_clone_command)
         sys.path.insert(1, f'{destination_folder}/demisto-sdk')
 
+    @staticmethod
     def cli(command) -> subprocess.CompletedProcess:
         if command:
             run_req = None
@@ -30,6 +30,7 @@ class e2e_tests_utils:
             return ret_value
 
 
+    @staticmethod
     def connect_to_server(insecure: bool = False):
         verify = (not insecure) if insecure else None  # set to None so demisto_client will use env var DEMISTO_VERIFY_SSL
         client = demisto_client.configure(verify_ssl=verify)
