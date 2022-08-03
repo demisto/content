@@ -496,7 +496,7 @@ def test_watchlist_update_action_command(mocker, requests_mock):
 
     from CarbonBlackResponseV2 import watchlist_update_action_command, Client
 
-    mock_response = { "result": "success" }
+    mock_response = {"result": "success"}
 
     id = '1021'
     action_type = 'alert'
