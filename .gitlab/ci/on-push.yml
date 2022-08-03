@@ -122,9 +122,9 @@ create-instances:
     #   fi
     # - section_end "Collect Tests and Content Packs"
 
-    # - section_start "Calculate Packs Dependencies" --collapsed
-    # - demisto-sdk find-dependencies -idp ./Tests/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
-    # - section_end "Calculate Packs Dependencies"
+    - section_start "Calculate Packs Dependencies" --collapsed
+    - demisto-sdk find-dependencies -idp ./Tests/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
+    - section_end "Calculate Packs Dependencies"
 
     # - section_start "Prepare Content Packs for Testing"
     # - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
