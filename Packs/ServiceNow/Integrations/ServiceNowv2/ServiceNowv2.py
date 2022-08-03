@@ -2363,24 +2363,20 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
+    closure_case = get_closure_case(params)
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
         if parsed_args.inc_status == IncidentStatus.DONE:
-            if not params.get('close_ticket') == 'None' and ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
+            if not closure_case == 'None' and ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
                 parsed_args.data['state'] = '3'
-            if params.get('close_ticket') == 'closed':
-                # These ticket types are closed by changing their state.
-                if ticket_type == INCIDENT:  # Closing incident ticket.
-                    parsed_args.data['state'] = '7'
-            elif params.get('close_ticket') == 'resolved':
-                # These ticket types are closed by changing their state.
-                if ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
-                    parsed_args.data['state'] = '3'
-                elif ticket_type == INCIDENT:  # Closing incident ticket.
-                    parsed_args.data['state'] = '6'
+            # These ticket types are closed by changing their state.
+            if closure_case == 'closed' and ticket_type == INCIDENT:
+                parsed_args.data['state'] = '7'  # Closing incident ticket.
+            elif closure_case == 'resolved' and ticket_type == INCIDENT:
+                parsed_args.data['state'] = '6'  # resolving incident ticket.
 
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
-        if not params.get('close_ticket') == 'None':
+        if not closure_case == 'None':
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
@@ -2417,6 +2413,22 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 client.add_comment(ticket_id, ticket_type, key, text)
 
     return ticket_id
+
+
+def get_closure_case(params: Dict[str, Any]):
+    """
+    return the right incident closing states according to old and new close_incident integration param.
+    Args:
+        params: the integration params dict.
+
+    Returns: (str) The right closure method.
+    """
+    if not params.get('close_incident_multiple_options') == 'None':
+        return params.get('close_incident_multiple_options')
+    elif params.get('close_ticket'):
+        return 'closed'
+    else:
+        return None
 
 
 def is_entry_type_mirror_supported(entry_type):
