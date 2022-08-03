@@ -99,7 +99,6 @@ def make_api_request(url: str, method: str, data: Optional[dict] = None, paramet
     # json stringify if dict
     isjson = False
     if isinstance(data, dict):
-        # data = json.dumps(data)
         isjson = True
 
     if method.upper() == "GET":
