@@ -34,7 +34,7 @@ ignore=IF100
 lookback
 InfoFile
 params
-שׁ„
+README
 
 [file:classifier-ServiceNow.json]
 ignore=BA101
