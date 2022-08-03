@@ -1,7 +1,7 @@
-import pytest
 import random
 
 from e2e_tests_utils import e2e_tests_utils
+
 
 def test_e2e_demisto_sdk_flow_foo(tmpdir, insecure: bool = False):
     # Importing TestSuite classes from Demisto-SDK
@@ -33,14 +33,14 @@ def test_e2e_demisto_sdk_flow_foo(tmpdir, insecure: bool = False):
     # e2e_tests_utils.cli(f'demisto-sdk download -i Packs/{pack_name}')
     e2e_tests_utils.cli(f'demisto-sdk download -i {playbook_name} -o {tmpdir}/Packs/{pack_name}_updated')
 
-    print (f'Generating docs (creating a readme file) for the playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
+    print(f'Generating docs (creating a readme file) for the playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
     e2e_tests_utils.cli(f'demisto-sdk generate-docs -i {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
 
-    print (f'Formating playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
+    print(f'Formating playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
     e2e_tests_utils.cli(f'demisto-sdk format -y -i {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
 
-    print (f'Validating playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
+    print(f'Validating playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
     e2e_tests_utils.cli(f'demisto-sdk validate --no-conf-json -i {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
 
-    print (f'Uploading updated playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
+    print(f'Uploading updated playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
     e2e_tests_utils.cli(f'demisto-sdk upload -i {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
