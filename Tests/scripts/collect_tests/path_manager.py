@@ -36,6 +36,7 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
             'Tests',
             '.gitlab',
             'Documentation',
+            'Tests/scripts/collect_tests',
         )
     )
     not_excluded = glob(
@@ -50,10 +51,14 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
             'Tests/secrets_white_list.json',
         )
     )
+    result = excluded - not_excluded
 
-    logging.debug(f'not excluded: {not_excluded}')
-    logging.debug(f'excluded paths: {excluded - not_excluded}')
-    return excluded - not_excluded
+    not_excluded_str = '\n'.join(sorted(map(str, not_excluded)))
+    result_str = '\n'.join(sorted(map(str, result)))
+
+    logging.debug(f'not excluded: {not_excluded_str}')
+    logging.debug(f'excluded paths: {result_str}')
+    return result
 
 
 def glob(content_path: Path, paths: Iterable[str]) -> set[Path]:
