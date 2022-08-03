@@ -582,6 +582,7 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
         if intelligence_relationships:
             relationships.extend(intelligence_relationships)
         threat_context.update(outputs)
+        human_readable += create_human_readable(outputs)
 
     ip_indicator = Common.IP(
         dbot_score=dbot_score,
@@ -637,6 +638,13 @@ def get_intelligence_information(client: Client, indicator, ioc_type, intelligen
         relationships.append(relationship)
 
     return relationships, intelligences
+
+def create_human_readable(intelligence_outputs):
+    table = ''
+    for intelligence in intelligence_outputs.keys():
+        table += tableToMarkdown(f'{intelligence} details:', intelligence_outputs[intelligence], headers=['name','id'])
+    
+    return table
 
 
 def domains_reputation_command(client: Client, score_calc: DBotScoreCalculator, domain, status, threshold=None,
@@ -698,6 +706,7 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
         if intelligence_relationships:
             relationships.append(intelligence_relationships)
         threat_context.update(outputs)
+        human_readable += create_human_readable(outputs)
 
     domain_indicator = Common.Domain(
         dbot_score=dbot_score,
@@ -786,6 +795,8 @@ def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, s
             relationships.extend(intelligence_relationships)
         threat_context.update(outputs)
 
+        human_readable += create_human_readable(outputs)
+
     file_indicator = Common.File(
         dbot_score=dbot_score,
         tags=get_tags(indicator),
@@ -864,6 +875,7 @@ def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, sta
         if intelligence_relationships:
             relationships.extend(intelligence_relationships)
         threat_context.update(outputs)
+        human_readable += create_human_readable(outputs)
 
     url_indicator = Common.URL(
         dbot_score=dbot_score,
