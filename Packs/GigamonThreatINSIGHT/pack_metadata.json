@@ -1,6 +1,6 @@
 {
     "name": "Gigamon ThreatINSIGHT",
-    "description": "Gigamon ThreatINSIGHT is a cloud-native network detection and response solution built for the rapid detection of threat activity, investigation of suspicious behavior, proactive hunting for potential risks, and directing a fast and effective response to active threats.",
+    "description": "Gigamon ThreatINSIGHT allows a fast detection and effective response to active threats.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Gigamon",
