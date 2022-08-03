@@ -1549,8 +1549,7 @@ def poll_offense_events(client: Client,
             f'Error while fetching offense {offense_id} events, search_id: {search_id}. Error details: {str(e)} \n'
             f'{traceback.format_exc()}')
         time.sleep(FAILURE_SLEEP)
-        # return WAIT because it's probably a temporary error due to QRadar service
-        return [], QueryStatus.WAIT.value
+        return [], QueryStatus.ERROR.value
 
 
 def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,
@@ -3449,7 +3448,7 @@ def qradar_search_retrieve_events_command(client: Client,
     Returns:
         CommandResults: The results of the command.
     """
-    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    interval_in_secs = int(args.get('interval_in_seconds', 30))
     search_id = args.get('search_id')
     if not search_id:
         try:
