@@ -78,21 +78,23 @@ class Client(BaseClient):
     def get_paginated(
         self,
         url_suffix: str,
-        params: Optional[Dict[str, Any]] = {},
+        params: Optional[Dict[str, Any]] = None,
         page_size: int = PAGE_SIZE,
         max_pages: int = MAX_PAGES,
         log: bool = True,
     ):
+        params = params or {}
         return self._paginated("GET", url_suffix, params, page_size, max_pages, log)
 
     def post_paginated(
         self,
         url_suffix: str,
-        params: Optional[Dict[str, Any]] = {},
+        params: Optional[Dict[str, Any]] = None,
         page_size: int = PAGE_SIZE,
         max_pages: int = MAX_PAGES,
         log: bool = True,
     ):
+        params = params or {}
         return self._paginated("POST", url_suffix, params, page_size, max_pages, log)
 
     def get_base_url(self):
