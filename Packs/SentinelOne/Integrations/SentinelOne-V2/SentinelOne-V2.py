@@ -1785,6 +1785,7 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
         ids=argToList(args.get('alert_ids')),
         limit=int(args.get('limit', 1000)),
         siteIds=args.get('site_ids'),
+        cursor=args.get('cursor'),
     )
 
     alerts, pagination = client.get_alerts_request(query_params)
