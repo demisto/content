@@ -1148,11 +1148,11 @@ Queries the specified table in ServiceNow.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ServiceNow.Results.ID | string | The unique record identifier for the record. | 
-| ServiceNow.Results.UpdatedBy | string | A string field that indicates the user who most recently updated the record. | 
-| ServiceNow.Results.UpdatedAt | date | A time\-stamp field that indicates the date and time of the most recent update. | 
-| ServiceNow.Results.CreatedBy | string | A string field that indicates the user who created the record. | 
-| ServiceNow.Results.CreatedOn | date | A time\-stamp field that indicates when a record was created. | 
+| ServiceNow.Record.ID | string | The unique record identifier for the record. | 
+| ServiceNow.Record.UpdatedBy | string | A string field that indicates the user who most recently updated the record. | 
+| ServiceNow.Record.UpdatedAt | date | A time\-stamp field that indicates the date and time of the most recent update. | 
+| ServiceNow.Record.CreatedBy | string | A string field that indicates the user who created the record. | 
+| ServiceNow.Record.CreatedOn | date | A time\-stamp field that indicates when a record was created. | 
 
 
 #### Command Example

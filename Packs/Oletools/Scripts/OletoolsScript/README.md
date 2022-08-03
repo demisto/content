@@ -8,9 +8,9 @@ Note that oletools is open source code and is subject to change.
 ---
 
 | **Name** | **Description** |
-| --- | --- |
-| Script Type | python3 |
-| Cortex XSOAR Version | 6.1.0 |
+| --- |-----------------|
+| Script Type | python3         |
+| Cortex XSOAR Version | 6.5.0           |
 
 ## Inputs
 ---
