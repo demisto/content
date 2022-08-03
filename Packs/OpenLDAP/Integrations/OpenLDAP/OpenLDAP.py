@@ -100,6 +100,27 @@ class LdapClient:
         """
         return self._custom_attributes
 
+    def _get_tls_object(self):
+        """
+            Returns a TLS object according to the user's selection of the 'Trust any certificate' checkbox.
+        """
+        if self._verify:  # Trust any certificate is unchecked
+            # Trust any certificate = False means that the LDAP server's certificate must be valid -
+            # i.e if the server's certificate is not valid the connection will fail.
+            tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'),
+                      version=ssl.PROTOCOL_TLS)
+
+        else:  # Trust any certificate is checked
+            # Trust any certificate = True means that we do not require validation of the LDAP server's certificate,
+            # and allow the use of all possible ciphers.
+            tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_TLS,
+                      ciphers=self.CIPHERS_STRING)
+
+            # By setting the version to ssl.PROTOCOL_TLS we select the highest protocol version that both client
+            # and server support (can be SSL or TLS versions).
+
+        return tls
+
     def _initialize_ldap_server(self):
         """
         Initializes ldap server object with given parameters. Supports both encrypted and non encrypted connection.
@@ -110,40 +131,13 @@ class LdapClient:
         if self._connection_type == 'ssl':  # Secure connection (SSL\TLS)
             demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {not self._verify})."
                          f" port: {self._port or 'default(636)'}")
-
-            if self._verify:  # Trust any certificate is unchecked
-                # Trust any certificate = False means that the LDAP server's certificate must be valid -
-                # i.e if the server's certificate is not valid the connection will fail.
-                tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'),
-                          version=ssl.PROTOCOL_TLS)
-
-            else:  # Trust any certificate is checked
-                # Trust any certificate = True means that we do not require validation of the LDAP server's certificate,
-                # and allow the use of all possible ciphers.
-                tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_TLS,
-                          ciphers=self.CIPHERS_STRING)
-
-                # By setting the version to ssl.PROTOCOL_TLS we select the highest protocol version that both client
-                # and server support (can be SSL or TLS versions).
-
+            tls = self._get_tls_object()
             return Server(host=self._host, port=self._port, use_ssl=True, tls=tls, connect_timeout=LdapClient.TIMEOUT)
 
-        elif self._connection_type == 'start tls':  # Secure connection (TLS)
+        elif self._connection_type == 'start tls':  # Secure connection (STARTTLS)
             demisto.info(f"Initializing LDAP sever without a secure connection - Start TLS operation will be executed"
                          f" during bind. (unsecure: {not self._verify}). port: {self._port or 'default(389)'}")
-
-            if self._verify:  # Trust any certificate is unchecked
-                # Trust any certificate = False means that the LDAP server's certificate must be valid -
-                # i.e if the server's certificate is not valid the connection will fail.
-                tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'),
-                          version=ssl.PROTOCOL_TLS)
-
-            else:  # Trust any certificate is checked
-                # Trust any certificate = True means that we do not require validation of the LDAP server's certificate,
-                # and allow the use of all possible ciphers.
-                tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_TLS,
-                          ciphers=self.CIPHERS_STRING)
-
+            tls = self._get_tls_object()
             return Server(host=self._host, port=self._port, use_ssl=False, tls=tls, connect_timeout=LdapClient.TIMEOUT)
 
         else:  # Unsecure (non encrypted connection initialized) - connection type is None
