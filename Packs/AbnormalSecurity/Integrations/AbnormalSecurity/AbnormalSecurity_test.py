@@ -224,7 +224,7 @@ def test_submit_a_false_negative_command(mocker):
     }
 
     results = submit_false_negative_report_command(client, args)
-    assert results.outputs_prefix == 'AbnormalSecurity.SubmitFalseNegativeReport'
+    assert results.readable_output == 'Thank you for your feedback! We have sent your inquiry to our support staff.'
 
 
 def test_submit_a_false_positive_command(mocker):
@@ -240,7 +240,7 @@ def test_submit_a_false_positive_command(mocker):
     }
 
     results = submit_false_positive_report_command(client, args)
-    assert results.outputs_prefix == 'AbnormalSecurity.SubmitFalsePositiveReport'
+    assert results.readable_output == 'Thank you for your feedback! We have sent your inquiry to our support staff.'
 
 
 def test_get_the_latest_threat_intel_feed_command(mocker):
