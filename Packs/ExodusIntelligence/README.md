@@ -15,12 +15,12 @@ Please note that an Exodus Intelligence account is necessary to access the API. 
 ## Required fields:
 - Email
 - Password
-- API Key 
+- Private key 
 
 ## Optional fields:
 - Min XI Score
 - Max XI Score
 
 ## Available Commands:
-!fetch-indicator: Runs the integration
-!reset-data-stream: Reset the integration data stream to a later date. Ie: `!reset-data-stream reset=100` will reset the data stream 100 days in the past.
+!exodus-get-indicator: Runs the integration
+!exodus-reset-data-stream: Reset the integration data stream to a later date. Ie: `!exodus-reset-data-stream reset=100` will reset the data stream 100 days in the past.
