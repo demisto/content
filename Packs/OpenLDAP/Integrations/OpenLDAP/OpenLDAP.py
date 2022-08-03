@@ -32,7 +32,7 @@ class LdapClient:
                      'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
 
     def __init__(self, kwargs):
-        self._ldap_server_type = kwargs.get('ldap_server_type', self.OPENLDAP)  # OpenLDAP or Active Directory
+        self._ldap_server_vendor = kwargs.get('ldap_server_vendor', self.OPENLDAP)  # OpenLDAP or Active Directory
         self._host = kwargs.get('host')
         self._port = int(kwargs.get('port')) if kwargs.get('port') else None
         self._username = kwargs.get('credentials', {}).get('identifier', '')
@@ -262,7 +262,7 @@ class LdapClient:
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             demisto.info(f'LDAP Connection Details: {ldap_conn}')
 
-            if self._ldap_server_type == self.ACTIVE_DIRECTORY:
+            if self._ldap_server_vendor == self.ACTIVE_DIRECTORY:
                 search_filter = '(&(objectClass=group)(objectCategory=group))'
 
                 referrals, entries = self._get_ldap_groups_entries_and_referrals_ad(ldap_conn=ldap_conn,
@@ -332,7 +332,7 @@ class LdapClient:
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             demisto.info(f'LDAP Connection Details: {ldap_conn}')
 
-            if self._ldap_server_type == self.ACTIVE_DIRECTORY:
+            if self._ldap_server_vendor == self.ACTIVE_DIRECTORY:
                 dns_filter = ''
                 for dn in dn_list:
                     dns_filter += f'(distinguishedName={dn})'
@@ -430,7 +430,7 @@ class LdapClient:
             return "Done"
         else:
             raise Exception(f"LDAP Authentication - authentication connection failed,"
-                            f" server type is: {self._ldap_server_type}")
+                            f" server type is: {self._ldap_server_vendor}")
 
     def get_user_data(self, username: str, pull_name: bool, pull_mail: bool, pull_phone: bool,
                       name_attribute: str, mail_attribute: str, phone_attribute: str,
@@ -567,7 +567,7 @@ class LdapClient:
         """
             Implements authenticate and roles command.
         """
-        if self._ldap_server_type == self.ACTIVE_DIRECTORY:
+        if self._ldap_server_vendor == self.ACTIVE_DIRECTORY:
             return self.authenticate_and_roles_active_directory(username=username, password=password,
                                                                 pull_name=pull_name, pull_mail=pull_mail,
                                                                 pull_phone=pull_phone, mail_attribute=mail_attribute,
@@ -591,7 +591,7 @@ class LdapClient:
             raise Exception(f'LDAP Authentication integration is supported from build number:'
                             f' {LdapClient.SUPPORTED_BUILD_NUMBER}')
 
-        if self._ldap_server_type == self.OPENLDAP:
+        if self._ldap_server_vendor == self.OPENLDAP:
             try:
                 parse_dn(self._username)
             except LDAPInvalidDnError:

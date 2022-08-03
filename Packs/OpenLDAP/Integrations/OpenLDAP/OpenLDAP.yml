@@ -8,7 +8,7 @@ configuration:
   defaultvalue: OpenLDAP
   display: LDAP Server Vendor
   hidden: false
-  name: ldap_server_type
+  name: ldap_server_vendor
   options:
   - OpenLDAP
   - Active Directory
