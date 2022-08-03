@@ -111,7 +111,7 @@ configuration:
   type: 8
   defaultvalue: 'false'
 - defaultvalue: 0
-  display: 'Advanced: Minutes to look back when fetching emails'
+  display: 'Advanced: Time in minutes to look back when fetching emails'
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents
     that were created before the last run time and did not match the query when they were created.
   name: look_back

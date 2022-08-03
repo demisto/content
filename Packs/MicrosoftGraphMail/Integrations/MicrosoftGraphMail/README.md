@@ -43,7 +43,7 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | self_deployed | Whether to use a self deployed Azure Application. | False |
 | incidentType | The incident type. | False |
 | display_full_email_body | Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required. | False
-| look_back | Advanced: Minutes to look back when fetching emails. | False
+| look_back | Advanced: Time in minutes to look back when fetching emails. | False
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Using National Cloud
@@ -61,10 +61,6 @@ Refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/d
 * Requires the permission of Mail.ReadWrite (Application) - to send attachments > 3mb
 * When sending mails with large attachments, it could take up to 5 minutes for the mail to actually be sent.
 
-## Look-Back Parameter Notes
-* In case the **look-back** parameter is initialized with a certain value and during a time that incidents/emails were fetched, if changing 
-the look back to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
-* If the integration was already set with look back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

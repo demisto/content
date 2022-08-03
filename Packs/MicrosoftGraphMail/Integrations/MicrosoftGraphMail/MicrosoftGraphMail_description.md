@@ -28,9 +28,7 @@ New commands were added to the integration, which require different application 
 - ***send-mail***
 
 ## Look-Back Parameter Notes
-* In case the **look-back** parameter is initialized with a certain value and during a time that incidents/emails were fetched, if changing 
-the look back to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
-* If the integration was already set with look back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
+* Setting the look back parameter will fetch duplicated incidents in the event that incidents that fall out during the given look-back time were already fetched.
 
 
 To use these commands and to fetch incidents,

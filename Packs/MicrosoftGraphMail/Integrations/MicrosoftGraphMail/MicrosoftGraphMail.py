@@ -698,22 +698,17 @@ class MsGraphClient:
     def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
         """
         Fetches emails from given folder that were modified after specific datetime (last_fetch).
-
         All fields are fetched for given email using select=* clause,
         for more information https://docs.microsoft.com/en-us/graph/query-parameters.
         The email will be excluded from returned results if it's id is presented in exclude_ids.
         Number of fetched emails is limited by _emails_fetch_limit parameter.
         The filtering and ordering is done based on modified time.
-
         :type folder_id: ``str``
         :param folder_id: Folder id
-
         :type last_fetch: ``str``
         :param last_fetch: Previous fetch date
-
         :type exclude_ids: ``list``
         :param exclude_ids: List of previous fetch email ids to exclude in current run
-
         :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
         :rtype: ``list`` and ``list``
         """
@@ -738,6 +733,7 @@ class MsGraphClient:
                                         email.get('receivedDateTime') == last_email_time]
 
         return new_emails, excluded_ids_for_nextrun
+
 
     @staticmethod
     def _parse_item_as_dict(email):
@@ -885,12 +881,10 @@ class MsGraphClient:
     def fetch_incidents(self, last_run):
         """
         Fetches emails from office 365 mailbox and creates incidents of parsed emails.
-
         :type last_run: ``dict``
         :param last_run:
             Previous fetch run data that holds the fetch time in utc Y-m-dTH:M:SZ format,
             ids of fetched emails, id and path of folder to fetch incidents from
-
         :return: Next run data and parsed fetched incidents
         :rtype: ``dict`` and ``list``
         """
@@ -940,7 +934,7 @@ class MsGraphClient:
         )
 
         demisto.debug(
-            f'fetched email IDs before after removing duplications - {[email.get("ID") for email in incidents]}'
+            f'fetched email IDs after removing duplications - {[email.get("ID") for email in incidents]}'
         )
 
         next_run = update_last_run_object(
