@@ -49,7 +49,7 @@ def main():
             client.connect(username=USERNAME, password=PASSWORD)
             sftp = paramiko.SFTPClient.from_transport(client)
             filePath = demisto.args()["filePath"]
-            res = sftp.get(filePath, "/tmp/" + filePath[filePath.rindex("/") + 1:])
+            sftp.get(filePath, "/tmp/" + filePath[filePath.rindex("/") + 1:])
             sftp.close()
             with open("/tmp/" + filePath[filePath.rindex("/") + 1:], "r") as f:
                 data = f.read()
@@ -61,7 +61,7 @@ def main():
                         'ContentsFormat': formats['text'],
                         'Contents': data,
                         'ReadableContentsFormat': formats['text'],
-                        'HumanReadable': res,
+                        'HumanReadable': data,
                         'EntryContext': {"SFTP.File.Content": data}
                     }
                     demisto.results(entry)
