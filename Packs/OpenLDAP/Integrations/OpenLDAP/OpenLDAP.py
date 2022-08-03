@@ -317,9 +317,6 @@ class LdapClient:
 
         referrals, entries = LdapClient._parse_ldap_group_entries_and_referrals(ldap_group_entries)
 
-        # Reverse the lists to conform Active Directory Authentication integration's output:
-        # TODO: Consider removing it - because it is meaningless - need to consult with Judah.
-
         return referrals, entries
 
     def _create_search_filter(self, filter_prefix: str) -> str:
