@@ -4,57 +4,143 @@ commonfields:
 name: CybleThreatIntel
 display: Cyble Threat Intel
 category: Data Enrichment & Threat Intelligence
-description: Cyble Threat Intelligence for Vision Users. Must have access to Vision Taxii feed to access the threat intelligence.
+description: Cyble Threat Intelligence for Vision Users. Must have access to Cyble TAXII Feed to access the threat intelligence.
 configuration:
-- display: Server URL
-  name: url
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  type: 19
+  required: false
+  defaultvalue: '1440'
+- display: Discovery Service
+  name: discovery_service
   type: 0
+  required: true
+  additionalinfo: Collection name to fetch indicators from.
+- display: Username
+  name: credentials
+  type: 9
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  defaultvalue: 'false'
+  type: 8
+  additionalinfo:
 - display: Use system proxy settings
   name: proxy
+  required: false
+  defaultvalue: 'false'
+  type: 8
+- display: First fetch time (by days)
+  name: initial_interval
+  defaultvalue: '1'
+  type: 0
+  required: true
+  additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
+- display: Fetch indicators
+  name: feed
   type: 8
   required: false
-- display: Access Token
-  name: token
-  type: 4
+  defaultvalue: 'true'
+- display: Indicator Reputation
+  name: feedReputation
+  type: 18
+  required: false
+  defaultvalue: None
+  options: 
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: A - Completely reliable
+  type: 15
   required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: Indicator Fetch Limit
+  name: limit
+  type: 0
+  required: false
+  additionalinfo: Provide value to limit the indicator to be fetched per iteration
+- display: Collection Name
+  name: collection
+  type: 0
+  required: true
+- name: feedExpirationPolicy
+  display: ''
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- name: feedExpirationInterval
+  display: ''
+  type: 1
+  required: false
+- name: feedBypassExclusionList
+  display: Bypass exclusion list
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
 script:
-  script: |
+  script: |-
+    -
   type: python
   commands:
   - name: cyble-vision-fetch-taxii
     arguments:
-    - name: page
-      required: true
-      description: Returns paginated records of the provided page considering the limits
-      defaultValue: '1'
     - name: limit
-      description: Number of records to return per page(max 20). Using a smaller limit will get faster responses.
-      defaultValue: '10'
-    - name: start_date
+      description: Number of records to fetch. Using a smaller limit will get faster responses
+      defaultValue: "50"
+    - name: begin
+      description: 'Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))'
+    - name: end
+      description: 'Returns records till the end timeline value. (Format: %Y-%m-%d %H:%M:%S)'
+    - name: collection
       required: true
-      description: 'Returns records starting with given date value. (Format: YYYY-mm-dd)'
-    - name: end_date
-      required: true
-      description: 'Returns records till the end date value. (Format: YYYY-mm-dd)'
-    - name: start_time
-      description: 'Returns records starting with given time value (Format: HH:mm:ss)'
-      defaultValue: 00:00:00
-    - name: end_time
-      description: 'Returns records till given time value (Format: HH:mm:ss)'
-      defaultValue: 00:00:00
+      description: Collection Name
     outputs:
     - contextPath: CybleIntel.Threat.details
       description: 'Returns the Threat Intel details from the Taxii service '
       type: String
     description: Fetch the indicators based on the taxii service
-  dockerimage: demisto/python3:3.10.4.28442
+  - name: cyble-vision-get-collection-names
+    arguments: []
+    outputs:
+    - contextPath: CybleIntel.collection.names
+      description: Available collection names for the feed service
+    description: Get the data feed collection names for the taxii feed
+  dockerimage: demisto/taxii-server:1.0.0.32509
   runonce: false
   subtype: python3
+  feed: true
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)

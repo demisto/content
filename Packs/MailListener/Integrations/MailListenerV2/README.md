@@ -199,5 +199,5 @@ There is no context output for this command.
 ```
 
 ## Additional Information
-In the first fetch iteration, it might take a few minutes for email messages to be ingested due to filter limitations on the IMAP client.
-Some emails may be skipped and not fetched as incidents, due to the fact that they are lacking the date field that shows the time when the email was received.
+In the first fetch iteration, some emails may be skipped and not fetched as incidents - the integration will fetch just the last available emails for the given day, as set in *The maximum number of incidents to fetch each time* and *First fetch time*. This behavior is due to the fact that IMAP time filter is limited to day based filter.
+Subsequent fetch iterations should fetch emails as they are received, without further issue.
