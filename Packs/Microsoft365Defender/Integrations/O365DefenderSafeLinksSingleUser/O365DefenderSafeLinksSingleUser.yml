@@ -1093,6 +1093,5 @@ script:
   script: "-"
   type: powershell
   dockerimage: demisto/powershell-ubuntu:7.2.2.29705
-fromversion: 5.5.0
 tests:
 - No Test
