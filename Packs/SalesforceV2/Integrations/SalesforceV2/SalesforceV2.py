@@ -45,9 +45,9 @@ class Client(BaseClient):
 
         if response.get("access_token"):
             self.SESSION_DATA = response
-            self._base_url = self.SESSION_DATA.get('instance_url')
+            self._base_url = self.SESSION_DATA.get('instance_url')  # type: ignore
             self._headers = {
-                'Authorization': f'Bearer {self.SESSION_DATA.get("access_token")}',
+                'Authorization': f'Bearer {self.SESSION_DATA.get("access_token")}', # type: ignore
                 'Content-Type': 'application/json'
             }
 
@@ -57,12 +57,14 @@ class Client(BaseClient):
 
         if not full_url:
             response = self._http_request(
-                method=method, url_suffix=f"{self.URI_PREFIX}{uri}", headers=self._headers, json_data=body, params=params, resp_type='response')
+                method=method, url_suffix=f"{self.URI_PREFIX}{uri}", headers=self._headers, json_data=body,
+                params=params, resp_type='response')
             if response.status_code == 401:
                 # get a new token and re-run the request
                 self.SESSION_DATA = self.getNewToken()
                 response = self._http_request(
-                    method=method, url_suffix=f"{self.URI_PREFIX}{uri}", headers=self._headers, json_data=body, params=params, resp_type='response')
+                    method=method, url_suffix=f"{self.URI_PREFIX}{uri}", headers=self._headers, json_data=body,
+                    params=params, resp_type='response')
         else:
             response = self._http_request(method=method, full_url=full_url, headers=self._headers,
                                           json_data=body, params=params, resp_type='response')
@@ -100,8 +102,6 @@ class Client(BaseClient):
 
         if not found:
             return f"Cannot find {caseFileId} in {caseNumber}"
-
-
 
     def getObjectTypes(self):
 
@@ -282,7 +282,7 @@ def searchToEntry(client, searchRecords):
         elif _type == 'Contact':
             contact_ids.append(item.Id)
             break
-        elif _type== 'Lead':
+        elif _type == 'Lead':
             lead_ids.append(item.get('Id'))
             break
         elif _type == 'Task':
@@ -305,13 +305,14 @@ def searchToEntry(client, searchRecords):
         condition = "ID IN ('" + "','".join(get_org) + "')"
         properties = ['ID', 'Name']
         cases = client.queryObjects(properties, "Account", condition).get('records')
-        #entries.append(client.orgToEntry(cases, 'Account:', userMapping))
+        # entries.append(client.orgToEntry(cases, 'Account:', userMapping))
 
     if len(case_ids) > 0:
         condition = "ID IN ('" + case_ids.join("','") + "')"
         properties = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate',
                       'ClosedDate', 'OwnerID', 'Priority', 'Origin', 'Status', 'Reason',
-                      'IsEscalated', 'SuppliedPhone', 'SuppliedCompany', 'SuppliedEmail', 'ContactEmail', 'ContactId', 'AccountId']
+                      'IsEscalated', 'SuppliedPhone', 'SuppliedCompany', 'SuppliedEmail', 'ContactEmail',
+                      'ContactId', 'AccountId']
         cases = client.queryObjects(properties, "Case", condition).get('records')
         entries.append(objectToEntry(client, cases))
 
@@ -403,8 +404,9 @@ def objectToEntry(client, raw_info):
 
     elif obj_type == 'Case':
 
-        headers = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate', 'ClosedDate', 'OwnerId', 'Priority', 'Origin', 'Status',
-                   'Reason', 'IsEscalated', 'SuppliedPhone', 'SuppliedCompany', 'SuppliedEmail', 'ContactEmail', 'ContactId', 'AccountId']
+        headers = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate', 'ClosedDate', 'OwnerId', 'Priority',
+                   'Origin', 'Status', 'Reason', 'IsEscalated', 'SuppliedPhone', 'SuppliedCompany', 'SuppliedEmail',
+                   'ContactEmail', 'ContactId', 'AccountId']
         outputs_prefix = 'SalesForceV2.Case'
         outputs_key_field = 'ID'
 
@@ -469,12 +471,12 @@ def get_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def update_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    result = client.updateObject(demisto.args().get('path'), demisto.args().get('json'))
+    result = client.updateObject(args.get('path'), args.get('json'))
     # return updated object
-    return get_object_command(demisto.args().get('path'))
+    return get_object_command(args.get('path'))
 
 
-def create_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_object_command(client: Client) -> CommandResults:
 
     result = client.createObject(demisto.args().get('path'), demisto.args().get('json'))
 
@@ -816,7 +818,9 @@ def get_remote_data_command(client, args):
                 owner = cc.get('Owner', '')
                 entries.append({
                     'Type': EntryType.NOTE,
-                    'Contents': f"# Case Comment From Salesforce on {cc.get('LastModifiedDate', '')}\n*Created By*: {owner.get('FirstName', '')} {owner.get('LastName', '')} ({owner.get('Username', '')})\n\n{cc.get('CommentBody', '')}",
+                    'Contents': f"# Case Comment From Salesforce on {cc.get('LastModifiedDate', '')}\n*Created By*:"
+                                f" {owner.get('FirstName', '')} {owner.get('LastName', '')}"
+                                f" ({owner.get('Username', '')})\n\n{cc.get('CommentBody', '')}",
                     'ContentsFormat': EntryFormat.MARKDOWN,
                     'Tags': ['Salesforce Case Comment'],  # the list of tags to add to the entry
                     'Note': True,
@@ -865,7 +869,6 @@ def fetchIncident(client, params):
         demisto.setLastRun(lastRun)
 
     condition = ''
-    properties = ''
     incidents = []
 
     if len(params.get('fetchFields', [])) > 1:
@@ -906,7 +909,8 @@ def fetchIncident(client, params):
         # Fetch comment replies
 
         properties += ['Id', 'CommentBody', 'CreatedDate']
-        condition = f"CreatedDate> {lastRun.get('last_case_time')} {params.get('condition','')} ORDER BY CreatedDate DESC LIMIT 10"
+        condition = f"CreatedDate> {lastRun.get('last_case_time')} {params.get('condition','')}" \
+                    f" ORDER BY CreatedDate DESC LIMIT 10"
         replies = client.queryObjects(list(set(properties)), "FeedComment", condition).get("records")
 
         if len(replies) > 0:
@@ -973,7 +977,7 @@ def main() -> None:
         # obtain the token
         client.getNewToken()
         # set the integration context if not already
-        if not 'sobjects' in demisto.getIntegrationContext():
+        if 'sobjects' not in demisto.getIntegrationContext():
             client.getObjectTypes()
 
         if command == 'test-module':
@@ -992,7 +996,7 @@ def main() -> None:
         elif command == 'salesforce-update-object':
             return_results(update_object_command(client, demisto.args()))
         elif command == 'salesforce-create-object':
-            return_results(create_object_command(client, demisto.args()))
+            return_results(create_object_command(client))
         elif command == 'salesforce-get-case':
             return_results(get_case_command(client, demisto.args()))
         elif command == 'salesforce-get-user':
@@ -1008,7 +1012,7 @@ def main() -> None:
         elif command == 'salesforce-update-case':
             return_results(update_case_command(client, demisto.args()))
         elif command == 'salesforce-get-cases':
-            return_results(get_cases_command(client, demisto.args()))
+            return_results(get_cases_command(client))
         elif command == 'salesforce-close-case':
             return_results(close_case_command(client, demisto.args()))
         elif command == 'salesforce-delete-case':

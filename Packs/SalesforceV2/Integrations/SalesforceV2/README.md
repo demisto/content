@@ -51,50 +51,50 @@ Search records that contain values with the defined pattern.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesForce.Case.ID | string | The ID of the case object. | 
-| SalesForce.Case.CaseNumber | string | The case number. | 
-| SalesForce.Case.Subject | string | The subject of the case. | 
-| SalesForce.Case.Description | string | The description of the case. | 
-| SalesForce.Case.CreateDate | date | The creation date the case. | 
-| SalesForce.Case.ClosedDate | date | The closure date of the case. | 
-| SalesForce.Case.Owner | string | The owner of the case. | 
-| SalesForce.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
-| SalesForce.Case.Origin | string | The origin of the case. Can be: "Web", "Phone", or "Email". | 
-| SalesForce.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
-| SalesForce.Case.Reason | string | The reason for the case creation. | 
-| SalesForce.Contact.ID | string | ID of the contact. | 
-| SalesForce.Contact.Name | string | The name of the contact. | 
-| SalesForce.Contact.Account | string | The account associated with the Contact information. | 
-| SalesForce.Contact.Title | string | The title of the contact. | 
-| SalesForce.Contact.Phone | string | The phone number of the contact. | 
-| SalesForce.Contact.MobilePhone | string | The mobile number of the contact. | 
-| SalesForce.Contact.Email | string | The email address of the contact. | 
-| SalesForce.Contact.Owner | string | The owner of the contact. | 
-| SalesForce.Lead.ID | string | The lead ID. | 
-| SalesForce.Lead.Name | string | The lead name. | 
-| SalesForce.Lead.Title | string | The title of the lead. | 
-| SalesForce.Lead.Company | string | The lead company. | 
-| SalesForce.Lead.Phone | string | The lead phone number. | 
-| SalesForce.Lead.Mobile | string | The lead mobile number. | 
-| SalesForce.Lead.Email | string | The lead email address. | 
-| SalesForce.Lead.Owner | string | The lead owner. | 
-| SalesForce.Lead.Status | string | The lead status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified". | 
-| SalesForce.Task.ID | string | The ID of the task. | 
-| SalesForce.Task.Subject | string | The subject of the task. | 
-| SalesForce.Task.Lead | string | The leader of the task. | 
-| SalesForce.Task.RelatedTo | string | The relevant account. | 
-| SalesForce.Task.DueDate | date | The due date of the task. | 
-| SalesForce.User.ID | string | The ID of the user. | 
-| SalesForce.User.Name | string | The name of the user. | 
-| SalesForce.User.Title | string | The title of the user. | 
-| SalesForce.User.Phone | string | The phone number of the user. | 
-| SalesForce.User.Email | string | The email address of the user. | 
-| SalesForce.Case.IsEscalated | boolean | Whether the case is escalated. | 
-| SalesForce.Case.SuppliedPhone | string | Case supplied phone number. | 
-| SalesForce.Case.SuppliedCompany | string | Case supplied company. | 
-| SalesForce.Case.ContactEmail | string | Case contact email address. | 
-| SalesForce.Case.ContactId | string | Case contact ID. | 
-| SalesForce.Case.AccountId | string | Case account ID. | 
+| SalesForceV2.Case.ID | string | The ID of the case object. | 
+| SalesForceV2.Case.CaseNumber | string | The case number. | 
+| SalesForceV2.Case.Subject | string | The subject of the case. | 
+| SalesForceV2.Case.Description | string | The description of the case. | 
+| SalesForceV2.Case.CreateDate | date | The creation date the case. | 
+| SalesForceV2.Case.ClosedDate | date | The closure date of the case. | 
+| SalesForceV2.Case.Owner | string | The owner of the case. | 
+| SalesForceV2.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
+| SalesForceV2.Case.Origin | string | The origin of the case. Can be: "Web", "Phone", or "Email". | 
+| SalesForceV2.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
+| SalesForceV2.Case.Reason | string | The reason for the case creation. | 
+| SalesForceV2.Contact.ID | string | ID of the contact. | 
+| SalesForceV2.Contact.Name | string | The name of the contact. | 
+| SalesForceV2.Contact.Account | string | The account associated with the Contact information. | 
+| SalesForceV2.Contact.Title | string | The title of the contact. | 
+| SalesForceV2.Contact.Phone | string | The phone number of the contact. | 
+| SalesForceV2.Contact.MobilePhone | string | The mobile number of the contact. | 
+| SalesForceV2.Contact.Email | string | The email address of the contact. | 
+| SalesForceV2.Contact.Owner | string | The owner of the contact. | 
+| SalesForceV2.Lead.ID | string | The lead ID. | 
+| SalesForceV2.Lead.Name | string | The lead name. | 
+| SalesForceV2.Lead.Title | string | The title of the lead. | 
+| SalesForceV2.Lead.Company | string | The lead company. | 
+| SalesForceV2.Lead.Phone | string | The lead phone number. | 
+| SalesForceV2.Lead.Mobile | string | The lead mobile number. | 
+| SalesForceV2.Lead.Email | string | The lead email address. | 
+| SalesForceV2.Lead.Owner | string | The lead owner. | 
+| SalesForceV2.Lead.Status | string | The lead status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified". | 
+| SalesForceV2.Task.ID | string | The ID of the task. | 
+| SalesForceV2.Task.Subject | string | The subject of the task. | 
+| SalesForceV2.Task.Lead | string | The leader of the task. | 
+| SalesForceV2.Task.RelatedTo | string | The relevant account. | 
+| SalesForceV2.Task.DueDate | date | The due date of the task. | 
+| SalesForceV2.User.ID | string | The ID of the user. | 
+| SalesForceV2.User.Name | string | The name of the user. | 
+| SalesForceV2.User.Title | string | The title of the user. | 
+| SalesForceV2.User.Phone | string | The phone number of the user. | 
+| SalesForceV2.User.Email | string | The email address of the user. | 
+| SalesForceV2.Case.IsEscalated | boolean | Whether the case is escalated. | 
+| SalesForceV2.Case.SuppliedPhone | string | Case supplied phone number. | 
+| SalesForceV2.Case.SuppliedCompany | string | Case supplied company. | 
+| SalesForceV2.Case.ContactEmail | string | Case contact email address. | 
+| SalesForceV2.Case.ContactId | string | Case contact ID. | 
+| SalesForceV2.Case.AccountId | string | Case account ID. | 
 
 ### salesforce-query
 ***
@@ -134,44 +134,44 @@ Returns an object by its path.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesForce.Case.ID | string | The object ID of the case. | 
-| SalesForce.Case.CaseNumber | string | The case number. | 
-| SalesForce.Case.Subject | string | The subject of the case. | 
-| SalesForce.Case.Description | string | The description of the case. | 
-| SalesForce.Case.CreateDate | date | The creation date of the case. | 
-| SalesForce.Case.ClosedDate | date | The closure date of the case. | 
-| SalesForce.Case.Owner | string | The owner of the case. | 
-| SalesForce.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
-| SalesForce.Case.Origin | string | Origin of the case. Can be: "Web", "Phone", or "Email". | 
-| SalesForce.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
-| SalesForce.Case.Reason | string | The reason for the case creation. | 
-| SalesForce.Contact.ID | string | The ID of the contact. | 
-| SalesForce.Contact.Name | string | The name of the contact. | 
-| SalesForce.Contact.Account | string | The account associated with the contact information. | 
-| SalesForce.Contact.Title | string | The title of the contact. | 
-| SalesForce.Contact.Phone | string | The phone number of the contact. | 
-| SalesForce.Contact.MobilePhone | string | The mobile number of the contact. | 
-| SalesForce.Contact.Email | string | The email address of the contact. | 
-| SalesForce.Contact.Owner | string | The owner of the contact. | 
-| SalesForce.Lead.ID | string | The lead ID. | 
-| SalesForce.Lead.Name | string | The lead name. | 
-| SalesForce.Lead.Title | string | The title of the lead. | 
-| SalesForce.Lead.Company | string | The lead company. | 
-| SalesForce.Lead.Phone | string | The lead phone number. | 
-| SalesForce.Lead.Mobile | string | The lead mobile number. | 
-| SalesForce.Lead.Email | string | The lead email address. | 
-| SalesForce.Lead.Owner | string | The lead owner. | 
-| SalesForce.Lead.Status | string | The lead status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified". | 
-| SalesForce.Task.ID | string | The ID of the task. | 
-| SalesForce.Task.Subject | string | The subject of the task. | 
-| SalesForce.Task.Lead | string | The leader of the task. | 
-| SalesForce.Task.RelatedTo | string | The relevant account of the task. | 
-| SalesForce.Task.DueDate | date | The due date of the task. | 
-| SalesForce.User.ID | string | The ID of the user. | 
-| SalesForce.User.Name | string | The name of the user. | 
-| SalesForce.User.Title | string | The title of the user. | 
-| SalesForce.User.Phone | string | The phone number of the user. | 
-| SalesForce.User.Email | string | The email address of the user. | 
+| SalesForceV2.Case.ID | string | The object ID of the case. | 
+| SalesForceV2.Case.CaseNumber | string | The case number. | 
+| SalesForceV2.Case.Subject | string | The subject of the case. | 
+| SalesForceV2.Case.Description | string | The description of the case. | 
+| SalesForceV2.Case.CreateDate | date | The creation date of the case. | 
+| SalesForceV2.Case.ClosedDate | date | The closure date of the case. | 
+| SalesForceV2.Case.Owner | string | The owner of the case. | 
+| SalesForceV2.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
+| SalesForceV2.Case.Origin | string | Origin of the case. Can be: "Web", "Phone", or "Email". | 
+| SalesForceV2.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
+| SalesForceV2.Case.Reason | string | The reason for the case creation. | 
+| SalesForceV2.Contact.ID | string | The ID of the contact. | 
+| SalesForceV2.Contact.Name | string | The name of the contact. | 
+| SalesForceV2.Contact.Account | string | The account associated with the contact information. | 
+| SalesForceV2.Contact.Title | string | The title of the contact. | 
+| SalesForceV2.Contact.Phone | string | The phone number of the contact. | 
+| SalesForceV2.Contact.MobilePhone | string | The mobile number of the contact. | 
+| SalesForceV2.Contact.Email | string | The email address of the contact. | 
+| SalesForceV2.Contact.Owner | string | The owner of the contact. | 
+| SalesForceV2.Lead.ID | string | The lead ID. | 
+| SalesForceV2.Lead.Name | string | The lead name. | 
+| SalesForceV2.Lead.Title | string | The title of the lead. | 
+| SalesForceV2.Lead.Company | string | The lead company. | 
+| SalesForceV2.Lead.Phone | string | The lead phone number. | 
+| SalesForceV2.Lead.Mobile | string | The lead mobile number. | 
+| SalesForceV2.Lead.Email | string | The lead email address. | 
+| SalesForceV2.Lead.Owner | string | The lead owner. | 
+| SalesForceV2.Lead.Status | string | The lead status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified". | 
+| SalesForceV2.Task.ID | string | The ID of the task. | 
+| SalesForceV2.Task.Subject | string | The subject of the task. | 
+| SalesForceV2.Task.Lead | string | The leader of the task. | 
+| SalesForceV2.Task.RelatedTo | string | The relevant account of the task. | 
+| SalesForceV2.Task.DueDate | date | The due date of the task. | 
+| SalesForceV2.User.ID | string | The ID of the user. | 
+| SalesForceV2.User.Name | string | The name of the user. | 
+| SalesForceV2.User.Title | string | The title of the user. | 
+| SalesForceV2.User.Phone | string | The phone number of the user. | 
+| SalesForceV2.User.Email | string | The email address of the user. | 
 
 ### salesforce-update-object
 ***
@@ -193,44 +193,44 @@ Updates object fields.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesForce.Case.ID | string | The object ID of the case. | 
-| SalesForce.Case.CaseNumber | string | The case number. | 
-| SalesForce.Case.Subject | string | The subject of the case. | 
-| SalesForce.Case.Description | string | The description of the case. | 
-| SalesForce.Case.CreateDate | date | The creation date of the case. | 
-| SalesForce.Case.ClosedDate | date | The closure time of the case. | 
-| SalesForce.Case.Owner | string | The owner of the case. | 
-| SalesForce.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
-| SalesForce.Case.Origin | string | The origin of the case. Can be: "Web", "Phone", or "Email". | 
-| SalesForce.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
-| SalesForce.Case.Reason | string | The reason for the case creation. | 
-| SalesForce.Contact.ID | string | The ID of the contact. | 
-| SalesForce.Contact.Name | string | The name of the contact. | 
-| SalesForce.Contact.Account | string | The account associated with the contact information. | 
-| SalesForce.Contact.Title | string | The title of the contact. | 
-| SalesForce.Contact.Phone | string | The phone number of the contact. | 
-| SalesForce.Contact.MobilePhone | string | The mobile number of the contact. | 
-| SalesForce.Contact.Email | string | The email address of the contact. | 
-| SalesForce.Contact.Owner | string | The owner of the contact. | 
-| SalesForce.Lead.ID | string | The lead ID. | 
-| SalesForce.Lead.Name | string | The lead name. | 
-| SalesForce.Lead.Title | string | The title of the lead. | 
-| SalesForce.Lead.Company | string | The lead company. | 
-| SalesForce.Lead.Phone | string | The lead phone number. | 
-| SalesForce.Lead.Mobile | string | The lead mobile number. | 
-| SalesForce.Lead.Email | string | The lead email address. | 
-| SalesForce.Lead.Owner | string | The lead owner. | 
-| SalesForce.Lead.Status | string | The lead status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified". | 
-| SalesForce.Task.ID | string | The ID of the task. | 
-| SalesForce.Task.Subject | string | The subject of the task. | 
-| SalesForce.Task.Lead | string | The leader of the task. | 
-| SalesForce.Task.RelatedTo | string | The relevant account. | 
-| SalesForce.Task.DueDate | date | The due date of the task. | 
-| SalesForce.User.ID | string | The ID of the user. | 
-| SalesForce.User.Name | string | The name of the user. | 
-| SalesForce.User.Title | string | The title of the user. | 
-| SalesForce.User.Phone | string | The phone number of the user. | 
-| SalesForce.User.Email | string | The email address of the user. | 
+| SalesForceV2.Case.ID | string | The object ID of the case. | 
+| SalesForceV2.Case.CaseNumber | string | The case number. | 
+| SalesForceV2.Case.Subject | string | The subject of the case. | 
+| SalesForceV2.Case.Description | string | The description of the case. | 
+| SalesForceV2.Case.CreateDate | date | The creation date of the case. | 
+| SalesForceV2.Case.ClosedDate | date | The closure time of the case. | 
+| SalesForceV2.Case.Owner | string | The owner of the case. | 
+| SalesForceV2.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
+| SalesForceV2.Case.Origin | string | The origin of the case. Can be: "Web", "Phone", or "Email". | 
+| SalesForceV2.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
+| SalesForceV2.Case.Reason | string | The reason for the case creation. | 
+| SalesForceV2.Contact.ID | string | The ID of the contact. | 
+| SalesForceV2.Contact.Name | string | The name of the contact. | 
+| SalesForceV2.Contact.Account | string | The account associated with the contact information. | 
+| SalesForceV2.Contact.Title | string | The title of the contact. | 
+| SalesForceV2.Contact.Phone | string | The phone number of the contact. | 
+| SalesForceV2.Contact.MobilePhone | string | The mobile number of the contact. | 
+| SalesForceV2.Contact.Email | string | The email address of the contact. | 
+| SalesForceV2.Contact.Owner | string | The owner of the contact. | 
+| SalesForceV2.Lead.ID | string | The lead ID. | 
+| SalesForceV2.Lead.Name | string | The lead name. | 
+| SalesForceV2.Lead.Title | string | The title of the lead. | 
+| SalesForceV2.Lead.Company | string | The lead company. | 
+| SalesForceV2.Lead.Phone | string | The lead phone number. | 
+| SalesForceV2.Lead.Mobile | string | The lead mobile number. | 
+| SalesForceV2.Lead.Email | string | The lead email address. | 
+| SalesForceV2.Lead.Owner | string | The lead owner. | 
+| SalesForceV2.Lead.Status | string | The lead status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified". | 
+| SalesForceV2.Task.ID | string | The ID of the task. | 
+| SalesForceV2.Task.Subject | string | The subject of the task. | 
+| SalesForceV2.Task.Lead | string | The leader of the task. | 
+| SalesForceV2.Task.RelatedTo | string | The relevant account. | 
+| SalesForceV2.Task.DueDate | date | The due date of the task. | 
+| SalesForceV2.User.ID | string | The ID of the user. | 
+| SalesForceV2.User.Name | string | The name of the user. | 
+| SalesForceV2.User.Title | string | The title of the user. | 
+| SalesForceV2.User.Phone | string | The phone number of the user. | 
+| SalesForceV2.User.Email | string | The email address of the user. | 
 
 ### salesforce-create-object
 ***
@@ -252,44 +252,44 @@ Creates a new object.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesForce.Case.ID | string | The object ID of the case. | 
-| SalesForce.Case.CaseNumber | string | The case number. | 
-| SalesForce.Case.Subject | string | The subject of the case. | 
-| SalesForce.Case.Description | string | The description of the case. | 
-| SalesForce.Case.CreateDate | date | The creation date of the case. | 
-| SalesForce.Case.ClosedDate | date | The closure date of the case. | 
-| SalesForce.Case.Owner | string | The owner of the case. | 
-| SalesForce.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", "High". | 
-| SalesForce.Case.Origin | string | Origin of the case. Can be: "Web", "Phone", or "Email". | 
-| SalesForce.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
-| SalesForce.Case.Reason | string | The reason for the case creation. | 
-| SalesForce.Contact.ID | string | The ID of the contact. | 
-| SalesForce.Contact.Name | string | The name of the contact. | 
-| SalesForce.Contact.Account | string | The account associated with the contact information. | 
-| SalesForce.Contact.Title | string | The title of the contact. | 
-| SalesForce.Contact.Phone | string | The phone number of the contact. | 
-| SalesForce.Contact.MobilePhone | string | The mobile number of the contact. | 
-| SalesForce.Contact.Email | string | The email address of the contact. | 
-| SalesForce.Contact.Owner | string | The owner of the contact. | 
-| SalesForce.Lead.ID | string | The lead ID. | 
-| SalesForce.Lead.Name | string | The lead name. | 
-| SalesForce.Lead.Title | string | The title of the lead. | 
-| SalesForce.Lead.Company | string | The lead company. | 
-| SalesForce.Lead.Phone | string | The lead phone number. | 
-| SalesForce.Lead.Mobile | string | The lead mobile number. | 
-| SalesForce.Lead.Email | string | The lead email address. | 
-| SalesForce.Lead.Owner | string | The lead owner. | 
-| SalesForce.Lead.Status | string | The lead status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified". | 
-| SalesForce.Task.ID | string | The ID of the task. | 
-| SalesForce.Task.Subject | string | The subject of the task. | 
-| SalesForce.Task.Lead | string | The leader of the task. | 
-| SalesForce.Task.RelatedTo | string | The relevant account of the task. | 
-| SalesForce.Task.DueDate | date | The due date of the task. | 
-| SalesForce.User.ID | string | The ID of the user. | 
-| SalesForce.User.Name | string | The name of the user. | 
-| SalesForce.User.Title | string | The title of the user. | 
-| SalesForce.User.Phone | string | The phone number of the user. | 
-| SalesForce.User.Email | string | The email address of the user. | 
+| SalesForceV2.Case.ID | string | The object ID of the case. | 
+| SalesForceV2.Case.CaseNumber | string | The case number. | 
+| SalesForceV2.Case.Subject | string | The subject of the case. | 
+| SalesForceV2.Case.Description | string | The description of the case. | 
+| SalesForceV2.Case.CreateDate | date | The creation date of the case. | 
+| SalesForceV2.Case.ClosedDate | date | The closure date of the case. | 
+| SalesForceV2.Case.Owner | string | The owner of the case. | 
+| SalesForceV2.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", "High". | 
+| SalesForceV2.Case.Origin | string | Origin of the case. Can be: "Web", "Phone", or "Email". | 
+| SalesForceV2.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
+| SalesForceV2.Case.Reason | string | The reason for the case creation. | 
+| SalesForceV2.Contact.ID | string | The ID of the contact. | 
+| SalesForceV2.Contact.Name | string | The name of the contact. | 
+| SalesForceV2.Contact.Account | string | The account associated with the contact information. | 
+| SalesForceV2.Contact.Title | string | The title of the contact. | 
+| SalesForceV2.Contact.Phone | string | The phone number of the contact. | 
+| SalesForceV2.Contact.MobilePhone | string | The mobile number of the contact. | 
+| SalesForceV2.Contact.Email | string | The email address of the contact. | 
+| SalesForceV2.Contact.Owner | string | The owner of the contact. | 
+| SalesForceV2.Lead.ID | string | The lead ID. | 
+| SalesForceV2.Lead.Name | string | The lead name. | 
+| SalesForceV2.Lead.Title | string | The title of the lead. | 
+| SalesForceV2.Lead.Company | string | The lead company. | 
+| SalesForceV2.Lead.Phone | string | The lead phone number. | 
+| SalesForceV2.Lead.Mobile | string | The lead mobile number. | 
+| SalesForceV2.Lead.Email | string | The lead email address. | 
+| SalesForceV2.Lead.Owner | string | The lead owner. | 
+| SalesForceV2.Lead.Status | string | The lead status. Can be: "New", "Nurturing", "Working", "Qualified", or "Unqualified". | 
+| SalesForceV2.Task.ID | string | The ID of the task. | 
+| SalesForceV2.Task.Subject | string | The subject of the task. | 
+| SalesForceV2.Task.Lead | string | The leader of the task. | 
+| SalesForceV2.Task.RelatedTo | string | The relevant account of the task. | 
+| SalesForceV2.Task.DueDate | date | The due date of the task. | 
+| SalesForceV2.User.ID | string | The ID of the user. | 
+| SalesForceV2.User.Name | string | The name of the user. | 
+| SalesForceV2.User.Title | string | The title of the user. | 
+| SalesForceV2.User.Phone | string | The phone number of the user. | 
+| SalesForceV2.User.Email | string | The email address of the user. | 
 
 ### salesforce-push-comment
 ***
@@ -312,13 +312,13 @@ Adds a comment to Chatter.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesForce.Comment.Body | string | The body of the comment. | 
-| SalesForce.Comment.CreatedDate | date | The date the comment was created. | 
-| SalesForce.Comment.Title | string | The title of the comment. | 
-| SalesForce.Comment.ParentType | string | The parent type of the comment. | 
-| SalesForce.Comment.ParentName | string | The parent name of the comment. | 
-| SalesForce.Comment.URL | string | The URL link of the comment. | 
-| SalesForce.Comment.Visibility | string | The visibility of the comment. | 
+| SalesForceV2.Comment.Body | string | The body of the comment. | 
+| SalesForceV2.Comment.CreatedDate | date | The date the comment was created. | 
+| SalesForceV2.Comment.Title | string | The title of the comment. | 
+| SalesForceV2.Comment.ParentType | string | The parent type of the comment. | 
+| SalesForceV2.Comment.ParentName | string | The parent name of the comment. | 
+| SalesForceV2.Comment.URL | string | The URL link of the comment. | 
+| SalesForceV2.Comment.Visibility | string | The visibility of the comment. | 
 
 ### salesforce-get-case
 ***
@@ -340,17 +340,17 @@ Returns information on a case. All arguments are optional, but you must specify 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesForce.Case.ID | string | The object ID of the case. | 
-| SalesForce.Case.CaseNumber | string | The case number. | 
-| SalesForce.Case.Subject | string | The subject of the case. | 
-| SalesForce.Case.Description | string | The description of the case. | 
-| SalesForce.Case.CreateDate | date | The creation date of the case. | 
-| SalesForce.Case.ClosedDate | date | The closure date of the case. | 
-| SalesForce.Case.Owner | string | The owner of the case. | 
-| SalesForce.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
-| SalesForce.Case.Origin | string | The origin of the case. Can be: "Web", "Phone", or "Email". | 
-| SalesForce.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
-| SalesForce.Case.Reason | string | The reason for the case creation. | 
+| SalesForceV2.Case.ID | string | The object ID of the case. | 
+| SalesForceV2.Case.CaseNumber | string | The case number. | 
+| SalesForceV2.Case.Subject | string | The subject of the case. | 
+| SalesForceV2.Case.Description | string | The description of the case. | 
+| SalesForceV2.Case.CreateDate | date | The creation date of the case. | 
+| SalesForceV2.Case.ClosedDate | date | The closure date of the case. | 
+| SalesForceV2.Case.Owner | string | The owner of the case. | 
+| SalesForceV2.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
+| SalesForceV2.Case.Origin | string | The origin of the case. Can be: "Web", "Phone", or "Email". | 
+| SalesForceV2.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
+| SalesForceV2.Case.Reason | string | The reason for the case creation. | 
 
 ### salesforce-create-case
 ***
@@ -376,17 +376,17 @@ Creates a new case.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesForce.Case.ID | string | The object ID of the case. | 
-| SalesForce.Case.CaseNumber | string | The case number. | 
-| SalesForce.Case.Subject | string | The subject of the case. | 
-| SalesForce.Case.Description | string | The description of the case. | 
-| SalesForce.Case.CreateDate | date | The creation date of the case. | 
-| SalesForce.Case.ClosedDate | date | The closure date of the case. | 
-| SalesForce.Case.Owner | string | The owner of the case. | 
-| SalesForce.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
-| SalesForce.Case.Origin | string | The origin of the case. Can be: "Web", "Phone", or "Email". | 
-| SalesForce.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
-| SalesForce.Case.Reason | string | The reason for the case creation. | 
+| SalesForceV2.Case.ID | string | The object ID of the case. | 
+| SalesForceV2.Case.CaseNumber | string | The case number. | 
+| SalesForceV2.Case.Subject | string | The subject of the case. | 
+| SalesForceV2.Case.Description | string | The description of the case. | 
+| SalesForceV2.Case.CreateDate | date | The creation date of the case. | 
+| SalesForceV2.Case.ClosedDate | date | The closure date of the case. | 
+| SalesForceV2.Case.Owner | string | The owner of the case. | 
+| SalesForceV2.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
+| SalesForceV2.Case.Origin | string | The origin of the case. Can be: "Web", "Phone", or "Email". | 
+| SalesForceV2.Case.Status | string | The status of the case. Can be: "New", "Escalated", "On Hold", or "Closed". | 
+| SalesForceV2.Case.Reason | string | The reason for the case creation. | 
 
 ### salesforce-update-case
 ***
@@ -414,17 +414,17 @@ Updates case fields.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesForce.Case.ID | string | The object ID of the case. | 
-| SalesForce.Case.CaseNumber | string | The number of the case. | 
-| SalesForce.Case.Subject | string | The subject of the case. | 
-| SalesForce.Case.Description | string | The description of the case. | 
-| SalesForce.Case.CreateDate | date | The creation date of the case. | 
-| SalesForce.Case.ClosedDate | date | The closure date of the case. | 
-| SalesForce.Case.Owner | string | The owner of the case. | 
-| SalesForce.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
-| SalesForce.Case.Origin | string | Origin of the case. Can be: "Web", "Phone", or "Email". | 
-| SalesForce.Case.Status | string | The status of the case. Can be: "New, "Escalated", "On Hold", or "Closed". | 
-| SalesForce.Case.Reason | string | Reason for the case creation. | 
+| SalesForceV2.Case.ID | string | The object ID of the case. | 
+| SalesForceV2.Case.CaseNumber | string | The number of the case. | 
+| SalesForceV2.Case.Subject | string | The subject of the case. | 
+| SalesForceV2.Case.Description | string | The description of the case. | 
+| SalesForceV2.Case.CreateDate | date | The creation date of the case. | 
+| SalesForceV2.Case.ClosedDate | date | The closure date of the case. | 
+| SalesForceV2.Case.Owner | string | The owner of the case. | 
+| SalesForceV2.Case.Priority | string | The priority of the case. Can be: "Low", "Medium", or "High". | 
+| SalesForceV2.Case.Origin | string | Origin of the case. Can be: "Web", "Phone", or "Email". | 
+| SalesForceV2.Case.Status | string | The status of the case. Can be: "New, "Escalated", "On Hold", or "Closed". | 
+| SalesForceV2.Case.Reason | string | Reason for the case creation. | 
 
 ### salesforce-get-cases
 ***
@@ -463,17 +463,17 @@ Close a case
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesForce.Case.ID | string | The object ID of the case. | 
-| SalesForce.Case.CaseNumber | string | The case number. | 
-| SalesForce.Case.Subject | string | The subject of the case. | 
-| SalesForce.Case.Description | string | Case description. | 
-| SalesForce.Case.CreateDate | date | Creation time of the case. | 
-| SalesForce.Case.ClosedDate | date | Closure time of the case. | 
-| SalesForce.Case.Owner | string | Case owner. | 
-| SalesForce.Case.Priority | string | Priority of the case. Can be one of the following: "Low", "Medium", "High". | 
-| SalesForce.Case.Origin | string | Origin of the case. Can be one of the following: "Web", "Phone", "Email". | 
-| SalesForce.Case.Status | string | Case status. Can be one of the following: "New", "Escalated"," On Hold" or "Closed". | 
-| SalesForce.Case.Reason | string | Reason the case was created. | 
+| SalesForceV2.Case.ID | string | The object ID of the case. | 
+| SalesForceV2.Case.CaseNumber | string | The case number. | 
+| SalesForceV2.Case.Subject | string | The subject of the case. | 
+| SalesForceV2.Case.Description | string | Case description. | 
+| SalesForceV2.Case.CreateDate | date | Creation time of the case. | 
+| SalesForceV2.Case.ClosedDate | date | Closure time of the case. | 
+| SalesForceV2.Case.Owner | string | Case owner. | 
+| SalesForceV2.Case.Priority | string | Priority of the case. Can be one of the following: "Low", "Medium", "High". | 
+| SalesForceV2.Case.Origin | string | Origin of the case. Can be one of the following: "Web", "Phone", "Email". | 
+| SalesForceV2.Case.Status | string | Case status. Can be one of the following: "New", "Escalated"," On Hold" or "Closed". | 
+| SalesForceV2.Case.Reason | string | Reason the case was created. | 
 
 ### salesforce-push-comment-threads
 ***
@@ -495,9 +495,9 @@ Add the comment to the Chatter thread. Use this command only after salesforce-pu
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesForce.Comment.Reply.Body | string | Reply body. | 
-| SalesForce.Comment.Reply.CreatedDate | date | Reply created date. | 
-| SalesForce.Comment.Reply.URL | string | Reply URL link. | 
+| SalesForceV2.Comment.Reply.Body | string | Reply body. | 
+| SalesForceV2.Comment.Reply.CreatedDate | date | Reply created date. | 
+| SalesForceV2.Comment.Reply.URL | string | Reply URL link. | 
 
 ### salesforce-delete-case
 ***
