@@ -1,5 +1,6 @@
-IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
-This integration was integrated and tested with API versions 10.1-14.0 on QRadar platform 7.4.1.
+Use the QRadar v3 integration to help security teams quickly and accurately detect and prioritize threats across the enterprise.  
+This integration was integrated and tested with API versions 10.1-14.0 on QRadar platform 7.4.1 (supports API versions 10.1 and above).
+
 ## Configure QRadar v3 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -15,7 +16,7 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | Fetch mode |  | True |
     | Number of offenses to pull per API call (max 50) |  | False |
     | Query to fetch offenses | Define a query to determine which offenses to fetch. E.g., "severity &amp;gt;= 4 AND id &amp;gt; 5 AND status=OPEN". | False |
-    | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
+    | Incidents Enrichment | IP enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
     | Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
     | Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done. | False |
     | Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. | False |
@@ -24,7 +25,8 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, token, and connection.  
+
 ## Required Permissions
 | Component | Permission |
 | --- | --- |
@@ -35,17 +37,21 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
 | Offenses (Read) | Offenses |
 | References (Create/Update) | Admin |
 | References (Read) | View Reference Data |
-## Mapping limitations for XSOAR versions below 6.0.0
-The *Pull from instance* option to create a new mapper is not supported in XSOAR versions below 6.0.0. 
-## Creating classifier using *Pull from instance* feature
-QRadar fetches incidents using a long-running execution. As a result, when you select the *Pull from instance* option to pull incidents from the QRadar service to create a classifier, it does not fetch offenses in real time, but uses samples to support the *Pull from instance* feature. This results in seeing the latest sample stored, and not the latest offense that was fetched.  
-## Important note regarding the *Query to fetch offenses* parameter
-The *Query to fetch offenses* feature enables you to define a specific query for offenses to be retrieved, e.g., **'status = OPEN and id = 5'**. The QRadar integration keeps track of IDs that have already been fetched in order to avoid duplicate fetching. 
-If you change the *Query to fetch offenses* value, it will not re-fetch offenses that have already been fetched. To re-fetch those offences, run the ***qradar-reset-last-run*** command. However, note that the list of QRadar IDs that had already been fetched will be reset and duplicate offenses could be re-fetched, depending on the user query.
+## Mapping Limitation for Cortex XSOAR Versions below 6.0.0
+The *Pull from instance* option to create a new mapper is not supported in Cortex XSOAR versions below 6.0.0. 
+
+## Creating a Classifier Using the *Pull from instance* Parameter
+QRadar fetches incidents using a long-running execution, not in real time. Therefore, *Pull from instance* pulls incidents from the QRadar service to create a classifier using samples, not real time data. This results in seeing the latest sample stored, and not the latest offense that was fetched.  
+
+## Important Note Regarding the *Query to fetch offenses* Parameter
+The *Query to fetch offenses* feature enables defining a specific query for offenses to be retrieved, e.g., **'status = OPEN and id = 5'**. The QRadar integration keeps track of IDs that have already been fetched in order to avoid duplicate fetching.   
+If you change the *Query to fetch offenses* value, it will not re-fetch offenses that have already been fetched. To re-fetch those offenses, run the ***qradar-reset-last-run*** command.  
+**Note:**  
+The list of QRadar IDs that were already fetched will be reset and duplicate offenses could be re-fetched, depending on the user query.  
 ## Migration from QRadar v2 to QRadar v3
 Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adjustments are required.
-## Additions and changes between QRadar v3 and QRadar v2
-### New commands
+### Additions and Changes from QRadar v2 to QRadar v3
+### New Commands
 - ***qradar-rule-groups-list***
 - ***qradar-searches-list***
 - ***qradar-geolocations-for-ip***
@@ -53,7 +59,7 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 - ***qradar-upload-indicators***
 - ***get-modified-remote-data***
 
-### Command name changes
+### Command Name Changes
 | QRadar v2 command | QRadar V3 command | Notes
 | --- | --- | --- |
 | qradar-offenses | qradar-offenses-list | |
@@ -78,28 +84,39 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 
 
 ## Mirroring
-This integration supports in mirroring from QRadar offenses to XSOAR.
-* When a field of an offense is updated in QRadar services, it is mirrored in XSOAR.
-### Mirroring events
-* Mirroring events from QRadar to XSOAR is supported via **Mirror Offense and Events** option.
+This integration supports in mirroring from QRadar offenses to Cortex XSOAR.  
+When a field of an offense is updated in QRadar services, the update is mirrored in Cortex XSOAR.
+### Mirroring Events
+* Mirroring events from QRadar to Cortex XSOAR is supported via the **Mirror Offense and Events** option.
 * Events will only be mirrored in the incoming direction.
 * Mirroring events will only work when the **Long running instance** parameter is enabled.
-* Filtering events via *events_limit* and *events_columns* options for mirrored incidents will be the same as in the fetched incidents.
+* Filtering events using the  *events_limit* and *events_columns* options for mirrored incidents will be the same as in the fetched incidents.
 * The integration will always mirror the events that occurred first in each offense.
 
-For further information about mirroring configurations, see [here](https://xsoar.pan.dev/docs/integrations/mirroring_integration).
-### Use API token instead of Username and Password
+For more information about mirroring configurations, see [here](https://xsoar.pan.dev/docs/integrations/mirroring_integration).  
+
+## Use the API Token Instead of Username and Password
 - In the **Username / API Key** field, type **_api_token_key**.  
 - In the **Password** field, type your API token.
-## Choose your API version
+## Choose Your API Version
 1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
-2. Choose one of the API versions listed under **Supported REST API versions** column in the line corresponding to your QRadar version.
+2. Choose one of the API versions listed under the **Supported REST API versions** column in the line corresponding to your QRadar version.
 
-Note: If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version.
-## View your QRadar version
+**Note:**  
+If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version.
+## View Your QRadar Version
 1. Enter QRadar service.
 2. Click the **Menu** toolbar. A scrolling toolbar will appear.
 3. Click **About**. A new window will appear with the details of your QRadar version.
+
+## Troubleshooting
+
+When *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
+It is possible, however, that some events may be missed during incident creation.
+It is recommended to enable [mirroring](#mirroring-events), as it should fetch previously missed events when the offense is updated.
+Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `events` immediately.
+If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -116,7 +133,7 @@ Gets offenses from QRadar.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | offense_id | The offense ID to retrieve its details. Specify offense_id to get details about a specific offense. | Optional | 
-| enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. Possible values are: IPs, IPs And Assets, None. Default is None. | Optional | 
+| enrichment | IP enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. Possible values are: IPs, IPs And Assets, None. Default is None. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query to filter offenses, e.g., "severity &gt;= 4 AND id &gt; 5 AND status=OPEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
 | fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-GET.html. | Optional | 
@@ -312,7 +329,7 @@ Update an offense.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | offense_id | The ID of the offense to update. | Required | 
-| enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. Possible values are: IPs, IPs And Assets, None. Default is None. | Optional | 
+| enrichment | IP enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. Possible values are: IPs, IPs And Assets, None. Default is None. | Optional | 
 | protected | Whether the offense should be protected. Possible values are: true, false. | Optional | 
 | follow_up | Whether the offense should be marked for follow-up. Possible values are: true, false. | Optional | 
 | status | The new status for the offense. When the status of an offense is set to CLOSED, a valid closing_reason_id must be provided. To hide an offense, use the HIDDEN status. To show a previously hidden offense, use the OPEN status. Possible values are: OPEN, HIDDEN, CLOSED. | Optional | 
@@ -2514,7 +2531,7 @@ Get Source IPs
 >|DomainID|EventFlowCount|FirstEventFlowSeen|ID|LastEventFlowSeen|LocalDestinationIP|Magnitude|Network|OffenseIDs|SourceAddressIDs|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 1635 | 2021-03-31T10:02:25.965000+00:00 | 1 | 2021-08-14T09:59:52.596000+00:00 | 172.42.18.211 | 0 | Net-10-172-192.Net_172_16_0_0 | 1,<br/>4,<br/>5,<br/>9,<br/>10,<br/>11,<br/>12,<br/>13,<br/>14,<br/>15,<br/>16,<br/>17,<br/>18,<br/>19,<br/>20,<br/>21,<br/>22,<br/>23,<br/>24,<br/>25,<br/>26,<br/>27,<br/>28,<br/>29,<br/>30,<br/>31,<br/>32,<br/>33,<br/>34,<br/>35,<br/>36,<br/>37,<br/>38,<br/>39,<br/>40,<br/>41,<br/>42 | 1,<br/>2 |
-### qradar-get-events-polling
+### qradar-search-retrieve-events
 ***
 Polling command to search for events of a specific offense.
 This uses the instance parameters to create the AQL search query for the events. 

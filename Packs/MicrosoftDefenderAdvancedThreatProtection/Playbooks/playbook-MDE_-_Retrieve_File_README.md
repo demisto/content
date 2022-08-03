@@ -1,6 +1,5 @@
-This playbook uses the Live Response feature to retrieve a file from an endpoint.
-
-Note that the endpoint id will be set from the incident field "Device ID".
+This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+This playbook uses the Live Response feature to retrieve a file from an endpoint./nNote that the endpoint id will be set from the incident field "Device ID".
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -9,21 +8,22 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-MicrosoftDefenderAdvancedThreatProtection
+* MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
-* isError
 * UnzipFile
+* isError
+* DeleteContext
 
 ### Commands
-microsoft-atp-live-response-get-file
+* microsoft-atp-live-response-get-file
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| paths | File paths to be provided. |  | Optional |
+| paths | The file paths to be provided. |  | Optional |
 
 ## Playbook Outputs
 ---
