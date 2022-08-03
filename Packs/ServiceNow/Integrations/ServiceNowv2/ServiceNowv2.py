@@ -2365,15 +2365,22 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     ticket_id = parsed_args.remote_incident_id
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
-        if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
-            # These ticket types are closed by changing their state.
-            if ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
+        if parsed_args.inc_status == IncidentStatus.DONE:
+            if not params.get('close_ticket') == 'None' and ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
                 parsed_args.data['state'] = '3'
-            elif ticket_type == INCIDENT:  # Closing incident ticket.
-                parsed_args.data['state'] = '7'
+            if params.get('close_ticket') == 'closed':
+                # These ticket types are closed by changing their state.
+                if ticket_type == INCIDENT:  # Closing incident ticket.
+                    parsed_args.data['state'] = '7'
+            elif params.get('close_ticket') == 'resolved':
+                # These ticket types are closed by changing their state.
+                if ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
+                    parsed_args.data['state'] = '3'
+                elif ticket_type == INCIDENT:  # Closing incident ticket.
+                    parsed_args.data['state'] = '6'
 
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
-        if not params.get('close_ticket'):
+        if not params.get('close_ticket') == 'None':
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
