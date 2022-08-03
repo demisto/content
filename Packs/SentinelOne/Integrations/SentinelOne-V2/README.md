@@ -2566,3 +2566,55 @@ Get a list of alerts for a given scope
 #### Command Example
 ```!sentinelone-get-alerts created_from=2012-02-27T04:49:26.257525Z created_until=2012-05-27T04:49:26.257525Z```
 
+
+### sentinelone-get-installed-applications
+***
+Get the installed applications for a specific Agent.
+
+#### Base Command
+
+`sentinelone-get-installed-applications`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_ids | A comma separated value of Agent IDs. Example: 14629133470822878,14627455454652878 | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Application.Name | String | The Application Name | 
+| SentinelOne.Application.Publisher | String | The Publisher | 
+| SentinelOne.Application.Size | String | The size of the application in bytes | 
+| SentinelOne.Application.Version | String | The Version of the application | 
+| SentinelOne.Application.InstalledOn | String | Installed Date | 
+ 
+
+#### Command Example
+```!sentinelone-get-installed-applications agent_ids="1463801667584541849,1463801667584545236"```
+
+
+### sentinelone-initiate-endpoint-scan
+***
+Initiate the endpoint virus scan on provided agent IDs
+
+#### Base Command
+
+`sentinelone-initiate-endpoint-scan`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_ids | A comma separated value of Agent IDs. Example: 14629133470822878,14627455454652878 | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Agent.Agent ID | String | The Agent ID | 
+| SentinelOne.Agent.Initiated | String | Whether the scan was initiated or not | 
+
+#### Command Example
+```!sentinelone-initiate-endpoint-scan agent_ids="1463801667584541849,1463801667584545236"```
+

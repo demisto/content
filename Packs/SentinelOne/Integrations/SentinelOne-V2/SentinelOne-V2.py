@@ -738,6 +738,22 @@ class Client(BaseClient):
     def download_threat_file_request(self, endpoint_url):
         return self._http_request(method='GET', url_suffix=endpoint_url, resp_type='content')
 
+    def get_installed_applications_request(self, query_params):
+        endpoint_url = 'agents/applications'
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=query_params)
+        return response.get('data', [])
+
+    def initiate_endpoint_scan_request(self, agent_ids):
+        endpoint_url = 'agents/actions/initiate-scan'
+        payload = {
+            "filter": {
+                "ids": agent_ids
+            },
+            "data": {}
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -1860,6 +1876,65 @@ def resolve_threat_command(client: Client, args: dict) -> CommandResults:
         raw_response=resolved_threats)
 
 
+def get_installed_applications(client: Client, args: dict) -> CommandResults:
+    """
+    Get installed applications from agent.
+    """
+    context_entries = []
+    headers = ['Name', 'Publisher', 'Size', 'Version', 'InstalledOn']
+    query_params = assign_params(
+        ids=argToList(args.get('agent_ids'))
+    )
+
+    applications = client.get_installed_applications_request(query_params)
+    if applications:
+        for app in applications:
+            context_entries.append({
+                "Name": app.get("name"),
+                "Publisher": app.get("publisher"),
+                "Size": app.get("size"),
+                "Version": app.get("version"),
+                "InstalledOn": app.get("installedDate")
+            })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Getting Installed Applications', context_entries, removeNull=True,
+                                        metadata='Provides summary information and details for all installed applications'
+                                        ' that matched your search criteria.',
+                                        headers=headers, headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.Application',
+        outputs_key_field='Name',
+        outputs=context_entries,
+        raw_response=applications)
+
+
+def initiate_endpoint_scan(client: Client, args: dict) -> CommandResults:
+    """
+    Initiate the endpoint virus scan on provided agent IDs
+    """
+    context_entries = []
+
+    agent_ids = argToList(args.get('agent_ids'))
+    initiated = client.initiate_endpoint_scan_request(agent_ids)
+    if initiated.get('affected') and int(initiated.get('affected')) > 0:
+        updated = True
+        meta = f'Total of {initiated.get("affected")} provided agents were successfully initiated the scan'
+    else:
+        updated = False
+        meta = 'No agents scan was initiated'
+    for agent_id in agent_ids:
+        context_entries.append({
+            "Agent ID": agent_id,
+            "Initiated": updated
+        })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Initiate endpoint scan on provided Agent ID',
+                                        context_entries, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.Agent',
+        outputs_key_field='Agent ID',
+        outputs=context_entries,
+        raw_response=initiated)
+
+
 def get_white_list_command(client: Client, args: dict) -> CommandResults:
     """
     List all white items matching the input filter
@@ -2715,6 +2790,8 @@ def main():
             'sentinelone-uninstall-agent': uninstall_agent,
             'sentinelone-expire-site': expire_site,
             'sentinelone-fetch-threat-file': fetch_threat_file,
+            'sentinelone-get-installed-applications': get_installed_applications,
+            'sentinelone-initiate-endpoint-scan': initiate_endpoint_scan,
         },
         '2.0': {
             'sentinelone-mark-as-threat': mark_as_threat_command,

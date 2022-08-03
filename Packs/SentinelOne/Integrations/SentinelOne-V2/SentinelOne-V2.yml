@@ -2446,6 +2446,41 @@ script:
     - contextPath: SentinelOne.Alert.RuleId
       description: Rule Id
       type: String  
+  - arguments:
+    - name: agent_ids
+      required: true
+      description: 'A comma separated value of Agent IDs. Example: 14629133470822878,14627455454652878'
+    name: sentinelone-get-installed-applications
+    description: Get the installed applications for a specific Agent.
+    outputs:
+    - contextPath: SentinelOne.Application.Name
+      description: The Application Name
+      type: String
+    - contextPath: SentinelOne.Application.Publisher
+      description: The Publisher
+      type: String
+    - contextPath: SentinelOne.Application.Size
+      description: The size of the application in bytes
+      type: String
+    - contextPath: SentinelOne.Application.Version
+      description: The Version of the application
+      type: String
+    - contextPath: SentinelOne.Application.InstalledOn
+      description: Installed Date
+      type: String
+  - arguments:
+    - name: agent_ids
+      required: true
+      description: 'A comma separated value of Agent IDs. Example: 14629133470822878,14627455454652878'
+    name: sentinelone-initiate-endpoint-scan
+    description: Initiate the endpoint virus scan on provided agent IDs
+    outputs:
+    - contextPath: SentinelOne.Agent.Agent ID
+      description: The Agent ID
+      type: String
+    - contextPath: SentinelOne.Agent.Initiated
+      description: Whether the scan was initiated or not
+      type: Boolean
   dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   longRunning: false
