@@ -16,22 +16,33 @@ HEADERS = dict()
 HEADERS["Content-Type"] = "application/json"
 TOKEN = None
 URL = ''
+AUTH_E = ''
 
 
 def get_token():
     """
     Retrieve the token using the credentials
     """
+    audience = ''
+
+    # check Wiz portal location - commercial or gov
+    if 'auth.app.wiz.io' in AUTH_E or 'auth.gov.wiz.io' in AUTH_E or 'auth.test.wiz.io' in AUTH_E: # remove last bit
+        audience = 'wiz-api'
+    elif 'auth.wiz.io' in AUTH_E or 'auth0.gov.wiz.io' in AUTH_E or 'auth0.test.wiz.io' in AUTH_E: # remove last bit
+        audience = 'beyond-api'
+    else:
+        raise Exception('Not a valid authentication endpoint')
+
     demisto_params = demisto.params()
     said = demisto_params.get('credentials').get('identifier')
     sasecret = demisto_params.get('credentials').get('password')
     auth_payload = parse.urlencode({
         'grant_type': 'client_credentials',
-        'audience': 'beyond-api',
+        'audience': audience,
         'client_id': said,
         'client_secret': sasecret
     })
-    response = requests.post("https://auth.wiz.io/oauth/token", headers=HEADERS_AUTH, data=auth_payload)
+    response = requests.post(AUTH_E, headers=HEADERS_AUTH, data=auth_payload)
 
     if response.status_code != requests.codes.ok:
         raise Exception('Error authenticating to Wiz [%d] - %s' % (response.status_code, response.text))
@@ -1366,8 +1377,10 @@ def get_project_team(project_name):
 
 def main():
     global URL
+    global AUTH_E
     params = demisto.params()
     URL = params.get('api_endpoint')
+    AUTH_E = params.get('auth_endpoint')
     try:
         command = demisto.command()
         if command == 'test-module':
