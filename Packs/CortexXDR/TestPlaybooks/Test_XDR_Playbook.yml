@@ -2029,7 +2029,7 @@ tasks:
         file path are necessary in order to run the command. After running this command,
         you can use the xdr-action-status-get command with returned action_id, to
         check the action status.
-      script: '|||xdr-retrieve-files'
+      script: '|||xdr-file-retrieve'
       type: regular
       iscommand: true
       brand: ""
@@ -2424,7 +2424,7 @@ tasks:
       name: Run snippet code script
       description: Initiate a new endpoint script execution action using provided
         snippet code.
-      script: '|||xdr-run-snippet-code-script'
+      script: '|||xdr-snippet-code-script-execute'
       type: regular
       iscommand: true
       brand: ""
@@ -2471,7 +2471,7 @@ tasks:
       version: -1
       name: Run script execute commands
       description: Initiate a new endpoint script execution of shell commands.
-      script: '|||xdr-run-script-execute-commands'
+      script: '|||xdr-script-commands-execute'
       type: regular
       iscommand: true
       brand: ""
