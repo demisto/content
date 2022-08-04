@@ -53,8 +53,7 @@ script:
     - defaultValue: '50'
       description: The maximum number of authentication logs to return.
       name: limit
-    description: Returns authentication logs associated with a user. Limited to 30
-      at a time
+    description: Returns authentication logs associated with a user. Limited to 30 at a time
     name: duoadmin-get-authentication-logs-by-user
     outputs:
     - contextPath: DuoAdmin.UserDetails.auth_logs.result
@@ -120,8 +119,7 @@ script:
       required: true
     description: Delete a u2f token
     name: duoadmin-delete-u2f-token
-  - arguments: []
-    description: Return usernames and their user id
+  - description: Return usernames and their user id
     name: duoadmin-get-users
     outputs:
     - contextPath: DuoAdmin.UserDetails.username
@@ -147,6 +145,7 @@ script:
       type: string
     - contextPath: DuoAdmin.UserDetails.phones
       description: Phone numbers
+    arguments: []
   - arguments:
     - description: Username
       name: username
@@ -176,8 +175,7 @@ script:
     - contextPath: DuoAdmin.UserDetails.u2ftokens
       description: The list of  tokens
       type: Unknown
-  - arguments: []
-    description: Returns all existing devices
+  - description: Returns all existing devices
     name: duoadmin-get-devices
     outputs:
     - contextPath: DuoAdmin.Phones.phone_id
@@ -195,6 +193,7 @@ script:
     - contextPath: DuoAdmin.Phones.users
       description: Users associated with this device
       type: Unknown
+    arguments: []
   - arguments:
     - description: Username
       name: username
@@ -280,15 +279,15 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - 'false'
-        - 'true'
+      - 'false'
+      - 'true'
       name: password_change_required
     - description: The status of the admin user.(disabled will not work with "Owner" admin role)
       required: false
       auto: PREDEFINED
       predefined:
-        - 'active'
-        - 'disabled'
+      - 'active'
+      - 'disabled'
       name: status
     outputs: []
     description: Modify the administrator user.
@@ -331,7 +330,7 @@ script:
       name: alias4
       required: false
     - description: The aliases list of the user.
-    - name: aliases
+      name: aliases
       isArray: true
       required: false
     outputs: []
@@ -340,8 +339,8 @@ script:
   dockerimage: demisto/duoadmin:1.0.0.24033
   runonce: false
   script: ''
-  subtype: python2
   type: python
-fromversion: 5.0.0
+  subtype: python2
 tests:
 - DuoAdmin API test playbook
+fromversion: 5.0.0
