@@ -30,7 +30,7 @@
 
 .create-id-set-xsoar: &create-id-set-xsoar
   - section_start "Create ID Set" --collapsed
-  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xsoar" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
+  - demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log
   - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
   - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
   - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
