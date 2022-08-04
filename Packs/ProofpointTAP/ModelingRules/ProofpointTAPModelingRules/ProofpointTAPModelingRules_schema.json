@@ -46,7 +46,7 @@
       },
       "clickIP": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "clickTime": {
         "type": "datetime",
