@@ -1,5 +1,12 @@
 [known_words]
 xlsm
+Zscaler
+Symantec
+Proofpoint
+Stealthwatch
+Sophos
+Forcepoint
+Netcraft
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101
