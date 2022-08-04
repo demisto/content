@@ -1,3 +1,4 @@
+# type: ignore
 from typing import Any, Dict, Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -89,7 +90,7 @@ class Client(BaseClient):
     def ip_list_create_request(self,
                                name: str,
                                description: str,
-                               items: List[Dict[str, Any]] = None) -> Dict[str, Any]:
+                               items: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
         """ Create a new IP list.
 
         Args:
@@ -808,7 +809,7 @@ def get_service_type_and_data(service: list) -> list:
     return service_type, service_data
 
 
-def create_url_prefix(path_variable: str) -> str:
+def create_url_prefix(path_variable: str = None) -> str:
     """ Create url prefix for request.
 
     Args:
@@ -2092,7 +2093,7 @@ def fetch_incidents(client: Client, args: dict) -> None:
         demisto.setLastRun({'time': last_run_time, 'id': last_run_id})
 
 
-def test_module(client: Client) -> None:
+def test_module(client: Client):
     try:
         client.access_lease_list_request()
     except DemistoException as e:
