@@ -295,12 +295,12 @@ tasks:
             iscontext: true
             value:
               simple: inputs.TicketingSystemToUse
-          operator: isEqualString
+          operator: containsString
           right:
             value:
               simple: SNOW
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: inputs.TicketingSystemToUse
@@ -315,7 +315,7 @@ tasks:
             iscontext: true
             value:
               simple: inputs.TicketingSystemToUse
-          operator: isEqualString
+          operator: containsString
           right:
             value:
               simple: JIRA
