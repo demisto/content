@@ -1,5 +1,5 @@
 Dome9 integration allows to easily manage the security and compliance of the public cloud.
-This integration was integrated and tested with version 2 of checkpointdome9
+This integration was integrated and tested with version xx of checkpointdome9
 
 ## Configure Check Point Dome9 (CloudGuard) on Cortex XSOAR
 
@@ -1893,9 +1893,9 @@ Get top results for each service.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.GlobalSearch.Alert.id | String | The Global Search alert ID. |
-| CheckPointDome9.GlobalSearch.Alert.type | String | The Global Search alert type. |
-| CheckPointDome9.GlobalSearch.Alert.severity | String | The Global Search alert severity. |
+| CheckPointDome9.GlobalSearch.Alerts.id | String | The Global Search alert ID. |
+| CheckPointDome9.GlobalSearch.Alerts.type | String | The Global Search alert type. |
+| CheckPointDome9.GlobalSearch.Alerts.severity | String | The Global Search alert severity. |
 
 #### Command example
 ```!dome9-global-search-get```
@@ -1904,9 +1904,36 @@ Get top results for each service.
 {
     "CheckPointDome9": {
         "GlobalSearch": {
-            "alerts": [],
-            "assets": [],
-            "environments": []
+            "Alert": [
+                {
+                    "alertType": "alertType",
+                    "bundleId": "bundleId",
+                    "cloudAccountExternalId": "cloudAccountExternalId",
+                    "cloudAccountId": "cloudAccountId",
+                    "createdTime": "createdTime",
+                    "description": "description",
+                    "entityName": "entityName",
+                    "id": "id",
+                    "remediation": "remediation",
+                    "ruleName": "ruleName",
+                    "severity": "severity",
+                    "updatedTime": "updatedTime"
+                },
+                {
+                    "alertType": "alertType",
+                    "bundleId": "bundleId",
+                    "cloudAccountExternalId": "cloudAccountExternalId",
+                    "cloudAccountId": "cloudAccountId",
+                    "createdTime": "createdTime",
+                    "description": "description",
+                    "entityName": "entityName",
+                    "id": "id",
+                    "remediation": "remediation",
+                    "ruleName": "ruleName",
+                    "severity": "severity",
+                    "updatedTime": "updatedTime"
+                }
+            ]
         }
     }
 }
@@ -1915,9 +1942,10 @@ Get top results for each service.
 #### Human Readable Output
 
 >### Global Search
->|Alerts|Assets|Environments|
->|---|---|---|
->|  |  |  |
+>|Alerttype|Bundleid|Cloudaccountexternalid|Cloudaccountid|Createdtime|Description|Entityname|Id|Remediation|Rulename|Severity|Updatedtime|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Alerttype | Bundleid | Cloudaccountexternalid | Cloudaccountid | date | Description | Entityname | id | Remediation | rule name | Severity | Updatedtime |
+>| Alerttype | Bundleid | Cloudaccountexternalid | Cloudaccountid | date | Description | Entityname | id | remediation | rule name | Severity | Updatedtime |
 
 
 ### dome9-cloud-trail-get

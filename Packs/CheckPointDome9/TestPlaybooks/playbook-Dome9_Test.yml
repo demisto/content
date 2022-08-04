@@ -1,7 +1,7 @@
 id: Dome9
 name: Dome9
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 starttaskid: '0'
 tasks:
   '0':
@@ -1532,17 +1532,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CheckPointDome9.GlobalSearch.environments
+              simple: CheckPointDome9.GlobalSearch.Alert.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: CheckPointDome9.GlobalSearch.alerts
+              simple: CheckPointDome9.GlobalSearch.Alert.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: CheckPointDome9.GlobalSearch.assets
+              simple: CheckPointDome9.GlobalSearch.Alert.severity
             iscontext: true
     view: '{"position":{"x":50,"y":9800}}'
     note: false
