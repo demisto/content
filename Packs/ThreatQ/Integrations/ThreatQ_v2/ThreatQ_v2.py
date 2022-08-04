@@ -350,7 +350,8 @@ def create_dbot_context(indicator, ind_type, ind_score):
     ret = {
         'Vendor': 'ThreatQ v2',
         'Indicator': indicator,
-        'Type': ind_type
+        'Type': ind_type,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
     if ind_score >= THRESHOLD:
