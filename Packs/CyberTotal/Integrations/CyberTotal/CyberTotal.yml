@@ -80,7 +80,6 @@ configuration:
   display: ''
   required: false
   type: 1
-  required: false
 script:
   script: ''
   type: python
