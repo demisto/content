@@ -5182,7 +5182,6 @@
         }
     ],
     "skipped_tests": {
-        "EclecticIQ Test": "~~~ NO INSTANCE ~~~",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
