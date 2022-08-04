@@ -263,50 +263,79 @@ script:
     - contextPath: DuoAdmin.UserDetails.user.user_id
       description: User Id
   - arguments:
-    - description: The admin_id of the admin user
-      name: user_id
+    - description: The id of the admin.
+      name: admin_id
       required: true
-    - defaultValue: None
-      description: The name of the admin user
+    - description: The name of the admin.
+      required: false
       name: name
-    - defaultValue: None
-      description: The phone number of the admin user
+    - description: The phone number of the admin.
+      required: false
       name: phone
-    - defaultValue: None
-      description: the password of the admin user
+    - description: the password of the admin.
+      required: false
       name: password
-    - defaultValue: 'FALSE'
-      description: a flag to determine if the password should change
+    - description: a flag to determine if the password should change.
+      defaultValue: 'false'
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - 'false'
+        - 'true'
       name: password_change_required
-    - description: The status of the admin user - Only Active or Disabled - Disabled
-        will not work with admin role = Owner
+    - description: The status of the admin user.(disabled will not work with "Owner" admin role)
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - 'active'
+        - 'disabled'
       name: status
-    description: Modify the administrator user
+    outputs: []
+    description: Modify the administrator user.
     name: duoadmin-modify-admin
   - arguments:
-    - description: The user_id of the user
+    - description: The user id of the user.
       name: user_id
       required: true
-    - description: The username of the user
-      name: username
-    - description: The real name of the user
+    - description: The user name of the user.
+      name: user_name
+      required: false
+    - description: The real name of the user.
       name: realname
-    - description: The status of the user
+      required: false
+    - description: The status of the user.
       name: status
-    - description: Notes for the user
+      required: false
+    - description: Notes for the user.
       name: notes
-    - description: The email of the user
+      required: false
+    - description: The email of the user.
       name: email
-    - description: The firstname of the user
-      name: firstname
-    - description: The lastname of the user
-      name: lastname
-    - name: alias1
-    - name: alias2
-    - name: alias3
-    - name: alias4
+      required: false
+    - description: The first name of the user.
+      name: first_name
+      required: false
+    - description: The last name of the user.
+      required: false
+      name: last_name
+    - description: The first alias of the user.
+      name: alias1
+      required: false
+    - description: The second alias of the user.
+      name: alias2
+      required: false
+    - description: The third alias of the user.
+      name: alias3
+      required: false
+    - description: The fourth alias of the user.
+      name: alias4
+      required: false
+    - description: The aliases list of the user.
     - name: aliases
-    description: Modify the user account
+      isArray: true
+      required: false
+    outputs: []
+    description: Modify the user account.
     name: duoadmin-modify-user
   dockerimage: demisto/duoadmin:1.0.0.24033
   runonce: false

@@ -5,18 +5,6 @@ import demistomock as demisto  # noqa: F401
 import duo_client
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('DUO Admin', 'start', __line__())
-
-# Integrations
-# DUO
-#  - Added command get_all_bypass_codes, which provides the ability to pull information from the bypass_code table.
-#     This identifies users in bypass mode, and allows for actions against these accounts
-#  - Added command get_all_admins, which provides the ability to get a list of the admininstrator accounts
-#  - Added command modify_admin_user, which allows the use of the update_admin command within the api
-#  - Added command modify_user, which allows the use of the update_user command within the api
-#  - Updated command get_all_users to include more of the fields available within the user table
-
-
 # Setup
 
 HOST = demisto.getParam('hostname')
@@ -393,15 +381,19 @@ def get_all_admins():
     demisto.results(entry)
 
 
-def modify_admin_user(user_id, name, phone, password, password_change_required, status):
+def modify_admin_user(user_id: str = None, name: str = None, phone: str = None, password: str = None,
+                      password_change_required: str = None, status: str = None) -> CommandResults:
     admin_api.update_admin(user_id, name, phone, password, password_change_required, status)
-    demisto.results('Status for' + user_id + ' Successful updated to ' + status)
+    return CommandResults(readable_output='Status for' + user_id + ' Successful updated to ' + status)
 
 
-def modify_user(user_id, username, realname, status, notes, email, firstname, lastname, alias1, alias2, alias3, alias4, aliases):
-    admin_api.update_user(user_id, username, realname, status, notes, email, firstname,
-                          lastname, alias1, alias2, alias3, alias4, aliases)
-    demisto.results('Status for' + user_id + ' Successful updated to ' + status)
+def modify_user(user_id: str = None, user_name: str = None, real_name: str = None, status: str = None,
+                notes: str = None, email: str = None, first_name: str = None, last_name: str = None, alias1: str = None,
+                alias2: str = None, alias3: str = None,
+                alias4: str = None, aliases: str = None) -> CommandResults:
+    admin_api.update_user(user_id, user_name, real_name, status, notes, email, first_name,
+                          last_name, alias1, alias2, alias3, alias4, argToList(aliases))
+    return CommandResults(readable_output='Status for' + user_id + ' Successful updated to ' + status)
 
 
 # Execution
@@ -443,14 +435,10 @@ try:
         delete_u2f_token(demisto.getArg('token_id'))
 
     if demisto.command() == 'duoadmin-modify-user':
-        modify_user(demisto.getArg('user_id'), demisto.getArg('username'), demisto.getArg('realname'),
-                    demisto.getArg('status'), demisto.getArg('notes'), demisto.getArg('email'),
-                    demisto.getArg('firstname'), demisto.getArg('lastname'), demisto.getArg('alias1'),
-                    demisto.getArg('alias2'), demisto.getArg('alias3'), demisto.getArg('alias4'), demisto.getArg('aliases'))
+        return_results(modify_user(**demisto.args()))
 
     if demisto.command() == 'duoadmin-modify-admin':
-        modify_admin_user(demisto.getArg('user_id'), demisto.getArg('name'), demisto.getArg('phone'),
-                          demisto.getArg('password'), demisto.getArg('password_change_required'), demisto.getArg('status'))
+        return_results(modify_admin_user(**demisto.args()))
 
 
 except Exception as e:
@@ -458,4 +446,3 @@ except Exception as e:
     return_error(e.message)
 sys.exit(0)
 
-register_module_line('DUO Admin', 'end', __line__())
