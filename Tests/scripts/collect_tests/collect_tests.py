@@ -13,7 +13,7 @@ from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
                                                str2bool)
-from exceptions import (DeprecatedPackException, EmptyMachineListException,
+from exceptions import (DeprecatedPackException,
                         NonDictException, NoTestsConfiguredException,
                         NothingToCollectException, NotUnderPackException,
                         SkippedPackException, UnsupportedPackException, SkippedTestException, PrivateTestException,
@@ -90,11 +90,11 @@ class CollectionResult:
 
         if test:
             self.tests = {test}
-            logger.info(f'collected {test=}, {reason} {reason_description}')
+            logger.info(f'collected {test=}, {reason} ({reason_description})')
 
         if pack:
             self.packs = {pack}
-            logger.info(f'collected {pack=}, {reason} {reason_description}')
+            logger.info(f'collected {pack=}, {reason} ({reason_description})')
 
     @staticmethod
     def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
@@ -167,6 +167,7 @@ class TestCollector(ABC):
         self.marketplace = marketplace
         self.id_set = IdSet(marketplace, PATHS.id_set_path)
         self.conf = TestConf(PATHS.conf_path)
+        self.trigger_sanity_tests = False
 
     @property
     def sanity_tests(self) -> Optional[CollectionResult]:
@@ -190,8 +191,8 @@ class TestCollector(ABC):
     @abstractmethod
     def _collect(self) -> Optional[CollectionResult]:
         """
-        Collects all relevant tests into self.collected.
-        Every inheriting class implements its own methodology here.
+        Collects all relevant tests and packs.
+        Every subclass implements its own methodology here.
         :return: A CollectedTests object with only the pack_name_to_pack_metadata to install and tests to run,
                 with machines=None.
         """
@@ -201,23 +202,22 @@ class TestCollector(ABC):
         result: Optional[CollectionResult] = self._collect()
 
         if not result:
-            logger.warning('Nothing was collected, returning sanity tests only')
-            result = self.sanity_tests
+            if self.trigger_sanity_tests:
+                result = self.sanity_tests
+                logger.warning('Nothing was collected, but sanity-test-triggering files were changed, '
+                               'returning sanity tests')
+            else:
+                logger.warning('Nothing was collected, and no sanity-test-triggering files were changed')
+                return None
 
-        if not result:  # for unit test cases, where there are no sanity tests
-            return None
-
-        self._validate_tests_in_id_set(result.tests)
-
-        if (suitable_machines := Machine.get_suitable_machines(result.version_range, run_nightly)) is None:
-            raise EmptyMachineListException()
-        result.machines = suitable_machines
-
+        self._validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
+        result.machines = Machine.get_suitable_machines(result.version_range, run_nightly)  # type:ignore[union-attr]
         return result
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
-        sanity_tests = self.sanity_tests.tests if self.sanity_tests else set()
-        if not_found := ((set(tests) - sanity_tests).difference(self.id_set.id_to_test_playbook.keys())):
+        if not_found := (
+                (set(tests) - set(self._sanity_test_names)).difference(self.id_set.id_to_test_playbook.keys())
+        ):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
@@ -350,8 +350,14 @@ class BranchTestCollector(TestCollector):
         try:
             reason_description = relative_path = PackManager.relative_to_packs(path)
         except NotUnderPackException:
-            if path in PATHS.excluded_files:
-                raise NothingToCollectException(path, 'not under a pack')  # infrastructure files that are ignored
+            # infrastructure files are not collected
+
+            if path in PATHS.files_to_ignore:
+                raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
+
+            if path in PATHS.files_triggering_sanity_tests:
+                self.trigger_sanity_tests = True
+                raise NothingToCollectException(path, 'not under a pack (triggering sanity tests)')
             raise
 
         try:
