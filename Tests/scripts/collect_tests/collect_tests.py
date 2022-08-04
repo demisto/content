@@ -198,7 +198,6 @@ class TestCollector(ABC):
         """
         pass
 
-    # type:ignore[union-attr]
     def collect(self, run_nightly: bool) -> Optional[CollectionResult]:
         result: Optional[CollectionResult] = self._collect()
 
@@ -211,12 +210,8 @@ class TestCollector(ABC):
                 logger.warning('Nothing was collected, and no sanity-test-triggering files were changed')
                 return None
 
-        self._validate_tests_in_id_set(result.tests)
-
-        if (suitable_machines := Machine.get_suitable_machines(result.version_range, run_nightly)) is None:
-            raise EmptyMachineListException()
-        result.machines = suitable_machines
-
+        self._validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
+        result.machines = Machine.get_suitable_machines(result.version_range, run_nightly)  # type:ignore[union-attr]
         return result
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):

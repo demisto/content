@@ -37,8 +37,6 @@ class NonDictException(Exception):
         super().__init__(self.message)
 
 
-class EmptyMachineListException(Exception):
-    pass
 
 
 class NoTestsConfiguredException(Exception):
