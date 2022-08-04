@@ -1,6 +1,6 @@
 {
-    "name": "Accenture CTI",
-    "description": "Accenture Security",
+    "name": "Accenture CTI (Deprecated)",
+    "description": "Deprecated. Use Accenture CTI v2 pack & Accenture CTI Feed instead.",
     "support": "partner",
     "currentVersion": "3.2.4",
     "author": "Accenture",
