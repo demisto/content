@@ -619,6 +619,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Whois",
+            "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0",
@@ -4032,6 +4037,10 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Microsoft Defender Advanced Threat Protection"
+            ],
+            "instance_names": [
+                "microsoft_defender_atp_dev",
+                "microsoft_defender_atp_dev_self_deployed"
             ]
         },
         {
@@ -5670,6 +5679,6 @@
         "Sanity Test - Playbook with integration",
         "Sanity Test - Playbook with no integration",
         "Sanity Test - Playbook with mocked integration",
-        "Sanity Test - Playbook with Unmockable Integration"
+        "Sanity Test - Playbook with Unmockable Whois Integration"
     ]
 }
