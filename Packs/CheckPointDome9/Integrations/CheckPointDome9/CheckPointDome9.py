@@ -1833,7 +1833,7 @@ def global_search_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
                                       headerTransform=string_to_table_header)
 
     command_results = CommandResults(readable_output=readable_output,
-                                     outputs_prefix='CheckPointDome9.GlobalSearch.Alerts.id',
+                                     outputs_prefix='CheckPointDome9.GlobalSearch.Alert',
                                      outputs_key_field='id',
                                      outputs=response,
                                      raw_response=response)
