@@ -4199,7 +4199,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return from ThreatStream. Default is 50.
+      description: The maximum number of results to return from ThreatStream. Default is 50, the maximum number of returned results is 1000. For more results, use the page and page_size arguments.
       isArray: false
       name: limit
       required: false

@@ -1,3 +1,5 @@
+import emoji
+
 import demistomock as demisto
 from CommonServerPython import *
 import traceback
@@ -190,18 +192,18 @@ RELATIONSHIPS_MAPPING = {
 INTELLIGENCE_TYPES = ['actor', 'signature', 'tipreport', 'ttp', 'vulnerability', 'campaign']
 
 INTELLIGENCE_TYPE_TO_ENTITY_TYPE = {'actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
-                                  'signature': 'Signature',
-                                  'vulnerability': FeedIndicatorType.CVE,
-                                  'ttp': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-                                  'tipreport': 'Publication',
-                                  'campaign': ThreatIntel.ObjectsNames.CAMPAIGN}
+                                    'signature': 'Signature',
+                                    'vulnerability': FeedIndicatorType.CVE,
+                                    'ttp': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+                                    'tipreport': 'Publication',
+                                    'campaign': ThreatIntel.ObjectsNames.CAMPAIGN}
 
 INTELLIGENCE_TYPE_TO_CONTEXT = {'actor': 'Actor',
-                                  'signature': 'Signature',
-                                  'vulnerability': 'Vulnerability',
-                                  'ttp': 'TTP',
-                                  'tipreport': 'ThreatBulletin',
-                                  'campaign': 'Campaign'}
+                                'signature': 'Signature',
+                                'vulnerability': 'Vulnerability',
+                                'ttp': 'TTP',
+                                'tipreport': 'ThreatBulletin',
+                                'campaign': 'Campaign'}
 ''' HELPER FUNCTIONS '''
 
 
@@ -261,6 +263,7 @@ class DBotScoreCalculator:
     """
     Class for DBot score calculation based on thresholds and confidence
     """
+
     def __init__(self, params: Dict):
         self.instance_defined_thresholds = {
             DBotScoreType.IP: arg_to_number(params.get('ip_threshold')),
@@ -600,7 +603,8 @@ def get_intelligence(client: Client, indicator, ioc_type):
     intelligence_outputs: Dict[str, Any] = {}
 
     for intelligence_type in INTELLIGENCE_TYPES:
-        intelligence_relationships, intelligence_output = get_intelligence_information(client, indicator, ioc_type, intelligence_type)
+        intelligence_relationships, intelligence_output = get_intelligence_information(
+            client, indicator, ioc_type, intelligence_type)
         if intelligence_relationships:
             relationships.extend(intelligence_relationships)
 
@@ -631,16 +635,17 @@ def get_intelligence_information(client: Client, indicator, ioc_type, intelligen
 
     return relationships, intelligences
 
+
 def create_human_readable(intelligence_outputs):
     table = ''
     for intelligence in intelligence_outputs.keys():
-        table += tableToMarkdown(f'{intelligence} details:', intelligence_outputs[intelligence], headers=['name','id'])
-    
+        table += tableToMarkdown(f'{intelligence} details:', intelligence_outputs[intelligence], headers=['name', 'id'])
+
     return table
 
 
 def domains_reputation_command(client: Client, score_calc: DBotScoreCalculator, domain, status, threshold=None,
-                                threat_model_association=False):
+                               threat_model_association=False):
     """
         Wrapper function for get_domain_reputation.
     """
@@ -1219,6 +1224,8 @@ def file_name_to_valid_string(file_name):
     """
         Demoji the file name if it's contain emoji
     """
+    if emoji.emoji_count(file_name):  # type: ignore
+        return emoji.demojize(file_name)  # type: ignore
     return file_name
 
 
@@ -1359,13 +1366,13 @@ def search_intelligence(client: Client, **kwargs):
         Returns filtered indicators by parameters from ThreatStream.
         By default the limit of indicators result is set to 50.
     """
-    page =  int(kwargs.pop('page', 0))
+    page = int(kwargs.pop('page', 0))
     page_size = int(kwargs.pop('page_size', 0))
     if page_size > 0:
-        limit = kwargs['limit'] = page_size
+        kwargs['limit'] = page_size
     else:
-        limit = kwargs['limit'] = int(kwargs.get('limit', 50))
-    offset = kwargs['offset'] = page * page_size
+        kwargs['limit'] = int(kwargs.get('limit', 50))
+    kwargs['offset'] = page * page_size
     url = 'v2/intelligence/'
     if 'query' in kwargs:
         url += f"?q={kwargs.pop('query')}"

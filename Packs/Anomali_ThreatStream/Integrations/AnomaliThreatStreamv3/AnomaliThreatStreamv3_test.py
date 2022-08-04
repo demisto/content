@@ -105,15 +105,14 @@ class TestReputationCommands:
             assert f'{ioc_type} reputation for: {iocs[i]}' in human_readable
             assert mocked_ioc == contents
 
-    def mocked_http_request(self, method,url_suffix, params=None,data=None, headers=None,files=None, json=None,
-                        resp_type='json'):
+    def mocked_http_request(self, method, url_suffix, params=None, data=None, headers=None, files=None, json=None,
+                            resp_type='json'):
         if 'actor' in url_suffix:
             mocked_actor_result = util_load_json('test_data/mocked_actor_response.json')
             return mocked_actor_result
         else:
             mocked_empty_result = util_load_json('test_data/mocked_empty_response.json')
             return mocked_empty_result
-
 
     def test_get_intelligence_command(self, mocker):
         """
@@ -138,7 +137,6 @@ class TestReputationCommands:
         assert outputs.get('Actor')
         assert not outputs.get('Campaign')
         assert intelligence_relationships
-
 
     @pytest.mark.parametrize(
         argnames='confidence, threshold, exp_dbot_score',
@@ -899,7 +897,7 @@ def test_search_intelligence(mocker):
             'itype': 'apt_ip'}
     client = mock_client()
 
-    #run
+    # run
     result = search_intelligence(client, **args)
 
     assert result.outputs[0].get('IType') == 'c2_ip'
