@@ -1388,13 +1388,13 @@ script:
     execution: false
     name: dome9-global-search-get
     outputs:
-    - contextPath: CheckPointDome9.GlobalSearch.Alerts.id
+    - contextPath: CheckPointDome9.GlobalSearch.Alert.id
       description: "The Global Search alert ID."
       type: String
-    - contextPath: CheckPointDome9.GlobalSearch.Alerts.type
+    - contextPath: CheckPointDome9.GlobalSearch.Alert.type
       description: "The Global Search alert type."
       type: String
-    - contextPath: CheckPointDome9.GlobalSearch.Alerts.severity
+    - contextPath: CheckPointDome9.GlobalSearch.Alert.severity
       description: "The Global Search alert severity."
       type: String
   - arguments:
