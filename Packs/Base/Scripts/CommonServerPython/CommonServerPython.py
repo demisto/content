@@ -7171,6 +7171,21 @@ class ExecutionMetrics(object):
             self.metrics = CommandResults(execution_metrics=self._metrics)
 
 
+def append_metrics(execution_metrics, results):
+    """
+
+    Args:
+        execution_metrics: metrics object to be added to CommandResults list.
+        results: CommandResults list.
+
+    Returns: the list appended with the metrics if the server version is supported.
+
+    """
+    if execution_metrics.metrics is not None and execution_metrics.is_supported():
+        results.append(execution_metrics.metrics)
+    return results
+
+
 class CommandRunner:
     """
     Class for executing multiple commands and save the results of each command.
