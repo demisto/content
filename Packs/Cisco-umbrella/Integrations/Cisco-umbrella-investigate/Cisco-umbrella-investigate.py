@@ -856,8 +856,6 @@ def get_domain_command():
 
             results.append(CommandResults(
                 readable_output=readable,
-                entry_type=entryTypes['note'],
-                content_format=formats['json'],
                 outputs=context,
                 raw_response=[contents, whois, name_servers, emails, domain_categorization_table]
             ))
@@ -868,8 +866,6 @@ def get_domain_command():
                 results.append(
                     CommandResults(
                         readable_output=f"Quota exceeded.",
-                        entry_type=entryTypes['note'],
-                        content_format=formats['json'],
                         outputs=context,
                         raw_response=contents
 
@@ -892,8 +888,6 @@ def get_domain_command():
 
                 results.append(
                     CommandResults(
-                        entry_type=entryTypes['note'],
-                        content_format=formats['json'],
                         readable_output=human_readable,
                         outputs=context,
                         raw_response=contents
@@ -1524,8 +1518,6 @@ def get_whois_for_domain_command():
 
     results.append(
         CommandResults(
-            entry_type=entryTypes['note'],
-            content_format=formats['json'],
             raw_response=[table_whois, contents_nameserver, contents_email],
             outputs=context,
             readable_output=readable_whois + readable_name_servers + readable_email
@@ -1880,7 +1872,7 @@ def get_url_timeline(url):
 
 
 def main() -> None:
-    LOG('command is %s' % (demisto.command(),))
+    demisto.debug(f'Command being called is {demisto.command()}')
     try:
         handle_proxy()
         if demisto.command() == 'test-module':
@@ -1943,9 +1935,7 @@ def main() -> None:
             return_error(f"HTTP error with code {e.response.status_code}")
 
     except Exception as e:
-        LOG(str(e))
-        LOG.print_log()
-        return_error(str(e))
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
