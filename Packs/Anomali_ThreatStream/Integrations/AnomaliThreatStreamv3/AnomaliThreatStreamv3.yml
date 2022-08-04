@@ -4180,8 +4180,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, <, >, and so on) and not the descriptive form (exact, lt, gt, and so on). e.g. (confidence>=90+AND+(itype="apt_ip"+OR+itype="bot_
-ip"+OR+itype="c2_ip"))
+      description: Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, <, >, and so on) and not the descriptive form (exact, lt, gt, and so on). e.g. (confidence>=90+AND+(itype="apt_ip"+OR+itype="bot_ip"+OR+itype="c2_ip"))
       isArray: false
       name: query
       required: false
