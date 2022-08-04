@@ -354,10 +354,10 @@ def create_indicator(
             Common.DBotScore(
                 entity,
                 DBotScoreType.IP,
-
                 dbot_vendor,
                 dbot_score,
                 dbot_description,
+                reliability=demisto.params().get('integrationReliability')
             ),
             asn=location.get("asn", None),
             geo_country=location.get("location", {}).get("country", None),
@@ -371,6 +371,7 @@ def create_indicator(
                 dbot_vendor,
                 dbot_score,
                 dbot_description,
+                reliability=demisto.params().get('integrationReliability')
             ),
         )
     elif entity_type == "file":
@@ -380,6 +381,7 @@ def create_indicator(
             dbot_vendor,
             dbot_score,
             dbot_description,
+            reliability=demisto.params().get('integrationReliability')
         )
         hash_type = determine_hash(entity)
         if hash_type == "MD5":
@@ -403,6 +405,7 @@ def create_indicator(
                 dbot_vendor,
                 dbot_score,
                 dbot_description,
+                reliability=demisto.params().get('integrationReliability')
             ),
         )
     else:
