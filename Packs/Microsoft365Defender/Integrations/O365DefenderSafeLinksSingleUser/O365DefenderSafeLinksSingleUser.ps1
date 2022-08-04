@@ -8,6 +8,7 @@ function CreateContextForReport{
     )
     $context_data = @{"Data"=$raw_response}
     if ($raw_response -is [array]) {
+        # RunSapceId is the same for all items in data.
         $context_data.ReportId=$raw_response[0].RunspaceId
     }
 

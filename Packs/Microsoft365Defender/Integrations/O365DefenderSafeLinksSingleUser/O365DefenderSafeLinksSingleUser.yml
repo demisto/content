@@ -908,14 +908,14 @@ script:
     deprecated: false
     arguments:
     - name: start_date
-      description: Start date of the date range in MM-DD-YYYY format.Yesterday is the most recent date that you can specify. You can't specify a date that's older than 7 days.
+      description: Start date of the date range in MM-DD-YYYY format. Yesterday is the most recent date that you can specify. You can't specify a date that's older than 7 days.
       required: true
       isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: end_date
-      description: End date of the date range in MM-DD-YYYY format.Yesterday is the most recent date that you can specify. You can't specify a date that's older than 7 days.
+      description: End date of the date range in MM-DD-YYYY format. Yesterday is the most recent date that you can specify. You can't specify a date that's older than 7 days.
       required: true
       isArray: false
       defaultValue: ""
@@ -1025,14 +1025,14 @@ script:
     deprecated: false
     arguments:
     - name: start_date
-      description: Start date of the date range in MM-DD-YYYY format.Yesterday is the most recent date that you can specify. You can't specify a date that's older than 90 days.
+      description: Start date of the date range in MM-DD-YYYY format. Yesterday is the most recent date that you can specify. You can't specify a date that's older than 90 days.
       required: true
       isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: end_date
-      description: End date of the date range in MM-DD-YYYY format.YYesterday is the most recent date that you can specify. You can't specify a date that's older than 90 days.
+      description: End date of the date range in MM-DD-YYYY format. Yesterday is the most recent date that you can specify. You can't specify a date that's older than 90 days.
       required: true
       isArray: false
       defaultValue: ""
