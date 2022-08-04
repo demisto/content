@@ -21,7 +21,7 @@ class TestsActiveDirectory:
                 - Verify that the raw response parsed correctly and that the referrals and entries lists
                   returned as expected.
         """
-        client = LdapClient({'ldap_server_type': 'Active Directory', 'host': 'server_ip'})
+        client = LdapClient({'ldap_server_vendor': 'Active Directory', 'host': 'server_ip'})
 
         ldap_group_entries = [
             {'uri': ['ldap://domain1/CN=test,DC=demisto,DC=test'], 'type': 'searchResRef'},
@@ -55,7 +55,7 @@ class TestsActiveDirectory:
                 - Verify that the raw response parsed correctly and that the referrals and entries lists
                   returned as expected.
         """
-        client = LdapClient({'ldap_server_type': 'Active Directory', 'host': 'server_ip'})
+        client = LdapClient({'ldap_server_vendor': 'Active Directory', 'host': 'server_ip'})
 
         password = '123456'
 
@@ -101,7 +101,7 @@ class TestsActiveDirectory:
             Then:
                 - Verify that the returned Active Directory username is as expected.
         """
-        client = LdapClient({'ldap_server_type': 'Active Directory', 'host': 'server_ip'})
+        client = LdapClient({'ldap_server_vendor': 'Active Directory', 'host': 'server_ip'})
 
         ad_username = client._get_ad_username(user_logon_name)
         assert ad_username == expected_ad_username
@@ -128,7 +128,7 @@ class TestsActiveDirectory:
                                   thus STARTTLS command shouldn't be executed.
                     3. 'NO_TLS' - Connection is insecure (cleartext) and shouldn't be upgraded to TLS.
         """
-        client = LdapClient({'ldap_server_type': 'Active Directory', 'host': 'server_ip',
+        client = LdapClient({'ldap_server_vendor': 'Active Directory', 'host': 'server_ip',
                              'connection_type': connection_type})
 
         auto_bind_value = client._get_auto_bind_value()

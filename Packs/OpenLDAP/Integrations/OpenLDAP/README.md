@@ -17,7 +17,7 @@ Use OpenLDAP or Active Directory user authentication groups to set user roles in
 2. Search for 'LDAP Authentication' ('OpenLDAP' or 'Active Directory Authentication' should work as well).
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __LDAP Server Type (OpenLDAP or Active Directory)__
+    * __LDAP Server Vendor (OpenLDAP or Active Directory)__
     * __Server IP or Host Name (e.g., 192.168.0.1)__
     * __Port. If not specified, default port is 389, or 636 for LDAPS.__
     * __User DN (e.g cn=admin,ou=users,dc=domain,dc=com)__
