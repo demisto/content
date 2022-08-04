@@ -1,6 +1,7 @@
 from collections import defaultdict
 from dataclasses import dataclass, fields
 import enum
+import tempfile
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -193,15 +194,49 @@ def http_request(uri: str, method: str, headers: dict = {},
     """
     Makes an API call with the given arguments
     """
-    result = requests.request(
-        method,
-        uri,
-        headers=headers,
-        data=body,
-        verify=USE_SSL,
-        params=params,
-        files=files
-    )
+    client_certificate = demisto.params().get('client_certificate')
+    private_key = demisto.params().get('client_private_key')
+
+    if client_certificate and private_key:
+        demisto.debug(f'client certificate: {client_certificate[:3]}, private key: {private_key[:3]}')
+        with tempfile.NamedTemporaryFile(suffix='.cert') as certificate, tempfile.NamedTemporaryFile(suffix='.key') as key:
+            demisto.debug(f'created certificate path: {certificate.name=}')  # certificate file path
+            demisto.debug(f'created private key path: {key.name=}')  # private key file path
+
+            with open(certificate.name, 'w') as f:
+                f.write(client_certificate)  # write the raw certificate into a file
+            with open(key.name, 'w') as f:
+                f.write(private_key)  # write the raw private key into a file
+            try:
+                result = requests.request(
+                    method,
+                    uri,
+                    headers=headers,
+                    data=body,
+                    verify=USE_SSL,
+                    params=params,
+                    files=files,
+                    cert=(certificate.name, key.name)  # sending the file paths
+                )
+            except Exception as e:
+                with open(certificate.name, 'r') as f:
+                    certificate_prefix = f.read()
+                    demisto.debug(f'certificate_prefix: {certificate_prefix[:3]}')
+                with open(key.name, 'r') as f:
+                    private_key_prefix = f.read()
+                    demisto.debug(f'private_key_prefix: {private_key_prefix[:3]}')
+                raise e
+    else:
+        demisto.debug(f'client certificate and private key were not provided')
+        result = requests.request(
+            method,
+            uri,
+            headers=headers,
+            data=body,
+            verify=USE_SSL,
+            params=params,
+            files=files,
+        )
 
     if result.status_code < 200 or result.status_code >= 300:
         raise Exception(
