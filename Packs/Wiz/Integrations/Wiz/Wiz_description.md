@@ -9,6 +9,7 @@ There Are 2 integration flows:
 
 ## Steps to follow
 - Navigate to [service accounts](https://app.wiz.io/settings/service-accounts) to create a Service Account
+- Take note of the **Authentication Endpoint** shown on the screen. You'll need to use that in the Wiz Integration setup in XSOAR
 - Click on Add Service Account
 - Scope the permissions for least privilege access:
     - **Resources** > **read:resources**
@@ -20,6 +21,7 @@ There Are 2 integration flows:
     - Choose **Wiz Classifier** as your classifier
     - Choose Wiz **Mapper Webhook** as your mapper
     - Paste the Service Account ID and Secret from Wiz, or create a set of credentials beforehand.
+    - Paste the Wiz Authentication Endpoint
     - Choose max Issues to fetch (up to 200)
     - Use system proxy settings checkbox 
     - Click "Test" button to make sure the Service Account ID/Secret is valid and then click the "Done" button
