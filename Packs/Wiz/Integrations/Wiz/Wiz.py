@@ -1229,12 +1229,12 @@ def rescan_machine_disk(vm_id):
 
     # Run the rescan query
     if not vm_response.get('data', {}).get('graphSearch', {}).get('nodes', []):
-        demisto.log(f"could not find VM with ID {vm_id}")
+        demisto.error(f"could not find VM with ID {vm_id}")
         return f"could not find VM with ID {vm_id}"
 
     else:
         vm_id_wiz = vm_response['data']['graphSearch']['nodes'][0]['entities'][0]['id']
-        demisto.log(f"Found VM with ID {vm_id}")
+        demisto.info(f"Found VM with ID {vm_id}")
 
     variables = {
         'input': {
@@ -1252,14 +1252,14 @@ def rescan_machine_disk(vm_id):
         }
     """)
 
-    demisto.log(f"Running scan on VM ID {vm_id}")
+    demisto.info(f"Running scan on VM ID {vm_id}")
     try:
         response = checkAPIerrors(query, variables)
     except DemistoException:
         demisto.debug(f"could not find run scan on VM ID {vm_id}")
         return {}
 
-    demisto.log(f"Scan on VM ID {vm_id} submitted successfully.")
+    demisto.info(f"Scan on VM ID {vm_id} submitted successfully.")
     return response
 
 
@@ -1351,7 +1351,7 @@ def get_project_team(project_name):
 
     project_response = response_json.get('data', {}).get('projects', {}).get('nodes')
 
-    demisto.log(f"Validating if Project with name \"{project_name}\" exists.")
+    demisto.info(f"Validating if Project with name \"{project_name}\" exists.")
     if not project_response:
         demisto.debug(f"Project with name {project_name} doesn not exist")
         return {}
