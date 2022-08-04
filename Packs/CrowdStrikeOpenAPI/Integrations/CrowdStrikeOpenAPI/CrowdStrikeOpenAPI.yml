@@ -27909,9 +27909,103 @@ script:
     - contextPath: CrowdStrike.modelsVerifyAccessResponseV1.resources.successful
       description: ''
       type: Boolean
-  dockerimage: demisto/python3:3.9.7.24076
+  - arguments:
+    - default: false
+      description: IDs of devices to get the login history for.
+      isArray: false
+      name: ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve details about recent login sessions for a set of devices.
+    execution: false
+    name: cs-get-device-login-history
+    outputs:
+    - contextPath: CrowdStrike.deviceHistoryLogin.errors.code
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.deviceHistoryLogin.errors.id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.errors.message
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.resources.device_id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.resources.recent_logins.login_time
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.resources.recent_logins.user_name
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.meta.powered_by
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.meta.trace_id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.meta.query_time
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.deviceHistoryLogin.meta.writes
+      description: ''
+      type: Unknown
+  - arguments:
+    - default: false
+      description: IDs of devices to get the network adres history for.
+      isArray: false
+      name: ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve history of IP and MAC addresses of devices.
+    execution: false
+    name: cs-get-device-network-history
+    outputs:
+    - contextPath: CrowdStrike.deviceNetworkHistory.error.code
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.deviceNetworkHistory.errors.id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.errors.message
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.meta.powered_by
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.meta.trace_id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.meta.query_time
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.deviceNetworkHistory.meta.writes
+      description: ''
+      type: Unknown
+    - contextPath: CrowdStrike.deviceNetworkHistory.resources.device_id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.resources.cid
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.resources.history.ip_address
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.resources.history.mac_address
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.resources.history.timestamp
+      description: ''
+      type: String
+  dockerimage: demisto/python3:3.10.5.31928
+  feed: false
   isfetch: false
-  script: ''
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
   subtype: python3
   type: python
 beta: true

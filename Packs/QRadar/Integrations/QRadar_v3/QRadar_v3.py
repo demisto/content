@@ -4,6 +4,7 @@ from enum import Enum
 from ipaddress import ip_address
 from typing import Tuple, Set, Dict
 from urllib import parse
+import dateparser
 
 import pytz
 import urllib3
@@ -35,8 +36,6 @@ SAMPLE_SIZE = 2  # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 EVENTS_SEARCH_FAILURE_LIMIT = 3  # amount of consecutive failures events search will tolerate
-
-ONE_HOUR_AFTER_EPOCH = 3600000  # One hour after epoch - 60*60*1000. QRadar supports start_time only after this time
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
@@ -736,7 +735,7 @@ def get_remote_events(client: Client,
             time.sleep(FAILURE_SLEEP)
     elif offense_id in offenses_queried:  # if our offense is in the queried list, we will get the result
         search_id = offenses_queried[offense_id]
-        events, status = poll_offense_events(client, search_id, int(offense_id), should_get_events=True)
+        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=int(offense_id))
         if status == QueryStatus.SUCCESS.value:
             del offenses_queried[offense_id]
             changed_ids_ctx.append(offense_id)
@@ -1319,7 +1318,7 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
     return [enrich_single_asset(asset) for asset in assets]
 
 
-def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) -> int:
+def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str], first_fetch: str, client: Client) -> int:
     """
     Receives the highest offense ID saved from last run, and user query.
     Checks if user query has a limitation for a minimum ID.
@@ -1328,10 +1327,13 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) 
     Args:
         highest_offense_id (int): Minimum ID to fetch offenses by from last run.
         user_query (Optional[str]): User query for QRadar service.
-
+        first_fetch (str): First fetch timestamp.
+        client (Client): Client to perform the API calls.
     Returns:
         (int): The Minimum ID to fetch offenses by.
     """
+    if not highest_offense_id:
+        highest_offense_id = get_min_id_from_first_fetch(first_fetch, client)
     if user_query:
         id_query = ID_QUERY_REGEX.search(user_query)
         if id_query:
@@ -1343,6 +1345,38 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) 
             print_debug_msg(f'Found ID in user query: {user_lowest_offense_id}, last highest ID: {highest_offense_id}')
             return max(highest_offense_id, user_lowest_offense_id)
     return highest_offense_id
+
+
+def get_min_id_from_first_fetch(first_fetch: str, client: Client):
+    """
+    Receives first_fetch integration param
+    and retrieve the lowest id (earliest offense) that was created after that time.
+    Args:
+        first_fetch (str): First fetch timestamp.
+        client (Client): Client to perform the API calls.
+
+    Returns:
+        (int): The ID of the earliest offense created after first_fetch.
+    """
+    filter_fetch_query = f'start_time>{str(convert_start_fetch_to_milliseconds(first_fetch))}'
+    raw_offenses = client.offenses_list(filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
+    return int(raw_offenses[0].get('id')) if raw_offenses else 0
+
+
+def convert_start_fetch_to_milliseconds(fetch_start_time: str):
+    """
+    Convert a timestamp string to milliseconds
+    Args:
+        fetch_start_time (str): First fetch timestamp.
+
+    Returns:
+        (int): time since (epoch - first_fetch) in milliseconds.
+    """
+    date = dateparser.parse(fetch_start_time, settings={'TIMEZONE': 'UTC'})
+    if date is None:
+        # if date is None it means dateparser failed to parse it
+        raise ValueError(f'Invalid first_fetch format: {fetch_start_time}')
+    return int(date.timestamp() * 1000)
 
 
 def get_offense_enrichment(enrichment: str) -> Tuple[bool, bool]:
@@ -1453,6 +1487,7 @@ def test_module_command(client: Client, params: Dict) -> str:
                 last_highest_id=last_highest_id,
                 incident_type=params.get('incident_type'),
                 mirror_direction=mirror_direction,
+                first_fetch=params.get('first_fetch', '3 days')
             )
         else:
             client.offenses_list(range_="items=0-0")
@@ -1502,7 +1537,7 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
     offense_id = offense['id']
     while num_of_failures <= max_retries:
         try:
-            ret_value = create_events_search(client, fetch_mode, event_columns, events_limit, offense_id)
+            ret_value = create_events_search(client, fetch_mode, event_columns, events_limit, offense_id, offense['start_time'])
             time.sleep(EVENTS_MODIFIED_SECS)
             return ret_value
         except Exception:
@@ -1518,7 +1553,11 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
     return QueryStatus.ERROR.value
 
 
-def poll_offense_events(client: Client, search_id: str, offense_id: int, should_get_events: bool,):
+def poll_offense_events(client: Client,
+                        search_id: str,
+                        should_get_events: bool,
+                        offense_id: int | None,
+                        ):
     try:
         print_debug_msg(f"Getting search status for {search_id}")
         search_status_response = client.search_status_get(search_id)
@@ -1547,8 +1586,7 @@ def poll_offense_events(client: Client, search_id: str, offense_id: int, should_
             f'Error while fetching offense {offense_id} events, search_id: {search_id}. Error details: {str(e)} \n'
             f'{traceback.format_exc()}')
         time.sleep(FAILURE_SLEEP)
-        # return WAIT because it's probably a temporary error due to QRadar service
-        return [], QueryStatus.WAIT.value
+        return [], QueryStatus.ERROR.value
 
 
 def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,
@@ -1574,7 +1612,7 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
     for retry in range(max_retries):
         print_debug_msg(f'Polling for events for offense {offense_id}. Retry number {retry+1}/{max_retries}')
         time.sleep(EVENTS_INTERVAL_SECS)
-        events, status = poll_offense_events(client, search_id, offense_id, should_get_events=True)
+        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=int(offense_id))
         if status == QueryStatus.SUCCESS.value:
             return events, ''
         elif status == QueryStatus.ERROR.value:
@@ -1606,11 +1644,10 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     failure_message = ''
     search_id = create_search_with_retry(client, fetch_mode, offense, events_columns,
                                          events_limit)
-    context_data, version = get_integration_context_with_version()
+    is_success = True
     if search_id == QueryStatus.ERROR.value:
         failure_message = 'Search for events was failed.'
-        context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
-        safely_update_context_data(context_data, version, offense_ids=[offense_id])
+        is_success = False
     else:
         events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
     events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
@@ -1620,9 +1657,8 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         offense['events'] = events
     else:
         print_debug_msg(f'No events were fetched for offense {offense_id}'
-                        'Adding to mirroring queue to be queried again.')
-        context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
-        safely_update_context_data(context_data, version, offense_ids=[offense_id])
+                        f'Adding to mirroring queue to be queried again.')
+        is_success = False
     mirroring_events_message = update_events_mirror_message(mirror_options=MIRROR_OFFENSE_AND_EVENTS,
                                                             events_limit=events_limit,
                                                             fetch_mode=fetch_mode,
@@ -1634,12 +1670,13 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
                                                             )
     offense['mirroring_events_message'] = mirroring_events_message
 
-    return offense
+    return offense, is_success
 
 
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
                                          events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
-                                         last_highest_id: int, incident_type: Optional[str], mirror_direction: Optional[str]) \
+                                         last_highest_id: int, incident_type: Optional[str], mirror_direction: Optional[str],
+                                         first_fetch: str) \
         -> Tuple[Optional[List[Dict]], Optional[int]]:
     """
     Gets offenses from QRadar service, and transforms them to incidents in a long running execution.
@@ -1658,13 +1695,14 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
         last_highest_id (int): The highest ID of all the offenses that have been fetched from QRadar service.
         incident_type (Optional[str]): Incident type.
         mirror_direction (Optional[str]): Whether mirror in is activated or not.
+        first_fetch (str): First fetch timestamp.
 
 
     Returns:
         (List[Dict], int): List of the incidents, and the new highest ID for next fetch.
         (None, None): if reset was triggered
     """
-    offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query)
+    offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query, first_fetch, client)
 
     user_query = update_user_query(user_query)
 
@@ -1697,7 +1735,9 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
                     events_columns=events_columns,
                     events_limit=events_limit,
                 ))
-            offenses = [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
+            offenses_with_success = [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
+            offenses = [offense for offense, _ in offenses_with_success]
+            prepare_context_for_failed_events(offenses_with_success)
         except concurrent.futures.TimeoutError as e:
             demisto.error(
                 f"Error while enriching offenses with events: {str(e)} \n {traceback.format_exc()}")
@@ -1714,6 +1754,17 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     final_offenses = sanitize_outputs(enriched_offenses)
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
     return incidents, new_highest_offense_id
+
+
+def prepare_context_for_failed_events(offenses_with_success):
+    ctx, version = get_integration_context_with_version()
+    changed_offense_ids = []
+    for offense, is_success in offenses_with_success:
+        if not is_success:
+            offense_id = str(offense['id'])
+            ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = QueryStatus.WAIT.value
+            changed_offense_ids.append(offense_id)
+    safely_update_context_data(ctx, version, offense_ids=changed_offense_ids)
 
 
 def update_missing_offenses_from_raw_offenses(raw_offenses: list, offenses: list):
@@ -1795,7 +1846,8 @@ def print_context_data_stats(context_data: dict, stage: str) -> Set[str]:
 
 def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mode: str,
                               user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
-                              asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str]):
+                              asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str],
+                              first_fetch: str):
     is_reset_triggered()
     context_data, _ = get_integration_context_with_version()
     print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
@@ -1810,8 +1862,8 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         asset_enrich=asset_enrich,
         last_highest_id=int(context_data.get(LAST_FETCH_KEY, '0')),
         incident_type=incident_type,
-        mirror_direction=mirror_direction
-
+        mirror_direction=mirror_direction,
+        first_fetch=first_fetch,
     )
     print_debug_msg(f'Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}')
     context_data, ctx_version = get_integration_context_with_version()
@@ -1844,6 +1896,7 @@ def long_running_execution_command(client: Client, params: Dict):
     """
     validate_long_running_params(params)
     fetch_mode = params.get('fetch_mode', '')
+    first_fetch = params.get('first_fetch', '3 days')
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
     offenses_per_fetch = int(params.get('offenses_per_fetch'))  # type: ignore
     user_query = params.get('query', '')
@@ -1866,6 +1919,7 @@ def long_running_execution_command(client: Client, params: Dict):
                 asset_enrich=asset_enrich,
                 incident_type=incident_type,
                 mirror_direction=mirror_direction,
+                first_fetch=first_fetch,
             )
             demisto.updateModuleHealth('')
 
@@ -2316,7 +2370,7 @@ def qradar_searches_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def qradar_search_create_command(client: Client, args: Dict) -> CommandResults:
+def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> CommandResults:
     """
     Create a search in QRadar service.
     possible arguments:
@@ -2324,18 +2378,37 @@ def qradar_search_create_command(client: Client, args: Dict) -> CommandResults:
     - saved_search_id: Saved search ID to execute. Mutually exclusive with query_expression.
     Args:
         client (Client): QRadar client to perform the API call.
+        params (Dict): Demisto params.
         args (Dict): Demisto args.
 
     Returns:
         CommandResults.
     """
+    offense_id = args.get('offense_id', '')
+    events_columns = args.get('events_columns', params.get('events_columns'))
+    events_limit = args.get('events_limit', params.get('events_limit'))
+    fetch_mode = args.get('fetch_mode', params.get('fetch_mode'))
+    start_time = args.get('start_time')
     query_expression = args.get('query_expression')
     saved_search_id = args.get('saved_search_id')
 
-    # if this call fails, raise an error and stop command execution
-    response = client.search_create(query_expression, saved_search_id)
-    outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
+    if not query_expression and not saved_search_id and not offense_id:
+        raise DemistoException('Please provide one of the following args: `query_expression`, `saved_search_id` or `offense_id`.')
 
+    if query_expression and offense_id:
+        raise DemistoException('Could not use both `query_expression` and `offense_id`.')
+    # if this call fails, raise an error and stop command execution
+    if query_expression or saved_search_id:
+        response = client.search_create(query_expression, saved_search_id)
+    else:
+        response = create_events_search(client,
+                                        fetch_mode,
+                                        events_columns,
+                                        events_limit,
+                                        int(offense_id),
+                                        start_time,
+                                        return_raw_response=True)
+    outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
     return CommandResults(
         readable_output=tableToMarkdown('Create Search', outputs),
         outputs_prefix='QRadar.Search',
@@ -3294,7 +3367,7 @@ def add_modified_remote_offenses(client: Client,
                 mirrored_offenses_queries[offense_id] = search_id
                 changed_ids_ctx.append(offense_id)
             # If the search finished, move it to finished queue
-            _, status = poll_offense_events(client, search_id, int(offense_id), should_get_events=False)
+            _, status = poll_offense_events(client, search_id, should_get_events=False, offense_id=int(offense_id))
             if status == QueryStatus.ERROR.value:
                 time.sleep(FAILURE_SLEEP)
                 print_debug_msg(f'offense {offense_id}, search query {search_id}, status is {status}')
@@ -3322,23 +3395,29 @@ def create_events_search(client: Client,
                          events_columns: str,
                          events_limit: int,
                          offense_id: int,
+                         offense_start_time: str = None,
+                         return_raw_response: bool = False,
                          ) -> str:
     additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
         if fetch_mode == FetchMode.correlations_events_only.value else ''
     try:
         # Get all the events starting from one hour after epoch
-        start_time = ONE_HOUR_AFTER_EPOCH
+        if not offense_start_time:
+            offense = client.offenses_list(offense_id=offense_id)
+            offense_start_time = offense['start_time']
         query_expression = (
             f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
-            f'START {start_time}'
+            f'START {offense_start_time}'
         )
         print_debug_msg(f'Creating search for offense ID: {offense_id}, '
                         f'query_expression: {query_expression}')
         search_response = client.search_create(query_expression)
         print_debug_msg(f'Created search for offense ID: {offense_id}, '
-                        f'Start Time: {ONE_HOUR_AFTER_EPOCH}, '
+                        f'Start Time: {offense_start_time}, '
                         f'events_limit: {events_limit}, '
                         f'ret_value: {search_response}.')
+        if return_raw_response:
+            return search_response
         return search_response['search_id'] if search_response['search_id'] else QueryStatus.ERROR.value
     except Exception as e:
         print_debug_msg(f'Search for {offense_id} failed. Error: {e}')
@@ -3392,6 +3471,74 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
                                                             )
 
     return GetModifiedRemoteDataResponse(list(new_modified_records_ids))
+
+
+def qradar_search_retrieve_events_command(client: Client,
+                                          params,
+                                          args,
+                                          ) -> CommandResults:  # pragma: no cover (tested in test-playbook)
+    """A polling command to get events from QRadar offense
+
+    Args:
+        client (Client): The QRadar client to use.
+        params (dict): Parameters passed to the command.
+        args (dict): Demisto arguments.
+
+    Raises:
+        DemistoException: If the search failed.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    interval_in_secs = int(args.get('interval_in_seconds', 30))
+    search_id = args.get('search_id')
+    if not search_id:
+        try:
+            search_command_results = qradar_search_create_command(client, params, args)
+            search_id = search_command_results.outputs[0].get('ID')  # type: ignore
+        except Exception as e:
+            raise DemistoException(f'The search was failed. Error: {e}')
+        polling_args = {
+            'search_id': search_id,
+            'interval_in_seconds': interval_in_secs,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command='qradar-search-retrieve-events',
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=3600,
+        )
+
+        return CommandResults(scheduled_command=scheduled_command,
+                              readable_output=f'Search ID: {search_id}',
+                              outputs_prefix='QRadar.SearchEvents',
+                              outputs_key_field='ID',
+                              outputs=search_command_results.outputs
+                              )
+    events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
+    if status == QueryStatus.ERROR.value:
+        raise DemistoException('Polling for events failed')
+    if status == QueryStatus.SUCCESS.value:
+        return CommandResults(outputs_prefix='QRadar.SearchEvents',
+                              outputs_key_field='ID',
+                              outputs={'Events': events, 'ID': search_id},
+                              readable_output=tableToMarkdown(f'Events returned from search_id {search_id}',
+                                                              events,
+                                                              )
+                              )
+    print_debug_msg(f'Still polling for search results for search ID: {search_id}.')
+    polling_args = {
+        'search_id': search_id,
+        'interval_in_seconds': interval_in_secs,
+        **args
+    }
+    scheduled_command = ScheduledCommand(
+        command='qradar-search-retrieve-events',
+        next_run_in_seconds=interval_in_secs,
+        args=polling_args,
+    )
+    return CommandResults(scheduled_command=scheduled_command)
 
 
 def migrate_integration_ctx(ctx: dict) -> dict:
@@ -3555,7 +3702,7 @@ def main() -> None:  # pragma: no cover
             return_results(qradar_searches_list_command(client, args))
 
         elif command == 'qradar-search-create' or command == 'qradar-searches':
-            return_results(qradar_search_create_command(client, args))
+            return_results(qradar_search_create_command(client, params, args))
 
         elif command == 'qradar-search-status-get' or command == 'qradar-get-search':
             return_results(qradar_search_status_get_command(client, args))
@@ -3615,6 +3762,8 @@ def main() -> None:  # pragma: no cover
             validate_integration_context()
             return_results(get_modified_remote_data_command(client, params, args))
 
+        elif command == 'qradar-search-retrieve-events':
+            return_results(qradar_search_retrieve_events_command(client, params, args))
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
@@ -3625,7 +3774,6 @@ def main() -> None:  # pragma: no cover
 
 
 ''' ENTRY POINT '''
-
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
