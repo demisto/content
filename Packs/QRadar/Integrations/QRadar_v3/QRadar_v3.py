@@ -1586,8 +1586,7 @@ def poll_offense_events(client: Client,
             f'Error while fetching offense {offense_id} events, search_id: {search_id}. Error details: {str(e)} \n'
             f'{traceback.format_exc()}')
         time.sleep(FAILURE_SLEEP)
-        # return WAIT because it's probably a temporary error due to QRadar service
-        return [], QueryStatus.WAIT.value
+        return [], QueryStatus.ERROR.value
 
 
 def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,

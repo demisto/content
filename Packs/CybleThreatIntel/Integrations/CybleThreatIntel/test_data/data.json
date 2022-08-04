@@ -1,0 +1,47 @@
+{
+  "id": "example:Package-19548504-7169-4b2e-9b54-0fa1c3d931f8",
+  "version": "1.2",
+  "indicators": [
+    {
+      "id": "example:indicator-639d1fcd-f295-436e-8d45-8a9a5jgd2064",
+      "title": "Phishing Site",
+      "timestamp": "2022-06-22T00:04:05.699330+00:00",
+      "observable": {
+        "id": "example:Observable-c76sd4ac-abe8-4b61-bb56-2db325a2ch09",
+        "object": {
+          "id": "example:URI-9ee1j5ff-87dd-4cda-a897-9b6s4hy0a818",
+          "properties": {
+            "value": "This is Test Value",
+            "type": "URL",
+            "xsi:type": "URIObjectType"
+          }
+        }
+      },
+      "indicator_types": [
+        {
+          "value": "URL Watchlist",
+          "xsi:type": "stixVocabs:IndicatorTypeVocab-1.1"
+        }
+      ],
+      "indicated_ttps": [
+        {
+          "ttp": {
+            "id": "example:ttp-3846ha2d-1a1f-4913-b5e7-7e734htd4439",
+            "title": "Victim Targeting: Banking, Insurance and Securities",
+            "timestamp": "2022-06-21T19:58:10",
+            "victim_targeting": {
+              "identity": {
+                "xsi:type": "stix-ciqidentity:CIQIdentity3.0InstanceType",
+                "specification": {
+                  "organisation_info": {
+                    "industry_type": "Banking, Insurance and Securities"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
