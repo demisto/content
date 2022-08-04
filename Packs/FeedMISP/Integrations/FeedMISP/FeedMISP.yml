@@ -30,7 +30,7 @@ configuration:
     new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
-  defaultvalue: true
+  defaultvalue: 'true'
   required: false
   type: 8
   hidden: true
@@ -80,7 +80,6 @@ configuration:
   required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: ""
   type: 8
   required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from
@@ -171,7 +170,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.27636
+  dockerimage: demisto/python3:3.10.5.31928
 fromversion: 5.5.0
 tests:
 - MISPfeed Test

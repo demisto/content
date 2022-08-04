@@ -1,0 +1,21 @@
+{
+    "name": "Attachments Pre Processing",
+    "description": "This pack contains a pre-processing script \"GetFilePathPreProcessing\" that is used to create the attachments of incoming incidents in an existing incident, then drop the incoming incident.\n\nIt should be configured as a pre-processing rule, and the logic for finding the right incident should be added to the code manually.\n\nThe automation collects the paths and names of the attachments of the incoming incident and passes it to the \"CreateFileFromPathObject\" automation that is being executed on the existing incident, which creates the files",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Gavriel Filippov",
+    "url": "",
+    "email": "",
+    "created": "2022-05-14T12:24:54Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "GavrielFilippov"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

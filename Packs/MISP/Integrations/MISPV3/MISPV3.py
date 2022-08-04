@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 import urllib3
 
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute
-from pymisp.tools import GenericObjectGenerator
+from pymisp.tools import GenericObjectGenerator, EMailObject
 import copy
 from pymisp.tools import FileObject
 
@@ -182,6 +182,7 @@ MISP_SEARCH_ARGUMENTS = [
     'page',
     'enforceWarninglist',
     'include_feed_correlations',
+    'eventinfo'
 ]
 
 EVENT_FIELDS = [
@@ -510,7 +511,7 @@ def get_new_misp_event_object(args):
     analysis_arg = args.get('analysis')
     event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg) if analysis_arg in MISP_ANALYSIS_TO_IDS else analysis_arg
     event.info = args.get('info') if args.get('info') else 'Event from XSOAR'
-    event.date = datetime.today()
+    event.date = datetime.strptime(args.get('creation_date'), "%Y-%m-%d") if args.get('creation_date') else datetime.today()
     event.published = argToBoolean(args.get('published', 'False'))
     return event
 
@@ -795,7 +796,7 @@ def prepare_args_to_search(controller):
     args_to_misp_format = {arg: demisto_args[arg] for arg in MISP_SEARCH_ARGUMENTS if arg in demisto_args}
     # Replacing keys and values from Demisto to Misp's keys
     if 'type' in args_to_misp_format:
-        args_to_misp_format['type_attribute'] = args_to_misp_format.pop('type')
+        args_to_misp_format['type_attribute'] = args_to_misp_format.pop('type').split(",")
     if 'to_ids' in args_to_misp_format:
         args_to_misp_format['to_ids'] = 1 if demisto_args.get('to_ids') == 'true' else 0
     if 'from' in args_to_misp_format:
@@ -1299,6 +1300,14 @@ def add_file_object(demisto_args: dict):
     return add_object(event_id, obj)
 
 
+def add_email_object(demisto_args: dict):
+    entry_id = demisto_args.get('entry_id')
+    event_id = demisto_args.get('event_id')
+    email_path = demisto.getFilePath(entry_id).get('path')
+    obj = EMailObject(email_path)
+    return add_object(event_id, obj)
+
+
 def add_domain_object(demisto_args: dict):
     """Adds a domain object to MISP
     domain-ip description: https://www.misp-project.org/objects.html#_domain_ip
@@ -1329,7 +1338,7 @@ def add_url_object(demisto_args: dict):
     url = demisto_args.get('url')
     url_parse = urlparse(url)
     url_obj = [{'url': url}]
-    url_obj.extend({'scheme': url_parse.scheme}) if url_parse.scheme else None
+    url_obj.append({'scheme': url_parse.scheme}) if url_parse.scheme else None
     url_obj.append({'resource_path': url_parse.path}) if url_parse.path else None
     url_obj.append({'query_string': url_parse.query}) if url_parse.query else None
     url_obj.append({'domain': url_parse.netloc}) if url_parse.netloc else None
@@ -1488,6 +1497,75 @@ def publish_event_command(demisto_args: dict) -> CommandResults:
         return CommandResults(readable_output=human_readable, raw_response=response)
 
 
+def set_event_attributes_command(demisto_args: dict) -> CommandResults:
+    """
+    Set the attributes of an event according to given alert_data.
+    """
+    changed = False
+    event_id = demisto_args.get('event_id')
+    event = PYMISP.get_event(event_id, pythonify=True)
+    if 'errors' in event:
+        raise DemistoException(f'Event ID: {event_id} has not found in MISP: \nError message: {event}')
+    try:
+        attribute_data = json.loads(demisto_args.get("attribute_data"))
+    except Exception as e:
+        raise DemistoException(f'Invalid attribute_data: \nError message: {str(e)}')
+    for event_attribute in event.attributes:
+        if event_attribute["value"] not in [x["value"] for x in attribute_data]:
+            event_attribute.delete()
+            changed = True
+    for attribute in attribute_data:
+        if attribute["value"] not in [x["value"] for x in event.attributes]:
+            event.add_attribute(attribute["type"], attribute["value"])
+            changed = True
+    if changed:
+        event_update = PYMISP.update_event(event=event)
+        if 'errors' in event_update:
+            raise DemistoException(f'Event ID: {event_id} could not be updated: \nError message: {event_update}')
+        else:
+            human_readable = f'Attributes of Event {event_id} were set to match attribute data.'
+            return CommandResults(readable_output=human_readable, raw_response=event_update)
+    else:
+        return CommandResults(readable_output="No changes to event.")
+
+
+def warninglist_command(demisto_args: dict) -> CommandResults:
+    """
+    Check values against MISP warninglists.
+    """
+    res = []
+    values = argToList(demisto_args["value"])
+    response = PYMISP.values_in_warninglist(values)
+    if 'errors' in response:
+        raise DemistoException(f'Unable to validate against MISPwarninglist!\nError message: {response}')
+    if not response:
+        return CommandResults(
+            readable_output="No value is on a MISP warning list!",
+            raw_response=response,
+        )
+    for value, lists in response.items():
+        if len(lists) > 0:
+            res.append(
+                {
+                    "Value": value,
+                    "Count": len(lists),
+                    "Lists": ",".join([x["name"] for x in lists]),
+                }
+            )
+    human_readable = tableToMarkdown(
+        "MISP Warninglist matchings:",
+        sorted(res, key=lambda x: x["Count"], reverse=True),
+        headers=["Value", "Lists", "Count"],
+    )
+    return CommandResults(
+        outputs=res,
+        outputs_prefix="MISP.Warninglist",
+        outputs_key_field=["Value"],
+        readable_output=human_readable,
+        raw_response=response,
+    )
+
+
 def main():
     params = demisto.params()
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
@@ -1551,6 +1629,8 @@ def main():
                                                       reliability, attributes_limit))
         elif command == 'misp-add-file-object':
             return_results(add_file_object(args))
+        elif command == 'misp-add-email-object':
+            return_results(add_email_object(args))
         elif command == 'misp-add-domain-object':
             return_results(add_domain_object(args))
         elif command == 'misp-add-url-object':
@@ -1565,6 +1645,10 @@ def main():
             return_results(delete_attribute_command(args))
         elif command == 'misp-publish-event':
             return_results(publish_event_command(args))
+        elif command == "misp-set-event-attributes":
+            return_results(set_event_attributes_command(args))
+        elif command == "misp-check-warninglist":
+            return_results(warninglist_command(args))
     except PyMISPError as e:
         return_error(e.message)
     except Exception as e:

@@ -72,8 +72,8 @@ def complete_auth(client: MsGraphClient):  # pragma: no cover
     return 'Authorization completed successfully.'
 
 
-def test_module(client: MsGraphClient, params: Dict) -> str:  # pragma: no cover
-    if params.get('app_secret') and params.get('tenant_id'):
+def test_module(client: MsGraphClient, app_secret: str, tenant_id: str) -> str:  # pragma: no cover
+    if app_secret and tenant_id:
         client.ms_client.get_access_token()
         return 'ok'
     else:
@@ -112,7 +112,10 @@ def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResul
         results = {'raw_response': response}
 
         if argToBoolean(args.get('populate_context', 'true')):
-            results['outputs'] = get_response_outputs(response)
+            outputs = get_response_outputs(response)
+            if outputs is True:
+                return CommandResults(readable_output='The API query ran successfully and returned no content.')
+            results['outputs'] = outputs
             results['outputs_prefix'] = 'MicrosoftGraph'
 
     return CommandResults(**results)  # type: ignore[arg-type]
@@ -136,16 +139,15 @@ def main() -> None:  # pragma: no cover
         scope += params.get('scope')
 
     app_secret = params.get('app_secret') or (params.get('credentials') or {}).get('password')
+    app_secret = app_secret if isinstance(app_secret, str) else ''
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
-    if not app_secret and not (certificate_thumbprint and private_key):
-        raise DemistoException('Application Secret or Certificate Thumbprint and Private Key must be provided.')
 
     try:
         client = MsGraphClient(
             app_id=params.get('app_id'),
             scope=scope,
-            app_secret=app_secret if isinstance(app_secret, str) else '',
+            app_secret=app_secret,
             tenant_id=params.get('tenant_id'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
@@ -156,7 +158,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == 'test-module':
-            result = test_module(client, params)
+            result = test_module(client, app_secret, params.get('tenant_id'))
             return_results(result)
         elif command == 'msgraph-api-request':
             return_results(generic_command(client, demisto.args()))
@@ -167,7 +169,6 @@ def main() -> None:  # pragma: no cover
         elif command == 'msgraph-api-test':
             return_results(test_command(client))
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 

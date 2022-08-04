@@ -1,7 +1,55 @@
 RSA NetWitness Platform provides systems Logs, Network, and endpoint visibility for real-time collection, detection, and automated response with the XSOAR Enterprise platform.
-This integration was integrated and tested with version 11.5 of RSANetWitness
+
+This integration was integrated and tested with version 11.5 of RSANetWitness.
+
 The integration supports version 11.5 and higher.
-Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
+
+Note: This is a beta integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
+
+## Changes compared to V11.1
+### Changes in commands
+- ***rsa-nw-remove-incident*** replaces the ***netwitness-delete-incident*** command.
+- ***rsa-nw-incident-list-alerts*** replaces the ***netwitness-get-alerts*** command with an added limit option and new pagination options.
+- ***rsa-nw-list-incidents*** replaces the ***netwitness-get-incident*** and ***netwitness-get-incidents*** commands.
+- ***rsa-nw-update-incident*** replaces the ***netwitness-update-incident*** command.
+
+### New commands
+- ***endpoint*** 
+- ***rsa-nw-endpoint-isolate-from-network*** 
+- ***rsa-nw-endpoint-isolation-remove*** 
+- ***rsa-nw-endpoint-update-exclusions*** 
+- ***rsa-nw-file-alerts-list*** 
+- ***rsa-nw-file-download*** 
+- ***rsa-nw-files-list*** 
+- ***rsa-nw-host-alerts-list*** 
+- ***rsa-nw-hosts-list*** 
+- ***rsa-nw-incident-add-journal-entry*** 
+- ***rsa-nw-incident-list-alerts*** 
+- ***rsa-nw-mft-download-request*** 
+- ***rsa-nw-process-dump-download-request*** 
+- ***rsa-nw-scan-request*** 
+- ***rsa-nw-scan-stop-request*** 
+- ***rsa-nw-services-list*** 
+- ***rsa-nw-snapshot-details-get*** 
+- ***rsa-nw-snapshots-list-for-host*** 
+- ***rsa-nw-system-dump-download-request*** 
+
+# API Limitations
+Commands that require actions within a hostonly  return the status of the request received by our RSA server and not our host.
+Whether the desired action was preformed successfully within the host is not reported back.
+
+For example, for our ***rsa-nw-scan-request*** command a success message returned only confirms the request has been received by RSA NetWitness,
+but does not indicate the scan has been preformed successfully in the requested host.
+Commands affected by this limitation are: 
+* ***rsa-nw-endpoint-isolate-from-network***
+* ***rsa-nw-endpoint-isolation-remove*** 
+* ***rsa-nw-endpoint-update-exclusions*** 
+* ***rsa-nw-file-download*** 
+* ***rsa-nw-mft-download-request***
+* ***rsa-nw-process-dump-download-request***
+* ***rsa-nw-scan-request***
+* ***rsa-nw-scan-stop-request***
+* ***rsa-nw-system-dump-download-request***
 
 ## Configure RSA NetWitness v11.5 (Beta) on Cortex XSOAR
 
@@ -11,7 +59,7 @@ Note: This is a beta Integration, which lets you implement and test pre-release 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g https://192.168.0.1) |  | True |
+    | Server URL (e.g., https://192.168.0.1) |  | True |
     | User name |  | True |
     | Password |  | True |
     | Service Id | The service ID that is automatically used in every command where service ID is required. Retrieve all service IDs with the rsa-nw-services-list command. To overwrite with another service ID, use the command argument 'service_id'. | False |

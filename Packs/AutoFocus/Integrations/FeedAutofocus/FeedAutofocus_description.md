@@ -1,7 +1,7 @@
 ## AutoFocus Feed
 Gets Custom and Sample feeds from AutoFocus.
 
-**Note:** The `Daily Threat Feed` option is deprecated. Use the separate **AutoFocus Daily Feed** instead. 
+**Note:** The `Daily Threat Feed` option is deprecated. No available replacement.
 
 For more information see the [AutoFocus documentation](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 

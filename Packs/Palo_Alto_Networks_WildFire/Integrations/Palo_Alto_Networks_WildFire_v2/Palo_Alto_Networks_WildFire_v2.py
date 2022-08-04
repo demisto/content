@@ -1089,14 +1089,19 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
     outputs, feed_related_indicators, behavior, relationships = parse_file_report(file_hash, reports,
                                                                                   file_info, extended_data)
 
-    dbot_score = 3 if file_info["malware"] == 'yes' else 1
+    if file_info["malware"] == 'yes':
+        dbot_score = 3
+        tags = ['malware']
+    else:
+        dbot_score = 1
+        tags = []
 
     dbot_score_object = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
                                          integration_name='WildFire', score=dbot_score, reliability=RELIABILITY)
     file = Common.File(dbot_score=dbot_score_object, name=file_info.get('filename'),
                        file_type=file_info.get('filetype'), md5=file_info.get('md5'), sha1=file_info.get('sha1'),
                        sha256=file_info.get('sha256'), size=file_info.get('size'),
-                       feed_related_indicators=feed_related_indicators, tags=['malware'],
+                       feed_related_indicators=feed_related_indicators, tags=tags,
                        digital_signature__publisher=file_info.get('file_signer'), behaviors=behavior, relationships=relationships)
 
     if format_ == 'pdf':
@@ -1148,7 +1153,7 @@ def wildfire_get_url_report(url: str) -> Tuple:
     get_report_uri = f"{URL}{URL_DICT['report']}"
     params = {'apikey': TOKEN, 'url': url}
     entry_context = {'URL': url}
-
+    human_readable = None
     try:
         response = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, resp_type='json')
         report = response.get('result').get('report')
@@ -1190,7 +1195,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
     sha256 = file_hash if sha256Regex.match(file_hash) else None
     md5 = file_hash if md5Regex.match(file_hash) else None
     entry_context = {key: value for key, value in (['MD5', md5], ['SHA256', sha256]) if value}
-
+    human_readable, relationships, indicator = None, None, None
     try:
         json_res = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
         reports = json_res.get('wildfire', {}).get('task_info', {}).get('report')

@@ -1,0 +1,99 @@
+{
+    "name": "get_agent_object_by_name",
+    "execute": "response_raw = CimTrak.get_agent_object_by_name_command(client,{'agentName':'local'})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getObjects",
+            "reply": {
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "results": [
+                  {
+                    "repositoryDisplayName": "DSK050",
+                    "connected": true,
+                    "agentObjectId": 1,
+                    "description": "",
+                    "name": "local",
+                    "objectPath": "DSK050->local",
+                    "agentIsFilesystem": true,
+                    "cancel": false,
+                    "logsByDays": true,
+                    "requireNotes": false,
+                    "inService": "",
+                    "events": 30,
+                    "intrusions": 0,
+                    "intrusionSize": 0,
+                    "objectId": 1,
+                    "objectStatus": 0,
+                    "objectSubType": 1,
+                    "objectType": 1,
+                    "parentId": 0,
+                    "revisions": 0,
+                    "templateId": 0,
+                    "securityAdd": true,
+                    "securityEdit": true,
+                    "securityLock": true,
+                    "securityReport": true,
+                    "securityUnlock": true,
+                    "securityView": true,
+                    "warnMinutes": 0,
+                    "contact": "",
+                    "createDate": "2021-10-23 16:08:51",
+                    "location": "",
+                    "url": "",
+                    "parentName": "",
+                    "children": 4,
+                    "agentVersion": "Build 18029",
+                    "agentBuild": 18029,
+                    "agentOsVersion": "Windows 10 Version 10.0.19043 x64",
+                    "agentIp": "127.0.0.1",
+                    "agentName": "local",
+                    "agentInstalled": true
+                  }
+                ]
+            }
+        }
+    ],
+    "response": {
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "connected": true,
+                "agentObjectId": 1,
+                "description": "",
+                "name": "local",
+                "objectPath": "DSK050->local",
+                "agentIsFilesystem": true,
+                "cancel": false,
+                "logsByDays": true,
+                "requireNotes": false,
+                "inService": "",
+                "events": 30,
+                "intrusions": 0,
+                "intrusionSize": 0,
+                "objectId": 1,
+                "objectStatus": 0,
+                "objectSubType": 1,
+                "objectType": 1,
+                "parentId": 0,
+                "revisions": 0,
+                "templateId": 0,
+                "securityAdd": true,
+                "securityEdit": true,
+                "securityLock": true,
+                "securityReport": true,
+                "securityUnlock": true,
+                "securityView": true,
+                "warnMinutes": 0,
+                "contact": "",
+                "createDate": "2021-10-23 16:08:51",
+                "location": "",
+                "url": "",
+                "children": 4
+            }
+        ]
+    }
+}

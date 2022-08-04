@@ -1,0 +1,599 @@
+{
+  "sort_by_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "NAME"
+          },
+          {
+            "name": "ASSIGNED_SLA_DOMAIN"
+          },
+          {
+            "name": "EFFECTIVE_SLA_DOMAIN"
+          },
+          {
+            "name": "EC2_INSTANCE_ID"
+          },
+          {
+            "name": "EC2_INSTANCE_NAME"
+          },
+          {
+            "name": "EBS_VOLUME_ID"
+          },
+          {
+            "name": "EBS_VOLUME_NAME"
+          },
+          {
+            "name": "EC2_INSTANCE_TYPE"
+          },
+          {
+            "name": "EBS_VOLUME_TYPE"
+          },
+          {
+            "name": "AWS_REGION"
+          },
+          {
+            "name": "EMAIL_ADDRESS"
+          },
+          {
+            "name": "ID"
+          },
+          {
+            "name": "AZURE_REGION"
+          },
+          {
+            "name": "AWS_VPC_ID"
+          },
+          {
+            "name": "AWS_NATIVE_ACCOUNT_NAME"
+          },
+          {
+            "name": "EC2_INSTANCE_COUNT"
+          },
+          {
+            "name": "EBS_VOLUME_COUNT"
+          },
+          {
+            "name": "EBS_VOLUME_SIZE"
+          },
+          {
+            "name": "AZURE_TENANT_ID"
+          },
+          {
+            "name": "AZURE_VM_RG_SUBSCRIPTION_NAME"
+          },
+          {
+            "name": "AZURE_DISK_RG_SUBSCRIPTION_NAME"
+          },
+          {
+            "name": "AZURE_VM_RG_VMCOUNT"
+          },
+          {
+            "name": "AZURE_DISK_RG_DISKCOUNT"
+          },
+          {
+            "name": "AZURE_SUBSCRIPTION_VMCOUNT"
+          },
+          {
+            "name": "AZURE_SUBSCRIPTION_DISKCOUNT"
+          },
+          {
+            "name": "AZURE_VM_RG_NAME"
+          },
+          {
+            "name": "AZURE_VM_SUBSCRIPTION_NAME"
+          },
+          {
+            "name": "AZURE_VNET_NAME"
+          },
+          {
+            "name": "AZURE_SUBNET_NAME"
+          },
+          {
+            "name": "AZURE_VM_SIZE"
+          },
+          {
+            "name": "AZURE_DISK_RG_NAME"
+          },
+          {
+            "name": "AZURE_DISK_SUBSCRIPTION_NAME"
+          },
+          {
+            "name": "AZURE_DISK_SIZE"
+          },
+          {
+            "name": "AZURE_DISK_ATTACHED_VM"
+          },
+          {
+            "name": "AZURE_DISK_TYPE"
+          },
+          {
+            "name": "PHYSICAL_HOST_OS_NAME"
+          },
+          {
+            "name": "FILESET_TEMPLATE_INCLUDES"
+          },
+          {
+            "name": "GCP_PROJECT_ORG_NAME"
+          },
+          {
+            "name": "GCP_INSTANCE_NATIVE_ID"
+          },
+          {
+            "name": "GCP_INSTANCE_NATIVE_NAME"
+          },
+          {
+            "name": "GCP_INSTANCE_PROJECT_NAME"
+          },
+          {
+            "name": "GCP_INSTANCE_TYPE"
+          },
+          {
+            "name": "AWS_NATIVE_RDS_DB_INSTANCE_CLASS"
+          },
+          {
+            "name": "AWS_NATIVE_RDS_DB_ENGINE"
+          },
+          {
+            "name": "GCP_PROJECT_NUMBER"
+          },
+          {
+            "name": "GCP_PROJECT_INSTANCE_COUNT"
+          },
+          {
+            "name": "GCP_PROJECT_NATIVE_ID"
+          },
+          {
+            "name": "GCP_INSTANCE_REGION"
+          },
+          {
+            "name": "GCP_INSTANCE_NETWORK_NAME"
+          },
+          {
+            "name": "FILESET_TEMPLATE_EXCLUDES"
+          },
+          {
+            "name": "FILESET_TEMPLATE_DOES_NOT_EXCLUDE"
+          },
+          {
+            "name": "PHYSICAL_HOST_CONNECTION_STATUS"
+          },
+          {
+            "name": "SAP_HANA_SYSTEM_SID"
+          },
+          {
+            "name": "SAP_HANA_SYSTEM_STATUS"
+          },
+          {
+            "name": "GCP_DISK_NATIVE_ID"
+          },
+          {
+            "name": "GCP_DISK_NATIVE_NAME"
+          },
+          {
+            "name": "GCP_DISK_PROJECT_NAME"
+          },
+          {
+            "name": "GCP_DISK_LOCATION"
+          },
+          {
+            "name": "GCP_DISK_SIZE"
+          },
+          {
+            "name": "GCP_PROJECT_DISK_COUNT"
+          },
+          {
+            "name": "AZURE_RG_SUBSCRIPTION_NAME"
+          },
+          {
+            "name": "AZURE_RG_VMCOUNT"
+          },
+          {
+            "name": "AZURE_RG_DISKCOUNT"
+          },
+          {
+            "name": "AZURE_DISK_CRG_NAME"
+          },
+          {
+            "name": "AZURE_VM_CRG_NAME"
+          },
+          {
+            "name": "AZURE_DISK_CRG_SUBSCRIPTION_NAME"
+          },
+          {
+            "name": "AZURE_VM_CRG_SUBSCRIPTION_NAME"
+          },
+          {
+            "name": "AZURE_RG_DISK_EFFECTIVE_SLA"
+          },
+          {
+            "name": "AZURE_RG_VM_EFFECTIVE_SLA"
+          },
+          {
+            "name": "VSPHERE_DATASTORE_CAPACITY"
+          },
+          {
+            "name": "VSPHERE_DATASTORE_FREE_SPACE"
+          },
+          {
+            "name": "VSPHERE_DATASTORE_TYPE"
+          }
+        ]
+      }
+    }
+  },
+  "sort_order_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "ASC"
+          },
+          {
+            "name": "DESC"
+          }
+        ]
+      }
+    }
+  },
+  "file_count_type_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "ANY"
+          },
+          {
+            "name": "HITS"
+          },
+          {
+            "name": "STALE"
+          },
+          {
+            "name": "OPEN_ACCESS"
+          },
+          {
+            "name": "STALE_HITS"
+          },
+          {
+            "name": "OPEN_ACCESS_HITS"
+          }
+        ]
+      }
+    }
+  },
+  "snapshot_group_by_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "Month"
+          },
+          {
+            "name": "Day"
+          },
+          {
+            "name": "Year"
+          },
+          {
+            "name": "Week"
+          },
+          {
+            "name": "Hour"
+          },
+          {
+            "name": "Quarter"
+          }
+        ]
+      }
+    }
+  },
+  "sla_query_sort_by_field_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "NAME"
+          },
+          {
+            "name": "PROTECTED_OBJECT_COUNT"
+          }
+        ]
+      }
+    }
+  },
+  "sla_object_type_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "UNKNOWN_OBJECT_TYPE"
+          },
+          {
+            "name": "SAP_HANA_OBJECT_TYPE"
+          },
+          {
+            "name": "AWS_EC2_EBS_OBJECT_TYPE"
+          },
+          {
+            "name": "AWS_RDS_OBJECT_TYPE"
+          },
+          {
+            "name": "AZURE_OBJECT_TYPE"
+          },
+          {
+            "name": "GCP_OBJECT_TYPE"
+          },
+          {
+            "name": "O365_OBJECT_TYPE"
+          },
+          {
+            "name": "VSPHERE_OBJECT_TYPE"
+          },
+          {
+            "name": "KUPR_OBJECT_TYPE"
+          },
+          {
+            "name": "FILESET_OBJECT_TYPE"
+          },
+          {
+            "name": "CASSANDRA_OBJECT_TYPE"
+          },
+          {
+            "name": "VOLUME_GROUP_OBJECT_TYPE"
+          },
+          {
+            "name": "MSSQL_OBJECT_TYPE"
+          },
+          {
+            "name": "AZURE_SQL_DATABASE_OBJECT_TYPE"
+          },
+          {
+            "name": "AZURE_SQL_MANAGED_INSTANCE_OBJECT_TYPE"
+          }
+        ]
+      }
+    }
+  },
+  "event_sort_by_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "LastUpdated"
+          },
+          {
+            "name": "Location"
+          },
+          {
+            "name": "ObjectType"
+          },
+          {
+            "name": "ClusterName"
+          },
+          {
+            "name": "ObjectName"
+          },
+          {
+            "name": "StartTime"
+          },
+          {
+            "name": "ActivityType"
+          },
+          {
+            "name": "Severity"
+          },
+          {
+            "name": "ActivityStatus"
+          }
+        ]
+      }
+    }
+  },
+  "event_sort_order_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "Asc"
+          },
+          {
+            "name": "Desc"
+          }
+        ]
+      }
+    }
+  },
+  "activity_type_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "Sync"
+          },
+          {
+            "name": "LocalRecovery"
+          },
+          {
+            "name": "TestFailover"
+          },
+          {
+            "name": "Anomaly"
+          },
+          {
+            "name": "RadarAnalysis"
+          },
+          {
+            "name": "Archive"
+          },
+          {
+            "name": "VolumeGroup"
+          },
+          {
+            "name": "VCenter"
+          },
+          {
+            "name": "Index"
+          },
+          {
+            "name": "CloudNativeVirtualMachine"
+          },
+          {
+            "name": "StormResource"
+          },
+          {
+            "name": "HostEvent"
+          },
+          {
+            "name": "Recovery"
+          },
+          {
+            "name": "Conversion"
+          },
+          {
+            "name": "CloudNativeVm"
+          },
+          {
+            "name": "EmbeddedEvent"
+          },
+          {
+            "name": "Maintenance"
+          },
+          {
+            "name": "Failover"
+          },
+          {
+            "name": "AuthDomain"
+          },
+          {
+            "name": "LegalHold"
+          },
+          {
+            "name": "Vcd"
+          },
+          {
+            "name": "Instantiate"
+          },
+          {
+            "name": "Configuration"
+          },
+          {
+            "name": "Fileset"
+          },
+          {
+            "name": "Discovery"
+          },
+          {
+            "name": "System"
+          },
+          {
+            "name": "Hdfs"
+          },
+          {
+            "name": "Classification"
+          },
+          {
+            "name": "StorageArray"
+          },
+          {
+            "name": "Storage"
+          },
+          {
+            "name": "Backup"
+          },
+          {
+            "name": "Hardware"
+          },
+          {
+            "name": "HypervServer"
+          },
+          {
+            "name": "HypervScvmm"
+          },
+          {
+            "name": "Diagnostic"
+          },
+          {
+            "name": "UnknownEventType"
+          },
+          {
+            "name": "Upgrade"
+          },
+          {
+            "name": "NutanixCluster"
+          },
+          {
+            "name": "Replication"
+          },
+          {
+            "name": "AwsEvent"
+          },
+          {
+            "name": "Support"
+          },
+          {
+            "name": "CloudNativeSource"
+          },
+          {
+            "name": "Download"
+          },
+          {
+            "name": "Connection"
+          },
+          {
+            "name": "ResourceOperations"
+          }
+        ]
+      }
+    }
+  },
+  "object_snapshot_sort_by_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "UNKNOWN"
+          },
+          {
+            "name": "CREATION_TIME"
+          }
+        ]
+      }
+    }
+  },
+  "cluster_list_sort_by_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "RegisteredAt"
+          },
+          {
+            "name": "ClusterName"
+          },
+          {
+            "name": "ClusterType"
+          }
+        ]
+      }
+    }
+  },
+  "hash_type_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "HASH_TYPE_M_D5"
+          },
+          {
+            "name": "HASH_TYPE_SH_A1"
+          },
+          {
+            "name": "HASH_TYPE_SH_A256"
+          }
+        ]
+      }
+    }
+  }
+}

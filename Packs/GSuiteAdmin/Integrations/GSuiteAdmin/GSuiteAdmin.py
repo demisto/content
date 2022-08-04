@@ -135,7 +135,7 @@ def prepare_args_for_user(args: Dict[str, str]) -> Dict[str, Any]:
         'name': {'familyName': args.get('last_name'),
                  'givenName': args.get('first_name')
                  },
-        'password': hashlib.md5(args['password'].encode()).hexdigest() if args.get('password') else None,  # NOSONAR
+        'password': hashlib.md5(args['password'].encode()).hexdigest() if args.get('password') else None,  # nosec
         'hashFunction': 'MD5' if args.get('password') else None,
         'primaryEmail': args.get('primary_email'),
         'addresses': [{
@@ -1125,7 +1125,6 @@ def main() -> None:
 
         # Log exceptions
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Error: {str(e)}')
 
 

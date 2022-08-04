@@ -12,15 +12,16 @@ A custom category ID has the format `CUSTOM_01`, which is not indicative of the
 2. Search for Zscaler Internet Access.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| cloud | Cloud Name \(i.e., https://admin.zscalertwo.net\) | True |
-| credentials | Username | True |
-| key | API Key | True |
-| auto_logout | Auto Logout | False |
-| auto_activate | Auto Activate Changes | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Cloud Name (i.e., https://admin.zscalertwo.net) |  | True |
+    | Username |  | True |
+    | Password |  | True |
+    | API Key |  | True |
+    | Auto Logout | If enabled, the integration will log out after executing each command. | False |
+    | Auto Activate Changes | If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zscaler-activate-changes' command to activate Zscaler command changes. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -38,7 +39,7 @@ Adds the specified URLs to the block list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to block list. For example, snapchat.com,facebook.com. | Required | 
+| url | A comma-separated list of URLs to add to block list. For example, snapchat.com,facebook.com. | Required | 
 
 
 #### Context Output
@@ -65,8 +66,8 @@ Looks up the classification for the each of the specified URLs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs for which to look up the classification.  For example, abc.com,xyz.com. The maximum number of URLs per call is 100. A URL cannot exceed 1024 characters. If there are multiple URLs, set the 'multiple' argument to 'true'. | Optional | 
-| multiple | Whether there are multiple URLs in the 'url' argument. If a URL contains commas, set this argument to 'false' and enter the single URL as the 'url' argument. Default is 'true'. | Optional | 
+| url | A comma-separated list of URLs for which to look up the classification.  For example, abc.com,xyz.com. The maximum number of URLs per call is 100. A URL cannot exceed 1024 characters. If there are multiple URLs, set the 'multiple' argument to 'true'. | Required | 
+| multiple | Whether there are multiple URLs in the 'url' argument. If a URL contains commas, set this argument to 'false' and enter the single URL as the 'url' argument. Possible values are: true, false. Default is true. | Optional | 
 
 
 #### Context Output
@@ -79,10 +80,10 @@ Looks up the classification for the each of the specified URLs.
 | URL.urlClassificationsWithSecurityAlert | string | The classifications of the URLs that have security alerts. | 
 | URL.Malicious.Vendor | string | For malicious URLs, the vendor that tagged the URL as malicious. | 
 | URL.Malicious.Description | string | For malicious URLs, the reason the vendor tagged the URL as malicious. | 
-| DBotScore.Indicator | string | The URL that was tested. | 
-| DBotScore.Type | string | The URL type. | 
-| DBotScore.Vendor | string | The vendor that calculated the DBot score. | 
-| DBotScore.Score | number | The actual DBot score. | 
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
 
 
 #### Command Example
@@ -139,10 +140,12 @@ Looks up the classification for each of the specified IP addresses.
 | IP.iplClassificationsWithSecurityAlert | string | Classifications that have a security alert for the IP address. | 
 | IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that tagged the IP address as malicious. | 
 | IP.Malicious.Description | string | For malicious IP addresses, the reason the vendor tagged the IP address as malicious. | 
-| DBotScore.Indicator | string | The IP address that was tested. | 
-| DBotScore.Type | string | The IP address type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the DBot score. | 
-| DBotScore.Score | number | The actual DBot score. | 
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+
+
 
 
 #### Command Example
@@ -317,7 +320,7 @@ Removes the specified IP addresses from the block list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP addresses to remove from the block list. For example, 8.8.8.8,1.2.3.4. | Required | 
+| ip | A comma-separated list of IP addresses to remove from the allow list. For example, 8.8.8.8,1.2.3.4. | Required | 
 
 
 #### Context Output
@@ -582,9 +585,9 @@ Retrieves a list of all categories.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| displayURL | Whether to display the URLs of each category in the War Room. Default is 'false'. URLs will always be returned to the Context Data. | Optional | 
-| custom_categories_only | Whether to retrieve only custom categories to the War Room. Default is 'false'. | Optional |
-| get_ids_and_names_only | Whether to retrieve only a list containing URL category IDs and names. Even if *displayURL* is set to true, URLs will not be returned. Please note - the API does not support the combination of custom_only and get_ids_and_names_only. | Optional |
+| displayURL | Whether to display the URLs of each category in the War Room. URLs will always be returned to the Context Data. Possible values are: true, false. Default is false. | Optional | 
+| custom_categories_only | Whether to retrieve only custom categories to the War Room. Possible values are: true, false. Default is false. | Optional | 
+| get_ids_and_names_only | Whether to retrieve only a list containing URL category IDs and names. Even if *displayURL* is set to true, URLs will not be returned. Please note - the API does not support the combination of custom_only and get_ids_and_names_only. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -644,8 +647,9 @@ Retrieves the Zscaler default block list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter results by URL or IP objects. Possible values are: ip, url. | Optional |
-| query | Query (Python regular expression) to match against. For example, 8.*.*.8 | Optional | 
+| filter | Filter results by URL or IP objects. Possible values are: url, ip. | Optional | 
+| query | Query (Python regular expression) to match against. For example, 8.*.*.8. | Optional | 
+
 
 #### Context Output
 
@@ -853,3 +857,102 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Changes have been activated successfully.
+
+### zscaler-url-quota
+***
+Gets information on the number of unique URLs that are currently provisioned for your organization as well as how many URLs you can add before reaching that number.
+
+
+#### Base Command
+
+`zscaler-url-quota`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Zscaler.remainingUrlsQuota | Number | The number of URLs you can add before reaching the quota. | 
+| Zscaler.uniqueUrlsProvisioned | Number | The number of unique URLs that are currently provisioned for your organization. | 
+
+### zscaler-get-users
+***
+Get Zscaler users
+
+
+#### Base Command
+
+`zscaler-get-users`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Filer by user name. | Optional | 
+| page | Specifies the page offset. | Optional | 
+| pageSize | Specifies the page size. Default is 100. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### zscaler-update-user
+***
+Updates the user information for the specified ID.
+
+
+#### Base Command
+
+`zscaler-update-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The unique identifer for the user. | Required | 
+| user | New user information. Docs: https://help.zscaler.com/zia/api#/User%20Management/updateUser. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### zscaler-get-departments
+***
+Get a list of departments. It can be searched by name.
+
+
+#### Base Command
+
+`zscaler-get-departments`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Filter by department name. | Optional | 
+| page | Specifies the page offset. | Optional | 
+| pageSize | Specifies the page size. Default is 100. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### zscaler-get-usergroups
+***
+Gets a list of groups
+
+
+#### Base Command
+
+`zscaler-get-usergroups`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Filter by group name or comment. | Optional | 
+| page | Specifies the page offset. | Optional | 
+| pageSize | Specifies the page size. Default is 100. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.

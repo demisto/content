@@ -328,7 +328,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search alerts on the Prisma Cloud (RedLock) platform
+    description: Search alerts on the Prisma Cloud (RedLock) platform.
+                 If no time-range arguments are given, the search will filter only alerts from the last 7 days.
     execution: false
     name: redlock-search-alerts
     outputs:
@@ -371,6 +372,18 @@ script:
       isArray: false
       name: alert-id
       required: true
+      secret: false
+    - default: false
+      description: Start time for search in the following string format -  MM/DD/YYYY, Should be provided along with time-range-date-to. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.
+      isArray: false
+      name: time-range-date-from
+      required: false
+      secret: false
+    - default: false
+      description: End time for search in the following format -  MM/DD/YYYY, Should be provided along with time-range-date-from. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.
+      isArray: false
+      name: time-range-date-to
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -1390,7 +1403,7 @@ script:
     - contextPath: Redlock.Scans.results.id
       description: Scan results ID
       type: String
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: true
   longRunning: false

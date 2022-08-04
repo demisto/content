@@ -1,3 +1,4 @@
+report_pytest.json
 node_modules
 .DS_Store
 .idea
@@ -36,6 +37,7 @@ failed_unittests.txt
 Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
+requirements.txt
 
 # Environment and reports
 .demisto-sdk-conf
@@ -43,8 +45,16 @@ Packs/**/__init__.py
 .demisto-sdk-report
 .env
 .envrc
+Packs/**/report_pytest.json
+
+
 
 # coverage related
 /coverage_report
 .coverage
-.demisto-sdk-report
+
+# devcontainer folders
+.devcontainer/certs.crt
+**/.devcontainer
+!/.devcontainer
+

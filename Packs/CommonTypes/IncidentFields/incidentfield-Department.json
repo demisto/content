@@ -19,6 +19,10 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
+  "SysAid Change",
+  "SysAid Incident",
+  "SysAid Problem",
+  "SysAid Request",
   "IAM - Rehire User",
   "IAM - New Hire",
   "IAM - Terminate User",

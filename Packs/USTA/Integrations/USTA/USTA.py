@@ -564,7 +564,7 @@ def close_incident() -> CommandResults:
 def encodeData(identities: list) -> list:
     hashedList = []
     for identity in identities:
-        hashedIdentity = hashlib.sha256((hashlib.md5(identity.encode())).hexdigest().encode()).hexdigest()
+        hashedIdentity = hashlib.sha256((hashlib.md5(identity.encode())).hexdigest().encode()).hexdigest()  # nosec
         hashedList.append(hashedIdentity)
     return hashedList
 

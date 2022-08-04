@@ -1,0 +1,11 @@
+[MODEL: dataset=atlassian_jira_raw, model=Audit]
+alter XDM.Audit.operation = summary,
+      XDM.Audit.TriggeredBy.ipv4 = remoteAddress,
+      XDM.Audit.TriggeredBy.identity.name = authorKey,
+      XDM.Audit.TriggeredBy.identity.uuid = authorAccountId,
+      XDM.Audit.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E3S", arrayindex(split(created, "+"), 0)),
+      XDM.Audit.operation_type = category,
+      XDM.Audit.identity.uuid = json_extract_scalar(objectItem, "$.id"),
+      XDM.Audit.identity.name = json_extract_scalar(objectItem, "$.name"),
+      XDM.Audit.identity.type = json_extract_scalar(objectItem, "$.typeName"),
+      XDM.Audit.outcome = json_extract_scalar(changedValues, "$.changedTo");

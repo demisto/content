@@ -49,6 +49,7 @@ INDICATOR_TYPE_TO_DBOT_TYPE = {
     'Url': DBotScoreType.URL,
     'DomainName': DBotScoreType.DOMAIN,
     'IpAddress': DBotScoreType.IP,
+    'CertificateThumbprint': None,
 }
 
 HEALTH_STATUS_TO_ENDPOINT_STATUS = {
@@ -66,6 +67,910 @@ SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH = 'https://api.securitycenter.microsoft
 GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
 INTEGRATION_NAME = 'Microsoft Defender ATP'
+
+
+class HuntingQueryBuilder:
+    """ERROR MESSAGES"""
+    FILE_ARGS_ERR = 'Please provide at least one file arguments: "file_name", "sha1", "sha256" or "md5".'
+    DEVICES_ARGS_ERR = 'Please provide at least one devices arguments: "device_id" or "device_name".'
+    ANY_ARGS_ERR = 'Please provide at least one of the query args: "device_name", "file_name", "sha1, "sha256", "md5"' \
+                   ' or "device_id".'
+
+    @staticmethod
+    def get_time_range_query(time_range: Optional[str]) -> str:
+        """
+        Given a human readable time_range returns the time_range query
+        """
+        if not time_range:
+            return ''
+        parsed_time = dateparser.parse(time_range)
+        if parsed_time:
+            time_in_minutes = int((datetime.now() - parsed_time).total_seconds() // 60)
+            return f'Timestamp > ago({time_in_minutes}m)'
+        else:
+            return ''
+
+    @staticmethod
+    def rebuild_query_with_time_range(query: str, time_range: str) -> str:
+        """
+        Given a query and human readable time_range returns the query with a time_range query
+        """
+        time_range_query = HuntingQueryBuilder.get_time_range_query(time_range)
+        insert_pos = query.find('|')
+        if insert_pos == -1:
+            return f'{query} | where {time_range_query}'
+        return f'{query[:insert_pos - 1]} | where {time_range_query} {query[insert_pos:]}'
+
+    @staticmethod
+    def get_filter_values(list_values: Optional[Union[list, str]]) -> Optional[str]:
+        """
+        creates a string of CSV values wrapped by parenthesis and brackets
+        """
+        if isinstance(list_values, str):
+            list_values = argToList(list_values)
+        if not list_values or not isinstance(list_values, list):
+            return None
+        return '("' + '","'.join(list_values) + '")'
+
+    @staticmethod
+    def remove_last_expression(query, expression):
+        """
+        Removes the last expression from the given query
+        """
+        return query.rsplit(expression, 1)[0]
+
+    @staticmethod
+    def build_generic_query(
+            query_prefix: str,
+            query_suffix: str,
+            query_dict: dict,
+            query_operation: str,
+            operator: str = 'has_any'
+    ):
+        if not query_dict:
+            return query_prefix + query_suffix
+        query = query_prefix + ' ('
+        for key, val in query_dict.items():
+            if isinstance(val, tuple):
+                # dict_val with special operator
+                query += f' {key} {val[0]} {val[1]} {query_operation}'
+            else:
+                query += f' ({key} {operator} {val}) {query_operation}'
+        query = HuntingQueryBuilder.remove_last_expression(query, query_operation)
+        query += ')'
+        if query_suffix:
+            return query + query_suffix
+        return query
+
+    class LateralMovementEvidence:
+        """QUERY PREFIX"""
+        NETWORK_CONNECTIONS_QUERY_PREFIX = 'DeviceNetworkEvents\n| where (RemoteIP startswith "172.16" or RemoteIP startswith "192.168" or RemoteIP startswith "10.") and'  # noqa: E501
+        SMB_CONNECTIONS_QUERY_PREFIX = 'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and'  # noqa: E501
+        CREDENTIAL_DUMPING_QUERY_PREFIX = 'DeviceProcessEvents\n| where ((FileName has_any ("procdump.exe", "procdump64.exe") and ProcessCommandLine has "lsass") or (ProcessCommandLine has "lsass.exe" and (ProcessCommandLine has "-accepteula" or ProcessCommandLine contains "-ma")) ) and'  # noqa: E501
+        MANAGEMENT_CONNECTION_QUERY_PREFIX = 'DeviceNetworkEvents\n| where RemotePort in (22,3389,139,135,23,1433) and'
+
+        """QUERY SUFFIX"""
+        NETWORK_CONNECTIONS_QUERY_SUFFIX = '\n| summarize TotalConnections = count() by DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName\n| order by TotalConnections\n| limit {}'  # noqa: E501
+        SMB_CONNECTIONS_QUERY_SUFFIX = '\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime\n|{} limit {}'  # noqa: E501
+        CREDENTIAL_DUMPING_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine, AccountName, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation\n| limit {}'  # noqa: E501
+        MANAGEMENT_CONNECTION_QUERY_SUFFIX = '\n| summarize TotalCount=count() by DeviceName,LocalIP,RemoteIP,RemotePort\n| order by TotalCount\n| limit {}'  # noqa: E501
+
+        def __init__(self,
+                     limit: str,
+                     query_operation: str,
+                     page: str,
+                     device_name: Optional[str] = None,
+                     file_name: Optional[str] = None,
+                     sha1: Optional[str] = None,
+                     sha256: Optional[str] = None,
+                     md5: Optional[str] = None,
+                     device_id: Optional[str] = None,
+                     remote_ip_count: Optional[str] = None,
+                     ):
+            if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
+                raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
+
+            self._limit = limit * (int(page))
+            self._query_operation = query_operation
+            self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
+            self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
+            self._sha1 = HuntingQueryBuilder.get_filter_values(sha1)
+            self._sha256 = HuntingQueryBuilder.get_filter_values(sha256)
+            self._md5 = HuntingQueryBuilder.get_filter_values(md5)
+            self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
+            self._remote_ip_count = remote_ip_count
+
+        def build_network_connections_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.NETWORK_CONNECTIONS_QUERY_PREFIX,
+                query_suffix=self.NETWORK_CONNECTIONS_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation,
+            )
+
+            return query
+
+        def build_smb_connections_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+            )
+            remote_ip_count_query = '' if not self._remote_ip_count else ' where RemoteIPCount > ' \
+                                                                         f'{self._remote_ip_count} |'
+
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.SMB_CONNECTIONS_QUERY_PREFIX,
+                query_suffix=self.SMB_CONNECTIONS_QUERY_SUFFIX.format(remote_ip_count_query, self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation,
+            )
+
+            return query
+
+        def build_credential_dumping_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.CREDENTIAL_DUMPING_QUERY_PREFIX,
+                query_suffix=self.CREDENTIAL_DUMPING_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation,
+            )
+
+            return query
+
+        def build_management_connection_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.MANAGEMENT_CONNECTION_QUERY_PREFIX,
+                query_suffix=self.MANAGEMENT_CONNECTION_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation,
+            )
+
+            return query
+
+    class PersistenceEvidence:
+        """QUERY PREFIX"""
+        SCHEDULE_JOB_QUERY_PREFIX = 'DeviceEvents | where ActionType == "ScheduledTaskCreated" and InitiatingProcessAccountSid != "S-1-5-18" and'  # noqa: E501
+        REGISTRY_ENTRY_QUERY_PREFIX = 'DeviceRegistryEvents | where ActionType == "RegistryValueSet" and'
+        STARTUP_FOLDER_CHANGES_QUERY_PREFIX = 'DeviceFileEvents | where FolderPath contains @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\" and ActionType == "FileCreated" and'  # noqa: E501
+        NEW_SERVICE_CREATED_QUERY_PREFIX = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\" and ActionType == "RegistryKeyCreated" and'  # noqa: E501
+        SERVICE_UPDATED_QUERY_PREFIX = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\" and ActionType has_any ("RegistryValueSet","RegistryKeyCreated") and'  # noqa: E501
+        FILE_REPLACED_QUERY_PREFIX = 'DeviceFileEvents | where FolderPath contains @"C:\Program Files" and ActionType == "FileModified" and'  # noqa: E501
+        NEW_USER_QUERY_PREFIX = 'DeviceEvents | where ActionType == "UserAccountCreated" and'
+        NEW_GROUP_QUERY_PREFIX = 'DeviceEvents | where ActionType == "SecurityGroupCreated" and'
+        GROUP_USER_CHANGE_QUERY_PREFIX = 'DeviceEvents | where ActionType == "UserAccountAddedToLocalGroup" and'
+        LOCAL_FIREWALL_CHANGE_QUERY_PREFIX = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy" and'  # noqa: E501
+        HOST_FILE_CHANGE_QUERY_PREFIX = 'DeviceFileEvents | where FolderPath contains @"C:\Windows\System32\drivers\etc\hosts" and ActionType == "FileModified" and'  # noqa: E501
+
+        """QUERY SUFFIX"""
+        SCHEDULE_JOB_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, InitiatingProcessAccountDomain, InitiatingProcessAccountName, AdditionalFields\n| limit {}'  # noqa: E501
+        REGISTRY_ENTRY_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, RegistryKey, RegistryValueType, PreviousRegistryValueData, RegistryValueName, PreviousRegistryValueName, PreviousRegistryKey, InitiatingProcessFileName\n| limit {}'  # noqa: E501
+        STARTUP_FOLDER_CHANGES_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
+        NEW_SERVICE_CREATED_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
+        SERVICE_UPDATED_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, RegistryKey, PreviousRegistryKey, RegistryValueName, PreviousRegistryValueName, RegistryValueType, RegistryValueData, PreviousRegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
+        FILE_REPLACED_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
+        NEW_USER_QUERY_SUFFIX = '\n| project AccountName,DeviceName,Timestamp,AccountSid,AccountDomain,InitiatingProcessAccountName,InitiatingProcessLogonId\n| limit {}'  # noqa: E501
+        NEW_GROUP_QUERY_SUFFIX = '\n| project AccountName,DeviceName,Timestamp,AccountSid,AccountDomain,InitiatingProcessAccountName,InitiatingProcessLogonId,AdditionalFields\n| limit {}'  # noqa: E501
+        GROUP_USER_CHANGE_QUERY_SUFFIX = '\n| summarize by AccountSid\n| limit {}'
+        LOCAL_FIREWALL_CHANGE_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, RegistryKey, PreviousRegistryKey, RegistryValueName, PreviousRegistryValueName, RegistryValueType, RegistryValueData, PreviousRegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
+        HOST_FILE_CHANGE_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA1, SHA256, MD5, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
+
+        def __init__(self,
+                     limit: str,
+                     query_operation: str,
+                     query_purpose: str,
+                     page: str,
+                     device_name: Optional[str] = None,
+                     file_name: Optional[str] = None,
+                     sha1: Optional[str] = None,
+                     sha256: Optional[str] = None,
+                     md5: Optional[str] = None,
+                     device_id: Optional[str] = None,
+                     process_cmd: Optional[str] = None,
+                     ):
+            if query_purpose == 'registry_entry' and not process_cmd:
+                raise DemistoException('Cannot initiate "registry_entry" query without "process_cmd" argument.')
+            elif not (device_name or file_name or sha1 or sha256 or md5 or device_id):
+                raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
+
+            self._limit = limit * (int(page))
+            self._query_operation = query_operation
+            self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
+            self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
+            self._sha1 = HuntingQueryBuilder.get_filter_values(sha1)
+            self._sha256 = HuntingQueryBuilder.get_filter_values(sha256)
+            self._md5 = HuntingQueryBuilder.get_filter_values(md5)
+            self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
+            self._process_cmd = ('contains', f'"{process_cmd}"') if process_cmd else None
+
+        def build_scheduled_job_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.SCHEDULE_JOB_QUERY_PREFIX,
+                query_suffix=self.SCHEDULE_JOB_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_registry_entry_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+                InitiatingProcessCommandLine=self._process_cmd
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.REGISTRY_ENTRY_QUERY_PREFIX,
+                query_suffix=self.REGISTRY_ENTRY_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_startup_folder_changes_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.STARTUP_FOLDER_CHANGES_QUERY_PREFIX,
+                query_suffix=self.STARTUP_FOLDER_CHANGES_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_new_service_created_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+                InitiatingProcessCommandLine=self._process_cmd
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.NEW_SERVICE_CREATED_QUERY_PREFIX,
+                query_suffix=self.NEW_SERVICE_CREATED_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_service_updated_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+                InitiatingProcessCommandLine=self._process_cmd
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.SERVICE_UPDATED_QUERY_PREFIX,
+                query_suffix=self.SERVICE_UPDATED_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_file_replaced_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.FILE_REPLACED_QUERY_PREFIX,
+                query_suffix=self.FILE_REPLACED_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_new_user_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.NEW_USER_QUERY_PREFIX,
+                query_suffix=self.NEW_USER_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_new_group_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.NEW_GROUP_QUERY_PREFIX,
+                query_suffix=self.NEW_GROUP_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_group_user_change_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.GROUP_USER_CHANGE_QUERY_PREFIX,
+                query_suffix=self.GROUP_USER_CHANGE_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_local_firewall_change_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+                InitiatingProcessCommandLine=self._process_cmd
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.LOCAL_FIREWALL_CHANGE_QUERY_PREFIX,
+                query_suffix=self.LOCAL_FIREWALL_CHANGE_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_host_file_change_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id,
+                InitiatingProcessCommandLine=self._process_cmd
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.HOST_FILE_CHANGE_QUERY_PREFIX,
+                query_suffix=self.HOST_FILE_CHANGE_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+    class FileOrigin:
+        """QUERY PREFIX"""
+        FILE_ORIGIN_QUERY_PREFIX = 'DeviceFileEvents | where'
+
+        """QUERY SUFFIX"""
+        FILE_ORIGIN_QUERY_SUFFIX = '\n| project Timestamp,FileName,FolderPath, ActionType,DeviceName,MD5,SHA1,SHA256,FileSize,FileOriginUrl,FileOriginIP,InitiatingProcessCommandLine,InitiatingProcessFileName,InitiatingProcessParentFileName\n| limit {}'  # noqa: E501
+
+        def __init__(self,
+                     limit: str,
+                     query_operation: str,
+                     page: str,
+                     device_name: Optional[str] = None,
+                     file_name: Optional[str] = None,
+                     sha1: Optional[str] = None,
+                     sha256: Optional[str] = None,
+                     md5: Optional[str] = None,
+                     device_id: Optional[str] = None,
+                     ):
+            if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
+                raise DemistoException(
+                    'Please provide at least one of the query args: "device_name", "file_name", "sha1, '
+                    '"sha256", "md5" or "device_id".')
+
+            self._limit = limit * (int(page))
+            self._query_operation = query_operation
+            self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
+            self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
+            self._sha1 = HuntingQueryBuilder.get_filter_values(sha1)
+            self._sha256 = HuntingQueryBuilder.get_filter_values(sha256)
+            self._md5 = HuntingQueryBuilder.get_filter_values(md5)
+            self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
+
+        def build_file_origin_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.FILE_ORIGIN_QUERY_PREFIX,
+                query_suffix=self.FILE_ORIGIN_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+    class ProcessDetails:
+        """QUERY PREFIX"""
+        GENERIC_PROCESS_DETAILS_QUERY_PREFIX = 'DeviceProcessEvents | where'
+        BECAONING_QUERY_PREFIX = 'DeviceNetworkEvents | where'
+        POWERSHELL_EXECUTION_PROCESS_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and'  # noqa: E501
+        POWERSHELL_EXECUTION_PROCESS_UNSIGNED_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and ( InitiatingProcessFileName != "SenerIR.exe" and InitiatingProcessParentFileName != "MsSense.exe" and InitiatingProcessSignatureStatus != "Valid" ) and (InitiatingProcessFileName != "CompatTelRunner.exe" and InitiatingProcessParentFileName != "CompatTelRunner.exe")'  # noqa: E501
+
+        """QUERY SUFFIX"""
+        PARENT_PROCESS_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, ActionType, ProcessId, ProcessCommandLine, ProcessCreationTime, AccountSid, AccountName, AccountDomain,InitiatingProcessAccountDomain, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid, InitiatingProcessAccountSid, InitiatingProcessAccountUpn, InitiatingProcessAccountObjectId, InitiatingProcessLogonId, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName, InitiatingProcessFileSize, InitiatingProcessVersionInfoCompanyName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoProductVersion, InitiatingProcessVersionInfoInternalFileName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoFileDescription, InitiatingProcessId, InitiatingProcessCommandLine, InitiatingProcessCreationTime, InitiatingProcessFolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid\n| limit {}'  # noqa: E501
+        GRANDPARENT_PROCESS_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, ActionType, ProcessId, ProcessCommandLine, ProcessIntegrityLevel, ProcessCreationTime, AccountSid, AccountName, AccountDomain, AccountObjectId, AccountUpn, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime, InitiatingProcessFolderPath, InitiatingProcessParentFileName, InitiatingProcessParentId, InitiatingProcessParentCreationTime\n| limit {}'  # noqa: E501
+        PROCESS_DETAILS_QUERY_SUFFIX = '\n| summarize by SHA1,FileName,SHA256,MD5 | join DeviceFileCertificateInfo on SHA1 | summarize by FileName,SHA1,SHA256,IsSigned,Signer,SignatureType,Issuer,CertificateExpirationTime,IsTrusted,IsRootSignerMicrosoft\n| limit {}'  # noqa: E501
+        BEACONING_EVIDENCE_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, LocalIP, LocalPort, Protocol, LocalIPType, RemoteIPType, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName\n| limit {}'  # noqa: E501
+        POWERSHELL_EXECUTION_PROCESS_QUERY_SUFFIX = '| project Timestamp, FileName, FolderPath, ProcessVersionInfoProductName, ProcessCommandLine, ProcessCreationTime, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine, InitiatingProcessFolderPath, InitiatingProcessSignerType, InitiatingProcessSignatureStatus,DeviceId,DeviceName\n| limit {}'  # noqa: E501
+        POWERSHELL_EXECUTION_PROCESS_UNSIGNED_QUERY_SUFFIX = '\n| summarize by InitiatingProcessFolderPath,InitiatingProcessFileName,InitiatingProcessParentFileName,InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoProductName,InitiatingProcessCommandLine,InitiatingProcessSignerType,InitiatingProcessSignatureStatus'  # noqa: E501
+
+        def __init__(self,
+                     limit: str,
+                     query_operation: str,
+                     page: str,
+                     device_name: Optional[str] = None,
+                     file_name: Optional[str] = None,
+                     sha1: Optional[str] = None,
+                     sha256: Optional[str] = None,
+                     md5: Optional[str] = None,
+                     device_id: Optional[str] = None,
+                     query_purpose: Optional[str] = None,
+                     ):
+            if query_purpose == 'process_excecution_powershell':
+                if not (file_name or sha1 or sha256 or md5):
+                    raise DemistoException(HuntingQueryBuilder.FILE_ARGS_ERR)
+                if not (device_id or device_name):
+                    raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
+
+            elif query_purpose != 'powershell_execution_unsigned_files':
+                if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
+                    raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
+
+            self._limit = limit * (int(page))
+            self._query_operation = query_operation
+            self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
+            self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
+            self._sha1 = HuntingQueryBuilder.get_filter_values(sha1)
+            self._sha256 = HuntingQueryBuilder.get_filter_values(sha256)
+            self._md5 = HuntingQueryBuilder.get_filter_values(md5)
+            self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
+
+        def build_parent_process_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.GENERIC_PROCESS_DETAILS_QUERY_PREFIX,
+                query_suffix=self.PARENT_PROCESS_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_grandparent_process_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.GENERIC_PROCESS_DETAILS_QUERY_PREFIX,
+                query_suffix=self.GRANDPARENT_PROCESS_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_process_details_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.GENERIC_PROCESS_DETAILS_QUERY_PREFIX,
+                query_suffix=self.PROCESS_DETAILS_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_beaconing_evidence_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.BECAONING_QUERY_PREFIX,
+                query_suffix=self.BEACONING_EVIDENCE_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_process_excecution_powershell_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.POWERSHELL_EXECUTION_PROCESS_QUERY_PREFIX,
+                query_suffix=self.POWERSHELL_EXECUTION_PROCESS_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_powershell_execution_unsigned_files_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = self.POWERSHELL_EXECUTION_PROCESS_UNSIGNED_QUERY_PREFIX
+            if query_dict:
+                query += ' and'
+
+            return HuntingQueryBuilder.build_generic_query(
+                query_prefix=query,
+                query_suffix=self.POWERSHELL_EXECUTION_PROCESS_UNSIGNED_QUERY_SUFFIX,
+                query_dict=query_dict,
+                query_operation=self._query_operation
+            )
+
+    class NetworkConnections:
+        """QUERY PREFIX"""
+        EXTERNAL_ADDRESSES_QUERY_PREFIX = 'DeviceNetworkEvents | where not(RemoteIP matches regex "(^10\\\\.)|(^172\\\\.1[6-9]\\\\.)|(^172\\\\.2[0-9]\\\\.)|(^172\\\\.3[0-1]\\\\.)|(^192\\\\.168\\\\.)") and'  # noqa: E501
+        DNS_QUERY_PREFIX = 'DeviceNetworkEvents | where RemotePort == 53 and'
+        ENCODED_COMMANDS_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in ("powershell.exe","powershell_ise.exe") and ProcessCommandLine contains "-encoded" and'  # noqa: E501
+
+        """QUERY SUFFIX"""
+        EXTERNAL_ADDRESSES_QUERY_SUFFIX = '\n| summarize TotalConnections = count() by DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName,InitiatingProcessFolderPath | order by TotalConnections\n| limit {}'  # noqa: E501
+        DNS_QUERY_SUFFIX = '| project Timestamp,DeviceName,ActionType,RemoteIP,Packetinfo = url_decode(AdditionalFields)\n| limit {}'  # noqa: E501
+        ENCODED_COMMANDS_QUERY_SUFFIX = '\n| limit {}'
+
+        def __init__(self,
+                     limit: str,
+                     query_operation: str,
+                     query_purpose: str,
+                     page: str,
+                     device_name: Optional[str] = None,
+                     file_name: Optional[str] = None,
+                     sha1: Optional[str] = None,
+                     sha256: Optional[str] = None,
+                     md5: Optional[str] = None,
+                     device_id: Optional[str] = None,
+                     ):
+            if query_purpose == 'encoded_commands':
+                if not (device_id or device_name):
+                    raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
+            else:
+                if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
+                    raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
+            self._limit = limit * (int(page))
+            self._query_operation = query_operation
+            self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
+            self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
+            self._sha1 = HuntingQueryBuilder.get_filter_values(sha1)
+            self._sha256 = HuntingQueryBuilder.get_filter_values(sha256)
+            self._md5 = HuntingQueryBuilder.get_filter_values(md5)
+            self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
+
+        def build_external_addresses_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.EXTERNAL_ADDRESSES_QUERY_PREFIX,
+                query_suffix=self.EXTERNAL_ADDRESSES_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_dns_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.DNS_QUERY_PREFIX,
+                query_suffix=self.DNS_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_encoded_commands_query(self):
+            query_dict = assign_params(
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.ENCODED_COMMANDS_QUERY_PREFIX,
+                query_suffix=self.ENCODED_COMMANDS_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+    class PrivilegeEscalation:
+        QUERY_PREFIX = 'DeviceLogonEvents | where IsLocalAdmin == 1 and'
+        QUERY_SUFFIX = ' and AccountDomain == DeviceName | project Timestamp, DeviceId, DeviceName, ActionType, LogonType, AccountDomain, AccountName, IsLocalAdmin, InitiatingProcessFileName\n| limit {}'  # noqa: E501
+
+        def __init__(self,
+                     limit: str,
+                     query_operation: str,
+                     page: str,
+                     device_name: Optional[str] = None,
+                     device_id: Optional[str] = None,
+                     ):
+            if not (device_name or device_id):
+                raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
+            self._limit = limit * (int(page))
+            self._query_operation = query_operation
+            self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
+            self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
+
+        def build_query(self):
+            query_dict = assign_params(
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.QUERY_PREFIX,
+                query_suffix=self.QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+    class Tampering:
+        QUERY_PREFIX = 'let includeProc = dynamic(["sc.exe","net1.exe","net.exe", "taskkill.exe", "cmd.exe", "powershell.exe"]); let action = dynamic(["stop","disable", "delete"]); let service1 = dynamic([\'sense\', \'windefend\', \'mssecflt\']); let service2 = dynamic([\'sense\', \'windefend\', \'mssecflt\', \'healthservice\']); let params1 = dynamic(["-DisableRealtimeMonitoring", "-DisableBehaviorMonitoring" ,"-DisableIOAVProtection"]); let params2 = dynamic(["sgrmbroker.exe", "mssense.exe"]); let regparams1 = dynamic([\'reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows Defender"\', \'reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows Advanced Threat Protection"\']); let regparams2 = dynamic([\'ForceDefenderPassiveMode\', \'DisableAntiSpyware\']); let regparams3 = dynamic([\'sense\', \'windefend\']); let regparams4 = dynamic([\'demand\', \'disabled\']); let timeframe = 1d; DeviceProcessEvents'  # noqa: E501
+        QUERY_SUFFIX = '\n| where InitiatingProcessFileName in~ (includeProc) | where (InitiatingProcessCommandLine has_any(action) and InitiatingProcessCommandLine has_any (service2) and InitiatingProcessParentFileName != \'cscript.exe\') or (InitiatingProcessCommandLine has_any (params1) and InitiatingProcessCommandLine has \'Set-MpPreference\' and InitiatingProcessCommandLine has \'$true\') or (InitiatingProcessCommandLine has_any (params2) and InitiatingProcessCommandLine has "/IM") or (InitiatingProcessCommandLine has_any (regparams1) and InitiatingProcessCommandLine has_any (regparams2) and InitiatingProcessCommandLine has \'/d 1\') or (InitiatingProcessCommandLine has_any("start") and InitiatingProcessCommandLine has "config" and InitiatingProcessCommandLine has_any (regparams3) and InitiatingProcessCommandLine has_any (regparams4))| extend Account = iff(isnotempty(InitiatingProcessAccountUpn), InitiatingProcessAccountUpn, InitiatingProcessAccountName), Computer = DeviceName| project Timestamp, Computer, Account, AccountDomain, ProcessName = InitiatingProcessFileName, ProcessNameFullPath = FolderPath, Activity = ActionType, CommandLine = InitiatingProcessCommandLine, InitiatingProcessParentFileName\n| limit {}'  # noqa: E501
+
+        def __init__(self,
+                     limit: str,
+                     query_operation: str,
+                     page: str,
+                     device_name: Optional[str] = None,
+                     device_id: Optional[str] = None,
+                     ):
+            self._limit = limit * (int(page))
+            self._query_operation = query_operation
+            self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
+            self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
+
+        def build_query(self):
+            query_dict = assign_params(
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=f'{self.QUERY_PREFIX}{"| where" if query_dict else ""}',
+                query_suffix=self.QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+    class CoverUp:
+        """ERRORS"""
+        USERNAME_ERROR = 'Please provide the "username" argument.'
+
+        """QUERY PREFIX"""
+        FILE_DELETED_QUERY_PREFIX = 'DeviceFileEvents | where ActionType == "FileDeleted" and'
+        EVENT_LOG_CLEARED_QUERY_PREFIX = 'DeviceProcessEvents | where (ProcessCommandLine has "WEVTUTIL" and ProcessCommandLine has_any ("CL","clear-log")) or (ProcessCommandLine contains "Clear-EventLog") and'  # noqa: E501
+        ACCOUNT_QUERY_PREFIX = 'union Device* | where'
+
+        """QUERY SUFFIX"""
+        FILE_DELETED_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
+        EVENT_LOG_CLEARED_QUERY_SUFFIX = '\n| summarize LogClearCount = dcount(ProcessCommandLine), ClearedLogList = make_set(ProcessCommandLine) by DeviceId,DeviceName, bin(Timestamp, 5m),FileName,InitiatingProcessFileName\n| limit {}'  # noqa: E501
+        COMPROMISED_INFORMATION_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, ActionType, FileName, FolderPath, SHA1, SHA256, MD5, InitiatingProcessFileName\n| limit {}'  # noqa: E501
+        CONNECTED_DEVICES_QUERY_SUFFIX = '\n| summarize by DeviceName\n| limit {}'
+        ACTION_TYPES_QUERY_SUFFIX = '\n| summarize Number_of_actions=count(ActionType) by ActionType,DeviceName | order by Number_of_actions\n| limit {}'  # noqa: E501
+        COMMON_FILES_QUERY_SUFFIX = '\n| summarize Number_of_accoiated_events=count(FileName) by FileName, MD5, SHA1, SHA256 | order by Number_of_accoiated_events\n| limit {}'  # noqa: E501
+
+        def __init__(self,
+                     limit: str,
+                     query_operation: str,
+                     query_purpose: str,
+                     page: str,
+                     device_name: Optional[str] = None,
+                     file_name: Optional[str] = None,
+                     sha1: Optional[str] = None,
+                     sha256: Optional[str] = None,
+                     md5: Optional[str] = None,
+                     device_id: Optional[str] = None,
+                     username: Optional[str] = None,
+                     ):
+            if query_purpose in ('compromised_information', 'connected_devices', 'action_types', 'common_files'):
+                if not username:
+                    raise DemistoException(self.USERNAME_ERROR)
+            elif query_purpose == 'event_log_cleared' and not (device_name or device_id):
+                raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
+            elif not (device_name or file_name or sha1 or sha256 or md5 or device_id):
+                raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
+            self._limit = limit * (int(page))
+            self._query_operation = query_operation
+            self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
+            self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
+            self._sha1 = HuntingQueryBuilder.get_filter_values(sha1)
+            self._sha256 = HuntingQueryBuilder.get_filter_values(sha256)
+            self._md5 = HuntingQueryBuilder.get_filter_values(md5)
+            self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
+            self._username = HuntingQueryBuilder.get_filter_values(username)
+
+        def build_file_deleted_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.FILE_DELETED_QUERY_PREFIX,
+                query_suffix=self.FILE_DELETED_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_event_log_cleared_query(self):
+            query_dict = assign_params(
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.EVENT_LOG_CLEARED_QUERY_PREFIX,
+                query_suffix=self.EVENT_LOG_CLEARED_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_compromised_information_query(self):
+            query_dict = assign_params(
+                AccountName=self._username
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.ACCOUNT_QUERY_PREFIX,
+                query_suffix=self.COMPROMISED_INFORMATION_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_connected_devices_query(self):
+            query_dict = assign_params(
+                AccountName=self._username
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.ACCOUNT_QUERY_PREFIX,
+                query_suffix=self.CONNECTED_DEVICES_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_action_types_query(self):
+            query_dict = assign_params(
+                AccountName=self._username
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.ACCOUNT_QUERY_PREFIX,
+                query_suffix=self.ACTION_TYPES_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_common_files_query(self):
+            query_dict = assign_params(
+                AccountName=self._username
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.ACCOUNT_QUERY_PREFIX,
+                query_suffix=self.COMMON_FILES_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
 
 
 def file_standard(observable: Dict) -> Common.File:
@@ -224,6 +1129,20 @@ class MsClient:
         kwargs.pop('should_use_security_center')
         return self.ms_client.http_request(*args, **kwargs)
 
+    def offboard_machine(self, machine_id, comment):
+        """ Offboard machine from defender.
+
+         Args:
+            machine_id (str): Machine ID
+            comment (str): Comment to associate with the
+        """
+        cmd_url = f'/machines/{machine_id}/offboard'
+        json_data = {
+            "Comment": comment
+        }
+        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return response
+
     def isolate_machine(self, machine_id, comment, isolation_type):
         """Isolates a machine from accessing external network.
 
@@ -375,17 +1294,20 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}'
         return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data)
 
-    def get_advanced_hunting(self, query: str, timeout: int) -> dict:
+    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[str] = None) -> dict:
         """Retrieves results according to query.
 
         Args:
             query (str): Query to do advanced hunting on
             timeout (int): Connection timeout
+            time_range (Optional[int]): Time range in minutes given in timespan format
 
         Returns:
             dict. Advanced hunting results
         """
         cmd_url = '/advancedqueries/run'
+        if time_range:
+            query = HuntingQueryBuilder.rebuild_query_with_time_range(query, time_range)
         json_data = {
             'Query': query
         }
@@ -992,6 +1914,40 @@ class MsClient:
         response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body)
         return response
 
+    def get_machine_users(self, machine_id):
+        """Retrieves a collection of users related to a given machine ID (logon users).
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machine-log-on-users?view=o365-worldwide
+
+        Args:
+            machine_id (str): The machine ID
+
+        Returns:
+            dict. User entities
+        """
+        cmd_url = f"/machines/{machine_id}/logonusers"
+        try:
+            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        except Exception:
+            raise Exception(f"Machine {machine_id} was not found")
+        return response
+
+    def get_machine_alerts(self, machine_id):
+        """Retrieves a collection of alerts related to a given machine ID.
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machine-related-alerts?view=o365-worldwide
+
+        Args:
+            machine_id (str): The machine ID
+
+        Returns:
+            dict. Alert entities
+        """
+        cmd_url = f"/machines/{machine_id}/alerts"
+        try:
+            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        except Exception:
+            raise Exception(f"Machine {machine_id} not found")
+        return response
+
 
 ''' Commands '''
 
@@ -1039,6 +1995,43 @@ def get_user_data(user_response):
         'NetworkUser': user_response.get('isOnlyNetworkUser')
     }
     return user_data
+
+
+def offboard_machine_command(client: MsClient, args: dict):
+    """Offboard machine from defender.
+
+    Returns:
+       CommandResults. Human readable, context, raw response
+    """
+    if not args.get('machine_id') or not args.get('comment'):
+        raise ValueError("Not all mandatory arguments are provided. Provide both machine_id and comment.")
+    headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
+    machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
+    comment = args.get('comment')
+    machines_action_data = []
+    raw_response = []
+    failed_machines = {}  # if we got an error, we will return the machine ids that failed
+    for machine_id in machine_ids:
+        try:
+            machine_action_response = client.offboard_machine(machine_id, comment)
+            raw_response.append(machine_action_response)
+            machines_action_data.append(get_machine_action_data(machine_action_response))
+        except Exception as e:
+            # if we got an error for a machine, we want to get result for the other ones
+            failed_machines[machine_id] = e
+            continue
+
+    human_readable = tableToMarkdown("The offboard request has been submitted successfully:", machines_action_data,
+                                     headers=headers, removeNull=True)
+    human_readable += add_error_message(failed_machines, machine_ids)
+
+    return CommandResults(
+        outputs=machines_action_data,
+        outputs_prefix="MicrosoftATP.OffboardMachine",
+        outputs_key_field=["ID", "MachineID"],
+        readable_output=human_readable,
+        raw_response=raw_response
+    )
 
 
 def isolate_machine_command(client: MsClient, args: dict):
@@ -1319,9 +2312,9 @@ def parse_ip_addresses(ip_addresses: List[Dict]) -> List[Dict]:
                 'Status': item['operationalStatus']
             }
         else:
-            mac_addresses[current_mac]['IPAddresses'].append(item['ipAddress'])
+            mac_addresses[current_mac]['IPAddresses'].append(item['ipAddress'])  # type: ignore
 
-    return list(mac_addresses.values())
+    return list(mac_addresses.values())  # type: ignore
 
 
 def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:
@@ -1526,7 +2519,8 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
     """
     query = args.get('query', '')
     timeout = int(args.get('timeout', 10))
-    response = client.get_advanced_hunting(query, timeout)
+    time_range = args.get('time_range')
+    response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
     if isinstance(results, list) and len(results) == 1:
         report_id = results[0].get('ReportId')
@@ -1755,6 +2749,46 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': context_output
     }
     return human_readable, entry_context, response
+
+
+def get_machine_investigation_package(client: MsClient, args: dict):
+
+    machine_id = args.get('machine_id')
+    comment = args.get('comment')
+    res = client.get_investigation_package(machine_id, comment)
+    human_readable = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
+
+    return CommandResults(outputs_prefix='MicrosoftATP.MachineAction',
+                          readable_output=human_readable, outputs={'action_id': res['id']})
+
+
+def request_download_investigation_package_command(client: MsClient, args: dict):
+    return run_polling_command(client, args, 'microsoft-atp-request-and-download-investigation-package',
+                               get_machine_investigation_package,
+                               get_machine_action_command, download_file_after_successful_status)
+
+
+def download_file_after_successful_status(client, res):
+    demisto.debug("post polling - download file")
+    machine_action_id = res['id']
+
+    # get file uri from action:
+    file_uri = client.get_investigation_package_sas_uri(machine_action_id)['value']
+    demisto.debug(f'Got file for downloading: {file_uri}')
+
+    # download link, create file result. File comes back as compressed gz file.
+    f_data = client.download_file(file_uri)
+    md_results = {
+        'Machine Action Id': res.get('id'),
+        'MachineId': res.get('machineId'),
+        'Status': res.get('status'),
+    }
+    return [fileResult('Response Result.gz', f_data.content),
+            CommandResults(
+                outputs_prefix='MicrosoftATP.MachineAction',
+                outputs=res,
+                readable_output=tableToMarkdown('Machine Action:', md_results)
+    )]
 
 
 def get_machine_action_data(machine_action_response):
@@ -2354,7 +3388,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
             last_fetch_time = last_fetch_time + "Z"
 
     else:
-        last_fetch_time = datetime.strftime(first_fetch_time, TIME_FORMAT)
+        last_fetch_time = datetime.strftime(first_fetch_time, TIME_FORMAT)  # type: ignore
 
     latest_created_time = dateparser.parse(last_fetch_time,
                                            settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
@@ -2381,8 +3415,8 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
                                       settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch_time:
-            if alert_time <= dateparser.parse(last_fetch_time,
-                                              settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'}):
+            parsed = dateparser.parse(last_fetch_time, settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+            if alert_time <= parsed:  # type: ignore
                 demisto.debug(f"{INTEGRATION_NAME} - alert {str(alert)} was created at {alert['alertCreationTime']}."
                               f' Skipping.')
                 continue
@@ -2394,12 +3428,12 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
         })
 
         # Update last run and add incident if the incident is newer than last fetch
-        if alert_time > latest_created_time:
-            latest_created_time = alert_time
+        if alert_time > latest_created_time:  # type: ignore
+            latest_created_time = alert_time  # type: ignore
 
     # last alert is the newest as we ordered by it ascending
     demisto.debug(f'got {len(incidents)} incidents from the API.')
-    last_run['last_alert_fetched_time'] = datetime.strftime(latest_created_time, TIME_FORMAT)
+    last_run['last_alert_fetched_time'] = datetime.strftime(latest_created_time, TIME_FORMAT)  # type: ignore
     return incidents, last_run
 
 
@@ -2912,6 +3946,260 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[
         return CommandResults(readable_output='No indicators found')
 
 
+def lateral_movement_evidence_command(client, args):  # pragma: no cover
+    # prepare query
+    timeout = int(args.pop('timeout', 10))
+    time_range = args.pop('time_range', None)
+    query_purpose = args.pop('query_purpose')
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
+    query_builder = HuntingQueryBuilder.LateralMovementEvidence(**args)
+    query_options = {
+        'network_connections': query_builder.build_network_connections_query,
+        'smb_connections': query_builder.build_smb_connections_query,
+        'credential_dumping': query_builder.build_credential_dumping_query,
+        'management_connection': query_builder.build_management_connection_query
+    }
+    if query_purpose not in query_options:
+        raise DemistoException(f'Unsupported query_purpose: {query_purpose}.')
+    query = query_options[query_purpose]()
+
+    # send request + handle result
+    response = client.get_advanced_hunting(query, timeout, time_range)
+    results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
+    readable_output = tableToMarkdown(f'Lateral Movement Evidence Hunt ({query_purpose}) Results',
+                                      results,
+                                      removeNull=True
+                                      )
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'MicrosoftATP.HuntLateralMovementEvidence.Result.{query_purpose}',
+        outputs=results
+    )
+
+
+def persistence_evidence_command(client, args):  # pragma: no cover
+    # prepare query
+    timeout = int(args.pop('timeout', 10))
+    time_range = args.pop('time_range', None)
+    query_purpose = args.get('query_purpose')
+    show_query = argToBoolean(args.pop('show_query', False))
+    query_builder = HuntingQueryBuilder.PersistenceEvidence(**args)
+    query_options = {
+        'scheduled_job': query_builder.build_scheduled_job_query,
+        'registry_entry': query_builder.build_registry_entry_query,
+        'startup_folder_changes': query_builder.build_startup_folder_changes_query,
+        'new_service_created': query_builder.build_new_service_created_query,
+        'service_updated': query_builder.build_service_updated_query,
+        'file_replaced': query_builder.build_file_replaced_query,
+        'new_user': query_builder.build_new_user_query,
+        'new_group': query_builder.build_new_group_query,
+        'group_user_change': query_builder.build_group_user_change_query,
+        'local_firewall_change': query_builder.build_local_firewall_change_query,
+        'host_file_change': query_builder.build_host_file_change_query,
+    }
+    if query_purpose not in query_options:
+        raise DemistoException(f'Unsupported query_purpose: {query_purpose}.')
+    query = query_options[query_purpose]()
+
+    # send request + handle result
+    response = client.get_advanced_hunting(query, timeout, time_range)
+    results = response.get('Results')
+    readable_output = tableToMarkdown(f'Persistence EvidenceHunt Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'MicrosoftATP.HuntPersistenceEvidence.Result.{query_purpose}',
+        outputs=results
+    )
+
+
+def file_origin_command(client, args):  # pragma: no cover
+    # prepare query
+    timeout = int(args.pop('timeout', 10))
+    time_range = args.pop('time_range', None)
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
+    query_builder = HuntingQueryBuilder.FileOrigin(**args)
+    query = query_builder.build_file_origin_query()
+
+    # send request + handle result
+    response = client.get_advanced_hunting(query, timeout, time_range)
+    results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
+    readable_output = tableToMarkdown('File Origin Hunt Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='MicrosoftATP.HuntFileOrigin.Result',
+        outputs=results
+    )
+
+
+def process_details_command(client, args):  # pragma: no cover
+    # prepare query
+    timeout = int(args.pop('timeout', 10))
+    time_range = args.pop('time_range', None)
+    query_purpose = args.get('query_purpose')
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
+    query_builder = HuntingQueryBuilder.ProcessDetails(**args)
+    query_options = {
+        'parent_process': query_builder.build_parent_process_query,
+        'grandparent_process': query_builder.build_grandparent_process_query,
+        'process_details': query_builder.build_process_details_query,
+        'beaconing_evidence': query_builder.build_beaconing_evidence_query,
+        'powershell_execution_unsigned_files': query_builder.build_powershell_execution_unsigned_files_query,
+        'process_excecution_powershell': query_builder.build_process_excecution_powershell_query,
+    }
+    if query_purpose not in query_options:
+        raise DemistoException(f'Unsupported query_purpose: {query_purpose}.')
+    query = query_options[query_purpose]()
+
+    # send request + handle result
+    response = client.get_advanced_hunting(query, timeout, time_range)
+    results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
+    readable_output = tableToMarkdown(f'Process Details Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'MicrosoftATP.HuntProcessDetails.Result.{query_purpose}',
+        outputs=results
+    )
+
+
+def network_connections_command(client, args):  # pragma: no cover
+    # prepare query
+    timeout = int(args.pop('timeout', 10))
+    time_range = args.pop('time_range', None)
+    query_purpose = args.get('query_purpose')
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
+    query_builder = HuntingQueryBuilder.NetworkConnections(**args)
+    query_options = {
+        'external_addresses': query_builder.build_external_addresses_query,
+        'dns_query': query_builder.build_dns_query,
+        'encoded_commands': query_builder.build_encoded_commands_query
+    }
+    if query_purpose not in query_options:
+        raise DemistoException(f'Unsupported query_purpose: {query_purpose}.')
+    query = query_options[query_purpose]()
+
+    # send request + handle result
+    response = client.get_advanced_hunting(query, timeout, time_range)
+    results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
+    readable_output = tableToMarkdown(f'Network Connections Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'MicrosoftATP.HuntNetworkConnections.Result.{query_purpose}',
+        outputs=results
+    )
+
+
+def privilege_escalation_command(client, args):  # pragma: no cover
+    # prepare query
+    timeout = int(args.pop('timeout', 10))
+    time_range = args.pop('time_range', None)
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
+    query_builder = HuntingQueryBuilder.PrivilegeEscalation(**args)
+    query = query_builder.build_query()
+
+    # send request + handle result
+    response = client.get_advanced_hunting(query, timeout, time_range)
+    results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
+    readable_output = tableToMarkdown('Privilege Escalation Hunt Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='MicrosoftATP.HuntPrivilegeEscalation.Result',
+        outputs=results
+    )
+
+
+def tampering_command(client, args):  # pragma: no cover
+    # prepare query
+    timeout = int(args.pop('timeout', 10))
+    time_range = args.pop('time_range', None)
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
+    query_builder = HuntingQueryBuilder.Tampering(**args)
+    query = query_builder.build_query()
+
+    # send request + handle result
+    response = client.get_advanced_hunting(query, timeout, time_range)
+    results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
+    readable_output = tableToMarkdown('Tampering Hunt Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='MicrosoftATP.HuntTampering.Result',
+        outputs=results
+    )
+
+
+def cover_up_command(client, args):  # pragma: no cover
+    # prepare query
+    timeout = int(args.pop('timeout', 10))
+    time_range = args.pop('time_range', None)
+    query_purpose = args.get('query_purpose')
+    page = int(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
+    query_builder = HuntingQueryBuilder.CoverUp(**args)
+    query_options = {
+        'file_deleted': query_builder.build_file_deleted_query,
+        'event_log_cleared': query_builder.build_event_log_cleared_query,
+        'compromised_information': query_builder.build_compromised_information_query,
+        'connected_devices': query_builder.build_connected_devices_query,
+        'action_types': query_builder.build_action_types_query,
+        'common_files': query_builder.build_common_files_query
+    }
+    if query_purpose not in query_options:
+        raise DemistoException(f'Unsupported query_purpose: {query_purpose}.')
+    query = query_options[query_purpose]()
+
+    # send request + handle result
+    response = client.get_advanced_hunting(query, timeout, time_range)
+    results = response.get('Results')
+    if isinstance(results, list) and page > 1:
+        results = results[(page - 1) * limit:limit * page]
+    readable_output = tableToMarkdown(f'Cover Up Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'MicrosoftATP.HuntCoverUp.Result.{query_purpose}',
+        outputs=results
+    )
+
+
 def test_module(client: MsClient):
     client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
     demisto.results('ok')
@@ -2935,11 +4223,14 @@ def get_dbot_indicator(dbot_type, dbot_score, value):
 
 
 def get_indicator_dbot_object(indicator):
-    indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE[indicator.get('indicatorType')]
-    indicator_value = indicator.get('indicatorValue')
-    dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
-                            score=Common.DBotScore.NONE)  # type:ignore
-    return get_dbot_indicator(indicator_type, dbot, indicator_value)
+    indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE.get(indicator.get('indicatorType'))
+    if indicator_type:
+        indicator_value = indicator.get('indicatorValue')
+        dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
+                                score=Common.DBotScore.NONE)  # type:ignore
+        return get_dbot_indicator(indicator_type, dbot, indicator_value)
+    else:
+        return None
 
 
 def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> CommandResults:
@@ -3150,6 +4441,67 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
     return machines_outputs
 
 
+def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of logon users on a given machine
+
+    Returns:
+        CommandResults.
+    """
+    headers = ["ID", "AccountName", "AccountDomain", "FirstSeen", "LastSeen", "LogonTypes", "DomainAdmin", "NetworkUser"]
+    machine_id = args.get("machine_id")
+    response = client.get_machine_users(machine_id)
+    users_list = [dict(**get_user_data(r), MachineID=machine_id) for r in response.get("value", [])]
+
+    return CommandResults(
+        outputs=users_list,
+        outputs_key_field=["ID", "MachineID"],
+        outputs_prefix="MicrosoftATP.MachineUser",
+        readable_output=tableToMarkdown(
+            f"Microsoft Defender ATP logon users for machine {machine_id}:",
+            users_list,
+            headers=headers,
+            removeNull=True,
+        ),
+        raw_response=response,
+    )
+
+
+def get_machine_alerts_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of alerts related to specific device.
+
+    Returns:
+        CommandResults.
+    """
+    headers = [
+        "ID",
+        "Title",
+        "Description",
+        "IncidentID",
+        "Severity",
+        "Status",
+        "Classification",
+        "Category",
+        "ThreatFamilyName",
+        "MachineID"
+    ]
+    machine_id = args.get("machine_id")
+    alerts_response = client.get_machine_alerts(machine_id)
+    alert_list = get_alerts_list(alerts_response)
+
+    return CommandResults(
+        outputs=alert_list,
+        outputs_key_field=["ID", "MachineID"],
+        outputs_prefix="MicrosoftATP.MachineAlerts",
+        readable_output=tableToMarkdown(
+            f"Alerts that are related to machine {machine_id}:",
+            alert_list,
+            headers=headers,
+            removeNull=True,
+        ),
+        raw_response=alerts_response,
+    )
+
+
 ''' EXECUTION CODE '''
 ''' LIVE RESPONSE CODE '''
 
@@ -3178,7 +4530,6 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
 
     # distinguish between the initial run, which is the upload run, and the results run
     is_first_run = 'machine_action_id' not in args
-    demisto.debug(f'polling args: {args}')
     if is_first_run:
         command_results = action_func(client, args)
         outputs = command_results.outputs
@@ -3198,14 +4549,24 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
         return command_results
 
     # not a first run
-
     command_result = results_function(client, args)
     action_status = command_result.outputs.get("status")
-    command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
+    demisto.debug(f"action status is: {action_status}")
+
+    # In case command is one of the put/get file/ run script there is command section, otherwise there isnt.
+    if command_result.outputs.get("commands", []):
+        command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
+    else:
+        command_status = 'Completed' if action_status == "Succeeded" else None
+
     if action_status in ['Failed', 'Cancelled'] or command_status == 'Failed':
-        raise Exception(
-            f'Command {action_status}. Additional info: {command_result.outputs.get("commands", [{}])[0].get("errors")}')
+        error_msg = f"Command {action_status}."
+        if command_result.outputs.get("commands", []):
+            error_msg += f'{command_result.outputs.get("commands", [{}])[0].get("errors")}'
+        raise Exception(error_msg)
+
     elif command_status != 'Completed' or action_status == 'InProgress':
+        demisto.debug("action status is not completed")
         # schedule next poll
         polling_args = {
             'interval_in_seconds': interval_in_secs,
@@ -3452,7 +4813,7 @@ def put_file_get_successful_action_results(client, res):
     )
 
 
-def main():
+def main():  # pragma: no cover
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
@@ -3635,6 +4996,30 @@ def main():
             return_results(cancel_action_command(client, args))
         elif command == 'microsoft-atp-live-response-result':
             return_results(get_live_response_result_command(client, args))
+        elif command == 'microsoft-atp-advanced-hunting-lateral-movement-evidence':
+            return_results(lateral_movement_evidence_command(client, args))
+        elif command == 'microsoft-atp-advanced-hunting-persistence-evidence':
+            return_results(persistence_evidence_command(client, args))
+        elif command == 'microsoft-atp-advanced-hunting-file-origin':
+            return_results(file_origin_command(client, args))
+        elif command == 'microsoft-atp-advanced-hunting-process-details':
+            return_results(process_details_command(client, args))
+        elif command == 'microsoft-atp-advanced-hunting-network-connections':
+            return_results(network_connections_command(client, args))
+        elif command == 'microsoft-atp-advanced-hunting-privilege-escalation':
+            return_results(privilege_escalation_command(client, args))
+        elif command == 'microsoft-atp-advanced-hunting-tampering':
+            return_results(tampering_command(client, args))
+        elif command == 'microsoft-atp-advanced-hunting-cover-up':
+            return_results(cover_up_command(client, args))
+        elif command == 'microsoft-atp-offboard-machine':
+            return_results(offboard_machine_command(client, args))
+        elif command == 'microsoft-atp-get-machine-users':
+            return_results(get_machine_users_command(client, args))
+        elif command == 'microsoft-atp-get-machine-alerts':
+            return_results(get_machine_alerts_command(client, args))
+        elif command == 'microsoft-atp-request-and-download-investigation-package':
+            return_results(request_download_investigation_package_command(client, args))
     except Exception as err:
         return_error(str(err))
 

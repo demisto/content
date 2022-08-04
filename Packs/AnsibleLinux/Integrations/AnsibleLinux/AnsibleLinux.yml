@@ -5759,7 +5759,6 @@ script:
         is only supported with state: `install`/`present`'
       name: allow_unauthenticated
     - auto: PREDEFINED
-      defaultValue: 'no'
       description: 'If yes or safe, performs an aptitude safe-upgrade. If full, performs
         an aptitude full-upgrade. If dist, performs an apt-get dist-upgrade. Note:
         This does not upgrade a specific package, use state=latest for that. Note:

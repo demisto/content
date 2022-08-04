@@ -18,6 +18,7 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
+    "description": "Conclusion of a intelligence report.",
     "associatedToAll": false,
     "associatedTypes": [
         "ACTI Intelligence Alert",

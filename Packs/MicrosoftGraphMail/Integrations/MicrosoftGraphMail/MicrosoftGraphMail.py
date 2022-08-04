@@ -1,3 +1,4 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -5,6 +6,7 @@ from typing import Union, Optional
 
 ''' IMPORTS '''
 import base64
+from bs4 import BeautifulSoup
 import binascii
 import urllib3
 from urllib.parse import quote
@@ -62,10 +64,13 @@ WELL_KNOWN_FOLDERS = {
 class MsGraphClient:
     ITEM_ATTACHMENT = '#microsoft.graph.itemAttachment'
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
+    # maximum attachment size to be sent through the api, files larger must be uploaded via upload session
+    MAX_ATTACHMENT_SIZE = 3145728  # 3mb = 3145728 bytes
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
                  app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
-                 emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None):
+                 emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None,
+                 display_full_email_body=False):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
@@ -76,6 +81,8 @@ class MsGraphClient:
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
         self._emails_fetch_limit = emails_fetch_limit
+        # whether to display the full email body for the fetch-incidents
+        self.display_full_email_body = display_full_email_body
 
     def pages_puller(self, response: dict, page_count: int) -> list:
         """ Gets first response from API and returns all pages
@@ -382,15 +389,28 @@ class MsGraphClient:
         attachments = zip(ids, attach_names) if provided_names else zip(ids, ids)
 
         for attach_id, attach_name in attachments:
-            b64_encoded_data, file_size, uploaded_file_name = read_file_and_encode64(attach_id)
-            attachment = {
-                '@odata.type': cls.FILE_ATTACHMENT,
-                'contentBytes': b64_encoded_data.decode('utf-8'),
-                'isInline': is_inline,
-                'name': attach_name if provided_names or not uploaded_file_name else uploaded_file_name,
-                'size': file_size
-            }
-            file_attachments_result.append(attachment)
+            file_data, file_size, uploaded_file_name = read_file(attach_id)
+            file_name = attach_name if provided_names or not uploaded_file_name else uploaded_file_name
+            if file_size < cls.MAX_ATTACHMENT_SIZE:  # if file is less than 3MB
+                file_attachments_result.append(
+                    {
+                        '@odata.type': cls.FILE_ATTACHMENT,
+                        'contentBytes': base64.b64encode(file_data).decode('utf-8'),
+                        'isInline': is_inline,
+                        'name': file_name,
+                        'size': file_size
+                    }
+                )
+            else:
+                file_attachments_result.append(
+                    {
+                        'size': file_size,
+                        'data': file_data,
+                        'name': file_name,
+                        'isInline': is_inline,
+                        'requires_upload': True
+                    }
+                )
 
         return file_attachments_result
 
@@ -478,7 +498,7 @@ class MsGraphClient:
 
     @staticmethod
     def build_message_to_reply(to_recipients, cc_recipients, bcc_recipients, subject, email_body, attach_ids,
-                               attach_names, attach_cids):
+                               attach_names, attach_cids, reply_to):
         """
         Builds a valid reply message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -487,6 +507,7 @@ class MsGraphClient:
             'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
             'ccRecipients': MsGraphClient._build_recipient_input(cc_recipients),
             'bccRecipients': MsGraphClient._build_recipient_input(bcc_recipients),
+            'replyTo': MsGraphClient._build_recipient_input(reply_to),
             'subject': subject,
             'bodyPreview': email_body[:255],
             'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
@@ -681,26 +702,38 @@ class MsGraphClient:
         :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
         :rtype: ``list`` and ``list``
         """
-        target_modified_time = add_second_to_str_date(last_fetch)  # workaround to Graph API bug
         suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
         # If you add to the select filter the $ sign, The 'internetMessageHeaders' field not contained within the
         # API response, (looks like a bug in graph API).
         params = {
-            "$filter": f"receivedDateTime gt {target_modified_time}",
+            "$filter": f"receivedDateTime ge {last_fetch}",
             "$orderby": "receivedDateTime asc",
             "select": "*",
-            "$top": self._emails_fetch_limit
+            "$top": len(exclude_ids) + self._emails_fetch_limit  # fetch extra incidents
         }
 
         fetched_emails = self.ms_client.http_request(
             'GET', suffix_endpoint, params=params
-        ).get('value', [])[:self._emails_fetch_limit]
+        ).get('value', [])
 
-        if exclude_ids:  # removing emails in order to prevent duplicate incidents
-            fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
+        fetched_emails_ids = {email.get('id') for email in fetched_emails}
+        exclude_ids_set = set(exclude_ids)
+        if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
+            # no new emails
+            demisto.debug(f'No new emails: {fetched_emails_ids=}. {exclude_ids_set=}')
+            return [], exclude_ids, last_fetch
+        new_emails = [mail for mail in fetched_emails
+                      if mail.get('id') in filtered_new_email_ids][:self._emails_fetch_limit]
+        last_email_time = new_emails[-1].get('receivedDateTime')
+        if last_email_time == last_fetch:
+            # next fetch will need to skip existing exclude_ids
+            excluded_ids_for_nextrun = exclude_ids + [email.get('id') for email in new_emails]
+        else:
+            # next fetch will need to skip messages the same time as last_email
+            excluded_ids_for_nextrun = [email.get('id') for email in new_emails if
+                                        email.get('receivedDateTime') == last_email_time]
 
-        fetched_emails_ids = [email.get('id') for email in fetched_emails]
-        return fetched_emails, fetched_emails_ids
+        return new_emails, excluded_ids_for_nextrun, last_email_time
 
     @staticmethod
     def _parse_item_as_dict(email):
@@ -827,9 +860,14 @@ class MsGraphClient:
 
         parsed_email['Mailbox'] = self._mailbox_to_fetch
 
+        body = email.get('bodyPreview', '')
+        if not body or self.display_full_email_body:
+            # parse HTML into plain-text
+            body = get_text_from_html(parsed_email.get('Body') or '')
+
         incident = {
             'name': parsed_email['Subject'],
-            'details': email.get('bodyPreview', '') or parsed_email['Body'],
+            'details': body,
             'labels': MsGraphClient._parse_email_as_labels(parsed_email),
             'occurred': parsed_email['ModifiedTime'],
             'attachment': parsed_email.get('Attachments', []),
@@ -837,27 +875,6 @@ class MsGraphClient:
         }
 
         return incident
-
-    @staticmethod
-    def _get_next_run_time(fetched_emails, start_time):
-        """
-        Returns received time of last email if exist, else utc time that was passed as start_time.
-
-        The elements in fetched emails are ordered by modified time in ascending order,
-        meaning the last element has the latest received time.
-
-        :type fetched_emails: ``list``
-        :param fetched_emails: List of fetched emails
-
-        :type start_time: ``str``
-        :param start_time: utc string of format Y-m-dTH:M:SZ
-
-        :return: Returns str date of format Y-m-dTH:M:SZ
-        :rtype: `str`
-        """
-        next_run_time = fetched_emails[-1].get('receivedDateTime') if fetched_emails else start_time
-
-        return next_run_time
 
     @logger
     def fetch_incidents(self, last_run):
@@ -872,9 +889,8 @@ class MsGraphClient:
         :return: Next run data and parsed fetched incidents
         :rtype: ``dict`` and ``list``
         """
-        start_time = get_now_utc()
         last_fetch = last_run.get('LAST_RUN_TIME')
-        exclude_ids = last_run.get('LAST_RUN_IDS', [])
+        exclude_ids = list(set(last_run.get('LAST_RUN_IDS', [])))  # remove any possible duplicates
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
         folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
         last_run_account = last_run.get('LAST_RUN_ACCOUNT')
@@ -892,20 +908,230 @@ class MsGraphClient:
             last_fetch, _ = parse_date_range(self._first_fetch_interval, date_format=DATE_FORMAT, utc=True)
             demisto.info(f"MS-Graph-Listener: initialize fetch and pull emails from date :{last_fetch}")
 
-        fetched_emails, fetched_emails_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
-                                                                     exclude_ids=exclude_ids)
+        fetched_emails, exclude_ids, next_run_time = self._fetch_last_emails(
+            folder_id=folder_id, last_fetch=last_fetch, exclude_ids=exclude_ids)
         incidents = list(map(self._parse_email_as_incident, fetched_emails))
-        next_run_time = MsGraphClient._get_next_run_time(fetched_emails, start_time)
         next_run = {
             'LAST_RUN_TIME': next_run_time,
-            'LAST_RUN_IDS': fetched_emails_ids,
+            'LAST_RUN_IDS': exclude_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
             'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
             'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
         }
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
+        demisto.debug(next_run)
 
         return next_run, incidents
+
+    def add_attachments_via_upload_session(self, email, draft_id, attachments):
+        """
+        Add attachments using an upload session by dividing the file bytes into chunks and sent each chunk each time.
+        more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
+
+        Args:
+            email (str): email to create the upload session.
+            draft_id (str): draft ID to add the attachments to.
+            attachments (list[dict]) : attachments to add to the draft message.
+        """
+        for attachment in attachments:
+            self.add_attachment_with_upload_session(
+                email=email,
+                draft_id=draft_id,
+                attachment_data=attachment.get('data'),
+                attachment_name=attachment.get('name'),
+                is_inline=attachment.get('isInline')
+            )
+
+    def get_upload_session(self, email, draft_id, attachment_name, attachment_size, is_inline):
+        """
+        Create an upload session for a specific draft ID.
+
+        Args:
+            email (str): email to create the upload session.
+            draft_id (str): draft ID to add the attachments to.
+            attachment_size (int) : attachment size (in bytes).
+            attachment_name (str): attachment name.
+            is_inline (bool): is the attachment inline, True if yes, False if not.
+        """
+        return self.ms_client.http_request(
+            'POST',
+            f'/users/{email}/messages/{draft_id}/attachments/createUploadSession',
+            json_data={
+                'attachmentItem': {
+                    'attachmentType': 'file',
+                    'name': attachment_name,
+                    'size': attachment_size,
+                    'isInline': is_inline
+                }
+            }
+        )
+
+    @staticmethod
+    def upload_attachment(
+        upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size
+    ):
+        """
+        Upload an attachment to the upload URL.
+
+        Args:
+            upload_url (str): upload URL provided when running 'get_upload_session'
+            start_chunk_idx (int): the start of the chunk file data.
+            end_chunk_idx (int): the end of the chunk file data.
+            chunk_data (bytes): the chunk data in bytes from start_chunk_idx to end_chunk_idx
+            attachment_size (int): the entire attachment size in bytes.
+
+        Returns:
+            Response: response indicating whether the operation succeeded. 200 if a chunk was added successfully,
+                201 (created) if the file was uploaded completely. 400 in case of errors.
+        """
+        chunk_size = len(chunk_data)
+        headers = {
+            "Content-Length": f'{chunk_size}',
+            "Content-Range": f"bytes {start_chunk_idx}-{end_chunk_idx - 1}/{attachment_size}",
+            "Content-Type": "application/octet-stream"
+        }
+        demisto.debug(f'uploading session headers: {headers}')
+        return requests.put(url=upload_url, data=chunk_data, headers=headers)
+
+    def add_attachment_with_upload_session(self, email, draft_id, attachment_data, attachment_name, is_inline=False):
+        """
+        Add an attachment using an upload session by dividing the file bytes into chunks and sent each chunk each time.
+        more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
+
+        Args:
+            email (str): email to create the upload session.
+            draft_id (str): draft ID to add the attachments to.
+            attachment_data (bytes) : attachment data in bytes.
+            attachment_name (str): attachment name.
+            is_inline (bool): is the attachment inline, True if yes, False if not.
+        """
+
+        attachment_size = len(attachment_data)
+        try:
+            upload_session = self.get_upload_session(
+                email=email,
+                draft_id=draft_id,
+                attachment_name=attachment_name,
+                attachment_size=attachment_size,
+                is_inline=is_inline
+            )
+            upload_url = upload_session.get('uploadUrl')
+            if not upload_url:
+                raise Exception(f'Cannot get upload URL for attachment {attachment_name}')
+
+            start_chunk_index = 0
+            end_chunk_index = self.MAX_ATTACHMENT_SIZE
+
+            chunk_data = attachment_data[start_chunk_index: end_chunk_index]
+
+            response = self.upload_attachment(
+                upload_url=upload_url,
+                start_chunk_idx=start_chunk_index,
+                end_chunk_idx=end_chunk_index,
+                chunk_data=chunk_data,
+                attachment_size=attachment_size
+            )
+            while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
+                start_chunk_index = end_chunk_index
+                next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
+                end_chunk_index = next_chunk if next_chunk < attachment_size else attachment_size
+
+                chunk_data = attachment_data[start_chunk_index: end_chunk_index]
+
+                response = self.upload_attachment(
+                    upload_url=upload_url,
+                    start_chunk_idx=start_chunk_index,
+                    end_chunk_idx=end_chunk_index,
+                    chunk_data=chunk_data,
+                    attachment_size=attachment_size
+                )
+
+                if response.status_code not in (201, 200):
+                    raise Exception(f'{response.json()}')
+
+        except Exception as e:
+            demisto.error(f'{e}')
+            raise e
+
+    def create_draft(self, email, json_data, reply_message_id=None):
+        """
+        Create a draft message for either a new message or as a reply to an existing message.
+
+        Args:
+            email (str): email to create the draft from.
+            json_data (dict): data to create the message with.
+            reply_message_id (str): message ID in case creating a draft to an existing message.
+
+        Returns:
+            dict: api response information about the draft.
+        """
+        if reply_message_id:
+            suffix = f'/users/{email}/messages/{reply_message_id}/createReply'  # create draft for a reply to an existing message
+        else:
+            suffix = f'/users/{email}/messages'  # create draft for a new message
+        return self.ms_client.http_request('POST', suffix, json_data=json_data)
+
+    def send_draft(self, email, draft_id):
+        """
+        Sends a draft message.
+
+        Args:
+            email (str): email to send the draft from.
+            draft_id (str): the ID of the draft to send.
+        """
+        self.ms_client.http_request('POST', f'/users/{email}/messages/{draft_id}/send', resp_type='text')
+
+    def send_mail(self, email, json_data):
+        """
+        Sends an email.
+
+        Args:
+            email (str): email to send the the message from.
+            json_data (dict): message data.
+        """
+        self.ms_client.http_request(
+            'POST', f'/users/{email}/sendMail', json_data={'message': json_data}, resp_type="text"
+        )
+
+    def send_reply(self, email_from, json_data, message_id):
+        """
+        Sends a reply email.
+
+        Args:
+            email_from (str): email to send the reply from.
+            message_id (str): a message ID to reply to.
+            message (dict): message body request.
+            comment (str): email's body.
+        """
+        self.ms_client.http_request(
+            'POST',
+            f'/users/{email_from}/messages/{message_id}/reply',
+            json_data=json_data,
+            resp_type="text"
+        )
+
+    def send_mail_with_upload_session_flow(self, email, json_data, attachments_more_than_3mb, reply_message_id=None):
+        """
+        Sends an email with the upload session flow, this is used only when there is one attachment that is larger
+        than 3 MB.
+
+        1) creates a draft message
+        2) upload the attachment using an upload session which uploads file chunks by chunks.
+        3) send the draft message
+
+        Args:
+            email (str): email to send from.
+            json_data (dict): data to send the message with.
+            attachments_more_than_3mb (list[dict]): data information about the large attachments.
+            reply_message_id (str): message ID in case sending a reply to an existing message.
+        """
+        # create the draft email
+        created_draft = self.create_draft(email=email, json_data=json_data, reply_message_id=reply_message_id)
+        draft_id = created_draft.get('id')
+        self.add_attachments_via_upload_session(  # add attachments via upload session.
+            email=email, draft_id=draft_id, attachments=attachments_more_than_3mb
+        )
+        self.send_draft(email=email, draft_id=draft_id)  # send the draft email
 
 
 ''' HELPER FUNCTIONS '''
@@ -936,26 +1162,6 @@ def upload_file(filename, content, attachments_list):
     })
 
 
-def add_second_to_str_date(date_string, seconds=1):
-    """
-    Add seconds to date string.
-
-    Is used as workaround to Graph API bug, for more information go to:
-    https://stackoverflow.com/questions/35729273/office-365-graph-api-greater-than-filter-on-received-date
-
-    :type date_string: ``str``
-    :param date_string: Date string to add seconds
-
-    :type seconds: int
-    :param seconds: Seconds to add to date, by default is set to 1
-
-    :return: Date time string appended seconds
-    :rtype: ``str``
-    """
-    added_result = datetime.strptime(date_string, DATE_FORMAT) + timedelta(seconds=seconds)
-    return datetime.strftime(added_result, DATE_FORMAT)
-
-
 def get_now_utc():
     """
     Creates UTC current time of format Y-m-dTH:M:SZ (e.g. 2019-11-06T09:06:39Z)
@@ -966,22 +1172,22 @@ def get_now_utc():
     return datetime.utcnow().strftime(DATE_FORMAT)
 
 
-def read_file_and_encode64(attach_id):
+def read_file(attach_id):
     """
-    Reads file that was uploaded to War Room and encodes it's content to base 64.
+    Reads file that was uploaded to War Room.
 
     :type attach_id: ``str``
     :param attach_id: The id of uploaded file to War Room
 
-    :return: Base 64 encoded data, size of the encoded data in bytes and uploaded file name.
+    :return: file data, size of the file in bytes and uploaded file name.
     :rtype: ``bytes``, ``int``, ``str``
     """
     try:
         file_info = demisto.getFilePath(attach_id)
         with open(file_info['path'], 'rb') as file_data:
-            b64_encoded_data = base64.b64encode(file_data.read())
+            file_data = file_data.read()  # type: ignore[assignment]
             file_size = os.path.getsize(file_info['path'])
-            return b64_encoded_data, file_size, file_info['name']
+            return file_data, file_size, file_info['name']
     except Exception as e:
         raise Exception(f'Unable to read and decode in base 64 file with id {attach_id}', e)
 
@@ -1148,6 +1354,23 @@ def parse_folders_list(folders_list):
         folders_list = [folders_list]
 
     return [{FOLDER_MAPPING[k]: v for (k, v) in f.items() if k in FOLDER_MAPPING} for f in folders_list]
+
+
+def get_text_from_html(html):
+    # parse HTML into plain-text
+    soup = BeautifulSoup(html, features="html.parser")
+
+    # kill all script and style elements
+    for script in soup(["script", "style"]):
+        script.extract()  # rip it out
+    # get text
+    text = soup.get_text()
+    # break into lines and remove leading and trailing space on each line
+    lines = (line.strip() for line in text.splitlines())
+    # break multi-headlines into a line each
+    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+    # drop blank lines
+    return '\n'.join(chunk for chunk in chunks if chunk)
 
 
 ''' COMMANDS '''
@@ -1447,16 +1670,41 @@ def prepare_args(command, args):
     return args
 
 
+def divide_attachments_according_to_size(attachments):
+    """
+    Divide attachments to those are larger than 3mb and those who are less than 3mb.
+
+    Returns:
+        tuple[list, list]: less than 3mb attachments and more than 3mb attachments.
+    """
+    less_than_3mb_attachments, more_than_3mb_attachments = [], []
+
+    for attachment in attachments:
+        if attachment.pop('requires_upload', None):  # if the attachment is bigger than 3mb, it requires upload session.
+            more_than_3mb_attachments.append(attachment)
+        else:
+            less_than_3mb_attachments.append(attachment)
+    return less_than_3mb_attachments, more_than_3mb_attachments
+
+
 def create_draft_command(client: MsGraphClient, args):
     """
     Creates draft message in user's mailbox, in draft folder.
     """
     prepared_args = prepare_args('create-draft', args)
     email = args.get('from')
-    suffix_endpoint = f'/users/{email}/messages'
     draft = client.build_message(**prepared_args)
+    less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
+        attachments=draft.get('attachments')
+    )
 
-    created_draft = client.ms_client.http_request('POST', suffix_endpoint, json_data=draft)
+    draft['attachments'] = less_than_3mb_attachments
+    created_draft = client.create_draft(email=email, json_data=draft)
+
+    if more_than_3mb_attachments:  # we have at least one attachment that should be uploaded using upload session
+        client.add_attachments_via_upload_session(
+            email=email, draft_id=created_draft.get('id'), attachments=more_than_3mb_attachments
+        )
 
     parsed_draft = client.parse_item_as_dict(created_draft)
     headers = ['ID', 'From', 'Sender', 'To', 'Subject', 'Body', 'BodyType', 'Cc', 'Bcc', 'Headers', 'Importance',
@@ -1492,13 +1740,29 @@ def build_recipients_human_readable(message_content):
 
 def send_email_command(client: MsGraphClient, args):
     """
-    Sends email from user's mailbox, the sent message will appear in Sent Items folder
+    Sends email from user's mailbox, the sent message will appear in Sent Items folder.
+
+    Sending email process:
+    1) If there are attachments larger than 3MB, create a draft mail, upload > 3MB attachments via upload session,
+        and send the draft mail.
+
+    2) if there aren't any attachments larger than 3MB, just send the email as usual.
     """
     prepared_args = prepare_args('send-mail', args)
-    email = args.get('from', client._mailbox_to_fetch)
-    suffix_endpoint = f'/users/{email}/sendMail'
     message_content = MsGraphClient.build_message(**prepared_args)
-    client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content}, resp_type="text")
+    email = args.get('from', client._mailbox_to_fetch)
+
+    less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
+        attachments=message_content.get('attachments')
+    )
+
+    if more_than_3mb_attachments:  # go through process 1 (in docstring)
+        message_content['attachments'] = less_than_3mb_attachments
+        client.send_mail_with_upload_session_flow(
+            email=email, json_data=message_content, attachments_more_than_3mb=more_than_3mb_attachments
+        )
+    else:  # go through process 2 (in docstring)
+        client.send_mail(email=email, json_data=message_content)
 
     message_content.pop('attachments', None)
     message_content.pop('internet_message_headers', None)
@@ -1518,10 +1782,11 @@ def send_email_command(client: MsGraphClient, args):
 
 def prepare_outputs_for_reply_mail_command(reply, email_to, message_id):
     reply.pop('attachments', None)
-    to_recipients, cc_recipients, bcc_recipients, _ = build_recipients_human_readable(reply)
+    to_recipients, cc_recipients, bcc_recipients, reply_to_recipients = build_recipients_human_readable(reply)
     reply['toRecipients'] = to_recipients
     reply['ccRecipients'] = cc_recipients
     reply['bccRecipients'] = bcc_recipients
+    reply['replyTo'] = reply_to_recipients
     reply['ID'] = message_id
 
     message_content = assign_params(**reply)
@@ -1543,6 +1808,7 @@ def reply_email_command(client: MsGraphClient, args):
     email_to = argToList(args.get('to'))
     email_from = args.get('from', client._mailbox_to_fetch)
     message_id = args.get('inReplyTo')
+    reply_to = argToList(args.get('replyTo'))
     email_body = args.get('body', "")
     email_subject = args.get('subject', "")
     email_subject = f'Re: {email_subject}'
@@ -1554,11 +1820,25 @@ def reply_email_command(client: MsGraphClient, args):
     attach_cids = argToList(args.get('attachCIDs'))
     message_body = html_body or email_body
 
-    suffix_endpoint = f'/users/{email_from}/messages/{message_id}/reply'
     reply = client.build_message_to_reply(email_to, email_cc, email_bcc, email_subject, message_body, attach_ids,
-                                          attach_names, attach_cids)
-    client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': reply, 'comment': message_body},
-                                  resp_type="text")
+                                          attach_names, attach_cids, reply_to)
+
+    less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
+        attachments=reply.get('attachments')
+    )
+
+    if more_than_3mb_attachments:
+        reply['attachments'] = less_than_3mb_attachments
+        client.send_mail_with_upload_session_flow(
+            email=email_from,
+            json_data={'message': reply, 'comment': message_body},
+            attachments_more_than_3mb=more_than_3mb_attachments,
+            reply_message_id=message_id
+        )
+    else:
+        client.send_reply(
+            email_from=email_from, message_id=message_id, json_data={'message': reply, 'comment': message_body}
+        )
 
     return prepare_outputs_for_reply_mail_command(reply, email_to, message_id)
 
@@ -1574,9 +1854,22 @@ def reply_to_command(client: MsGraphClient, args):
     attach_cids = prepared_args.get('attach_cids')
     email = args.get('from')
 
-    suffix_endpoint = f'/users/{email}/messages/{message_id}/reply'
     reply = client.build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids)
-    client.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
+
+    less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
+        attachments=reply.get('message').get('attachments')
+    )
+
+    if more_than_3mb_attachments:
+        reply['message']['attachments'] = less_than_3mb_attachments
+        client.send_mail_with_upload_session_flow(
+            email=email,
+            json_data=reply,
+            attachments_more_than_3mb=more_than_3mb_attachments,
+            reply_message_id=message_id
+        )
+    else:
+        client.send_reply(email_from=email, message_id=message_id, json_data=reply)
 
     return_outputs(f'### Replied to: {", ".join(to_recipients)} with comment: {comment}')
 
@@ -1584,8 +1877,7 @@ def reply_to_command(client: MsGraphClient, args):
 def send_draft_command(client: MsGraphClient, args):
     email = args.get('from')
     draft_id = args.get('draft_id')
-    suffix_endpoint = f'/users/{email}/messages/{draft_id}/send'
-    client.ms_client.http_request('POST', suffix_endpoint, resp_type="text")
+    client.send_draft(email=email, draft_id=draft_id)
 
     return_outputs(f'### Draft with: {draft_id} id was sent successfully.')
 
@@ -1627,12 +1919,13 @@ def main():
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     timeout = arg_to_number(params.get('timeout', '10') or '10')
+    display_full_email_body = argToBoolean(params.get("display_full_email_body", False))
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
                                           first_fetch_interval, emails_fetch_limit, timeout, endpoint,
                                           certificate_thumbprint=certificate_thumbprint,
-                                          private_key=private_key,
+                                          private_key=private_key, display_full_email_body=display_full_email_body
                                           )
 
     command = demisto.command()

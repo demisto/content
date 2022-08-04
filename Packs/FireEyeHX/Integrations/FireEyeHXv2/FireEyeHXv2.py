@@ -831,6 +831,84 @@ class Client(BaseClient):
         )
 
     """
+    HOST SETS
+    """
+
+    def delete_host_set_request(self, host_set_id: str):
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f'host_sets/{host_set_id}',
+            return_empty_response=True
+        )
+
+    def create_static_host_set_request(self, host_set_name: str, hosts_ids: List[str]):
+        body = self.create_static_host_request_body(host_set_name, hosts_ids, [])
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/host_sets/static',
+            json_data=body
+        )
+
+    def update_static_host_set_request(self, host_set_id, host_set_name, add_host_ids, remove_host_ids):
+        body = self.create_static_host_request_body(host_set_name, add_host_ids, remove_host_ids)
+
+        return self._http_request(
+            method='PUT',
+            url_suffix=f'/host_sets/static/{host_set_id}',
+            json_data=body
+        )
+
+    def create_dynamic_host_set_request(self, host_set_name, query, query_key, query_value, query_operator):
+        body = self.create_dynamic_host_request_body(host_set_name, query, query_key, query_value, query_operator)
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/host_sets/dynamic',
+            json_data=body
+        )
+
+    def update_dynamic_host_set_request(self, host_set_id, host_set_name, query, query_key, query_value, query_operator):
+        body = self.create_dynamic_host_request_body(host_set_name, query, query_key, query_value, query_operator)
+
+        return self._http_request(
+            method='PUT',
+            url_suffix=f'/host_sets/dynamic/{host_set_id}',
+            json_data=body
+        )
+
+    @staticmethod
+    def create_static_host_request_body(host_set_name: str, host_ids_to_add: list, host_ids_to_remove: list):
+        body = {
+            'name': host_set_name,
+            'changes': [
+                {
+                    'command': 'change',
+                    'add': host_ids_to_add,
+                    'remove': host_ids_to_remove
+                }
+            ]
+        }
+
+        return body
+
+    @staticmethod
+    def create_dynamic_host_request_body(host_set_name: str, query: str, query_key: str, query_value: str, query_operator: str):
+        body: Dict[str, Any] = {
+            'name': host_set_name,
+        }
+
+        if query:
+            body['query'] = safe_load_json(query)
+        else:
+            body['query'] = {'key': query_key,
+                             'value': query_value,
+                             'operator': query_operator
+                             }
+
+        return body
+
+    """
     ACQUISITION REQUEST
     """
 
@@ -1816,7 +1894,7 @@ def get_host_set_information_command(client: Client, args: Dict[str, Any]) -> Co
 
     response = client.get_host_set_information_request(body, host_set_id)
 
-    host_set = []  # type: List[Dict[str, str]]
+    host_set = []  # type: List[Dict[str, Any]]
     try:
         if host_set_id:
             data = response['data']
@@ -1835,6 +1913,9 @@ def get_host_set_information_command(client: Client, args: Dict[str, Any]) -> Co
             t=host_set_entry(host_set),
             headers=['Name', 'ID', 'Type']
         )
+
+    for entry in host_set:
+        entry['deleted'] = False
 
     return CommandResults(
         outputs_prefix="FireEyeHX.HostSets",
@@ -1960,6 +2041,181 @@ def cancel_containment_command(client: Client, args: Dict[str, Any]) -> CommandR
             raise ValueError(e)
 
     return CommandResults(readable_output=message)
+
+
+"""
+HOST SETS
+"""
+
+
+def delete_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_id: str = args.get('host_set_id', '')
+
+    outputs = {}
+    try:
+        client.delete_host_set_request(host_set_id)
+        message = f'Host set {host_set_id} was deleted successfully'
+        outputs = {'deleted': True, '_id': host_set_id}
+    except Exception as e:
+        if '404' in str(e):
+            message = f'Host set id - {host_set_id} Not Found'
+        else:
+            raise ValueError(e)
+
+    return CommandResults(outputs_prefix='FireEyeHX.HostSets',
+                          outputs_key_field="_id",
+                          outputs=outputs,
+                          readable_output=message)
+
+
+def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_name = args.get('host_set_name', '')
+    hosts_ids = argToList(args.get('hosts_ids'))
+
+    data = {}
+    try:
+        response = client.create_static_host_set_request(host_set_name, hosts_ids)
+        if data := response.get('data'):
+            data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
+            host_set_id = data.get('_id')
+            message = f'Static Host Set {host_set_name} with id {host_set_id} was created successfully.'
+    except Exception as e:
+        response = {}
+        if '409' in str(e):
+            message = 'Another host set with the same name was found, please use a different one.'
+        elif 'Referenced entity not found' in str(e):
+            message = "Referenced entity not found, check if one of the host ids that were given does not exists."
+        else:
+            demisto.debug(str(e))
+            message = 'Creating Host Set failed, check if you have the necessary permissions.'
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field='_id',
+        outputs=data,
+        readable_output=message,
+        raw_response=response
+    )
+
+
+def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_id = args.get('host_set_id')
+    host_set_name = args.get('host_set_name')
+    add_host_ids = argToList(args.get('add_host_ids'))
+    remove_host_ids = argToList(args.get('remove_host_ids'))
+
+    if not add_host_ids and not remove_host_ids:
+        message = 'Nothing to update, no host ids to add or to remove were given.'
+        return CommandResults(readable_output=message)
+
+    data: Dict[str, Any] = {}
+    try:
+        response = client.update_static_host_set_request(host_set_id, host_set_name, add_host_ids, remove_host_ids)
+        if data := response.get('data'):
+            data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
+            message = f'Static Host Set {host_set_name} was updated successfully.'
+    except Exception as e:
+        response = {}
+        if '409' in str(e):
+            message = 'Another host set with the same name was found, please use a different one.'
+        elif 'Referenced entity not found' in str(e):
+            message = "Referenced entity not found, Check if one of the host ids that was given does not exists."
+        elif '404' in str(e):
+            message = 'Host set was not found.'
+        else:
+            demisto.debug(str(e))
+            message = 'Updating Host Set failed, check if you have the necessary permissions.'
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=message,
+        raw_response=response
+    )
+
+
+def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_name = args.get('host_set_name')
+    query = args.get('query')
+    query_key = args.get('query_key')
+    query_value = args.get('query_value')
+    query_operator = args.get('query_operator')
+
+    if query and (query_key or query_value or query_operator):
+        raise ValueError('Cannot use free text query with other query operators, Please use one.')
+    elif not (query_key and query_value and query_operator) and not query:
+        raise ValueError('Please provide a free text query, or add all of the query operators toghether.')
+
+    data: Dict[str, Any] = {}
+    try:
+        response = client.create_dynamic_host_set_request(host_set_name, query, query_key, query_value, query_operator)
+        if data := response.get('data'):
+            data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
+            host_set_id = data.get('_id')
+            message = f'Dynamic Host Set {host_set_name} with id {host_set_id} was created successfully.'
+    except Exception as e:
+        response = {}
+        if '409' in str(e):
+            message = 'Another host set with the same name was found, please use a different one.'
+        else:
+            demisto.debug(str(e))
+            message = "Creating Host Set failed, check if you have the necessary permissions."
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=message,
+        raw_response=response
+    )
+
+
+def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_name = args.get('host_set_name')
+    host_set_id = args.get('host_set_id')
+    query = args.get('query')
+    query_key = args.get('query_key')
+    query_value = args.get('query_value')
+    query_operator = args.get('query_operator')
+
+    if query and (query_key or query_value or query_operator):
+        raise ValueError('Cannot use free text query with other query operators, Please use one.')
+    elif not (query_key and query_value and query_operator) and not query:
+        raise ValueError('Please provide a free text query, or add all of the query operators toghether.')
+
+    data = {}
+    try:
+        response = client.update_dynamic_host_set_request(host_set_id, host_set_name, query, query_key, query_value,
+                                                          query_operator)
+        if data := response.get('data'):
+            data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
+            message = f'Dynamic Host Set {host_set_name} was updated successfully.'
+    except Exception as e:
+        response = {}
+        if '409' in str(e):
+            message = 'Another host set with the same name was found, please use a different one.'
+        elif '404' in str(e):
+            message = 'Host set was not found.'
+        else:
+            demisto.debug(str(e))
+            message = "Updating Host Set failed, check if you have the necessary permissions"
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=message,
+        raw_response=response
+    )
 
 
 """
@@ -2712,6 +2968,7 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
             ))
 
     if 'stopSearch' in args:
+        message = ''
         try:
             if args.get('stopSearch') == 'stop':
                 message = 'Failed to stop search'
@@ -2868,6 +3125,11 @@ def main() -> None:
         'fireeye-hx-delete-indicator': delete_indicator_command,
         'fireeye-hx-list-indicator-category': list_indicator_categories_command,
         'fireeye-hx-delete-indicator-condition': delete_condition_command,
+        'fireeye-hx-delete-host-set': delete_host_set_command,
+        'fireeye-hx-create-host-set-static': create_static_host_set_command,
+        'fireeye-hx-update-host-set-static': update_static_host_set_command,
+        'fireeye-hx-create-host-set-dynamic': create_dynamic_host_set_command,
+        'fireeye-hx-update-host-set-dynamic': update_dynamic_host_set_command,
     }
 
     params = demisto.params()
@@ -2916,7 +3178,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

@@ -13,7 +13,8 @@ def test_antivirus_get_by_id(mocker):
     Then:
         - validating the returned context data
     """
-    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False,
+                    reliability='D - Not usually reliable')
     return_data = {
         "active": True,
         "createTime": "2010-10-01 10:28:57 (UTC)",
@@ -76,7 +77,8 @@ def test_antivirus_get_by_id_no_ids():
     Then:
         - validating the raised error
     """
-    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False,
+                    reliability='D - Not usually reliable')
 
     with pytest.raises(Exception, match="Please submit a sha256 or a signature_id."):
         antivirus_signature_get(client, args={})
@@ -91,7 +93,8 @@ def test_file_command(mocker):
     Then
         - Validate the reputation of the sha256 is malicious.
     """
-    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False,
+                    reliability='D - Not usually reliable')
     return_data = {
         "active": True,
         "createTime": "2010-10-01 10:28:57 (UTC)",
@@ -113,7 +116,8 @@ def test_file_command(mocker):
         "signatureId": 93534285,
         "signatureName": "Worm/Win32.autorun.crck"
     }
-    mocker.patch.object(client, 'antivirus_signature_get_request', return_value=return_data)
+    mocker.patch.object(client, 'antivirus_signature_get_request', return_value=return_data,
+                        reliability='D - Not usually reliable')
     command_results_list = file_command(
         client, args={'file': '7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8'})
 
@@ -130,7 +134,8 @@ def test_dns_get_by_id(mocker):
     Then:
         - validating the returned context data
     """
-    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False,
+                    reliability='D - Not usually reliable')
     return_data = {
         'signatureId': 325235352, 'signatureName': 'generic:accounts.google.com.sign-google.com',
         'domainName': 'accounts.google.com.sign-google.com', 'createTime': '2020-01-15 23:57:54 (UTC)',
@@ -169,7 +174,8 @@ def test_antispyware_get_by_id(mocker):
     Then:
         - validating the returned context data
     """
-    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False,
+                    reliability='D - Not usually reliable')
     return_data = {
         'metadata': {
             'severity': 'medium',
@@ -229,7 +235,8 @@ def test_ip_geo_get(mocker):
     Then:
         - validating the returned context data
     """
-    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False,
+                    reliability='D - Not usually reliable')
     return_data = {'ipAddress': '1.1.1.1', 'countryCode': 'AU', 'countryName': 'Australia'}
     mocker.patch.object(client, 'ip_geo_get_request', return_value=return_data)
     command_results = ip_geo_get(client, args={'ip': '1.1.1.1'})
@@ -255,7 +262,8 @@ def test_ip_command(mocker):
         - validating the generated indicator dbot score
         - validating the generated indicator country
     """
-    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False,
+                    reliability='D - Not usually reliable')
     return_data = {'ipAddress': '8.8.8.8', 'countryCode': 'US', 'countryName': 'United States'}
     mocker.patch.object(client, 'ip_geo_get_request', return_value=return_data)
     command_results_list = ip_command(client, args={'ip': '8.8.8.8'})
@@ -273,7 +281,8 @@ def test_antispyware_signature_search_wrongful_arguments():
     Then:
         - validating the raised error
     """
-    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False,
+                    reliability='D - Not usually reliable')
     wrong_args_err = 'Please provide either a signature_name or a cve or a vendor.'
 
     with pytest.raises(Exception, match=wrong_args_err):
@@ -295,7 +304,8 @@ def test_signature_search_results_dns(mocker):
         - validating the returned context data
         - validating the returned human readable
     """
-    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False,
+                    reliability='D - Not usually reliable')
     return_data = {
         "page_count": 1,
         "signatures": [
@@ -373,7 +383,8 @@ def test_signature_search_results_anti_spyware_cve(mocker):
         - validating the returned context data
         - validating the returned human readable
     """
-    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False,
+                    reliability='D - Not usually reliable')
     return_data = {
         "page_count": 1,
         "signatures": [

@@ -57,7 +57,7 @@ tasks:
       - '9'
     scriptarguments:
       list_id:
-        simple: ${MWG.Lists.[0].Name}
+        simple: ${MWG.Lists.[0].McAfeeID}
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
   '5':
     id: '5'
@@ -150,7 +150,7 @@ tasks:
       - '5'
     scriptarguments:
       list_id:
-        simple: ${MWG.Lists.[5].Name}
+        simple: ${MWG.Lists.[5].McAfeeID}
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
   '10':
     id: '10'

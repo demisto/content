@@ -1,0 +1,4 @@
+### GPS VM Hosts
+|VSphere Host ID|Name|Physical Host|
+|---|---|---|
+| f57bfebf-c7c9-5310-a5fd-1f0aeea5ba25 | sjc-40302-sand1-esx02.rubrikdemo.com | {'id': '72480b29-0eaa-57a9-8c5c-45b7e1c2c826', 'name': 'Sandbox-1 SJC Cluster', 'objectType': 'VSphereComputeCluster'},<br>{'id': '3f3a92de-c7f3-57f7-989f-3731db83aeab', 'name': 'Sandbox-1 Datacenter', 'objectType': 'VSphereDatacenter'},<br>{'id': '415859e2-fd22-53ea-8de1-041d99298fe3', 'name': 'sand1-vcsa.rubrikdemo.com', 'objectType': 'VSphereVCenter'} |

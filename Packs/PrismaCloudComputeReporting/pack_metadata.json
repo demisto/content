@@ -1,8 +1,8 @@
 {
-    "name": "Prisma Cloud Compute Reporting",
-    "description": "Generate compliance and vulnerability reports from Prisma Cloud Compute",
+    "name": "Prisma Cloud Compute Reporting (Deprecated)",
+    "description": "Deprecated. No available replacement.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "SA Team",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

@@ -571,3 +571,18 @@ Because of this, you may have some users in Slack who are not users in XSOAR. Th
 health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error is expected and is purely cosmetic in nature.
 - In some cases when mirroring an investigation, kicking the admin will cause no further actions to be able to be performed by the bot. Any subsequent actions taken on the channel (such as mirror out) will result in a "not in channel" error.
 - Please note: If a dedicated channel is configured, however there are no notifications being sent, please verify that the **Types of Notifications** to send parameter is populated.
+### slack-get-integration-context
+***
+Returns the integration context as a file. Use this command for debug purposes only.
+
+
+#### Base Command
+
+`slack-get-integration-context`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

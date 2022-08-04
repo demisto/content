@@ -1,25 +1,29 @@
 # -*- coding: utf-8 -*-
-import demistomock as demisto
 import copy
+import gzip
 import json
-import re
 import os
+import re
 import sys
-import requests
-from pytest import raises, mark
-import pytest
 import warnings
 
-from CommonServerPython import set_to_integration_context_with_retries, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
-    flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
+import dateparser
+import pytest
+import requests
+from pytest import raises, mark
+
+import CommonServerPython
+import demistomock as demisto
+from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
+    flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
+    return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg
-import CommonServerPython
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam
 
 try:
     from StringIO import StringIO
@@ -666,6 +670,7 @@ class TestTableToMarkdown:
         assert 'header_2' not in table
         assert headers == ['header_1', 'header_2']
 
+    # Test fails locally because expected time is in UTC
     @staticmethod
     def test_date_fields_param():
         """
@@ -1044,6 +1049,7 @@ def test_argToList():
     test5 = 1
     test6 = '1'
     test7 = True
+    test8 = [1, 2, 3]
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
@@ -1051,8 +1057,10 @@ def test_argToList():
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
 
     assert argToList(test5) == [1]
+    assert argToList(test5, transform=str) == ['1']
     assert argToList(test6) == ['1']
     assert argToList(test7) == [True]
+    assert argToList(test8, transform=str) == ['1', '2', '3']
 
 
 @pytest.mark.parametrize('args, field, expected_output', [
@@ -1836,7 +1844,7 @@ class TestCommandResults:
     def test_dbot_score_is_in_to_context_url(self):
         """
         Given
-        - domain indicator
+        - url indicator
 
         When
         - Creating a reputation
@@ -1865,6 +1873,56 @@ class TestCommandResults:
         ).to_context()['EntryContext']
         assert Common.DBotScore.CONTEXT_PATH in entry_context
         assert Common.URL.CONTEXT_PATH in entry_context
+
+    def test_hashes_array_is_in_to_context_file(self):
+        """
+        Given
+        - A File indicator.
+
+        When
+        - Creating a reputation with all existing hashes.
+
+        Then
+        - Verify that the hashes array exists in the entry context and includes all the hashes types and values.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = '63347f5d946164a23faca26b78a91e1c'
+        raw_response = {'id': indicator_id}
+        indicator = Common.File(
+            md5=indicator_id,
+            sha1='test_sha1',
+            sha256='test_sha256',
+            sha512='test_sha512',
+            ssdeep='test_ssdeep',
+            imphash='test_imphash',
+            hashes= [Common.Hash('test_type1', 'test_value1'), Common.Hash('test_type2', 'test_value2')],
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.FILE,
+                'Indicator',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='output!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+
+        expected_hashes_array = [
+            {'type': 'test_type1', 'value': 'test_value1'},
+            {'type': 'test_type2', 'value': 'test_value2'},
+            {'type': 'MD5', 'value': '63347f5d946164a23faca26b78a91e1c'},
+            {'type': 'SHA1', 'value': 'test_sha1'},
+            {'type': 'SHA256', 'value': 'test_sha256'},
+            {'type': 'SHA512', 'value': 'test_sha512'},
+            {'type': 'SSDeep', 'value': 'test_ssdeep'},
+            {'type': 'Imphash', 'value': 'test_imphash'}
+        ]
+
+        assert entry_context[Common.File.CONTEXT_PATH][0].get('Hashes') == expected_hashes_array
 
     def test_multiple_outputs_keys(self):
         """
@@ -3385,9 +3443,7 @@ INDICATOR_VALUE_AND_TYPE = [
     ('11.111.11.11/11', 'CIDR'),
     ('CVE-0000-0000', 'CVE'),
     ('dbot@demisto.works', 'Email'),
-    ('37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com', 'Email'),
     ('dummy@recipient.com', 'Email'),
-    ('image003.gif@01CF4D7F.1DF62650', 'Email'),
     ('bruce.wayne@pharmtech.zz', 'Email'),
     ('joe@gmail.com', 'Email'),
     ('koko@demisto.com', 'Email'),
@@ -4292,7 +4348,7 @@ class TestExecuteCommand:
 
     @staticmethod
     def test_failure_integration(monkeypatch):
-        from CommonServerPython import execute_command, EntryType
+        from CommonServerPython import execute_command
         monkeypatch.delattr(demisto, 'executeCommand')
 
         with raises(DemistoException, match=r'Cannot run demisto.executeCommand\(\) from integrations.'):
@@ -4388,6 +4444,316 @@ class TestExecuteCommand:
         assert 'error number 1' in error_text
         assert 'error number 2' in error_text
         assert 'not an error' not in error_text
+
+
+class TestExecuteCommandsMultipleResults:
+
+    @staticmethod
+    def test_sanity(mocker):
+        """
+        Given:
+            - A successful command with a single entry as output.
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that only the Contents value is returned.
+        """
+        from CommonServerPython import CommandRunner, EntryType
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=[{'Type': EntryType.NOTE,
+                                                                  'ModuleName': 'module',
+                                                                  'Brand': 'brand',
+                                                                  'Contents': {'hello': 'world'}}])
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer)
+        execute_command_args = demisto_execute_mock.call_args_list[0][0]
+        assert demisto_execute_mock.call_count == 1
+        assert execute_command_args[0] == 'command'
+        assert execute_command_args[1] == {'arg1': 'value'}
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 1
+        assert results[0].brand == 'brand'
+        assert results[0].instance == 'module'
+        assert results[0].result == {'hello': 'world'}
+        assert not errors
+
+    @staticmethod
+    def test_multiple_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that the "Contents" values of all entries are returned.
+        """
+        from CommonServerPython import CommandRunner, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            {'Type': EntryType.NOTE, 'Contents': {'entry': '2'}},
+            {'Type': EntryType.NOTE, 'Context': 'Content is `None`', 'Contents': None}
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert not errors
+        assert len(results) == 4
+        assert results[0].result == {'hello': 'world'}
+        assert results[1].result == {}
+        assert results[2].result == {'entry': '2'}
+        assert results[3].result == {}
+
+    @staticmethod
+    def test_raw_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that the entire entries are returned.
+        """
+        from CommonServerPython import EntryType, CommandRunner
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            'text',
+            1337,
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer, extract_contents=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert not errors
+        assert len(results) == 4
+        assert results[0].result == {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}}
+        assert results[1].result == {'Type': EntryType.NOTE, 'Context': 'no contents here'}
+        assert results[2].result == 'text'
+        assert results[3].result == 1337
+        assert results[2].brand == results[2].instance == results[3].brand == results[3].instance == 'Unknown'
+
+    @staticmethod
+    def test_with_errors(mocker):
+        """
+        Given:
+            - A command that sometimes fails and sometimes not.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the results list and the errors list returned as should've been
+        """
+        from CommonServerPython import CommandRunner, EntryType
+        entries = [
+            {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
+            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
+            {'Type': EntryType.ERROR, 'Contents': 'error number 2'}
+        ]
+
+        def execute_command_mock(command, args):
+            if command == 'unsupported':
+                raise ValueError("Command is not supported")
+            return entries
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   side_effect=execute_command_mock)
+        command_executer = CommandRunner.Command(commands=['command', 'unsupported'],
+                                                 args_lst=[{'arg1': 'value'}, {}])
+
+        results, errors = CommandRunner.execute_commands(command_executer)
+
+        # validate that errors were found and the unsupported is ignored
+        assert demisto_execute_mock.call_count == 2
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 1
+        assert len(errors) == 2
+        assert errors[0].result == 'error number 1'
+        assert errors[1].result == 'error number 2'
+        assert results[0].result == 'not an error'
+
+    @staticmethod
+    def get_result_for_multiple_commands_helper(command, args):
+        from CommonServerPython import EntryType
+        return [{'Type': EntryType.NOTE,
+                 'ModuleName': list(args.keys())[0],
+                 'Brand': command,
+                 'Contents': {'hello': list(args.values())[0]}},
+                ]
+
+    @staticmethod
+    def test_multiple_commands(mocker):
+        """
+        Given:
+            - List of commands and list of args.
+        When:
+            - Calling execute_commands with multiple commands to get multiple results.
+        Then:
+            - Assert that the results list and the errors list returned as should've been
+        """
+        from CommonServerPython import CommandRunner
+        demisto_execute_mock = mocker.patch.object(demisto,
+                                                   'executeCommand',
+                                                   side_effect=TestExecuteCommandsMultipleResults.get_result_for_multiple_commands_helper)
+        command_executer = CommandRunner.Command(commands=['command1', 'command2'],
+                                                 args_lst=[{'arg1': 'value1'},
+                                                                    {'arg2': 'value2'}])
+
+        results, errors = CommandRunner.execute_commands(command_executer)
+        assert demisto_execute_mock.call_count == 2
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 2
+        assert results[0].brand == 'command1'
+        assert results[0].instance == 'arg1'
+        assert results[0].result == {'hello': 'value1'}
+        assert results[1].brand == 'command2'
+        assert results[1].instance == 'arg2'
+        assert results[1].result == {'hello': 'value2'}
+        assert not errors
+
+    @staticmethod
+    def test_invalid_args():
+        """
+        Given:
+            - List of commands and list of args which is invalid
+        When:
+            - Calling execute_commands.
+        Then:
+            - Assert that error is given.
+        """
+        from CommonServerPython import CommandRunner
+        with pytest.raises(DemistoException):
+            CommandRunner.execute_commands(
+                CommandRunner.Command(commands=['command'],
+                                      args_lst=[{'arg': 'val'}, {'arg': 'val'}]))
+        with pytest.raises(DemistoException):
+            CommandRunner.execute_commands(
+                CommandRunner.Command(commands=['command', 'command1'],
+                                      args_lst=[{'arg': 'val'}]))
+
+    @staticmethod
+    def test_using_brand_instance(mocker):
+        """
+        Given:
+            - Provide instance and brand to command wrapper
+        When:
+            - Calling execute_commands
+        Then:
+            - Assert that the `demisto.executeCommand` runned with `using` and `using-brand`.
+        """
+        from CommonServerPython import CommandRunner
+        executer_with_brand = CommandRunner.Command(brand='my brand',
+                                                    instance='my instance',
+                                                    commands='command',
+                                                    args_lst={'arg': 'val'})
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand')
+        CommandRunner.execute_commands(executer_with_brand)
+        assert demisto_execute_mock.called
+        args_for_execute_command = demisto_execute_mock.call_args_list[0][0][1]
+        assert 'using-brand' in args_for_execute_command
+        assert 'using' in args_for_execute_command
+        assert args_for_execute_command['using-brand'] == 'my brand'
+        assert args_for_execute_command['using'] == 'my instance'
+
+
+class TestGetResultsWrapper:
+    NUM_EXECUTE_COMMAND_CALLED = 0
+
+    @staticmethod
+    def execute_command_mock(command_executer, extract_contents):
+        from CommonServerPython import CommandRunner
+        TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED += 1
+        results, errors = [], []
+
+        for command, args in zip(command_executer.commands, command_executer.args_lst):
+            result_wrapper = CommandRunner.Result(command=command,
+                                                  args=args,
+                                                  brand='my-brand{}'.format(TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED),
+                                                  instance='instance',
+                                                  result='Command did not succeeded' if command == 'error-command' else 'Good')
+            if command == 'error-command':
+                errors.append(result_wrapper)
+            elif command != 'unsupported-command':
+                results.append(result_wrapper)
+        return results, errors
+
+    @staticmethod
+    def test_get_wrapper_results(mocker):
+        """
+        Given:
+            - List of CommandWrappers.
+        When:
+            - Calling get_wrapper_results to give generic results
+        Then:
+            - Assert that the "good" results are returned, and the summary includes the errors.
+            - Assert that the unsupported command is ignored.
+        """
+        from CommonServerPython import CommandRunner, CommandResults
+        command_wrappers = [CommandRunner.Command(brand='my-brand1', commands='my-command', args_lst={'arg': 'val'}),
+                            CommandRunner.Command(brand='my-brand2', commands=['command1', 'command2'], args_lst=[{'arg1': 'val1'}, {'arg2': 'val2'}]),
+                            CommandRunner.Command(brand='my-brand3', commands='error-command', args_lst={'bad_arg': 'bad_val'}),
+                            CommandRunner.Command(brand='brand-no-exist', commands='unsupported-command', args_lst={'arg': 'val'})]
+        mocker.patch.object(CommandRunner, 'execute_commands',
+                            side_effect=TestGetResultsWrapper.execute_command_mock)
+        results = CommandRunner.run_commands_with_summary(command_wrappers)
+        assert len(results) == 4  # 1 error (brand3)
+        assert all(res == 'Good' for res in results[:-1])
+        assert isinstance(results[-1], CommandResults)
+        if IS_PY3:
+            md_summary = """### Results Summary
+|Instance|Command|Result|Comment|
+|---|---|---|---|
+| ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success |  |
+| ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success |  |
+| ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success |  |
+| ***my-brand3***: instance | ***command***: error-command<br>**args**:<br>	***bad_arg***: bad_val | Error | Command did not succeeded |
+"""
+        else:
+            md_summary = u"""### Results Summary
+|Instance|Command|Result|Comment|
+|---|---|---|---|
+| ***my-brand1***: instance | **args**:<br>	***arg***: val<br>***command***: my-command | Success |  |
+| ***my-brand2***: instance | **args**:<br>	***arg1***: val1<br>***command***: command1 | Success |  |
+| ***my-brand2***: instance | **args**:<br>	***arg2***: val2<br>***command***: command2 | Success |  |
+| ***my-brand3***: instance | **args**:<br>	***bad_arg***: bad_val<br>***command***: error-command | Error | Command did not succeeded |
+"""
+        assert results[-1].readable_output == md_summary
+
+    @staticmethod
+    def test_get_wrapper_results_error(mocker):
+        """
+        Given:
+            - List of CommandWrappers, which all of them returns errors or ignored
+        When:
+            - Calling get_wrapper_results to give generic results
+        Then:
+            - Assert that error returned.
+        """
+        from CommonServerPython import CommandRunner
+        command_wrappers = [CommandRunner.Command(brand='my-brand1',
+                                                  commands='error-command',
+                                                  args_lst={'arg': 'val'}),
+                            CommandRunner.Command(brand='my-brand2',
+                                                  commands='error-command',
+                                                  args_lst={'bad_arg': 'bad_val'}),
+                            CommandRunner.Command(brand='brand-no-exist',
+                                                  commands='unsupported-command',
+                                                  args_lst={'arg': 'val'}),
+                            ]
+        mocker.patch.object(CommandRunner, 'execute_commands',
+                            side_effect=TestGetResultsWrapper.execute_command_mock)
+        with pytest.raises(DemistoException) as e:
+            CommandRunner.run_commands_with_summary(command_wrappers)
+            assert 'Command did not succeeded' in e.value
+            assert 'Script failed. The following errors were encountered:' in e.value
 
 
 def test_arg_to_int__valid_numbers():
@@ -4686,8 +5052,151 @@ def test_get_schedule_metadata():
 
 
 class TestCommonTypes:
+    def test_create_ip(self):
+        """
+            Given:
+                - A single IP indicator entry
+            When
+               - Creating a Common.IP object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common, DBotScoreType
+
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Test',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+
+        ip = Common.IP(
+            ip='8.8.8.8',
+            dbot_score=dbot_score,
+            asn='some asn',
+            hostname='test.com',
+            geo_country='geo_country',
+            geo_description='geo_description',
+            geo_latitude='geo_latitude',
+            geo_longitude='geo_longitude',
+            positive_engines=5,
+            detection_engines=10,
+            as_owner=None,
+            region='region',
+            port='port',
+            internal=None,
+            updated_date=None,
+            registrar_abuse_name='Mr Registrar',
+            registrar_abuse_address='Registrar Address',
+            registrar_abuse_country='Registrar Country',
+            registrar_abuse_network='Registrar Network',
+            registrar_abuse_phone=None,
+            registrar_abuse_email='registrar@test.com',
+            campaign='campaign',
+            traffic_light_protocol='traffic_light_protocol',
+            threat_types=[Common.ThreatTypes(threat_category='threat_category',
+                                             threat_category_confidence='threat_category_confidence')],
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            publications=[Common.Publications(title='title', source='source', timestamp='2019-01-01T00:00:00',
+                                              link='link')],
+            organization_name='Some Organization',
+            organization_type='Organization type',
+            feed_related_indicators=None,
+            tags=['tag1', 'tag2'],
+            malware_family=['malware_family1', 'malware_family2'],
+            relationships=None,
+            blocked=False,
+            description='description test',
+            stix_id='stix_id',
+            whois_records=[Common.WhoisRecord('test_key', 'test_value', 'test_date')],
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[ip]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'IP(val.Address && val.Address == obj.Address)': [
+                    {'Address': '8.8.8.8',
+                     'ASN': 'some asn',
+                     'Region': 'region',
+                     'Port': 'port',
+                     'STIXID': 'stix_id',
+                     'Registrar': {
+                         'Abuse': {
+                             'Name': 'Mr Registrar',
+                             'Address': 'Registrar Address',
+                             'Country': 'Registrar Country',
+                             'Network': 'Registrar Network',
+                             'Email': 'registrar@test.com'
+                         }
+                     },
+                     'Campaign': 'campaign',
+                     'Description': 'description test',
+                     'TrafficLightProtocol': 'traffic_light_protocol',
+                     'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
+                     'Publications': [
+                         {
+                             'source': 'source',
+                             'title': 'title',
+                             'link': 'link',
+                             'timestamp': '2019-01-01T00:00:00'
+                         }
+                     ],
+                     'ThreatTypes': [
+                         {'threatcategory': 'threat_category',
+                          'threatcategoryconfidence': 'threat_category_confidence'}
+                     ],
+                     'WhoisRecords': [{'key': 'test_key', 'value': 'test_value', 'date': 'test_date'}],
+                     'Hostname': 'test.com',
+                     'Geo': {
+                         'Location': 'geo_latitude:geo_longitude',
+                         'Country': 'geo_country',
+                         'Description': 'geo_description'
+                     },
+                     'Organization': {
+                         'Name': 'Some Organization',
+                         'Type': 'Organization type'
+                     },
+                     'DetectionEngines': 10,
+                     'PositiveDetections': 5,
+                     'Tags': ['tag1', 'tag2'],
+                     'MalwareFamily': ['malware_family1', 'malware_family2']
+                     }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {'Indicator': '8.8.8.8',
+                     'Type': 'ip',
+                     'Vendor': 'Test',
+                     'Score': 1
+                     }
+                ]
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
     def test_create_domain(self):
-        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+        """
+            Given:
+                - A single Domain indicator entry
+            When
+               - Creating a Common.Domain object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common, DBotScoreType
 
         dbot_score = Common.DBotScore(
             indicator='somedomain.com',
@@ -4748,7 +5257,13 @@ class TestCommonTypes:
             tech_name='tech_name',
             tech_organization='tech_organization',
             tech_email='tech_email',
-            billing='billing'
+            billing='billing',
+            whois_records=[Common.WhoisRecord('test_key', 'test_value', 'test_date')],
+            description='test_description',
+            stix_id='test_stix_id',
+            blocked=True,
+            certificates=[Common.Certificates('test_issuedto', 'test_issuedby', 'test_validfrom', 'test_validto')],
+            dns_records=[Common.DNSRecord('test_type', 'test_ttl', 'test_data')]
         )
 
         results = CommandResults(
@@ -4766,114 +5281,468 @@ class TestCommonTypes:
             'EntryContext': {
                 'Domain(val.Name && val.Name == obj.Name)': [
                     {
-                        "Name": "somedomain.com",
-                        "DNS": "dns.somedomain",
-                        "DetectionEngines": 10,
-                        "PositiveDetections": 5,
-                        "Registrar": {
-                            "Name": "Mr Registrar",
-                            "AbuseEmail": "registrar@test.com",
-                            "AbusePhone": None
+                        'Name': 'somedomain.com',
+                        'DNS': 'dns.somedomain',
+                        'DetectionEngines': 10,
+                        'PositiveDetections': 5,
+                        'Registrar': {'Name': 'Mr Registrar', 'AbuseEmail': 'registrar@test.com', 'AbusePhone': None},
+                        'Registrant': {'Name': 'Mr Registrant', 'Email': None, 'Phone': None, 'Country': None},
+                        'Admin': {'Name': None, 'Email': 'admin@test.com', 'Phone': '18000000', 'Country': None},
+                        'Organization': 'Some Organization',
+                        'Subdomains': ['sub-domain1.somedomain.com', 'sub-domain2.somedomain.com',
+                                       'sub-domain3.somedomain.com'], 'DomainStatus': 'ACTIVE',
+                        'CreationDate': '2019-01-01T00:00:00',
+                        'UpdatedDate': '2019-01-02T00:00:00',
+                        'NameServers': ['PNS31.CLOUDNS.NET', 'PNS32.CLOUDNS.NET'],
+                        'Tags': ['tag1', 'tag2'],
+                        'FeedRelatedIndicators': [{'value': '8.8.8.8', 'type': 'IP', 'description': 'test'}],
+                        'WhoisRecords': [{'key': 'test_key', 'value': 'test_value', 'date': 'test_date'}],
+                        'MalwareFamily': ['malware_family1', 'malware_family2'], 'DomainIDNName': 'domain_idn_name',
+                        'Port': 'port',
+                        'Internal': 'False',
+                        'Category': 'category',
+                        'Campaign': 'campaign',
+                        'TrafficLightProtocol': 'traffic_light_protocol',
+                        'ThreatTypes': [{'threatcategory': 'threat_category',
+                                         'threatcategoryconfidence': 'threat_category_confidence'}],
+                        'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
+                        'Publications': [{'source': 'source', 'title': 'title', 'link': 'link',
+                                          'timestamp': '2019-01-01T00:00:00'}],
+                        'Geo': {'Location': 'geo_location', 'Country': 'geo_country', 'Description': 'geo_description'},
+                        'Tech': {'Country': 'tech_country', 'Name': 'tech_name', 'Organization': 'tech_organization',
+                                 'Email': 'tech_email'},
+                        'Billing': 'billing',
+                        'WHOIS': {
+                            'Registrar': {'Name': 'Mr Registrar', 'AbuseEmail': 'registrar@test.com',
+                                          'AbusePhone': None},
+                            'Registrant': {'Name': 'Mr Registrant', 'Email': None, 'Phone': None, 'Country': None},
+                            'Admin': {'Name': None, 'Email': 'admin@test.com', 'Phone': '18000000', 'Country': None},
+                            'DomainStatus': 'ACTIVE',
+                            'CreationDate': '2019-01-01T00:00:00',
+                            'UpdatedDate': '2019-01-02T00:00:00',
+                            'NameServers': ['PNS31.CLOUDNS.NET', 'PNS32.CLOUDNS.NET']
                         },
-                        "Registrant": {
-                            "Name": "Mr Registrant",
-                            "Email": None,
-                            "Phone": None,
-                            "Country": None
-                        },
-                        "Admin": {
-                            "Name": None,
-                            "Email": "admin@test.com",
-                            "Phone": "18000000",
-                            "Country": None
-                        },
-                        "Organization": "Some Organization",
-                        "Subdomains": [
-                            "sub-domain1.somedomain.com",
-                            "sub-domain2.somedomain.com",
-                            "sub-domain3.somedomain.com"
-                        ],
-                        "DomainStatus": "ACTIVE",
-                        "CreationDate": "2019-01-01T00:00:00",
-                        "UpdatedDate": "2019-01-02T00:00:00",
-                        "NameServers": [
-                            "PNS31.CLOUDNS.NET",
-                            "PNS32.CLOUDNS.NET"
-                        ],
-                        "Tags": ["tag1", "tag2"],
-                        "FeedRelatedIndicators": [{"value": "8.8.8.8", "type": "IP", "description": "test"}],
-                        "MalwareFamily": ["malware_family1", "malware_family2"],
-                        "DomainIDNName": "domain_idn_name",
-                        "Port": "port",
-                        "Internal": "False",
-                        "Category": "category",
-                        "Campaign": "campaign",
-                        "TrafficLightProtocol": "traffic_light_protocol",
-                        "ThreatTypes": [{
-                            "threatcategory": "threat_category",
-                            "threatcategoryconfidence": "threat_category_confidence"
-                        }],
-                        "CommunityNotes": [{
-                            "note": "note",
-                            "timestamp": "2019-01-01T00:00:00"
-                        }],
-                        "Publications": [{
-                            "source": "source",
-                            "title": "title",
-                            "link": "link",
-                            "timestamp": "2019-01-01T00:00:00"
-                        }],
-                        "Geo": {
-                            "Location": "geo_location",
-                            "Country": "geo_country",
-                            "Description": "geo_description"
-                        },
-                        "Tech": {
-                            "Country": "tech_country",
-                            "Name": "tech_name",
-                            "Organization": "tech_organization",
-                            "Email": "tech_email"
-                        },
-                        "Billing": "billing",
-                        "WHOIS": {
-                            "Registrar": {
-                                "Name": "Mr Registrar",
-                                "AbuseEmail": "registrar@test.com",
-                                "AbusePhone": None
-                            },
-                            "Registrant": {
-                                "Name": "Mr Registrant",
-                                "Email": None,
-                                "Phone": None,
-                                "Country": None
-                            },
-                            "Admin": {
-                                "Name": None,
-                                "Email": "admin@test.com",
-                                "Phone": "18000000",
-                                "Country": None
-                            },
-                            "DomainStatus": "ACTIVE",
-                            "CreationDate": "2019-01-01T00:00:00",
-                            "UpdatedDate": "2019-01-02T00:00:00",
-                            "NameServers": [
-                                "PNS31.CLOUDNS.NET",
-                                "PNS32.CLOUDNS.NET"
-                            ]
-                        }
+                        'DNSRecords': [{'type': 'test_type', 'ttl': 'test_ttl', 'data': 'test_data'}],
+                        'STIXID': 'test_stix_id',
+                        'Description': 'test_description',
+                        'Blocked': True,
+                        'Certificates': [{'issuedto': 'test_issuedto', 'issuedby': 'test_issuedby',
+                                          'validfrom': 'test_validfrom','validto': 'test_validto'}]
                     }
                 ],
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {'Indicator': 'somedomain.com', 'Type': 'domain', 'Vendor': 'Test', 'Score': 1}
+                ]
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
+    def test_create_url(self):
+        """
+            Given:
+                - A single URL indicator entry
+            When
+               - Creating a Common.URL object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common, DBotScoreType
+
+        dbot_score = Common.DBotScore(
+            indicator='https://somedomain.com',
+            integration_name='Test',
+            indicator_type=DBotScoreType.URL,
+            score=Common.DBotScore.GOOD
+        )
+
+        url = Common.URL(
+            url='https://somedomain.com',
+            dbot_score=dbot_score,
+            positive_detections=5,
+            detection_engines=10,
+            category='test_category',
+            feed_related_indicators=None,
+            tags=['tag1', 'tag2'],
+            malware_family=['malware_family1', 'malware_family2'],
+            port='port',
+            internal=None,
+            campaign='test_campaign',
+            traffic_light_protocol='test_traffic_light_protocol',
+            threat_types=[Common.ThreatTypes(threat_category='threat_category',
+                                             threat_category_confidence='threat_category_confidence')],
+            asn='test_asn',
+            as_owner='test_as_owner',
+            geo_country='test_geo_country',
+            organization='test_organization',
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            publications=[Common.Publications(title='title', source='source', timestamp='2019-01-01T00:00:00',
+                                              link='link')],
+            relationships=None,
+            blocked=True,
+            certificates=None,
+            description='description test',
+            stix_id='stix_id',
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[url]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'URL(val.Data && val.Data == obj.Data)': [
                     {
-                        'Indicator': 'somedomain.com',
-                        'Type': 'domain',
+                        'Data': 'https://somedomain.com',
+                        'Blocked': True,
+                        'Description': 'description test',
+                        'STIXID': 'stix_id',
+                        'DetectionEngines': 10,
+                        'PositiveDetections': 5,
+                        'Category': 'test_category',
+                        'Tags': ['tag1', 'tag2'],
+                        'MalwareFamily': ['malware_family1', 'malware_family2'],
+                        'Port': 'port',
+                        'Campaign': 'test_campaign',
+                        'TrafficLightProtocol': 'test_traffic_light_protocol',
+                        'ThreatTypes': [
+                            {
+                                'threatcategory': 'threat_category',
+                                'threatcategoryconfidence': 'threat_category_confidence'
+                            }
+                        ],
+                        'ASN': 'test_asn',
+                        'ASOwner': 'test_as_owner',
+                        'Geo': {'Country': 'test_geo_country'},
+                        'Organization': 'test_organization',
+                        'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
+                        'Publications': [
+                            {'source': 'source',
+                             'title': 'title',
+                             'link': 'link',
+                             'timestamp': '2019-01-01T00:00:00'
+                             }
+                        ]
+                    }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': 'https://somedomain.com',
+                        'Type': 'url',
                         'Vendor': 'Test',
                         'Score': 1
                     }
                 ]
             },
             'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
+    def test_create_file(self):
+        """
+            Given:
+                - A single File indicator entry
+            When
+               - Creating a Common.File object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common, DBotScoreType
+
+        indicator_id = '63347f5d946164a23faca26b78a91e1c'
+
+        dbot_score = Common.DBotScore(
+            indicator=indicator_id,
+            integration_name='Test',
+            indicator_type=DBotScoreType.FILE,
+            score=Common.DBotScore.BAD,
+            malicious_description='malicious!'
+        )
+
+        file = Common.File(
+            md5=indicator_id,
+            sha1='test_sha1',
+            sha256='test_sha256',
+            sha512='test_sha512',
+            ssdeep='test_ssdeep',
+            imphash='test_imphash',
+            name='test_name',
+            entry_id='test_entry_id',
+            size=1000,
+            dbot_score=dbot_score,
+            extension='test_extension',
+            file_type='test_file_type',
+            hostname='test_hostname',
+            path=None,
+            company=None,
+            product_name=None,
+            digital_signature__publisher=None,
+            signature=None,
+            actor='test_actor',
+            tags=['tag1', 'tag2'],
+            feed_related_indicators=None,
+            malware_family=['malware_family1', 'malware_family2'],
+            quarantined=None,
+            campaign='test_campaign',
+            associated_file_names=None,
+            traffic_light_protocol='traffic_light_protocol',
+            organization='test_organization',
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            publications=[Common.Publications(title='title', source='source', timestamp='2019-01-01T00:00:00',
+                                              link='link')],
+            threat_types=[Common.ThreatTypes(threat_category='threat_category',
+                                             threat_category_confidence='threat_category_confidence')],
+            behaviors=None,
+            relationships=None,
+            creation_date='test_creation_date',
+            description='test_description',
+            hashes=None,
+            stix_id='test_stix_id'
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[file]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 &&'
+                ' val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 &&'
+                ' val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep &&'
+                ' val.SSDeep == obj.SSDeep)': [
+                    {'Hashes': [{'type': 'MD5', 'value': '63347f5d946164a23faca26b78a91e1c'},
+                                {'type': 'SHA1', 'value': 'test_sha1'}, {'type': 'SHA256', 'value': 'test_sha256'},
+                                {'type': 'SHA512', 'value': 'test_sha512'}, {'type': 'SSDeep', 'value': 'test_ssdeep'},
+                                {'type': 'Imphash', 'value': 'test_imphash'}],
+                     'Name': 'test_name',
+                     'EntryID': 'test_entry_id',
+                     'Size': 1000,
+                     'MD5': '63347f5d946164a23faca26b78a91e1c',
+                     'SHA1': 'test_sha1',
+                     'SHA256': 'test_sha256',
+                     'SHA512': 'test_sha512',
+                     'SSDeep': 'test_ssdeep',
+                     'Extension': 'test_extension',
+                     'Type': 'test_file_type',
+                     'Hostname': 'test_hostname',
+                     'Actor': 'test_actor',
+                     'Tags': ['tag1', 'tag2'],
+                     'MalwareFamily': ['malware_family1', 'malware_family2'],
+                     'Campaign': 'test_campaign',
+                     'TrafficLightProtocol': 'traffic_light_protocol',
+                     'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}], 'Publications': [
+                        {'source': 'source', 'title': 'title', 'link': 'link', 'timestamp': '2019-01-01T00:00:00'}],
+                     'ThreatTypes': [{'threatcategory': 'threat_category',
+                                      'threatcategoryconfidence': 'threat_category_confidence'}],
+                     'Imphash': 'test_imphash',
+                     'Organization': 'test_organization',
+                     'Malicious': {'Vendor': 'Test', 'Description': 'malicious!'}
+                     }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {'Indicator': '63347f5d946164a23faca26b78a91e1c',
+                     'Type': 'file',
+                     'Vendor': 'Test',
+                     'Score': 3}
+                ]
+            },
+             'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
+    def test_create_cve(self):
+        """
+            Given:
+                - A single CVE indicator entry
+            When
+               - Creating a Common.CVE object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common
+
+        cve = Common.CVE(
+            id='CVE-2015-1653',
+            cvss='10.0',
+            published='2022-04-28T13:16:54+00:00',
+            modified='2022-04-31T13:16:54+00:00',
+            description='test_description',
+            relationships=None,
+            stix_id='test_stix_id',
+            cvss_version='test_cvss_version',
+            cvss_score=10,
+            cvss_vector='test_cvss_vector',
+            cvss_table='test_cvss_table',
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            tags=['tag1', 'tag2'],
+            traffic_light_protocol='traffic_light_protocol'
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[cve]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'CVE(val.ID && val.ID == obj.ID)': [
+                    {
+                        'ID': 'CVE-2015-1653',
+                        'CVSS': {
+                            'Score': '10.0',
+                            'Version': 'test_cvss_version',
+                            'Vector': 'test_cvss_vector',
+                            'Table': 'test_cvss_table'
+                        },
+                        'Published': '2022-04-28T13:16:54+00:00',
+                        'Modified': '2022-04-31T13:16:54+00:00',
+                        'Description': 'test_description',
+                        'STIXID': 'test_stix_id',
+                        'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
+                        'Tags': ['tag1', 'tag2'],
+                        'TrafficLightProtocol': 'traffic_light_protocol'
+                    }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {'Indicator': 'CVE-2015-1653',
+                     'Type': 'cve',
+                     'Vendor': None,
+                     'Score': 0
+                     }
+                ]
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
+    def test_create_account(self):
+        """
+            Given:
+                - A single Account indicator entry
+            When
+               - Creating a Common.Account object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common
+
+        dbot_score = Common.DBotScore(
+            indicator='test_account_id',
+            integration_name='Test',
+            indicator_type=DBotScoreType.ACCOUNT,
+            score=Common.DBotScore.GOOD
+        )
+
+        account = Common.Account(
+            id='test_account_id',
+            type='test_account_type',
+            username='test_username',
+            display_name='test_display_name',
+            groups=None,
+            domain=None,
+            email_address='user@test.com',
+            telephone_number=None,
+            office='test_office',
+            job_title='test_job_title',
+            department='test_department',
+            country='test_country',
+            state='test_state',
+            city='test_city',
+            street='test_street',
+            is_enabled=None,
+            dbot_score=dbot_score,
+            relationships=None,
+            blocked=True,
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            creation_date='test_creation_date',
+            description='test_description',
+            stix_id='test_stix_id',
+            tags=['tag1', 'tag2'],
+            traffic_light_protocol='traffic_light_protocol',
+            user_id='test_user_id'
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[account]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'Account(val.id && val.id == obj.id)': [
+                    {'Id': 'test_account_id',
+                     'Type': 'test_account_type',
+                     'Blocked': True,
+                     'CreationDate': 'test_creation_date',
+                     'City': 'test_city',
+                     'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
+                     'Country': 'test_country',
+                     'Department': 'test_department',
+                     'Description': 'test_description',
+                     'DisplayName': 'test_display_name',
+                     'Email': {
+                         'Address': 'user@test.com'
+                     },
+                     'JobTitle': 'test_job_title',
+                     'Office': 'test_office',
+                     'State': 'test_state',
+                     'StixId': 'test_stix_id',
+                     'Street': 'test_street',
+                     'Tags': ['tag1', 'tag2'],
+                     'TrafficLightProtocol': 'traffic_light_protocol',
+                     'UserId': 'test_user_id',
+                     'Username': 'test_username'
+                     }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': 'test_account_id',
+                        'Type': 'account',
+                        'Vendor': 'Test',
+                        'Score': 1
+                    }
+                ]
+            },
+             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
             'Relationships': []
@@ -5283,6 +6152,198 @@ class TestCommonTypes:
             'Note': False
         }
 
+    def test_create_external_reference(self):
+        """
+            Given:
+                - A single ExternalReference object
+            When
+               - Running 'to_context' function
+           Then
+               - Verify that the context is as expected
+       """
+        from CommonServerPython import Common
+
+        external_reference = Common.ExternalReference(
+            source_name='test_source_name',
+            source_id='test_source_id'
+        )
+
+        assert external_reference.to_context() == {
+            'sourcename' : 'test_source_name',
+            'sourceid' : 'test_source_id'
+        }
+
+    def test_create_attack_pattern(self):
+        """
+            Given:
+                - A single AttackPattern indicator entry
+            When
+               - Creating a Common.AttackPattern object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common
+
+        dbot_score = Common.DBotScore(
+            indicator='test_stix_id',
+            integration_name='Test',
+            indicator_type=DBotScoreType.ATTACKPATTERN,
+            score=Common.DBotScore.GOOD
+        )
+
+        attack_pattern = Common.AttackPattern(
+            stix_id='test_stix_id',
+            kill_chain_phases='test_kill_chain_phases',
+            first_seen_by_source=None,
+            description='test_description',
+            operating_system_refs=None,
+            publications='test_publications',
+            mitre_id='test_mitre_id',
+            tags=['tag1', 'tag2'],
+            traffic_light_protocol='test_traffic_light_protocol',
+            dbot_score=dbot_score,
+            value='test_stix_id',
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            external_references=None
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[attack_pattern]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'AttackPattern(val.value && val.value == obj.value)': [
+                    {
+                        'STIXID': 'test_stix_id',
+                        'KillChainPhases': 'test_kill_chain_phases',
+                        'FirstSeenBySource': None,
+                        'OperatingSystemRefs': None,
+                        'Publications': 'test_publications',
+                        'MITREID': 'test_mitre_id',
+                        'Value': 'test_stix_id',
+                        'Tags': ['tag1', 'tag2'],
+                        'Description': 'test_description',
+                        'TrafficLightProtocol': 'test_traffic_light_protocol'
+                    }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': 'test_stix_id',
+                        'Type': 'attackpattern',
+                        'Vendor': 'Test',
+                        'Score': 1
+                    }
+                ]
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
+    def test_create_certificates(self):
+        """
+            Given:
+                - A Certificates object
+            When
+               - Running 'to_context' function
+           Then
+               - Verify that the context is as expected
+       """
+        from CommonServerPython import Common
+
+        certificates = Common.Certificates(
+            issued_to='test_issued_to',
+            issued_by='test_issued_by',
+            valid_from='test_valid_from',
+            valid_to='test_valid_to'
+        )
+
+        assert certificates.to_context() == {
+            'issuedto': 'test_issued_to',
+            'issuedby': 'test_issued_by',
+            'validfrom': 'test_valid_from',
+            'validto': 'test_valid_to'
+        }
+
+    def test_create_hash(self):
+        """
+            Given:
+                - A single Hash object
+            When
+               - Running 'to_context' function
+           Then
+               - Verify that the context is as expected
+       """
+        from CommonServerPython import Common
+
+        hash_object = Common.Hash(
+            hash_type='test_hash_type',
+            hash_value='test_hash_value'
+        )
+
+        assert hash_object.to_context() == {
+                'type': 'test_hash_type',
+                'value': 'test_hash_value',
+            }
+
+    def test_create_whois_record(self):
+        """
+            Given:
+                - A single WhoisRecord object
+            When
+               - Running 'to_context' function
+           Then
+               - Verify that the context is as expected
+       """
+        from CommonServerPython import Common
+
+        whois_record = Common.WhoisRecord(
+            whois_record_type='test_whois_record_type',
+            whois_record_value='test_whois_record_value',
+            whois_record_date='test_whois_record_date',
+
+        )
+
+        assert whois_record.to_context() == {
+            'key': 'test_whois_record_type',
+            'value': 'test_whois_record_value',
+            'date': 'test_whois_record_date'
+        }
+
+    def test_create_dns_record(self):
+        """
+            Given:
+                - A single DNSRecord object
+            When
+               - Running 'to_context' function
+           Then
+               - Verify that the context is as expected
+       """
+        from CommonServerPython import Common
+
+        dns_record = Common.DNSRecord(
+            dns_record_type='test_dns_record_type',
+            dns_ttl='test_dns_ttl',
+            dns_record_data='test_dns_record_data',
+
+        )
+
+        assert dns_record.to_context() == {
+            'type': 'test_dns_record_type',
+            'ttl': 'test_dns_ttl',
+            'data': 'test_dns_record_data'
+        }
+
     def test_email_indicator_type(self, mocker):
         """
         Given:
@@ -5309,10 +6370,63 @@ class TestCommonTypes:
         email_context = Common.EMAIL(
             domain='example.com',
             address='user@example.com',
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            description='test',
+            internal=True,
+            stix_id='stix_id_test',
+            tags=['tag1', 'tag2'],
+            traffic_light_protocol='traffic_light_protocol_test'
         )
-        assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com',
-                                                                          'Domain': 'example.com'}
+        assert email_context.to_context()[email_context.CONTEXT_PATH] == \
+               {'Address': 'user@example.com',
+                'Domain': 'example.com',
+                'Description': 'test',
+                'Internal': True,
+                'STIXID': 'stix_id_test',
+                'Tags': ['tag1', 'tag2'],
+                'TrafficLightProtocol':'traffic_light_protocol_test'}
+
+    @pytest.mark.parametrize('item', [
+        'CommunityNotes', 'Publications', 'ThreatTypes'
+    ])
+    def test_common_indicator_create_context_table(self, item):
+        """
+        Tests the functionality of the 'create_context_table' function.
+            Given:
+                Case a: A list containing CommunityNotes items.
+                Case b: A list containing Publications items.
+                Case c: A list containing ThreatTypes items.
+
+            When:
+                Running the 'create_context_table' function.
+
+            Then:
+                Case a: Verify that the output is a list of CommunityNotes context items as expected.
+                Case b: Verify that the output is a list of Publications context items as expected.
+                Case c: Verify that the output is a list of ThreatTypes context items as expected.
+        """
+        if item == 'CommunityNotes':
+            community_notes1 = Common.CommunityNotes(note='note1', timestamp='time1')
+            community_notes2 = Common.CommunityNotes(note='note2', timestamp='time2')
+            items = [community_notes1, community_notes2]
+            expected_output = [{'note': 'note1', 'timestamp': 'time1'}, {'note': 'note2', 'timestamp': 'time2'}]
+
+        elif item == 'Publications':
+            publications1 = Common.Publications(source='source1', title='title1', link='link1', timestamp='time1')
+            publications2 = Common.Publications(source='source2', title='title2', link='link2', timestamp='time2')
+            items = [publications1, publications2]
+            expected_output = [{'source': 'source1', 'title': 'title1', 'link': 'link1', 'timestamp': 'time1'},
+                               {'source': 'source2', 'title': 'title2', 'link': 'link2', 'timestamp': 'time2'}]
+
+        elif item == 'ThreatTypes':
+            threat_types1 = Common.ThreatTypes(threat_category='test1', threat_category_confidence='10')
+            threat_types2 = Common.ThreatTypes(threat_category='test2', threat_category_confidence='20')
+            items = [threat_types1, threat_types2]
+            expected_output = [{'threatcategory': 'test1', 'threatcategoryconfidence': '10'},
+                               {'threatcategory': 'test2', 'threatcategoryconfidence': '20'}]
+
+        table = Common.Indicator.create_context_table(items)
+        assert table == expected_output
 
 
 class TestIndicatorsSearcher:
@@ -6344,6 +7458,234 @@ class TestSetAndGetLastMirrorRun:
             assert set_last_run.called is False
 
 
+class TestFetchWithLookBack:
+
+    LAST_RUN = {}
+    INCIDENTS = [
+        {
+            'incident_id': 1,
+            'created': '2022-04-01T08:00:00'
+        },
+        {
+            'incident_id': 2,
+            'created': '2022-04-01T10:00:00'
+        },
+        {
+            'incident_id': 3,
+            'created': '2022-04-01T10:31:00'
+        },
+        {
+            'incident_id': 4,
+            'created': '2022-04-01T10:41:00'
+        },
+        {
+            'incident_id': 5,
+            'created': '2022-04-01T10:51:00'
+        }
+    ]
+
+    NEW_INCIDENTS = [
+        {
+            'incident_id': 6,
+            'created': '2022-04-01T10:11:00'
+        },
+        {
+            'incident_id': 7,
+            'created': '2022-04-01T10:35:00'
+        },
+        {
+            'incident_id': 8,
+            'created': '2022-04-01T10:37:00'
+        }
+    ]
+
+    def example_fetch_incidents(self):
+        """
+        An example fetch for testing
+        """
+
+        from CommonServerPython import get_fetch_run_time_range, filter_incidents_by_duplicates_and_limit, \
+            update_last_run_object
+
+        incidents = []
+
+        params = demisto.params()
+        fetch_limit_param = params.get('limit')
+        look_back = int(params.get('look_back', 0))
+        first_fetch = params.get('first_fetch')
+        time_zone = params.get('time_zone', 0)
+
+        last_run = demisto.getLastRun()
+        fetch_limit = last_run.get('limit') or fetch_limit_param
+
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, look_back=look_back, timezone=time_zone)
+
+        query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
+        incidents_res = self.get_incidents_request(query)
+
+        incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents_res, last_run=last_run, fetch_limit=fetch_limit_param, id_field='incident_id')
+
+        last_run = update_last_run_object(last_run=last_run, incidents=incidents, fetch_limit=fetch_limit_param, start_fetch_time=start_fetch_time,
+                                          end_fetch_time=end_fetch_time, look_back=look_back, created_time_field='created', id_field='incident_id')
+
+        demisto.setLastRun(last_run)
+        return incidents
+
+    @staticmethod
+    def build_query(start_time, end_time, limit, return_incidents_by_limit=True):
+        query = {'from': start_time, 'to': end_time}
+        if return_incidents_by_limit:
+            query['limit'] = limit
+        return query
+
+    def get_incidents_request(self, query):
+        from_time = datetime.strptime(query['from'], '%Y-%m-%dT%H:%M:%S')
+        incidents = [inc for inc in self.INCIDENTS if datetime.strptime(inc['created'], '%Y-%m-%dT%H:%M:%S') > from_time]
+        if query.get('limit') is not None:
+            return incidents[:query['limit']]
+        return incidents
+
+    def set_last_run(self, new_last_run):
+        self.LAST_RUN = new_last_run
+
+    @pytest.mark.parametrize('params, result_phase1, result_phase2, expected_last_run', [
+        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[3]['created']}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
+         {'limit': 3, 'time': INCIDENTS[4]['created']}),
+        ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[2]['created']}),
+        ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 3, 'time': INCIDENTS[3]['created']}),
+    ])
+    def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit and first fetch time)
+
+        When:
+        - Running the example fetch incidents
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
+        self.LAST_RUN = {}
+
+        mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        # Run first fetch
+        incidents_phase1 = self.example_fetch_incidents()
+
+        assert incidents_phase1 == result_phase1
+        assert self.LAST_RUN == expected_last_run
+
+        # Run second fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase2 = self.example_fetch_incidents()
+
+        assert incidents_phase2 == result_phase2
+
+    def mock_dateparser(self, date_string, settings):
+        date_arr = date_string.split(' ')
+        if len(date_arr) > 1 and date_arr[0].isdigit():
+            return datetime(2022, 4, 1, 11, 0, 0) - timedelta(minutes=int(date_arr[0])) if date_arr[1] == 'minutes' \
+                else datetime(2022, 4, 1, 11, 0, 0) - timedelta(hours=int(date_arr[0]))
+        return datetime(2022, 4, 1, 11, 0, 0) - (datetime(2022, 4, 1, 11, 0, 0) - datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S'))
+
+    @pytest.mark.parametrize('params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index', [
+        (
+            {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[0], INCIDENTS[4]], [],
+            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+            [NEW_INCIDENTS[0]], 2
+        ),
+        (
+            {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [INCIDENTS[4]],
+            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+        ),
+        (
+            {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15}, [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
+            {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6}, {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+            [NEW_INCIDENTS[0]], 2
+        ),
+        (
+            {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
+            {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6}, {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+        ),
+    ])
+    def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
+                                  expected_last_run_phase1, expected_last_run_phase2, new_incidents, index):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit, first fetch time and look back)
+
+        When:
+        - Running the example fetch incidents and creating new incidents between fetch calles
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
+        self.LAST_RUN = {}
+        incidents = self.INCIDENTS[:]
+
+        mocker.patch.object(CommonServerPython, 'get_current_time', return_value=datetime(2022, 4, 1, 11, 0, 0))
+        mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        # Run first fetch
+        incidents_phase1 = self.example_fetch_incidents()
+
+        assert incidents_phase1 == result_phase1
+        assert self.LAST_RUN['limit'] == expected_last_run_phase1['limit']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase1['found_incident_ids'].keys()
+        for inc in incidents_phase1:
+            assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
+
+        next_run_phase1 = self.LAST_RUN['time']
+        self.INCIDENTS = incidents[:index] + new_incidents + incidents[index:]
+
+        # Run second fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase2 = self.example_fetch_incidents()
+
+        assert incidents_phase2 == result_phase2
+        assert self.LAST_RUN['limit'] == expected_last_run_phase2['limit']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase2['found_incident_ids'].keys()
+
+        if len(incidents_phase2) >= params.get('limit'):
+            assert next_run_phase1 == self.LAST_RUN['time']
+        else:
+            assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
+
+        for inc in incidents_phase2:
+            assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
+
+        # Run third fetch
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        incidents_phase3 = self.example_fetch_incidents()
+
+        assert incidents_phase3 == result_phase3
+
+        # Remove new incidents from self.INCIDENTS
+        self.INCIDENTS = incidents
+
+
 class TestTracebackLineNumberAdgustment:
     @staticmethod
     def test_module_line_number_mapping():
@@ -6519,3 +7861,372 @@ def test_get_pack_version(mocker, calling_context_mock, pack_name):
     mocker.patch('demistomock.callingContext', calling_context_mock)
     mocker.patch.object(demisto, 'internalHttpRequest', side_effect=get_pack_version_mock_internal_http_request)
     assert get_pack_version(pack_name=pack_name) == '1.0.0'
+
+
+TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN = [
+    (
+        {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
+         'indicator_type': DBotScoreType.FILE, 'reliability': DBotScoreReliability.A},
+        {'instance': Common.File, 'indicator_type': 'SHA256', 'reliability': 'A - Completely reliable'}
+    ),
+    (
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': DBotScoreType.FILE,
+        'reliability': DBotScoreReliability.B},
+        {'instance': Common.File, 'indicator_type': 'MD5', 'reliability': 'B - Usually reliable'}
+    ),
+    (
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': DBotScoreType.FILE,
+        'reliability': DBotScoreReliability.B},
+        {'instance': Common.File, 'indicator_type': 'MD5', 'reliability': 'B - Usually reliable', 'integration_name': 'test'}
+    ),
+    (
+        {'indicator': 'f4dad67d0f0a8e53d8*****937fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
+         'indicator_type': DBotScoreType.FILE, 'reliability': DBotScoreReliability.A},
+        {'error_message': 'This indicator -> f4dad67d0f0a8e53d8*****937fc9506e81b76e043294da77ae50ce4e8f0482127e7c12 is incorrect'}
+    ),
+    (
+        {'indicator': '8.8.8.8', 'indicator_type': DBotScoreType.IP},
+        {'instance': Common.IP, 'indicator_type': 'IP', 'reliability': None}
+    ),
+    (
+        {'indicator': 'www.google.com', 'indicator_type': DBotScoreType.URL, 'reliability': DBotScoreReliability.A},
+        {'instance': Common.URL, 'indicator_type': 'URL', 'reliability': 'A - Completely reliable'}
+    ),
+    (
+        {'indicator': 'google.com', 'indicator_type': DBotScoreType.DOMAIN},
+        {'instance': Common.Domain, 'indicator_type': 'DOMAIN', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.ACCOUNT},
+        {'instance': Common.Account, 'indicator_type': 'ACCOUNT', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CRYPTOCURRENCY, 'address_type': 'bitcoin'},
+        {'instance': Common.Cryptocurrency, 'indicator_type': 'BITCOIN', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CERTIFICATE},
+        {'instance': Common.Certificate, 'indicator_type': 'CERTIFICATE', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': 'test', 'context_prefix': 'test'},
+        {'instance': Common.CustomIndicator, 'indicator_type': 'TEST', 'reliability': None}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': 'test'},
+        {'error_message': 'Indicator type is invalid'}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CRYPTOCURRENCY},
+        {'error_message': 'Missing address_type parameter'}
+    ),
+    (
+        {'indicator': 'test@test.com', 'indicator_type': DBotScoreType.CVE},
+        {'error_message': 'DBotScoreType.CVE is unsupported'}
+    )
+]
+
+
+@pytest.mark.parametrize('args, expected', TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN)
+def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
+
+    from CommonServerPython import create_indicator_result_with_dbotscore_unknown
+
+    if expected.get('integration_name'):
+        mocker.patch('CommonServerPython.Common.DBotScore',
+                     return_value=Common.DBotScore(indicator=args['indicator'],
+                                                   indicator_type=args['indicator_type'],
+                                                   score=0,
+                                                   integration_name=expected['integration_name'],
+                                                   reliability=args['reliability'],
+                                                   message='No results found.'))
+    try:
+        results = create_indicator_result_with_dbotscore_unknown(**args)
+    except ValueError as e:
+        assert str(e) == expected['error_message']
+        return
+
+    assert expected['indicator_type'] in results.readable_output
+    assert isinstance(results.indicator, expected['instance'])
+    assert results.indicator.dbot_score.score == 0
+    assert results.indicator.dbot_score.reliability == expected['reliability']
+    assert results.indicator.dbot_score.message == 'No results found.'
+
+    if expected.get('integration_name'):
+        assert expected['integration_name'] in results.readable_output
+    else:
+        assert 'Results:' in results.readable_output
+
+
+@pytest.mark.parametrize('content_format,outputs,expected_type', ((None, {}, 'json'),
+                                                                  (None, 'foo', 'text'),
+                                                                  (None, 1, 'text'),
+                                                                  ('html', '', 'html'),
+                                                                  ('html', {}, 'html')))
+def test_content_type(content_format, outputs, expected_type):
+    from CommonServerPython import CommandResults
+    command_results = CommandResults(
+        outputs=outputs,
+        readable_output='human_readable',
+        outputs_prefix='prefix',
+        content_format=content_format,
+    )
+    assert command_results.to_context()['ContentsFormat'] == expected_type
+
+
+class TestSendEventsToXSIAMTest:
+    from test_data.send_events_to_xsiam_data import events_dict
+    test_data = events_dict
+
+    @staticmethod
+    def get_license_custom_field_mock(arg):
+        if 'token' in arg:
+            return "TOKEN"
+        elif 'url' in arg:
+            return "url"
+
+    @pytest.mark.parametrize('events_use_case', [
+        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events'
+    ])
+    def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
+        """
+        Test for the fetch fetch events function
+        Given:
+            Case a: a list containing dicts representing events.
+            Case b: a list containing strings representing events.
+            Case c: a string representing events (separated by a new line).
+            Case d: a string representing events (separated by a new line).
+            Case e: an empty list of events.
+
+        When:
+            Case a: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case b: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case d: Calling the send_events_to_xsiam function with a cef data format specification.
+            Case e: Calling the send_events_to_xsiam function with no explicit data format specified.
+
+        Then ensure that:
+            Case a:
+                - The events data was compressed correctly
+                - The data format was automatically identified as json.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case b:
+                - The events data was compressed correctly
+                - The data format was automatically identified as text.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case c:
+                - The events data was compressed correctly
+                - The data format was automatically identified as text.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case d:
+                - The events data was compressed correctly
+                - The data format remained as cef.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case e:
+                - No request to XSIAM API was made.
+                - The number of events reported to the module health - 0
+        """
+        if not IS_PY3:
+            return
+
+        from CommonServerPython import BaseClient
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value={'error': 'false'})
+
+        events = self.test_data[events_use_case]['events']
+        number_of_events = self.test_data[events_use_case]['number_of_events']
+        data_format = self.test_data[events_use_case].get('format')
+
+        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
+
+        if number_of_events:
+            expected_format = self.test_data[events_use_case]['expected_format']
+            expected_data = self.test_data[events_use_case]['expected_data']
+            arguments_called = _http_request_mock.call_args[1]
+            decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
+
+            assert arguments_called['headers']['format'] == expected_format
+            assert decompressed_data == expected_data
+        else:
+            assert _http_request_mock.call_count == 0
+
+        demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_events})
+
+    @pytest.mark.parametrize('error_msg', [None, {'error': 'error'}, ''])
+    def test_send_events_to_xsiam_error_handling(self, mocker, requests_mock, error_msg):
+        """
+        Given:
+            case a: response type containing None
+            case b: response type containing json
+            case c: response type containing empty string
+
+        When:
+            calling the send_events_to_xsiam function
+
+        Then:
+            DemistoException is raised with the correct error message on each case.
+        """
+        if not IS_PY3:
+            return
+
+        if isinstance(error_msg, dict):
+            requests_mock.post(
+                'https://api-url/logs/v1/xsiam', json=error_msg, status_code=401, reason='Unauthorized[401]'
+            )
+            error_msg = 'Unauthorized[401]'
+        else:
+            requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=401)
+            error_msg = '\n'
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'error')
+
+        events = self.test_data['json_events']['events']
+        with pytest.raises(
+            DemistoException,
+            match=re.escape('Error sending new events into XSIAM. \n' + error_msg),
+        ):
+            send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
+
+class TestIsMetricsSupportedByServer:
+    @classmethod
+    @pytest.fixture(scope='function', autouse=True)
+    def clear_cache(cls):
+        get_demisto_version._version = None
+
+    def test_metrics_supported(self, mocker):
+        """
+        Given: An XSOAR server running version 6.8.0
+        When: Testing that a server supports ExecutionMetrics
+        Then: Assert that is_supported reports True
+        """
+        from CommonServerPython import ExecutionMetrics
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.8.0',
+                'buildNumber': '50000'
+            }
+        )
+        mock_metrics = ExecutionMetrics()
+
+        # XSOAR version is 7.0.0 and should be supported. Assert that it is.
+        assert mock_metrics.is_supported() is True
+
+    def test_metrics_are_not_supported(self, mocker):
+        """
+        Given: An XSOAR server running version 1.0.0
+        When: Testing that a server does not support ExecutionMetrics
+        Then: Assert that is_supported reports False
+        """
+        from CommonServerPython import ExecutionMetrics
+
+        # XSOAR version is not supported.
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '1.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        mock_metrics = ExecutionMetrics()
+        # XSOAR version is 1.0.0 and should not be supported. Assert that it isn't.
+        assert mock_metrics.is_supported() is False
+
+
+def test_collect_execution_metrics():
+    """
+    Given:
+        An ExecutionMetrics object -
+            Case 1 - Reports a successful metric
+            Case 2 - Reports a quota error metric
+            Case 3 - Reports multiple quota error metrics
+    When:
+        Case 1 - Testing that a success metric has been reported
+        Case 2 - Testing that a quota metric has been reported
+        Case 3 - Testing that multiple quota errors have been reported
+    Then:
+        Case 1 - Assert that there is one successful metric and that the entry is an ExecutionMetrics entry
+        Case 2 - Assert that there is a quota error added to the metric report and is contained in the ExecutionMetrics entry
+        Case 3 - Assert that there are 26 total quota errors that are contained in the ExecutionMetrics entry
+    """
+    from CommonServerPython import ExecutionMetrics
+
+    mock_metrics = ExecutionMetrics()
+
+    # Report Successful Metrics
+    mock_metrics.success += 1
+
+    # Collect Metrics
+    collected_metrics = mock_metrics.metrics
+
+    expected_command_results = {'APIExecutionMetrics': [{'APICallsCount': 1, 'Type': 'Successful'}],
+                                'Contents': 'Metrics reported successfully.',
+                                'ContentsFormat': 'json',
+                                'EntryContext': {},
+                                'HumanReadable': None,
+                                'IgnoreAutoExtract': False,
+                                'IndicatorTimeline': [],
+                                'Note': False,
+                                'Relationships': [],
+                                'Type': 19}
+
+    # Assert collected metrics are correct
+    assert collected_metrics.to_context() == expected_command_results
+
+    # Report Quota Error
+    mock_metrics.quota_error += 1
+
+    # Update Test Bank
+    expected_command_results['APIExecutionMetrics'].append({'APICallsCount': 1, 'Type': 'QuotaError'})
+
+    # Assert collected metrics are correct
+    assert collected_metrics.to_context() == expected_command_results
+
+    # Report multiple metrics
+    mock_metrics.quota_error += 25
+
+    # Update Test Bank
+    expected_command_results['APIExecutionMetrics'][1]['APICallsCount'] = 26
+
+    # Assert collected metrics are correct
+    assert collected_metrics.to_context() == expected_command_results
+
+
+def test_is_scheduled_command_retry(mocker):
+    """
+    Given:
+        Test Case 1 - A command's metadata indicates it is scheduled.
+        Test Case 2 - A command's metadata indicates it is not scheduled.
+    When:
+        Test Case 1 - Checking if a command is scheduled or not.
+        Test Case 2 - Checking if a command is scheduled or not.
+    Then:
+        Test Case 1 - Assert the function returns True
+        Test Case 2 - Assert the function returns False
+    """
+    from CommonServerPython import is_scheduled_command_retry
+
+    mock_scheduled_command = {
+        'polling': True,
+        'pollingCommand': 'SomeCommand',
+        'pollingArgs': {'some': 'args'},
+        'timesRan': 0,
+        'startDate': '5.4.2022',
+        'endingDate': '1.2.2022'
+    }
+
+    mocker.patch.dict(demisto.callingContext, {'context': {'ParentEntry': mock_scheduled_command}})
+    mocker.patch.object(CommonServerPython, 'get_integration_name', return_value='')
+
+    # The run should be considered a scheduled command
+    assert is_scheduled_command_retry() is True
+
+    # Change run to not be a scheduled command
+    mock_scheduled_command['polling'] = False
+
+    # The run should not be considered a scheduled command
+    assert is_scheduled_command_retry() is False

@@ -21,6 +21,19 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
 description: Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
 display: CrowdStrike Falcon X
 name: CrowdStrike Falcon X
@@ -67,8 +80,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -77,8 +90,8 @@ script:
       isArray: false
       name: extended_data
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -90,13 +103,84 @@ script:
       secret: false
     - auto: PREDEFINED
       default:
-      defaultValue: "no"
+      defaultValue: no
       description: Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no".
       isArray: false
       name: submit_file
       predefined:
-      - 'no'
-      - 'yes'
+      - no
+      - yes
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "160: Windows 10"
+      description: Sandbox environment used for analysis. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: environment_id
+      predefined:
+        - '300: Linux Ubuntu 16.04'
+        - 64-bit
+        - '200: Android (static analysis)'
+        - '160: Windows 10'
+        - 64-bit
+        - '110: Windows 7'
+        - 64-bit
+        - '100: Windows 7'
+        - 32-bit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Runtime script for sandbox analysis. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: action_script
+      predefined:
+        - default
+        - default_maxantievasion
+        - default_randomfiles
+        - default_randomtheme
+        - default_openie
+      required: false
+      secret: false
+    - default: false
+      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters. Relevant if the submit_file parameter is set to true.'
+      isArray: false
+      name: command_line
+      required: false
+      secret: false
+    - default: false
+      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. Relevant if the submit_file parameter is set to true.'
+      isArray: false
+      name: document_password
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the sandbox analysis routes network traffic via TOR. If true, sandbox analysis routes network traffic via TOR. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: enable_tor
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Name of the malware sample that is used for file type detection and analysis. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: submit_name
+      required: false
+      secret: false
+    - default: false
+      description: Set a custom date for the sandbox environment in the format yyyy-MM-dd. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: system_date
+      required: false
+      secret: false
+    - default: false
+      description: Sets a custom time for the sandbox environment in the format HH:mm. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: system_time
       required: false
       secret: false
     deprecated: false
@@ -108,25 +192,25 @@ script:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
       type: String
-    - contextPath: resource.sandbox.http_requests.header
+    - contextPath: csfalconx.resource.sandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.Accept
+    - contextPath: csfalconx.resource.sandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_ip
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_port
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: resource.sandbox.http_requests.method
+    - contextPath: csfalconx.resource.sandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.url
+    - contextPath: csfalconx.resource.sandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: resource.sandbox.User-Agent
+    - contextPath: csfalconx.resource.sandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
@@ -232,7 +316,7 @@ script:
       description: The sandbox dns requests registrar organization.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.address
-      description: The sandbox contacted hosts naddress.
+      description: The sandbox contacted hosts address.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.country
       description: The sandbox contacted hosts country.
@@ -253,49 +337,49 @@ script:
       description: The sandbox incidents.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.tactic
-      description: The sndbox MITRE tactic name.
+      description: The sandbox MITRE tactic name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.technique
-      description: The sndbox MITRE technique name.
+      description: The sandbox MITRE technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.attack_id
-      description: The sndbox MITRE technique ID.
+      description: The sandbox MITRE technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers
-      description: The sndbox MITRE malicious identifiers.
+      description: The sandbox MITRE malicious identifiers.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.technique
-      description: The sndbox MITRE parent technique name.
+      description: The sandbox MITRE parent technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id
-      description: The sndbox MITRE parent technique ID.
+      description: The sandbox MITRE parent technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki
-      description: The sndbox MITRE parent technique wiki URL link.
+      description: The sandbox MITRE parent technique wiki URL link.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.threat_level_human
-      description: The sndbox signatures threat level.
+      description: The sandbox signatures threat level.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.category
-      description: The sndbox signatures category.
+      description: The sandbox signatures category.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.identifier
-      description: The sndbox signatures identifier.
+      description: The sandbox signatures identifier.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.type
-      description: The sndbox signatures type.
+      description: The sandbox signatures type.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.relevance
-      description: The sndbox signatures relevance.
+      description: The sandbox signatures relevance.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.name
-      description: The sndbox signatures name.
+      description: The sandbox signatures name.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.description
-      description: The sndbox signatures description.
+      description: The sandbox signatures description.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.origin
-      description: The sndbox signatures origin.
+      description: The sandbox signatures origin.
       type: String
     - contextPath: csfalconx.resource.intel.malware_families
       description: The malware families of the resource.
@@ -308,8 +392,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample
-        ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.
+      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.
       isArray: false
       name: sha256
       required: false
@@ -345,15 +428,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Command line script passed to the submitted file at runtime. Max
-        length: 2048 characters.'
+      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters.'
       isArray: false
       name: command_line
       required: false
       secret: false
     - default: false
-      description: 'Auto-filled for Adobe or Office files that prompt for a password.
-        Max length: 32 characters.'
+      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
       isArray: false
       name: document_password
       required: false
@@ -369,8 +450,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of the malware sample that’s used for file type detection.
-        and analysis.
+      description: Name of the malware sample that’s used for file type detection. and analysis.
       isArray: false
       name: submit_name
       required: false
@@ -387,8 +467,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -397,8 +477,8 @@ script:
       isArray: false
       name: extended_data
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -426,7 +506,7 @@ script:
     execution: false
     name: cs-fx-submit-uploaded-file
     outputs:
-    - contextPath: 'csfalconx.resource.uploaded_id'
+    - contextPath: csfalconx.resource.uploaded_id
       description: Analysis ID received after uploading the file.
       type: String
     - contextPath: csfalconx.resource.file_name
@@ -435,25 +515,25 @@ script:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
       type: String
-    - contextPath: resource.sandbox.http_requests.header
+    - contextPath: csfalconx.resource.sandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.Accept
+    - contextPath: csfalconx.resource.sandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_ip
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_port
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: resource.sandbox.http_requests.method
+    - contextPath: csfalconx.resource.sandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.url
+    - contextPath: csfalconx.resource.sandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: resource.sandbox.User-Agent
+    - contextPath: csfalconx.resource.sandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
@@ -559,7 +639,7 @@ script:
       description: The sandbox dns requests registrar organization.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.address
-      description: The sandbox contacted hosts naddress.
+      description: The sandbox contacted hosts address.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.country
       description: The sandbox contacted hosts country.
@@ -580,49 +660,49 @@ script:
       description: The sandbox incidents.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.tactic
-      description: The sndbox MITRE tactic name.
+      description: The sandbox MITRE tactic name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.technique
-      description: The sndbox MITRE technique name.
+      description: The sandbox MITRE technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.attack_id
-      description: The sndbox MITRE technique ID.
+      description: The sandbox MITRE technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers
-      description: The sndbox MITRE malicious identifiers.
+      description: The sandbox MITRE malicious identifiers.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.technique
-      description: The sndbox MITRE parent technique name.
+      description: The sandbox MITRE parent technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id
-      description: The sndbox MITRE parent technique ID.
+      description: The sandbox MITRE parent technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki
-      description: The sndbox MITRE parent technique wiki URL link.
+      description: The sandbox MITRE parent technique wiki URL link.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.threat_level_human
-      description: The sndbox signatures threat level.
+      description: The sandbox signatures threat level.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.category
-      description: The sndbox signatures category.
+      description: The sandbox signatures category.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.identifier
-      description: The sndbox signatures identifier.
+      description: The sandbox signatures identifier.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.type
-      description: The sndbox signatures type.
+      description: The sandbox signatures type.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.relevance
-      description: The sndbox signatures relevance.
+      description: The sandbox signatures relevance.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.name
-      description: The sndbox signatures name.
+      description: The sandbox signatures name.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.description
-      description: The sndbox signatures description.
+      description: The sandbox signatures description.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.origin
-      description: The sndbox signatures origin.
+      description: The sandbox signatures origin.
       type: String
     - contextPath: csfalconx.resource.intel.malware_families
       description: The malware families of the resource.
@@ -630,7 +710,7 @@ script:
     - contextPath: csfalconx.resource.state
       description: Analysis state.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
+    - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.sha256
@@ -639,10 +719,45 @@ script:
     - contextPath: csfalconx.resource.environment_id
       description: 'Environment ID of the analysis. '
       type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: String
+    - contextPath: csfalconx.resource.submitted_id
+      description: Analysis ID received after submitting the file.
+      type: String
   - arguments:
     - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
+      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
       isArray: true
       name: ids
       required: true
@@ -653,8 +768,8 @@ script:
       isArray: false
       name: extended_data
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -668,25 +783,25 @@ script:
     - contextPath: csfalconx.resource.file_name
       description: 'Name of the uploaded file. '
       type: String
-    - contextPath: resource.sandbox.http_requests.header
+    - contextPath: csfalconx.resource.sandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.Accept
+    - contextPath: csfalconx.resource.sandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_ip
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_port
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: resource.sandbox.http_requests.method
+    - contextPath: csfalconx.resource.sandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.url
+    - contextPath: csfalconx.resource.sandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: resource.sandbox.User-Agent
+    - contextPath: csfalconx.resource.sandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
@@ -792,7 +907,7 @@ script:
       description: The sandbox dns requests registrar organization.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.address
-      description: The sandbox contacted hosts naddress.
+      description: The sandbox contacted hosts address.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.country
       description: The sandbox contacted hosts country.
@@ -813,49 +928,49 @@ script:
       description: The sandbox incidents.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.tactic
-      description: The sndbox MITRE tactic name.
+      description: The sandbox MITRE tactic name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.technique
-      description: The sndbox MITRE technique name.
+      description: The sandbox MITRE technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.attack_id
-      description: The sndbox MITRE technique ID.
+      description: The sandbox MITRE technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers
-      description: The sndbox MITRE malicious identifiers.
+      description: The sandbox MITRE malicious identifiers.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.technique
-      description: The sndbox MITRE parent technique name.
+      description: The sandbox MITRE parent technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id
-      description: The sndbox MITRE parent technique ID.
+      description: The sandbox MITRE parent technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki
-      description: The sndbox MITRE parent technique wiki URL link.
+      description: The sandbox MITRE parent technique wiki URL link.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.threat_level_human
-      description: The sndbox signatures threat level.
+      description: The sandbox signatures threat level.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.category
-      description: The sndbox signatures category.
+      description: The sandbox signatures category.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.identifier
-      description: The sndbox signatures identifier.
+      description: The sandbox signatures identifier.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.type
-      description: The sndbox signatures type.
+      description: The sandbox signatures type.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.relevance
-      description: The sndbox signatures relevance.
+      description: The sandbox signatures relevance.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.name
-      description: The sndbox signatures name.
+      description: The sandbox signatures name.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.description
-      description: The sndbox signatures description.
+      description: The sandbox signatures description.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.origin
-      description: The sndbox signatures origin.
+      description: The sandbox signatures origin.
       type: String
     - contextPath: csfalconx.resource.intel.malware_families
       description: The malware families of the resource.
@@ -866,13 +981,13 @@ script:
     - contextPath: csfalconx.resource.verdict
       description: Analysis verdict.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
+    - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.environment_id
       description: Environment ID.
       type: String
-    - contextPath: csfalconx.resource.snadbox.environment_description
+    - contextPath: csfalconx.resource.sandbox.environment_description
       description: Environment description.
       type: String
     - contextPath: csfalconx.resource.threat_score
@@ -884,10 +999,10 @@ script:
     - contextPath: csfalconx.resource.submission_type
       description: Type of submitted artifact, for example file, URL, etc.
       type: String
-    - contextPath: csfalconx.resource.filetype
+    - contextPath: csfalconx.resource.file_type
       description: File type.
       type: String
-    - contextPath: csfalconx.resource.filesize
+    - contextPath: csfalconx.resource.file_size
       description: File size.
       type: Int
     - contextPath: csfalconx.resource.sha256
@@ -917,10 +1032,264 @@ script:
     - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
       description: ID of the IOC pack to download (MAEC).
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.Type
+      description: The type of the file.
+      type: String
+    - contextPath: csfalconx.resource.architecture
+      description: The architecture of the machine on which the report was created.
+      type: String
+    - contextPath: csfalconx.resource.classification
+      description: Classification
+      type: String
+    - contextPath: csfalconx.resource.classification_tags
+      description: Tags related to the classification.
+      type: String
+    - contextPath: csfalconx.resource.contacted_hosts.address
+      description: Address of a contacted host.
+      type: String
+    - contextPath: csfalconx.resource.contacted_hosts.associated_runtime.name
+      description: The sandbox contacted hosts associated runtime name.
+      type: String
+    - contextPath: csfalconx.resource.contacted_hosts.associated_runtime.pid
+      description: The sandbox contacted hosts associated runtime pid.
+      type: Number
+    - contextPath: csfalconx.resource.contacted_hosts.country
+      description: The sandbox contacted hosts country.
+      type: String
+    - contextPath: csfalconx.resource.contacted_hosts.port
+      description: The sandbox contacted hosts port.
+      type: Number
+    - contextPath: csfalconx.resource.contacted_hosts.protocol
+      description: The sandbox contacted hosts protocol.
+      type: String
+    - contextPath: csfalconx.resource.created_timestamp
+      description: Analysis start time.
+      type: Date
+    - contextPath: csfalconx.resource.dns_requests.country
+      description: Country the DNS request was sent to.
+      type: String
+    - contextPath: csfalconx.resource.dns_requests.domain
+      description: Domain the DNS request was sent to.
+      type: String
+    - contextPath: csfalconx.resource.dns_requests.address
+      description: Address the DNS request was sent to.
+      type: String
+    - contextPath: csfalconx.resource.environment_description
+      description: Environment description.
+      type: String
+    - contextPath: csfalconx.resource.extracted_files.description
+      description: Description of an extracted file.
+      type: String
+    - contextPath: csfalconx.resource.extracted_files.file_size
+      description: Size of an extracted file
+      type: Number
+    - contextPath: csfalconx.resource.extracted_files.md5
+      description: MD5 of an extracted file.
+      type: String
+    - contextPath: csfalconx.resource.extracted_files.name
+      description: Name of an extracted file.
+      type: String
+    - contextPath: csfalconx.resource.extracted_files.sha1
+      description: SHA1 of an extracted file.
+      type: String
+    - contextPath: csfalconx.resource.extracted_files.sha256
+      description: SHA256 of an extracted file.
+      type: String
+    - contextPath: csfalconx.resource.extracted_files.threat_level_readable
+      description: Threat level of an extracted file.
+      type: String
+    - contextPath: csfalconx.resource.extracted_files.type_tags
+      description: Type tags of an extracted file.
+      type: String
+    - contextPath: csfalconx.resource.file_size
+      description: File size.
+      type: Number
+    - contextPath: csfalconx.resource.file_type
+      description: File type.
+      type: String
+    - contextPath: csfalconx.resource.file_type_short
+      description: File type (short).
+      type: String
+    - contextPath: csfalconx.resource.http_requests.header
+      description: HTTP request header.
+      type: String
+    - contextPath: csfalconx.resource.http_requests.host
+      description: HTTP request host.
+      type: String
+    - contextPath: csfalconx.resource.http_requests.host_ip
+      description: HTTP request host IP.
+      type: String
+    - contextPath: csfalconx.resource.http_requests.host_port
+      description: HTTP request host IP.
+      type: Number
+    - contextPath: csfalconx.resource.http_requests.method
+      description: HTTP request method.
+      type: String
+    - contextPath: csfalconx.resource.http_requests.url
+      description: HTTP request URL.
+      type: String
+    - contextPath: csfalconx.resource.id
+      description: Analysis ID.
+      type: String
+    - contextPath: csfalconx.resource.incidents.details
+      description: Incident details.
+      type: String
+    - contextPath: csfalconx.resource.incidents.name
+      description: Incident name.
+      type: String
+    - contextPath: csfalconx.resource.processes.command_line
+      description: Process command line.
+      type: String
+    - contextPath: csfalconx.resource.processes.file_accesses.mask
+      description: File access mask.
+      type: String
+    - contextPath: csfalconx.resource.processes.file_accesses.path
+      description: File access path.
+      type: String
+    - contextPath: csfalconx.resource.processes.file_accesses.type
+      description: File access type.
+      type: String
+    - contextPath: csfalconx.resource.processes.handles.id
+      description: Process handle ID.
+      type: Number
+    - contextPath: csfalconx.resource.processes.handles.path
+      description: Process handle path.
+      type: String
+    - contextPath: csfalconx.resource.processes.handles.type
+      description: Process handle type.
+      type: String
+    - contextPath: csfalconx.resource.processes.icon_artifact_id
+      description: Process icon artifact ID.
+      type: String
+    - contextPath: csfalconx.resource.processes.mutants
+      description: Process mutants.
+      type: String
+    - contextPath: csfalconx.resource.processes.name
+      description: Process name.
+      type: String
+    - contextPath: csfalconx.resource.processes.normalized_path
+      description: Process normalized path.
+      type: String
+    - contextPath: csfalconx.resource.processes.pid
+      description: Process ID (PID).
+      type: Number
+    - contextPath: csfalconx.resource.processes.sha256
+      description: Process SHA256.
+      type: String
+    - contextPath: csfalconx.resource.processes.uid
+      description: Process UID.
+      type: String
+    - contextPath: csfalconx.resource.processes.parent_uid
+      description: Process parent UID.
+      type: String
+    - contextPath: csfalconx.resource.processes.process_flags.name
+      description: Process flag name.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.http_requests.header
+      description: Sandbox HTTP request header.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.http_requests.host
+      description: Sandbox HTTP request host.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_ip
+      description: Sandbox HTTP request host IP.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_port
+      description: Sandbox HTTP request host port.
+      type: Number
+    - contextPath: csfalconx.resource.sandbox.http_requests.method
+      description: Sandbox HTTP request method.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.http_requests.url
+      description: Sandbox HTTP request URL.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.incidents.details
+      description: Sandbox incident details.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.incidents.name
+      description: Sandbox incident name.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.file_accesses.mask
+      description: Sandbox process file access mask.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.file_accesses.path
+      description: Sandbox process file access path.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.file_accesses.type
+      description: Sandbox process file access type.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.icon_artifact_id
+      description: Sandbox process file access icon artifact ID.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.mutants
+      description: Sandbox process file access process mutants.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.uid
+      description: Sandbox process file access process UID.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.parent_uid
+      description: Sandbox process file access process parent UID.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.process_flags.name
+      description: Sandbox process file access process flag name.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.submit_name
+      description: Sandbox submit name.
+      type: String
+    - contextPath: csfalconx.resource.screenshots_artifact_ids
+      description: Screenshot artifact IDs.
+      type: String
+    - contextPath: csfalconx.resource.submit_name
+      description: Submit name.
+      type: String
   - arguments:
     - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
+      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
       isArray: true
       name: ids
       required: true
@@ -942,7 +1311,7 @@ script:
     - contextPath: csfalconx.resource.verdict
       description: Analysis verdict.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
+    - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.environment_id
@@ -960,10 +1329,10 @@ script:
     - contextPath: csfalconx.resource.submission_type
       description: Type of submitted artifact. For example, file, URL, etc.
       type: String
-    - contextPath: csfalconx.resource.filetype
+    - contextPath: csfalconx.resource.file_type
       description: File type.
       type: String
-    - contextPath: csfalconx.resource.filesize
+    - contextPath: csfalconx.resource.file_size
       description: File size.
       type: Int
     - contextPath: csfalconx.resource.sha256
@@ -995,8 +1364,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command.
+      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command.
       isArray: true
       name: ids
       required: true
@@ -1012,7 +1380,7 @@ script:
     - contextPath: csfalconx.resource.verdict
       description: Analysis verdict.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
+    - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.environment_id
@@ -1030,10 +1398,10 @@ script:
     - contextPath: csfalconx.resource.submission_type
       description: Type of submitted artifact. For example, file, URL, etc.
       type: String
-    - contextPath: csfalconx.resource.filetype
+    - contextPath: csfalconx.resource.file_type
       description: File type.
       type: String
-    - contextPath: csfalconx.resource.filesize
+    - contextPath: csfalconx.resource.file_size
       description: File size.
       type: Int
     - contextPath: csfalconx.resource.sha256
@@ -1068,18 +1436,18 @@ script:
     execution: false
     name: cs-fx-check-quota
     outputs:
-    - contextPath: csfalconx.resource.quota.total
-      description: 'Total quota number. '
+    - contextPath: csfalconx.resource.total
+      description: Total quota number.
       type: Number
-    - contextPath: csfalconx.resource.quota.used
+    - contextPath: csfalconx.resource.used
       description: Used quota number.
       type: Number
-    - contextPath: csfalconx.resource.quota.in_progress
-      description: Analysis in progress.
+    - contextPath: csfalconx.resource.in_progress
+      description: The number of calls in progress
       type: Number
   - arguments:
     - default: false
-      description: Optional filter and sort criteria in the form of an FQL query.
+      description: Optional filter and sort criteria in the form of an FQL query. Takes precedence over the *hash* argument (if provided)
       isArray: false
       name: filter
       required: false
@@ -1091,7 +1459,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Maximum number of report IDs to return. Maximum is 5000.'
+      description: SHA256 hashes to search for. Overridden by the *filter* argument (if provided)
+      isArray: true
+      name: hashes
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of report IDs to return. Maximum is 5000. Default is 50.
       isArray: false
       name: limit
       required: false
@@ -1111,8 +1485,14 @@ script:
     execution: false
     name: cs-fx-find-reports
     outputs:
-    - contextPath: csfalconx.resource.id
-      description: 'Set of report IDs that match the search criteria. '
+    - contextPath: csfalconx.resource.resources
+      description: Set of report IDs that match the search criteria.
+      type: Number
+    - contextPath: csfalconx.resource.FindReport.sha256
+      description: queried SHA256 value (when applicable).
+      type: Number
+    - contextPath: csfalconx.resource.FindReport.foundIds
+      description: Set of report ids that match this queried SHA256 value.
       type: Number
   - arguments:
     - default: false
@@ -1128,7 +1508,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Maximum number of report IDs to return. Maximum is 5000.'
+      description: Maximum number of report IDs to return. Maximum is 5000.
       isArray: false
       name: limit
       required: false
@@ -1144,13 +1524,82 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Finds submission IDs for uploaded files by providing an FQL filter
-      and paging details. Returns a set of submission IDs that match the search criteria.
+    description: Finds submission IDs for uploaded files by providing an FQL filter and paging details. Returns a set of submission IDs that match the search criteria.
     execution: false
     name: cs-fx-find-submission-id
     outputs:
+    - contextPath: csfalconx.resource.resources
+      description: 'Set of report IDs that match the search criteria. '
+      type: Number
+  - arguments:
+    - default: true
+      description: |-
+        The file hash(es) to search for
+      isArray: true
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets reputation data for one or more files, by sha256 hashes.
+    execution: false
+    name: file
+    outputs:
     - contextPath: csfalconx.resource.id
       description: 'Set of report IDs that match the search criteria. '
+      type: Number
+    - contextPath: csfalconx.resource.file_size
+      description: The file size.
+      type: Number
+    - contextPath: csfalconx.resource.sha256
+      description: SHA256 hash of the uploaded file.
+      type: String
+    - contextPath: csfalconx.resource.threat_score
+      description: Score of the threat.
+      type: Number
+    - contextPath: csfalconx.resource.verdict
+      description: Analysis verdict.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 found in the parsed file.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 found in the parsed file.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 found in the parsed file.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.Type
+      description: The type of the file.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
       type: Number
   - arguments:
     - default: false
@@ -1161,11 +1610,13 @@ script:
       name: url
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: Sandbox environment used for analysis.
       isArray: false
       name: environment_id
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - '300: Linux Ubuntu 16.04'
       - 64-bit
@@ -1176,8 +1627,6 @@ script:
       - 64-bit
       - '100: Windows 7'
       - 32-bit
-      required: false
-      secret: false
     - default: false
       description: |-
         Runtime script for sandbox analysis. Values:
@@ -1191,15 +1640,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Command line script passed to the submitted file at runtime. Max
-        length: 2048 characters'
+      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters'
       isArray: false
       name: command_line
       required: false
       secret: false
     - default: false
-      description: 'Auto-filled for Adobe or Office files that prompt for a password.
-        Max length: 32 characters.'
+      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
       isArray: false
       name: document_password
       required: false
@@ -1207,7 +1654,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false.'
+      description: Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false.
       isArray: false
       name: enable_tor
       predefined:
@@ -1216,8 +1663,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of the malware sample that’s used for file type detection
-        and analysis.
+      description: Name of the malware sample that is used for file type detection and analysis.
       isArray: false
       name: submit_name
       required: false
@@ -1234,8 +1680,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -1251,8 +1697,8 @@ script:
       isArray: false
       name: extended_data
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -1270,8 +1716,8 @@ script:
     deprecated: false
     description: Submits a URL or FTP for sandbox analysis.
     execution: false
-    polling: true
     name: cs-fx-submit-url
+    polling: true
     outputs:
     - contextPath: csfalconx.resource.submitted_id
       description: Analysis ID received after submitting the file.
@@ -1282,25 +1728,25 @@ script:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
       type: String
-    - contextPath: resource.sandbox.http_requests.header
+    - contextPath: csfalconx.resource.sandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.Accept
+    - contextPath: csfalconx.resource.sandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_ip
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_port
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: resource.sandbox.http_requests.method
+    - contextPath: csfalconx.resource.sandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.url
+    - contextPath: csfalconx.resource.sandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: resource.sandbox.User-Agent
+    - contextPath: csfalconx.resource.sandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
@@ -1406,7 +1852,7 @@ script:
       description: The sandbox dns requests registrar organization.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.address
-      description: The sandbox contacted hosts naddress.
+      description: The sandbox contacted hosts address.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.country
       description: The sandbox contacted hosts country.
@@ -1427,49 +1873,49 @@ script:
       description: The sandbox incidents.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.tactic
-      description: The sndbox MITRE tactic name.
+      description: The sandbox MITRE tactic name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.technique
-      description: The sndbox MITRE technique name.
+      description: The sandbox MITRE technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.attack_id
-      description: The sndbox MITRE technique ID.
+      description: The sandbox MITRE technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers
-      description: The sndbox MITRE malicious identifiers.
+      description: The sandbox MITRE malicious identifiers.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.technique
-      description: The sndbox MITRE parent technique name.
+      description: The sandbox MITRE parent technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id
-      description: The sndbox MITRE parent technique ID.
+      description: The sandbox MITRE parent technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki
-      description: The sndbox MITRE parent technique wiki URL link.
+      description: The sandbox MITRE parent technique wiki URL link.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.threat_level_human
-      description: The sndbox signatures threat level.
+      description: The sandbox signatures threat level.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.category
-      description: The sndbox signatures category.
+      description: The sandbox signatures category.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.identifier
-      description: The sndbox signatures identifier.
+      description: The sandbox signatures identifier.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.type
-      description: The sndbox signatures type.
+      description: The sandbox signatures type.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.relevance
-      description: The sndbox signatures relevance.
+      description: The sandbox signatures relevance.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.name
-      description: The sndbox signatures name.
+      description: The sandbox signatures name.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.description
-      description: The sndbox signatures description.
+      description: The sandbox signatures description.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.origin
-      description: The sndbox signatures origin.
+      description: The sandbox signatures origin.
       type: String
     - contextPath: csfalconx.resource.intel.malware_families
       description: The malware families of the resource.
@@ -1477,19 +1923,18 @@ script:
     - contextPath: csfalconx.resource.state
       description: Analysis state.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
-      description: Analysis start time.
-      type: String
     - contextPath: csfalconx.resource.sha256
       description: SHA256 hash of the scanned file.
       type: Unknown
     - contextPath: csfalconx.resource.environment_id
       description: Environment ID of the analysis.
       type: Unknown
+    - contextPath: csfalconx.resource.created_timestamp
+      description: Analysis start time.
+      type: Date
   - arguments:
     - default: false
-      description: ID of an artifact, such as an IOC pack, PCAP file, or actor image.
-        Find an artifact ID in a report or summary.
+      description: ID of an artifact, such as an IOC pack, PCAP file, or actor image. Find an artifact ID in a report or summary.
       isArray: false
       name: id
       required: true
@@ -1502,8 +1947,7 @@ script:
       secret: false
     - default: false
       defaultValue: gzip
-      description: Format used to compress the downloaded file. Currently, you must
-        provide the value of the GZIP file.
+      description: Format used to compress the downloaded file. Currently, you must provide the value of the GZIP file.
       isArray: false
       name: accept_encoding
       required: false
@@ -1512,7 +1956,7 @@ script:
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false

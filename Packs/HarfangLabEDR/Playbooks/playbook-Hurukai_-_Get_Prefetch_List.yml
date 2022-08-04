@@ -1,0 +1,301 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Hurukai - Get Prefetch List
+inputs:
+- description: ''
+  key: agentid
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Hurukai - Get Prefetch List
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 90882702-6076-4797-8373-06355aff2892
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 90882702-6076-4797-8373-06355aff2892
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -980
+        }
+      }
+  '3':
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Ids:
+        simple: ${Harfanglab.Job.ID}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: harfanglab-job-info
+      Timeout:
+        simple: '60'
+      dt:
+        simple: Harfanglab.Job.Info(val.Status !== 'finished').ID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 29d767b5-0169-4d04-860e-c351190a8569
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 29d767b5-0169-4d04-860e-c351190a8569
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -260
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: b97cba80-4cc1-4cc0-8cae-b57ad903738e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: b97cba80-4cc1-4cc0-8cae-b57ad903738e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 100
+        }
+      }
+  '6':
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Start a job to get the list of prefetches from a host (Windows)
+      id: 48e27649-e12a-4327-8601-53cba9300f51
+      iscommand: true
+      name: harfanglab-job-prefetchlist
+      script: Hurukai|||harfanglab-job-prefetchlist
+      type: regular
+      version: -1
+    taskid: 48e27649-e12a-4327-8601-53cba9300f51
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -450
+        }
+      }
+  '7':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Prefetch list
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      job_id:
+        simple: ${Harfanglab.Job.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Get a hostname's list of prefetches from job results
+      id: 866f81ea-54f2-48d8-8f88-248d96db40a2
+      iscommand: true
+      name: harfanglab-result-prefetechlist
+      script: Hurukai|||harfanglab-result-prefetchlist
+      type: regular
+      version: -1
+    taskid: 866f81ea-54f2-48d8-8f88-248d96db40a2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -90
+        }
+      }
+  '8':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Agent
+                root: Harfanglab
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: ostype
+                  operator: getField
+          operator: isEqualString
+          right:
+            value:
+              simple: windows
+      label: windows
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      windows:
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a97456e6-43b4-4b8b-8cff-11b1d013db72
+      iscommand: false
+      name: Which platform is the agent running on ?
+      type: condition
+      version: -1
+      description: ''
+    taskid: a97456e6-43b4-4b8b-8cff-11b1d013db72
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -670
+        }
+      }
+  '9':
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Get endpoint information from agent_id
+      id: 3ab7b1c1-9481-4e1b-86ce-9f3d65aaf376
+      iscommand: true
+      name: harfanglab-get-endpoint-info
+      script: Hurukai|||harfanglab-get-endpoint-info
+      type: regular
+      version: -1
+    taskid: 3ab7b1c1-9481-4e1b-86ce-9f3d65aaf376
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -845
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1145,
+        "width": 530,
+        "x": 550,
+        "y": -980
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+description: Get the list of prefetch files

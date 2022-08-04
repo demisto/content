@@ -444,10 +444,12 @@ def test_url(requests_mock):
     args = {
         'url': MOCK_URL
     }
-    _, outputs, _ = url_command(client, args)
+    result = url_command(client, args)
 
-    assert outputs[outputPaths['url']][0]['Data'] == MOCK_URL
-    assert outputs[DBOT_SCORE_KEY][0] == MOCK_URL_RESP[DBOT_SCORE_KEY]
+    assert result[0].indicator.url == MOCK_URL
+    assert result[0].indicator.dbot_score.indicator == MOCK_URL_RESP[DBOT_SCORE_KEY]['Indicator']
+    assert result[0].indicator.dbot_score.score == MOCK_URL_RESP[DBOT_SCORE_KEY]['Score']
+    assert result[0].indicator.dbot_score.reliability == MOCK_URL_RESP[DBOT_SCORE_KEY]['Reliability']
 
 
 def test_get_cve(requests_mock):

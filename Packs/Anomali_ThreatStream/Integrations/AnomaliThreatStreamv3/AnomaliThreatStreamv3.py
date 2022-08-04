@@ -451,7 +451,9 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
     }
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=ip)
+        return create_indicator_result_with_dbotscore_unknown(indicator=ip,
+                                                              indicator_type=DBotScoreType.IP,
+                                                              reliability=client.reliability)
 
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)
@@ -516,7 +518,9 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
     params = dict(value=domain, type=DBotScoreType.DOMAIN, status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=domain)
+        return create_indicator_result_with_dbotscore_unknown(indicator=domain,
+                                                              indicator_type=DBotScoreType.DOMAIN,
+                                                              reliability=client.reliability)
 
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)
@@ -582,7 +586,9 @@ def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, s
     params = dict(value=file, type="md5", status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=file)
+        return create_indicator_result_with_dbotscore_unknown(indicator=file,
+                                                              indicator_type=DBotScoreType.FILE,
+                                                              reliability=client.reliability)
 
     # save the hash value under the hash type key
     threat_context = get_generic_threat_context(indicator, indicator_mapping=FILE_INDICATOR_MAPPING)
@@ -655,7 +661,9 @@ def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, sta
     params = dict(value=url, type=DBotScoreType.URL, status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=url)
+        return create_indicator_result_with_dbotscore_unknown(indicator=url,
+                                                              indicator_type=DBotScoreType.URL,
+                                                              reliability=client.reliability)
 
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)

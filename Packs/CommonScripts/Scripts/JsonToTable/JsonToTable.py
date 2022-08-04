@@ -1,3 +1,5 @@
+import json
+
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -34,8 +36,10 @@ def get_value_from_str(value: Any):
     # in case of str value when using this automation as transformer - the value will be in list as [str]
     if isinstance(value, list) and len(value) == 1 and isinstance(value[0], str):
         str_value = value[0]
-
-    return safe_load_json(str_value) if str_value else None
+    try:
+        return json.loads(str_value) if str_value else None
+    except json.JSONDecodeError:
+        return str_value
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

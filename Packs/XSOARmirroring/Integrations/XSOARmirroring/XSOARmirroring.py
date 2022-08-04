@@ -2,9 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 import json
 import requests
-import traceback
 import dateparser
-from typing import Any, Dict, Tuple, List, Optional, cast, Set
+from datetime import timedelta
+from typing import Any, Dict, Tuple, List, Optional, Set
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -26,17 +26,24 @@ MIRROR_DIRECTION = {
     'Outgoing': 'Out',
     'Incoming And Outgoing': 'Both'
 }
+XSOAR_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
     def search_incidents(self, query: Optional[str], max_results: Optional[int],
-                         start_time: Optional[int]) -> List[Dict[str, Any]]:
+                         start_time: Union[str, int]) -> List[Dict[str, Any]]:
         data = {
-            'filter': {
-                'query': query,
-                'size': max_results or 10,
-                'fromDate': timestamp_to_datestring(start_time)
+            "filter": {
+                "query": query,
+                "size": max_results or 10,
+                "fromDate": start_time,
+                "sort": [{
+                    "field": "id",
+                    "asc": True
+                }]
             }
         }
         return self._http_request(
@@ -201,7 +208,7 @@ def arg_to_timestamp(arg: str, arg_name: str, required: bool = False):
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
-def test_module(client: Client, first_fetch_time: int) -> str:
+def test_module(client: Client, first_fetch_time: str) -> str:
     """Tests API connectivity and authentication
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -211,7 +218,7 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     :type client: ``Client``
     :param client: XSOAR client to use
 
-    :type first_fetch_time: ``int``
+    :type first_fetch_time: ``str``
     :param first_fetch_time: First fetch time parameter value.
 
     :return: 'ok' if test passed, anything else will fail the test.
@@ -228,9 +235,9 @@ def test_module(client: Client, first_fetch_time: int) -> str:
             raise e
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], query: Optional[str], mirror_direction: str,
-                    mirror_tag: List[str]) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[str, int]],
+                    first_fetch_time: Union[int, str], query: Optional[str], mirror_direction: str,
+                    mirror_tag: List[str]) -> Tuple[Dict[str, str], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -239,12 +246,12 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     :type max_results: ``int``
     :param max_results: Maximum numbers of incidents per fetch
 
-    :type last_run: ``Optional[Dict[str, int]]``
+    :type last_run: ``Optional[Dict[str, str]]``
     :param last_run:
         A dict with a key containing the latest incident created time we got
         from last fetch
 
-    :type first_fetch_time: ``Optional[int]``
+    :type first_fetch_time: ``Optional[int, str]``
     :param first_fetch_time:
         If last_run is None (first time we are fetching), it contains
         the timestamp in milliseconds on when to start fetching incidents
@@ -270,27 +277,30 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
 
-    last_fetch: int = last_run.get('last_fetch', -1)
-    if last_fetch == -1:
+    last_fetch = last_run.get('last_fetch')
+    if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
     else:
-        last_fetch = int(last_fetch)
+        demisto.debug('Trying to convert the last_fetch to int, and convert it to date string if succeed. '
+                      'This is for preventing backward compatibility breakage.')
+        try:
+            last_fetch = int(last_fetch)
+            last_fetch = datetime.fromtimestamp(last_fetch).strftime(XSOAR_DATE_FORMAT)
+        except Exception:
+            pass
 
-    latest_created_time = cast(int, last_fetch)
+    latest_created_time = dateparser.parse(last_fetch)  # type: ignore[arg-type]
     incidents_result: List[Dict[str, Any]] = []
-    last_fetch_milliseconds = last_fetch * 1000
-    created_filter = timestamp_to_datestring(last_fetch_milliseconds)
-
     if query:
-        query += f' and created:>="{created_filter}"'
+        query += f' and created:>="{last_fetch}"'
     else:
-        query = f'created:>="{created_filter}"'
+        query = f'created:>="{last_fetch}"'
 
-    demisto.debug(f'Fetching incidents since last fetch: {created_filter}')
+    demisto.debug(f'Fetching incidents since last fetch: {last_fetch}')
     incidents = client.search_incidents(
         query=query,
         max_results=max_results,
-        start_time=last_fetch_milliseconds
+        start_time=last_fetch
     )
 
     for incident in incidents:
@@ -332,18 +342,16 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
-        incident_created_time = arg_to_timestamp(
-            arg=incident.get('created'),  # type: ignore
-            arg_name='created',
-            required=True
-        )
+        incident_created_time = dateparser.parse(incident.get('created'))  # type: ignore[arg-type]
 
         # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:
+        if incident_created_time > latest_created_time:  # type: ignore[operator]
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': latest_created_time + 1}
+    next_run = {'last_fetch': (latest_created_time + timedelta(microseconds=1))  # type: ignore[operator]
+                .strftime(XSOAR_DATE_FORMAT)}  # type: ignore[union-attr,operator]
+
     return next_run, incidents_result
 
 
@@ -369,11 +377,7 @@ def search_incidents_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
 
     query = args.get('query')
-    start_date = arg_to_datetime(
-        arg=args.get('start_time', '3 days'),
-        arg_name='start_time',
-        required=False
-    )
+    start_date = dateparser.parse(args.get('start_time', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore[union-attr]
     max_results = arg_to_number(
         arg=args.get('max_results'),
         arg_name='max_results',
@@ -381,7 +385,7 @@ def search_incidents_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
     incidents = client.search_incidents(
         query=query,
-        start_time=int(start_date.timestamp() * 1000) if start_date else 0,
+        start_time=start_date,
         max_results=max_results
     )
     if not incidents:
@@ -734,11 +738,8 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = arg_to_timestamp(
-        arg=demisto.params().get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
+    first_fetch_time = dateparser.parse(demisto.params().get('first_fetch', '3 days')) \
+        .strftime(XSOAR_DATE_FORMAT)  # type: ignore[union-attr]
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \
@@ -815,7 +816,6 @@ def main() -> None:
     except NotImplementedError:
         raise
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

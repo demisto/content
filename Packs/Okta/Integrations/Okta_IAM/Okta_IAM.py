@@ -441,7 +441,7 @@ def test_module(client, is_fetch, fetch_query_filter, auto_generate_query_filter
         elif not fetch_query_filter:
             raise DemistoException(FETCH_QUERY_EXCEPTION_MSG)
     try:
-        dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
+        dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)  # type: ignore
     except AttributeError:
         raise DemistoException('First fetch timestamp parameter is not in the correct format.')
 
@@ -742,7 +742,9 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
     incidents = last_run.get('incidents', [])
     last_run_full_url = last_run.get('last_run_full_url')
 
-    first_fetch = dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
+    first_fetch_date = dateparser.parse(first_fetch_str)
+    assert first_fetch_date is not None, f'could not parse {first_fetch_str}'
+    first_fetch = first_fetch_date.strftime(DATE_FORMAT)
     last_run_time = last_run.get('last_run_time', first_fetch)  # if last_run_time is undefined, use first_fetch
     time_now = datetime.now().strftime(DATE_FORMAT)
 
@@ -1007,9 +1009,9 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 
-    except Exception:
+    except Exception as e:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 from IAMApiModule import *  # noqa: E402

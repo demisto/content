@@ -20931,415 +20931,6 @@ Get the list of restricted IPs within the user's subscription.
 
 >Successfully added restricted ips
 
-### qualys-host-list-detection
-***
-Get a list of hosts with the hosts latest vulnerability data. The list is based on the host based scan data available in the user’s account.
-
-
-#### Base Command
-
-`qualys-host-list-detection`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ids | A comma-separated list of host IDs/ranges. A host ID range is specified with a hyphen (for example, 190-400). Valid host IDs are required. | Optional | 
-| ips | A comma-separated list of host IP addresses/ranges. An IP address range is specified with a hyphen (for example, 10.10.30.1-10.10.30.50). | Optional | 
-| qids | A comma-separated list of valid detection record QIDs. A range is specified with a dash (for example, 68518-68522). | Optional | 
-| severities | A comma-separated list of severity levels. A range is specified with a dash (for example, 1-3). | Optional | 
-| use_tags | Specify 0 (the default) to select hosts based on IP addresses/ranges and/or asset groups. Specify 1 to select hosts based on asset tags. Possible values are: 0, 1. | Optional | 
-| tag_set_by | (Optional when use_tags=1) Specify “id” (the default) to select a tag set by providing tag IDs. Specify “name” to select a tag set by providing tag names. Possible values are: id, name. | Optional | 
-| tag_include_selector | (Optional when use_tags=1) Specify “any” (the default) to include hosts that match at least one of the selected tags. Specify “all” to include hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
-| tag_exclude_selector | (Optional when use_tags=1) Specify “any” (the default) to exclude hosts that match at least one of the selected tags. Specify “all” to exclude hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
-| tag_set_include | (Optional when use_tags=1) Specify a comma-separated list of tag names or IDs to include hosts that match these tags. | Optional | 
-| tag_set_exclude | (Optional when use_tags=1) Specify a comma-separated list of tag names or IDs for which to exclude hosts that match the tags. | Optional | 
-| detection_processed_before | Specify the date before which to retrieve detections vulnerability scan results that were processed. Specify the date in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), for example, “2016-09-12” or “2016-09-12T23:15:00Z”. | Optional | 
-| detection_processed_after | Specify the date after which to retrieve detections vulnerability scan results that were processed. Specify the date in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), for example, “2016-09-12” or “2016-09-12T23:15:00Z”. | Optional | 
-| vm_scan_since | Show hosts that were last scanned for vulnerabilities since the specified date and time (optional). Hosts that were the target of a vulnerability scan since the date/time will be shown. Date/time is specified in the following format: YYYY-MM-DD[THH:MM:SSZ] (UTC/GMT). Permissions: An Auditor cannot specify this parameter. | Optional | 
-| no_vm_scan_since | Show hosts not scanned since the specified date and time (optional). The date/time is specified in the following format: YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), for example, “2007-07-01” or “2007-01-25T23:12:00Z”. Permissions - An Auditor cannot specify this parameter. | Optional | 
-| truncation_limit | Specify the maximum number of host records processed per request. When not specified, the truncation limit is set to 1000 host records. You may specify a value less than the default (1-999) or greater than the default (1001-1000000). | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Qualys.HostDetections.ID | String | Host detection ID. | 
-| Qualys.HostDetections.IP | String | Host detection IP address. | 
-| Qualys.HostDetections.TRACKING_METHOD | String | Tracking method. | 
-| Qualys.HostDetections.OS | String | Host operating system. | 
-| Qualys.HostDetections.DNS | String | Host DNS. | 
-| Qualys.HostDetections.DNS_DATA.HOSTNAME | String | DNS data host name. | 
-| Qualys.HostDetections.DNS_DATA.DOMAIN | Unknown | DNS data domain. | 
-| Qualys.HostDetections.DNS_DATA.FQDN | Unknown | DNS data FQDN. | 
-| Qualys.HostDetections.NETBIOS | String | Netbios. | 
-| Qualys.HostDetections.QG_HOSTID | String | QG host ID. | 
-| Qualys.HostDetections.LAST_SCAN_DATETIME | Date | Last scan date. | 
-| Qualys.HostDetections.LAST_VM_SCANNED_DATE | Date | Last VM scan date. | 
-| Qualys.HostDetections.LAST_VM_SCANNED_DURATION | String | Last VM scan duration. | 
-| Qualys.HostDetections.LAST_PC_SCANNED_DATE | Date | Last PC scan date. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.QID | String | Detection QID. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.TYPE | String | Detection type. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.SEVERITY | String | Detection severity. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.SSL | String | Detection SSL. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.RESULTS | String | Detection results. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.STATUS | String | Detection status. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.FIRST_FOUND_DATETIME | Date | Date detection was first found. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_FOUND_DATETIME | Date | Date detection was last found. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.TIMES_FOUND | String | Number of times detection was found. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_TEST_DATETIME | Date | Date detection was last tested. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_UPDATE_DATETIME | Date | Date detection was last updated. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.IS_IGNORED | String | Whether detection is ignored. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.IS_DISABLED | String | Whether detection is disabled. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_PROCESSED_DATETIME | Date | Date detection was last processed. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.PORT | String | Detection port. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.PROTOCOL | String | Detection protocol. | 
-
-
-#### Command Example
-```!qualys-host-list-detection truncation_limit=2```
-
-#### Context Example
-```json
-{
-    "Qualys": {
-        "HostDetections": [
-            {
-                "DETECTION_LIST": {
-                    "DETECTION": [
-                        {
-                            "FIRST_FOUND_DATETIME": "2017-06-08T09:17:08Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:13:37Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:13:37Z",
-                            "PORT": "3389",
-                            "PROTOCOL": "tcp",
-                            "QID": "38170",
-                            "RESULTS": "Certificate #0 CN=WIN-2AAABX64SXS (WIN-2AAABX64SXS) doesn&apos;t resolve",
-                            "SEVERITY": "2",
-                            "SSL": "1",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "396",
-                            "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2017-06-08T09:17:08Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:13:37Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:13:37Z",
-                            "PORT": "3389",
-                            "PROTOCOL": "tcp",
-                            "QID": "38173",
-                            "RESULTS": "Certificate #0 CN=WIN-2AAABX64SXS unable to get local issuer certificate",
-                            "SEVERITY": "2",
-                            "SSL": "1",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "396",
-                            "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2017-06-08T09:17:08Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:13:37Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:13:37Z",
-                            "PORT": "3389",
-                            "PROTOCOL": "tcp",
-                            "QID": "38601",
-                            "RESULTS": "CIPHER\tKEY-EXCHANGE\tAUTHENTICATION\tMAC\tENCRYPTION(KEY-STRENGTH)\tGRADE\nTLSv1 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM\nTLSv1.1 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM\nTLSv1.2 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM",
-                            "SEVERITY": "3",
-                            "SSL": "1",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "396",
-                            "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2017-06-08T09:17:08Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:13:37Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:13:37Z",
-                            "PORT": "3389",
-                            "PROTOCOL": "tcp",
-                            "QID": "38628",
-                            "RESULTS": "TLSv1.0 is supported",
-                            "SEVERITY": "3",
-                            "SSL": "1",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "396",
-                            "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2017-06-08T09:17:08Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:13:37Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:13:37Z",
-                            "PORT": "3389",
-                            "PROTOCOL": "tcp",
-                            "QID": "90882",
-                            "RESULTS": "RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit)",
-                            "SEVERITY": "3",
-                            "SSL": "1",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "396",
-                            "TYPE": "Confirmed"
-                        }
-                    ]
-                },
-                "DNS": "i-070b64d396f8037e7",
-                "DNS_DATA": {
-                    "DOMAIN": null,
-                    "FQDN": null,
-                    "HOSTNAME": "i-070b64d396f8037e7"
-                },
-                "ID": "35700896",
-                "IP": "1.1.1.1",
-                "LAST_PC_SCANNED_DATE": "2018-07-08T22:03:23Z",
-                "LAST_SCAN_DATETIME": "2018-10-25T19:13:37Z",
-                "LAST_VM_SCANNED_DATE": "2018-10-25T19:13:11Z",
-                "LAST_VM_SCANNED_DURATION": "1083",
-                "NETBIOS": "WIN-2AAABX64SXS",
-                "OS": "Windows 2008 R2/7",
-                "QG_HOSTID": "a30ba2e0-1e90-4f16-b755-2db8f44b67a7",
-                "TRACKING_METHOD": "EC2"
-            },
-            {
-                "DETECTION_LIST": {
-                    "DETECTION": [
-                        {
-                            "FIRST_FOUND_DATETIME": "2018-05-14T13:54:45Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:12:25Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:12:25Z",
-                            "QID": "70000",
-                            "RESULTS": "AMAZON-544DB96A",
-                            "SEVERITY": "2",
-                            "SSL": "0",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "59",
-                            "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2018-05-14T13:54:45Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:12:25Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:12:25Z",
-                            "QID": "70001",
-                            "RESULTS": "Device Name\tComment\tType\nIPC$\tRemote IPC\t-2147483645\nC$\tDefault share\t-2147483648\nADMIN$\tRemote Admin\t-2147483648",
-                            "SEVERITY": "3",
-                            "SSL": "0",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "59",
-                            "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2018-05-14T13:54:45Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:12:25Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:12:25Z",
-                            "QID": "90043",
-                            "SEVERITY": "3",
-                            "SSL": "0",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "59",
-                            "TYPE": "Potential"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2018-05-14T13:54:45Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:12:25Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:12:25Z",
-                            "PORT": "3389",
-                            "PROTOCOL": "tcp",
-                            "QID": "90882",
-                            "RESULTS": "RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit)",
-                            "SEVERITY": "3",
-                            "SSL": "0",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "59",
-                            "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2018-05-14T13:54:45Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:12:25Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:12:25Z",
-                            "PORT": "3389",
-                            "PROTOCOL": "tcp",
-                            "QID": "90883",
-                            "RESULTS": "RDP Public key is 512 bits long.",
-                            "SEVERITY": "3",
-                            "SSL": "0",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "59",
-                            "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2018-05-14T13:54:45Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:12:25Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:12:25Z",
-                            "QID": "105500",
-                            "RESULTS": "QID: 105500 detected on port 3389 over TCP.",
-                            "SEVERITY": "3",
-                            "SSL": "0",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "59",
-                            "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2018-05-14T13:54:45Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:12:25Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:12:25Z",
-                            "QID": "105501",
-                            "RESULTS": "QID: 105501 detected on port 3389 over TCP.",
-                            "SEVERITY": "2",
-                            "SSL": "0",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "59",
-                            "TYPE": "Potential"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2018-05-14T13:54:45Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:12:25Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:11:35Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:12:25Z",
-                            "QID": "105632",
-                            "RESULTS": "EOL/Obsolete Operating System : Windows Server 2003 R2 Detected",
-                            "SEVERITY": "5",
-                            "SSL": "0",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "59",
-                            "TYPE": "Confirmed"
-                        }
-                    ]
-                },
-                "DNS": "i-055ef1b4734491575",
-                "DNS_DATA": {
-                    "DOMAIN": null,
-                    "FQDN": null,
-                    "HOSTNAME": "i-055ef1b4734491575"
-                },
-                "ID": "69291564",
-                "IP": "1.1.1.1",
-                "LAST_PC_SCANNED_DATE": "2018-07-08T22:03:23Z",
-                "LAST_SCAN_DATETIME": "2018-10-25T19:12:25Z",
-                "LAST_VM_SCANNED_DATE": "2018-10-25T19:11:35Z",
-                "LAST_VM_SCANNED_DURATION": "987",
-                "NETBIOS": "AMAZON-544DB96A",
-                "OS": "Windows 2003 R2 Service Pack 2",
-                "QG_HOSTID": "8725d236-7f5b-41e1-b795-fa67e3adc108",
-                "TRACKING_METHOD": "EC2"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Host Detection List
->|DETECTIONS|DNS_DATA|ID|IP|
->|---|---|---|---|
->| {'QID': '38170', 'RESULTS': 'Certificate #0 CN=WIN-2AAABX64SXS (WIN-2AAABX64SXS) doesn&apos;t resolve'},<br/>{'QID': '38173', 'RESULTS': 'Certificate #0 CN=WIN-2AAABX64SXS unable to get local issuer certificate'},<br/>{'QID': '38601', 'RESULTS': 'CIPHER\tKEY-EXCHANGE\tAUTHENTICATION\tMAC\tENCRYPTION(KEY-STRENGTH)\tGRADE\nTLSv1 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM\nTLSv1.1 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM\nTLSv1.2 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM'},<br/>{'QID': '38628', 'RESULTS': 'TLSv1.0 is supported'},<br/>{'QID': '38657', 'RESULTS': 'CIPHER\tKEY-EXCHANGE\tAUTHENTICATION\tMAC\tENCRYPTION(KEY-STRENGTH)\tGRADE\nTLSv1 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM\nTLSv1.1 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM\nTLSv1.2 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM'},<br/>{'QID': '70000', 'RESULTS': 'WIN-2AAABX64SXS'},<br/>{'QID': '90043', 'RESULTS': None},<br/>{'QID': '90882', 'RESULTS': 'RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit)'} | HOSTNAME: i-070b64d396f8037e7 | 35700896 | 1.1.1.1 |
->| {'QID': '70000', 'RESULTS': 'AMAZON-544DB96A'},<br/>{'QID': '70001', 'RESULTS': 'Device Name\tComment\tType\nIPC$\tRemote IPC\t-2147483645\nC$\tDefault share\t-2147483648\nADMIN$\tRemote Admin\t-2147483648'},<br/>{'QID': '90043', 'RESULTS': None},<br/>{'QID': '90882', 'RESULTS': 'RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit)'},<br/>{'QID': '90883', 'RESULTS': 'RDP Public key is 512 bits long.'},<br/>{'QID': '105500', 'RESULTS': 'QID: 105500 detected on port 3389 over TCP.'},<br/>{'QID': '105501', 'RESULTS': 'QID: 105501 detected on port 3389 over TCP.'},<br/>{'QID': '105632', 'RESULTS': 'EOL/Obsolete Operating System : Windows Server 2003 R2 Detected'} | HOSTNAME: i-055ef1b4734491575 | 69291564 | 1.1.1.1 |
-
-
-
-
-### qualys-host-update
-***
-Update host attributes using new update parameters.
-
-
-#### Base Command
-
-`qualys-host-update`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ids | A comma-separated list of host IDs/ranges to update. A host ID range is specified with a hyphen (for example, 190-400). Valid host IDs are required. Either the `ips` or `ids` parameter must be supplied. IDs or IPs can be retrieved via running the `qualys-host-list-detection` command, using the ID field or IPs field. | Optional | 
-| ips | A comma-separated list of host IP addresses/ranges to add to, remove from or replace in the restricted IPs list. An IP range is specified with a hyphen (for example, 10.10.30.1-10.10.30.50). Either the `ips` or `ids` parameter must be supplied. | Optional | 
-| network_id | (Valid only when the Network Support feature is enabled for the user’s account.) The network ID of the custom network for which to restrict the request. When unspecified, defaults to Global Default Network. | Optional | 
-| host_dns | The DNS hostname for the IP you want to update. A single IP must be specified in the same request and the IP will only be updated if it matches the hostname specified. | Optional | 
-| host_netbios | The NetBIOS hostname for the IP you want to update. A single IP must be specified in the same request and the IP will only be updated if it matches the hostname specified. | Optional | 
-| tracking_method | Show only IP addresses/ranges which have a certain tracking method. Possible values are: IP, DNS, NETBIOS. | Optional | 
-| new_tracking_method | The new tracking method. Note - You cannot change the tracking method to EC2 or AGENT. If an IP is already tracked by EC2 or AGENT, you cannot change the tracking method to something else. Possible values are: IP, DNS, NETBIOS. | Optional | 
-| new_owner | The new owner of the host asset(s). The owner must be a Manager. Another user (Unit Manager, Scanner, Reader) can be the owner if the IP address is in the user’s account. | Optional | 
-| new_comment | The user-defined comments. Specify new comments for the host asset(s). | Optional | 
-| new_ud1 | Change value for user-defined field 1. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
-| new_ud2 | Change value for user-defined field 2. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
-| new_ud3 | Change value for user-defined field 3. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Qualys.Endpoint.Update.DATETIME | Date | Date the command was executed. | 
-| Qualys.Endpoint.Update.TEXT | String | Qualys response for the host update. | 
-
-
-#### Command Example
-```!qualys-host-update ids=35700896 new_comment=comment```
-
-#### Context Example
-```json
-{
-    "Qualys": {
-        "Endpoint": {
-            "Update": {
-                "DATETIME": "2021-12-20T12:02:03Z",
-                "TEXT": "Assets successfully updated"
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->Assets successfully updated
-
 ### qualys-schedule-scan-create
 ***
 Create a scan schedule in the user’s account.
@@ -21823,3 +21414,293 @@ Gets a list of the supported time zone codes.
 >| 0 | PF3 | (GMT -09:00) French Polynesia, Gambier Islands |
 >| 1 | US-AK | (GMT -09:00) United States, Alaska |
 >| 1 | CA-BC | (GMT -08:00) Canada, British Columbia (Pacific Standard Time) |
+
+
+### qualys-host-list-detection
+***
+Get a list of hosts with the hosts latest vulnerability data. The list is based on the host based scan data available in the user’s account.
+
+
+#### Base Command
+
+`qualys-host-list-detection`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of host IDs/ranges. A host ID range is specified with a hyphen (for example, 190-400). Valid host IDs are required. | Optional | 
+| ips | A comma-separated list of host IP addresses/ranges. An IP address range is specified with a hyphen (for example, 10.10.30.1-10.10.30.50). | Optional | 
+| qids | A comma-separated list of valid detection record QIDs. A range is specified with a dash (for example, 68518-68522). | Optional | 
+| severities | A comma-separated list of severity levels. A range is specified with a dash (for example, 1-5 where 1 is low and 5 is high). | Optional | 
+| use_tags | Specify 0 (the default) to select hosts based on IP addresses/ranges and/or asset groups. Specify 1 to select hosts based on asset tags. Possible values are: 0, 1. | Optional | 
+| tag_set_by | (Optional when use_tags=1) Specify “id” (the default) to select a tag set by providing tag IDs. Specify “name” to select a tag set by providing tag names. Possible values are: id, name. | Optional | 
+| tag_include_selector | (Optional when use_tags=1) Specify “any” (the default) to include hosts that match at least one of the selected tags. Specify “all” to include hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
+| tag_exclude_selector | (Optional when use_tags=1) Specify “any” (the default) to exclude hosts that match at least one of the selected tags. Specify “all” to exclude hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
+| tag_set_include | (Optional when use_tags=1) Specify a comma-separated list of tag names or IDs to include hosts that match these tags. | Optional | 
+| tag_set_exclude | (Optional when use_tags=1) Specify a comma-separated list of tag names or IDs for which to exclude hosts that match the tags. | Optional | 
+| detection_processed_before | Specify the date before which to retrieve detections vulnerability scan results that were processed. Specify the date in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), for example, “2016-09-12” or “2016-09-12T23:15:00Z”. | Optional | 
+| detection_processed_after | Specify the date after which to retrieve detections vulnerability scan results that were processed. Specify the date in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), for example, “2016-09-12” or “2016-09-12T23:15:00Z”. | Optional | 
+| vm_scan_since | Show hosts that were last scanned for vulnerabilities since the specified date and time (optional). Hosts that were the target of a vulnerability scan since the date/time will be shown. Date/time is specified in the following format: YYYY-MM-DD[THH:MM:SSZ] (UTC/GMT). Permissions: An Auditor cannot specify this parameter. | Optional | 
+| no_vm_scan_since | Show hosts not scanned since the specified date and time (optional). The date/time is specified in the following format: YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), for example, “2007-07-01” or “2007-01-25T23:12:00Z”. Permissions - An Auditor cannot specify this parameter. | Optional | 
+| truncation_limit | Specify the maximum number of host records processed per request. When not specified, the truncation limit is set to 1000 host records. You may specify a value less than the default (1-999) or greater than the default (1001-1000000). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qualys.HostDetections.ID | String | Host detection ID. | 
+| Qualys.HostDetections.IP | String | Host detection IP address. | 
+| Qualys.HostDetections.TRACKING_METHOD | String | Tracking method. | 
+| Qualys.HostDetections.OS | String | Host operating system. | 
+| Qualys.HostDetections.DNS | String | Host DNS. | 
+| Qualys.HostDetections.DNS_DATA.HOSTNAME | String | DNS data host name. | 
+| Qualys.HostDetections.DNS_DATA.DOMAIN | Unknown | DNS data domain. | 
+| Qualys.HostDetections.DNS_DATA.FQDN | Unknown | DNS data FQDN. | 
+| Qualys.HostDetections.NETBIOS | String | Netbios. | 
+| Qualys.HostDetections.QG_HOSTID | String | QG host ID. | 
+| Qualys.HostDetections.LAST_SCAN_DATETIME | Date | Last scan date. | 
+| Qualys.HostDetections.LAST_VM_SCANNED_DATE | Date | Last VM scan date. | 
+| Qualys.HostDetections.LAST_VM_SCANNED_DURATION | String | Last VM scan duration. | 
+| Qualys.HostDetections.LAST_PC_SCANNED_DATE | Date | Last PC scan date. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.QID | String | Detection QID. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.TYPE | String | Detection type. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.SEVERITY | String | Detection severity. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.SSL | String | Detection SSL. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.RESULTS | String | Detection results. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.STATUS | String | Detection status. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.FIRST_FOUND_DATETIME | Date | Date detection was first found. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_FOUND_DATETIME | Date | Date detection was last found. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.TIMES_FOUND | String | Number of times detection was found. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_TEST_DATETIME | Date | Date detection was last tested. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_UPDATE_DATETIME | Date | Date detection was last updated. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.IS_IGNORED | String | Whether detection is ignored. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.IS_DISABLED | String | Whether detection is disabled. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_PROCESSED_DATETIME | Date | Date detection was last processed. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.PORT | String | Detection port. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.PROTOCOL | String | Detection protocol. | 
+
+#### Command example
+```!qualys-host-list-detection truncation_limit=2```
+#### Context Example
+```json
+{
+    "Qualys": {
+        "HostDetections": [
+            {
+                "DETECTION_LIST": {
+                    "DETECTION": [
+                        {
+                            "FIRST_FOUND_DATETIME": "2017-06-08T09:17:08Z",
+                            "IS_DISABLED": "0",
+                            "IS_IGNORED": "0",
+                            "LAST_FOUND_DATETIME": "2018-10-25T19:13:11Z",
+                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:13:37Z",
+                            "LAST_TEST_DATETIME": "2018-10-25T19:13:11Z",
+                            "LAST_UPDATE_DATETIME": "2018-10-25T19:13:37Z",
+                            "PORT": "3389",
+                            "PROTOCOL": "tcp",
+                            "QID": "38170",
+                            "RESULTS": "Certificate #0 CN=WIN-2IDQKTU63RC (WIN-2IDQKTU63RC) doesn&apos;t resolve",
+                            "SEVERITY": "2",
+                            "SSL": "1",
+                            "STATUS": "Active",
+                            "TIMES_FOUND": "396",
+                            "TYPE": "Confirmed"
+                        },
+                        {
+                            "FIRST_FOUND_DATETIME": "2017-06-08T09:17:08Z",
+                            "IS_DISABLED": "0",
+                            "IS_IGNORED": "0",
+                            "LAST_FOUND_DATETIME": "2018-10-25T19:13:11Z",
+                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:13:37Z",
+                            "LAST_TEST_DATETIME": "2018-10-25T19:13:11Z",
+                            "LAST_UPDATE_DATETIME": "2018-10-25T19:13:37Z",
+                            "PORT": "3389",
+                            "PROTOCOL": "tcp",
+                            "QID": "38173",
+                            "RESULTS": "Certificate #0 CN=WIN-2IDQKTU63RC unable to get local issuer certificate",
+                            "SEVERITY": "2",
+                            "SSL": "1",
+                            "STATUS": "Active",
+                            "TIMES_FOUND": "396",
+                            "TYPE": "Confirmed"
+                        },
+                    ]
+                },
+                "DNS": "xxx",
+                "DNS_DATA": {
+                    "DOMAIN": null,
+                    "FQDN": null,
+                    "HOSTNAME": "xxx"
+                },
+                "ID": "123",
+                "IP": "1.1.1.1",
+                "LAST_PC_SCANNED_DATE": "2018-07-08T22:03:23Z",
+                "LAST_SCAN_DATETIME": "2018-10-25T19:13:37Z",
+                "LAST_VM_SCANNED_DATE": "2018-10-25T19:13:11Z",
+                "LAST_VM_SCANNED_DURATION": "1083",
+                "NETBIOS": "WIN-2IDQKTU63RC",
+                "OS": "Windows 2008 R2/7",
+                "QG_HOSTID": "a30ba2e0-1e90-4f16-b755-2db8f44b67a7",
+                "TRACKING_METHOD": "EC2"
+            },
+            {
+                "DETECTION_LIST": {
+                    "DETECTION": [
+                        {
+                            "FIRST_FOUND_DATETIME": "2018-05-14T13:54:45Z",
+                            "IS_DISABLED": "0",
+                            "IS_IGNORED": "0",
+                            "LAST_FOUND_DATETIME": "2018-10-25T19:11:35Z",
+                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:12:25Z",
+                            "LAST_TEST_DATETIME": "2018-10-25T19:11:35Z",
+                            "LAST_UPDATE_DATETIME": "2018-10-25T19:12:25Z",
+                            "QID": "70000",
+                            "RESULTS": "AMAZON-544DB96A",
+                            "SEVERITY": "2",
+                            "SSL": "0",
+                            "STATUS": "Active",
+                            "TIMES_FOUND": "59",
+                            "TYPE": "Confirmed"
+                        },
+                        {
+                            "FIRST_FOUND_DATETIME": "2018-05-14T13:54:45Z",
+                            "IS_DISABLED": "0",
+                            "IS_IGNORED": "0",
+                            "LAST_FOUND_DATETIME": "2018-10-25T19:11:35Z",
+                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:12:25Z",
+                            "LAST_TEST_DATETIME": "2018-10-25T19:11:35Z",
+                            "LAST_UPDATE_DATETIME": "2018-10-25T19:12:25Z",
+                            "QID": "70001",
+                            "RESULTS": "Device Name\tComment\tType\nIPC$\tRemote IPC\t-2147483645\nC$\tDefault share\t-2147483648\nADMIN$\tRemote Admin\t-2147483648",
+                            "SEVERITY": "3",
+                            "SSL": "0",
+                            "STATUS": "Active",
+                            "TIMES_FOUND": "59",
+                            "TYPE": "Confirmed"
+                        },
+                        {
+                            "FIRST_FOUND_DATETIME": "2018-05-14T13:54:45Z",
+                            "IS_DISABLED": "0",
+                            "IS_IGNORED": "0",
+                            "LAST_FOUND_DATETIME": "2018-10-25T19:11:35Z",
+                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:12:25Z",
+                            "LAST_TEST_DATETIME": "2018-10-25T19:11:35Z",
+                            "LAST_UPDATE_DATETIME": "2018-10-25T19:12:25Z",
+                            "QID": "90043",
+                            "SEVERITY": "3",
+                            "SSL": "0",
+                            "STATUS": "Active",
+                            "TIMES_FOUND": "59",
+                            "TYPE": "Potential"
+                        },
+                    ]
+                },
+                "DNS": "xxx",
+                "DNS_DATA": {
+                    "DOMAIN": null,
+                    "FQDN": null,
+                    "HOSTNAME": "xxx"
+                },
+                "ID": "1234",
+                "IP": "1.1.1.1",
+                "LAST_PC_SCANNED_DATE": "2018-07-08T22:03:23Z",
+                "LAST_SCAN_DATETIME": "2018-10-25T19:12:25Z",
+                "LAST_VM_SCANNED_DATE": "2018-10-25T19:11:35Z",
+                "LAST_VM_SCANNED_DURATION": "987",
+                "NETBIOS": "AMAZON-544DB96A",
+                "OS": "Windows 2003 R2 Service Pack 2",
+                "QG_HOSTID": "8725d236-7f5b-41e1-b795-fa67e3adc108",
+                "TRACKING_METHOD": "EC2"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Host Detection List
+>
+>|ID|IP|DNS_DATA|38170|38173|38601|38628|38657|70000|90882|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 123 | 1.1.1.1 | HOSTNAME: xxx | Certificate #0 CN=WIN-2IDQKTU63RC (WIN-2IDQKTU63RC) doesn&apos;t resolve | Certificate #0 CN=WIN-2IDQKTU63RC unable to get local issuer certificate | CIPHER	KEY-EXCHANGE	AUTHENTICATION	MAC	ENCRYPTION(KEY-STRENGTH)	GRADE<br/>TLSv1 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM<br/>TLSv1.1 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM<br/>TLSv1.2 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM | TLSv1.0 is supported | CIPHER	KEY-EXCHANGE	AUTHENTICATION	MAC	ENCRYPTION(KEY-STRENGTH)	GRADE<br/>TLSv1 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM<br/>TLSv1.1 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM<br/>TLSv1.2 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM | WIN-2IDQKTU63RC | RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit) |
+>### Host Detection List
+>
+>|ID| IP      | DNS_DATA      |70000|70001|90882|90883|105500|105501|105632|
+>|---------|---------------|---|---|---|---|---|---|---|---|
+>| 1234 | 1.1.1.1 | HOSTNAME: xxx | AMAZON-544DB96A | Device Name	Comment	Type<br/>IPC$	Remote IPC	-2147483645<br/>C$	Default share	-2147483648<br/>ADMIN$	Remote Admin	-2147483648 | RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit) | RDP Public key is 512 bits long. | QID: 105500 detected on port 3389 over TCP. | QID: 105501 detected on port 3389 over TCP. | EOL/Obsolete Operating System : Windows Server 2003 R2 Detected |
+
+### qualys-host-update
+***
+Update host attributes using new update parameters.
+
+
+#### Base Command
+
+`qualys-host-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of host IDs/ranges to update. A host ID range is specified with a hyphen (for example, 190-400). Valid host IDs are required. Either the `ips` or `ids` parameter must be supplied. IDs or IPs can be retrieved via running the `qualys-host-list-detection` command, using the ID field or IPs field. | Optional | 
+| ips | A comma-separated list of host IP addresses/ranges to add to, remove from or replace in the restricted IPs list. An IP range is specified with a hyphen (for example, 10.10.30.1-10.10.30.50). Either the `ips` or `ids` parameter must be supplied. | Optional | 
+| network_id | (Valid only when the Network Support feature is enabled for the user’s account.) The network ID of the custom network for which to restrict the request. When unspecified, defaults to Global Default Network. | Optional | 
+| host_dns | The DNS hostname for the IP you want to update. A single IP must be specified in the same request and the IP will only be updated if it matches the hostname specified. | Optional | 
+| host_netbios | The NetBIOS hostname for the IP you want to update. A single IP must be specified in the same request and the IP will only be updated if it matches the hostname specified. | Optional | 
+| tracking_method | Show only IP addresses/ranges which have a certain tracking method. Possible values are: IP, DNS, NETBIOS. | Optional | 
+| new_tracking_method | The new tracking method. Note - You cannot change the tracking method to EC2 or AGENT. If an IP is already tracked by EC2 or AGENT, you cannot change the tracking method to something else. Possible values are: IP, DNS, NETBIOS. | Optional | 
+| new_owner | The new owner of the host asset(s). The owner must be a Manager. Another user (Unit Manager, Scanner, Reader) can be the owner if the IP address is in the user’s account. | Optional | 
+| new_comment | The user-defined comments. Specify new comments for the host asset(s). | Optional | 
+| new_ud1 | Change value for user-defined field 1. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
+| new_ud2 | Change value for user-defined field 2. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
+| new_ud3 | Change value for user-defined field 3. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qualys.Endpoint.Update.DATETIME | Date | Date the command was executed. | 
+| Qualys.Endpoint.Update.TEXT | String | Qualys response for the host update. | 
+
+#### Command example
+```!qualys-host-update ids=35700896 new_comment=comment```
+#### Context Example
+```json
+{
+    "Qualys": {
+        "Endpoint": {
+            "Update": {
+                "DATETIME": "2022-05-12T14:25:43Z",
+                "TEXT": "Assets successfully updated"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Assets successfully updated
+
+### qualys-update-unix-record
+***
+Update Unix records for authenticated scans of hosts running on Unix
+
+
+#### Base Command
+
+`qualys-update-unix-record`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | Record IDs to update. | Required | 
+| add_ips | IPs specified will overwrite existing IPs in the record, and existing IPs will be removed. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.

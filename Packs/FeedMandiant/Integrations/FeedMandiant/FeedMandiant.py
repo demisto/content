@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 import requests
-import traceback
 from typing import Dict
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -140,7 +139,7 @@ class MandiantClient(BaseClient):
                 res = call_result.get(info_type, [])
         return res
 
-    def get_indicators(self, indicator_type: str, params: Dict = {}) -> List:
+    def get_indicators(self, indicator_type: str, params: Dict = None) -> List:
         """
         Get additional information for given indicator.
 
@@ -150,6 +149,7 @@ class MandiantClient(BaseClient):
         Returns:
             List: list indicators.
         """
+        params = params if params else {}
         try:
             url = f'/v4/{MAP_TYPE_TO_URL[indicator_type]}'
 
@@ -184,13 +184,14 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
     if indicator_type == 'Indicators':
         # for indicator type the earliest time to fetch is 90 days ago
         earliest_fetch = arg_to_datetime('90 days ago')
-        start_date = max(earliest_fetch, start_date)
+        start_date = max(earliest_fetch, start_date)  # type:ignore
         params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
 
-    if indicator_type != 'Indicators':
-        new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated')), reverse=True)  # new to old
+    if indicator_type != 'Indicators': \
+            # new to old
+        new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated')), reverse=True)  # type:ignore
         new_indicators_list = list(
             filter(lambda x: arg_to_datetime(x['last_updated']).timestamp() > start_date.timestamp(),  # type: ignore
                    new_indicators_list))
@@ -283,7 +284,7 @@ def get_indicator_relationships(raw_indicator: Dict, indicator_field: str, entit
                                             entity_b=entity.get(entity_b_field, ''),
                                             entity_b_type=entity_b_type,
                                             reverse_name=reverse_name
-                                            )
+                                            ).to_indicator()
                          for entity in entities_list]
     return relationships
 
@@ -474,7 +475,7 @@ def enrich_indicators(client: MandiantClient, indicators_list: List, indicator_t
                                                     entity_b=report.get('title'),
                                                     entity_b_type=ThreatIntel.ObjectsNames.REPORT,
                                                     reverse_name=EntityRelationship.Relationships.RELATED_TO
-                                                    )
+                                                    ).to_indicator()
                                  for report in reports_list if report]
 
         general_list = client.get_indicator_additional_info(indicator_type=indicator_type,
@@ -487,7 +488,7 @@ def enrich_indicators(client: MandiantClient, indicators_list: List, indicator_t
                                                     entity_b=general_indicator.get('value'),
                                                     entity_b_type=MAP_INDICATORS_TYPE[
                                                         general_indicator.get('type', '')],
-                                                    reverse_name=EntityRelationship.Relationships.INDICATOR_OF)
+                                                    reverse_name=EntityRelationship.Relationships.INDICATOR_OF).to_indicator()
                                  for general_indicator in general_list if general_indicator]
 
         attack_pattern_list = client.get_indicator_additional_info(indicator_type=indicator_type,
@@ -500,13 +501,13 @@ def enrich_indicators(client: MandiantClient, indicators_list: List, indicator_t
                                                            entity_b=attack_pattern.get('title'),
                                                            entity_b_type=ThreatIntel.ObjectsNames.ATTACK_PATTERN,
                                                            reverse_name=EntityRelationship.Relationships.USED_BY
-                                                           )
+                                                           ).to_indicator()
                                         for attack_pattern in attack_pattern_list if attack_pattern]
 
         indicator['relationships'] += reports_relationships + general_relationships + attack_pattern_relationships
 
 
-def fetch_indicators(client: MandiantClient, args: Dict = {}, update_context: bool = True):
+def fetch_indicators(client: MandiantClient, args: Dict = None, update_context: bool = True):
     """
     For each type the fetch indicator command will:
         1. Fetch a list of indicators, this is done in a single API call and retrieve minimal data for each indicator.
@@ -523,7 +524,7 @@ def fetch_indicators(client: MandiantClient, args: Dict = {}, update_context: bo
     Returns:
         List of all indicators
     """
-
+    args = args if args else {}
     limit = int(args.get('limit', client.limit))
     metadata = argToBoolean(args.get('indicatorMetadata', client.metadata))
     enrichment = argToBoolean(args.get('indicatorRelationships', client.enrichment))
@@ -643,7 +644,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

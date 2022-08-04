@@ -19,8 +19,8 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.9.8.24399
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.4.27798
 enabled: true
 name: CreateHash
 outputs:

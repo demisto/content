@@ -1,9 +1,9 @@
 Use the Blocklist.de feed integration to fetch indicators from the feed.
 
-## Configure Blocklist_de Feed on Cortex XSOAR
+## Configure Blocklist.de Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Blocklist_de Feed.
+2. Search for Blocklist.de Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -45,3 +45,14 @@ Gets the feed indicators.
 #### Context Output
 
 There is no context output for this command.
+
+
+#### Human Readable Output
+
+### Indicators
+
+>|Value|Type|Rawjson|
+>|---|---|---|
+>| 1.1.1.1 | IP | value: 1.1.1.1<br>type: IP<br>tags: null |
+>| 2.2.2.2 | IP | value: 2.2.2.2<br>type: IP<br>tags: null |
+>| 3.3.3.3 | IP | value: 3.3.3.3<br>type: IP<br>tags: null |

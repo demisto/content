@@ -1,0 +1,5 @@
+name: DropboxEventCollector
+id: DropboxEventCollector
+fromversion: 3.3.0
+rules: ''
+schema: ''

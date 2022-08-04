@@ -746,7 +746,7 @@ def get_publish_body(message_attributes, message_data):
     message = {}
     if message_data:
         # convert to base64 string
-        message["data"] = str(base64.b64encode(message_data.encode("utf8")))[2:-1]
+        message["data"] = base64.b64encode(message_data.encode("utf8")).decode('utf8')
     if message_attributes:
         message["attributes"] = attribute_pairs_to_dict(message_attributes)
     body = {"messages": [message]}
@@ -832,7 +832,7 @@ def extract_acks_and_msgs(raw_msgs, add_ack_to_msg=True):
             msg = raw_msg.get("message", {})
             decoded_data = str(msg.get("data", ""))
             try:
-                decoded_data = str(base64.b64decode(decoded_data))[2:-1]
+                decoded_data = base64.b64decode(decoded_data).decode("utf-8")
             except Exception:
                 # display message with b64 value
                 pass
@@ -1475,24 +1475,24 @@ def handle_fetch_results(
     """
     incidents = []
     if pulled_msg_ids and max_publish_time:
-        if last_run_time <= max_publish_time:
-            # Create incidents
-            for msg in pulled_msgs:
-                incident = message_to_incident(msg)
-                incidents.append(incident)
-            # ACK messages if relevant
-            if ack_incidents:
-                client.ack_messages(sub_name, acknowledges)
-            # Recreate last run to return with new values
-            last_run = {
-                LAST_RUN_TIME_KEY: max_publish_time,
-                LAST_RUN_FETCHED_KEY: list(pulled_msg_ids),
-            }
+        # Create incidents
+        for msg in pulled_msgs:
+            incident = message_to_incident(msg)
+            incidents.append(incident)
+        # ACK messages if relevant
+        if ack_incidents:
+            client.ack_messages(sub_name, acknowledges)
+        # Recreate last run to return with new values
+        last_run = {
+            LAST_RUN_TIME_KEY: max_publish_time,
+            LAST_RUN_FETCHED_KEY: list(pulled_msg_ids),
+        }
     # We didn't manage to pull any unique messages, so we're trying to increment micro seconds - not relevant for ack
     elif not ack_incidents:
         last_run_time_dt = dateparser.parse(
             max_publish_time if max_publish_time else last_run_time
         )
+        assert last_run_time_dt is not None
         last_run_time = convert_datetime_to_iso_str(
             last_run_time_dt + timedelta(microseconds=1)
         )

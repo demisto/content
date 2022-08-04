@@ -1,7 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-import traceback
 
 try:
     inc1 = demisto.args().get('incident_id_1')
@@ -40,5 +38,4 @@ try:
         md = "No different labels."
     return_outputs(md, {}, {})
 except Exception as ex:
-    demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
-    return_error(ex.message)
+    return_error(f'An Error occured: {ex}', error=ex)

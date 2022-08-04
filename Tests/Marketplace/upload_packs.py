@@ -21,7 +21,8 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
-    CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH
+    CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH, \
+    SKIPPED_STATUS_CODES
 from demisto_sdk.commands.common.tools import run_command, str2bool, open_id_set_file
 
 from Tests.scripts.utils.log_util import install_logging
@@ -806,11 +807,6 @@ def get_packs_summary(packs_list):
     Returns: 3 lists of packs - successful_packs, skipped_packs & failed_packs
 
     """
-    skipped_status_codes = {
-        PackStatus.PACK_ALREADY_EXISTS.name,
-        PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
-        PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
-    }
 
     successful_packs = []
     skipped_packs = []
@@ -818,7 +814,7 @@ def get_packs_summary(packs_list):
     for pack in packs_list:
         if pack.status == PackStatus.SUCCESS.name:
             successful_packs.append(pack)
-        elif pack.status in skipped_status_codes:
+        elif pack.status in SKIPPED_STATUS_CODES:
             skipped_packs.append(pack)
         else:
             failed_packs.append(pack)
@@ -929,54 +925,54 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
         storage_base_path (str): The upload destination in the target bucket for all packs (in the format of
                                  <some_path_in_the_target_bucket>/content/Packs).
         storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
-        packs_for_current_marketplace_dict (dict): Dict of packs relevant for current marketplace as {pack_name: pack_object}
+        packs_for_current_marketplace_dict (dict): Dict of packs relevant for current marketplace as
+        {pack_name: pack_object}
 
     """
     logging.info("Starting to collect pack with dependencies zips")
-    try:
-        for pack_name, pack in packs_for_current_marketplace_dict.items():
-            logging.info(f"Collecting dependencies of {pack_name}")
-            pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
-            zip_with_deps_path = os.path.join(pack.path, f"{pack_name}_with_dependencies.zip")
-            upload_path = os.path.join(storage_base_path, pack_name, f"{pack_name}_with_dependencies.zip")
-            Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
-            if not (pack.zip_path and os.path.isfile(pack.zip_path)):
-                task_status = sign_and_zip_pack(pack, signature_key)
+    for pack_name, pack in packs_for_current_marketplace_dict.items():
+        try:
+            if pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name]:
+                # avoid trying to upload dependencies zip for failed packs
+                continue
+            pack_and_its_dependencies = [packs_for_current_marketplace_dict.get(dep_name) for dep_name in
+                                         pack.all_levels_dependencies] + [pack]
+            pack_or_dependency_was_uploaded = any(dep_pack.status == PackStatus.SUCCESS.name for dep_pack in
+                                                  pack_and_its_dependencies)
+            if pack_or_dependency_was_uploaded:
+                pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
+                zip_with_deps_path = os.path.join(pack.path, f"{pack_name}_with_dependencies.zip")
+                upload_path = os.path.join(storage_base_path, pack_name, f"{pack_name}_with_dependencies.zip")
+                Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
+                for current_pack in pack_and_its_dependencies:
+                    logging.debug(f"Starting to collect zip of pack {current_pack.name}")
+                    # zip the pack and each of the pack's dependencies (or copy existing zip if was already zipped)
+                    if not (current_pack.zip_path and os.path.isfile(current_pack.zip_path)):
+                        # the zip does not exist yet, zip the current pack
+                        task_status = sign_and_zip_pack(current_pack, signature_key)
+                        if not task_status:
+                            # modify the pack's status to indicate the failure was in the dependencies zip step
+                            pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
+                            logging.debug(f"Skipping uploading {pack.name} since failed zipping {current_pack.name}.")
+                            break
+                    shutil.copy(current_pack.zip_path, os.path.join(pack_with_dep_path, current_pack.name + ".zip"))
+                if pack.status == PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name:
+                    break
+                else:
+                    logging.info(f"Zipping {pack_name} with its dependencies")
+                    Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
+                    shutil.rmtree(pack_with_dep_path)
+                    logging.info(f"Uploading {pack_name} with its dependencies")
+                    task_status, _, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
+                                                               storage_base_path, overridden_upload_path=upload_path)
+                    logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} "
+                                 f"uploaded successfully")
                 if not task_status:
-                    logging.warning(f"Skipping dependencies collection for {pack_name}. Failed zipping")
-                    continue
-            shutil.copy(pack.zip_path, os.path.join(pack_with_dep_path, pack_name + ".zip"))
-            for dep_name in pack.all_levels_dependencies:
-                dep_pack = packs_for_current_marketplace_dict.get(dep_name)
-                if not (dep_pack.zip_path and os.path.isfile(dep_pack.zip_path)):
-                    task_status = sign_and_zip_pack(dep_pack, signature_key)
-                    if not task_status:
-                        logging.error(f"Skipping dependency {pack_name}. Failed zipping")
-                        continue
-                shutil.copy(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
-            logging.info(f"Zipping {pack_name} with dependencies")
-            Pack.zip_folder_items(
-                pack_with_dep_path,
-                pack_with_dep_path,
-                zip_with_deps_path
-            )
-            shutil.rmtree(pack_with_dep_path)
-            logging.info(f"Uploading {pack_name} with dependencies")
-            task_status, _, _ = pack.upload_to_storage(
-                zip_pack_path=zip_with_deps_path,
-                latest_version='',
-                storage_bucket=storage_bucket,
-                override_pack=True,
-                storage_base_path=storage_base_path,
-                overridden_upload_path=upload_path
-            )
-            logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} uploaded successfully")
-            if not task_status:
-                pack.status = PackStatus.FAILED_UPLOADING_PACK.name
-                pack.cleanup()
-    except Exception as e:
-        logging.error(traceback.format_exc())
-        logging.error(f"Failed uploading packs with dependencies: {e}")
+                    pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
+                    pack.cleanup()
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
 def option_handler():
@@ -1068,7 +1064,7 @@ def main():
                                                                         is_bucket_upload_flow, ci_branch)
 
     # detect packs to upload
-    pack_names = get_packs_names(target_packs, previous_commit_hash)
+    pack_names = get_packs_names(target_packs, previous_commit_hash)  # list of the pack's ids
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
@@ -1079,7 +1075,7 @@ def main():
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
     )
 
-    if not option.override_all_packs:
+    if not override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
 
@@ -1125,17 +1121,9 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, True)
-        if not task_status:
-            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
-            pack.cleanup()
-            continue
-
-        task_status = pack.upload_author_image(storage_bucket, storage_base_path, diff_files_list, True)
-
-        if not task_status:
-            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
-            pack.cleanup()
+        # upload author and integration images
+        if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
+                                  override_all_packs):
             continue
 
         # detect if the pack is modified and return modified RN files
@@ -1146,6 +1134,13 @@ def main():
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
             continue
+
+        if is_bucket_upload_flow:
+            task_status, modified_files_data = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths)
+
+            if not task_status:
+                pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
+                continue
 
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
@@ -1164,17 +1159,19 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
-                                                                    modified_rn_files_paths)
-        if not task_status:
-            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
-            pack.cleanup()
-            continue
+        if is_bucket_upload_flow:
+            task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
+                                                                        modified_rn_files_paths,
+                                                                        modified_files_data, marketplace)
 
-        if not_updated_build:
-            pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
-            pack.cleanup()
-            continue
+            if not task_status:
+                pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+                pack.cleanup()
+                continue
+
+            if not_updated_build:
+                pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
+                continue
 
         sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
 
@@ -1214,7 +1211,7 @@ def main():
 
         pack.status = PackStatus.SUCCESS.name
 
-    logging.info(f"packs_with_missing_dependencies: {packs_with_missing_dependencies}")
+    logging.info(f"packs_with_missing_dependencies: {[pack.name for pack in packs_with_missing_dependencies]}")
 
     # Going over all packs that were marked as missing dependencies,
     # updating them with the new data for the new packs that were added to the index.zip
@@ -1251,6 +1248,12 @@ def main():
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
                             storage_bucket=storage_bucket)
 
+    # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
+    if is_create_dependencies_zip and marketplace == 'xsoar':
+        # handle packs with dependencies zip
+        upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
+                                           packs_for_current_marketplace_dict)
+
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
@@ -1263,12 +1266,6 @@ def main():
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
-
-    # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
-    if is_create_dependencies_zip and marketplace == 'xsoar':
-        # handle packs with dependencies zip
-        upload_packs_with_dependencies_zip(signature_key, storage_bucket, storage_base_path,
-                                           packs_for_current_marketplace_dict)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,7 @@
 import tempfile
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from io import StringIO
+import paramiko
 from paramiko import SSHClient, AutoAddPolicy, transport, Transport
 from paramiko.ssh_exception import NoValidConnectionsError
 from scp import SCPClient, SCPException
@@ -10,6 +12,7 @@ from CommonServerUserPython import *  # noqa
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DEFAULT_TIMEOUT = 10.0
+DEFAULT_PORT = 22
 ''' HELPER FUNCTIONS '''
 
 
@@ -82,16 +85,20 @@ def get_available_key_algorithms() -> Set[str]:
     return set(opts.kex)
 
 
-def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ciphers: Set[str],
-                               key_algorithms: Set[str]) -> SSHClient:
+def create_paramiko_ssh_client(
+        host_name: str, user_name: str, password: str, ciphers: Set[str], key_algorithms: Set[str], private_key: str = '',
+        port: int = DEFAULT_PORT) -> SSHClient:
     """
     Creates the Paramiko SSH client.
+
     Args:
         host_name (str): Hostname of the machine to create the SSH for.
         user_name (str): User to create the SSH session with the given host.
         password (str): Password of the given user.
         ciphers (Set[str]): Set of ciphers to be used, if given.
         key_algorithms (Set[str]): Set of key algorithms to be used, if given.
+        private_key (str): The SSH certificate (should be PEM file based certificate only).
+        port (int): The port to connect to.
 
     Returns:
         (SSHClient): Paramiko SSH client if connection was successful, exception otherwise.
@@ -102,20 +109,77 @@ def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ci
         if not ciphers.intersection(available_ciphers):
             raise DemistoException(f'Given ciphers are not available in server.\n'
                                    f'Ciphers available in server are: {available_ciphers}')
-        Transport._preferred_ciphers = (*ciphers,)
+        Transport._preferred_ciphers = (*ciphers,)  # type: ignore
     if key_algorithms:
         available_key_args = get_available_key_algorithms()
         if not key_algorithms.intersection(available_key_args):
             raise DemistoException(f'Given key algorithms are not available in server.\n'
                                    f'Key algorithms available in server are: {available_key_args}')
-        Transport._preferred_kex = (*key_algorithms,)
+        Transport._preferred_kex = (*key_algorithms,)  # type: ignore
     client = SSHClient()
     client.set_missing_host_key_policy(AutoAddPolicy())
     try:
-        client.connect(hostname=host_name, username=user_name, password=password, port=22)
+        rsa_private_key = None
+        if private_key:
+            # authenticating with private key only works for certificates which are based on PEM files.
+            # (RSA private keys)
+            rsa_private_key = paramiko.RSAKey.from_private_key(StringIO(private_key))  # type: ignore # [assignment]
+        client.connect(hostname=host_name, username=user_name, password=password, port=port, pkey=rsa_private_key)
     except NoValidConnectionsError as e:
-        raise DemistoException(f'Unable to connect to port 22 on {host_name}') from e
+        raise DemistoException(f'Unable to connect to port {port} on {host_name}') from e
     return client
+
+
+def find_nonexistent_systems(given_systems: List[str], given_hosts: List[str]):
+    investigation = demisto.investigation()
+    if not investigation:
+        return None
+
+    systems = investigation.get('systems')
+    investigation_id = investigation.get('id')
+    demisto.debug(f'Available systems on investigation {investigation_id} are {systems}.')
+    if not systems:
+        return None
+
+    systems_names = [system_properties.get('name') for system_properties in systems]
+    not_found_systems = []
+    for given_system in given_systems:
+        if given_system not in systems_names:
+            not_found_systems.append(given_system)
+
+    systems_hosts = [system_properties.get('host') for system_properties in systems]
+    not_found_hosts = []
+    for given_host in given_hosts:
+        if given_host not in systems_hosts:
+            not_found_hosts.append(given_host)
+
+    if not not_found_hosts and not not_found_systems:
+        return None
+
+    return f'{f"Systems {not_found_systems}" if not_found_systems else ""}' \
+           f'{" and " if not_found_systems and not_found_hosts else ""}' \
+           f'{f"Hosts {not_found_hosts}" if not_found_hosts else ""} ' \
+           f'not found on investigation {investigation_id}. ' \
+           f'Available systems by name are {systems_names}, and by host are {systems_hosts}.'
+
+
+def create_clients(host_name: str, user: str, password: str, ciphers: Set[str], key_algorithms: Set[str], certificate: str,
+                   systems: List[str], hosts: List[str], port: int = DEFAULT_PORT) -> List[SSHClient]:
+    clients = [create_paramiko_ssh_client(system, user, password, ciphers, key_algorithms, certificate, port)
+               for system in systems]
+    clients.extend([create_paramiko_ssh_client(host, user, password, ciphers, key_algorithms, certificate, port)
+                    for host in hosts])
+
+    if not clients and host_name:
+        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate)
+        clients.append(client)
+
+    return clients
+
+
+def close_clients(clients: List[SSHClient]):
+    for client in clients:
+        client.close()
 
 
 ''' COMMAND FUNCTIONS '''
@@ -236,12 +300,12 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    credentials: Dict[str, Any] = params.get('credentials', {})
+    credentials: Dict[str, Any] = params.get('credentials') or {}
     user: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
+    certificate: str = (credentials.get('credentials') or {}).get('sshkey', '')
 
     host_name: str = params.get('hostname', '')
-
     ciphers: Set[str] = set(argToList(params.get('ciphers')))
     key_algorithms: Set[str] = set(argToList(params.get('key_algorithms')))
 
@@ -251,28 +315,46 @@ def main() -> None:
             raise DemistoException('Additional password to use the module have been supplied.\n'
                                    'Please supply "additional_password" argument that matches the "Additional Password"'
                                    ' parameter value.')
-    client = None
+
+    systems = argToList(args.get('system'))
+    hosts = argToList(args.get('host'))
+    port = args.get('port') or DEFAULT_PORT
+
+    clients = []
     try:
-        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms)
+        if nonexistent_systems_result := find_nonexistent_systems(systems, hosts):
+            raise DemistoException(nonexistent_systems_result)
+        clients = create_clients(host_name, user, password, ciphers, key_algorithms, certificate, systems, hosts, port)
+
+        commands = {
+            'ssh': execute_shell_command,
+            'copy-to': copy_to_command,
+            'copy-from': copy_from_command,
+        }
+
         if command == 'test-module':
             return_results('ok')
-        elif command == 'ssh':
-            return_results(execute_shell_command(client, args))
-        elif command == 'copy-to':
-            return_results(copy_to_command(client, args))
-        elif command == 'copy-from':
-            return_results(copy_from_command(client, args))
+        elif command in commands:
+            if not clients:
+                raise DemistoException('Command can\'t be executed because no hostname, system, or host was provided.')
+
+            results = []
+            with ThreadPoolExecutor(max_workers=len(clients)) as executor:
+                future_results = [executor.submit(commands[command], ssh_client=client, args=args) for client in clients]
+                for future in as_completed(future_results):
+                    results.append(future.result())
+
+            return_results(results)
 
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
-        client.close()
 
     # Log exceptions and return errors
     except Exception as e:
-        if client:
-            client.close()
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+    finally:
+        close_clients(clients)
 
 
 ''' ENTRY POINT '''

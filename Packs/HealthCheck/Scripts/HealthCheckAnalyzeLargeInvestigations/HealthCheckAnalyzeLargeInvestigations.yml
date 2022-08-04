@@ -2,12 +2,12 @@ args:
 - description: Define the thresholds.
   name: Thresholds
 - auto: PREDEFINED
-  defaultValue: "False"
+  defaultValue: 'False'
   description: 'Append to existing data in grid field , Default: False'
   name: Append
   predefined:
-  - "True"
-  - "False"
+  - 'True'
+  - 'False'
 comment: Analyze large investigation from previous month until current month.
 commonfields:
   id: HealthCheckAnalyzeLargeInvestigations
@@ -17,7 +17,7 @@ name: HealthCheckAnalyzeLargeInvestigations
 script: ''
 subtype: python3
 type: python
-dockerimage: demisto/python3:3.10.1.27636
+dockerimage: demisto/python3:3.10.4.29342
 runas: DBotWeakRole
 runonce: false
 tests:

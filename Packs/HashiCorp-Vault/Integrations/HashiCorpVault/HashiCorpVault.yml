@@ -26,14 +26,17 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+- display: Vault enterprise namespace
+  name: namespace
+  defaultvalue: ""
+  type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Fetches credentials

@@ -141,3 +141,5 @@ ignore=IF116
 
 [known_words]
 CheckEmailAuthenticity
+DeleteReportedEmail
+GetBrandDeleteReportedEmail

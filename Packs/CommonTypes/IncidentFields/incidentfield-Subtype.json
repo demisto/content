@@ -1,6 +1,10 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
+		"SysAid Change",
+        "SysAid Incident",
+        "SysAid Problem",
+        "SysAid Request",
 		"Traps",
 		"Azure Active Directory Identity and Access"
 	],

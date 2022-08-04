@@ -36,6 +36,7 @@ def assert_results_ok():
 def test_test_command(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch("Whois.get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
     Whois.main()
     assert_results_ok()
 
@@ -215,6 +216,7 @@ def test_get_whois_ip_proxy_param(mocker):
     """
     from Whois import get_whois_ip
     mocker.patch.object(demisto, 'params', return_value={"proxy": True})
+    mocker.patch("ipwhois.IPWhois.lookup_rdap", return_value={"raw": None})
     result = get_whois_ip('1.1.1.1')
     assert result
 
@@ -256,6 +258,13 @@ def test_parse_raw_whois():
         raw_data = f.read()
     result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
     assert result['registrar'] == ['IONOS SE']
+
+
+def test_parse_raw_whois_empty_nameserver():
+    with open('test_data/EU domains_empty_nameservers.text', 'r') as f:
+        raw_data = f.read()
+    result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
+    assert result['nameservers'] == ['ns1060.ui-dns.biz']
 
 
 def test_get_raw_response_with_a_refer_server_that_fails(mocker):

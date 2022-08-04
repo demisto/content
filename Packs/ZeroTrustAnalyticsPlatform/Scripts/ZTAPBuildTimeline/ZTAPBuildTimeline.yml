@@ -1,9 +1,10 @@
 args: []
-comment: Adds unmarked log/comment notes as evidence in the timeline.
+comment: Deprecated. Comment ingestion simplified and audit log ingestion removed. No available replacement. Adds unmarked log/comment notes as evidence in the timeline.
 commonfields:
   id: ZTAPBuildTimeline
   version: -1
 enabled: false
+deprecated: true
 name: ZTAPBuildTimeline
 script: ''
 subtype: python3

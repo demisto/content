@@ -140,42 +140,73 @@ def purge_queue(args, client):
         return raise_error(e)
 
 
-def parse_incident_from_finding(message):
+def parse_incident_from_finding(message, parse_body_as_json=False):
     incident = {}
     incident['name'] = "SQS MessageId: " + message["MessageId"]
+    if parse_body_as_json:
+        try:
+            message["Body"] = json.loads(message["Body"])
+        except Exception:
+            pass
     incident['rawJSON'] = json.dumps(message)
     return incident
 
 
-def fetch_incidents(aws_client, aws_queue_url, max_fetch):
+def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
+    """
+    Fetching the messages from the queue by following steps:
+
+    1. fetch.
+    2. create-incidents (while skipping previous fetch).
+    3. save fetch results to context.
+    4. try to delete all messages (if not successful, will continue next run).
+    """
+
     try:
         client = aws_client.aws_session(service='sqs')
+        # The 'receipt_handles' of the messages that were received from the last call.
+        last_receipt_handles = demisto.getLastRun().get('lastReceiptHandles')
+        if last_receipt_handles:
+            demisto.debug('last_receipt_handles before fetch occurred" -> {} {}'.format(len(last_receipt_handles),
+                          last_receipt_handles))
+            last_receipt_handles = set(last_receipt_handles)
+        incidents_created = 0  # type: int
+        max_number_of_messages = min(max_fetch, 10)
         receipt_handles = []  # type: list
         incidents = []  # type: list
-        max_number_of_messages = min(max_fetch, 10)
-        while len(incidents) < max_fetch:
+        while incidents_created < max_fetch:
             messages = client.receive_message(
                 QueueUrl=aws_queue_url,
                 MaxNumberOfMessages=max_number_of_messages,
-                VisibilityTimeout=5,
+                VisibilityTimeout=30,
                 WaitTimeSeconds=5,
             )
 
             if "Messages" not in messages.keys():
-                if len(incidents) == 0:
+                if incidents_created == 0:
                     if demisto.command() == 'fetch-incidents':
                         demisto.incidents([])
                     return messages, incidents, receipt_handles
                 else:
                     break
 
+            # Creating incidents and avoiding creating incidents that were already created previously
             for message in messages["Messages"]:
                 receipt_handles.append(message['ReceiptHandle'])
-                incidents.append(parse_incident_from_finding(message))
-                if len(incidents) == max_fetch:
+                if last_receipt_handles and message['ReceiptHandle'] in last_receipt_handles:
+                    continue
+                incidents.append(parse_incident_from_finding(message, parse_body_as_json))
+                incidents_created += 1
+                if incidents_created == max_fetch:
                     break
 
+        # Save fetch results to context.
         demisto.incidents(incidents)
+        # The "receipt_handles" of converted messages to the incidents are saved for next fetch
+        demisto.setLastRun({"lastReceiptHandles": receipt_handles})
+        demisto.debug('last_receipt_handles after fetch occurred" -> {} {}'.format(len(receipt_handles), receipt_handles))
+
+        # try to delete all messages (if not successful, will continue next run)
         for receipt_handle in receipt_handles:
             client.delete_message(QueueUrl=aws_queue_url, ReceiptHandle=receipt_handle)
 
@@ -207,7 +238,8 @@ def main():
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
     aws_queue_url = params.get('queueUrl')
-    max_fetch = min(params.get('max_fetch', 10), 100)
+    max_fetch = min(arg_to_number(params.get('max_fetch', 10)), 100)
+    parse_body_as_json = params.get('parse_body_as_json', False)
 
     commands = {
         'aws-sqs-get-queue-url': get_queue_url,
@@ -230,7 +262,7 @@ def main():
         if command == 'test-module':
             return_results(test_function(aws_client))
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents(aws_client, aws_queue_url, max_fetch)
+            fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json)
             sys.exit(0)
         elif command in commands:
             client = aws_client.aws_session(

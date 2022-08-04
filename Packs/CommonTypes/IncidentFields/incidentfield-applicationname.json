@@ -21,8 +21,12 @@
     "associatedTypes": [
         "IAM - App Add",
         "IAM - App Remove",
-        "IAM - Group Membership Update"
+        "IAM - Group Membership Update",
+        "Symantec DLP Endpoint Incident"
     ],
+    "systemAssociatedTypes": [
+    "Symantec DLP Endpoint Incident"
+  ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,

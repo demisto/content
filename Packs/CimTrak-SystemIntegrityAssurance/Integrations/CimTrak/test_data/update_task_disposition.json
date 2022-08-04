@@ -1,0 +1,27 @@
+{
+    "name": "update_task_disposition",
+    "execute": "response_raw = CimTrak.update_task_disposition_command(client,{'taskId':2,'Disposition':'REJECTED'})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.updateTaskDisposition",
+            "reply": {
+                "results": [],
+                "resultDetails": [
+                    {
+                        "taskId": 2,
+                        "status": "Access denied or task not found."
+                    }
+                ],
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": []
+            }
+        }
+    ],
+    "response": {
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": ""
+    }
+}

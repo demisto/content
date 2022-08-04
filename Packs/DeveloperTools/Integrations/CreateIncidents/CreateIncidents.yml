@@ -41,19 +41,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The paths of the files to be added to incidents as attachment. Would
-        be added to all incidents provided in the incident_path file. For example:
-        Packs/somePack/TestPlaybooks/attach.eml'
+      description: 'The paths of the files to be added to incidents as attachment. Would be added to all incidents provided in the incident_path file. For example: Packs/somePack/TestPlaybooks/attach.eml'
       isArray: false
       name: attachment_paths
       required: false
       secret: false
     deprecated: false
-    description: Creates incidents from json files provided, and stores it in the
-      instance context.
+    description: Creates incidents from json files provided, and stores it in the instance context.
     execution: false
     name: create-test-incident-from-file
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.5.31797
   feed: false
   isfetch: true
   longRunning: false

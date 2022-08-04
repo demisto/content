@@ -285,7 +285,7 @@ tasks:
       {
         "position": {
           "x": -570,
-          "y": 60
+          "y": 270
         }
       }
     note: false
@@ -339,7 +339,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "67"
+      - "103"
     separatecontext: false
     view: |-
       {
@@ -619,7 +619,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2490,
+          "x": 2530,
           "y": 615
         }
       }
@@ -854,7 +854,7 @@ tasks:
       {
         "position": {
           "x": -810,
-          "y": -120
+          "y": 60
         }
       }
     note: false
@@ -1022,7 +1022,7 @@ tasks:
       {
         "position": {
           "x": -2110,
-          "y": 605
+          "y": 675
         }
       }
     note: false
@@ -1052,7 +1052,7 @@ tasks:
       {
         "position": {
           "x": -2340,
-          "y": 795
+          "y": 920
         }
       }
     note: false
@@ -1087,7 +1087,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 615
+          "y": 675
         }
       }
     note: false
@@ -1227,13 +1227,6 @@ tasks:
           right:
             value: {}
           ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Block Indicators.Answers
-                accessor: "1"
-            iscontext: true
     - label: IP or Domain
       condition:
       - - operator: isNotEmpty
@@ -1314,7 +1307,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 465
+          "y": 470
         }
       }
     note: false
@@ -1563,11 +1556,12 @@ tasks:
       id: 00b4d391-7aa0-4af6-8d39-5fb70f2da912
       version: -1
       name: Get Okta user ID
-      description: Fetches information for a single user. You must enter one or more parameters for the command to run.
-      script: Okta v2|||okta-get-user
+      description: Fetches information for a single user. You must enter one or more
+        parameters for the command to run.
+      script: '|||okta-get-user'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - "61"
@@ -1617,7 +1611,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2490,
+          "x": 2530,
           "y": 270
         }
       }
@@ -1636,11 +1630,12 @@ tasks:
       id: 2a30594a-78be-440f-8c28-55172de55ee2
       version: -1
       name: Get Okta user ID
-      description: Fetches information for a single user. You must enter one or more parameters for the command to run.
-      script: Okta v2|||okta-get-user
+      description: Fetches information for a single user. You must enter one or more
+        parameters for the command to run.
+      script: '|||okta-get-user'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - "82"
@@ -1777,7 +1772,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 465
+          "y": 470
         }
       }
     note: false
@@ -1817,7 +1812,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 615
+          "y": 675
         }
       }
     note: false
@@ -1891,7 +1886,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 795
+          "y": 920
         }
       }
     note: false
@@ -1921,7 +1916,7 @@ tasks:
       {
         "position": {
           "x": -1050,
-          "y": 60
+          "y": 270
         }
       }
     note: false
@@ -2009,7 +2004,7 @@ tasks:
       {
         "position": {
           "x": -1050,
-          "y": 260
+          "y": 470
         }
       }
     note: false
@@ -2049,7 +2044,7 @@ tasks:
       {
         "position": {
           "x": -1050,
-          "y": 465
+          "y": 675
         }
       }
     note: false
@@ -2094,7 +2089,7 @@ tasks:
       {
         "position": {
           "x": -1050,
-          "y": 615
+          "y": 920
         }
       }
     note: false
@@ -2166,7 +2161,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.HostAutoContainment
+                root: inputs.AutoContainment
             iscontext: true
           right:
             value:
@@ -2183,7 +2178,7 @@ tasks:
             value:
               simple: WORKSTATION
           ignorecase: true
-      - - operator: isNotEqualString
+      - - operator: isEqualString
           left:
             value:
               complex:
@@ -2192,7 +2187,18 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: AGENT_UNISOLATED
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: DISCONNECTED
           ignorecase: true
     - label: Manual
       condition:
@@ -2200,7 +2206,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.HostAutoContainment
+                root: inputs.AutoContainment
             iscontext: true
           right:
             value:
@@ -2216,7 +2222,7 @@ tasks:
           right:
             value:
               simple: WORKSTATION
-      - - operator: isNotEqualString
+      - - operator: isEqualString
           left:
             value:
               complex:
@@ -2225,7 +2231,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: AGENT_UNISOLATED
           ignorecase: true
     view: |-
       {
@@ -2537,9 +2543,32 @@ tasks:
       DomainToBlock:
         complex:
           root: inputs.Domain
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: Block Indicators.Answers.1
+                iscontext: true
+          transformers:
+          - operator: uniq
       IP:
         complex:
           root: inputs.IP
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              right:
+                value:
+                  simple: Block Indicators.Answers.1
+                iscontext: true
+              ignorecase: true
           transformers:
           - operator: uniq
       MD5:
@@ -2554,6 +2583,16 @@ tasks:
               right:
                 value:
                   simple: "32"
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: BlockIndicatorsList
+                iscontext: true
+              ignorecase: true
       SHA256:
         complex:
           root: inputs.FileHash
@@ -2566,6 +2605,18 @@ tasks:
               right:
                 value:
                   simple: "64"
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: BlockIndicatorsList
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: uniq
       URL:
         complex:
           root: inputs.URL
@@ -2584,7 +2635,46 @@ tasks:
       {
         "position": {
           "x": 740,
-          "y": 795
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: fdeae51c-6c98-49db-8798-4b329f69d773
+    type: condition
+    task:
+      id: fdeae51c-6c98-49db-8798-4b329f69d773
+      version: -1
+      name: Is Active Directory Query v2 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "56"
+      "yes":
+      - "67"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": -120
         }
       }
     note: false
@@ -2597,6 +2687,7 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+      "103_56_no": 0.21,
       "29_57_#default#": 0.15,
       "29_95_yes": 0.63,
       "35_53_#default#": 0.15,
@@ -2610,9 +2701,9 @@ view: |-
       "64_62_#default#": 0.22,
       "64_81_Manual": 0.61,
       "64_83_yes": 0.9,
-      "67_45_yes": 0.69,
+      "67_45_yes": 0.37,
       "67_56_#default#": 0.1,
-      "67_90_Manual": 0.59,
+      "67_90_Manual": 0.42,
       "71_57_No": 0.13,
       "71_72_Manual": 0.62,
       "76_102_IP or Domain": 0.89,
@@ -2620,9 +2711,9 @@ view: |-
       "76_77_All": 0.41,
       "79_62_#default#": 0.3,
       "79_80_yes": 0.44,
-      "87_53_#default#": 0.31,
-      "87_88_yes": 0.37,
-      "91_56_#default#": 0.23,
+      "87_53_#default#": 0.25,
+      "87_88_yes": 0.56,
+      "91_56_#default#": 0.28,
       "91_92_yes": 0.53,
       "97_68_Yes": 0.76,
       "97_70_Manual": 0.67
@@ -2630,7 +2721,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1635,
-        "width": 5210,
+        "width": 5250,
         "x": -2340,
         "y": -420
       }
@@ -2645,7 +2736,7 @@ inputs:
     Whether to execute containment plan (except isolation) automatically.
     The specific containment playbook inputs should also be set to 'True'.
   playbookInputQuery:
-- key: HostAutoContainment
+- key: HostContainment
   value:
     simple: "True"
   required: false
