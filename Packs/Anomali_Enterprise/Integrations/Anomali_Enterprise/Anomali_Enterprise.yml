@@ -35,11 +35,21 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-- display: ""
+- defaultvalue: indicatorType
   name: feedExpirationPolicy
-  defaultvalue: indicatorType
-  type: 17
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 description: Use Anomali Match to search indicators and enrich domains.
 display: Anomali Match
 name: Anomali Enterprise
