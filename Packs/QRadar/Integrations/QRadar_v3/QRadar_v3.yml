@@ -25,6 +25,11 @@ configuration:
   name: incident_type
   required: false
   type: 13
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
 - defaultvalue: Fetch With All Events
   display: Fetch mode
   hidden: false
