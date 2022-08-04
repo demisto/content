@@ -347,7 +347,7 @@ def test_create_single_asset_for_offense_enrichment():
                            None,
                            None,
                            None,
-                           ([], QueryStatus.WAIT.value))
+                           ([], QueryStatus.ERROR.value))
                           ])
 def test_poll_offense_events_with_retry(requests_mock, status_exception, status_response, results_response, search_id,
                                         expected):
