@@ -101,27 +101,36 @@ create-instances:
     - demisto-sdk create-content-graph --no-use-docker
     - cp ./neo4j/backups/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
 
-    # - section_start "Create Content Artifacts and Update Conf" --collapsed
-    # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
-    # - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
-    # - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
-    # - echo $successful_feature_branch_build
-    # - python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
-    # - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
-    # - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
-    # - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
-    # - section_end "Create Content Artifacts and Update Conf"
+    - section_start "Create Content Artifacts and Update Conf" --collapsed
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
+    - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
+    - echo $successful_feature_branch_build
+    - python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
+    - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
+    - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - section_end "Create Content Artifacts and Update Conf"
 
-    # - section_start "Collect Tests and Content Packs"
-    # - |
-    #   if [ -n "${INSTANCE_TESTS}" ]; then
-    #     echo "Skipping - not running in INSTANCE_TESTS build"
-    #   else
-    #     [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-    #     python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
-    #   fi
-    # - section_end "Collect Tests and Content Packs"
+    - section_start "Collect Tests and Content Packs"
+    - |
+      if [ -n "${INSTANCE_TESTS}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
+      fi
+    - section_end "Collect Tests and Content Packs"
 
+    - section_start "Collect Tests V2"
+    - |
+      if [ -n "${INSTANCE_TESTS}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
+      fi
+    - section_end "Collect Tests V2"
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp ./Tests/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
     - section_end "Calculate Packs Dependencies"
