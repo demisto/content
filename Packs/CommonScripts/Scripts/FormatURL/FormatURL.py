@@ -1,13 +1,14 @@
 from html import unescape
 from typing import Tuple
 from urllib.parse import urlparse, parse_qs, ParseResult, unquote
+import ipaddress
 
 from CommonServerPython import *
 
 ATP_REGEX = re.compile(r'(https://\w*|\w*)\.safelinks\.protection\.outlook\.com/.*\?url=')
 FIREEYE_REGEX = re.compile(r'(https:\/\/\w*|\w*)\.fireeye\.com\/.*\/url\?k=')
 PROOF_POINT_URL_REG = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
-FIRST_TLD = re.compile(r"([.(?!.)][a-zA-Z]?(?:\/|$))|([.(?!.)][a-zA-Z0-9]{2,}[\/])")
+FIRST_TLD = re.compile(r"([(?!.)][a-zA-Z]?(?:/|$))|([(?!.)][a-zA-Z\d]{2,}[.]?/)")
 
 HTTP = 'http'
 PREFIX_TO_NORMALIZE = {
@@ -112,23 +113,35 @@ def remove_special_chars_from_start_and_end_of_url(url_: str) -> str:
     Returns:
         (str): URL with characters brackets, if needed to remove, else the URL itself.
     """
-    brackets = {
+
+    def is_ipv6(url: str) -> bool:
+        try:
+            # IPv6 should have square brackets around them, no need to remove
+            ipaddress.IPv6Address(re.findall(r"\[(.*?)]", url)[0])
+            return True
+
+        except (ipaddress.AddressValueError, IndexError):
+            return False
+
+    delimiters = {
         "[": "]",
         "(": ")",
-        "{": "}"
-    }
-
-    quotes = {
+        "{": "}",
         "'": "'",
         '"': '"'
     }
-    while url_[0] in brackets or url_[0] in quotes:
-        if brackets.get(url_[0]) == url_[-1]:
+
+    while url_[0] in delimiters and not is_ipv6(url_):
+        if delimiters.get(url_[0]) == url_[-1]:
             url_ = url_[1:-1]
         else:
             url_ = url_[1:]
 
-    if url_.count("/") < 3:
+    if is_ipv6(f'[{url_.split("//")[-1]}]'):
+        # In case we have an IPv6 without brackets, it's "invalid" but we will return it
+        return url_
+
+    if url_.count("/") < 3 and not is_ipv6(url_):
         # If url has no path only letters are allowed in tld or port
 
         while not url_[-1].isalpha() and not url_[-1].isnumeric():
@@ -145,7 +158,8 @@ def remove_special_chars_from_start_and_end_of_url(url_: str) -> str:
                 # Not the correct format, removing all characters but tld
                 url_ = url_.replace(f":{port}", "")
 
-        elif not last_part.isnumeric():
+        elif not last_part.isnumeric() and "#" not in last_part:
+            # No fragment section and no port, cleans all non letter chars from tld
             while not url_[-1].isalpha():
                 url_ = url_[:-1]
 

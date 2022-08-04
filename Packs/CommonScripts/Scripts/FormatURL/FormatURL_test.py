@@ -112,6 +112,13 @@ FORMAT_URL_ADDITIONAL_TEST_CASES = [
     ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com'),
     ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz !"#$%&'),
     ('ftps://foo.bar/baz%27%28%29%2A%2B,', "ftps://foo.bar/baz'()*+,"),
+    ('https://test.com#fragment3', 'https://test.com#fragment3'),
+    ('https://test.com#fragment3#fragment3', 'https://test.com#fragment3#fragment3'),
+    ('http://_23_11.redacted.com./#redactedredactedredacted', 'http://_23_11.redacted.com./#redactedredactedredacted'),
+    ('[http://[2001:db8:3333:4444:5555:6666:7777:8888]]', 'http://[2001:db8:3333:4444:5555:6666:7777:8888]'),
+    ('[2001:db8:3333:4444:5555:6666:7777:8888]', '[2001:db8:3333:4444:5555:6666:7777:8888]'),
+    ('[http://2001:db8:3333:4444:5555:6666:7777:8888]', 'http://2001:db8:3333:4444:5555:6666:7777:8888'),
+    ('2001:db8:3333:4444:5555:6666:7777:8888', '2001:db8:3333:4444:5555:6666:7777:8888'),
 ]
 
 REDIRECT_NON_ATP_PROOF_POINT = [('https://www.test.test.com/test.html?redirectURL=https://evil.com/mal.html',
@@ -129,7 +136,7 @@ SINGLE_LETTER_TLD = [
     ('goog.l/', True),
     ('goog.l', True),
     ('google.#/', False),
-    ('ww.goo./com/', True),
+    ('ww.goo./com/', False),    # This is False as "." at the end of the host part is valid
     ('google.com/./', False),
     ('hello////,,,,dfdsf', False),
     ('hello./.com/', True),
