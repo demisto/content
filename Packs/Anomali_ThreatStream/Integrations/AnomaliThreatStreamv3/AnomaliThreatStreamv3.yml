@@ -100,7 +100,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'Note: if set to true, additional 6 API calls will be performed.'
+      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: if set to true, additional 6 API calls will be performed.'
       isArray: false
       name: threat_model_association
       predefined:
@@ -207,16 +207,16 @@ script:
       description: The id of the threat actor.
       type: Number
     - contextPath: ThreatStream.IP.Actor.is_anonymous
-      description: Is the threat actor anonymus or not.
+      description: Whether the threat actor anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.IP.Actor.is_cloneable
-      description: Is the threat actor clonable or not.
+      description: Whether the threat actor clonable or not.
       type: String
     - contextPath: ThreatStream.IP.Actor.is_public
-      description: Is the threat actor public or not.
+      description: Whether the threat actor is public or not.
       type: Boolean
     - contextPath: ThreatStream.IP.Actor.is_team
-      description: Is the threat actor in a team or not.
+      description: Whether the threat actor in a team or not.
       type: Boolean
     - contextPath: ThreatStream.IP.Actor.modified_ts
       description: When was the threat actor modified.
@@ -294,16 +294,16 @@ script:
       description: The id of the signature.
       type: Number
     - contextPath: ThreatStream.IP.Signature.is_anonymous
-      description: Is the signature anonymus or not.
+      description: Whether the signature anonymous or not.
       type: Boolean
     - contextPath: ThreatStream.IP.Signature.is_cloneable
-      description: Is the signature clonable or not.
+      description: Whether the signature clonable or not.
       type: String
     - contextPath: ThreatStream.IP.Signature.is_public
-      description: Is the signature public or not.
+      description: Whether the signature is public or not.
       type: Boolean
     - contextPath: ThreatStream.IP.Signature.is_team
-      description: Is the signature in a team or not.
+      description: Whether the signature in a team or not.
       type: Boolean
     - contextPath: ThreatStream.IP.Signature.modified_ts
       description: When was the signature modified.
@@ -405,19 +405,19 @@ script:
       description: The ID of the threat bulletin.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.is_anonymous
-      description: Is the threat bulletin anonymous.
+      description: Whether the threat bulletin anonymous.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.is_cloneable
-      description: Is the threat bulletin cloneble.
+      description: Whether the threat bulletin cloneble.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.is_editable
-      description: Is the threat bulletin editable.
+      description: Whether the threat bulletin editable.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.is_email
-      description: Is the threat bulletin an email.
+      description: Whether the threat bulletin an email.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.is_public
-      description: Is the threat bulletin public.
+      description: Whether the threat bulletin is public or not.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.modified_ts
       description: When was the threat bulletin modified.
@@ -567,16 +567,16 @@ script:
       description: The id of the TTP.
       type: Number
     - contextPath: ThreatStream.IP.TTP.is_anonymous
-      description: Is the TTP anonymus or not.
+      description: Whether the TTP anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.IP.TTP.is_cloneable
-      description: Is the TTP clonable or not.
+      description: Whether the TTP clonable or not.
       type: String
     - contextPath: ThreatStream.IP.TTP.is_public
-      description: Is the TTP public or not.
+      description: Whether the TTP public or not.
       type: Boolean
     - contextPath: ThreatStream.IP.TTP.is_team
-      description: Is the TTP in a team or not.
+      description: Whether the TTP in a team or not.
       type: Boolean
     - contextPath: ThreatStream.IP.TTP.modified_ts
       description: When was the TTP modified.
@@ -663,16 +663,16 @@ script:
       description: The ID of the vulnerability.
       type: Number
     - contextPath: ThreatStream.IP.Vulnerability.is_anonymous
-      description: Is the vulnerability anonymus or not.
+      description: Whether the vulnerability anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.IP.Vulnerability.is_cloneable
-      description: Is the vulnerability clonable or not.
+      description: Whether the vulnerability clonable or not.
       type: String
     - contextPath: ThreatStream.IP.Vulnerability.is_public
-      description: Is the vulnerability public or not.
+      description: Whether the vulnerability public or not.
       type: Boolean
     - contextPath: ThreatStream.IP.Vulnerability.is_system
-      description: Is the vulnerability in the system or not.
+      description: Whether the vulnerability in the system or not.
       type: Boolean
     - contextPath: ThreatStream.IP.Vulnerability.modified_ts
       description: When was the vulnerability modified.
@@ -750,13 +750,13 @@ script:
       description: The ID of the campaign.
       type: Number
     - contextPath: ThreatStream.IP.Campaign.is_anonymous
-      description: Is the campaign anonymus or not.
+      description: Whether the campaign anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.IP.Campaign.is_cloneable
-      description: Is the campaign clonable or not.
+      description: Whether the campaign clonable or not.
       type: String
     - contextPath: ThreatStream.IP.Campaign.is_public
-      description: Is the campaign public or not.
+      description: Whether the campaign public or not.
       type: Boolean
     - contextPath: ThreatStream.IP.Campaign.modified_ts
       description: When was the campain modified.
@@ -832,7 +832,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'Note: if set to true, additional 6 API calls will be performed.'
+      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: if set to true, additional 6 API calls will be performed.'
       isArray: false
       name: threat_model_association
       predefined:
@@ -954,16 +954,16 @@ script:
       description: The id of the threat actor.
       type: Number
     - contextPath: ThreatStream.Domain.Actor.is_anonymous
-      description: Is the threat actor anonymus or not.
+      description: Whether the threat actor anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.Actor.is_cloneable
-      description: Is the threat actor clonable or not.
+      description: Whether the threat actor clonable or not.
       type: String
     - contextPath: ThreatStream.Domain.Actor.is_public
-      description: Is the threat actor public or not.
+      description: Whether the threat actor public or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.Actor.is_team
-      description: Is the threat actor in a team or not.
+      description: Whether the threat actor in a team or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.Actor.modified_ts
       description: When was the threat actor modified.
@@ -1041,16 +1041,16 @@ script:
       description: The id of the signature.
       type: Number
     - contextPath: ThreatStream.Domain.Signature.is_anonymous
-      description: Is the signature anonymus or not.
+      description: Whether the signature anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.Signature.is_cloneable
-      description: Is the signature clonable or not.
+      description: Whether the signature clonable or not.
       type: String
     - contextPath: ThreatStream.Domain.Signature.is_public
-      description: Is the signature public or not.
+      description: Whether the signature public or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.Signature.is_team
-      description: Is the signature in a team or not.
+      description: Whether the signature in a team or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.Signature.modified_ts
       description: When was the signature modified.
@@ -1152,19 +1152,19 @@ script:
       description: The ID of the threat bulletin.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.is_anonymous
-      description: Is the threat bulletin anonymous.
+      description: Whether the threat bulletin anonymous.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.is_cloneable
-      description: Is the threat bulletin cloneble.
+      description: Whether the threat bulletin cloneble.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.is_editable
-      description: Is the threat bulletin editable.
+      description: Whether the threat bulletin editable.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.is_email
-      description: Is the threat bulletin an email.
+      description: Whether the threat bulletin an email.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.is_public
-      description: Is the threat bulletin public.
+      description: Whether the threat bulletin public.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.modified_ts
       description: When was the threat bulletin modified.
@@ -1314,16 +1314,16 @@ script:
       description: The id of the TTP.
       type: Number
     - contextPath: ThreatStream.Domain.TTP.is_anonymous
-      description: Is the TTP anonymus or not.
+      description: Whether the TTP anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.TTP.is_cloneable
-      description: Is the TTP clonable or not.
+      description: Whether the TTP clonable or not.
       type: String
     - contextPath: ThreatStream.Domain.TTP.is_public
-      description: Is the TTP public or not.
+      description: Whether the TTP public or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.TTP.is_team
-      description: Is the TTP in a team or not.
+      description: Whether the TTP in a team or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.TTP.modified_ts
       description: When was the TTP modified.
@@ -1410,16 +1410,16 @@ script:
       description: The ID of the vulnerability.
       type: Number
     - contextPath: ThreatStream.Domain.Vulnerability.is_anonymous
-      description: Is the vulnerability anonymus or not.
+      description: Whether the vulnerability anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.Vulnerability.is_cloneable
-      description: Is the vulnerability clonable or not.
+      description: Whether the vulnerability clonable or not.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.is_public
-      description: Is the vulnerability public or not.
+      description: Whether the vulnerability public or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.Vulnerability.is_system
-      description: Is the vulnerability in the system or not.
+      description: Whether the vulnerability in the system or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.Vulnerability.modified_ts
       description: When was the vulnerability modified.
@@ -1497,13 +1497,13 @@ script:
       description: The ID of the campaign.
       type: Number
     - contextPath: ThreatStream.Domain.Campaign.is_anonymous
-      description: Is the campaign anonymus or not.
+      description: Whether the campaign anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.Campaign.is_cloneable
-      description: Is the campaign clonable or not.
+      description: Whether the campaign clonable or not.
       type: String
     - contextPath: ThreatStream.Domain.Campaign.is_public
-      description: Is the campaign public or not.
+      description: Whether the campaign public or not.
       type: Boolean
     - contextPath: ThreatStream.Domain.Campaign.modified_ts
       description: When was the campain modified.
@@ -1579,7 +1579,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'Note: if set to true, additional 6 API calls will be performed.'
+      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: if set to true, additional 6 API calls will be performed.'
       isArray: false
       name: threat_model_association
       predefined:
@@ -1688,16 +1688,16 @@ script:
       description: The id of the threat actor.
       type: Number
     - contextPath: ThreatStream.File.Actor.is_anonymous
-      description: Is the threat actor anonymus or not.
+      description: Whether the threat actor anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.File.Actor.is_cloneable
-      description: Is the threat actor clonable or not.
+      description: Whether the threat actor clonable or not.
       type: String
     - contextPath: ThreatStream.File.Actor.is_public
-      description: Is the threat actor public or not.
+      description: Whether the threat actor public or not.
       type: Boolean
     - contextPath: ThreatStream.File.Actor.is_team
-      description: Is the threat actor in a team or not.
+      description: Whether the threat actor in a team or not.
       type: Boolean
     - contextPath: ThreatStream.File.Actor.modified_ts
       description: When was the threat actor modified.
@@ -1775,16 +1775,16 @@ script:
       description: The id of the signature.
       type: Number
     - contextPath: ThreatStream.File.Signature.is_anonymous
-      description: Is the signature anonymus or not.
+      description: Whether the signature anonymous or not.
       type: Boolean
     - contextPath: ThreatStream.File.Signature.is_cloneable
-      description: Is the signature clonable or not.
+      description: Whether the signature clonable or not.
       type: String
     - contextPath: ThreatStream.File.Signature.is_public
-      description: Is the signature public or not.
+      description: Whether the signature public or not.
       type: Boolean
     - contextPath: ThreatStream.File.Signature.is_team
-      description: Is the signature in a team or not.
+      description: Whether the signature in a team or not.
       type: Boolean
     - contextPath: ThreatStream.File.Signature.modified_ts
       description: When was the signature modified.
@@ -1886,19 +1886,19 @@ script:
       description: The ID of the threat bulletin.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.is_anonymous
-      description: Is the threat bulletin anonymous.
+      description: Whether the threat bulletin anonymous.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.is_cloneable
-      description: Is the threat bulletin cloneble.
+      description: Whether the threat bulletin cloneble.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.is_editable
-      description: Is the threat bulletin editable.
+      description: Whether the threat bulletin editable.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.is_email
-      description: Is the threat bulletin an email.
+      description: Whether the threat bulletin an email.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.is_public
-      description: Is the threat bulletin public.
+      description: Whether the threat bulletin public.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.modified_ts
       description: When was the threat bulletin modified.
@@ -2048,16 +2048,16 @@ script:
       description: The id of the TTP.
       type: Number
     - contextPath: ThreatStream.File.TTP.is_anonymous
-      description: Is the TTP anonymus or not.
+      description: Whether the TTP anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.File.TTP.is_cloneable
-      description: Is the TTP clonable or not.
+      description: Whether the TTP clonable or not.
       type: String
     - contextPath: ThreatStream.File.TTP.is_public
-      description: Is the TTP public or not.
+      description: Whether the TTP public or not.
       type: Boolean
     - contextPath: ThreatStream.File.TTP.is_team
-      description: Is the TTP in a team or not.
+      description: Whether the TTP in a team or not.
       type: Boolean
     - contextPath: ThreatStream.File.TTP.modified_ts
       description: When was the TTP modified.
@@ -2144,16 +2144,16 @@ script:
       description: The ID of the vulnerability.
       type: Number
     - contextPath: ThreatStream.File.Vulnerability.is_anonymous
-      description: Is the vulnerability anonymus or not.
+      description: Whether the vulnerability anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.File.Vulnerability.is_cloneable
-      description: Is the vulnerability clonable or not.
+      description: Whether the vulnerability clonable or not.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.is_public
-      description: Is the vulnerability public or not.
+      description: Whether the vulnerability public or not.
       type: Boolean
     - contextPath: ThreatStream.File.Vulnerability.is_system
-      description: Is the vulnerability in the system or not.
+      description: Whether the vulnerability in the system or not.
       type: Boolean
     - contextPath: ThreatStream.File.Vulnerability.modified_ts
       description: When was the vulnerability modified.
@@ -2231,13 +2231,13 @@ script:
       description: The ID of the campaign.
       type: Number
     - contextPath: ThreatStream.File.Campaign.is_anonymous
-      description: Is the campaign anonymus or not.
+      description: Whether the campaign anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.File.Campaign.is_cloneable
-      description: Is the campaign clonable or not.
+      description: Whether the campaign clonable or not.
       type: String
     - contextPath: ThreatStream.File.Campaign.is_public
-      description: Is the campaign public or not.
+      description: Whether the campaign public or not.
       type: Boolean
     - contextPath: ThreatStream.File.Campaign.modified_ts
       description: When was the campain modified.
@@ -3409,7 +3409,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'Note: if set to true, additional 6 API calls will be performed.'
+      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: if set to true, additional 6 API calls will be performed.'
       isArray: false
       name: threat_model_association
       predefined:
@@ -3506,16 +3506,16 @@ script:
       description: The id of the threat actor.
       type: Number
     - contextPath: ThreatStream.URL.Actor.is_anonymous
-      description: Is the threat actor anonymus or not.
+      description: Whether the threat actor anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.URL.Actor.is_cloneable
-      description: Is the threat actor clonable or not.
+      description: Whether the threat actor clonable or not.
       type: String
     - contextPath: ThreatStream.URL.Actor.is_public
-      description: Is the threat actor public or not.
+      description: Whether the threat actor public or not.
       type: Boolean
     - contextPath: ThreatStream.URL.Actor.is_team
-      description: Is the threat actor in a team or not.
+      description: Whether the threat actor in a team or not.
       type: Boolean
     - contextPath: ThreatStream.URL.Actor.modified_ts
       description: When was the threat actor modified.
@@ -3593,16 +3593,16 @@ script:
       description: The id of the signature.
       type: Number
     - contextPath: ThreatStream.URL.Signature.is_anonymous
-      description: Is the signature anonymus or not.
+      description: Whether the signature anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.URL.Signature.is_cloneable
-      description: Is the signature clonable or not.
+      description: Whether the signature clonable or not.
       type: String
     - contextPath: ThreatStream.URL.Signature.is_public
-      description: Is the signature public or not.
+      description: Whether the signature public or not.
       type: Boolean
     - contextPath: ThreatStream.URL.Signature.is_team
-      description: Is the signature in a team or not.
+      description: Whether the signature in a team or not.
       type: Boolean
     - contextPath: ThreatStream.URL.Signature.modified_ts
       description: When was the signature modified.
@@ -3707,16 +3707,16 @@ script:
       description: Is the threat bulletin anonymous.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.is_cloneable
-      description: Is the threat bulletin cloneble.
+      description: Whether the threat bulletin cloneble.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.is_editable
-      description: Is the threat bulletin editable.
+      description: Whether the threat bulletin editable.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.is_email
-      description: Is the threat bulletin an email.
+      description: Whether the threat bulletin an email.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.is_public
-      description: Is the threat bulletin public.
+      description: Whether the threat bulletin public.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.modified_ts
       description: When was the threat bulletin modified.
@@ -3866,16 +3866,16 @@ script:
       description: The id of the TTP.
       type: Number
     - contextPath: ThreatStream.URL.TTP.is_anonymous
-      description: Is the TTP anonymus or not.
+      description: Whether the TTP anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.URL.TTP.is_cloneable
-      description: Is the TTP clonable or not.
+      description: Whether the TTP clonable or not.
       type: String
     - contextPath: ThreatStream.URL.TTP.is_public
-      description: Is the TTP public or not.
+      description: Whether the TTP public or not.
       type: Boolean
     - contextPath: ThreatStream.URL.TTP.is_team
-      description: Is the TTP in a team or not.
+      description: Whether the TTP in a team or not.
       type: Boolean
     - contextPath: ThreatStream.URL.TTP.modified_ts
       description: When was the TTP modified.
@@ -3962,16 +3962,16 @@ script:
       description: The ID of the vulnerability.
       type: Number
     - contextPath: ThreatStream.URL.Vulnerability.is_anonymous
-      description: Is the vulnerability anonymus or not.
+      description: Whether the vulnerability anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.URL.Vulnerability.is_cloneable
-      description: Is the vulnerability clonable or not.
+      description: Whether the vulnerability clonable or not.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.is_public
-      description: Is the vulnerability public or not.
+      description: Whether the vulnerability public or not.
       type: Boolean
     - contextPath: ThreatStream.URL.Vulnerability.is_system
-      description: Is the vulnerability in the system or not.
+      description: Whether the vulnerability in the system or not.
       type: Boolean
     - contextPath: ThreatStream.URL.Vulnerability.modified_ts
       description: When was the vulnerability modified.
@@ -4049,13 +4049,13 @@ script:
       description: The ID of the campaign.
       type: Number
     - contextPath: ThreatStream.URL.Campaign.is_anonymous
-      description: Is the campaign anonymus or not.
+      description: Whether the campaign anonymus or not.
       type: Boolean
     - contextPath: ThreatStream.URL.Campaign.is_cloneable
-      description: Is the campaign clonable or not.
+      description: Whether the campaign clonable or not.
       type: String
     - contextPath: ThreatStream.URL.Campaign.is_public
-      description: Is the campaign public or not.
+      description: Whether the campaign public or not.
       type: Boolean
     - contextPath: ThreatStream.URL.Campaign.modified_ts
       description: When was the campain modified.
@@ -4113,7 +4113,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The uuid of an intelligence. When several uuids stated, an “OR” operator is used
+      description: The uuid of an intelligence. When several uuids stated, an “OR” operator is used.
       isArray: true
       name: uuid
       required: false
@@ -4133,7 +4133,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The itype of an intelligence.
+      description: The itype of an intelligence. (e.g. apt_ip, apt_email).
       isArray: false
       name: itype
       required: false
@@ -4150,7 +4150,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The tags of an intelligence. Comma-seperated list. When several tags stated, an “OR” operator is used
+      description: The tags of an intelligence. Comma-seperated list. When several tags stated, an “OR” operator is used.
       isArray: true
       name: tags
       required: false
@@ -4174,19 +4174,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: Is the intelligence public or not.
+      description: Whether the intelligence is public or not.
       isArray: false
       name: is_public
       required: false
       secret: false
     - default: false
-      description: Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, <, >, and so on) and not the descriptive form (exact, lt, gt, and so on). For more information, see page 19 in API documentation
+      description: Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, <, >, and so on) and not the descriptive form (exact, lt, gt, and so on). e.g. (confidence>=90+AND+(itype="apt_ip"+OR+itype="bot_
+ip"+OR+itype="c2_ip"))
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: If specified, then it is recommended to use order_by=update_id
+      description: An incrementing numeric identifier associated with each update to intelligence on ThreatStream. If specified, then it is recommended to use order_by=update_id.
       isArray: false
       name: update_id_gt
       required: false
@@ -4217,7 +4218,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Return filtered intelligence from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
+    description: Returns filtered intelligence from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
     execution: false
     name: threatstream-search-intelligence
     outputs:
