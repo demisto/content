@@ -316,7 +316,8 @@ def domain_command(client, args):
             indicator=domain,
             indicator_type=DBotScoreType.DOMAIN,
             integration_name='SecurityTrails',
-            score=Common.DBotScore.NONE
+            score=Common.DBotScore.NONE,
+            reliability=demisto.params().get('integrationReliability')
         )
         domain_indicator = Common.Domain(
             domain=domain,
