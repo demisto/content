@@ -42,3 +42,5 @@ runas: DBotRole
 runonce: false
 sensitive: true
 fromversion: 5.0.0
+tests:
+- test_delete_context
