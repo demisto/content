@@ -403,7 +403,7 @@ tasks:
       - "12"
     scriptarguments:
       hostname:
-        simple: ip-172-31-15-237.eu-central-1.compute.internal
+        simple: DESKTOP-S2455R8
     separatecontext: false
     view: |-
       {
@@ -443,14 +443,14 @@ tasks:
             value:
               simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
             iscontext: true
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: PaloAltoNetworksXDR.Endpoint.os_type
             iscontext: true
           right:
             value:
-              simple: AGENT_OS_LINUX
+              simple: AGENT_OS_WINDOWS
       - - operator: isNotEmpty
           left:
             value:
