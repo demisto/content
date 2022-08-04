@@ -16,6 +16,8 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | Fetch mode |  | True |
     | Number of offenses to pull per API call (max 50) |  | False |
     | Query to fetch offenses | Define a query to determine which offenses to fetch. E.g., "severity &amp;gt;= 4 AND id &amp;gt; 5 AND status=OPEN". | False |
+    | First fetch time | how long to look back while fetching incidents on the first fetch \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+    | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
     | Incidents Enrichment | IP enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
     | Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
     | Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done. | False |
