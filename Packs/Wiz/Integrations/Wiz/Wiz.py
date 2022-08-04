@@ -43,7 +43,7 @@ def get_token():
             message = 'Could not retrieve token from Wiz: {}'.format(response_json.get("message"))
             raise Exception(message)
     except ValueError as exception:
-        demisto.log(exception)  # pylint: disable=E9012
+        demisto.debug(exception)
         raise Exception('Could not parse API response')
     HEADERS["Authorization"] = "Bearer " + TOKEN
 
