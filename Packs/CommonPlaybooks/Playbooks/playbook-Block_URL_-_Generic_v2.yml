@@ -1,0 +1,1199 @@
+id: Block URL - Generic v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Block URL - Generic v2
+description: |-
+  This playbook blocks malicious URLs using all integrations that are enabled.
+
+  Supported integrations for this playbook:
+  * Palo Alto Networks PAN-OS
+  * Zscaler
+  * Sophos
+  * Forcepoint
+  * Checkpoint
+  * Netcraft
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f7a7452c-dafe-4b3e-8461-4ea61daf5e3b
+    type: start
+    task:
+      id: f7a7452c-dafe-4b3e-8461-4ea61daf5e3b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8f968aa5-26ca-4471-891b-4ac7f9114147
+    type: title
+    task:
+      id: 8f968aa5-26ca-4471-891b-4ac7f9114147
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ecece7aa-0eb6-4f67-8a9b-dfc77bcef34d
+    type: title
+    task:
+      id: ecece7aa-0eb6-4f67-8a9b-dfc77bcef34d
+      version: -1
+      name: Block URLs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "16"
+      - "17"
+      - "18"
+      - "26"
+      - "28"
+      - "32"
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3c98fe18-18f7-4908-830c-2dfa0f707144
+    type: condition
+    task:
+      id: 3c98fe18-18f7-4908-830c-2dfa0f707144
+      version: -1
+      name: Is there a URL to block?
+      description: Verify that the playbook input includes at least one URL to block.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "25"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Blocklist.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: efeca267-b6d2-4a08-8325-e8fb7c1dd633
+    type: condition
+    task:
+      id: efeca267-b6d2-4a08-8325-e8fb7c1dd633
+      version: -1
+      name: Is Zscaler enabled?
+      description: Verify that there is a valid instance of Zscaler enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "2"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Zscaler
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: d78d4b61-7749-4ec3-8b42-b956ad2c5292
+    type: regular
+    task:
+      id: d78d4b61-7749-4ec3-8b42-b956ad2c5292
+      version: -1
+      name: Block URL with Zscaler
+      description: Block the URLS using Zscaler.
+      script: "|||zscaler-blacklist-url"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c0cec4ff-8abe-49a4-8b2d-e67ae4a0af97
+    type: playbook
+    task:
+      id: c0cec4ff-8abe-49a4-8b2d-e67ae4a0af97
+      version: -1
+      name: PAN-OS - Block URL - Custom URL Category
+      description: |-
+        This playbook blocks URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories.
+        The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
+      playbookName: PAN-OS - Block URL - Custom URL Category
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      URL:
+        complex:
+          root: Blocklist
+          accessor: URL
+          transformers:
+          - operator: uniq
+      pre-post:
+        simple: pre-rulebase
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 90b64f91-6db0-4a69-86e3-80aa6fc36ebd
+    type: title
+    task:
+      id: 90b64f91-6db0-4a69-86e3-80aa6fc36ebd
+      version: -1
+      name: Checkpoint
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 0c64c152-533a-4e38-8a33-5ba8499b4c48
+    type: title
+    task:
+      id: 0c64c152-533a-4e38-8a33-5ba8499b4c48
+      version: -1
+      name: PAN-OS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 9e331921-f00a-47d7-8f02-8ab4fbacc053
+    type: title
+    task:
+      id: 9e331921-f00a-47d7-8f02-8ab4fbacc053
+      version: -1
+      name: Zscaler
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 543180a9-1ea4-4aed-83f6-4e89cf9613be
+    type: condition
+    task:
+      id: 543180a9-1ea4-4aed-83f6-4e89cf9613be
+      version: -1
+      name: Use EDL?
+      description: Checks if we should we block using EDL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "2"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.EDLServerIP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 0abc0c58-5486-416b-80aa-7277253f2b1d
+    type: condition
+    task:
+      id: 0abc0c58-5486-416b-80aa-7277253f2b1d
+      version: -1
+      name: Use Custom URL Category?
+      description: Checks a custom URL category should be used
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "2"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: da7121fa-715d-4010-81ac-e519b88b58e3
+    type: condition
+    task:
+      id: da7121fa-715d-4010-81ac-e519b88b58e3
+      version: -1
+      name: "Is CheckPoint Integration \nAavailable?"
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "2"
+      "yes":
+      - "23"
+    scriptarguments:
+      brandname:
+        simple: CheckPointFirewall_v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 195a51ea-2a0b-47e3-83f6-c6b6a4938847
+    type: playbook
+    task:
+      id: 195a51ea-2a0b-47e3-83f6-c6b6a4938847
+      version: -1
+      name: Checkpoint - Block URL
+      description: |-
+        This playbook blocks URLs using Checkpoint Firewall through Custom URL Categories.
+        The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and publish the configuration.
+      playbookName: Checkpoint - Block URL
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0dd55a58-9d45-449e-8b9f-3c1630188951
+    type: playbook
+    task:
+      id: 0dd55a58-9d45-449e-8b9f-3c1630188951
+      version: -1
+      name: Sophos Firewall - Block URL
+      description: "This playbook adds the URL to the Default Block URL Policy. (The target\npolicy can be changed as requested).\nPre-Requisite: \n1) Create a web policy rule that refers to the URL group you specified on the inputs of the playbook.\n2) Create a new firewall rule and assign the web policy to the one created in the previous step."
+      playbookName: Sophos Firewall - Block URL
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 21af0a6a-234a-4061-884a-86f3209ae79e
+    type: title
+    task:
+      id: 21af0a6a-234a-4061-884a-86f3209ae79e
+      version: -1
+      name: No URL was definded
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 42362e33-89e4-4e9a-89ad-8fca62f06425
+    type: title
+    task:
+      id: 42362e33-89e4-4e9a-89ad-8fca62f06425
+      version: -1
+      name: Sophos
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 6f012bfb-f96f-4b8e-8429-22e25716e594
+    type: condition
+    task:
+      id: 6f012bfb-f96f-4b8e-8429-22e25716e594
+      version: -1
+      name: Is Sophos Integration Is Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "2"
+      "yes":
+      - "24"
+    scriptarguments:
+      brandname:
+        simple: sophos_firewall
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 12ce6945-cd09-46e6-8661-748f50ed220c
+    type: title
+    task:
+      id: 12ce6945-cd09-46e6-8661-748f50ed220c
+      version: -1
+      name: EDL
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8d37ba43-fa53-4ab4-83f9-5b9764281c85
+    type: regular
+    task:
+      id: 8d37ba43-fa53-4ab4-83f9-5b9764281c85
+      version: -1
+      name: Update Tag For URLs
+      description: commands.local.cmd.set.indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      value:
+        simple: ${Blocklist.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: c0fce5a4-6077-40f7-891b-6d2b868571da
+    type: collection
+    task:
+      id: c0fce5a4-6077-40f7-891b-6d2b868571da
+      version: -1
+      name: User Verification
+      description: asking the analyst which URL's should be blocked
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator,Analyst
+      subject:
+        simple: "User Verification - Block URLs (Inc #${incident.id})"
+      body:
+        simple: Dear XSOAR user, Please approve those URLs that you would like to block in your internal systems
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "Please select those URLs that you would like to block:"
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${inputs.URL}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Would you like to Block the following URLs?
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 18f017fa-2abf-4f7e-800f-1374a242dc9d
+    type: regular
+    task:
+      id: 18f017fa-2abf-4f7e-800f-1374a242dc9d
+      version: -1
+      name: Append the URLs' blocking list
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "8"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Blocklist.URL
+      value:
+        simple: ${Would you like to Block the following URLs?.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: d561f0f8-0d4c-4ba3-8560-187751ca5c85
+    type: title
+    task:
+      id: d561f0f8-0d4c-4ba3-8560-187751ca5c85
+      version: -1
+      name: Forcepoint
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 39802624-7a78-4ac4-8999-7735896a5fcd
+    type: condition
+    task:
+      id: 39802624-7a78-4ac4-8999-7735896a5fcd
+      version: -1
+      name: Is Sophos Integration Is Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "2"
+      "yes":
+      - "35"
+    scriptarguments:
+      brandname:
+        simple: Forcepoint
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: d3a1e7fd-3deb-4910-8567-c5bcb6363576
+    type: regular
+    task:
+      id: d3a1e7fd-3deb-4910-8567-c5bcb6363576
+      version: -1
+      name: Forcepoint - Add URL's to a specific category
+      description: "Append a specific category in Forcepoint with the Blocked URLs. \nYou can choose to add those to a default category (For more info - refer to https://www.forcepoint.com/product/feature/master-database-url-categories)\nor specify a custom/user-defined category."
+      script: Forcepoint|||fp-add-address-to-category
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      urls:
+        simple: ${Blocklist.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 05ed149d-f3c8-46ab-818f-4327e57b1f59
+    type: condition
+    task:
+      id: 05ed149d-f3c8-46ab-818f-4327e57b1f59
+      version: -1
+      name: Is User Verification Is Required?
+      description: Checks if a manual user verification is needed before block
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "37"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${input.UserVerification}
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: f647d8c3-407f-41e7-8af3-0583f6e8d767
+    type: regular
+    task:
+      id: f647d8c3-407f-41e7-8af3-0583f6e8d767
+      version: -1
+      name: Set Input URLs as Blocklist.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "8"
+    scriptarguments:
+      key:
+        simple: Blocklist.URL
+      value:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: e889ae46-04a0-4514-8923-2291cec2883a
+    type: title
+    task:
+      id: e889ae46-04a0-4514-8923-2291cec2883a
+      version: -1
+      name: Netcraft
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1190,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 32024a50-7f4b-47cd-8917-904f2b016e93
+    type: condition
+    task:
+      id: 32024a50-7f4b-47cd-8917-904f2b016e93
+      version: -1
+      name: Is Netcraft Integration Is Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "2"
+      "yes":
+      - "41"
+    scriptarguments:
+      brandname:
+        simple: Netcraft
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1190,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 7bc9240f-ea25-4054-8c9c-6d247c123e74
+    type: regular
+    task:
+      id: 7bc9240f-ea25-4054-8c9c-6d247c123e74
+      version: -1
+      name: Block URL with Netcraft
+      description: Reports an attack to Netcraft.
+      script: Netcraft|||netcraft-report-attack
+      type: regular
+      iscommand: true
+      brand: Netcraft
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      attack:
+        simple: ${inputs.URL}
+      comment:
+        simple: Malicious - Added by Netcraft Integration
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1190,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.18,
+      "19_2_#default#": 0.1,
+      "20_2_#default#": 0.1,
+      "21_2_#default#": 0.18,
+      "27_2_#default#": 0.1,
+      "8_25_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1625,
+        "width": 3650,
+        "x": -1190,
+        "y": -470
+      }
+    }
+  }
+inputs:
+- key: URL
+  value: {}
+  required: false
+  description: Array of malicious URLs to block.
+  playbookInputQuery:
+- key: LogForwarding
+  value: {}
+  required: false
+  description: Log Forwarding object name.
+  playbookInputQuery:
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: |-
+    This input establishes whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+  playbookInputQuery:
+- key: CustomURLCategory
+  value:
+    simple: Demisto Remediation - Malicious URLs
+  required: false
+  description: Custom URL Category name.
+  playbookInputQuery:
+- key: type
+  value: {}
+  required: false
+  description: Custom URL category type. Insert "URL List"/ "Category Match".
+  playbookInputQuery:
+- key: Tag
+  value: {}
+  required: false
+  description: Device group for the Custom URL Category (Panorama instances).
+  playbookInputQuery:
+- key: categories
+  value: {}
+  required: false
+  description: The list of categories. Relevant from PAN-OS v9.x.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
