@@ -203,6 +203,7 @@ def ip_command():
             'Type': 'ip',
             'Vendor': 'Shodan_v2',
             'Score': 0,
+            'Reliability': demisto.params().get('integrationReliability')
         }
 
         shodan_ip_details = {
