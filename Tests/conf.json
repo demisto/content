@@ -4039,7 +4039,6 @@
                 "Microsoft Defender Advanced Threat Protection"
             ],
             "instance_names": [
-                "microsoft_defender_atp_prod",
                 "microsoft_defender_atp_dev",
                 "microsoft_defender_atp_dev_self_deployed"
             ]
