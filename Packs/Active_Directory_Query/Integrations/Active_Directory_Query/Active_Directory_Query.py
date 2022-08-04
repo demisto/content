@@ -650,8 +650,9 @@ def search_users(default_base_dn, page_size):
         'HumanReadable': tableToMarkdown("Active Directory - Get Users", entries['flat']),
         'EntryContext': {
             'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
-            'ActiveDirectory.UsersPageCookie': entries['page_cookie']
             # 'backward compatability' with ADGetUser script
+            'Account(obj.ID == val.ID)': accounts,
+            'ActiveDirectory.UsersPageCookie': entries['page_cookie']
         }
     }
     demisto.results(demisto_entry)
