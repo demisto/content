@@ -1,0 +1,21 @@
+{
+    "name": "Test_Only_Roei_contribution",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "rshunim",
+    "url": "",
+    "email": "",
+    "created": "2022-08-04T13:58:58Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "rshunim"
+    ]
+}

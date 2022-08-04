@@ -1,0 +1,19 @@
+{
+    "description": "",
+    "feed": true,
+    "id": "My_custom_mapper",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Associations": {
+                    "simple": "x_mitre_attack_spec_version"
+                }
+            }
+        }
+    },
+    "name": "My_custom_mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
