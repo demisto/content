@@ -40,11 +40,21 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- display: ""
+- defaultvalue: indicatorType
   name: feedExpirationPolicy
-  defaultvalue: indicatorType
-  type: 17
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 - display: Use system proxy settings
   name: proxy
   type: 8
