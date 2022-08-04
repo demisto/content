@@ -1606,21 +1606,21 @@ script:
     description: Queries the specified table in ServiceNow.
     name: servicenow-query-table
     outputs:
-    - contextPath: ServiceNow.Results.ID
+    - contextPath: ServiceNow.Record.ID
       description: The unique record identifier for the record.
       type: string
-    - contextPath: ServiceNow.Results.UpdatedBy
+    - contextPath: ServiceNow.Record.UpdatedBy
       description: A string field that indicates the user who most recently updated
         the record.
       type: string
-    - contextPath: ServiceNow.Results.UpdatedAt
+    - contextPath: ServiceNow.Record.UpdatedAt
       description: A time-stamp field that indicates the date and time of the most
         recent update.
       type: date
-    - contextPath: ServiceNow.Results.CreatedBy
+    - contextPath: ServiceNow.Record.CreatedBy
       description: A string field that indicates the user who created the record.
       type: string
-    - contextPath: ServiceNow.Results.CreatedOn
+    - contextPath: ServiceNow.Record.CreatedOn
       description: A time-stamp field that indicates when a record was created.
       type: date
   - arguments:
