@@ -28,7 +28,7 @@ from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPCo
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
     RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
-from Tests.scripts.utils import logging_wrapper as logging
+import logging
 
 PULL_REQUEST_PATTERN = '\(#(\d+)\)'
 TAGS_SECTION_PATTERN = '(.|\s)+?'
