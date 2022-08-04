@@ -198,6 +198,7 @@ class TestCollector(ABC):
         """
         pass
 
+    # type:ignore[union-attr]
     def collect(self, run_nightly: bool) -> Optional[CollectionResult]:
         result: Optional[CollectionResult] = self._collect()
 
