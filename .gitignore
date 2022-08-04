@@ -60,6 +60,6 @@ Packs/**/report_pytest.json
 
 # neo4j
 
-neo4j/**
+neo4j
 !neo4j/docker-compose.yml
-
+!neo4j/plugins/**
