@@ -4037,6 +4037,10 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Microsoft Defender Advanced Threat Protection"
+            ],
+            "instance_names": [
+                "microsoft_defender_atp_dev",
+                "microsoft_defender_atp_dev_self_deployed"
             ]
         },
         {
@@ -5315,8 +5319,7 @@
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
-        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
-        "SplunkPy_KV_commands_requests_handler": "CIAC-3669"
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
