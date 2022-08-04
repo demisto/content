@@ -606,13 +606,13 @@ class Client(BaseClient):
 
         return response
 
-    def global_search_get_request(self, free_text: str = None) -> Dict[str, Any]:
+    def global_search_get_request(self) -> Dict[str, Any]:
         """ Get top results for each service.
 
         Returns:
             Dict[str, Any]: API response from Dome9.
         """
-        params = {"freeText": "free_text"}
+        params = {"freeText": "String"}
         response = self._http_request('GET', 'GlobalSearch', params=params)
 
         return response
@@ -1809,17 +1809,32 @@ def global_search_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     response = client.global_search_get_request()
-    # fix_output, pagination_message = pagination(response, args)
 
-    readable_output = tableToMarkdown(
-        name='Global Search',
-        # metadata=pagination_message,
-        t=response,
-        headerTransform=string_to_table_header)
+    output = response['alerts']
+    alerts = []
+    for alert in output:
+        alerts.append({
+            'id': alert['id'],
+            'createdTime': alert['createdTime'],
+            'updatedTime': alert['updatedTime'],
+            'cloudAccountId': alert['cloudAccountId'],
+            'cloudAccountExternalId': alert['cloudAccountExternalId'],
+            'bundleId': alert['bundleId'],
+            'alertType': alert['alertType'],
+            'severity': alert['severity'],
+            'entityName': alert['entityName'],
+            'ruleName': alert['ruleName'],
+            'description': alert['description'],
+            'remediation': alert['remediation'],
+        })
+
+    readable_output = tableToMarkdown(name='Global Search',
+                                      t=alerts,
+                                      headerTransform=string_to_table_header)
 
     command_results = CommandResults(readable_output=readable_output,
-                                     outputs_prefix='CheckPointDome9.GlobalSearch',
-                                     outputs_key_field='assets',
+                                     outputs_prefix='CheckPointDome9.GlobalSearch.Alerts.id',
+                                     outputs_key_field='id',
                                      outputs=response,
                                      raw_response=response)
 
@@ -1991,8 +2006,15 @@ def finding_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     finding_id = args.get('finding_id')
     response = client.finding_get_request(finding_id)
+    readable_output = tableToMarkdown(name='Findings:',
+                                      t=response,
+                                      headers=[
+                                          'id', 'alertType', 'severity', 'region', 'status',
+                                          'action', 'cloudAccountId', 'description'
+                                      ],
+                                      headerTransform=string_to_table_header)
 
-    command_results = CommandResults(readable_output='Finding',
+    command_results = CommandResults(readable_output=readable_output,
                                      outputs_prefix='CheckPointDome9.Finding',
                                      outputs_key_field='id',
                                      outputs=response,
@@ -2016,8 +2038,6 @@ def parse_incident(alert: dict) -> dict:
     iso_time = FormatIso8601(alert_date) + 'Z'
     incident = {}
     incident['name'] = "Dome9 Alert ID: " + alert.get('id')
-    # incident['severity'] = alert['severity']
-    # incident['type'] = alert['alertType']
     incident['occurred'] = iso_time
     incident['rawJSON'] = json.dumps(alert)
 

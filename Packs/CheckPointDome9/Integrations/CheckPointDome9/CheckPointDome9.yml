@@ -1388,14 +1388,14 @@ script:
     execution: false
     name: dome9-global-search-get
     outputs:
-    - contextPath: CheckPointDome9.GlobalSearch.environments
-      description: "The Global Search environments."
+    - contextPath: CheckPointDome9.GlobalSearch.Alerts.id
+      description: "The Global Search alert ID."
       type: String
-    - contextPath: CheckPointDome9.GlobalSearch.alerts
-      description: "The Global Search alerts."
+    - contextPath: CheckPointDome9.GlobalSearch.Alerts.type
+      description: "The Global Search alert type."
       type: String
-    - contextPath: CheckPointDome9.GlobalSearch.assets
-      description: "The Global Search assets."
+    - contextPath: CheckPointDome9.GlobalSearch.Alerts.severity
+      description: "The Global Search alert severity."
       type: String
   - arguments:
     - description: "Page number of paginated results. min value: 1."

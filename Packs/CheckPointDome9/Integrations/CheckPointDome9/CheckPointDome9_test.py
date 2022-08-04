@@ -559,9 +559,9 @@ def test_global_search_get_command(requests_mock, mock_client):
     requests_mock.get(url=url, json=mock_response)
     result = global_search_get_command(mock_client, {})
 
-    assert result.outputs_prefix == 'CheckPointDome9.GlobalSearch'
+    assert result.outputs_prefix == 'CheckPointDome9.GlobalSearch.Alert'
     assert len(result.outputs) == 3
-    assert result.outputs_key_field == 'assets'
+    assert result.outputs_key_field == 'id'
 
 
 def test_cloud_accounts_list_command(requests_mock, mock_client):
@@ -824,7 +824,7 @@ def test_security_group_service_update_command(requests_mock, mock_client):
     args = {
         'sg_id': sg_id,
         'policy_type': 'policy_type',
-        'port': 'port',
+        'port': '5',
         'protocol_type': 'protocol_type',
         'service_name': 'service_name'
     }
@@ -833,7 +833,7 @@ def test_security_group_service_update_command(requests_mock, mock_client):
 
     assert result.outputs_prefix == 'CheckPointDome9.SecurityGroup.Service'
     assert len(result.outputs) == 10
-    assert result.outputs_key_field == 'name'
+    assert result.outputs_key_field == 'id'
 
 
 def test_security_group_service_create_command(requests_mock, mock_client):
@@ -861,7 +861,7 @@ def test_security_group_service_create_command(requests_mock, mock_client):
     args = {
         'sg_id': sg_id,
         'policy_type': 'policy_type',
-        'port': 'port',
+        'port': '5',
         'protocol_type': 'protocol_type',
         'service_name': 'service_name'
     }
@@ -870,7 +870,7 @@ def test_security_group_service_create_command(requests_mock, mock_client):
 
     assert result.outputs_prefix == 'CheckPointDome9.SecurityGroup.Service'
     assert len(result.outputs) == 10
-    assert result.outputs_key_field == 'name'
+    assert result.outputs_key_field == 'id'
 
 
 def test_security_group_service_delete_command(requests_mock, mock_client):
@@ -900,7 +900,7 @@ def test_security_group_service_delete_command(requests_mock, mock_client):
     result = security_group_service_delete_command(mock_client, args)
 
     assert result.outputs_prefix == 'CheckPointDome9.SecurityGroup.Service'
-    assert result.outputs_key_field == 'name'
+    assert result.outputs_key_field == 'id'
 
 
 def test_security_group_tags_update_command(requests_mock, mock_client):

@@ -13,7 +13,11 @@
                 {
                     "scope": [
                         {
-                            "type": "type"
+                            "type": "type",
+                            "data": {
+                                "cidr": "cidr",
+                                "note": null
+                            }
                         }
                     ]
                 }
@@ -22,7 +26,11 @@
                 {
                     "scope": [
                         {
-                            "type": "type"
+                            "type": "type",
+                            "data": {
+                                "cidr": "cidr",
+                                "note": null
+                            }
                         }
                     ]
                 }
