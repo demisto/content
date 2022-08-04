@@ -416,7 +416,7 @@ def test_search_group_members(mocker):
 
     class ConnectionMocker:
         entries = [EntryMocker()]
-        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': b'<cookie>'}}}}
 
         def search(self, *args, **kwargs):
             time.sleep(1)
@@ -428,9 +428,12 @@ def test_search_group_members(mocker):
                         'HumanReadable': '### Active Directory - Get Group Members\n|'
                                          'dn|memberOf|name|\n|---|---|---|\n| dn | memberOf | name |\n',
                         'EntryContext': {'ActiveDirectory.Groups(obj.dn ==dn)': {'dn': 'dn', 'members': [
-                                        {'dn': 'dn', 'category': 'group'}]}, 'ActiveDirectory.Groups(obj.dn == val.dn)':
-                                            [{'dn': 'dn', 'memberOf': ['memberOf'], 'name': ['name']}], 'Group':
-                                            [{'Type': 'AD', 'ID': 'dn', 'Name': ['name'], 'Groups': ['memberOf']}]}}
+                            {'dn': 'dn', 'category': 'group'}]},
+                                         'ActiveDirectory.Groups(obj.dn == val.dn)':
+                                             [{'dn': 'dn', 'memberOf': ['memberOf'], 'name': ['name']}], 'Group':
+                                             [{'Type': 'AD', 'ID': 'dn', 'Name': ['name'], 'Groups': ['memberOf']}],
+                                         'ActiveDirectory.GroupsPageCookie':
+                                             base64.b64encode(b'<cookie>').decode('utf-8')}}
 
     expected_results = f'demisto results: {json.dumps(expected_results, indent=4, sort_keys=True)}'
 
@@ -496,7 +499,6 @@ def test_search__no_control_exist(mocker):
     Active_Directory_Query.search_users('dc=test,dc=test_1', page_size=20)
 
     assert '**No entries.**' in demisto.results.call_args[0][0]['HumanReadable']
-
 
 def test_user_account_to_boolean_fields():
     """
@@ -572,7 +574,7 @@ def test_search_with_paging_bug(mocker):
 
     class ConnectionMocker:
         entries = []
-        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': b'<cookie>'}}}}
 
         def search(self, *args, **kwargs):
             page_size = kwargs.get('paged_size')

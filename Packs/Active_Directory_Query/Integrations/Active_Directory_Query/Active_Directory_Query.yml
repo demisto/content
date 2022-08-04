@@ -130,7 +130,7 @@ script:
     - name: attributes
       description: A CSV list of the object attributes to return. For example, "dn,memberOf".
         To return all object attributes, specify 'ALL'.
-    - name: size-limit
+    - name: limit
       description: The maximum number of records to return.
       defaultValue: "50"
     - name: time-limit
@@ -142,7 +142,15 @@ script:
       - "no"
       defaultValue: "yes"
       description: Whether to output the search results to the context.
+    - name: page-size
+      description: The page size to query.
+        limit will be ignored
+    - name: page-cookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
+    - contextPath: ActiveDirectory.SearchPageCookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
+      type: string
     - contextPath: 'ActiveDirectory.Search.dn'
       description: The distinguished names that match the query.
       type: string
@@ -299,6 +307,8 @@ script:
       description: The name of the user to return information.
     - name: attributes
       description: Adds AD attributes of the resulting objects to the default attributes.
+    - name: attributes-to-exclude
+      description: Excludes these attributes of the resulting objects.
     - name: custom-field-type
       description: Queries users by custom field type.
     - name: custom-field-data
@@ -321,6 +331,11 @@ script:
       description: Whether to include verbose translation for UserAccountControl flags.
         Default is false.
       defaultValue: "false"
+    - name: page-size
+      description: The page size to query.
+        limit will be ignored
+    - name: page-cookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
     - contextPath: 'ActiveDirectory.Users.dn'
       description: The user distinguished name.
@@ -413,6 +428,9 @@ script:
     - contextPath: ActiveDirectory.Users.userAccountControlFields.PARTIAL_SECRETS_ACCOUNT
       description: Whether the account is a read-only domain controller (RODC).
       type: bool
+    - contextPath: ActiveDirectory.UsersPageCookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
+      type: string
     - contextPath: 'Account.DisplayName'
       description: The user display name.
       type: string
@@ -447,7 +465,17 @@ script:
         argument is provided).
     - name: custom-field-type
       description: Search the computer by custom field type.
+    - name: page-size
+      description: The page size to query.
+        limit will be ignored
+    - name: page-cookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
+    - name: limit
+      description: The maximum number of records to return.
     outputs:
+    - contextPath: ActiveDirectory.ComputersPageCookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
+      type: string
     - contextPath: 'ActiveDirectory.Computers.dn'
       description: The computer distinguished name.
     - contextPath: 'ActiveDirectory.Computers.memberOf'
@@ -503,7 +531,17 @@ script:
       description: Queries results by the samAccountName attribute.
       required: false
       defaultValue: '*'
+    - name: page-size
+      description: The page size to query.
+        limit will be ignored
+    - name: page-cookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
+    - name: limit
+      description: The maximum number of records to return.
     outputs:
+    - contextPath: ActiveDirectory.GroupsPageCookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
+      type: string
     - contextPath: 'ActiveDirectory.Groups.dn'
       description: The group DN.
       type: string
