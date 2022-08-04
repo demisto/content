@@ -13,7 +13,7 @@ from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
                                                str2bool)
-from exceptions import (DeprecatedPackException, EmptyMachineListException,
+from exceptions import (DeprecatedPackException,
                         NonDictException, NoTestsConfiguredException,
                         NothingToCollectException, NotUnderPackException,
                         SkippedPackException, UnsupportedPackException, SkippedTestException, PrivateTestException,
