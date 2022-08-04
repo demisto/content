@@ -1402,6 +1402,9 @@
             "playbookID": "PagerDuty Test"
         },
         {
+            "scripts": [
+                "DeleteContext"
+            ],
             "playbookID": "test_delete_context"
         },
         {
