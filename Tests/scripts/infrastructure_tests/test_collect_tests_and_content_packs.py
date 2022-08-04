@@ -21,7 +21,7 @@ from Tests.scripts.collect_tests_and_content_packs import (
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
     remove_ignored_tests, remove_tests_for_non_supported_packs)
 from Tests.scripts.utils import content_packs_util
-from Tests.scripts.utils import logging_wrapper as logging
+import logging
 from Tests.scripts.utils.get_modified_files_for_testing import (
     ModifiedFiles, get_modified_files_for_testing)
 

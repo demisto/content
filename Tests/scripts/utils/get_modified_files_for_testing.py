@@ -4,8 +4,8 @@ This class replaces the old get_modified_files_for_testing function in collect_t
 import glob
 import os
 from typing import Dict, Set, Optional
+import logging
 from Tests.scripts.utils.log_util import install_logging
-from Tests.scripts.utils import logging_wrapper as logging
 
 import demisto_sdk.commands.common.constants as constants
 from demisto_sdk.commands.common.constants import FileType
@@ -14,7 +14,7 @@ from Tests.scripts.utils.collect_helpers import (
     is_code_test_file, checked_type, SECRETS_WHITE_LIST, LANDING_PAGE_SECTIONS_JSON_PATH,
 )
 from demisto_sdk.commands.common import tools
-install_logging('Collect_Tests_And_Content_Packs.log', logger=logging)
+install_logging('Collect_Tests_And_Content_Packs.log')
 
 
 class ModifiedFiles:
