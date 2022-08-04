@@ -240,8 +240,7 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
         data: Dict = {}
         dbotscore = {
             'Vendor': 'Lastline',
-            'Score': 0,
-            'Reliability': demisto.params().get('integrationReliability')
+            'Score': 0
         }
         dbotscore_list = []
         if 'score' in result['data']:
@@ -253,8 +252,7 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
                 dbotscore['Score'] = 3
                 data['Malicious'] = {
                     'Vendor': 'Lastline',
-                    'Score': score,
-                    'Reliability': demisto.params().get('integrationReliability')
+                    'Score': score
                 }
             elif score > 30:
                 dbotscore['Score'] = 2

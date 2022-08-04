@@ -44,12 +44,9 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-- display: ""
-  name: feedExpirationPolicy
-  defaultvalue: indicatorType
-  type: 17
-  required: false
-description: Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches.
+
+Packs/Pwned/Integrations/PwnedV2/PwnedV2:
+  yml:description: Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches.
 display: Have I Been Pwned? v2
 name: Have I Been Pwned? V2
 script:

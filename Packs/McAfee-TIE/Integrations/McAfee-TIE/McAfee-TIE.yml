@@ -35,11 +35,21 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-- display: ""
+- defaultvalue: indicatorType
   name: feedExpirationPolicy
-  defaultvalue: indicatorType
-  type: 17
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 description: Connect to McAfee TIE using the McAfee DXL client.
 display: McAfee Threat Intelligence Exchange
 name: McAfee Threat Intelligence Exchange

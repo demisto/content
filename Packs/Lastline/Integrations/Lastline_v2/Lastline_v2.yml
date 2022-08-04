@@ -42,25 +42,6 @@ configuration:
   required: false
   type: 4
   hidden: true
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
-  display: Source Reliability
-  name: integrationReliability
-  options:
-  - A+ - 3rd party enrichment
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: false
-  type: 15
-- display: ""
-  name: feedExpirationPolicy
-  defaultvalue: indicatorType
-  type: 17
-  required: false
 description: Use the Lastline v2 integration to provide threat analysts and incident response teams with the advanced malware isolation and inspection environment needed to safely execute advanced malware samples, and understand their behavior.
 display: Lastline v2
 name: Lastline v2
