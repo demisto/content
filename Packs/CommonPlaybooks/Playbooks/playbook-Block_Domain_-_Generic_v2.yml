@@ -1,0 +1,336 @@
+id: Block Domain - Generic v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Block Domain - Generic v2
+description: |
+  This playbook blocks malicious Domains using all integrations that are enabled.
+
+  Supported integrations for this playbook:
+  * Zscaler
+  * Symantec Messaging Gateway
+  * FireEye EX
+  * Trend Micro Apex One
+  * Proofpoint Threat Response
+  * Cisco Stealthwatch Cloud
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: aa69480c-0a5e-4e81-86c2-b80a2fc7c10d
+    type: start
+    task:
+      id: aa69480c-0a5e-4e81-86c2-b80a2fc7c10d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "2"
+      - "3"
+      - "4"
+      - "6"
+      - "7"
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d6a0912b-a03f-4a90-838d-abf4ec52f8ce
+    type: playbook
+    task:
+      id: d6a0912b-a03f-4a90-838d-abf4ec52f8ce
+      version: -1
+      name: Block Domain - Symantec Messaging Gateway
+      playbookName: Block Domain - Symantec Messaging Gateway
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "5"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f9253412-d3de-4e67-821b-e501fd7dd69e
+    type: playbook
+    task:
+      id: f9253412-d3de-4e67-821b-e501fd7dd69e
+      version: -1
+      name: Block Domain - FireEye Email Security
+      playbookName: Block Domain - FireEye Email Security
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "5"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ddd8c442-4746-41e6-82e4-c46244f99402
+    type: playbook
+    task:
+      id: ddd8c442-4746-41e6-82e4-c46244f99402
+      version: -1
+      name: Block Domain - Zscaler
+      description: |-
+        This playbook blocks domains using Zscaler.
+        The playbook checks whether the Zscaler integration is enabled, whether the Domain input has been provided and if so, blocks the domain.
+      playbookName: Block Domain - Zscaler
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "5"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 56106ad2-8509-4c5b-89a6-8c8cc10223c5
+    type: title
+    task:
+      id: 56106ad2-8509-4c5b-89a6-8c8cc10223c5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8db4ff8c-a46d-4be6-8669-a157e9ecea30
+    type: playbook
+    task:
+      id: 8db4ff8c-a46d-4be6-8669-a157e9ecea30
+      version: -1
+      name: Block Domain - Trend Micro Apex One
+      playbookName: Block Domain - Trend Micro Apex One
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "5"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 54dcc2d1-497f-4c3c-800a-897d125a2dbd
+    type: playbook
+    task:
+      id: 54dcc2d1-497f-4c3c-800a-897d125a2dbd
+      version: -1
+      name: Block Domain - Proofpoint Threat Response
+      playbookName: Block Domain - Proofpoint Threat Response
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "5"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 71a65711-416b-4a49-89b9-9ec5251c5936
+    type: playbook
+    task:
+      id: 71a65711-416b-4a49-89b9-9ec5251c5936
+      version: -1
+      name: Block Domain - Cisco Stealthwatch
+      playbookName: Block Domain - Cisco Stealthwatch
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "5"
+    scriptarguments:
+      Domain:
+        simple: ${inputs.Domain}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 495,
+        "width": 2670,
+        "x": -240,
+        "y": 100
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value: {}
+  required: false
+  description: The Domain to block.
+  playbookInputQuery:
+- key: DomainBlackListID
+  value: {}
+  required: false
+  description: |-
+    The Domain List ID to add the Domain to.
+    product: Proofpoint Threat Response
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
