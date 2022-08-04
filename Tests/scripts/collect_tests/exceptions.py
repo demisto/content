@@ -45,7 +45,7 @@ class NoTestsConfiguredException(Exception):
     """ raised when an integration has no tests configured """
 
     def __init__(self, content_id: str):
-        self.message = f'The content item with id={content_id} has `Tests: No Tests` configured. ' \
+        self.message = f'The content item with id {content_id} has `Tests: No Tests` configured. ' \
                        f'This is not an error! Tests for this integration are to be taken from the conf.json instead.'
         super().__init__(self.message)
 
@@ -58,7 +58,7 @@ class NotUnderPackException(Exception):
 
 class NothingToCollectException(Exception):
     def __init__(self, path: Path, reason: str):
-        self.message = f'Not collecting tests or packs for {str(path)}, {reason=}'
+        self.message = f'Not collecting tests or packs for {str(path)}: {reason}'
         super().__init__(self.message)
 
 
@@ -75,7 +75,7 @@ class TestMissingFromIdSetException(Exception):
 
 class SkippedTestException(InvalidTestException):
     def __init__(self, test_name: str, skip_reason: str):
-        super().__init__(test_name, f'Test {test_name} is skipped, {skip_reason=}')
+        super().__init__(test_name, f'Test {test_name} is skipped: {skip_reason}')
 
 
 class PrivateTestException(InvalidTestException):
