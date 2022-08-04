@@ -23,8 +23,8 @@ from Tests.scripts.utils.content_packs_util import should_test_content_pack, sho
     is_pack_xsoar_supported
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, \
     filter_modified_files_for_specific_marketplace_version
+import logging
 from Tests.scripts.utils.log_util import install_logging
-from Tests.scripts.utils import logging_wrapper as logging
 from demisto_sdk.commands.common import constants
 
 SANITY_TESTS = {
@@ -1558,7 +1558,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
 
 
 if __name__ == "__main__":
-    install_logging('Collect_Tests_And_Content_Packs.log', logger=logging)
+    install_logging('Collect_Tests_And_Content_Packs.log')
     logging.info("Starting creation of test filter file")
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
