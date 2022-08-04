@@ -14,7 +14,6 @@
     "editForm": true,
     "extractIndicatorTypesIDs": [],
     "fieldCalcScript": "",
-    "fromServerVersion": "",
     "group": 0,
     "hidden": false,
     "id": "incident_highlevelcategories",
@@ -44,5 +43,8 @@
     "validationRegex": "",
     "version": -1,
     "fromVersion": "6.0.0",
-    "openEnded": true
+    "openEnded": true,
+    "marketplaces": [
+		"xsoar"
+	]
 }

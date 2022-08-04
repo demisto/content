@@ -984,103 +984,232 @@ class MockedResponse:
         self.headers = headers
 
 
-@pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
-                         [pytest.param({'device-group': 'some_device', 'admin_name': 'some_admin_name'},
-                                       {'action': 'partial',
-                                        'cmd': '<commit><device-group><entry '
-                                               'name="some_device"/></device-group><partial><admin>'
-                                               '<member>some_admin_name</member></admin></partial></commit>',
-                                        'key': 'thisisabogusAPIKEY!',
-                                        'type': 'commit'},
-                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
-                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
-                                                           '<job>19420</job></result></response>', status_code=200,
-                                                      reason=''),
-                                       {'Panorama.Commit(val.JobID == obj.JobID)': {'Description': None,
-                                                                                    'JobID': '19420',
-                                                                                    'Status': 'Pending'}},
-                                       id='only admin changes commit'),
-                          pytest.param({'device-group': 'some_device', 'force_commit': 'true'},
-                                       {'cmd': '<commit><device-group><entry name="some_device"/></device-group><force>'
-                                               '</force></commit>',
-                                        'key': 'thisisabogusAPIKEY!',
-                                        'type': 'commit'},
-                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
-                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
-                                                           '<job>19420</job></result></response>', status_code=200,
-                                                      reason=''),
-                                       {'Panorama.Commit(val.JobID == obj.JobID)': {'Description': None,
-                                                                                    'JobID': '19420',
-                                                                                    'Status': 'Pending'}},
-                                       id="force commit"),
-                          pytest.param({'device-group': 'some_device', 'exclude_device_network_configuration': 'true'},
-                                       {'action': 'partial',
-                                        'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
-                                               '<partial><device-and-network>excluded</device-and-network></partial>'
-                                               '</commit>',
-                                        'key': 'thisisabogusAPIKEY!',
-                                        'type': 'commit'},
-                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
-                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
-                                                           '<job>19420</job></result></response>', status_code=200,
-                                                      reason=''),
-                                       {'Panorama.Commit(val.JobID == obj.JobID)': {'Description': None,
-                                                                                    'JobID': '19420',
-                                                                                    'Status': 'Pending'}},
-                                       id="device and network excluded"),
-                          pytest.param({'device-group': 'some_device', 'exclude_shared_objects': 'true'},
-                                       {'action': 'partial',
-                                        'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
-                                               '<partial><shared-object>excluded</shared-object></partial></commit>',
-                                        'key': 'thisisabogusAPIKEY!',
-                                        'type': 'commit'},
-                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
-                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
-                                                           '<job>19420</job></result></response>', status_code=200,
-                                                      reason=''),
-                                       {'Panorama.Commit(val.JobID == obj.JobID)': {'Description': None,
-                                                                                    'JobID': '19420',
-                                                                                    'Status': 'Pending'}},
-                                       id="exclude shared objects"),
-                          pytest.param({'device-group': 'some_device'},
-                                       {'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
-                                               '</commit>',
-                                        'key': 'thisisabogusAPIKEY!',
-                                        'type': 'commit'},
-                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
-                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
-                                                           '<job>19420</job></result></response>', status_code=200,
-                                                      reason=''),
-                                       {'Panorama.Commit(val.JobID == obj.JobID)': {'Description': None,
-                                                                                    'JobID': '19420',
-                                                                                    'Status': 'Pending'}},
-                                       id="no args")
-                          ])
-def test_panorama_commit_command(mocker, args, expected_request_params, request_result, expected_demisto_result):
-    """
-    Given:
-        - command args
-        - request result
-    When:
-        - Running panorama-commit command
-    Then:
-        - Assert the request url is as expected
-        - Assert demisto results contain the relevant result information
-    """
-    import Panorama
-    import requests
-    from Panorama import panorama_commit_command
+class TestPanoramaCommitCommand:
 
-    Panorama.API_KEY = 'thisisabogusAPIKEY!'
-    return_results_mock = mocker.patch.object(Panorama, 'return_results')
-    request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
-    panorama_commit_command(args)
+    COMMIT_POLLING_ARGS = {
+        'device-group': 'some_device',
+        'admin_name': 'some_admin_name',
+        'description': 'a simple commit',
+        'polling': 'true'
+    }
 
-    called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
-    assert called_request_params == expected_request_params
+    EXPECTED_COMMIT_REQUEST_URL_PARAMS = {
+        'action': 'partial',
+        'cmd': '<commit><device-group><entry '
+               'name="some_device"/></device-group><partial><admin>'
+               '<member>some_admin_name</member></admin></partial></commit>',
+        'key': 'APIKEY',
+        'type': 'commit'
+    }
 
-    demisto_result_got = return_results_mock.call_args.args[0]['EntryContext']
-    assert demisto_result_got == expected_demisto_result
+    @staticmethod
+    def create_mock_responses(job_commit_status_count):
+
+        mocked_responses = [  # panorama commit api response mock
+            MockedResponse(
+                text='<response status="success" code="19"><result><msg>''<line>Commit job '
+                     'enqueued with jobid 123</line></msg>''<job>123</job></result></response>',
+                status_code=200,
+            )
+        ]
+
+        mocked_responses += [  # add a mocked response indicating that the job is still in progress
+            MockedResponse(
+                text='<response status="success"><result><job><tenq>2022/07/16 07:50:04</tenq><tdeq>07:50:04<'
+                     '/tdeq><id>123</id><user>app</user><type>Commit</type><status>ACT</status><queued>NO</queued>'
+                     '<stoppable>no</stoppable><result>PEND</result><tfin>Still Active</tfin><description></'
+                     'description><positionInQ>0</positionInQ><progress>69</progress><warnings></warnings>'
+                     '<details></details></job></result></response>',
+                status_code=200,
+            ) for _ in range(job_commit_status_count)
+        ]
+
+        mocked_responses += [  # add a mocked response indicating that the job has finished.
+            MockedResponse(
+                text='<response status="success"><result><job><tenq>2022/07/16 07:26:05</tenq><tdeq>07:26:05</tdeq>'
+                     '<id>7206</id><user>app</user><type>Commit</type><status>FIN</status><queued>NO</queued>'
+                     '<stoppable>no</stoppable><result>OK</result><tfin>07:26:24</tfin><description></description>'
+                     '<positionInQ>0</positionInQ><progress>100</progress><details><line>Configuration '
+                     'committed successfully</line></details><warnings></warnings></job></result></response>',
+                status_code=200,
+            )
+        ]
+
+        return mocked_responses
+
+    @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
+                             [pytest.param({'device-group': 'some_device', 'admin_name': 'some_admin_name',
+                                            'description': 'a simple commit', 'polling': 'false'},
+                                           {'action': 'partial',
+                                            'cmd': '<commit><device-group><entry '
+                                                   'name="some_device"/></device-group><partial><admin>'
+                                                   '<member>some_admin_name</member></admin></partial></commit>',
+                                            'key': 'thisisabogusAPIKEY!',
+                                            'type': 'commit'},
+                                           MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                               '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                               '<job>19420</job></result></response>', status_code=200,
+                                                          reason=''),
+                                           {'Description': "a simple commit", 'JobID': '19420', 'Status': 'Pending'},
+                                           id='only admin changes commit'),
+                              pytest.param({'device-group': 'some_device', 'force_commit': 'true', 'polling': 'false'},
+                                           {'cmd': '<commit><device-group><entry name="some_device"/>'
+                                                   '</device-group><force>''</force></commit>',
+                                            'key': 'thisisabogusAPIKEY!',
+                                            'type': 'commit'},
+                                           MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                               '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                               '<job>19420</job></result></response>', status_code=200,
+                                                          reason=''),
+                                           {'Description': '', 'JobID': '19420', 'Status': 'Pending'},
+                                           id="force commit"),
+                              pytest.param({'device-group': 'some_device',
+                                            'exclude_device_network_configuration': 'true', 'polling': 'false'},
+                                           {'action': 'partial',
+                                            'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
+                                                   '<partial><device-and-network>excluded</'
+                                                   'device-and-network></partial>''</commit>',
+                                            'key': 'thisisabogusAPIKEY!',
+                                            'type': 'commit'},
+                                           MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                               '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                               '<job>19420</job></result></response>', status_code=200,
+                                                          reason=''),
+                                           {'Description': '', 'JobID': '19420', 'Status': 'Pending'},
+                                           id="device and network excluded"),
+                              pytest.param({'device-group': 'some_device',
+                                            'exclude_shared_objects': 'true', 'polling': 'false'},
+                                           {'action': 'partial',
+                                            'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
+                                                   '<partial><shared-object>excluded'
+                                                   '</shared-object></partial></commit>',
+                                            'key': 'thisisabogusAPIKEY!',
+                                            'type': 'commit'},
+                                           MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                               '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                               '<job>19420</job></result></response>', status_code=200,
+                                                          reason=''),
+                                           {'Description': '', 'JobID': '19420', 'Status': 'Pending'},
+                                           id="exclude shared objects"),
+                              pytest.param({'device-group': 'some_device', 'polling': 'false'},
+                                           {'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
+                                                   '</commit>',
+                                            'key': 'thisisabogusAPIKEY!',
+                                            'type': 'commit'},
+                                           MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                               '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                               '<job>19420</job></result></response>', status_code=200,
+                                                          reason=''),
+                                           {'Description': '', 'JobID': '19420', 'Status': 'Pending'}, id="no args")
+                              ])
+    def test_panorama_commit_command_without_polling(
+        self, mocker, args, expected_request_params, request_result, expected_demisto_result
+    ):
+        """
+        Given:
+            - commit command arguments and the expected api request without polling
+
+        When:
+            - Running panorama-commit command
+
+        Then:
+            - Assert the request url is as expected
+            - Assert that panorama commit returns the correct context output
+        """
+        import Panorama
+        import requests
+        from Panorama import panorama_commit_command
+
+        Panorama.API_KEY = 'thisisabogusAPIKEY!'
+        request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
+        command_result = panorama_commit_command(args)
+
+        called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
+        assert called_request_params == expected_request_params  # check that the URL is sent as expected.
+        assert command_result.outputs == expected_demisto_result  # check context is valid
+
+    @pytest.mark.parametrize(
+        'args, expected_commit_request_url_params, api_response_queue',
+        [
+            pytest.param(
+                COMMIT_POLLING_ARGS,
+                EXPECTED_COMMIT_REQUEST_URL_PARAMS,
+                create_mock_responses(job_commit_status_count=1)
+            ),
+            pytest.param(
+                COMMIT_POLLING_ARGS,
+                EXPECTED_COMMIT_REQUEST_URL_PARAMS,
+                create_mock_responses(job_commit_status_count=10)
+            ),
+            pytest.param(
+                COMMIT_POLLING_ARGS,
+                EXPECTED_COMMIT_REQUEST_URL_PARAMS,
+                create_mock_responses(job_commit_status_count=5)
+            ),
+            pytest.param(
+                COMMIT_POLLING_ARGS,
+                EXPECTED_COMMIT_REQUEST_URL_PARAMS,
+                create_mock_responses(job_commit_status_count=8)
+            ),
+            pytest.param(
+                COMMIT_POLLING_ARGS,
+                EXPECTED_COMMIT_REQUEST_URL_PARAMS,
+                create_mock_responses(job_commit_status_count=13)
+            ),
+            pytest.param(
+                COMMIT_POLLING_ARGS,
+                EXPECTED_COMMIT_REQUEST_URL_PARAMS,
+                create_mock_responses(job_commit_status_count=0)  # commit job finished instantly (very very rare case!)
+            ),
+        ]
+    )
+    def test_panorama_commit_command_with_polling(
+        self, mocker, args, expected_commit_request_url_params, api_response_queue
+    ):
+        """
+        Given:
+            - pan-os-commit command arguments
+            - expected structure of the URL to commit pan-os configuration
+            - a queue for api responses of the following:
+                1) first value in the queue is the panorama commit api response
+                2) panorama job status api response which indicates job isn't done yet (different number each time)
+                3) last value in the queue is the panorama job status that indicates it has finished and succeeded
+
+        When:
+            - running pan-os-commit with polling argument.
+
+        Then:
+            - make sure that the panorama_commit_command function querying for the commit job ID status until its done.
+            - make sure that eventually after polling the panorama_commit_command, that it returns the expected output.
+        """
+        import Panorama
+        import requests
+        from Panorama import panorama_commit_command
+        from CommonServerPython import ScheduledCommand
+
+        Panorama.API_KEY = 'APIKEY'
+        request_mock = mocker.patch.object(requests, 'request', side_effect=api_response_queue)
+        mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
+        command_result = panorama_commit_command(args)
+        description = args.get('description')
+
+        called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
+        assert called_request_params == expected_commit_request_url_params  # check that the URL is sent as expected.
+        assert command_result.readable_output == f'Waiting for commit "{description}" with job ID 123 to finish...'
+
+        polling_args = {
+            'commit_job_id': '123', 'description': description, 'hide_polling_output': True, 'polling': True
+        }
+
+        command_result = panorama_commit_command(polling_args)
+        while command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
+            assert not command_result.readable_output  # make sure that indication of polling is printed only once
+            assert not command_result.outputs  # make sure no context output is being returned to war-room during polling
+            command_result = panorama_commit_command(polling_args)
+
+        # last response of the command should be job status and the commit description
+        assert command_result.outputs == {'JobID': '123', 'Description': description, 'Status': 'Success'}
 
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
@@ -1202,7 +1331,7 @@ def test_panorama_push_to_device_group_command(mocker, args, expected_request_pa
                                        id='with device'),
                           ])
 def test_panorama_push_to_template_command(
-    mocker, args, expected_request_params, request_result, expected_demisto_result
+        mocker, args, expected_request_params, request_result, expected_demisto_result
 ):
     """
     Given:
@@ -1306,7 +1435,7 @@ def test_panorama_push_to_template_command(
                                  id='with device'),
                          ])
 def test_panorama_push_to_template_stack_command(
-    mocker, args, expected_request_params, request_result, expected_demisto_result
+        mocker, args, expected_request_params, request_result, expected_demisto_result
 ):
     """
     Given:
@@ -1370,6 +1499,51 @@ def test_get_url_category__url_length_gt_1278(mocker):
 
     # validate
     assert 'URL Node can be at most 1278 characters.' == return_results_mock.call_args[0][0][1].readable_output
+
+
+def test_get_url_category_multiple_categories_for_url(mocker):
+    """
+    Given:
+        - response indicating the url has multiple categories.
+
+    When:
+        - Run get_url_category command
+
+    Then:
+        - Validate a commandResult is returned with detailed readable output
+        - Validate only a single DBot score is returned for the URL.
+    """
+    # prepare
+    import Panorama
+    import requests
+    from Panorama import panorama_get_url_category_command
+    Panorama.DEVICE_GROUP = ''
+    mocked_res_dict = {
+        'response': {
+            '@cmd': 'status',
+            '@status': 'success',
+            'result': 'https://someURL.com not-resolved (Base db) expires in 5 seconds\n'
+                      'https://someURL.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db)'
+        }
+    }
+    mocked_res_obj = requests.Response()
+    mocked_res_obj.status_code = 200
+    mocked_res_obj._content = json.dumps(mocked_res_dict).encode('utf-8')
+    mocker.patch.object(requests, 'request', return_value=mocked_res_obj)
+    mocker.patch.object(Panorama, 'xml2json', return_value=mocked_res_obj._content)
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+
+    # run
+    panorama_get_url_category_command(url_cmd='url', url='test_url', additional_suspicious=[], additional_malicious=[])
+
+    # validate
+    for i in range(3):
+        assert return_results_mock.call_args[0][0][0].outputs[i].get('Category') in ['shareware-and-freeware',
+                                                                                     'online-storage-and-backup',
+                                                                                     'low-risk']
+
+    # category with highest dbot-score
+    assert return_results_mock.call_args[0][0][1].indicator.dbot_score.score == 1
 
 
 class TestDevices:
@@ -1929,7 +2103,8 @@ class TestUtilityFunctions:
         assert "### PAN-OS Object" in results.readable_output
 
         results = dataclasses_to_command_results(
-            test_dataclass, override_table_name="Test Table", override_table_headers=["hostid", "name", "container_name"])
+            test_dataclass, override_table_name="Test Table",
+            override_table_headers=["hostid", "name", "container_name"])
         # When we provide overrides, check they are rendered correctly in the readable output
         assert "hostid|name|container_name" in results.readable_output
         assert "### Test Table" in results.readable_output
@@ -2052,16 +2227,16 @@ class TestUniversalCommand:
 
         # We also want to check that if an empty string is passed, an error is returned
         with pytest.raises(
-            DemistoException,
-            match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
+                DemistoException,
+                match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "")
 
         # Lets also check that if an invalid hostid is given, we also raise.
         with pytest.raises(
-            DemistoException,
-            match="filter_str badserialnumber is not the exact ID of "
-                  "a host in this topology; use a more specific filter string."
+                DemistoException,
+                match="filter_str badserialnumber is not the exact ID of "
+                      "a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "badserialnumber")
 
@@ -2567,8 +2742,7 @@ class TestObjectFunctions:
                                      'cmd': '<show><system><info/></system></show>',
                                      'key': 'fakeAPIKEY!',
                                  },
-                                 None,
-                         ),
+                                 None,),
                          ])
 def test_add_target_arg(mocker, expected_request_params, target):
     """
@@ -2593,39 +2767,60 @@ def test_add_target_arg(mocker, expected_request_params, target):
 
 
 @pytest.mark.parametrize('rule , expected_result',
-                         [pytest.param({'target':
-                                        {'devices':
-                                         {'entry':
-                                          [{'@name': 'fw1'},
-                                           {'@name': 'fw2'}]
-                                          }
+                         [pytest.param({
+                             'target': {
+                                 'devices': {
+                                     'entry': [
+                                         {
+                                             '@name': 'fw1'
+                                         },
+                                         {
+                                             '@name': 'fw2'
                                          }
-                                        },
-                                       True
-                                       ),
-                          pytest.param(
-                              {'target':
-                               {'devices':
-                                {'entry': {'@name': 'fw1'}}
-                                }
-                               },
-                              True),
-                          pytest.param({'target':
-                                        {'devices':
-                                         {'entry': {'@name': 'fw2'}
-                                          }
+                                     ]
+                                 }
+                             }
+                         },
+                             True
+                         ),
+                             pytest.param(
+                                 {
+                                     'target': {
+                                         'devices': {
+                                             'entry': {
+                                                 '@name': 'fw1'
+                                             }
                                          }
-                                        },
-                                       False),
-                          pytest.param({'target':
-                                        {'devices':
-                                         {'entry': [{'@name': 'fw1'}]}
+                                     }
+                                 },
+                                 True),
+                             pytest.param(
+                                 {
+                                     'target': {
+                                         'devices': {
+                                             'entry': {
+                                                 '@name': 'fw2'
+                                             }
                                          }
-                                        },
-                                       True),
-
-                          ]
-                         )
+                                     }
+                                 },
+                                 False),
+                             pytest.param(
+                                 {
+                                     'target':
+                                         {
+                                             'devices':
+                                                 {
+                                                     'entry': [
+                                                         {
+                                                             '@name': 'fw1'
+                                                         }
+                                                     ]
+                                                 }
+                                         }
+                                 },
+                                 True),
+                         ])
 def test_target_filter(rule, expected_result):
     """
     Given:

@@ -31,7 +31,7 @@ SANITY_TESTS = {
     'Sanity Test - Playbook with integration',
     'Sanity Test - Playbook with no integration',
     'Sanity Test - Playbook with mocked integration',
-    'Sanity Test - Playbook with Unmockable Integration',
+    'Sanity Test - Playbook with Unmockable Whois integration',
 }
 
 
@@ -1303,9 +1303,9 @@ def get_test_list_and_content_packs_to_install(files_string,
             tests.update(SANITY_TESTS)
             logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
             logging.debug(
-                "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' uses it"
+                "Adding Whois to packs to install as 'Sanity Test - Playbook with Unmockable Whois Integration' uses it"
             )
-            packs_to_install.update(["HelloWorld", "Gmail"])
+            packs_to_install.update(["HelloWorld", "Whois"])
 
     # We add Base and DeveloperTools packs for every build
     if tests or packs_to_install:
@@ -1428,9 +1428,9 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
     """
     envs_to_test = {
         'Server Master': True,
+        'Server 6.8': is_runnable_in_server_version(from_version, '6.8', to_version),
         'Server 6.6': is_runnable_in_server_version(from_version, '6.6', to_version),
         'Server 6.5': is_runnable_in_server_version(from_version, '6.5', to_version),
-        'Server 6.2': is_runnable_in_server_version(from_version, '6.2', to_version),
 
     }
 
@@ -1438,9 +1438,9 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
         # No need to create the instances.
         envs_to_test = {
             'Server Master': False,
+            'Server 6.8': False,
             'Server 6.6': False,
             'Server 6.5': False,
-            'Server 6.2': False,
         }
 
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
@@ -1522,6 +1522,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
             files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
 
         logging.debug(f'Files string: {files_string}')
+        files_string = '\n'.join(filter(lambda line: 'scripts/collect_tests' not in line, files_string.split('\n')))
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              marketplace_version)
