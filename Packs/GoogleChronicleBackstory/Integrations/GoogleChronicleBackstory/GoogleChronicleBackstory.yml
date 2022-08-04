@@ -208,11 +208,21 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-- display: ""
+- defaultvalue: indicatorType
   name: feedExpirationPolicy
-  defaultvalue: indicatorType
-  type: 17
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 description: Use the Chronicle integration to retrieve Asset alerts or IOC Domain
   matches as Incidents. Use it to fetch a list of infected assets based on the indicator
   accessed. This integration also provides reputation and threat enrichment of indicators
