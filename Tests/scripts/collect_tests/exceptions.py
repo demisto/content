@@ -37,8 +37,6 @@ class NonDictException(Exception):
         super().__init__(self.message)
 
 
-
-
 class NoTestsConfiguredException(Exception):
     """ raised when an integration has no tests configured """
 
