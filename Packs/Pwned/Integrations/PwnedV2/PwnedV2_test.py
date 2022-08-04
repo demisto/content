@@ -62,7 +62,8 @@ username_req = [
                         u' data breach they titled "50 days of lulz"</a>. The compromised data came from'
                         u' sources such as AT&T, Battlefield Heroes and the <a href="http://hackforums.'
                         u'net" target="_blank" rel="noopener">hackforums.net website</a>. The leaked '
-                        u'Hack Forums data included credentials and personal information of nearly 200,000 registered forum users.'
+                        u'Hack Forums data included credentials and personal '
+                        u'information of nearly 200,000 registered forum users.'
     }
 ]
 
