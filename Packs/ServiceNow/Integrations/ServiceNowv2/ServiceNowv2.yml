@@ -136,9 +136,9 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Define how to close the mirrored tickets,
-    choose 'resolve' to enable reopening from the UI.
+    choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: None
-  display: Close Mirrored XSOAR Incident
+  display: Mirrored ServiceNow Ticket closure method
   name: close_ticket_multiple_options
   options:
   - None
