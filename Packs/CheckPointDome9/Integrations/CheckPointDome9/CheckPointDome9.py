@@ -1,5 +1,4 @@
 from typing import Any, Dict, Tuple
-from requests.auth import HTTPBasicAuth
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -9,7 +8,7 @@ class Client(BaseClient):
     def __init__(self, base_url: str, key_id: str, key_secret: str, proxy: bool, verify: bool):
         self.base_url = base_url
         headers = {'Content-Type': 'application/json'}
-        auth = HTTPBasicAuth(key_id, key_secret)
+        auth = (key_id, key_secret)
         super().__init__(base_url=base_url, auth=auth, verify=verify, headers=headers, proxy=proxy)
 
     def access_lease_list_request(self) -> Dict[str, Any]:
@@ -20,7 +19,7 @@ class Client(BaseClient):
         """
         return self._http_request('GET', 'AccessLease')
 
-    def access_lease_delete_request(self, lease_id: str) -> Dict[str, Any]:
+    def access_lease_delete_request(self, lease_id: str) -> str:
         """ Delete an access lease by ID.
 
         Args:
@@ -37,13 +36,13 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Dome9.
         """
-        url_prefix = f'/{invitation_id}' if invitation_id else ''
+        url_prefix = create_url_prefix(invitation_id)
 
         response = self._http_request('GET', f'AccessLeaseInvitation{url_prefix}')
 
         return response
 
-    def access_lease_invitation_delete_request(self, invitation_id: str) -> Dict[str, Any]:
+    def access_lease_invitation_delete_request(self, invitation_id: str) -> str:
         """ Delete an access lease invitation by ID.
 
         Args:
@@ -57,23 +56,21 @@ class Client(BaseClient):
                                   resp_type='text')
 
     def findings_search_request(self,
-                                alert_severity: list = None,
-                                alert_region: list = None,
-                                max_fetch: int = None) -> Dict[str, Any]:
+                                max_fetch: int,
+                                alert_severity: List[str] = None,
+                                alert_region: List[str] = None) -> Dict[str, Any]:
         """ Search findings.
-            Filter findings by account, region, VPC, IP, or instance name. ???
+            Filter findings by account, region, VPC, IP, or instance name.
 
         Returns:
             Dict[str, Any]: API response from Dome9.
         """
         fields = []
-        if alert_severity:
-            for severity in alert_severity:
-                fields.append({"name": "severity", "value": severity})
+        for severity in (alert_severity or []):
+            fields.append({"name": "severity", "value": severity})
 
-        if alert_region:
-            for region in alert_region:
-                fields.append({"name": "region", "value": region})
+        for region in (alert_region or []):
+            fields.append({"name": "region", "value": region})
 
         data = {
             "pageSize": max_fetch,
@@ -92,7 +89,7 @@ class Client(BaseClient):
     def ip_list_create_request(self,
                                name: str,
                                description: str,
-                               items: List[Dict[str, Any]] = '') -> Dict[str, Any]:
+                               items: List[Dict[str, Any]] = None) -> Dict[str, Any]:
         """ Create a new IP list.
 
         Args:
@@ -103,15 +100,18 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Dome9.
         """
-        items = '' if not items else items
+        items = items or ''
         data = {"description": description, "items": items, "name": name}
         return self._http_request('POST', 'IpList', json_data=data)
 
-    def ip_list_update_request(self, list_id, description: str, items: list = '') -> Dict[str, Any]:
+    def ip_list_update_request(self,
+                               list_id: str,
+                               description: str,
+                               items: List[Dict[str, Any]] = None) -> str:
         """ Update exist IP list.
 
         Args:
-            list_id (_type_): The IP list ID.
+            list_id (str): The IP list ID.
             description (str): The new IP list description.
             items (list, optional): The new IP-list items (IP address and comment).
 
@@ -132,10 +132,10 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Dome9.
         """
 
-        url_prefix = f'/{list_id}' if list_id else ''
+        url_prefix = create_url_prefix(list_id)
         return self._http_request(method='GET', url_suffix=f'IpList{url_prefix}')
 
-    def ip_list_delete_request(self, list_id: str) -> Dict[str, Any]:
+    def ip_list_delete_request(self, list_id: str) -> str:
         """ Delete an IP List by id.
 
         Args:
@@ -155,8 +155,12 @@ class Client(BaseClient):
         """
         return self._http_request('GET', 'IpAddressMetadata')
 
-    def ip_list_metadata_create_request(self, cidr: str, name: str,
-                                        classification: str) -> Dict[str, Any]:
+    def ip_list_metadata_create_request(
+        self,
+        cidr: str,
+        name: str,
+        classification: str,
+    ) -> Dict[str, Any]:
         """ Add a new IP address metadata. An Ip Address metadata must contain CIDR, Name and Classification.
             Classification can be External or Unsafe or Dmz or InternalVpc or InternalDc or NoClassification.
 
@@ -174,8 +178,12 @@ class Client(BaseClient):
 
         return response
 
-    def ip_list_metadata_update_request(self, list_id: str, classification: str,
-                                        name: str) -> Dict[str, Any]:
+    def ip_list_metadata_update_request(
+        self,
+        list_id: str,
+        classification: str,
+        name: str,
+    ) -> Dict[str, Any]:
         """ Update an existing IP address metadata.
             Classification can only be External or Unsafe or Dmz or InternalVpc or InternalDc or NoClassification.
 
@@ -192,8 +200,12 @@ class Client(BaseClient):
 
         return response
 
-    def ip_list_metadata_delete_request(self, account_id: str, address: str,
-                                        mask: int) -> Dict[str, Any]:
+    def ip_list_metadata_delete_request(
+        self,
+        account_id: str,
+        address: str,
+        mask: int,
+    ) -> str:
         """ Delete an IP address metadata with a specific CIDR.
 
         Args:
@@ -206,7 +218,6 @@ class Client(BaseClient):
         """
 
         params = {"accountId": account_id, "address": address, "mask": mask}
-        # Delete but throw an error. FIX: resp_type='text'
         response = self._http_request('DELETE',
                                       'IpAddressMetadata',
                                       params=params,
@@ -245,9 +256,14 @@ class Client(BaseClient):
         }
         return self._http_request('POST', 'ComplianceRemediation', json_data=data)
 
-    def compliance_remediation_update_request(self, remediation_id: str, ruleset_id: str,
-                                              rule_logic_hash: str, comment: str,
-                                              cloudbots: list) -> Dict[str, Any]:
+    def compliance_remediation_update_request(
+        self,
+        remediation_id: str,
+        ruleset_id: str,
+        rule_logic_hash: str,
+        comment: str,
+        cloudbots: list,
+    ) -> Dict[str, Any]:
         """ Update a remediation.
 
         Args:
@@ -272,7 +288,7 @@ class Client(BaseClient):
 
         return response
 
-    def compliance_remediation_delete_request(self, remediation_id: str) -> Dict[str, Any]:
+    def compliance_remediation_delete_request(self, remediation_id: str) -> str:
         """ Delete a remediation by ID.
 
         Args:
@@ -304,8 +320,12 @@ class Client(BaseClient):
         """
         return self._http_request('GET', f'Compliance/Ruleset/{rule_id}')
 
-    def security_group_attach_request(self, instance_id: str, sg_id: str,
-                                      nic_name: str) -> Dict[str, Any]:
+    def security_group_attach_request(
+        self,
+        instance_id: str,
+        sg_id: str,
+        nic_name: str,
+    ) -> Dict[str, Any]:
         """ Attach security Group to an AWS EC2 Instance.
 
         Args:
@@ -333,12 +353,12 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Dome9.
         """
-        url_prefix = f'/{instance_id}' if instance_id else ''
+        url_prefix = create_url_prefix(instance_id)
         response = self._http_request('GET', f'cloudinstance{url_prefix}')
 
         return response
 
-    def security_group_service_delete_request(self, sg_id: str, service_id: str) -> Dict[str, Any]:
+    def security_group_service_delete_request(self, sg_id: str, service_id: str) -> str:
         """ Delete security group service by ID.
 
         Args:
@@ -354,13 +374,14 @@ class Client(BaseClient):
 
         return response
 
-    def security_group_tags_update_request(self, sg_id, key, value) -> Dict[str, Any]:
+    def security_group_tags_update_request(self, sg_id: str, key: str,
+                                           value: str) -> Dict[str, Any]:
         """ Create and Update a security group tag.
 
         Args:
-            sg_id (_type_): Security group ID.
-            key (_type_): The tag key to add.
-            value (_type_): The tag value to add.
+            sg_id (str): Security group ID.
+            key (str): The tag key to add.
+            value (str): The tag value to add.
 
         Returns:
             Dict[str, Any]: API response from Dome9.
@@ -371,21 +392,23 @@ class Client(BaseClient):
 
         return response
 
-    def security_group_service_create_request(self,
-                                              sg_id: str,
-                                              name: str,
-                                              protocol_type: str,
-                                              port: int,
-                                              policy_type: str = None,
-                                              open_for_all: bool = None,
-                                              description: str = None,
-                                              data_id: str = None,
-                                              data_name: str = None,
-                                              scope_type: str = None,
-                                              is_valid: bool = None,
-                                              inbound: bool = None,
-                                              icmptype: str = None,
-                                              icmpv6type: str = None) -> Dict[str, Any]:
+    def security_group_service_create_request(
+        self,
+        sg_id: str,
+        name: str,
+        protocol_type: str,
+        port: int,
+        policy_type: str = None,
+        open_for_all: bool = None,
+        description: str = None,
+        data_id: str = None,
+        data_name: str = None,
+        scope_type: str = None,
+        is_valid: bool = None,
+        inbound: bool = None,
+        icmptype: str = None,
+        icmpv6type: str = None,
+    ) -> Dict[str, Any]:
         """ Create new security group service.
 
         Args:
@@ -437,21 +460,23 @@ class Client(BaseClient):
                                       json_data=data)
         return response
 
-    def security_group_service_update_request(self,
-                                              sg_id: str,
-                                              service_name: str,
-                                              protocol_type: str,
-                                              port: int,
-                                              policy_type: str,
-                                              open_for_all: bool = None,
-                                              description: str = None,
-                                              data_id: str = None,
-                                              data_name: str = None,
-                                              scope_type: str = None,
-                                              is_valid: bool = None,
-                                              inbound: bool = None,
-                                              icmptype: str = None,
-                                              icmpv6type: str = None) -> Dict[str, Any]:
+    def security_group_service_update_request(
+        self,
+        sg_id: str,
+        service_name: str,
+        protocol_type: str,
+        port: int,
+        policy_type: str,
+        open_for_all: bool = None,
+        description: str = None,
+        data_id: str = None,
+        data_name: str = None,
+        scope_type: str = None,
+        is_valid: bool = None,
+        inbound: bool = None,
+        icmptype: str = None,
+        icmpv6type: str = None,
+    ) -> Dict[str, Any]:
         """ Update security group service.
 
         Args:
@@ -506,8 +531,12 @@ class Client(BaseClient):
 
         return response
 
-    def security_group_instance_detach_request(self, instance_id: str, sg_id: str,
-                                               nic_name: str) -> Dict[str, Any]:
+    def security_group_instance_detach_request(
+        self,
+        instance_id: str,
+        sg_id: str,
+        nic_name: str,
+    ) -> Dict[str, Any]:
         """ Detach security Group from an AWS EC2 Instance.
 
         Args:
@@ -550,7 +579,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Dome9.
         """
-        url_prefix = f'/{account_id}' if account_id else ''
+        url_prefix = create_url_prefix(account_id)
         response = self._http_request('GET', f'CloudAccounts{url_prefix}')
 
         return response
@@ -562,7 +591,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Dome9.
         """
-        url_prefix = f'/{sg_id}' if sg_id else ''
+        url_prefix = create_url_prefix(sg_id)
         response = self._http_request('GET', f'CloudSecurityGroup{url_prefix}')
 
         return response
@@ -653,7 +682,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Dome9.
         """
-        url_prefix = f'/{unit_id}' if unit_id else ''
+        url_prefix = create_url_prefix(unit_id)
         response = self._http_request('GET', f'OrganizationalUnit{url_prefix}')
         return response
 
@@ -769,14 +798,28 @@ def get_service_type_and_data(service: list) -> list:
     Returns:
         str: service type and data.
     """
-    service_type, service_data, service_scope = ''
+    service_type = service_data = service_scope = ''
     if service:
         service_scope = service[0]['scope']
         if service_scope:
-            service_type = service[0]['type']
-            service_data = service[0]['data']
+            service_type = service_scope[0]['type']
+            service_data = service_scope[0]['data']
 
     return service_type, service_data
+
+
+def create_url_prefix(path_variable: str) -> str:
+    """ Create url prefix for request.
+
+    Args:
+        path_variable (str): The path variable.
+
+    Returns:
+        str: URL prefix.
+    """
+
+    url_prefix = f'/{path_variable}' if path_variable else ''
+    return url_prefix
 
 
 def create_sg_list(fix_output: list) -> list:
@@ -790,12 +833,12 @@ def create_sg_list(fix_output: list) -> list:
     """
     security_group_list = []
     for sg in fix_output:
-        # inbound_services = sg['services']['inbound']
-        # inbound_services_type, inbound_services_data = get_service_type_and_data(inbound_services)
+        inbound_services = sg['services']['inbound']
+        inbound_services_type, inbound_services_data = get_service_type_and_data(inbound_services)
 
-        # outbound_services = sg['services']['outbound']
-        # outbound_services_type, outbound_services_data = get_service_type_and_data(
-        #     outbound_services)
+        outbound_services = sg['services']['outbound']
+        outbound_services_type, outbound_services_data = get_service_type_and_data(
+            outbound_services)
 
         security_group_list.append({
             'cloud_account_id': sg['cloudAccountId'],
@@ -805,10 +848,10 @@ def create_sg_list(fix_output: list) -> list:
             'security_group_id': sg['securityGroupId'],
             'security_group_name': sg['securityGroupName'],
             'isProtected': sg['isProtected'],
-            # 'inbound_scope_type': inbound_services_type,
-            # 'inbound_scope_data': inbound_services_data,
-            # 'outbound_scope_type': outbound_services_type,
-            # 'outbound_scope_data': outbound_services_data,
+            'inbound_scope_type': inbound_services_type,
+            'inbound_scope_data': inbound_services_data,
+            'outbound_scope_type': outbound_services_type,
+            'outbound_scope_data': outbound_services_data,
             'description': sg['description'],
             'vpc_id': sg['vpcId']
         })
@@ -928,14 +971,11 @@ def findings_search_command(client: Client, args: Dict[str, Any]) -> CommandResu
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    # search with filter >> DONT WORK
-    # acknowledged = args.get('acknowledged')
-    # entity_type = args.get('entity_type')
     severity = argToList(args.get('severity'))
     region = argToList(args.get('region'))
-    # acknowledged = args.get('acknowledged')
+    page_size = arg_to_number(args.get('limit'))
 
-    response = client.findings_search_request(severity, region, 50)
+    response = client.findings_search_request(page_size, severity, region)
     output = response['findings']
 
     fix_output, pagination_message = pagination(output, args)
@@ -1411,7 +1451,7 @@ def security_group_service_delete_command(client: Client, args: Dict[str, Any]) 
 
     command_results = CommandResults(readable_output="Service deleted successfully",
                                      outputs_prefix='CheckPointDome9.SecurityGroup.Service',
-                                     outputs_key_field='name',
+                                     outputs_key_field='id',
                                      outputs=response,
                                      raw_response=response)
 
@@ -1433,7 +1473,11 @@ def security_group_tags_update_command(client: Client, args: Dict[str, Any]) -> 
     value = args.get('value')
 
     response = client.security_group_tags_update_request(sg_id, key, value)
-    command_results = CommandResults(readable_output="Tag updated successfully",
+    readable_output = tableToMarkdown(name='Tag updated successfully',
+                                      t=response,
+                                      headerTransform=string_to_table_header)
+
+    command_results = CommandResults(readable_output=readable_output,
                                      outputs_prefix='CheckPointDome9.SecurityGroup.Tag',
                                      outputs_key_field='key',
                                      outputs=response,
@@ -1455,7 +1499,7 @@ def security_group_service_create_command(client: Client, args: Dict[str, Any]) 
     sg_id = args.get('sg_id')  # mandatory
     name = args.get('name')  # mandatory
     protocol_type = args.get('protocol_type')  # mandatory
-    port = args.get('port')  # mandatory
+    port = arg_to_number(args.get('port'))  # mandatory
     policy_type = args.get('policy_type')
     open_for_all = arg_to_boolean(args.get('open_for_all'))
     description = args.get('description')
@@ -1471,13 +1515,13 @@ def security_group_service_create_command(client: Client, args: Dict[str, Any]) 
                                                             policy_type, open_for_all, description,
                                                             data_id, data_name, scope_type,
                                                             is_valid, inbound, icmptype, icmpv6type)
-
     sg_service = [{
         'id': response['id'],
         'name': response['name'],
-        'protocolType': response['protocolType'],
+        'protocol Type': response['protocolType'],
         'port': response['port'],
         'description': response['description'],
+        'security Group ID': sg_id,
         #    'scopeType': response['scope'][0]['type'],
         #    'scopeData': f"{response['scope'][0]['data']['id']} - {response['scope'][0]['data']['name']}",
     }]
@@ -1488,7 +1532,7 @@ def security_group_service_create_command(client: Client, args: Dict[str, Any]) 
 
     command_results = CommandResults(readable_output=readable_output,
                                      outputs_prefix='CheckPointDome9.SecurityGroup.Service',
-                                     outputs_key_field='name',
+                                     outputs_key_field='id',
                                      outputs=response,
                                      raw_response=response)
 
@@ -1496,7 +1540,7 @@ def security_group_service_create_command(client: Client, args: Dict[str, Any]) 
 
 
 def security_group_service_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """ Update a service (rule) for an AWS security group.
+    """ Update a service (rule) for an AWS security group. Can update only port and name.
 
     Args:
         client (Client): Dome9 API client.
@@ -1509,7 +1553,7 @@ def security_group_service_update_command(client: Client, args: Dict[str, Any]) 
     policy_type = args.get('policy_type')
     service_name = args.get('service_name')
     protocol_type = args.get('protocol_type')
-    port = args.get('port')
+    port = arg_to_number(args.get('port'))
     open_for_all = args.get('open_for_all')
     description = args.get('description')
     data_id = args.get('data_id')
@@ -1529,9 +1573,10 @@ def security_group_service_update_command(client: Client, args: Dict[str, Any]) 
     sg_service = [{
         'id': response['id'],
         'name': response['name'],
-        'protocolType': response['protocolType'],
+        'protocol Type': response['protocolType'],
         'port': response['port'],
         'description': response['description'],
+        'security Group ID': sg_id,
         # 'scopeType': response['scope'][0]['type'],
         #    'scopeData': f"{response['scope'][0]['data']['id']} - {response['scope'][0]['data']['name']}",
     }]
@@ -1542,7 +1587,7 @@ def security_group_service_update_command(client: Client, args: Dict[str, Any]) 
 
     command_results = CommandResults(readable_output=readable_output,
                                      outputs_prefix='CheckPointDome9.SecurityGroup.Service',
-                                     outputs_key_field='name',
+                                     outputs_key_field='id',
                                      outputs=response,
                                      raw_response=response)
 
@@ -1619,7 +1664,10 @@ def cloud_accounts_list_command(client: Client, args: Dict[str, Any]) -> Command
     """
     account_id = args.get('account_id')
     response = client.cloud_accounts_list_request(account_id)
-    fix_output, pagination_message = pagination(response, args)
+    if account_id:
+        fix_output, pagination_message = response, ""
+    else:
+        fix_output, pagination_message = pagination(response, args)
 
     readable_output = tableToMarkdown(
         name='Cloud accounts:',
@@ -1651,9 +1699,22 @@ def instance_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     response = client.instance_list_request(instance_id)
     fix_output, pagination_message = pagination(response, args)
 
+    instance_list = []
+
+    for instance in fix_output:
+        instance_list.append({
+            'account ID': instance['accountId'],
+            'instance_id': instance['externalId'],
+            'nics name': instance['nics'][0]['name'],
+            'instance type': instance['instanceType'],
+            'region': instance['region'],
+            'image': instance['image'],
+            'cloud account ID': instance['cloudAccountId']
+        })
+
     readable_output = tableToMarkdown(name='AWS instances',
                                       metadata=pagination_message,
-                                      t=fix_output,
+                                      t=instance_list,
                                       headerTransform=string_to_table_header)
 
     command_results = CommandResults(readable_output=readable_output,
@@ -1776,17 +1837,25 @@ def cloud_trail_get_command(client: Client, args: Dict[str, Any]) -> CommandResu
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     response = client.cloud_trail_get_request()
-    fix_output, pagination_message = pagination(response, args)
+
+    cloud_trail = response[0]
+    cloud_trail_output = []
+    cloud_trail_output.append({
+        'name': cloud_trail['name'],
+        'id': cloud_trail['id'],
+        'region': cloud_trail['region'],
+        'accountId': cloud_trail['accountId'],
+        's3BucketName': cloud_trail['s3BucketName'],
+    })
 
     readable_output = tableToMarkdown(name='Cloud Trail',
-                                      metadata=pagination_message,
-                                      t=fix_output,
+                                      t=cloud_trail_output,
                                       headerTransform=string_to_table_header)
 
     command_results = CommandResults(readable_output=readable_output,
                                      outputs_prefix='CheckPointDome9.CloudTrail',
                                      outputs_key_field='id',
-                                     outputs=fix_output,
+                                     outputs=response,
                                      raw_response=response)
 
     return command_results
@@ -1884,8 +1953,21 @@ def organizational_unit_get_command(client: Client, args: Dict[str, Any]) -> Com
     unit_id = args.get('unit_id')
     response = client.organizational_unit_get_request(unit_id)
     output = response[0]['item']
+
+    organizational_unit_list = []
+
+    organizational_unit_list.append({
+        'accountId': output['accountId'],
+        'id': output['id'],
+        'name': output['name'],
+        'created': output['created'],
+        'updated': output['updated'],
+        'isRoot': output['isRoot'],
+        'awsCloudAcountsCount': output['awsCloudAcountsCount'],
+    })
+
     readable_output = tableToMarkdown(name='Organizational Unit',
-                                      t=output,
+                                      t=organizational_unit_list,
                                       headerTransform=string_to_table_header)
 
     command_results = CommandResults(readable_output=readable_output,
@@ -1975,7 +2057,7 @@ def fetch_incidents(client: Client, args: dict) -> None:
 
     assert isinstance(first_fetch_timestamp, int)
 
-    alert_list = client.findings_search_request(alert_severity, alert_region, max_fetch)
+    alert_list = client.findings_search_request(max_fetch, alert_severity, alert_region)
     incidents = []
 
     for alert in alert_list['findings']:

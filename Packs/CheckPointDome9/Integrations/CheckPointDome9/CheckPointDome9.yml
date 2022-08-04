@@ -160,49 +160,6 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
-      description: indicates the finding was acknowledged.
-      isArray: false
-      name: acknowledged
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-    - auto: PREDEFINED
-      description: The type of entity tested (e.g. S3, or EC2).
-      isArray: true
-      name: entity_type
-      predefined:
-      - securityGroup
-      - iamPolicy
-      - :iamRole
-      - subnet
-      - networkInterface
-      - instance
-      - region
-      - vpc
-      - s3Bucket
-      - nacl
-      - iamUser
-      - kms
-      - vminstance
-      - elb
-      - elasticIP
-      - applicationLoadBalancer
-      - lambda
-      - ami
-      - cloudTrail
-      - iamGroup
-      - cloudFront
-      - route53RecordSetGroup
-      - iam
-      - vpnGateway
-      - iamServerCertificate
-      - route53HostedZone
-      - acmCertificate
-      - list<cloudTrail>
-      - dynamoDbTable
-      required: false
-    - auto: PREDEFINED
       description: "The findings severities."
       isArray: true
       name: severity
@@ -724,7 +681,7 @@ script:
       required: true
       isArray: false
     - name: nic_name
-      description: The instance nic name.
+      description: The instance nic name (use dome9-instance-list command to get this argument).
       required: true
       isArray: false
   - name: dome9-security-group-service-delete
@@ -1025,7 +982,7 @@ script:
       description: "The service description."
       type: string
   - name: dome9-security-group-service-update
-    description: Update a service (rule) for an AWS security group.
+    description: Update a service (rule) for an AWS security group. Can update only port and name.
     arguments:
     - name: sg_id
       description: Security group ID.
@@ -1305,7 +1262,7 @@ script:
       required: true
       isArray: false
     - name: nic_name
-      description: The instance nic name.
+      description: The instance nic name (use dome9-instance-list command to get this argument).
       required: true
       isArray: false
     outputs: []
