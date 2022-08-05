@@ -11,6 +11,7 @@ import logging
 from packaging.version import Version
 import requests
 from demisto_sdk.commands.common.tools import run_command, get_dict_from_file
+from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
 PACKS_DIR = 'Packs'
@@ -479,7 +480,7 @@ def create_content_descriptor(release_notes, version, asset_id, github_token):
 
 
 def main():
-    install_logging('Build_Content_Descriptor.log')
+    install_logging('Build_Content_Descriptor.log', logger=logging)
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('version', help='Release version')
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')

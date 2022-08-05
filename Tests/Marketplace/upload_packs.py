@@ -25,8 +25,8 @@ from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPCon
     SKIPPED_STATUS_CODES
 from demisto_sdk.commands.common.tools import run_command, str2bool, open_id_set_file
 
-from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
+from Tests.scripts.utils.log_util import install_logging
 import traceback
 
 

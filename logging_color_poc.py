@@ -12,4 +12,4 @@ else:
 logging.info(f'this is an info log: {sys.argv}')
 logging.debug(f'this is a debug log')
 logging.warning(f'this is a warning log')
-logging.success(f'this is a warning log')
+logging.success(f'this is a success log')

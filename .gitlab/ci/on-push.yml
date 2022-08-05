@@ -126,7 +126,6 @@ prepare-testing-bucket-mpv2:
   needs: []
   stage: create-instances
   script:
-    - exit 0
     - !reference [.download-demisto-conf]
     - !reference [.create-id-set-mp-v2]
     - !reference [.create-release-notes-and-common-docs]
