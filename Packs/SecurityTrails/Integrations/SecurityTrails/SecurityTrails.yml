@@ -3,24 +3,24 @@ commonfields:
   id: SecurityTrails
   version: -1
 configuration:
-  - display: API Key
-    name: apikey
-    required: true
-    type: 4
-  - display: Timeout
-    name: timeout
-    required: false
-    defaultvalue: 10
-    type: 3
-    additionalinfo: Some commands can take a while to return. Extending the timeout can avoid timeout issues.
-  - display: Trust any certificate (not secure)
-    name: insecure
-    required: false
-    type: 8
-  - display: Use system proxy settings
-    name: proxy
-    required: false
-    type: 8
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Timeout
+  name: timeout
+  required: false
+  defaultvalue: 10
+  type: 3
+  additionalinfo: Some commands can take a while to return. Extending the timeout can avoid timeout issues.
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
