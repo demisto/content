@@ -50,6 +50,7 @@ Get alerts from Varonis DA
 | sam_account_name | List of sam account names (up to 5). | Optional |
 | email | List of emails (up to 5). | Optional |
 | last_days | Number of days you want the search to go back to. | Optional |
+| descending_order | Indicates whether alerts should be ordered in newest to oldest order. | Optional |
 | page | Page number. Default is 1. | Optional | 
 
 
