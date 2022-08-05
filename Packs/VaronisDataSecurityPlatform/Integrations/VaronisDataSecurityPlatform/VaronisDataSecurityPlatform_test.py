@@ -260,12 +260,12 @@ def test_convert_to_demisto_severity():
 
 
 def test_get_excluded_severitires():
-    from VaronisDataSecurityPlatform import get_excluded_severitires
+    from VaronisDataSecurityPlatform import get_included_severitires
 
-    assert get_excluded_severitires(None) == []
-    assert get_excluded_severitires('Low') == ['high', 'medium', 'low']
-    assert get_excluded_severitires('Medium') == ['high', 'medium']
-    assert get_excluded_severitires('High') == ['high']
+    assert get_included_severitires(None) == []
+    assert get_included_severitires('Low') == ['high', 'medium', 'low']
+    assert get_included_severitires('Medium') == ['high', 'medium']
+    assert get_included_severitires('High') == ['high']
 
 
 def test_varonis_get_auth_url(requests_mock: MockerFixture):

@@ -138,6 +138,20 @@ class Client(BaseClient):
             json_data=query)
 
     def varonis_get_alerted_events(self, alerts: List[str], count: int, page: int) -> List[Dict[str, Any]]:
+        """Get alerted events
+
+        :type alerts: ``List[str]``
+        :param alerts: List of alert ids
+
+        :type count: ``int``
+        :param count: Alerted events count
+
+        :type page: ``int``
+        :param page: Page number
+
+        :return: Alerted events
+        :rtype: ``List[Dict[str, Any]]``
+        """
         request_params: Dict[str, Any] = {}
 
         request_params['alertId'] = alerts
@@ -155,6 +169,47 @@ class Client(BaseClient):
                            sid_ids: Optional[List[int]], from_alert_id: Optional[int], alert_statuses: Optional[List[str]],
                            alert_severities: Optional[List[str]], aggregate: bool, count: int,
                            page: int) -> List[Dict[str, Any]]:
+        """Get alerts
+
+        :type threat_models: ``Optional[List[str]]``
+        :param threat_models: List of threat models to filter by
+
+        :type start_time: ``Optional[datetime]``
+        :param start_time: Start time of the range of alerts
+
+        :type end_time: ``Optional[datetime]``
+        :param end_time: End time of the range of alerts
+
+        :type device_names: ``Optional[List[str]]``
+        :param device_names: List of device names to filter by
+
+        :type last_days: ``Optional[List[int]]``
+        :param last_days: Number of days you want the search to go back to
+
+        :type sid_ids: ``Optional[List[int]]``
+        :param sid_ids: List of user ids
+
+        :type from_alert_id: ``Optional[int]``
+        :param from_alert_id: Alert id to fetch from
+
+        :type alert_statuses: ``Optional[List[str]]``
+        :param alert_statuses: List of alert statuses to filter by
+
+        :type alert_severities: ``Optional[List[str]]``
+        :param alert_severities: List of alert severities to filter by
+
+        :type aggregate: ``bool``
+        :param aggregate: Indicated whether agregate alert by alert id
+
+        :type count: ``int``
+        :param count: Alerts count
+
+        :type page: ``int``
+        :param page: Page number
+
+        :return: Alerts
+        :rtype: ``List[Dict[str, Any]]``
+        """
         request_params: Dict[str, Any] = {}
 
         if threat_models and len(threat_models) > 0:
@@ -222,7 +277,15 @@ def convert_to_demisto_severity(severity: Optional[str]) -> int:
     }[severity]
 
 
-def get_excluded_severitires(severity: Optional[str]) -> List[str]:
+def get_included_severitires(severity: Optional[str]) -> List[str]:
+    """ Return list of severities that is equal or higher then provided
+
+    :type severity: ``Optional[str]``
+    :param severity: Severity
+
+    :return: List of severities
+    :rtype: ``List[str]``
+    """
     if not severity:
         return []
 
@@ -313,18 +376,39 @@ def enrich_with_pagination(output: Dict[str, Any], page: int, page_size: int) ->
 
 
 def enrich_with_url(output: Dict[str, Any], baseUrl: str, id: str) -> Dict[str, Any]:
+    """Enriches result with alert url
+
+    :type output: ``Dict[str, Any]``
+    :param output: Output to enrich
+
+    :type baseUrl: ``str``
+    :param baseUrl: Varonis UI based url
+
+    :type id: ``str``
+    :param id: Alert it
+
+    :return: Enriched output
+    :rtype: ``Dict[str, Any]``
+    """
+
     output['Url'] = urljoin(baseUrl, f'/#/app/analytics/entity/Alert/{id}')
     return output
 
 
 def get_sids(client: Client, values: List[str], user_domain_name: Optional[str], key: str) -> List[int]:
-    """Add alert user names filter to the search query
+    """Return list of user ids
+
+    :type client: ``Client``
+    :param client: Http client
 
     :type user_names: ``List[str]``
     :param user_names: A list of user names
 
     :type user_domain_name: ``str``
     :param user_domain_name: User domain name
+
+    :return: List of user ids
+    :rtype: ``List[int]``
     """
     sidIds: List[int] = []
 
@@ -346,31 +430,49 @@ def get_sids(client: Client, values: List[str], user_domain_name: Optional[str],
 
 
 def get_sids_by_user_name(client: Client, user_names: List[str], user_domain_name: str) -> List[int]:
-    """Add alert user names filter to the search query
+    """Return list of user ids
+
+    :type client: ``Client``
+    :param client: Http client
 
     :type user_names: ``List[str]``
     :param user_names: A list of user names
 
     :type user_domain_name: ``str``
     :param user_domain_name: User domain name
+
+    :return: List of user ids
+    :rtype: ``List[int]``
     """
     return get_sids(client, user_names, user_domain_name, DISPLAY_NAME_KEY)
 
 
 def get_sids_by_sam(client: Client, sam_account_names: List[str]) -> List[int]:
-    """Add alert sam account name filter to the search query
+    """Return list of user ids
+
+    :type client: ``Client``
+    :param client: Http client
 
     :type sam_account_names: ``List[str]``
     :param sam_account_names: A list of sam account names
+
+    :return: List of user ids
+    :rtype: ``List[int]``
     """
     return get_sids(client, sam_account_names, None, SAM_ACCOUNT_NAME_KEY)
 
 
 def get_sids_by_email(client: Client, emails: List[str]) -> List[int]:
-    """Add alert email filter to the search query
+    """Return list of user ids
+
+    :type client: ``Client``
+    :param client: Http client
 
     :type emails: ``List[str]``
     :param emails: A list of emails
+
+    :return: List of user ids
+    :rtype: ``List[int]``
     """
     return get_sids(client, emails, None, EMAIL_KEY)
 
@@ -495,7 +597,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
     if alert_status:
         statuses.append(alert_status)
 
-    severities = get_excluded_severitires(severity)
+    severities = get_included_severitires(severity)
 
     alerts = client.varonis_get_alerts(threat_models, first_fetch_time, None, None, None, None,
                                        last_fetched_id, statuses, severities, True, max_results, 1)
