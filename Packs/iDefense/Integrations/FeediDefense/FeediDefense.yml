@@ -157,10 +157,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Fetches indicators from a ACTI feed. You can filter returned indicators
-  by indicator type, indicator severity, threat type, confidence, and malware family
-  (each of these are an integration parameter).
-display: ACTI Feed
+description: Deprecated. Use Accenture CTI Feed instead.
+deprecated: true
+display: ACTI Feed (Deprecated)
 name: iDefense Feed
 script:
   commands:
