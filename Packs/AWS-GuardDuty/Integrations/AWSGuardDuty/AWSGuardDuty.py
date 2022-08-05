@@ -546,6 +546,9 @@ def main():
     timeout = params.get('timeout') or 1
     retries = params.get('retries') or 5
 
+    if demisto.args().get('region') is not None:
+        aws_default_region = demisto.args().get('region')
+
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                         aws_secret_access_key)
