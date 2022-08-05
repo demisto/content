@@ -26,7 +26,7 @@ configuration:
   required: true
   type: 0
 - display: Username
-  additionalinfo: Credentials to use for the basic auth.
+  additionalinfo: Credentials to use for the basic authentication.
   hidden: false
   name: credentials
   required: false
@@ -104,7 +104,42 @@ description: This integration provides TAXII2 Services for system indicators (Ou
 display: TAXII2 Server
 name: TAXII2 Server
 script:
-  dockerimage: demisto/flask-nginx:1.0.0.29338
+  commands:
+  - deprecated: false
+    description: Returns all the collections.
+    execution: false
+    name: taxii-server-list-collections
+    outputs:
+    - contextPath: TAXIIServer.Collection.id
+      description: The collection ID.
+      type: String
+    - contextPath: TAXIIServer.Collection.query
+      description: The collection query.
+      type: String
+    - contextPath: TAXIIServer.Collection.title
+      description: The collection title.
+      type: String
+    - contextPath: TAXIIServer.Collection.description
+      description: The collection description.
+      type: String
+  - deprecated: false
+    description: Returns the TAXII server info, default URL, title, etc.
+    execution: false
+    name: taxii-server-info
+    outputs:
+    - contextPath: TAXIIServer.ServerInfo.title
+      description: The server title.
+      type: String
+    - contextPath: TAXIIServer.ServerInfo.api_roots
+      description: The server API roots URLs.
+      type: Unknown
+    - contextPath: TAXIIServer.ServerInfo.default
+      description: The default URL.
+      type: String
+    - contextPath: TAXIIServer.ServerInfo.description
+      description: The server description
+      type: String
+  dockerimage: demisto/flask-nginx:1.0.0.32086
   feed: false
   isfetch: false
   longRunning: true

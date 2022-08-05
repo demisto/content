@@ -7,7 +7,7 @@ This pack includes XSIAM content.
 
 ### MySQL Enterprise Server Configuration
 
-1. Install the [audit log plugin](dev.mysql.com/doc/mysql-secure-deployment-guide/5.7/en/secure-deployment-audit.html)
+1. Install the [audit log plugin](https://dev.mysql.com/doc/mysql-secure-deployment-guide/5.7/en/secure-deployment-audit.html)
 2. After the audit log plugin installation verify the following two lines in the `my.cnf` file:
 ```
 plugin-load = audit_log.so

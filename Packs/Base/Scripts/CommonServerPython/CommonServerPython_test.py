@@ -670,6 +670,7 @@ class TestTableToMarkdown:
         assert 'header_2' not in table
         assert headers == ['header_1', 'header_2']
 
+    # Test fails locally because expected time is in UTC
     @staticmethod
     def test_date_fields_param():
         """
@@ -8096,7 +8097,7 @@ class TestIsMetricsSupportedByServer:
 
     def test_metrics_supported(self, mocker):
         """
-        Given: An XSOAR server running version 7.0.0
+        Given: An XSOAR server running version 6.8.0
         When: Testing that a server supports ExecutionMetrics
         Then: Assert that is_supported reports True
         """
@@ -8105,7 +8106,7 @@ class TestIsMetricsSupportedByServer:
             demisto,
             'demistoVersion',
             return_value={
-                'version': '7.0.0',
+                'version': '6.8.0',
                 'buildNumber': '50000'
             }
         )

@@ -1,7 +1,8 @@
 {
     "name": "Recorded Future (Deprecated)",
-    "description": "Unique threat intel technology that automatically serves up relevant insights in real time.",
+    "description": "Deprecated. Use RecordedFuture instead.",
     "support": "xsoar",
+    "hidden": true,
     "currentVersion": "1.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",

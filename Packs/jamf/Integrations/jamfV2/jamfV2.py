@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
+import dateparser
 import requests
 import traceback
 from typing import Dict, Any
@@ -28,6 +29,73 @@ INTEGRATION_NAME = 'JAMF v2'
 
 
 class Client(BaseClient):
+    def __init__(self, base_url: str, verify: bool, username: str = "", password: str = "", proxy: bool = False):
+        super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy)
+
+        """ due to deprecating the basic auth option from the classical API versions 10.35 and up
+            the client will try to generate an auth token first, if it failed to do generate the token,
+            the client will use basic auth instead.
+        """
+        try:
+            self._token = self._get_token()
+            self._headers = {
+                'Authorization': f'Bearer {self._token}'
+            }
+            add_sensitive_log_strs(self._token)
+        except DemistoException as e:
+            demisto.info(str(e))
+            demisto.info("Couldn't create token will proceed using basic auth")
+
+    def _get_token(self) -> str:
+        """
+        Obtains token from integration context if available and still valid.
+        After expiration, new token are generated and stored in the integration context.
+        Returns:
+            str: token that will be added to authorization header.
+        """
+        integration_context = get_integration_context()
+        token = integration_context.get('token', '')
+        valid_until = integration_context.get('expires')
+
+        now_timestamp = arg_to_datetime('now').timestamp()  # type:ignore
+        # if there is a key and valid_until, and the current time is smaller than the valid until
+        # return the current token
+        if token and valid_until:
+            if now_timestamp < valid_until:
+                return token
+
+        # else generate a token and update the integration context accordingly
+        token = self._generate_token()
+
+        return token
+
+    def _generate_token(self) -> str:
+        """
+        Generates new token.
+        """
+        resp = self._http_request(method='POST', url_suffix='api/v1/auth/token', resp_type='json')
+        token = resp.get('token')
+        expiration_time = int(dateparser.parse(resp.get('expires')).timestamp())
+        integration_context = get_integration_context()
+        integration_context.update({'token': token})
+        # Add 10 minutes buffer for the token
+        integration_context.update({'expires': expiration_time - 60})
+        set_integration_context(integration_context)
+
+        return token
+
+    def _classic_api_post(self, url_suffix, data, error_handler):
+        post_headers = ((self._headers or {}) | POST_HEADERS)  # merge the token and the POST headers
+        classic_url_suffix = urljoin('/JSSResource', url_suffix)  # classic API endpoints starts with JSSResource
+        return self._http_request(method='POST', data=data, url_suffix=classic_url_suffix,
+                                  headers=post_headers, resp_type='response',
+                                  error_handler=error_handler)
+
+    def _classic_api_get(self, url_suffix, error_handler=None):
+        get_headers = ((self._headers or {}) | GET_HEADERS)  # merge the token and the GET headers
+        classic_url_suffix = urljoin('/JSSResource', url_suffix)  # classic API endpoints starts with JSSResource
+        return self._http_request(method='GET', url_suffix=classic_url_suffix, headers=get_headers,
+                                  error_handler=error_handler)
 
     def get_computers_request(self, computer_id: str = None, basic_subset: bool = False, match: str = None):
         """Retrieve the computers results.
@@ -40,17 +108,17 @@ class Client(BaseClient):
         """
         uri = '/computers'
         if computer_id:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/id/{computer_id}/subset/General',
-                                     headers=GET_HEADERS, error_handler=self._generic_error_handler)
+            res = self._classic_api_get(url_suffix=f'{uri}/id/{computer_id}/subset/General',
+                                        error_handler=self._generic_error_handler)
         elif basic_subset:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/subset/basic', headers=GET_HEADERS,
-                                     error_handler=self._generic_error_handler)
+            res = self._classic_api_get(url_suffix=f'{uri}/subset/basic',
+                                        error_handler=self._generic_error_handler)
         elif match:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/match/{match}', headers=GET_HEADERS,
-                                     error_handler=self._generic_error_handler)
+            res = self._classic_api_get(url_suffix=f'{uri}/match/{match}',
+                                        error_handler=self._generic_error_handler)
         else:
-            res = self._http_request(method='GET', url_suffix=uri, headers=GET_HEADERS,
-                                     error_handler=self._generic_error_handler)
+            res = self._classic_api_get(url_suffix=uri,
+                                        error_handler=self._generic_error_handler)
 
         return res
 
@@ -65,8 +133,8 @@ class Client(BaseClient):
         """
 
         url_suffix = f'/computers/{identifier}/{identifier_value}/subset/{subset}'
-        res = self._http_request(method='GET', url_suffix=url_suffix, headers=GET_HEADERS,
-                                 error_handler=self._generic_error_handler)
+        res = self._classic_api_get(url_suffix=url_suffix,
+                                    error_handler=self._generic_error_handler)
 
         return res
 
@@ -114,8 +182,8 @@ class Client(BaseClient):
                        '</computers>' + \
                        '</computer_command>'
 
-        res = self._http_request(method='POST', data=request_body, url_suffix=uri, headers=POST_HEADERS,
-                                 resp_type='response', error_handler=self._computer_lock_erase_error_handler)
+        res = self._classic_api_post(data=request_body, url_suffix=uri,
+                                     error_handler=self._computer_lock_erase_error_handler)
 
         json_res = json.loads(xml2json(res.content))
         return json_res
@@ -146,8 +214,8 @@ class Client(BaseClient):
                        '</computers>' + \
                        '</computer_command>'
 
-        res = self._http_request(method='POST', data=request_body, url_suffix=uri, headers=POST_HEADERS,
-                                 resp_type='response', error_handler=self._computer_lock_erase_error_handler)
+        res = self._classic_api_post(data=request_body, url_suffix=uri,
+                                     error_handler=self._computer_lock_erase_error_handler)
 
         raw_action = json.loads(xml2json(res.content))
         return raw_action
@@ -164,17 +232,17 @@ class Client(BaseClient):
 
         uri = '/users'
         if user_id:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/id/{user_id}', headers=GET_HEADERS,
-                                     error_handler=self._generic_error_handler)
+            res = self._classic_api_get(url_suffix=f'{uri}/id/{user_id}',
+                                        error_handler=self._generic_error_handler)
         elif name:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/name/{name}', headers=GET_HEADERS,
-                                     error_handler=self._generic_error_handler)
+            res = self._classic_api_get(url_suffix=f'{uri}/name/{name}',
+                                        error_handler=self._generic_error_handler)
         elif email:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/email/{email}', headers=GET_HEADERS,
-                                     error_handler=self._generic_error_handler)
+            res = self._classic_api_get(url_suffix=f'{uri}/email/{email}',
+                                        error_handler=self._generic_error_handler)
         else:
-            res = self._http_request(method='GET', url_suffix=f'{uri}', headers=GET_HEADERS,
-                                     error_handler=self._generic_error_handler)
+            res = self._classic_api_get(url_suffix=f'{uri}',
+                                        error_handler=self._generic_error_handler)
 
         return res
 
@@ -189,19 +257,18 @@ class Client(BaseClient):
 
         uri = '/mobiledevices'
         if mobile_id:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/id/{mobile_id}', headers=GET_HEADERS,
-                                     error_handler=self._generic_error_handler)
+            res = self._classic_api_get(url_suffix=f'{uri}/id/{mobile_id}',
+                                        error_handler=self._generic_error_handler)
         elif match:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/match/{match}', headers=GET_HEADERS,
-                                     error_handler=self._generic_error_handler)
+            res = self._classic_api_get(url_suffix=f'{uri}/match/{match}',
+                                        error_handler=self._generic_error_handler)
         else:
-            res = self._http_request(method='GET', url_suffix=f'{uri}', headers=GET_HEADERS,
-                                     error_handler=self._generic_error_handler)
+            res = self._classic_api_get(url_suffix=f'{uri}',
+                                        error_handler=self._generic_error_handler)
 
         return res
 
     def get_mobile_devices_subset_request(self, identifier: str, identifier_value: str, subset: str):
-
         """Retrieve the mobile device subset results.
         Args:
             identifier: The identifier to search mobile device.
@@ -212,8 +279,8 @@ class Client(BaseClient):
         """
 
         url_suffix = f'/mobiledevices/{identifier}/{identifier_value}/subset/{subset}'
-        res = self._http_request(method='GET', url_suffix=url_suffix, headers=GET_HEADERS,
-                                 error_handler=self._generic_error_handler)
+        res = self._classic_api_get(url_suffix=url_suffix,
+                                    error_handler=self._generic_error_handler)
         return res
 
     def get_computers_by_app_request(self, app: str, version: str = None):
@@ -227,10 +294,9 @@ class Client(BaseClient):
 
         url_suffix = f'/computerapplications/application/{app}'
         if version:
-            res = self._http_request(method='GET', url_suffix=f'{url_suffix}/version/{version}',
-                                     headers=GET_HEADERS)
+            res = self._classic_api_get(url_suffix=f'{url_suffix}/version/{version}')
         else:
-            res = self._http_request(method='GET', url_suffix=url_suffix, headers=GET_HEADERS)
+            res = self._classic_api_get(url_suffix=url_suffix)
 
         return res
 
@@ -261,8 +327,8 @@ class Client(BaseClient):
                        '</mobile_devices>' + \
                        '</mobile_device_command>'
 
-        res = self._http_request(method='POST', data=request_body, url_suffix=uri, headers=POST_HEADERS,
-                                 resp_type='response', error_handler=self._mobile_lost_erase_error_handler)
+        res = self._classic_api_post(data=request_body, url_suffix=uri,
+                                     error_handler=self._mobile_lost_erase_error_handler)
 
         json_response = json.loads(xml2json(res.content))
         return json_response
@@ -288,8 +354,8 @@ class Client(BaseClient):
                        '</mobile_devices>' + \
                        '</mobile_device_command>'
 
-        res = self._http_request(method='POST', data=request_body, url_suffix=uri, headers=POST_HEADERS,
-                                 resp_type='response', error_handler=self._mobile_lost_erase_error_handler)
+        res = self._classic_api_post(data=request_body, url_suffix=uri,
+                                     error_handler=self._mobile_lost_erase_error_handler)
 
         json_response = json.loads(xml2json(res.content))
         return json_response
@@ -1224,14 +1290,14 @@ def endpoint_command(client, args):
 def main() -> None:
     try:
         params = demisto.params()
-        base_url = urljoin(params.get('url', '').rstrip('/'), '/JSSResource')
+        base_url = params.get('url', '').rstrip('/')
         username = params.get('credentials', {}).get('identifier')
         password = params.get('credentials', {}).get('password')
 
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
-        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, auth=(username, password))
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, username=username, password=password)
 
         if demisto.command() == 'test-module':
             result = test_module(client)
