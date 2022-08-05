@@ -168,7 +168,7 @@ class Client(BaseClient):
                            end_time: Optional[datetime], device_names: Optional[List[str]], last_days: Optional[int],
                            sid_ids: Optional[List[int]], from_alert_id: Optional[int], alert_statuses: Optional[List[str]],
                            alert_severities: Optional[List[str]], aggregate: bool, count: int,
-                           page: int) -> List[Dict[str, Any]]:
+                           page: int, descending_order: bool) -> List[Dict[str, Any]]:
         """Get alerts
 
         :type threat_models: ``Optional[List[str]]``
@@ -207,6 +207,9 @@ class Client(BaseClient):
         :type page: ``int``
         :param page: Page number
 
+        :type descendingOrder: ``bool``
+        :param descendingOrder: Indicates whether alerts should be ordered in newest to oldest order
+
         :return: Alerts
         :rtype: ``List[Dict[str, Any]]``
         """
@@ -238,6 +241,8 @@ class Client(BaseClient):
 
         if alert_severities and len(alert_severities) > 0:
             request_params['severity'] = alert_severities
+
+        request_params['descendingOrder'] = descending_order
 
         request_params['aggregate'] = aggregate
         request_params['offset'] = (page - 1) * count
@@ -600,10 +605,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
     severities = get_included_severitires(severity)
 
     alerts = client.varonis_get_alerts(threat_models, first_fetch_time, None, None, None, None,
-                                       last_fetched_id, statuses, severities, True, max_results, 1)
+                                       last_fetched_id, statuses, severities, True, max_results, 1, True)
 
     for alert in alerts:
-        id = alert['InternalId']
+        id = alert['AlertSeqId']
         if not last_fetched_id or id > last_fetched_id:
             last_fetched_id = id
         guid = alert['ID']
@@ -647,6 +652,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         ``args['sam_account_name']`` List of sam account names
         ``args['email']`` List of emails
         ``args['last_days']`` Number of days you want the search to go back to
+        ``args['descending_order']`` Indicates whether alerts should be ordered in newest to oldest order
 
     :return:
         A ``CommandResults`` object
@@ -666,6 +672,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     sam_account_names = args.get('sam_account_name', None)
     emails = args.get('email', None)
     last_days = args.get('last_days', None)
+    descending_order = args.get('descending_order', True)
 
     user_names = try_convert(user_names, lambda x: argToList(x))
     sam_account_names = try_convert(sam_account_names, lambda x: argToList(x))
@@ -733,7 +740,8 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
                 raise ValueError(f'There is no status {severity}.')
 
     alerts = client.varonis_get_alerts(threat_model_names, start_time, end_time, device_names,
-                                       last_days, sid_ids, None, alert_statuses, alert_severities, False, max_results, page)
+                                       last_days, sid_ids, None, alert_statuses, alert_severities, False, max_results,
+                                       page, descending_order)
     outputs = dict()
     outputs['Alert'] = alerts
 

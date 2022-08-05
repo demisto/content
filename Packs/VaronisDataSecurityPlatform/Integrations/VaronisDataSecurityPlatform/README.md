@@ -72,7 +72,7 @@ Get alerts from Varonis DA
 | Varonis.Alert.UserName | String | Name of the users triggered alerts | 
 | Varonis.Alert.By.SamAccountName | String | Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0. In the dashboards \(other than the Alert dashboard\), this is the SAM account name of the user or group | 
 | Varonis.Alert.By.PrivilegedAccountType | String | Privileged account. Options are:<br/>- Service accounts<br/>- Admin accounts<br/>- Executive accounts | 
-| Varonis.Alert.By.HasFollowUpIndicators | Boolean | Whether global flags, tags or notes are associated with the user | 
+| Varonis.Alert.By.Department | String | User`s department | 
 | Varonis.Alert.On.ContainsFlaggedData | Boolean | Whether the data affected by the alerted events has global flags | 
 | Varonis.Alert.On.ContainsSensitiveData | Boolean | Filters according to whether the resource on which the event was performed is sensitive \(including subfolders\) | 
 | Varonis.Alert.On.Platform | String | Type of platform on which the server resides. For example, Windows, Exchange, or SharePoint | 
@@ -241,6 +241,7 @@ Get events applied to specific alerts
 | Varonis.Event.OnObject.UserAccountType | String | Specified type of privileged account.<br/>Options are:<br/>- Service accounts<br/>- Admin accounts<br/>- Executive accounts<br/>- Test accounts | 
 | Varonis.Event.OnObject.DestinationIP | String | Destination IP address within the organization | 
 | Varonis.Event.OnObject.DestinationDevice | String | Destination host name for relevant services | 
+| Varonis.Event.OnObject.Path | String | Path of asset | 
 | Varonis.Pagination.Page | Number | Current page number requested by user | 
 | Varonis.Pagination.PageSize | Number | Number of records on the page | 
 

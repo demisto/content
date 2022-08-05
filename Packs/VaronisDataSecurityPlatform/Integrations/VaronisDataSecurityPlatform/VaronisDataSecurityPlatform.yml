@@ -150,6 +150,12 @@ script:
       name: last_days
       required: false
       secret: false
+    - default: false
+      description: Indicates whether alerts should be ordered in newest to oldest order
+      isArray: false
+      name: descending_order
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: Page number
@@ -229,9 +235,9 @@ script:
         - Admin accounts
         - Executive accounts
       type: String
-    - contextPath: Varonis.Alert.By.HasFollowUpIndicators
-      description: Whether global flags, tags or notes are associated with the user
-      type: Boolean
+    - contextPath: Varonis.Alert.By.Department
+      description: User`s department
+      type: String
     - contextPath: Varonis.Alert.On.ContainsFlaggedData
       description: Whether the data affected by the alerted events has global flags
       type: Boolean
@@ -448,6 +454,9 @@ script:
       type: String
     - contextPath: Varonis.Event.OnObject.DestinationDevice
       description: Destination host name for relevant services
+      type: String
+    - contextPath: Varonis.Event.OnObject.Path
+      description: Path of asset
       type: String
     - contextPath: Varonis.Pagination.Page
       description: Current page number requested by user
