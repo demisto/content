@@ -93,9 +93,22 @@ create-instances:
   needs: []
   stage: create-instances
   script:
+    - echo "Not in a section"
     - python3 logging_color_poc.py
     - python3 logging_color_poc.py wrapper
     - ./test_logging_colors.sh
+
+    - section_start "In a collapse section" --collapsed
+    - python3 logging_color_poc.py
+    - python3 logging_color_poc.py wrapper
+    - ./test_logging_colors.sh
+    - section_end "In a collapse section"
+
+    - section_start "In an uncollapse section"
+    - python3 logging_color_poc.py
+    - python3 logging_color_poc.py wrapper
+    - ./test_logging_colors.sh
+    - section_end "In an uncollapse section"
 
 prepare-testing-bucket-mpv2:
   tags:
@@ -145,7 +158,7 @@ prepare-testing-bucket-mpv2:
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
       python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
     - section_end "Collect Tests and Content Packs"
-    
+
     - section_start "Collect Tests V2"
     - |
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
