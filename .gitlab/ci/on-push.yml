@@ -95,7 +95,7 @@ create-instances:
   script:
     - python3 logging_color_poc.py
     - python3 logging_color_poc.py wrapper
-    - ./test_logging_color.sh
+    - ./test_logging_colors.sh
 
 prepare-testing-bucket-mpv2:
   tags:
