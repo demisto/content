@@ -2,7 +2,7 @@
 
 ## Insight Overview
 
-The Gigamon ThreatINSIGHT Demisto integration enables security teams to utilize the features and functionality of the ThreatINSIGHT solution with their existing Demisto deployment. The integration leverages ThreatINSIGHT RESTful APIs to interact with the back end to introduce specific data sets into Demisto. This document contains all the necessary information to configure, install, and use the integration.
+The Gigamon ThreatINSIGHT Cortex XSOAR integration enables security teams to utilize the features and functionality of the ThreatINSIGHT solution with their existing Cortex deployment. The integration leverages ThreatINSIGHT RESTful APIs to interact with the back end to introduce specific data sets into Cortex XSOAR. This document contains all the necessary information to configure, install, and use the integration.
 
 ## Integration Overview
 
@@ -24,7 +24,7 @@ Optional - Select the Fetches Incidents option to have the integration periodica
 
 ## Commands
 
-The integration includes several commands available to execute within Demisto to interact with Gigamon ThreatINSIGHT. Below is a list of all the commands and the following sections detail the arguments for each command.
+The integration includes several commands available to execute within Cortex XSOAR to interact with Gigamon ThreatINSIGHT. Below is a list of all the commands and the following sections detail the arguments for each command.
 
 | Command | Description |
 | ------- | ----------- |

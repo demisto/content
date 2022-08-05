@@ -1,2484 +1,1810 @@
 commonfields:
   id: Gigamon ThreatINSIGHT
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Gigamon ThreatINSIGHT
 display: Gigamon ThreatINSIGHT
 category: Network Security
-image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeoAAAAyCAYAAACTd5jMAAAACXBIWXMAABcRAAAXEQHKJvM/AAAQOUlEQVR4nO2dXW4ayxLHJ0d+tIR3YB82AGcFJisIOzBZAPJEfrKEFCxZ4gmFyAsIXoHxCgIrCGzAx96BkXjPVXH/7dOu9Azd0z1fUD8J3XODmZme6en67KoPv3//joQ/GYzG7SiKJvTF7fVVR26RIAiCUAZHctcTOYmi6Lyi1yYIgiAcCH/JgxYEQRCE6iKCWhAEQRAqjLi+95zBaEzx9Z/aKBcScxcEQagPYlELgiB4MhiNz+gj91HIAy+LetNvUsIVZUcrCy2rpfaMz/z47mle5yc9GI0nuCdFEt9eXy3LHbmw7wxG43fvpqtnRt9JoZHb3OXvYihP0mA07mKto0+Lfaf+cx1FEY2L7tny9vpq5nlOvq7ked9oXVdjPEtJql2pdZs+oa7HME/o/sUhjp1wPut5kjCH82bpLKg3/eYZHmKPT1IP1ET4uuk36X/voyia1lRot0vIFj8p+HzCYeI7r007KaYUnrm9vnrN4Y4GexchvGJ8GhY/aeDc5/g9CW4S1pOMAo2PJfg7jzAZresXlj9p4fMJv3+BEJt6Ps+id9y4zJNSdgNZu743/WZn02/SRPs3iqJvlkL6JeN10UT5SeeDYiAIwn5C68iwyiODACPL8aulkDbRwLr2izwTOGYlICsR3pKfDkLaxClkw/NgNM7NAj5EdlrUEJQTpTVZ8gi3z1fPe0rnJAWhd3z35OU6KhBXbfmEKT3rDMfIwxoRaspgNO7BMlJUPTRySYLC1z2cB7iXP1IOvTK8f/yd5pBF9nMwGv99e331XPL4aG2/TPkTtR4t2TiVW/zU8BtSSr6pebhnYTm6BwvH37SZgmeaM2mku743/Sa5uKcOWuRac4v7CmkFnfth02/eHN89VVrzjv4f33DSJA1Z2UvJyhY84XHFOoRGyAXeLltw6aTEI5WLd5Z2vXi3u/hwgfZY5ljhyp8nKBRrrPvTXUIWCXTKZc5dwnRs8h6QojgNO4JywP1wzc2Ys3tD98MprJsoqDf95i5Ni7PCACae7pMkKH59cnz3JC4VQdg/GojhFp2ImcbEYKTc3F5fWRkMWIzpE0NoD7UFu7R1DArI1CCk1xjzxDbGDGVjqhQtjFH3vjYw1r0Q1GVhjFFv+s1pRiHdzUlIKy7JDZ7j8QVBKI41O1NrMBpXwmsGocMtxO+2QppDQhueso8Q9qVY07CkTUKa3Lnk0RhmTQQja/P2+qqLMapnq7ysggd/CGoIaRdhu9LiFWmxnFD82PSbVdK6BUHIxhI7PHS+ViTRiguXdYikNwjsMpURk7v7npSIUMoDPAlnkA3dKoUz6so71zesVRchvdWWju+eXiHgbdAD8UnJCLuYVsxFJghCNmK8y7rwmFHsM6ctW7bw3SbLkq/HG3grTEI6uJcS90rW6EC8CWotu9sFysZ+3vSbcUqWo0pMmJn2RaNoSjchGSGJFjLBJe4RGLjG1AumLJttQRrXBIgk2DkiHHtXUg795sQnKcVw3i2hxmV5DSZr8fVQC9bQgo7s4F/aP6t4dZmW9V5tC4Urnyf4PuYhpIXw6Ba1S3Y3sdC2TCW5cm5I+JPFnXQQfLdNRqC92lAWbPZoDyVBIQzI3IwTslPf0Io2DD3dWW2W6X7D5xAEWswSUxauz1wr4tBJGhuqSa20TNdglhMWyJ6pipXhGh6RyOOkOEDQ6YKFC7iehTt5XqTCokNKymA0/oI9uIpzZAsXXQVqX+H38YVt4RMqzFZQQ0C6VlsZRv+5y7mAX8HadrISYHG3LTPOT8Wq9gfuMNutdKpow8VgNP6eR1k/KA1T3+o/KPM4cQittCAohnRPfAUEzh87joOUkk+D0XjhuPd5lzfKNpxVWiVAut9QJnTF7Bv2V5fhbeBbas7hjq9dvBX3lc+PzEljQvGoZDLX5IaF5sbmSRfb5DJXIa2DLVifLf5UsgkzQm7gwWjsU5SGilQs4U4OdU1tJBhlFtIYFwn6hwQhvYZlvkionKeKNcyzjE2r8vTgMY5z7D89tBhfz/BMZiHnmAOm9auu1j23nFf7sq/5UDhCbNp1Qdk+ZMSXdQ1YCWlvTY0sZVxbmiBxqZYmgIRiB8qtPUdMWnGiFW3gnpMWFi9vFxqE0pydg19T6rxKKeKQWqAiwfpVwtK6DjWO82D46kUbx1w/ntYAgVvFDSWsLay4KbOGe0xJsamEVLqlqMWr9bDIKcZXqFJOVdJQu1q/j+TtmNYwrsvvnYQTasZRxhdAxab1uNdbBnioW0CVyHa55en7unfcKgGe/Xmzo8iBsmqGhpAEucFnAco/6jkSzoUXgEn52OnGxrXP4CKcadfRchQSXNi94PyJ1gvGpwpGxCxO28B3qfFlfnyMQxcwzpWQyoKuczAa3zAFnQRkrwQrcGjYcnqB8EyvDm5wzAWuYNelHLMA/sqQWbnQhLHumhtSBngON7YHQZL0kTiLG2easCVB9o9NkQP6HjFpU0jCV0PXO7GRcOu4Fl5AzWIupDsusWa2/1PxCZayze+XmKN07i+311dnLsIF18rv7/mhucCxz5jXU54UfR/w7Pg+7wiGw79kXdvOjRLh6/tCYtP1I4ug1mM36sV5Ob57ysWdQsKfLOuUj/RhdkO3tDquiTpYvG7YP596LqLqmtZZrgnn5pa+83Gi/yzcHqua5SLsh6jwlOl9wP3lQuoQczH4M2jA61BovBpubpOwjpCk9zAYjalbVOGKhCV8m5l4H2vIUYa2bTx+GWW1qFBhLNSL9ypC24kvHtm0E0Nf3m6Grl+crO5Enn1+45MpjO1CQ80NTYpI19a9H8AlOmHhnoNr0kL3EPFqPeavWmIWWiebhDUSL4cJ6+UpFMVLbQtjiHBQCPZhP/hZzqVlK3+Pdra5NGBaALNOyHbAsqOLQ1zQMvLis/0IST+8HryvNbHIsrDBwtK3H72EKNGI7UL6wtwtKraHRKYiTlVpcB++s3lWSktMzAeVrzBM2fanb2FUQntSoYI2dbSoTwN2Y6wlxqYcjrxkjU1jD7TNNiwhLCHCFHyh9PWMZBWueWa06vFl2QpYAsiLWLEzT5HQVSjI06Csbzr3P9SkI2GLn0IJ7V/Y7ncwhgSNlRRd9anAJdWaEILaS1OEsP5S9nUcGCGskZCJg2uPrGQuQENaWvqxGge4r7kqmOLVpbqV0SkqdhDaFMr4iaTHMilKwenACv566NZwCLK4vtvMfeItICkRbdNvdj2rUUmHFjtWIbaVIIYY6pp83HHvFp7AW2b4sTJ7DQ7JmgoNcgZiFiZroYJc6dYa3Nox+k6rkrFJ5XjJdX9S4F5snuFdx5j1Kue8BNuy1aVxBC3QpYOV/qBDWrE8gcYVsajtqOLWDJ9n925LFqqC5UXHVqlQe22xYFd6EagD5HKGsqPnI3xFvLoycVcmtLuGmgUR4teveZTgNbBkhaHq6BV6zfMZ07PI69ihOMKDdBHUumXwHCprmxp8bPrNdYYsdGItRU+s2WeFpuFbI9yXlMIwgj+xoblKFVpiGtEK6Zh6F5BlPSmgaAp/38WzU0P+yhDraaG0Z4Tfhlz4sx5LKu3YI8UOcgJW9DxFSK+0OuO7PuvcL7hmQBjznIRG1bvowXI25eEU4bbnBozkWtSQIwg51y1SXbSvfA4cG+Yda2yRAvNCVEAsa9dcn5ka86N1pmvryqzvwl6T0BLzU9VbYmJ7F8/DyX0nAbZSLth5Y2lxWS+OqBzopt+8d2iFF+FB5/FSZHGjL8TtfdDoORatsuKVSHbShTQpDd06tkWsOglCr8yWmLbw9q2Nglpn8vNeIBFP5mZNyNrm8hR9qEOTxSUje/QOm3eLTYluPf4+1KJpQ43pGsIDZbXEtMWkROaehY2ytHzrmHTQqhFbQQ0XdlI92ySGaHMZEtdF9rtY0wcPz08oy6X3zpoOYNntQ+nH3EiIV59WWQCVrLhxg+YTSrQKNUAveBI7JrAEfSlgobtkfK/EmhZMgroCVpWX8mhoUykYQJiDN4i58BVANH/y6IqVsJe+kOTOhGYvVW0kIjDeBDVaV7pOzouALnAXoUsKRS9k72uhnsBK0RegRgUUON/FL/T1V9kd7AUKnvASo74CKEZXrNCJiVxQrwuOqZsqvM1FWFefdyVE4UZ2rb39Y9Nveu3N2/SbaUXuOdtWiNIpS9Dgnp3LEqwqfQHMvPDhun2zvbmLdd8XYh6vzrxlC1vsVMlLSlALEvfGcbngL7qxyLPhGpSwDu0GF+EfkD9qfWdslDFDCVBnYJHb1oJ9ESEtcFBYgrv1fmRdfLT90A8Ox9Dd3Y0s1hjOFaKbHBfUe91QBAKIP6dWRoWHPzeq6vWM5hKZBDYs1pkhtFf4tlK4wPn63sD74q2UoBkHr4YmeGJsyqEJa9uYNT3oh02/ab04USLapt+cOCxMj6SliZAWEjBlAf9AQ3/rxQcCdqklh/2wtKy5Vf/NVsjDend5F3bBY+StpFrjOHeh/Z3zAMra9wCHNrnSGzAmnjGfrBL96O/QOWpu2F//WNZWwgRhHTGlxCmZkd4R7P3/aRhrWrMSwYLEphwkrDf95hJan22t4m9wgyfGjzf9ZhuLamyZPEYPOaYSo/JAhSRQ2EHV4tbn1SUSzKYoPPKHooffdWGV8Tm5skkOo0XXUFhCCflhwnlVAwd+3ntkfWdygeNaeA1/VcpSjeUEY+7CA/BcdI/nHBgiDpy5tjqyydsJZT8b+LdL3N85vBd8fnTg+k2yKldlFxxB7fRng6WvlBKqo77C99tx6lnreGfOMNZuylr+KMVV/EntngXrtY0Ysq1g3WplsJYneJAxFgaXF2iF6mdSdUywAlWrOgblUl9gIyh/zxaCkARm7FBHumuwnj5hK8yalchNOvc9dVYK0FxkmxCl/f/GjpaDvbqX4oWy1jMoa1mORU01ZphLpvyZU61IlEsbx0fssS89ERYK3RnGaFIqWvhsx+fYLe8F744YWAGw6kd9fPc0hPZ0Y+kOf3MVQbMcQGjfG2KJihUmMZUH/Pv47qktQlpwBZZrx7BtR+d0h5CmReYjCUyXBRV/20mY46phyHnCuem9+hKq/SEWSJfaCHtRnAXPP0jWPAky9Jv+HMB9S7//fHt91a1SAxG6Frommu8pa7MLL1jD2yKkw2Hdjxqu7CEKnSiX2a79nroWr9woE4kzC3mChXAId7dyLe/aVbCGJTb1WWCUsIZlH1sk1SzwXkxDL+CwzGdQkk3jX+Pce1VOEiVGO6ESmhDTnVr0muaoOTXDMSoL4uUdLTvddowRhLMapwjnHLAW1DqIF28fCKqTtfGxSdrpSO/odyyhzSpCa9v8+CEX5KzXnec1vQHhM4TQPtNiajr0N8vQ+1mx8M2RyMbfj6VFj91Y+/vMc0JrtaiuQWW0v2YY80eLv0kj77mu0wu9RYj1mk5b95aI6YacUzE7Ty5rqLaFK055ZxR/xK4DUeQ8iQz3Nu/jOz+7D79//w57SXsCNHLKYKTJ++HQ74cgCIJQDlYxakEQBEEQRFALgiAIgsAQQS0IgiAIFUYEtSAIgiBUlSiK/gfEBEEY0JrIzQAAAABJRU5ErkJggg==
-description:
-  Gigamon ThreatINSIGHT is a cloud-native network detection and response
-  solution built for the rapid detection of threat activity, investigation of suspicious
-  behavior, proactive hunting for potential risks, and directing a fast and effective
-  response to active threats.
-detaileddescription: |-
-  # Gigamon Insight Integration for Cortex XSOAR
-
-  ### Insight Overview
-  Gigamon Insight is a cloud-based network detection and response solution built for the rapid detection of threat activity, investigation of suspicious behavior, proactive hunting for potential risks, and directing a fast and effective response to active threats.
-
-  ### Integration Overview
-  The Gigamon Insight Cortex XSOAR integration enables security teams to utilize the features and functionality of the Insight solution with their existing Cortex XSOAR deployment. The integration leverages Insight’s fully RESTful APIs to interact with the Insight backend to introduce specific data sets into Cortex XSOAR. This document contains all the necessary information to configure, install, and use the integration.
-
-  For more information about the Cortex XSOAR integration visit the Insight help documentation here: https://insight.gigamon.com/help/api/apidocs-demisto
-
-  #### Installation
-
-  To install the integration:
-  1. Navigate to the Settings section of the Cortex XSOAR interface. Ensure you are on the Integration tab and Servers & Services sub-tab. In the Search box, type “Gigamon Insight” to search for the integration.
-
-      Alternatively, you can manually install the integration using the integration-Gigamon_Insight.yml file available on Cortex XSOAR’s GitHub repository (here). Once you have the file downloaded, select the Upload button on the Settings page
-
-  2. Click the Add Instance link to create a new instance of the add-on.
-  3. In the settings, enter a Name for the instance, and a valid Insight API Key. (in the Insight portal, navigate to the Profile Settings page to create a new API key).
-
-      Optional - Select the Fetches Incidents option to have the integration periodically pull new detections from Insight into Cortex XSOAR. Note: This will pull ALL events your portal account has access to unless you specify a specific account UUID.
-
-  4. Choose either Use Single Engine or Use Load-Balancing Group depending on your Cortex XSOAR deployment.
-  5. Click the Test button to test the instance. If the instance can connect to the Insight APIs, you should see a successful message like the one above.
-  6. Lastly, click the Done button to complete the installation of the integration.
-
-  #### Commands
-
-  The integration includes several commands available to execute within Cortex XSOAR to interact with Gigamon Insight. Below is a list of all the commands and the following sections detail the arguments for each command.
-
-  | Command | Description |
-  | --- | --- |
-  | insight-get-events | Perform a search for network events from Insight |
-  | insight-get-history | Get user's query history |
-  | insight-get-saved-searches | Get user's saved searches |
-  | insight-get-sensors | Get a list of all sensors |
-  | insight-get-devices | Get the number of devices |
-  | insight-get-tasks | Get a list of all the PCAP tasks |
-  | insight-create-task | Create a new PCAP task |
-  | insight-get-detections | Get a list of detections |
-  | insight-get-detection-rules | Get a list of detection rules |
-  | insight-resolve-detection | Resolve a specific detection |
-  | insight-get-detection-rule-events | Get a list of the events that matched on a specific rule |
-  | insight-create-detection-rule | Create a new detection rule |
-  | insight-get-entity-summary | Get entity summary information about an IP or domain |
-  | insight-get-entity-pdns | Get passive DNS information about an IP or domain |
-  | insight-get-entity-dhcp| Get DHCP information about an IP address |
-  | insight-get-entity-file | Get entity information about a file |
-  | insight-get-telemetry-events | Get event telemetry data grouped by time |
-  | insight-get-telemetry-network | Get network telemetry data grouped by time |
-  | insight-get-telemetry-packetstats | Get network metrics to a given sensor's interfaces |
+description: Gigamon ThreatINSIGHT is a cloud-native network detection and response solution built for the rapid detection of threat activity, investigation of suspicious behavior, proactive hunting for potential risks, and directing a fast and effective response to active threats.
 configuration:
-  - display: API Token
-    name: api_key
-    type: 4
-    required: true
-  - display: Fetch incidents
-    name: isFetch
-    type: 8
-    required: false
-  - display: Incident type
-    name: incidentType
-    type: 13
-    required: false
-  - display: 'Incident Filter: Account UUID (Optional)'
-    name: account_uuid
-    type: 0
-    required: false
-  - display: Maximum incidents in each fetch each run
-    name: max_fetch
-    type: 0
-    required: false
-  - display: Incidents Fetch Interval
-    name: incidentFetchInterval
-    defaultvalue: '1'
-    type: 19
-    required: false
+- display: API Token
+  name: api_key
+  type: 4
+  required: true
+- display: First Fetch Time
+  name: first_fetch
+  defaultvalue: 7 days
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: 'Incident Filter: Account UUID (Optional)'
+  name: account_uuid
+  type: 0
+  required: false
+- display: Maximum incidents in each fetch each run
+  name: max_fetch
+  defaultvalue: '50'
+  type: 0
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
 script:
-  script: |
-    """    Gigamon ThreatINSIGHT Integration for Cortex XSOAR (aka Demisto)
-
-           This integration allows fetching detections, entities, events and
-           saved searches from Gigamon ThreatINSIGHT APIs, also allows for
-           some management operations like creating scheduled pcap tasks,
-           updating detection rules and resolving detections.
-    """
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
-
-    import requests
-    import json
-    import re
-    from datetime import datetime, timedelta
-
-    # Global for setting up headers
-    HEADERS: Dict[str, str] = {}
-    TRAINING_ACC = 'f6f6f836-8bcd-4f5d-bd61-68d303c4f634'
-    MAX_DETECTIONS = 100
-    DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-
-
-    ''' HELPER FUNCTIONS '''
-
-
-    def sendRequest(method, api, endpoint=None, data=None, args=None):
-        """ Client method for figuring out the right endpoint and running the requests"""
-
-        # dump data if supplied
-        if data:
-            data = json.dumps(data)
-        # set api url
-        if api == 'Events':
-            url = 'https://events.icebrg.io/v2/query/'
-        elif api == 'Detections':
-            url = 'https://detections.icebrg.io/v1/'
-        elif api == 'Sensors':
-            url = 'https://sensor.icebrg.io/v1/'
-        elif api == 'Entity':
-            url = 'https://entity.icebrg.io/v1/entity/'
-        # adjust url according to endpoint and args
-        if endpoint is not None:
-            url = url + endpoint
-        if args is not None:
-            url = url + args
-        # attempt API call
-        try:
-            response = requests.request(
-                method=method,
-                url=url,
-                headers=HEADERS,
-                data=data,
-            )
-        except requests.exceptions.RequestException:
-            return_error('API error')
-        # check response
-        if response.status_code == 200:
-            r_json = response.json()
-            return r_json
-        elif response.status_code >= 400:
-            r_json = response.json()
-            demisto.results("Error: " + str(response.status_code) + " " + response.reason + ": "
-                            + str(r_json['error']['message']) + "\n" + url)
-        else:
-            demisto.results(response.reason)
-
-
-    def getArgs():
-        args = demisto.args()
-        arguments = {}
-        for arg in args:
-            arguments[arg] = demisto.getArg(arg)
-        return arguments
-
-
-    def encodeArgsToURL(args):
-        url = ''
-        first = True
-        for arg in args:
-            this_arg = str(arg) + "=" + str(args[arg])
-            if first:
-                url = url + "?" + this_arg
-                first = False
-            else:
-                url = url + "&" + this_arg
-        return url
-
-
-    def formatEvents(r_json, response_type):
-        if response_type == "metadata":
-            data = []
-            metadata = {}
-            for field in r_json:
-                if field != "events" and field != "aggregations":
-                    metadata[field] = r_json[field]
-            data.append(metadata)
-            r_json['data'] = data
-        elif response_type == "aggregations":
-            # Get group by statement
-            for x in r_json['aggregations']:
-                group_by = x
-            fields = []
-            aggregations = []
-            for column in r_json['aggregations'][group_by]['columns']:
-                fields.append(column['field'])
-            for datum in r_json['aggregations'][group_by]['data']:
-                aggregation = {}
-                for i in range(0, len(fields)):
-                    aggregation[fields[i]] = datum[i]
-                aggregations.append(aggregation)
-            r_json['data'] = aggregations
-        else:
-            for event in r_json['events']:
-                # flatten dict values, convert lists to string
-                new_fields = {}
-                for field in event:
-                    if isinstance(event[field], list):
-                        event[field] = str(json.dumps(event[field]))
-                    if isinstance(event[field], dict):
-                        new_fields.update(flattenFieldDict(field, event[field]))
-                        event[field] = "REMOVE"
-                event.update(new_fields)
-            # remove fields
-            for i in range(0, len(r_json['events'])):
-                r_json['events'][i] = {k: v for k, v in r_json['events'][i].items() if v != "REMOVE"}
-        return r_json
-
-
-    def flattenFieldDict(field, field_dict):
-        new_dict = {}
-        for key in field_dict:
-            if isinstance(field_dict[key], dict):
-                new_dict.update(flattenFieldDict(field + "_" + key, field_dict[key]))
-            else:
-                new_dict[field + "_" + key] = field_dict[key]
-        return new_dict
-
-
-    def flattenList(lt):
-        string = ''
-        for i in range(0, len(lt)):
-            if isinstance(lt[i], dict):
-                string = string + flattenDict(lt[i])
-                if i + 1 < len(lt):
-                    string = string + "---" + "\n"
-            elif isinstance(lt[i], list):
-                string = string + flattenList(lt[i])
-            else:
-                string = string + str(lt[i])
-                if i + 1 < len(lt):
-                    string = string + ", "
-        return string
-
-
-    def flattenDict(dt):
-        string = ''
-        for key in dt:
-            if isinstance(dt[key], list):
-                string = string + str(key) + ": " + flattenList(dt[key]) + "\n"
-            elif isinstance(dt[key], dict):
-                string = string + str(key) + ": " + flattenDict(dt[key]) + "\n"
-            else:
-                string = string + str(key) + ": " + str(dt[key]) + "\n"
-        return string
-
-
-    ''' COMMANDS + REQUESTS FUNCTIONS '''
-
-
-    def fetchIncidents(account_uuid, max_results, last_run, first_fetch_time):
-        demisto.debug(f'last_run retrieved: {last_run}')
-        last_fetch = last_run.get('last_fetch')
-
-        if last_fetch is None:
-            last_fetch = first_fetch_time
-        else:
-            last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
-
-        if not max_results or max_results > MAX_DETECTIONS:
-            max_results = MAX_DETECTIONS
-
-        args = {'created_or_shared_start_date': last_fetch.strftime(DATE_FORMAT),
-                'include': 'rules',
-                'sort_by': 'first_seen',
-                'sort_order': 'asc',
-                'limit': max_results}
-
-        if account_uuid:
-            args['account_uuid'] = account_uuid
-
-        response = sendRequest('GET', 'Detections', 'detections', None, encodeArgsToURL(args))
-        response = addDetectionRules(response)
-        last_incident_time = last_fetch
-        detections = []
-        for detection in response['detections']:
-            # filter out training detections
-            if detection['account_uuid'] != TRAINING_ACC:
-                for rule in response['rules']:
-                    if rule['uuid'] == detection['rule_uuid']:
-                        detection['rule_name'] = str(rule['name'])
-                        detection['rule_description'] = str(rule['description'])
-                        detection['rule_severity'] = str(rule['severity'])
-                        detection['rule_category'] = str(rule['category'])
-                        detection['rule_confidence'] = str(rule['confidence'])
-
-                        if rule['severity'] == 'high':
-                            severity = 3
-                        elif rule['severity'] == 'moderate':
-                            severity = 2
-                        elif rule['severity'] == 'low':
-                            severity = 1
-                        else:
-                            severity = 0
-
-                this_detection = {
-                    'occurred': detection['first_seen'],
-                    'name': detection['rule_name'],
-                    'dbotMirrorId': detection['uuid'],
-                    'severity': severity,
-                    'details': detection['rule_description'],
-                    'rawJSON': json.dumps(detection),
-                }
-                incident_time = datetime.strptime(detection['first_seen'], DATE_FORMAT)
-
-                # To workaround the issue with multiple detections at same timestamp
-                if last_fetch < incident_time:
-                    detections.append(this_detection)
-
-                if last_incident_time < incident_time:
-                    last_incident_time = incident_time
-
-        demisto.debug(f'Last incident time: {last_incident_time.strftime(DATE_FORMAT)}')
-        next_run = {'last_fetch': last_incident_time.strftime(DATE_FORMAT)}
-        demisto.debug(f'fetched {len(detections)} incidents')
-        return next_run, detections
-
-
-    def getDetectionsInc(r_json, args):
-        total_detections = r_json['total_count']
-        offset = MAX_DETECTIONS
-        while total_detections > MAX_DETECTIONS and offset < total_detections:
-            args['offset'] = offset
-            response = sendRequest('GET', 'Detections', 'detections', None, encodeArgsToURL(args))
-            for detection in response['detections']:
-                r_json['detections'].append(detection)
-            if 'include' in args:
-                if args['include'] == 'rules':
-                    for rule in response['rules']:
-                        r_json['rules'].append(rule)
-            offset += MAX_DETECTIONS
-        return r_json
-
-
-    def addDetectionRules(r_json):
-        for detection in r_json['detections']:
-            for rule in r_json['rules']:
-                if detection['rule_uuid'] == rule['uuid']:
-                    rule_name = rule['name']
-                    rule_description = rule['description']
-                    rule_severity = rule['severity']
-                    rule_confidence = rule['confidence']
-                    rule_category = rule['category']
-                    rule_signature = rule['query_signature']
-            detection.update({'rule_name': rule_name})
-            detection.update({'rule_description': rule_description})
-            detection.update({'rule_severity': rule_severity})
-            detection.update({'rule_confidence': rule_confidence})
-            detection.update({'rule_category': rule_category})
-            detection.update({'rule_signature': rule_signature})
-        return r_json
-
-
-    def responseToEntry(r_json, path, title):
-        # set data and type
-        data = []
-        data_type = title.lower().replace(" ", "_")
-        # set context path
-        contextPath = "Insight." + path
-        context = {contextPath: []}  # type: dict
-        # check for exclusions
-        if data_type == 'device_list':
-            r_json = r_json['devices']
-        # iterate based on data type
-        if data_type in ('data'):
-            for i in range(0, len(r_json[data_type])):
-                new_item = {}
-                if isinstance(r_json[data_type][i], list):
-                    for j in range(0, len(r_json[data_type][i])):
-                        new_pair = {r_json['columns'][j]: r_json[data_type][i][j]}
-                        new_item.update(new_pair)
-                elif isinstance(r_json[data_type][i], dict):
-                    for item in r_json[data_type][i]:
-                        if isinstance(r_json[data_type][i][item], int):
-                            new_pair = {str(item): int(r_json[data_type][i][item])}
-                        else:
-                            new_pair = {str(item): str(r_json[data_type][i][item])}
-                        new_item.update(new_pair)
-                data.append(new_item)
-                context[contextPath].append(createContext(new_item))
-        elif data_type in ('pcap_task', 'summary', 'file'):
-            new_item = {}
-            for item in r_json[data_type]:
-                if isinstance(r_json[data_type][item], dict):
-                    r_json[data_type][item] = flattenDict(r_json[data_type][item])
-                if isinstance(r_json[data_type][item], list):
-                    r_json[data_type][item] = flattenList(r_json[data_type][item])
-                new_pair = {item: str(r_json[data_type][item])}
-                new_item.update(new_pair)
-            data.append(new_item)
-            context[contextPath].append(createContext(new_item))
-        else:
-            for item in r_json[data_type]:
-                new_item = {}
-                for field in item:
-                    # if there are any unicode characters, encode them to utf8
-                    if isinstance(item[field], str):
-                        item[field] = str(item[field].encode("utf-8"))
-                    new_pair = {field: str(item[field])}
-                    new_item.update(new_pair)
-                data.append(new_item)
-                context[contextPath].append(createContext(new_item))
-        # submit results
-        demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': data, 'EntryContext': context})
-
-
-    def main():
-        # get command and args
-        command = demisto.command()
-        args = getArgs()
-
-        # initialize common args
-        api_key = demisto.params().get('api_key')
-        account_uuid = demisto.params().get('account_uuid')
-        global HEADERS
-        HEADERS = {
-            'Authorization': 'IBToken ' + api_key,
-            'User-Agent': 'Cortex_Insight.v3',
-            'Content-Type': 'application/json',
-        }
-        # attempt command execution
-        try:
-            if command == 'test-module':
-                response = sendRequest('GET', 'Sensors', 'sensors')
-                demisto.results('ok')
-            if command == 'fetch-incidents':
-                # default first fetch to -7days
-                first_fetch_time = datetime.now() - timedelta(days=7)
-                max_results = arg_to_number(
-                    arg=demisto.params().get('max_fetch'),
-                    arg_name='max_fetch',
-                    required=False
-                )
-
-                next_run, incidents = fetchIncidents(
-                    account_uuid=account_uuid,
-                    max_results=max_results,
-                    last_run=demisto.getLastRun(),
-                    first_fetch_time=first_fetch_time
-                )
-
-                demisto.setLastRun(next_run)
-                demisto.incidents(incidents)
-            elif command == 'insight-get-events':
-                if args['response_type'] == "metadata":
-                    response_type = "metadata"
-                elif args['response_type'] == "aggregations":
-                    pattern = r"^.*[Gg][Rr][Oo][Uu][Pp]\s+[Bb][Yy].*$"
-                    if not re.search(pattern, args['query']):
-                        demisto.results("Error: No 'group by' statement in query. Aggregation requires a 'group by' statement.")
-                    else:
-                        response_type = "aggregations"
-                else:
-                    response_type = "events"
-                args.pop('response_type')
-                response = sendRequest('POST', 'Events', None, args)
-                response = formatEvents(response, response_type)
-                if response_type in ("metadata", "aggregations"):
-                    responseToEntry(response, 'Events', 'Data')
-                else:
-                    responseToEntry(response, 'Events', 'Events')
-            elif command == 'insight-get-history':
-                response = sendRequest('GET', 'Events', 'history')
-                responseToEntry(response, 'UserQueryHistory', 'History')
-
-            elif command == 'insight-get-saved-searches':
-                response = sendRequest('GET', 'Events', 'saved')
-                responseToEntry(response, 'SavedSearches', 'Saved Queries')
-
-            elif command == 'insight-get-sensors':
-                response = sendRequest('GET', 'Sensors', 'sensors')
-                responseToEntry(response, 'Sensors', 'Sensors')
-
-            elif command == 'insight-get-devices':
-                response = sendRequest('GET', 'Sensors', 'devices')
-                responseToEntry(response, 'Devices', 'Device List')
-
-            elif command == 'insight-get-tasks':
-                if 'task_uuid' in args:
-                    endpoint = 'pcaptasks/' + args['task_uuid']
-                    response = sendRequest('GET', 'Sensors', endpoint)
-                    responseToEntry(response, 'Tasks', 'PCAP Task')
-                else:
-                    response = sendRequest('GET', 'Sensors', 'pcaptasks')
-                    responseToEntry(response, 'Tasks', 'PCAPTasks')
-
-            elif command == 'insight-create-task':
-                sensor_ids = [args['sensor_ids']]
-                args.pop('sensor_ids')
-                args['sensor_ids'] = sensor_ids
-                response = sendRequest('POST', 'Sensors', 'pcaptasks', args)
-                demisto.results("Task created successfully")
-
-            elif command == 'insight-get-detections':
-                response = sendRequest('GET', 'Detections', 'detections', None, encodeArgsToURL(args))
-                if response['total_count'] > MAX_DETECTIONS:
-                    if 'limit' not in args or int(args['limit']) > MAX_DETECTIONS:
-                        # pull the remaining detections incrementally
-                        response = getDetectionsInc(response, args)
-                # filter out training detections
-                detections = []
-                for detection in response['detections']:
-                    if detection['account_uuid'] != TRAINING_ACC:
-                        detections.append(detection)
-                response['detections'] = detections
-                if 'include' in args:
-                    if args['include'] == 'rules':
-                        response = addDetectionRules(response)
-                responseToEntry(response, 'Detections', 'Detections')
-
-            elif command == 'insight-get-detection-rules':
-                response = sendRequest('GET', 'Detections', 'rules', None, encodeArgsToURL(args))
-                responseToEntry(response, 'Rules', 'Rules')
-
-            elif command == 'insight-get-detection-rule-events':
-                rule_uuid = args['rule_uuid']
-                endpoint = "rules/" + rule_uuid + "/events"
-                args.pop('rule_uuid')
-                response = sendRequest('GET', 'Detections', endpoint, None, encodeArgsToURL(args))
-                responseToEntry(response, 'Detections', 'Events')
-
-            elif command == 'insight-resolve-detection':
-                endpoint = "detections/" + args['detection_uuid'] + "/resolve"
-                body = {"resolution": args['resolution'], "resolution_comment": args['resolution_comment']}
-                sendRequest('PUT', 'Detections', endpoint, body, None)
-                demisto.results("Detection resolved successfully")
-
-            elif command == 'insight-create-detection-rule':
-                run_accts = [args['run_account_uuids']]
-                dev_ip_fields = [args['device_ip_fields']]
-                args.pop('run_account_uuids')
-                args.pop('device_ip_fields')
-                args['run_account_uuids'] = run_accts
-                args['device_ip_fields'] = dev_ip_fields
-                sendRequest('POST', 'Detections', 'rules', args, None)
-                demisto.results("Rule created successfully")
-
-            elif command == 'insight-get-entity-summary':
-                endpoint = args['entity'] + "/summary"
-                response = sendRequest('GET', 'Entity', endpoint, None, None)
-                responseToEntry(response, 'Entity.Summary', 'Summary')
-
-            elif command == 'insight-get-entity-pdns':
-                endpoint = args['entity'] + "/pdns"
-                response = sendRequest('GET', 'Entity', endpoint, None, None)
-                responseToEntry(response, 'Entity.PDNS', 'PassiveDNS')
-
-            elif command == 'insight-get-entity-dhcp':
-                endpoint = args['entity'] + "/dhcp"
-                response = sendRequest('GET', 'Entity', endpoint, None, None)
-                responseToEntry(response, 'Entity.DHCP', 'DHCP')
-
-            elif command == 'insight-get-entity-file':
-                endpoint = args['hash'] + "/file"
-                response = sendRequest('GET', 'Entity', endpoint, None, None)
-                responseToEntry(response, 'Entity.File', 'File')
-
-            elif command == 'insight-get-telemetry-events':
-                response = sendRequest('GET', 'Sensors', 'telemetry/events', None, encodeArgsToURL(args))
-                responseToEntry(response, 'Telemetry.Events', 'Data')
-
-            elif command == 'insight-get-telemetry-network':
-                response = sendRequest('GET', 'Sensors', 'telemetry/network', None, encodeArgsToURL(args))
-                responseToEntry(response, 'Telemetry.Network', 'Data')
-
-            elif command == 'insight-get-telemetry-packetstats':
-                response = sendRequest('GET', 'Sensors', 'telemetry/packetstats', None, encodeArgsToURL(args))
-                responseToEntry(response, 'Telemetry.Packetstats', 'Data')
-        # catch exceptions
-        except Exception as e:
-            return_error(str(e))
-
-
-    if __name__ in ('__main__', '__builtin__', 'builtins'):
-        main()
+  script: '-'
   type: python
   commands:
-    - name: insight-get-events
-      arguments:
-        - name: query
-          required: true
-          default: true
-          description: The query string used to search for matching events.
-        - name: start_date
-          description:
-            The beginning of the temporal extent by which to restrict filter
-            results, inclusive.
-        - name: end_date
-          description:
-            The end of the temporal extent by which to restrict filter results,
-            exclusive.
-        - name: limit
-          description:
-            A limit on the number of events returned in filter results. Default
-            is 100. Max is 10000
-        - name: order_by
-          description: The event property by which to order results. Default is timestamp.
-        - name: order
-          description: The order of results, either asc or desc. Default is desc.
-        - name: customer_id
-          description:
-            The customer ID by which to restrict filter results. Default is
-            user account.
-        - name: history
-          description:
-            When true, save this query in user Query History and include up
-            to the last 50 queries from users Query History. Default is false.
-        - name: service_traffic
-          description:
-            When true, the service will include the service_traffic aggregation.
-            Default is false.
-        - name: response_type
-          auto: PREDEFINED
-          predefined:
-            - events
-            - aggregations
-            - metadata
-          description:
-            The type items you want returned. The default type to return are
-            events. Include a 'group by' statement in your query to return aggregations.
-            Metadata about queries also available.
-          defaultValue: events
-      outputs:
-        - contextPath: Insight.Events.uuid
-          description: Unique ID for the event
-          type: string
-        - contextPath: Insight.Events.timestamp
-          description: Time and date of the event
-          type: date
-        - contextPath: Insight.Events.flow_id
-          description: Unique ID for the connection
-          type: string
-        - contextPath: Insight.Events.sensor_id
-          description: The sensor that produced the event
-          type: string
-        - contextPath: Insight.Events.customer_id
-          description: Customer ID that the event belongs to
-          type: string
-        - contextPath: Insight.Events.src_ip
-          description: Source IP address
-          type: string
-        - contextPath: Insight.Events.dst_ip
-          description: Destination IP address
-          type: string
-        - contextPath: Insight.Events.src_port
-          description: Source port number
-          type: number
-        - contextPath: Insight.Events.dst_port
-          description: Destination port number
-          type: number
-        - contextPath: Insight.Events.geo_distance
-          description: Distance between src and dst in nautical miles
-          type: number
-        - contextPath: Insight.Events.intel
-          description: Intel sharing platform
-          type: string
-        - contextPath: Insight.Events.duration
-          description: Flow - Duration of the flow event
-          type: number
-        - contextPath: Insight.Events.flow_state
-          description: Flow - Connection result
-          type: string
-        - contextPath: Insight.Events.proto
-          description: Flow - Protocol used in the flow event (i.e. tcp, udp)
-          type: string
-        - contextPath: Insight.Events.service
-          description:
-            Flow - Either the service type for flow events (i.e. http, dns)
-            or the name of the service in a Kerberos event
-          type: string
-        - contextPath: Insight.Events.total_ip_bytes
-          description: Flow - Number of bytes both sent and received in the flow event
-          type: number
-        - contextPath: Insight.Events.total_pkts
-          description: Flow - Number of packets both send and received in the flow event
-          type: number
-        - contextPath: Insight.Events.query_domain
-          description: DNS - The domain name that is the subject of the DNS query
-          type: string
-        - contextPath: Insight.Events.answers
-          description: DNS - The set of resource descriptions in the query answer
-          type: string
-        - contextPath: Insight.Events.qtype
-          description: DNS - The QTYPE value of the query
-          type: number
-        - contextPath: Insight.Events.qtype_name
-          description: DNS - The description name for the type of query
-          type: string
-        - contextPath: Insight.Events.rcode
-          description: DNS - The response code value in DNS response messages
-          type: number
-        - contextPath: Insight.Events.rcode_name
-          description: DNS - A descriptive name for the response code value
-          type: string
-        - contextPath: Insight.Events.rejected
-          description: DNS - The DNS query was rejected by the server (true/false)
-          type: boolean
-        - contextPath: Insight.Events.ttls
-          description:
-            DNS - The caching intervals of the associated RRs described by
-            the answers field
-          type: number
-        - contextPath: Insight.Events.host_ip
-          description: HTTP - The IP of the host header, if present
-          type: string
-        - contextPath: Insight.Events.host_domain
-          description: HTTP - The domain of the host header, if present
-          type: string
-        - contextPath: Insight.Events.method
-          description: HTTP - Verb used in the HTTP request
-          type: string
-        - contextPath: Insight.Events.proxied
-          description: HTTP - Indicates if the request was proxied
-          type: string
-        - contextPath: Insight.Events.request_len
-          description:
-            HTTP - Uncompressed content size of the HTTP packet transferred
-            from the client, measure in bytes
-          type: number
-        - contextPath: Insight.Events.request_mime
-          description:
-            HTTP - Multipurpose Internet Mail Extensions (MIME) type for the
-            client request, identifying the desired format of the requested file
-          type: string
-        - contextPath: Insight.Events.response_len
-          description:
-            HTTP - Uncompressed content size of the HTTP packet transferred
-            from the server, measure in bytes
-          type: number
-        - contextPath: Insight.Events.response_mime
-          description:
-            HTTP - Multipurpose Internet Mail Extensions (MIME) type for the
-            server response, identifying the format of the returned file
-          type: string
-        - contextPath: Insight.Events.status_code
-          description:
-            HTTP - Status code returned by the server indicating the result
-            of the request
-          type: number
-        - contextPath: Insight.Events.status_msg
-          description:
-            HTTP - Status message associated with the status code returned
-            by the server
-          type: number
-        - contextPath: Insight.Events.info_msg
-          description:
-            HTTP - Reply message for when a 100-level status code is returned
-            by the server; that is generally used to signal that the client should continue
-            with an ongoing request
-          type: string
-        - contextPath: Insight.Events.trans_depth
-          description:
-            HTTP - Count to represent the depth of the message transaction
-            in a single connection where multiple messages were transferred
-          type: number
-        - contextPath: Insight.Events.user_agent
-          description:
-            HTTP - The User Agent header sent by the client that generally
-            identifies the software that created the request
-          type: string
-        - contextPath: Insight.Events.username
-          description:
-            HTTP / NTLM / FTP - The specified username if basic auth is used
-            for the request for HTTP events, the username given by the client for NTLM
-            events, or the user name for the current FTP session for FTP events
-          type: string
-        - contextPath: Insight.Events.uri_uri
-          description: HTTP - The entire URI of the request
-          type: string
-        - contextPath: Insight.Events.referrer
-          description: The entire URI of the referrer
-          type: string
-        - contextPath: Insight.Events.date
-          description: SMTP - Contents of the 'Date' SMTP header
-          type: date
-        - contextPath: Insight.Events.from_name
-          description: SMTP - Email name from the 'From' SMTP header
-          type: string
-        - contextPath: Insight.Events.from_domain
-          description: SMTP - Email domain from the 'From' SMTP header
-          type: string
-        - contextPath: Insight.Events.from_email
-          description: SMTP - Full email address from the 'From' SMTP header
-          type: string
-        - contextPath: Insight.Events.to
-          description: SMTP - Email name from the 'To' SMTP header
-          type: string
-        - contextPath: Insight.Events.reply_to_name
-          description: SMTP - Email name from the 'Reply To' SMTP header
-          type: string
-        - contextPath: Insight.Events.reply_to_domain
-          description: SMTP - Email domain from the 'Reply To' SMTP header
-          type: string
-        - contextPath: Insight.Events.reply_to_email
-          description: SMTP - Full email address from the 'Reply To' SMTP header
-          type: string
-        - contextPath: Insight.Events.file_bytes
-          description: SMTP - Size of the file in bytes
-          type: number
-        - contextPath: Insight.Events.file_md5
-          description: SMTP - MD5 hash of the file
-          type: string
-        - contextPath: Insight.Events.file_mime_type
-          description: SMTP - MIME type of the file
-          type: string
-        - contextPath: Insight.Events.file_name
-          description: SMTP - Name of the file
-          type: string
-        - contextPath: Insight.Events.file_sha1
-          description: SMTP - SHA1 hash of the file
-          type: string
-        - contextPath: Insight.Events.file_sha256
-          description: SMTP - SHA256 hash of the file
-          type: string
-        - contextPath: Insight.Events.helo_domain
-          description: SMTP - Contents of the 'Helo' SMTP header
-          type: string
-        - contextPath: Insight.Events.helo_domain_entropy
-          description: SMTP - Entropy of the 'Helo' SMTP header contents
-          type: string
-        - contextPath: Insight.Events.path
-          description:
-            SMTP - IP address(es) recorded during the transmission path of
-            the email
-          type: string
-        - contextPath: Insight.Events.x_originating_ip
-          description: SMTP - Contents of the 'x-originating-ip' SMTP header
-          type: string
-        - contextPath: Insight.Events.first_received
-          description: SMTP - Contents of the first 'Received' SMTP header
-          type: string
-        - contextPath: Insight.Events.in_reply_to
-          description: SMTP - Contents of the 'In-Reply-To' SMTP header
-          type: string
-        - contextPath: Insight.Events.is_webmail
-          description: SMTP - Indicates if the message was sent through a webmail interface
-          type: boolean
-        - contextPath: Insight.Events.last_reply
-          description: SMTP - Last message that the server sent to the client
-          type: string
-        - contextPath: Insight.Events.mailfrom
-          description: SMTP - Email address found in the 'From' header
-          type: string
-        - contextPath: Insight.Events.msg_id
-          description: SMTP - Contents of the 'MsgID' SMTP header
-          type: string
-        - contextPath: Insight.Events.rcptto
-          description: SMTP - Email address found in the 'Recipient' SMTP header
-          type: string
-        - contextPath: Insight.Events.second_received
-          description: SMTP - Contents of the second 'Received' SMTP header
-          type: string
-        - contextPath: Insight.Events.subject
-          description:
-            SMTP/SSL - Contents of the 'Subject' SMTP header or Subject of
-            the X509 certificate offered by the server.
-          type: string
-        - contextPath: Insight.Events.tls
-          description: SMTP - Indicates that the connection has switched to using TLS
-          type: boolean
-        - contextPath: Insight.Events.urls
-          description: SMTP - URLs found in the email body
-          type: string
-        - contextPath: Insight.Events.cipher
-          description: SSL - Cipher suite used for encryption in the SSL or Kerberos event
-          type: string
-        - contextPath: Insight.Events.client_issuer
-          description:
-            SSL - Subject of the signer of the X509 certificate offered by
-            the client
-          type: string
-        - contextPath: Insight.Events.client_subject
-          description: SSL - Subject of the X509 certificate offered by the client
-          type: string
-        - contextPath: Insight.Events.issuer
-          description:
-            SSL/X509 - Subject of the signer of the X509 certificate offered
-            by the server.
-          type: string
-        - contextPath: Insight.Events.server_name
-          description:
-            SSL - Value of the server name indicator SSL/TLS extension. Indicates
-            the server that the client was requesting
-          type: string
-        - contextPath: Insight.Events.session_id
-          description:
-            SSL - Session ID offered by the client for session resumption.
-            Not used for logging
-          type: string
-        - contextPath: Insight.Events.validation_status
-          description: SSL - Result of the certificate validation for this connection
-          type: string
-        - contextPath: Insight.Events.version
-          description:
-            SSL - Either the SSL/TLS version for SSL events, the software version
-            for Software events, or the version number for X509 events
-          type: string
-        - contextPath: Insight.Events.ca_constraints
-          description: X509 - CA flag
-          type: boolean
-        - contextPath: Insight.Events.ca_constraints_len
-          description: X509 - Maximum path length
-          type: number
-        - contextPath: Insight.Events.cert_id
-          description: X509 - File ID of the certificate
-          type: string
-        - contextPath: Insight.Events.key_len
-          description: X509 - Key length in bits
-          type: number
-        - contextPath: Insight.Events.key_type
-          description: X509 - Key type, if key parseable by openssl
-          type: string
-        - contextPath: Insight.Events.san_dns
-          description: X509 - List of DNS entries in SAN
-          type: string
-        - contextPath: Insight.Events.san_email
-          description: X509 - List of email entries in SAN
-          type: string
-        - contextPath: Insight.Events.san_ip
-          description: X509 - List of IP entries in SAN
-          type: string
-        - contextPath: Insight.Events.san_uri
-          description: X509 - List of URI entries in SAN
-          type: string
-        - contextPath: Insight.Events.serial
-          description: X509 - Certificate serial number
-          type: string
-        - contextPath: Insight.Events.valid_end
-          description: X509 - Timestamp after when certificate is not valid
-          type: date
-        - contextPath: Insight.Events.valid_start
-          description: X509 - Timestamp before when certificate is not valid
-          type: date
-        - contextPath: Insight.Events.client
-          description:
-            Kerberos/SSH - Name on the ticket for Kerberos events or the clients
-            version string for SSH events
-          type: string
-        - contextPath: Insight.Events.client_cert_fuid
-          description: Kerberos - File unique ID of client certificate
-          type: string
-        - contextPath: Insight.Events.client_cert_subject
-          description: Kerberos - Subject of the client certificate
-          type: string
-        - contextPath: Insight.Events.error_msg
-          description: Kerberos - Additional text to explain the error
-          type: string
-        - contextPath: Insight.Events.forwardable
-          description:
-            Kerberos - The ticket to be issued should have its forwardable
-            flag set
-          type: boolean
-        - contextPath: Insight.Events.renewable
-          description:
-            Kerberos - The ticket to be issued should have its renewable flag
-            set
-          type: boolean
-        - contextPath: Insight.Events.request_type
-          description: Kerberos - The message type (11 for AS_REP, 13 for TGS_REP)
-          type: string
-        - contextPath: Insight.Events.server_cert_fuid
-          description: Kerberos - File unique ID of server certificate
-          type: string
-        - contextPath: Insight.Events.server_cert_subject
-          description: Kerberos - Subject of the server certificate
-          type: string
-        - contextPath: Insight.Events.success
-          description:
-            'Kerberos / NTLM - Request result for Kerberos events or authentication
-            result '
-          type: boolean
-        - contextPath: Insight.Events.ticket_from
-          description: Kerberos - Time the ticket is good from
-          type: date
-        - contextPath: Insight.Events.ticket_till
-          description: Kerberos - Time the ticket is good till
-          type: date
-        - contextPath: Insight.Events.compile_timestamp
-          description: PE - The time that the file was created
-          type: date
-        - contextPath: Insight.Events.file_name
-          description: PE - File name
-          type: string
-        - contextPath: Insight.Events.file_mime_type
-          description: PE - File MIME type
-          type: string
-        - contextPath: Insight.Events.file_md5
-          description: PE - File MD5 hash
-          type: string
-        - contextPath: Insight.Events.file_sha1
-          description: PE - File SHA1 hash
-          type: string
-        - contextPath: Insight.Events.file_sha256
-          description: PE - File SHA256 hash
-          type: string
-        - contextPath: Insight.Events.has_cert_table
-          description: PE - Does the file have an attribute certificate table?
-          type: boolean
-        - contextPath: Insight.Events.has_debug_data
-          description: PE - Does the file have a debug data?
-          type: boolean
-        - contextPath: Insight.Events.has_export_table
-          description: PE - Does the file have an export table?
-          type: boolean
-        - contextPath: Insight.Events.has_import_table
-          description: PE - Does the file have an import table?
-          type: boolean
-        - contextPath: Insight.Events.id
-          description: PE - File ID of the portable executable
-        - contextPath: Insight.Events.is64_bit
-          description: PE - Is the file a 64-bit executable?
-          type: boolean
-        - contextPath: Insight.Events.is_exe
-          description: PE - Is the file an executable or only an object file?
-          type: boolean
-        - contextPath: Insight.Events.machine
-          description: PE - The target machine that the file was compiled for
-          type: string
-        - contextPath: Insight.Events.os
-          description: PE - The required operating system
-          type: string
-        - contextPath: Insight.Events.section_names
-          description: PE - The names of the section in order
-          type: string
-        - contextPath: Insight.Events.subsystem
-          description: PE - The subsystem that is required to run this file
-          type: string
-        - contextPath: Insight.Events.uses_aslr
-          description: PE - Does the file support Address Space Layout Randomization?
-          type: boolean
-        - contextPath: Insight.Events.uses_code_integrity
-          description: PE - Does the file enforce code integrity checks?
-          type: boolean
-        - contextPath: Insight.Events.uses_dep
-          description: PE - Does the file support Data Execution Prevention?
-          type: boolean
-        - contextPath: Insight.Events.uses_seh
-          description: PE - Does the file use structured exception handling?
-          type: boolean
-        - contextPath: Insight.Events.cert_count
-          description: RDP - Number of certificates seen
-          type: number
-        - contextPath: Insight.Events.cert_permanent
-          description:
-            RDP - Indicates if the provided certificate or certificate chain
-            is permanent or temporary
-          type: boolean
-        - contextPath: Insight.Events.cert_type
-          description:
-            RDP - If the connection is being encrypted with native RDP encryption,
-            this is the type of certificate being used
-          type: string
-        - contextPath: Insight.Events.client_build
-          description: RDP - RDP client version used by the client machine
-          type: string
-        - contextPath: Insight.Events.client_dig_product_id
-          description: RDP - Product ID of the client machine
-          type: string
-        - contextPath: Insight.Events.client_name
-          description: RDP - Name of the client machine
-          type: string
-        - contextPath: Insight.Events.cookie
-          description:
-            RDP - Cookie value used by the client machine. This is typically
-            a username
-          type: string
-        - contextPath: Insight.Events.desktop_height
-          description: RDP - Desktop height (in pixels) of the client machine
-          type: number
-        - contextPath: Insight.Events.desktop_width
-          description: RDP - Desktop width (in pixels) of the client machine
-          type: number
-        - contextPath: Insight.Events.encryption_level
-          description: RDP - Encryption level of the connection
-          type: string
-        - contextPath: Insight.Events.encryption_method
-          description: RDP - Encryption method of the connection
-          type: string
-        - contextPath: Insight.Events.keyboard_layout
-          description: RDP - Keyboard layout (language) of the client machine
-          type: string
-        - contextPath: Insight.Events.requested_color_depth
-          description:
-            RDP - The color depth requested by the client in the high_color_depth
-            field
-          type: string
-        - contextPath: Insight.Events.result
-          description:
-            RDP - Status result for the connection. It's a mix between RDP
-            negotiation failure message and GCC server create response messages
-          type: string
-        - contextPath: Insight.Events.security_protocol
-          description: RDP - Security protocol chosen by the server
-          type: string
-        - contextPath: Insight.Events.auth_success
-          description: SSH - Authentication result
-          type: boolean
-        - contextPath: Insight.Events.cipher_alg
-          description: SSH - The encryption algorithm in use
-          type: string
-        - contextPath: Insight.Events.compression_alg
-          description: SSH - The compression algorithm in use
-          type: string
-        - contextPath: Insight.Events.direction
-          description:
-            SSH - Direction of the connection. If the client was a local host
-            logging into an external host, this would be ‘outbound’. ‘Inbound’ would be
-            set for the opposite situation.
-          type: string
-        - contextPath: Insight.Events.host_key
-          description: SSH - The server's key fingerprint
-          type: string
-        - contextPath: Insight.Events.host_key_alg
-          description: SSH - The server host key's algorithm
-          type: string
-        - contextPath: Insight.Events.kex_alg
-          description: SSH - The key exchange algorithm in use
-          type: string
-        - contextPath: Insight.Events.mac_alg
-          description: SSH - The signing (MAC) algorithm in use
-          type: string
-        - contextPath: Insight.Events.server
-          description: SSH - The server's version string
-          type: string
-        - contextPath: Insight.Events.ssh_version
-          description: SSH - Major SSH version number (1 or 2)
-          type: number
-        - contextPath: Insight.Events.host_port
-          description: Software - The port the software used
-          type: number
-        - contextPath: Insight.Events.host_internal
-          description: Software - Is the host internal (true/false)
-          type: boolean
-        - contextPath: Insight.Events.host_asn
-          description: Software - Host ASN (if applicable)
-          type: string
-        - contextPath: Insight.Events.host_geo_city
-          description: Software - Host geolocation (city)
-          type: string
-        - contextPath: Insight.Events.host_geo_country
-          description: Software - Host geolocation (country)
-          type: string
-        - contextPath: Insight.Events.Host.geo.subdivision
-          description: Software - Host geolocation (state/province)
-          type: string
-        - contextPath: Insight.Events.software_type
-          description: Software - The type of software detected
-          type: string
-        - contextPath: Insight.Events.software_name
-          description: Software - Name of the software
-          type: string
-        - contextPath: Insight.Events.software_version_version
-          description: Software - Version name from software_version string
-          type: string
-        - contextPath: Insight.Events.software_version_additional
-          description: Software - Additional text in version string
-          type: string
-        - contextPath: Insight.Events.software_version_version_number
-          description: Software - Version number from software_version string
-          type: string
-        - contextPath: Insight.Events.software_version_major
-          description: Software - Major version number
-          type: number
-        - contextPath: Insight.Events.software_version_minor
-          description: Software - Minor version number
-          type: number
-        - contextPath: Insight.Events.software_version_minor2
-          description: Software - Minor subversion number
-          type: number
-        - contextPath: Insight.Events.software_version_minor3
-          description: Software - Minor updates number
-          type: number
-        - contextPath: Insight.Events.assignment_ip
-          description: DHCP - Client’s actual assigned IP address.
-          type: string
-        - contextPath: Insight.Events.assignment_internal
-          description: DHCP - Is the host internal?
-          type: boolean
-        - contextPath: Insight.Events.assignment_asn
-          description: DHCP - Host ASN (if applicable)
-          type: string
-        - contextPath: Insight.Events.assignment_geo_city
-          description: DHCP - Host geolocation (city)
-          type: string
-        - contextPath: Insight.Events.assignment_geo_country
-          description: DHCP - Host geolocation (country)
-          type: string
-        - contextPath: Insight.Events.Assignment.geo.subdivision
-          description: DHCP - Host geolocation (state/province)
-          type: string
-        - contextPath: Insight.Events.hostname
-          description:
-            DHCP / NTLM - The value of the DHCP host name option for DHCP events,
-            or the hostname given by the client for NTLM events
-          type: string
-        - contextPath: Insight.Events.mac
-          description: DHCP - Client’s hardware address.
-          type: string
-        - contextPath: Insight.Events.lease_duration
-          description:
-            DHCP - The duration of the dhcp lease in seconds (converted to
-            minutes / hours / days in the event table)
-          type: number
-        - contextPath: Insight.Events.dhcp_msg_type
-          description: DHCP - The type of dhcp message
-          type: string
-        - contextPath: Insight.Events.sig_category
-          description: Suricata - Signature category
-          type: string
-        - contextPath: Insight.Events.sig_id
-          description: Suricata - Signature unique ID
-          type: number
-        - contextPath: Insight.Events.sig_name
-          description: Suricata - Signature name
-          type: string
-        - contextPath: Insight.Events.sig_rev
-          description: Suricata - Signature revision/version
-          type: number
-        - contextPath: Insight.Events.sig_severity
-          description: 'Suricata - Signature severity '
-          type: number
-        - contextPath: Insight.Events.Http.hostname
-          description: Suricata - The hostname this HTTP event is attributed to
-          type: string
-        - contextPath: Insight.Events.Http.method
-          description: Suricata - Verb used in the HTTP request
-          type: string
-        - contextPath: Insight.Events.Http.protocol
-          description: Suricata - Protocol / Version of HTTP
-          type: string
-        - contextPath: Insight.Events.Http.redirect
-          description: Suricata - Redirect domain, if one exists
-          type: string
-        - contextPath: Insight.Events.Http.referrer
-          description: Suricata - The referrer for this action
-          type: string
-        - contextPath: Insight.Events.Http.response_len
-          description: Suricata - The content size of the HTTP body (bytes)
-          type: number
-        - contextPath: Insight.Events.Http.response_mime
-          description:
-            Suricata - MIME-type for the server response, identifying the format
-            of the returned file.
-          type: string
-        - contextPath: Insight.Events.Http.status
-          description:
-            Suricata - Status code returned by the server indicating the result
-            of the request.
-          type: number
-        - contextPath: Insight.Events.Http.uri
-          description: Suricata - URI of the response
-          type: string
-        - contextPath: Insight.Events.Http.user_agent
-          description: Suricata - User agent for http response
-          type: string
-        - contextPath: Insight.Events.Http.xff
-          description: Suricata - X-Forwarded-For header
-          type: string
-        - contextPath: Insight.Events.smb_action
-          description: SMB_File - SMB command
-          type: string
-        - contextPath: Insight.Events.smb_service
-          description:
-            SMB_Mapping - The type of resource of the tree (disk share, printer
-            share, named pipe, etc.)
-          type: string
-        - contextPath: Insight.Events.native_file_system
-          description: SMB_Mapping - File system of the tree
-          type: string
-        - contextPath: Insight.Events.share_type
-          description:
-            SMB_Mapping - If this is SMB2, a share type will be included. For
-            SMB1, the type of share will be deduced and included as well
-          type: string
-        - contextPath: Insight.Events.auth_domain_domain
-          description: NTLM - Domain name given by the client
-          type: string
-        - contextPath: Insight.Events.ntlm_status
-          description:
-            NTLM - Status code that was returned in response to the authentication
-            attempt
-          type: string
-        - contextPath: Insight.Events.tunnel_action
-          description: Tunnel - The type of activity that occurred
-          type: string
-        - contextPath: Insight.Events.tunnel_type
-          description: Tunnel - The type of tunnel
-          type: string
-        - contextPath: Insight.Events.data_channel_dst_asn_asn
-          description: FTP - Destination autonomous system number
-          type: number
-        - contextPath: Insight.Events.data_channel_dst_asn_asn_org
-          description: FTP - Destination ASN organization
-          type: string
-        - contextPath: Insight.Events.data_channel_dst_asn_isp
-          description: FTP - Destination ASN internet service provider
-          type: string
-        - contextPath: Insight.Events.data_channel_dst_asn_org
-          description: FTP - Destination ASN organization
-          type: string
-        - contextPath: Insight.Events.data_channel_dst_geo_city
-          description: FTP - Destination geolocation (city)
-          type: string
-        - contextPath: Insight.Events.data_channel_dst_geo_country
-          description: FTP - Destination geolocation (country)
-          type: string
-        - contextPath: Insight.Events.data_channel_dst_geo_subdivision
-          description: FTP - Destination geolocation (state/province)
-          type: string
-        - contextPath: Insight.Events.data_channel_dst_internal
-          description: FTP - Destination IP is internal?
-          type: boolean
-        - contextPath: Insight.Events.data_channel_dst_ip
-          description: FTP - Destination IP address
-          type: string
-        - contextPath: Insight.Events.data_channel_dst_port
-          description: FTP - Destination port
-          type: number
-        - contextPath: Insight.Events.data_channel_geo_distance
-          description:
-            FTP - Distance between src and dst entities. Nautical miles by
-            default, now supports miles
-        - contextPath: Insight.Events.data_channel_passive
-          description: FTP - Indicates if the session is in active or passive mode
-          type: boolean
-        - contextPath: Insight.Events.data_channel_src_asn
-          description: FTP - Source autonomous system number
-          type: number
-        - contextPath: Insight.Events.data_channel_src_asn_asn_org
-          description: FTP - Source ASN organization
-          type: string
-        - contextPath: Insight.Events.data_channel_src_asn_isp
-          description: FTP - Source ASN internet service provider
-          type: string
-        - contextPath: Insight.Events.data_channel_src_asn_org
-          description: FTP - Source ASN organization
-          type: string
-        - contextPath: Insight.Events.data_channel_src_geo_city
-          description: FTP - Source geolocation (city)
-          type: string
-        - contextPath: Insight.Events.data_channel_src_geo_country
-          description: FTP - Source geolocation (country)
-          type: string
-        - contextPath: Insight.Events.data_channel_src_geo_subdivision
-          description: FTP - Source geolocation (state/province)
-          type: string
-        - contextPath: Insight.Events.data_channel_src_internal
-          description: FTP - Source IP is internal?
-          type: boolean
-        - contextPath: Insight.Events.data_channel_src_ip
-          description: FTP - Source IP address
-          type: string
-        - contextPath: Insight.Events.ftp_command
-          description: FTP - Command given by the client
-          type: string
-        - contextPath: Insight.Events.ftp_arg
-          description: FTP - Argument for the command if one is given
-          type: string
-        - contextPath: Insight.Events.reply_code
-          description: FTP - Reply code from the server in response to the command
-          type: string
-        - contextPath: Insight.Events.reply_msg
-          description: "FTP - \tReply message from the server in response to the command"
-          type: string
-        - contextPath: Insight.Events.dce_rpc_endpoint
-          description: DCE_RPC - Endpoint name
-          type: string
-        - contextPath: Insight.Events.dce_rpc_operation
-          description: DCE_RPC - Operation seen in the call
-          type: string
-        - contextPath: Insight.Events.named_pipe
-          description: DCE_RPC - Remote pipe name
-          type: string
-        - contextPath: Insight.Events.round_trip_time
-          description:
-            DCE_RPC - Round trip time from the request to the response, in
-            seconds
-          type: number
-        - contextPath: Insight.Events.assignment_geo_location_lat
-          description: DHCP - Latitude of assigned IP
-          type: number
-        - contextPath: Insight.Events.assignment_geo_location_lon
-          description: DHCP - Longitude of assigned IP
-          type: number
-        - contextPath: Insight.Events.assignment_geo_subdivision
-          description: DHCP - Geolocation subdivision of assigned IP
-          type: string
-        - contextPath: Insight.Events.auth_domain_domain_entropy
-          description: NTLM - Entropy of the domain used to authenticate the client
-          type: number
-        - contextPath: Insight.Events.aws
-          description: AWS Headers
-          type: string
-        - contextPath: Insight.Events.data_channel
-          description: FTP - Data Channel data
-          type: string
-        - contextPath: Insight.Events.data_channel_dst_geo_location_lat
-          description: FTP - Latitude of the destination IP
-          type: number
-        - contextPath: Insight.Events.data_channel_dst_geo_location_lon
-          description: FTP - Longitude of the destination IP
-          type: number
-        - contextPath: Insight.Events.data_channel_src_geo_location_lat
-          description: FTP - Latitude of the source IP
-          type: number
-        - contextPath: Insight.Events.data_channel_src_geo_location_lon
-          description: FTP - Longitude of the source IP
-          type: number
-        - contextPath: Insight.Events.dst_asn
-          description: Destination Autonomous System Number
-          type: string
-        - contextPath: Insight.Events.dst_asn_asn
-          description: Destination Autonomous System Number
-          type: string
-        - contextPath: Insight.Events.dst_asn_asn_org
-          description: Destination ASN Organization
-          type: string
-        - contextPath: Insight.Events.dst_asn_isp
-          description: Destination ASN ISP
-          type: string
-        - contextPath: Insight.Events.dst_asn_org
-          description: Destination ASN Organization
-          type: string
-        - contextPath: Insight.Events.dst_geo
-          description: Destination Geolocation
-          type: string
-        - contextPath: Insight.Events.dst_geo_city
-          description: Destination City
-          type: string
-        - contextPath: Insight.Events.dst_geo_country
-          description: Destination Country
-          type: string
-        - contextPath: Insight.Events.dst_geo_location_lat
-          description: Destination Latitude
-          type: number
-        - contextPath: Insight.Events.dst_geo_location_lon
-          description: Destination Longitude
-          type: number
-        - contextPath: Insight.Events.dst_geo_subdivision
-          description: Destination Subdivision
-          type: string
-        - contextPath: Insight.Events.dst_internal
-          description: Destination Internal (true/false)
-          type: boolean
-        - contextPath: Insight.Events.dst_ip_bytes
-          description: Bytes transmitted by the destination IP
-          type: number
-        - contextPath: Insight.Events.dst_pkts
-          description: Packets transmitted by the destination IP
-          type: number
-        - contextPath: Insight.Events.event_type
-          description: Event Type
-          type: string
-        - contextPath: Insight.Events.files
-          description: File Data
-          type: string
-        - contextPath: Insight.Events.headers_accept
-          description: HTTP - The content of the Accept header
-          type: string
-        - contextPath: Insight.Events.headers_content_md5
-          description: HTTP - The computed MD5 hash of the headers content
-          type: string
-        - contextPath: Insight.Events.headers_content_type
-          description: HTTP - The contents of the Content Type header
-          type: string
-        - contextPath: Insight.Events.headers_cookie_length
-          description: HTTP - The length of the cookie in bytes
-          type: number
-        - contextPath: Insight.Events.headers_location
-          description: HTTP - The content of the location headers
-          type: string
-        - contextPath: Insight.Events.headers_location_fragment
-          description: The fragment identifier component
-          type: string
-        - contextPath: Insight.Events.headers_location_host_domain
-          description: The domain
-          type: string
-        - contextPath: Insight.Events.headers_location_host_domain_entropy
-          description: The computed Shannon entropy of the domain
-          type: number
-        - contextPath: Insight.Events.headers_location_path
-          description: The path of the requested resource
-          type: string
-        - contextPath: Insight.Events.headers_location_port
-          description: The specified port
-          type: number
-        - contextPath: Insight.Events.headers_location_query
-          description: The full parameter string
-          type: string
-        - contextPath: Insight.Events.headers_location_scheme
-          description: The specified scheme
-          type: string
-        - contextPath: Insight.Events.headers_location_uri
-          description: The full URI
-          type: string
-        - contextPath: Insight.Events.headers_origin
-          description: HTTP - The content of the Origin header
-          type: string
-        - contextPath: Insight.Events.headers_proxied_client_ips
-          description: HTTP - The sequence of IPs the HTTP connection is proxied through
-          type: string
-        - contextPath: Insight.Events.headers_refresh
-          description: HTTP - The full content of the Refresh header
-          type: string
-        - contextPath: Insight.Events.headers_server
-          description: HTTP - The web server software
-          type: string
-        - contextPath: Insight.Events.headers_x_powered_by
-          description: HTTP - The application software running on the server
-          type: string
-        - contextPath: Insight.Events.host_domain_entropy
-          description: The computed Shannon entropy of the domain
-          type: number
-        - contextPath: Insight.Events.host_geo_location_lat
-          description: Latitude of the host
-          type: number
-        - contextPath: Insight.Events.host_geo_location_lon
-          description: Longitude of the host
-          type: number
-        - contextPath: Insight.Events.host_geo_subdivision
-          description: Subdivision of the host
-          type: string
-        - contextPath: Insight.Events.http
-          description: HTTP data
-          type: string
-        - contextPath: Insight.Events.ja3
-          description: SSL - The computed JA3 hash for the client
-          type: string
-        - contextPath: Insight.Events.ja3s
-          description: SSL - The computed JA3 hash of the server
-          type: string
-        - contextPath: Insight.Events.lease_end
-          description: DHCP - The time at which the lease expires
-          type: date
-        - contextPath: Insight.Events.path
-          description: The path of the requested resource
-          type: string
-        - contextPath: Insight.Events.payload
-          description:
-            "Suricata - \tThe raw payload from the traffic that matched the
-            signature"
-          type: string
-        - contextPath: Insight.Events.query_domain_entropy
-          description: The computed Shannon entropy of the domain
-          type: number
-        - contextPath: Insight.Events.request_mimes
-          description:
-            HTTP - The fingerprinted MIME-type(s) of the request content, use
-            instead of request_mime
-          type: string
-        - contextPath: Insight.Events.response_mimes
-          description:
-            HTTP - The fingerprinted MIME-type of the response content, use
-            instead of response_mime
-          type: string
-        - contextPath: Insight.Events.server_name_indication_domain
-          description: The enriched Server Name Indication set by the client
-          type: string
-        - contextPath: Insight.Events.server_name_indication_domain_entropy
-          description: The computed Shannon entropy of the domain
-          type: number
-        - contextPath: Insight.Events.smb_path_path
-          description: SMB - The full network path to the target share
-          type: string
-        - contextPath: Insight.Events.smb_path_share
-          description: SMB - The target network share
-          type: string
-        - contextPath: Insight.Events.smb_path_system
-          description: SMB - The target host
-          type: string
-        - contextPath: Insight.Events.src_asn
-          description: Source Autonomous System Number
-          type: string
-        - contextPath: Insight.Events.src_asn_asn
-          description: Source Autonomous System Number
-          type: string
-        - contextPath: Insight.Events.src_asn_asn_org
-          description: Source ASN Org
-          type: string
-        - contextPath: Insight.Events.src_asn_isp
-          description: Source ASN ISP
-          type: string
-        - contextPath: Insight.Events.src_asn_org
-          description: Source ASN Org
-          type: string
-        - contextPath: Insight.Events.src_geo
-          description: Source Geolocation
-          type: string
-        - contextPath: Insight.Events.src_geo_city
-          description: Source City
-          type: string
-        - contextPath: Insight.Events.src_geo_country
-          description: Source Country
-          type: string
-        - contextPath: Insight.Events.src_geo_location_lat
-          description: Source Latitude
-          type: number
-        - contextPath: Insight.Events. src_geo_location_lon
-          description: Source Longitude
-          type: number
-        - contextPath: Insight.Events.src_geo_subdivision
-          description: Source Subdivision
-          type: string
-        - contextPath: Insight.Events.src_internal
-          description: Source Internal (true/false)
-          type: boolean
-        - contextPath: Insight.Events.src_ip_bytes
-          description: Bytes transmitted from the source
-          type: number
-        - contextPath: Insight.Events.src_pkts
-          description: Packets transmitted from the source
-          type: number
-        - contextPath: Insight.Events.ticket_duration
-          description: Kerberos - The ticket duration in seconds
-          type: number
-        - contextPath: Insight.Events.trans_id
-          description: DHCP - The transaction ID, ties together requests and acknowledgements
-          type: string
-        - contextPath: Insight.Events.upload_percent
-          description:
-            The percentage of bytes transmitted by the src for the flow (56%
-            == 56)
-          type: string
-        - contextPath: Insight.Events.uri_fragment
-          description: The fragment identifier component
-          type: string
-        - contextPath: Insight.Events.uri_host
-          description: The content of the Host header
-          type: string
-        - contextPath: Insight.Events.uri_path
-          description: The path of the requested resource
-          type: string
-        - contextPath: Insight.Events.uri_port
-          description: The specified port
-          type: number
-        - contextPath: Insight.Events.uri_query
-          description: The full parameter string
-          type: string
-        - contextPath: Insight.Events.uri_scheme
-          description: The specified scheme
-          type: string
-        - contextPath: Insight.Events.uri_uri
-          description: The full URI
-          type: string
-        - contextPath: Insight.Events.uri_params
-          description: The HTTP parameters as an array of key-value pairs
-          type: string
-        - contextPath: Insight.Events.count
-          description:
-            The number of events for the matching event aggregation group by
-            field
-          type: number
-        - contextPath: Insight.Events.total
-          description: Total number of events returned
-          type: number
-      description:
-        Perform a search for network events (using the Insight Query Language)
-        and import those events.
-    - name: insight-get-history
-      arguments: []
-      outputs:
-        - contextPath: Insight.UserQueryHistory.total
-          description: Total number of events that matched the query
-          type: number
-        - contextPath: Insight.UserQueryHistory.timestamp
-          description: Date when the query was performed
-          type: date
-        - contextPath: Insight.UserQueryHistory.query
-          description: IQL Query
-          type: string
-        - contextPath: Insight.UserQueryHistory.id
-          description: Unique ID of the query
-          type: string
-      description: Get user's query history.
-    - name: insight-get-saved-searches
-      arguments: []
-      outputs:
-        - contextPath: Insight.SavedSearches.tags
-          description: Labels for the saved search
-          type: string
-        - contextPath: Insight.SavedSearches.description
-          description: Description of the saved search
-          type: string
-        - contextPath: Insight.SavedSearches.title
-          description: Title of the saved search
-          type: string
-        - contextPath: Insight.SavedSearches.timestamp
-          description: Date when the search was saved
-          type: date
-        - contextPath: Insight.SavedSearches.query
-          description: Query of the saved search
-          type: string
-        - contextPath: Insight.SavedSearches.id
-          description: Unique ID of the saved search
-          type: string
-      description: Get user's saved searches.
-    - name: insight-get-sensors
-      arguments:
-        - name: account_uuid
-          description: UUID of account to filter by.
-        - name: account_code
-          description: Account code to fiilter by.
-        - name: sensor_id
-          description: ID of the sensor to filter by.
-      outputs:
-        - contextPath: Insight.Sensors.created
-          description: Date when the sensor was created
-          type: date
-        - contextPath: Insight.Sensors.city
-          description: City where the sensor is located
-          type: string
-        - contextPath: Insight.Sensors.subdivison
-          description: State/Province where the sensor is located
-          type: string
-        - contextPath: Insight.Sensors.sensor_id
-          description: ID code of the sensor
-          type: string
-        - contextPath: Insight.Sensors.location
-          description: Latitude and longitude where the sensor is located
-          type: string
-        - contextPath: Insight.Sensors.tags
-          description: Labels added for this sensor
-          type: string
-        - contextPath: Insight.Sensors.country
-          description: Country where the sensor is located
-          type: string
-        - contextPath: Insight.Sensors.account_code
-          description: ID code of the customer account
-          type: string
-        - contextPath: Insight.Sensors.updated
-          description: Date when the sensor was last updated
-          type: date
-        - contextPath: Insight.Sensors.pcap_enabled
-          description: If PCAP is enabled on the sensor (true/false)
-          type: boolean
-      description: Get a list of all sensors.
-    - name: insight-get-devices
-      arguments:
-        - name: start_date
-          description: Filter devices based on when they were seen.
-        - name: end_date
-          description: Filter devices based on when they were seen.
-        - name: cidr
-          description: Filter devices that are under a specific CIDR.
-        - name: sensor_id
-          description: Filter devices that were observed by a specific sensor.
-        - name: traffic_direction
-          description:
-            Filter devices that have been noted to only have a certain directionality
-            of traffic ("external" vs "internal").
-        - name: sort_by
-          description: 'Sort output by: "ip", "internal", "external".'
-        - name: sort_direction
-          description: Sort direction ("asc" vs "desc").
-      outputs:
-        - contextPath: Insight.Devices.date
-          description: Date when the device was first seen
-          type: date
-        - contextPath: Insight.Devices.external
-          description: If external traffic has been observed for this device
-          type: boolean
-        - contextPath: Insight.Devices.internal
-          description: If internal traffic has been observed for this device
-          type: boolean
-        - contextPath: Insight.Devices.ip_address
-          description: IP address of the device
-          type: string
-        - contextPath: Insight.Devices.sensor_id
-          description: ID code of the sensor
-          type: string
-      description: Get a list of all devices.
-    - name: insight-get-tasks
-      arguments:
-        - name: task_uuid
-          description: Filter to a specific task.
-      outputs:
-        - contextPath: Insight.Tasks.task_uuid
-          description: Unique ID of the task
-          type: string
-        - contextPath: Insight.Tasks.actual_start_time
-          description: Date when the task actually ended
-          type: date
-        - contextPath: Insight.Tasks.requested_start_time
-          description: Requested date for the task start
-          type: date
-        - contextPath: Insight.Tasks.updated_email
-          description: Email address of the user that updated the task
-          type: string
-        - contextPath: Insight.Tasks.created_uuid
-          description: Unique ID of the user that created the task
-          type: string
-        - contextPath: Insight.Tasks.created
-          description: Date when the task was created
-          type: date
-        - contextPath: Insight.Tasks.name
-          description: Name of the task
-          type: string
-        - contextPath: Insight.Tasks.status
-          description: Current status of the task
-          type: string
-        - contextPath: Insight.Tasks.created_email
-          description: Email address of the user that created the task
-          type: string
-        - contextPath: Insight.Tasks.updated_uuid
-          description: Unique ID of the user that updated the task
-          type: string
-        - contextPath: Insight.Tasks.bpf
-          description: Berkeley Packet Filter for the task
-          type: string
-        - contextPath: Insight.Tasks.actual_end_time
-          description: Date when the task actually ended
-          type: date
-        - contextPath: Insight.Tasks.account_code
-          description: ID code of the customer account
-          type: string
-        - contextPath: Insight.Tasks.requested_end_time
-          description: Requested date for the task end
-          type: date
-        - contextPath: Insight.Tasks.updated
-          description: Date when the task was updated
-          type: date
-        - contextPath: Insight.Tasks.description
-          description: Description of the task
-          type: string
-        - contextPath: Insight.Tasks.has_files
-          description: If this task has files (true/false)
-          type: boolean
-        - contextPath: Insight.Tasks.sensor_ids
-          description: Sensors this task is running on
-          type: string
-        - contextPath: Insight.Tasks.files
-          description: Files captured for this task
-          type: string
-      description: Get a list of all the PCAP tasks.
-    - name: insight-create-task
-      arguments:
-        - name: name
-          required: true
-          description: The name of the task.
-        - name: account_uuid
-          required: true
-          description: Account where the task will be created.
-        - name: description
-          required: true
-          description: A description for the task.
-        - name: bpf
-          required: true
-          description: The Berkeley Packet Filter for capture filtering.
-        - name: requested_start_date
-          required: true
-          description: The date the task will become active. (2019-01-30T00:00:00.000Z)
-        - name: requested_end_date
-          required: true
-          description: The date the task will become inactive. (2019-12-31T23:59:59.000Z)
-        - name: sensor_ids
-          required: true
-          description:
-            Sensor IDs on which this task will run (separate multiple accounts
-            by comma).
-      description: Create a new PCAP task.
-    - name: insight-get-detections
-      arguments:
-        - name: rule_uuid
-          description: Filter to a specific rule.
-        - name: account_uuid
-          description:
-            For those with access to multiple accounts, specify a single account
-            to return results from.
-        - name: status
-          description: 'Filter by detection status: active / resolved.'
-        - name: device_ip
-          description: Device IP to filter by.
-        - name: sensor_id
-          description: Sensor ID to filter by.
-        - name: muted
-          description: 'List detections that a user muted: true / false.'
-        - name: muted_device
-          description: 'List detections for muted devices: true / false.'
-        - name: muted_rule
-          description: List detections for muted rules.
-        - name: include
-          auto: PREDEFINED
-          predefined:
-            - rules
-          description: Include additional information in the response (rules).
-        - name: created_or_shared_start_date
-          description: Created or shared start date to filter by (inclusive).
-        - name: created_or_shared_end_date
-          description: Created or shared start date to filter by (exclusive).
-        - name: sort_by
-          description: 'Sort output by: "ip", "internal", "external".'
-        - name: sort_order
-          description: Sort direction ("asc" vs "desc").
-        - name: offset
-          description: The number of records to skip past.
-        - name: limit
-          description: 'The number of records to return, default: 100, max: 1000.'
-          defaultValue: '1000'
-      outputs:
-        - contextPath: Insight.Detections.muted_rule
-          description: Is this rule muted (true/false)
-          type: boolean
-        - contextPath: Insight.Detections.created
-          description: Date when the detection was created
-          type: date
-        - contextPath: Insight.Detections.account_uuid
-          description: Unique ID of the account for this detection
-        - contextPath: Insight.Detections.resolution_timestamp
-          description: Date when the detection was resolved
-          type: date
-        - contextPath: Insight.Detections.first_seen
-          description: Date when the detection was first seen
-          type: date
-        - contextPath: Insight.Detections.muted
-          description: If the detection is muted or not (true/false)
-          type: boolean
-        - contextPath: Insight.Detections.resolution
-          description: Resolution type
-          type: string
-        - contextPath: Insight.Detections.muted_user_uuid
-          description: Unique ID of the user that muted the detection
-          type: string
-        - contextPath: Insight.Detections.last_seen
-          description: Date when the detection was last seen
-          type: date
-        - contextPath: Insight.Detections.status
-          description: Current status of the detection
-          type: string
-        - contextPath: Insight.Detections.resolution_user_uuid
-          description: Unique identifier of the user that resolved the detection
-          type: string
-        - contextPath: Insight.Detections.resolution_comment
-          description: Comment entered when detection was resolved
-          type: string
-        - contextPath: Insight.Detections.muted_comment
-          description: Comment entered when detection was muted
-          type: string
-        - contextPath: Insight.Detections.sensor_id
-          description: ID code of the sensor
-          type: string
-        - contextPath: Insight.Detections.rule_uuid
-          description: Unique ID of the rule for this detection
-          type: string
-        - contextPath: Insight.Detections.updated
-          description: Date when the detection was last updated
-          type: date
-        - contextPath: Insight.Detections.uuid
-          description: Unique ID of the detection
-          type: string
-        - contextPath: Insight.Detections.muted_device_uuid
-          description: Unique ID of the muted device
-          type: string
-        - contextPath: Insight.Detections.device_ip
-          description: IP address of the detection
-          type: string
-      description: Get a list of detections.
-    - name: insight-get-detection-rules
-      arguments:
-        - name: search
-          description: Filter name or category.
-        - name: account_uuid
-          description:
-            For those with access to multiple accounts, specify a single account
-            to return results from.
-        - name: has_detections
-          auto: PREDEFINED
-          predefined:
-            - 'true'
-            - 'false'
-          description: Include rules that have unmuted, unresolved detections.
-        - name: severity
-          auto: PREDEFINED
-          predefined:
-            - low
-            - moderate
-            - high
-          description: 'Filter by severity: high, moderate, low.'
-        - name: confidence
-          auto: PREDEFINED
-          predefined:
-            - low
-            - moderate
-            - high
-          description: 'Filter by confidence: high, moderate, low.'
-        - name: category
-          auto: PREDEFINED
-          predefined:
-            - Attack:Command and Control
-            - Attack:Exploitation
-            - Attack:Exfiltration
-            - Attack:Installation
-            - Attack:Lateral Movement
-            - Attack:Infection Vector
-            - Attack:Miscellaneous
-            - Miscellaneous
-            - Posture:Anomalous Activity
-            - Posture:Insecure Configuration
-            - Posture:Potentially Unauthorized Software or Device
-            - Posture:Miscellaneous
-            - PUA:Adware
-            - PUA:Spyware
-            - PUA:Unauthorized Resource Use
-            - PUA:Miscellaneous
-          description: Category to filter by.
-        - name: rule_account_muted
-          auto: PREDEFINED
-          predefined:
-            - 'true'
-            - 'false'
-          description: 'Include muted rules: true / false.'
-        - name: enabled
-          auto: PREDEFINED
-          predefined:
-            - 'true'
-            - 'false'
-          description: Enabled rules only
-        - name: sort_by
-          auto: PREDEFINED
-          predefined:
-            - ip
-            - internal
-            - external
-          description: 'Sort output by: "ip", "internal", "external".'
-        - name: sort_order
-          auto: PREDEFINED
-          predefined:
-            - asc
-            - desc
-          description: Sort direction ("asc" vs "desc").
-        - name: offset
-          description: The number of records to skip past.
-        - name: limit
-          description: 'The number of records to return, default: 100, max: 1000.'
-      outputs:
-        - contextPath: Insight.Rules.enabled
-          description: 'Status of the rule: If true it is enabled, if false it is disabled.'
-          type: boolean
-        - contextPath: Insight.Rules.updated_user_uuid
-          description: User ID that updated the rule
-          type: string
-        - contextPath: Insight.Rules.rule_accounts
-          description: Accounts which have seen detections for this rule
-          type: string
-        - contextPath: Insight.Rules.auto_resolution_minutes
-          description: Length of time (in minutes) the rule will auto-resolve detections
-          type: number
-        - contextPath: Insight.Rules.created
-          description: Date the rule was created
-          type: date
-        - contextPath: Insight.Rules.account_uuid
-          description: Account ID the rule was created under
-          type: string
-        - contextPath: Insight.Rules.confidence
-          description: Confidence level of the rule
-          type: string
-        - contextPath: Insight.Rules.name
-          description: Name of the rule
-          type: string
-        - contextPath: Insight.Rules.created_user_uuid
-          description: User ID that created the rule
-          type: string
-        - contextPath: Insight.Rules.query_signature
-          description: IQL signature of the rule
-          type: string
-        - contextPath: Insight.Rules.shared_account_uuids
-          description: Account IDs the rule is visible to
-          type: string
-        - contextPath: Insight.Rules.run_account_uuids
-          description: Account IDs the rule runs on
-          type: string
-        - contextPath: Insight.Rules.updated
-          description: Date the rule was updated
-          type: date
-        - contextPath: Insight.Rules.uuid
-          description: Unique ID of the rule
-          type: string
-        - contextPath: Insight.Rules.description
-          description: Description of the rule
-          type: string
-        - contextPath: Insight.Rules.severity
-          description: Severity level of the rule
-          type: string
-        - contextPath: Insight.Rules.category
-          description: Category of the rule
-          type: string
-      description: Get a list of detection rules.
-    - name: insight-resolve-detection
-      arguments:
-        - name: detection_uuid
-          required: true
-          description: Detection UUID to resolve
-        - name: resolution
-          required: true
-          auto: PREDEFINED
-          predefined:
-            - true_positive_mitigated
-            - true_positive_no_action
-            - false_positive
-            - unknown
-          description:
-            'Resolution state. Options: true_positive_mitigated, true_posititve_no_action,
-            false_positive, unknown'
-        - name: resolution_comment
-          description: Optional comment for the resolution.
-      description: Resolve a specific detection.
-    - name: insight-get-detection-rule-events
-      arguments:
-        - name: rule_uuid
-          required: true
-          description: Rule UUID to get events for
-        - name: offset
-          description: The number of records to skip past
-        - name: limit
-          description: 'The number of records to return, default: 100, max: 1000.'
-      outputs:
-        - contextPath: Insight.Events.src_ip
-          description: Source IP address
-          type: string
-        - contextPath: Insight.Events.dst_ip
-          description: Destination IP address
-          type: string
-        - contextPath: Insight.Events.src_port
-          description: Source port number
-          type: number
-        - contextPath: Insight.Events.dst_port
-          description: Destination port number
-          type: number
-        - contextPath: Insight.Events.host_domain
-          description: Domain name
-          type: string
-        - contextPath: Insight.Events.flow_id
-          description: Unique ID of the flow record
-          type: string
-        - contextPath: Insight.Events.event_type
-          description: Event type
-          type: string
-        - contextPath: Insight.Events.sensor_id
-          description: ID code of the sensor
-          type: string
-        - contextPath: Insight.Events.timestamp
-          description: Date the event occurred
-          type: date
-        - contextPath: Insight.Events.customer_id
-          description: ID code of the customer account
-          type: string
-        - contextPath: Insight.Events.uuid
-          description: Unique ID for the event
-          type: string
-      description: Get a list of the events that matched on a specific rule.
-    - name: insight-create-detection-rule
-      arguments:
-        - name: account_uuid
-          required: true
-          description: Account where the rule will be created.
-        - name: name
-          required: true
-          description: The name of the rule.
-        - name: category
-          required: true
-          auto: PREDEFINED
-          predefined:
-            - Attack:Command and Control
-            - Attack:Exploitation
-            - Attack:Exfiltration
-            - Attack:Installation
-            - Attack:Lateral Movement
-            - Attack:Infection Vector
-            - Attack:Miscellaneous
-            - Miscellaneous
-            - Posture:Anomalous Activity
-            - Posture:Insecure Configuration
-            - Posture:Potentially Unauthorized Software or Device
-            - Posture:Miscellaneous
-            - PUA:Adware
-            - PUA:Spyware
-            - PUA:Unauthorized Resource Use
-            - PUA:Miscellaneous
-          description: The category of the rule.
-        - name: query_signature
-          required: true
-          description: The IQL query for the rule.
-        - name: description
-          required: true
-          description: A description for the rule.
-        - name: severity
-          required: true
-          auto: PREDEFINED
-          predefined:
-            - low
-            - moderate
-            - high
-          description: The severity of the rule.
-        - name: confidence
-          required: true
-          auto: PREDEFINED
-          predefined:
-            - low
-            - moderate
-            - high
-          description: The confidence of the rule.
-        - name: run_account_uuids
-          required: true
-          description:
-            Account UUIDs on which this rule will run. This will usually be
-            just your own account UUID. (separate multiple accounts by comma)
-        - name: auto_resolution_minutes
-          description:
-            The number of minutes after which detections will be auto-resolved.
-            If 0 then detections have to be manually resolved.
-        - name: device_ip_fields
-          required: true
-          auto: PREDEFINED
-          predefined:
-            - DEFAULT
-            - src.ip
-            - dst.ip
-            - dhcp:assignment.ip
-            - dns:answers.ip
-            - http:host.ip
-            - http:uri.host.ip
-            - http:referrer.host.ip
-            - http:headers.location.host.ip
-            - http:headers.origin.host.ip
-            - http:headers.proxied_client_ips.ip
-            - http:headers.refresh.uri.host.ip
-            - smtp:helo.ip
-            - smtp:x_originating_ip.ip
-            - smtp:path.ip
-            - software:host.ip
-            - ssl:server_name_indication.ip
-            - suricata:http.host.ip
-            - x509:san_dns.ip
-            - x509:san_ip.ip
-          description: List of event fields to check for impacted devices
-      description: Create a new detection rule.
-    - name: insight-get-entity-summary
-      arguments:
-        - name: entity
-          required: true
-          description: IP or Domain to get entity data for.
-      outputs:
-        - contextPath: Insight.Entity.Summary.entity
-          description: Entity identifier
-          type: string
-        - contextPath: Insight.Entity.Summary.first_seen
-          description: First seen date for this entity
-          type: date
-        - contextPath: Insight.Entity.Summary.last_seen
-          description: Last seen date for this entity
-          type: date
-        - contextPath: Insight.Entity.Summary.prevalence_count_internal
-          description: Prevalence for this entity within the environment
-          type: number
-      description: Get summary information about an IP or domain.
-    - name: insight-get-entity-pdns
-      arguments:
-        - name: entity
-          required: true
-          description: IP or Domain to get passive DNS data for.
-      outputs:
-        - contextPath: Insight.Entity.PDNS.account_uuid
-          description: Unique ID for the customer account
-          type: string
-        - contextPath: Insight.Entity.PDNS.first_seen
-          description: First seen date for matching dns information
-          type: date
-        - contextPath: Insight.Entity.PDNS.last_seen
-          description: Last seen date for matching dns information
-          type: date
-        - contextPath: Insight.Entity.PDNS.record_type
-          description: DNS record type
-          type: string
-        - contextPath: Insight.Entity.PDNS.resolved
-          description: Domain name resolved from the DNS record
-          type: string
-        - contextPath: Insight.Entity.PDNS.sensor_id
-          description: ID code of the sensor
-          type: string
-        - contextPath: Insight.Entity.PDNS.source
-          description: Source of the DNS record
-          type: string
-      description: Get passive DNS information about an IP or domain.
-    - name: insight-get-entity-dhcp
-      arguments:
-        - name: entity
-          required: true
-          description: IP to get DHCP data for.
-      outputs:
-        - contextPath: Insight.Entity.DHCP.customer_id
-          description: ID code of the customer account
-          type: string
-        - contextPath: Insight.Entity.DHCP.hostnames
-          description: Hostname of the entity
-          type: string
-        - contextPath: Insight.Entity.DHCP.ip
-          description: IP Address of the entity
-          type: string
-        - contextPath: Insight.Entity.DHCP.lease_end
-          description: DHCP lease end date
-          type: date
-        - contextPath: Insight.Entity.DHCP.lease_start
-          description: DHCP lease start date
-          type: date
-        - contextPath: Insight.Entity.DHCP.mac
-          description: MAC address of the entity
-          type: string
-        - contextPath: Insight.Entity.DHCP.sensor_id
-          description: Sensor ID that recorded the entity data
-          type: string
-        - contextPath: Insight.Entity.DHCP.start_lease_as_long
-          description: Start Date as a long value
-          type: number
-      description: Get DHCP information about an IP address.
-    - name: insight-get-entity-file
-      arguments:
-        - name: hash
-          required: true
-          description: File hash. Can be an MD5, SHA1, or SHA256 hash of the file
-      outputs:
-        - contextPath: Insight.Entity.File.entity
-          description: The entity identifier
-          type: string
-        - contextPath: Insight.Entity.File.sha1
-          description: The entity SHA1 hash
-          type: string
-        - contextPath: Insight.Entity.File.sha256
-          description: The entity SHA256 hash
-          type: string
-        - contextPath: Insight.Entity.File.md5
-          description: The entity MD5 hash
-          type: string
-        - contextPath: Insight.Entity.File.customer_id
-          description: ID code of the customer account
-          type: string
-        - contextPath: Insight.Entity.File.names
-          description: File names for the entity
-          type: string
-        - contextPath: Insight.Entity.File.prevalence_count_internal
-          description: Prevalence for this file within the environment
-          type: number
-        - contextPath: Insight.Entity.File.last_seen
-          description: Last seen date for this file
-          type: date
-        - contextPath: Insight.Entity.File.mime_type
-          description: File MIME type
-          type: string
-        - contextPath: Insight.Entity.File.first_seen
-          description: First seen date for this file
-          type: date
-        - contextPath: Insight.Entity.File.bytes
-          description: File size
-          type: number
-        - contextPath: Insight.Entity.File.pe
-          description: File Portable Executable attributes
-          type: string
-      description: Get information about a file.
-    - name: insight-get-telemetry-events
-      arguments:
-        - name: interval
-          auto: PREDEFINED
-          predefined:
-            - hour
-            - day
-          description: 'Interval to group by: hour (default) or day.'
-        - name: start_date
-          description:
-            Start date/time to query for. The default is 1 day ago for interval=hour
-            or 30 days ago for interval=day.
-        - name: end_date
-          description: End date/time to query for. The default is the current time.
-        - name: account_uuid
-          description: Account uuid to filter by.
-        - name: account_code
-          description: Account code to filter by.
-        - name: sensor_id
-          description: Sensor id to filter by.
-        - name: event_type
-          auto: PREDEFINED
-          predefined:
-            - flow
-            - dns
-            - http
-            - ssl
-            - x509
-          description: The type of event. Limited to flow, dns, http, ssl, and x509.
-        - name: group_by
-          auto: PREDEFINED
-          predefined:
-            - sensor_id
-            - event_type
-          description: 'Optionally group results by: sensor_id, event_type.'
-      outputs:
-        - contextPath: Insight.Telemetry.Events.timestamp
-          description: Timestamp of the grouped data
-          type: date
-        - contextPath: Insight.Telemetry.Events.event_count
-          description: Number of events
-          type: number
-        - contextPath: Insight.Telemetry.Events.sensor_id
-          description: Sensor name (if grouped by sensor_id)
-          type: string
-        - contextPath: Insight.Telemetry.Events.event_type
-          description: Type of event (if grouped by event_type)
-          type: string
-      description: Get event telemetry data grouped by time.
-    - name: insight-get-telemetry-packetstats
-      arguments:
-        - name: sensor_id
-          description:
-            Scopes the returned metrics to the interfaces of the specified
-            sensor ID.
-        - name: start_date
-          description:
-            Scopes the returned metrics to dates after the given start_date.
-            If empty returns most current packet stats.
-        - name: end_date
-          description:
-            Scopes the returned metrics to dates before the given end_date.
-            If empty returns most current packet stats
-        - name: interval
-          description: Aggregation interval. 1 hr is not specified by default.
-        - name: group_by
-          auto: PREDEFINED
-          predefined:
-            - interface_name
-            - sensor_id
-            - account_code
-          description:
-            'Option to group by the following fields: interface_name, sensor_id,
-            account_code.'
-        - name: account_code
-          description: Account code to filter by.
-      outputs:
-        - contextPath: Insight.Telemetry.Packetstats.account_code
-          description: Account code the data was filtered by
-          type: string
-        - contextPath: Insight.Telemetry.Packetstats.timestamp
-          description: Timestamp of the grouped data
-          type: date
-        - contextPath: Insight.Telemetry.Packetstats.interface_name
-          description: Interface the packet data was recorded from
-          type: string
-        - contextPath: Insight.Telemetry.Packetstats.rx_bits_per_second
-          description: Receive throughput (bits per second)
-          type: number
-        - contextPath: Insight.Telemetry.Packetstats.rx_bytes
-          description: Receive data size (bytes)
-          type: number
-        - contextPath: Insight.Telemetry.Packetstats.rx_errors
-          description: Number of receive errors
-          type: number
-        - contextPath: Insight.Telemetry.Packetstats.rx_packets
-          description: Number of receive packets
-          type: number
-        - contextPath: Insight.Telemetry.Packetstats.sensor_id
-          description: Sensor ID packet data was recorded from
-          type: string
-        - contextPath: Insight.Telemetry.Packetstats.tx_bytes
-          description: Transmit data size (bytes)
-          type: number
-        - contextPath: Insight.Telemetry.Packetstats.tx_errors
-          description: Number of transmit errors
-          type: number
-        - contextPath: Insight.Telemetry.Packetstats.tx_packets
-          description: Number of transmit packets
-          type: number
-      description: Get network metrics to a given sensor's interfaces
-  dockerimage: demisto/python3:3.10.4.29342
+  - name: insight-get-events
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The query string used to search for matching events.
+    - name: start_date
+      description: The beginning of the temporal extent by which to restrict filter results, inclusive.
+    - name: end_date
+      description: The end of the temporal extent by which to restrict filter results, exclusive.
+    - name: limit
+      description: A limit on the number of events returned in filter results. Default is 100. Max is 10000
+    - name: order_by
+      description: The event property by which to order results. Default is timestamp.
+    - name: order
+      description: The order of results, either asc or desc. Default is desc.
+    - name: customer_id
+      description: The customer ID by which to restrict filter results. Default is user account.
+    - name: history
+      description: When true, save this query in user Query History and include up to the last 50 queries from users Query History. Default is false.
+    - name: service_traffic
+      description: When true, the service will include the service_traffic aggregation. Default is false.
+    - name: response_type
+      auto: PREDEFINED
+      predefined:
+      - events
+      - aggregations
+      - metadata
+      description: The type items you want returned. The default type to return are events. Include a 'group by' statement in your query to return aggregations. Metadata about queries also available.
+      defaultValue: events
+    outputs:
+    - contextPath: Insight.Events.uuid
+      description: Unique ID for the event
+      type: string
+    - contextPath: Insight.Events.timestamp
+      description: Time and date of the event
+      type: date
+    - contextPath: Insight.Events.flow_id
+      description: Unique ID for the connection
+      type: string
+    - contextPath: Insight.Events.sensor_id
+      description: The sensor that produced the event
+      type: string
+    - contextPath: Insight.Events.customer_id
+      description: Customer ID that the event belongs to
+      type: string
+    - contextPath: Insight.Events.src_ip
+      description: Source IP address
+      type: string
+    - contextPath: Insight.Events.dst_ip
+      description: Destination IP address
+      type: string
+    - contextPath: Insight.Events.src_port
+      description: Source port number
+      type: number
+    - contextPath: Insight.Events.dst_port
+      description: Destination port number
+      type: number
+    - contextPath: Insight.Events.geo_distance
+      description: Distance between src and dst in nautical miles
+      type: number
+    - contextPath: Insight.Events.intel
+      description: Intel sharing platform
+      type: string
+    - contextPath: Insight.Events.duration
+      description: Flow - Duration of the flow event
+      type: number
+    - contextPath: Insight.Events.flow_state
+      description: Flow - Connection result
+      type: string
+    - contextPath: Insight.Events.proto
+      description: Flow - Protocol used in the flow event (i.e. tcp, udp)
+      type: string
+    - contextPath: Insight.Events.service
+      description: Flow - Either the service type for flow events (i.e. http, dns) or the name of the service in a Kerberos event
+      type: string
+    - contextPath: Insight.Events.total_ip_bytes
+      description: Flow - Number of bytes both sent and received in the flow event
+      type: number
+    - contextPath: Insight.Events.total_pkts
+      description: Flow - Number of packets both send and received in the flow event
+      type: number
+    - contextPath: Insight.Events.query_domain
+      description: DNS - The domain name that is the subject of the DNS query
+      type: string
+    - contextPath: Insight.Events.answers
+      description: DNS - The set of resource descriptions in the query answer
+      type: string
+    - contextPath: Insight.Events.qtype
+      description: DNS - The QTYPE value of the query
+      type: number
+    - contextPath: Insight.Events.qtype_name
+      description: DNS - The description name for the type of query
+      type: string
+    - contextPath: Insight.Events.rcode
+      description: DNS - The response code value in DNS response messages
+      type: number
+    - contextPath: Insight.Events.rcode_name
+      description: DNS - A descriptive name for the response code value
+      type: string
+    - contextPath: Insight.Events.rejected
+      description: DNS - The DNS query was rejected by the server (true/false)
+      type: boolean
+    - contextPath: Insight.Events.ttls
+      description: DNS - The caching intervals of the associated RRs described by the answers field
+      type: number
+    - contextPath: Insight.Events.host_ip
+      description: HTTP - The IP of the host header, if present
+      type: string
+    - contextPath: Insight.Events.host_domain
+      description: HTTP - The domain of the host header, if present
+      type: string
+    - contextPath: Insight.Events.method
+      description: HTTP - Verb used in the HTTP request
+      type: string
+    - contextPath: Insight.Events.proxied
+      description: HTTP - Indicates if the request was proxied
+      type: string
+    - contextPath: Insight.Events.request_len
+      description: HTTP - Uncompressed content size of the HTTP packet transferred from the client, measure in bytes
+      type: number
+    - contextPath: Insight.Events.request_mime
+      description: HTTP - Multipurpose Internet Mail Extensions (MIME) type for the client request, identifying the desired format of the requested file
+      type: string
+    - contextPath: Insight.Events.response_len
+      description: HTTP - Uncompressed content size of the HTTP packet transferred from the server, measure in bytes
+      type: number
+    - contextPath: Insight.Events.response_mime
+      description: HTTP - Multipurpose Internet Mail Extensions (MIME) type for the server response, identifying the format of the returned file
+      type: string
+    - contextPath: Insight.Events.status_code
+      description: HTTP - Status code returned by the server indicating the result of the request
+      type: number
+    - contextPath: Insight.Events.status_msg
+      description: HTTP - Status message associated with the status code returned by the server
+      type: number
+    - contextPath: Insight.Events.info_msg
+      description: HTTP - Reply message for when a 100-level status code is returned by the server; that is generally used to signal that the client should continue with an ongoing request
+      type: string
+    - contextPath: Insight.Events.trans_depth
+      description: HTTP - Count to represent the depth of the message transaction in a single connection where multiple messages were transferred
+      type: number
+    - contextPath: Insight.Events.user_agent
+      description: HTTP - The User Agent header sent by the client that generally identifies the software that created the request
+      type: string
+    - contextPath: Insight.Events.username
+      description: HTTP / NTLM / FTP - The specified username if basic auth is used for the request for HTTP events, the username given by the client for NTLM events, or the user name for the current FTP session for FTP events
+      type: string
+    - contextPath: Insight.Events.uri_uri
+      description: HTTP - The entire URI of the request
+      type: string
+    - contextPath: Insight.Events.referrer
+      description: The entire URI of the referrer
+      type: string
+    - contextPath: Insight.Events.date
+      description: SMTP - Contents of the 'Date' SMTP header
+      type: date
+    - contextPath: Insight.Events.from_name
+      description: SMTP - Email name from the 'From' SMTP header
+      type: string
+    - contextPath: Insight.Events.from_domain
+      description: SMTP - Email domain from the 'From' SMTP header
+      type: string
+    - contextPath: Insight.Events.from_email
+      description: SMTP - Full email address from the 'From' SMTP header
+      type: string
+    - contextPath: Insight.Events.to
+      description: SMTP - Email name from the 'To' SMTP header
+      type: string
+    - contextPath: Insight.Events.reply_to_name
+      description: SMTP - Email name from the 'Reply To' SMTP header
+      type: string
+    - contextPath: Insight.Events.reply_to_domain
+      description: SMTP - Email domain from the 'Reply To' SMTP header
+      type: string
+    - contextPath: Insight.Events.reply_to_email
+      description: SMTP - Full email address from the 'Reply To' SMTP header
+      type: string
+    - contextPath: Insight.Events.file_bytes
+      description: SMTP - Size of the file in bytes
+      type: number
+    - contextPath: Insight.Events.file_md5
+      description: SMTP - MD5 hash of the file
+      type: string
+    - contextPath: Insight.Events.file_mime_type
+      description: SMTP - MIME type of the file
+      type: string
+    - contextPath: Insight.Events.file_name
+      description: SMTP - Name of the file
+      type: string
+    - contextPath: Insight.Events.file_sha1
+      description: SMTP - SHA1 hash of the file
+      type: string
+    - contextPath: Insight.Events.file_sha256
+      description: SMTP - SHA256 hash of the file
+      type: string
+    - contextPath: Insight.Events.helo_domain
+      description: SMTP - Contents of the 'Helo' SMTP header
+      type: string
+    - contextPath: Insight.Events.helo_domain_entropy
+      description: SMTP - Entropy of the 'Helo' SMTP header contents
+      type: string
+    - contextPath: Insight.Events.path
+      description: SMTP - IP address(es) recorded during the transmission path of the email
+      type: string
+    - contextPath: Insight.Events.x_originating_ip
+      description: SMTP - Contents of the 'x-originating-ip' SMTP header
+      type: string
+    - contextPath: Insight.Events.first_received
+      description: SMTP - Contents of the first 'Received' SMTP header
+      type: string
+    - contextPath: Insight.Events.in_reply_to
+      description: SMTP - Contents of the 'In-Reply-To' SMTP header
+      type: string
+    - contextPath: Insight.Events.is_webmail
+      description: SMTP - Indicates if the message was sent through a webmail interface
+      type: boolean
+    - contextPath: Insight.Events.last_reply
+      description: SMTP - Last message that the server sent to the client
+      type: string
+    - contextPath: Insight.Events.mailfrom
+      description: SMTP - Email address found in the 'From' header
+      type: string
+    - contextPath: Insight.Events.msg_id
+      description: SMTP - Contents of the 'MsgID' SMTP header
+      type: string
+    - contextPath: Insight.Events.rcptto
+      description: SMTP - Email address found in the 'Recipient' SMTP header
+      type: string
+    - contextPath: Insight.Events.second_received
+      description: SMTP - Contents of the second 'Received' SMTP header
+      type: string
+    - contextPath: Insight.Events.subject
+      description: SMTP/SSL - Contents of the 'Subject' SMTP header or Subject of the X509 certificate offered by the server.
+      type: string
+    - contextPath: Insight.Events.tls
+      description: SMTP - Indicates that the connection has switched to using TLS
+      type: boolean
+    - contextPath: Insight.Events.urls
+      description: SMTP - URLs found in the email body
+      type: string
+    - contextPath: Insight.Events.cipher
+      description: SSL - Cipher suite used for encryption in the SSL or Kerberos event
+      type: string
+    - contextPath: Insight.Events.client_issuer
+      description: SSL - Subject of the signer of the X509 certificate offered by the client
+      type: string
+    - contextPath: Insight.Events.client_subject
+      description: SSL - Subject of the X509 certificate offered by the client
+      type: string
+    - contextPath: Insight.Events.issuer
+      description: SSL/X509 - Subject of the signer of the X509 certificate offered by the server.
+      type: string
+    - contextPath: Insight.Events.server_name
+      description: SSL - Value of the server name indicator SSL/TLS extension. Indicates the server that the client was requesting
+      type: string
+    - contextPath: Insight.Events.session_id
+      description: SSL - Session ID offered by the client for session resumption. Not used for logging
+      type: string
+    - contextPath: Insight.Events.validation_status
+      description: SSL - Result of the certificate validation for this connection
+      type: string
+    - contextPath: Insight.Events.version
+      description: SSL - Either the SSL/TLS version for SSL events, the software version for Software events, or the version number for X509 events
+      type: string
+    - contextPath: Insight.Events.ca_constraints
+      description: X509 - CA flag
+      type: boolean
+    - contextPath: Insight.Events.ca_constraints_len
+      description: X509 - Maximum path length
+      type: number
+    - contextPath: Insight.Events.cert_id
+      description: X509 - File ID of the certificate
+      type: string
+    - contextPath: Insight.Events.key_len
+      description: X509 - Key length in bits
+      type: number
+    - contextPath: Insight.Events.key_type
+      description: X509 - Key type, if key parseable by openssl
+      type: string
+    - contextPath: Insight.Events.san_dns
+      description: X509 - List of DNS entries in SAN
+      type: string
+    - contextPath: Insight.Events.san_email
+      description: X509 - List of email entries in SAN
+      type: string
+    - contextPath: Insight.Events.san_ip
+      description: X509 - List of IP entries in SAN
+      type: string
+    - contextPath: Insight.Events.san_uri
+      description: X509 - List of URI entries in SAN
+      type: string
+    - contextPath: Insight.Events.serial
+      description: X509 - Certificate serial number
+      type: string
+    - contextPath: Insight.Events.valid_end
+      description: X509 - Timestamp after when certificate is not valid
+      type: date
+    - contextPath: Insight.Events.valid_start
+      description: X509 - Timestamp before when certificate is not valid
+      type: date
+    - contextPath: Insight.Events.client
+      description: Kerberos/SSH - Name on the ticket for Kerberos events or the clients version string for SSH events
+      type: string
+    - contextPath: Insight.Events.client_cert_fuid
+      description: Kerberos - File unique ID of client certificate
+      type: string
+    - contextPath: Insight.Events.client_cert_subject
+      description: Kerberos - Subject of the client certificate
+      type: string
+    - contextPath: Insight.Events.error_msg
+      description: Kerberos - Additional text to explain the error
+      type: string
+    - contextPath: Insight.Events.forwardable
+      description: Kerberos - The ticket to be issued should have its forwardable flag set
+      type: boolean
+    - contextPath: Insight.Events.renewable
+      description: Kerberos - The ticket to be issued should have its renewable flag set
+      type: boolean
+    - contextPath: Insight.Events.request_type
+      description: Kerberos - The message type (11 for AS_REP, 13 for TGS_REP)
+      type: string
+    - contextPath: Insight.Events.server_cert_fuid
+      description: Kerberos - File unique ID of server certificate
+      type: string
+    - contextPath: Insight.Events.server_cert_subject
+      description: Kerberos - Subject of the server certificate
+      type: string
+    - contextPath: Insight.Events.success
+      description: 'Kerberos / NTLM - Request result for Kerberos events or authentication result '
+      type: boolean
+    - contextPath: Insight.Events.ticket_from
+      description: Kerberos - Time the ticket is good from
+      type: date
+    - contextPath: Insight.Events.ticket_till
+      description: Kerberos - Time the ticket is good till
+      type: date
+    - contextPath: Insight.Events.compile_timestamp
+      description: PE - The time that the file was created
+      type: date
+    - contextPath: Insight.Events.file_name
+      description: PE - File name
+      type: string
+    - contextPath: Insight.Events.file_mime_type
+      description: PE - File MIME type
+      type: string
+    - contextPath: Insight.Events.file_md5
+      description: PE - File MD5 hash
+      type: string
+    - contextPath: Insight.Events.file_sha1
+      description: PE - File SHA1 hash
+      type: string
+    - contextPath: Insight.Events.file_sha256
+      description: PE - File SHA256 hash
+      type: string
+    - contextPath: Insight.Events.has_cert_table
+      description: PE - Does the file have an attribute certificate table?
+      type: boolean
+    - contextPath: Insight.Events.has_debug_data
+      description: PE - Does the file have a debug data?
+      type: boolean
+    - contextPath: Insight.Events.has_export_table
+      description: PE - Does the file have an export table?
+      type: boolean
+    - contextPath: Insight.Events.has_import_table
+      description: PE - Does the file have an import table?
+      type: boolean
+    - contextPath: Insight.Events.id
+      description: PE - File ID of the portable executable
+    - contextPath: Insight.Events.is64_bit
+      description: PE - Is the file a 64-bit executable?
+      type: boolean
+    - contextPath: Insight.Events.is_exe
+      description: PE - Is the file an executable or only an object file?
+      type: boolean
+    - contextPath: Insight.Events.machine
+      description: PE - The target machine that the file was compiled for
+      type: string
+    - contextPath: Insight.Events.os
+      description: PE - The required operating system
+      type: string
+    - contextPath: Insight.Events.section_names
+      description: PE - The names of the section in order
+      type: string
+    - contextPath: Insight.Events.subsystem
+      description: PE - The subsystem that is required to run this file
+      type: string
+    - contextPath: Insight.Events.uses_aslr
+      description: PE - Does the file support Address Space Layout Randomization?
+      type: boolean
+    - contextPath: Insight.Events.uses_code_integrity
+      description: PE - Does the file enforce code integrity checks?
+      type: boolean
+    - contextPath: Insight.Events.uses_dep
+      description: PE - Does the file support Data Execution Prevention?
+      type: boolean
+    - contextPath: Insight.Events.uses_seh
+      description: PE - Does the file use structured exception handling?
+      type: boolean
+    - contextPath: Insight.Events.cert_count
+      description: RDP - Number of certificates seen
+      type: number
+    - contextPath: Insight.Events.cert_permanent
+      description: RDP - Indicates if the provided certificate or certificate chain is permanent or temporary
+      type: boolean
+    - contextPath: Insight.Events.cert_type
+      description: RDP - If the connection is being encrypted with native RDP encryption, this is the type of certificate being used
+      type: string
+    - contextPath: Insight.Events.client_build
+      description: RDP - RDP client version used by the client machine
+      type: string
+    - contextPath: Insight.Events.client_dig_product_id
+      description: RDP - Product ID of the client machine
+      type: string
+    - contextPath: Insight.Events.client_name
+      description: RDP - Name of the client machine
+      type: string
+    - contextPath: Insight.Events.cookie
+      description: RDP - Cookie value used by the client machine. This is typically a username
+      type: string
+    - contextPath: Insight.Events.desktop_height
+      description: RDP - Desktop height (in pixels) of the client machine
+      type: number
+    - contextPath: Insight.Events.desktop_width
+      description: RDP - Desktop width (in pixels) of the client machine
+      type: number
+    - contextPath: Insight.Events.encryption_level
+      description: RDP - Encryption level of the connection
+      type: string
+    - contextPath: Insight.Events.encryption_method
+      description: RDP - Encryption method of the connection
+      type: string
+    - contextPath: Insight.Events.keyboard_layout
+      description: RDP - Keyboard layout (language) of the client machine
+      type: string
+    - contextPath: Insight.Events.requested_color_depth
+      description: RDP - The color depth requested by the client in the high_color_depth field
+      type: string
+    - contextPath: Insight.Events.result
+      description: RDP - Status result for the connection. It's a mix between RDP negotiation failure message and GCC server create response messages
+      type: string
+    - contextPath: Insight.Events.security_protocol
+      description: RDP - Security protocol chosen by the server
+      type: string
+    - contextPath: Insight.Events.auth_success
+      description: SSH - Authentication result
+      type: boolean
+    - contextPath: Insight.Events.cipher_alg
+      description: SSH - The encryption algorithm in use
+      type: string
+    - contextPath: Insight.Events.compression_alg
+      description: SSH - The compression algorithm in use
+      type: string
+    - contextPath: Insight.Events.direction
+      description: SSH - Direction of the connection. If the client was a local host logging into an external host, this would be ‘outbound’. ‘Inbound’ would be set for the opposite situation.
+      type: string
+    - contextPath: Insight.Events.host_key
+      description: SSH - The server's key fingerprint
+      type: string
+    - contextPath: Insight.Events.host_key_alg
+      description: SSH - The server host key's algorithm
+      type: string
+    - contextPath: Insight.Events.kex_alg
+      description: SSH - The key exchange algorithm in use
+      type: string
+    - contextPath: Insight.Events.mac_alg
+      description: SSH - The signing (MAC) algorithm in use
+      type: string
+    - contextPath: Insight.Events.server
+      description: SSH - The server's version string
+      type: string
+    - contextPath: Insight.Events.ssh_version
+      description: SSH - Major SSH version number (1 or 2)
+      type: number
+    - contextPath: Insight.Events.host_port
+      description: Software - The port the software used
+      type: number
+    - contextPath: Insight.Events.host_internal
+      description: Software - Is the host internal (true/false)
+      type: boolean
+    - contextPath: Insight.Events.host_asn
+      description: Software - Host ASN (if applicable)
+      type: string
+    - contextPath: Insight.Events.host_geo_city
+      description: Software - Host geolocation (city)
+      type: string
+    - contextPath: Insight.Events.host_geo_country
+      description: Software - Host geolocation (country)
+      type: string
+    - contextPath: Insight.Events.Host.geo.subdivision
+      description: Software - Host geolocation (state/province)
+      type: string
+    - contextPath: Insight.Events.software_type
+      description: Software - The type of software detected
+      type: string
+    - contextPath: Insight.Events.software_name
+      description: Software - Name of the software
+      type: string
+    - contextPath: Insight.Events.software_version_version
+      description: Software - Version name from software_version string
+      type: string
+    - contextPath: Insight.Events.software_version_additional
+      description: Software - Additional text in version string
+      type: string
+    - contextPath: Insight.Events.software_version_version_number
+      description: Software - Version number from software_version string
+      type: string
+    - contextPath: Insight.Events.software_version_major
+      description: Software - Major version number
+      type: number
+    - contextPath: Insight.Events.software_version_minor
+      description: Software - Minor version number
+      type: number
+    - contextPath: Insight.Events.software_version_minor2
+      description: Software - Minor subversion number
+      type: number
+    - contextPath: Insight.Events.software_version_minor3
+      description: Software - Minor updates number
+      type: number
+    - contextPath: Insight.Events.assignment_ip
+      description: DHCP - Client’s actual assigned IP address.
+      type: string
+    - contextPath: Insight.Events.assignment_internal
+      description: DHCP - Is the host internal?
+      type: boolean
+    - contextPath: Insight.Events.assignment_asn
+      description: DHCP - Host ASN (if applicable)
+      type: string
+    - contextPath: Insight.Events.assignment_geo_city
+      description: DHCP - Host geolocation (city)
+      type: string
+    - contextPath: Insight.Events.assignment_geo_country
+      description: DHCP - Host geolocation (country)
+      type: string
+    - contextPath: Insight.Events.Assignment.geo.subdivision
+      description: DHCP - Host geolocation (state/province)
+      type: string
+    - contextPath: Insight.Events.hostname
+      description: DHCP / NTLM - The value of the DHCP host name option for DHCP events, or the hostname given by the client for NTLM events
+      type: string
+    - contextPath: Insight.Events.mac
+      description: DHCP - Client’s hardware address.
+      type: string
+    - contextPath: Insight.Events.lease_duration
+      description: DHCP - The duration of the dhcp lease in seconds (converted to minutes / hours / days in the event table)
+      type: number
+    - contextPath: Insight.Events.dhcp_msg_type
+      description: DHCP - The type of dhcp message
+      type: string
+    - contextPath: Insight.Events.sig_category
+      description: Suricata - Signature category
+      type: string
+    - contextPath: Insight.Events.sig_id
+      description: Suricata - Signature unique ID
+      type: number
+    - contextPath: Insight.Events.sig_name
+      description: Suricata - Signature name
+      type: string
+    - contextPath: Insight.Events.sig_rev
+      description: Suricata - Signature revision/version
+      type: number
+    - contextPath: Insight.Events.sig_severity
+      description: 'Suricata - Signature severity '
+      type: number
+    - contextPath: Insight.Events.Http.hostname
+      description: Suricata - The hostname this HTTP event is attributed to
+      type: string
+    - contextPath: Insight.Events.Http.method
+      description: Suricata - Verb used in the HTTP request
+      type: string
+    - contextPath: Insight.Events.Http.protocol
+      description: Suricata - Protocol / Version of HTTP
+      type: string
+    - contextPath: Insight.Events.Http.redirect
+      description: Suricata - Redirect domain, if one exists
+      type: string
+    - contextPath: Insight.Events.Http.referrer
+      description: Suricata - The referrer for this action
+      type: string
+    - contextPath: Insight.Events.Http.response_len
+      description: Suricata - The content size of the HTTP body (bytes)
+      type: number
+    - contextPath: Insight.Events.Http.response_mime
+      description: Suricata - MIME-type for the server response, identifying the format of the returned file.
+      type: string
+    - contextPath: Insight.Events.Http.status
+      description: Suricata - Status code returned by the server indicating the result of the request.
+      type: number
+    - contextPath: Insight.Events.Http.uri
+      description: Suricata - URI of the response
+      type: string
+    - contextPath: Insight.Events.Http.user_agent
+      description: Suricata - User agent for http response
+      type: string
+    - contextPath: Insight.Events.Http.xff
+      description: Suricata - X-Forwarded-For header
+      type: string
+    - contextPath: Insight.Events.smb_action
+      description: SMB_File - SMB command
+      type: string
+    - contextPath: Insight.Events.smb_service
+      description: SMB_Mapping - The type of resource of the tree (disk share, printer share, named pipe, etc.)
+      type: string
+    - contextPath: Insight.Events.native_file_system
+      description: SMB_Mapping - File system of the tree
+      type: string
+    - contextPath: Insight.Events.share_type
+      description: SMB_Mapping - If this is SMB2, a share type will be included. For SMB1, the type of share will be deduced and included as well
+      type: string
+    - contextPath: Insight.Events.auth_domain_domain
+      description: NTLM - Domain name given by the client
+      type: string
+    - contextPath: Insight.Events.ntlm_status
+      description: NTLM - Status code that was returned in response to the authentication attempt
+      type: string
+    - contextPath: Insight.Events.tunnel_action
+      description: Tunnel - The type of activity that occurred
+      type: string
+    - contextPath: Insight.Events.tunnel_type
+      description: Tunnel - The type of tunnel
+      type: string
+    - contextPath: Insight.Events.data_channel_dst_asn_asn
+      description: FTP - Destination autonomous system number
+      type: number
+    - contextPath: Insight.Events.data_channel_dst_asn_asn_org
+      description: FTP - Destination ASN organization
+      type: string
+    - contextPath: Insight.Events.data_channel_dst_asn_isp
+      description: FTP - Destination ASN internet service provider
+      type: string
+    - contextPath: Insight.Events.data_channel_dst_asn_org
+      description: FTP - Destination ASN organization
+      type: string
+    - contextPath: Insight.Events.data_channel_dst_geo_city
+      description: FTP - Destination geolocation (city)
+      type: string
+    - contextPath: Insight.Events.data_channel_dst_geo_country
+      description: FTP - Destination geolocation (country)
+      type: string
+    - contextPath: Insight.Events.data_channel_dst_geo_subdivision
+      description: FTP - Destination geolocation (state/province)
+      type: string
+    - contextPath: Insight.Events.data_channel_dst_internal
+      description: FTP - Destination IP is internal?
+      type: boolean
+    - contextPath: Insight.Events.data_channel_dst_ip
+      description: FTP - Destination IP address
+      type: string
+    - contextPath: Insight.Events.data_channel_dst_port
+      description: FTP - Destination port
+      type: number
+    - contextPath: Insight.Events.data_channel_geo_distance
+      description: FTP - Distance between src and dst entities. Nautical miles by default, now supports miles
+    - contextPath: Insight.Events.data_channel_passive
+      description: FTP - Indicates if the session is in active or passive mode
+      type: boolean
+    - contextPath: Insight.Events.data_channel_src_asn
+      description: FTP - Source autonomous system number
+      type: number
+    - contextPath: Insight.Events.data_channel_src_asn_asn_org
+      description: FTP - Source ASN organization
+      type: string
+    - contextPath: Insight.Events.data_channel_src_asn_isp
+      description: FTP - Source ASN internet service provider
+      type: string
+    - contextPath: Insight.Events.data_channel_src_asn_org
+      description: FTP - Source ASN organization
+      type: string
+    - contextPath: Insight.Events.data_channel_src_geo_city
+      description: FTP - Source geolocation (city)
+      type: string
+    - contextPath: Insight.Events.data_channel_src_geo_country
+      description: FTP - Source geolocation (country)
+      type: string
+    - contextPath: Insight.Events.data_channel_src_geo_subdivision
+      description: FTP - Source geolocation (state/province)
+      type: string
+    - contextPath: Insight.Events.data_channel_src_internal
+      description: FTP - Source IP is internal?
+      type: boolean
+    - contextPath: Insight.Events.data_channel_src_ip
+      description: FTP - Source IP address
+      type: string
+    - contextPath: Insight.Events.ftp_command
+      description: FTP - Command given by the client
+      type: string
+    - contextPath: Insight.Events.ftp_arg
+      description: FTP - Argument for the command if one is given
+      type: string
+    - contextPath: Insight.Events.reply_code
+      description: FTP - Reply code from the server in response to the command
+      type: string
+    - contextPath: Insight.Events.reply_msg
+      description: "FTP - \tReply message from the server in response to the command"
+      type: string
+    - contextPath: Insight.Events.dce_rpc_endpoint
+      description: DCE_RPC - Endpoint name
+      type: string
+    - contextPath: Insight.Events.dce_rpc_operation
+      description: DCE_RPC - Operation seen in the call
+      type: string
+    - contextPath: Insight.Events.named_pipe
+      description: DCE_RPC - Remote pipe name
+      type: string
+    - contextPath: Insight.Events.round_trip_time
+      description: DCE_RPC - Round trip time from the request to the response, in seconds
+      type: number
+    - contextPath: Insight.Events.assignment_geo_location_lat
+      description: DHCP - Latitude of assigned IP
+      type: number
+    - contextPath: Insight.Events.assignment_geo_location_lon
+      description: DHCP - Longitude of assigned IP
+      type: number
+    - contextPath: Insight.Events.assignment_geo_subdivision
+      description: DHCP - Geolocation subdivision of assigned IP
+      type: string
+    - contextPath: Insight.Events.auth_domain_domain_entropy
+      description: NTLM - Entropy of the domain used to authenticate the client
+      type: number
+    - contextPath: Insight.Events.aws
+      description: AWS Headers
+      type: string
+    - contextPath: Insight.Events.data_channel
+      description: FTP - Data Channel data
+      type: string
+    - contextPath: Insight.Events.data_channel_dst_geo_location_lat
+      description: FTP - Latitude of the destination IP
+      type: number
+    - contextPath: Insight.Events.data_channel_dst_geo_location_lon
+      description: FTP - Longitude of the destination IP
+      type: number
+    - contextPath: Insight.Events.data_channel_src_geo_location_lat
+      description: FTP - Latitude of the source IP
+      type: number
+    - contextPath: Insight.Events.data_channel_src_geo_location_lon
+      description: FTP - Longitude of the source IP
+      type: number
+    - contextPath: Insight.Events.dst_asn
+      description: Destination Autonomous System Number
+      type: string
+    - contextPath: Insight.Events.dst_asn_asn
+      description: Destination Autonomous System Number
+      type: string
+    - contextPath: Insight.Events.dst_asn_asn_org
+      description: Destination ASN Organization
+      type: string
+    - contextPath: Insight.Events.dst_asn_isp
+      description: Destination ASN ISP
+      type: string
+    - contextPath: Insight.Events.dst_asn_org
+      description: Destination ASN Organization
+      type: string
+    - contextPath: Insight.Events.dst_geo
+      description: Destination Geolocation
+      type: string
+    - contextPath: Insight.Events.dst_geo_city
+      description: Destination City
+      type: string
+    - contextPath: Insight.Events.dst_geo_country
+      description: Destination Country
+      type: string
+    - contextPath: Insight.Events.dst_geo_location_lat
+      description: Destination Latitude
+      type: number
+    - contextPath: Insight.Events.dst_geo_location_lon
+      description: Destination Longitude
+      type: number
+    - contextPath: Insight.Events.dst_geo_subdivision
+      description: Destination Subdivision
+      type: string
+    - contextPath: Insight.Events.dst_internal
+      description: Destination Internal (true/false)
+      type: boolean
+    - contextPath: Insight.Events.dst_ip_bytes
+      description: Bytes transmitted by the destination IP
+      type: number
+    - contextPath: Insight.Events.dst_pkts
+      description: Packets transmitted by the destination IP
+      type: number
+    - contextPath: Insight.Events.event_type
+      description: Event Type
+      type: string
+    - contextPath: Insight.Events.files
+      description: File Data
+      type: string
+    - contextPath: Insight.Events.headers_accept
+      description: HTTP - The content of the Accept header
+      type: string
+    - contextPath: Insight.Events.headers_content_md5
+      description: HTTP - The computed MD5 hash of the headers content
+      type: string
+    - contextPath: Insight.Events.headers_content_type
+      description: HTTP - The contents of the Content Type header
+      type: string
+    - contextPath: Insight.Events.headers_cookie_length
+      description: HTTP - The length of the cookie in bytes
+      type: number
+    - contextPath: Insight.Events.headers_location
+      description: HTTP - The content of the location headers
+      type: string
+    - contextPath: Insight.Events.headers_location_fragment
+      description: The fragment identifier component
+      type: string
+    - contextPath: Insight.Events.headers_location_host_domain
+      description: The domain
+      type: string
+    - contextPath: Insight.Events.headers_location_host_domain_entropy
+      description: The computed Shannon entropy of the domain
+      type: number
+    - contextPath: Insight.Events.headers_location_path
+      description: The path of the requested resource
+      type: string
+    - contextPath: Insight.Events.headers_location_port
+      description: The specified port
+      type: number
+    - contextPath: Insight.Events.headers_location_query
+      description: The full parameter string
+      type: string
+    - contextPath: Insight.Events.headers_location_scheme
+      description: The specified scheme
+      type: string
+    - contextPath: Insight.Events.headers_location_uri
+      description: The full URI
+      type: string
+    - contextPath: Insight.Events.headers_origin
+      description: HTTP - The content of the Origin header
+      type: string
+    - contextPath: Insight.Events.headers_proxied_client_ips
+      description: HTTP - The sequence of IPs the HTTP connection is proxied through
+      type: string
+    - contextPath: Insight.Events.headers_refresh
+      description: HTTP - The full content of the Refresh header
+      type: string
+    - contextPath: Insight.Events.headers_server
+      description: HTTP - The web server software
+      type: string
+    - contextPath: Insight.Events.headers_x_powered_by
+      description: HTTP - The application software running on the server
+      type: string
+    - contextPath: Insight.Events.host_domain_entropy
+      description: The computed Shannon entropy of the domain
+      type: number
+    - contextPath: Insight.Events.host_geo_location_lat
+      description: Latitude of the host
+      type: number
+    - contextPath: Insight.Events.host_geo_location_lon
+      description: Longitude of the host
+      type: number
+    - contextPath: Insight.Events.host_geo_subdivision
+      description: Subdivision of the host
+      type: string
+    - contextPath: Insight.Events.http
+      description: HTTP data
+      type: string
+    - contextPath: Insight.Events.ja3
+      description: SSL - The computed JA3 hash for the client
+      type: string
+    - contextPath: Insight.Events.ja3s
+      description: SSL - The computed JA3 hash of the server
+      type: string
+    - contextPath: Insight.Events.lease_end
+      description: DHCP - The time at which the lease expires
+      type: date
+    - contextPath: Insight.Events.path
+      description: The path of the requested resource
+      type: string
+    - contextPath: Insight.Events.payload
+      description: "Suricata - \tThe raw payload from the traffic that matched the signature"
+      type: string
+    - contextPath: Insight.Events.query_domain_entropy
+      description: The computed Shannon entropy of the domain
+      type: number
+    - contextPath: Insight.Events.request_mimes
+      description: HTTP - The fingerprinted MIME-type(s) of the request content, use instead of request_mime
+      type: string
+    - contextPath: Insight.Events.response_mimes
+      description: HTTP - The fingerprinted MIME-type of the response content, use instead of response_mime
+      type: string
+    - contextPath: Insight.Events.server_name_indication_domain
+      description: The enriched Server Name Indication set by the client
+      type: string
+    - contextPath: Insight.Events.server_name_indication_domain_entropy
+      description: The computed Shannon entropy of the domain
+      type: number
+    - contextPath: Insight.Events.smb_path_path
+      description: SMB - The full network path to the target share
+      type: string
+    - contextPath: Insight.Events.smb_path_share
+      description: SMB - The target network share
+      type: string
+    - contextPath: Insight.Events.smb_path_system
+      description: SMB - The target host
+      type: string
+    - contextPath: Insight.Events.src_asn
+      description: Source Autonomous System Number
+      type: string
+    - contextPath: Insight.Events.src_asn_asn
+      description: Source Autonomous System Number
+      type: string
+    - contextPath: Insight.Events.src_asn_asn_org
+      description: Source ASN Org
+      type: string
+    - contextPath: Insight.Events.src_asn_isp
+      description: Source ASN ISP
+      type: string
+    - contextPath: Insight.Events.src_asn_org
+      description: Source ASN Org
+      type: string
+    - contextPath: Insight.Events.src_geo
+      description: Source Geolocation
+      type: string
+    - contextPath: Insight.Events.src_geo_city
+      description: Source City
+      type: string
+    - contextPath: Insight.Events.src_geo_country
+      description: Source Country
+      type: string
+    - contextPath: Insight.Events.src_geo_location_lat
+      description: Source Latitude
+      type: number
+    - contextPath: Insight.Events. src_geo_location_lon
+      description: Source Longitude
+      type: number
+    - contextPath: Insight.Events.src_geo_subdivision
+      description: Source Subdivision
+      type: string
+    - contextPath: Insight.Events.src_internal
+      description: Source Internal (true/false)
+      type: boolean
+    - contextPath: Insight.Events.src_ip_bytes
+      description: Bytes transmitted from the source
+      type: number
+    - contextPath: Insight.Events.src_pkts
+      description: Packets transmitted from the source
+      type: number
+    - contextPath: Insight.Events.ticket_duration
+      description: Kerberos - The ticket duration in seconds
+      type: number
+    - contextPath: Insight.Events.trans_id
+      description: DHCP - The transaction ID, ties together requests and acknowledgements
+      type: string
+    - contextPath: Insight.Events.upload_percent
+      description: The percentage of bytes transmitted by the src for the flow (56% == 56)
+      type: string
+    - contextPath: Insight.Events.uri_fragment
+      description: The fragment identifier component
+      type: string
+    - contextPath: Insight.Events.uri_host
+      description: The content of the Host header
+      type: string
+    - contextPath: Insight.Events.uri_path
+      description: The path of the requested resource
+      type: string
+    - contextPath: Insight.Events.uri_port
+      description: The specified port
+      type: number
+    - contextPath: Insight.Events.uri_query
+      description: The full parameter string
+      type: string
+    - contextPath: Insight.Events.uri_scheme
+      description: The specified scheme
+      type: string
+    - contextPath: Insight.Events.uri_uri
+      description: The full URI
+      type: string
+    - contextPath: Insight.Events.uri_params
+      description: The HTTP parameters as an array of key-value pairs
+      type: string
+    - contextPath: Insight.Events.count
+      description: The number of events for the matching event aggregation group by field
+      type: number
+    - contextPath: Insight.Events.total
+      description: Total number of events returned
+      type: number
+    description: Perform a search for network events (using the Insight Query Language) and import those events.
+  - name: insight-get-history
+    arguments: []
+    outputs:
+    - contextPath: Insight.UserQueryHistory.total
+      description: Total number of events that matched the query
+      type: number
+    - contextPath: Insight.UserQueryHistory.timestamp
+      description: Date when the query was performed
+      type: date
+    - contextPath: Insight.UserQueryHistory.query
+      description: IQL Query
+      type: string
+    - contextPath: Insight.UserQueryHistory.id
+      description: Unique ID of the query
+      type: string
+    description: Get user's query history.
+  - name: insight-get-saved-searches
+    arguments: []
+    outputs:
+    - contextPath: Insight.SavedSearches.tags
+      description: Labels for the saved search
+      type: string
+    - contextPath: Insight.SavedSearches.description
+      description: Description of the saved search
+      type: string
+    - contextPath: Insight.SavedSearches.title
+      description: Title of the saved search
+      type: string
+    - contextPath: Insight.SavedSearches.timestamp
+      description: Date when the search was saved
+      type: date
+    - contextPath: Insight.SavedSearches.query
+      description: Query of the saved search
+      type: string
+    - contextPath: Insight.SavedSearches.id
+      description: Unique ID of the saved search
+      type: string
+    description: Get user's saved searches.
+  - name: insight-get-sensors
+    arguments:
+    - name: account_uuid
+      description: UUID of account to filter by.
+    - name: account_code
+      description: Account code to fiilter by.
+    - name: sensor_id
+      description: ID of the sensor to filter by.
+    outputs:
+    - contextPath: Insight.Sensors.created
+      description: Date when the sensor was created
+      type: date
+    - contextPath: Insight.Sensors.city
+      description: City where the sensor is located
+      type: string
+    - contextPath: Insight.Sensors.subdivison
+      description: State/Province where the sensor is located
+      type: string
+    - contextPath: Insight.Sensors.sensor_id
+      description: ID code of the sensor
+      type: string
+    - contextPath: Insight.Sensors.location
+      description: Latitude and longitude where the sensor is located
+      type: string
+    - contextPath: Insight.Sensors.tags
+      description: Labels added for this sensor
+      type: string
+    - contextPath: Insight.Sensors.country
+      description: Country where the sensor is located
+      type: string
+    - contextPath: Insight.Sensors.account_code
+      description: ID code of the customer account
+      type: string
+    - contextPath: Insight.Sensors.updated
+      description: Date when the sensor was last updated
+      type: date
+    - contextPath: Insight.Sensors.pcap_enabled
+      description: If PCAP is enabled on the sensor (true/false)
+      type: boolean
+    description: Get a list of all sensors.
+  - name: insight-get-devices
+    arguments:
+    - name: start_date
+      description: Filter devices based on when they were seen.
+    - name: end_date
+      description: Filter devices based on when they were seen.
+    - name: cidr
+      description: Filter devices that are under a specific CIDR.
+    - name: sensor_id
+      description: Filter devices that were observed by a specific sensor.
+    - name: traffic_direction
+      description: Filter devices that have been noted to only have a certain directionality of traffic ("external" vs "internal").
+    - name: sort_by
+      description: 'Sort output by: "ip", "internal", "external".'
+    - name: sort_direction
+      description: Sort direction ("asc" vs "desc").
+    outputs:
+    - contextPath: Insight.Devices.date
+      description: Date when the device was first seen
+      type: date
+    - contextPath: Insight.Devices.external
+      description: If external traffic has been observed for this device
+      type: boolean
+    - contextPath: Insight.Devices.internal
+      description: If internal traffic has been observed for this device
+      type: boolean
+    - contextPath: Insight.Devices.ip_address
+      description: IP address of the device
+      type: string
+    - contextPath: Insight.Devices.sensor_id
+      description: ID code of the sensor
+      type: string
+    description: Get a list of all devices.
+  - name: insight-get-tasks
+    arguments:
+    - name: task_uuid
+      description: Filter to a specific task.
+    outputs:
+    - contextPath: Insight.Tasks.task_uuid
+      description: Unique ID of the task
+      type: string
+    - contextPath: Insight.Tasks.actual_start_time
+      description: Date when the task actually ended
+      type: date
+    - contextPath: Insight.Tasks.requested_start_time
+      description: Requested date for the task start
+      type: date
+    - contextPath: Insight.Tasks.updated_email
+      description: Email address of the user that updated the task
+      type: string
+    - contextPath: Insight.Tasks.created_uuid
+      description: Unique ID of the user that created the task
+      type: string
+    - contextPath: Insight.Tasks.created
+      description: Date when the task was created
+      type: date
+    - contextPath: Insight.Tasks.name
+      description: Name of the task
+      type: string
+    - contextPath: Insight.Tasks.status
+      description: Current status of the task
+      type: string
+    - contextPath: Insight.Tasks.created_email
+      description: Email address of the user that created the task
+      type: string
+    - contextPath: Insight.Tasks.updated_uuid
+      description: Unique ID of the user that updated the task
+      type: string
+    - contextPath: Insight.Tasks.bpf
+      description: Berkeley Packet Filter for the task
+      type: string
+    - contextPath: Insight.Tasks.actual_end_time
+      description: Date when the task actually ended
+      type: date
+    - contextPath: Insight.Tasks.account_code
+      description: ID code of the customer account
+      type: string
+    - contextPath: Insight.Tasks.requested_end_time
+      description: Requested date for the task end
+      type: date
+    - contextPath: Insight.Tasks.updated
+      description: Date when the task was updated
+      type: date
+    - contextPath: Insight.Tasks.description
+      description: Description of the task
+      type: string
+    - contextPath: Insight.Tasks.has_files
+      description: If this task has files (true/false)
+      type: boolean
+    - contextPath: Insight.Tasks.sensor_ids
+      description: Sensors this task is running on
+      type: string
+    - contextPath: Insight.Tasks.files
+      description: Files captured for this task
+      type: string
+    description: Get a list of all the PCAP tasks.
+  - name: insight-create-task
+    arguments:
+    - name: name
+      required: true
+      description: The name of the task.
+    - name: account_uuid
+      required: true
+      description: Account where the task will be created.
+    - name: description
+      required: true
+      description: A description for the task.
+    - name: bpf
+      required: true
+      description: The Berkeley Packet Filter for capture filtering.
+    - name: requested_start_date
+      required: true
+      description: The date the task will become active. (2019-01-30T00:00:00.000Z)
+    - name: requested_end_date
+      required: true
+      description: The date the task will become inactive. (2019-12-31T23:59:59.000Z)
+    - name: sensor_ids
+      required: true
+      description: Sensor IDs on which this task will run (separate multiple accounts by comma).
+    description: Create a new PCAP task.
+  - name: insight-get-detections
+    arguments:
+    - name: rule_uuid
+      description: Filter to a specific rule.
+    - name: account_uuid
+      description: For those with access to multiple accounts, specify a single account to return results from.
+    - name: status
+      description: 'Filter by detection status: active / resolved.'
+    - name: device_ip
+      description: Device IP to filter by.
+    - name: sensor_id
+      description: Sensor ID to filter by.
+    - name: muted
+      description: 'List detections that a user muted: true / false.'
+    - name: muted_device
+      description: 'List detections for muted devices: true / false.'
+    - name: muted_rule
+      description: List detections for muted rules.
+    - name: include
+      auto: PREDEFINED
+      predefined:
+      - rules
+      description: Include additional information in the response (rules).
+    - name: created_or_shared_start_date
+      description: Created or shared start date to filter by (inclusive).
+    - name: created_or_shared_end_date
+      description: Created or shared start date to filter by (exclusive).
+    - name: sort_by
+      description: 'Sort output by: "ip", "internal", "external".'
+    - name: sort_order
+      description: Sort direction ("asc" vs "desc").
+    - name: offset
+      description: The number of records to skip past.
+    - name: limit
+      description: 'The number of records to return, default: 100, max: 1000.'
+      defaultValue: '1000'
+    outputs:
+    - contextPath: Insight.Detections.muted_rule
+      description: Is this rule muted (true/false)
+      type: boolean
+    - contextPath: Insight.Detections.created
+      description: Date when the detection was created
+      type: date
+    - contextPath: Insight.Detections.account_uuid
+      description: Unique ID of the account for this detection
+    - contextPath: Insight.Detections.resolution_timestamp
+      description: Date when the detection was resolved
+      type: date
+    - contextPath: Insight.Detections.first_seen
+      description: Date when the detection was first seen
+      type: date
+    - contextPath: Insight.Detections.muted
+      description: If the detection is muted or not (true/false)
+      type: boolean
+    - contextPath: Insight.Detections.resolution
+      description: Resolution type
+      type: string
+    - contextPath: Insight.Detections.muted_user_uuid
+      description: Unique ID of the user that muted the detection
+      type: string
+    - contextPath: Insight.Detections.last_seen
+      description: Date when the detection was last seen
+      type: date
+    - contextPath: Insight.Detections.status
+      description: Current status of the detection
+      type: string
+    - contextPath: Insight.Detections.resolution_user_uuid
+      description: Unique identifier of the user that resolved the detection
+      type: string
+    - contextPath: Insight.Detections.resolution_comment
+      description: Comment entered when detection was resolved
+      type: string
+    - contextPath: Insight.Detections.muted_comment
+      description: Comment entered when detection was muted
+      type: string
+    - contextPath: Insight.Detections.sensor_id
+      description: ID code of the sensor
+      type: string
+    - contextPath: Insight.Detections.rule_uuid
+      description: Unique ID of the rule for this detection
+      type: string
+    - contextPath: Insight.Detections.updated
+      description: Date when the detection was last updated
+      type: date
+    - contextPath: Insight.Detections.uuid
+      description: Unique ID of the detection
+      type: string
+    - contextPath: Insight.Detections.muted_device_uuid
+      description: Unique ID of the muted device
+      type: string
+    - contextPath: Insight.Detections.device_ip
+      description: IP address of the detection
+      type: string
+    description: Get a list of detections.
+  - name: insight-get-detection-rules
+    arguments:
+    - name: search
+      description: Filter name or category.
+    - name: account_uuid
+      description: For those with access to multiple accounts, specify a single account to return results from.
+    - name: has_detections
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Include rules that have unmuted, unresolved detections.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
+      description: 'Filter by severity: high, moderate, low.'
+    - name: confidence
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
+      description: 'Filter by confidence: high, moderate, low.'
+    - name: category
+      auto: PREDEFINED
+      predefined:
+      - Attack:Command and Control
+      - Attack:Exploitation
+      - Attack:Exfiltration
+      - Attack:Installation
+      - Attack:Lateral Movement
+      - Attack:Infection Vector
+      - Attack:Miscellaneous
+      - Miscellaneous
+      - Posture:Anomalous Activity
+      - Posture:Insecure Configuration
+      - Posture:Potentially Unauthorized Software or Device
+      - Posture:Miscellaneous
+      - PUA:Adware
+      - PUA:Spyware
+      - PUA:Unauthorized Resource Use
+      - PUA:Miscellaneous
+      description: Category to filter by.
+    - name: rule_account_muted
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: 'Include muted rules: true / false.'
+    - name: enabled
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Enabled rules only
+    - name: sort_by
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - internal
+      - external
+      description: 'Sort output by: "ip", "internal", "external".'
+    - name: sort_order
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction ("asc" vs "desc").
+    - name: offset
+      description: The number of records to skip past.
+    - name: limit
+      description: 'The number of records to return, default: 100, max: 1000.'
+    outputs:
+    - contextPath: Insight.Rules.enabled
+      description: 'Status of the rule: If true it is enabled, if false it is disabled.'
+      type: boolean
+    - contextPath: Insight.Rules.updated_user_uuid
+      description: User ID that updated the rule
+      type: string
+    - contextPath: Insight.Rules.rule_accounts
+      description: Accounts which have seen detections for this rule
+      type: string
+    - contextPath: Insight.Rules.auto_resolution_minutes
+      description: Length of time (in minutes) the rule will auto-resolve detections
+      type: number
+    - contextPath: Insight.Rules.created
+      description: Date the rule was created
+      type: date
+    - contextPath: Insight.Rules.account_uuid
+      description: Account ID the rule was created under
+      type: string
+    - contextPath: Insight.Rules.confidence
+      description: Confidence level of the rule
+      type: string
+    - contextPath: Insight.Rules.name
+      description: Name of the rule
+      type: string
+    - contextPath: Insight.Rules.created_user_uuid
+      description: User ID that created the rule
+      type: string
+    - contextPath: Insight.Rules.query_signature
+      description: IQL signature of the rule
+      type: string
+    - contextPath: Insight.Rules.shared_account_uuids
+      description: Account IDs the rule is visible to
+      type: string
+    - contextPath: Insight.Rules.run_account_uuids
+      description: Account IDs the rule runs on
+      type: string
+    - contextPath: Insight.Rules.updated
+      description: Date the rule was updated
+      type: date
+    - contextPath: Insight.Rules.uuid
+      description: Unique ID of the rule
+      type: string
+    - contextPath: Insight.Rules.description
+      description: Description of the rule
+      type: string
+    - contextPath: Insight.Rules.severity
+      description: Severity level of the rule
+      type: string
+    - contextPath: Insight.Rules.category
+      description: Category of the rule
+      type: string
+    description: Get a list of detection rules.
+  - name: insight-resolve-detection
+    arguments:
+    - name: detection_uuid
+      required: true
+      description: Detection UUID to resolve
+    - name: resolution
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - true_positive_mitigated
+      - true_positive_no_action
+      - false_positive
+      - unknown
+      description: 'Resolution state. Options: true_positive_mitigated, true_posititve_no_action, false_positive, unknown'
+    - name: resolution_comment
+      description: Optional comment for the resolution.
+    description: Resolve a specific detection.
+  - name: insight-get-detection-rule-events
+    arguments:
+    - name: rule_uuid
+      required: true
+      description: Rule UUID to get events for
+    - name: offset
+      description: The number of records to skip past
+    - name: limit
+      description: 'The number of records to return, default: 100, max: 1000.'
+    outputs:
+    - contextPath: Insight.Events.src_ip
+      description: Source IP address
+      type: string
+    - contextPath: Insight.Events.dst_ip
+      description: Destination IP address
+      type: string
+    - contextPath: Insight.Events.src_port
+      description: Source port number
+      type: number
+    - contextPath: Insight.Events.dst_port
+      description: Destination port number
+      type: number
+    - contextPath: Insight.Events.host_domain
+      description: Domain name
+      type: string
+    - contextPath: Insight.Events.flow_id
+      description: Unique ID of the flow record
+      type: string
+    - contextPath: Insight.Events.event_type
+      description: Event type
+      type: string
+    - contextPath: Insight.Events.sensor_id
+      description: ID code of the sensor
+      type: string
+    - contextPath: Insight.Events.timestamp
+      description: Date the event occurred
+      type: date
+    - contextPath: Insight.Events.customer_id
+      description: ID code of the customer account
+      type: string
+    - contextPath: Insight.Events.uuid
+      description: Unique ID for the event
+      type: string
+    description: Get a list of the events that matched on a specific rule.
+  - name: insight-create-detection-rule
+    arguments:
+    - name: account_uuid
+      required: true
+      description: Account where the rule will be created.
+    - name: name
+      required: true
+      description: The name of the rule.
+    - name: category
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Attack:Command and Control
+      - Attack:Exploitation
+      - Attack:Exfiltration
+      - Attack:Installation
+      - Attack:Lateral Movement
+      - Attack:Infection Vector
+      - Attack:Miscellaneous
+      - Miscellaneous
+      - Posture:Anomalous Activity
+      - Posture:Insecure Configuration
+      - Posture:Potentially Unauthorized Software or Device
+      - Posture:Miscellaneous
+      - PUA:Adware
+      - PUA:Spyware
+      - PUA:Unauthorized Resource Use
+      - PUA:Miscellaneous
+      description: The category of the rule.
+    - name: query_signature
+      required: true
+      description: The IQL query for the rule.
+    - name: description
+      required: true
+      description: A description for the rule.
+    - name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
+      description: The severity of the rule.
+    - name: confidence
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
+      description: The confidence of the rule.
+    - name: run_account_uuids
+      required: true
+      description: Account UUIDs on which this rule will run. This will usually be just your own account UUID. (separate multiple accounts by comma)
+    - name: auto_resolution_minutes
+      description: The number of minutes after which detections will be auto-resolved. If 0 then detections have to be manually resolved.
+    - name: device_ip_fields
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - DEFAULT
+      - src.ip
+      - dst.ip
+      - dhcp:assignment.ip
+      - dns:answers.ip
+      - http:host.ip
+      - http:uri.host.ip
+      - http:referrer.host.ip
+      - http:headers.location.host.ip
+      - http:headers.origin.host.ip
+      - http:headers.proxied_client_ips.ip
+      - http:headers.refresh.uri.host.ip
+      - smtp:helo.ip
+      - smtp:x_originating_ip.ip
+      - smtp:path.ip
+      - software:host.ip
+      - ssl:server_name_indication.ip
+      - suricata:http.host.ip
+      - x509:san_dns.ip
+      - x509:san_ip.ip
+      description: List of event fields to check for impacted devices
+    description: Create a new detection rule.
+  - name: insight-get-entity-summary
+    arguments:
+    - name: entity
+      required: true
+      description: IP or Domain to get entity data for.
+    outputs:
+    - contextPath: Insight.Entity.Summary.entity
+      description: Entity identifier
+      type: string
+    - contextPath: Insight.Entity.Summary.first_seen
+      description: First seen date for this entity
+      type: date
+    - contextPath: Insight.Entity.Summary.last_seen
+      description: Last seen date for this entity
+      type: date
+    - contextPath: Insight.Entity.Summary.prevalence_count_internal
+      description: Prevalence for this entity within the environment
+      type: number
+    description: Get summary information about an IP or domain.
+  - name: insight-get-entity-pdns
+    arguments:
+    - name: entity
+      required: true
+      description: IP or Domain to get passive DNS data for.
+    outputs:
+    - contextPath: Insight.Entity.PDNS.account_uuid
+      description: Unique ID for the customer account
+      type: string
+    - contextPath: Insight.Entity.PDNS.first_seen
+      description: First seen date for matching dns information
+      type: date
+    - contextPath: Insight.Entity.PDNS.last_seen
+      description: Last seen date for matching dns information
+      type: date
+    - contextPath: Insight.Entity.PDNS.record_type
+      description: DNS record type
+      type: string
+    - contextPath: Insight.Entity.PDNS.resolved
+      description: Domain name resolved from the DNS record
+      type: string
+    - contextPath: Insight.Entity.PDNS.sensor_id
+      description: ID code of the sensor
+      type: string
+    - contextPath: Insight.Entity.PDNS.source
+      description: Source of the DNS record
+      type: string
+    description: Get passive DNS information about an IP or domain.
+  - name: insight-get-entity-dhcp
+    arguments:
+    - name: entity
+      required: true
+      description: IP to get DHCP data for.
+    outputs:
+    - contextPath: Insight.Entity.DHCP.customer_id
+      description: ID code of the customer account
+      type: string
+    - contextPath: Insight.Entity.DHCP.hostnames
+      description: Hostname of the entity
+      type: string
+    - contextPath: Insight.Entity.DHCP.ip
+      description: IP Address of the entity
+      type: string
+    - contextPath: Insight.Entity.DHCP.lease_end
+      description: DHCP lease end date
+      type: date
+    - contextPath: Insight.Entity.DHCP.lease_start
+      description: DHCP lease start date
+      type: date
+    - contextPath: Insight.Entity.DHCP.mac
+      description: MAC address of the entity
+      type: string
+    - contextPath: Insight.Entity.DHCP.sensor_id
+      description: Sensor ID that recorded the entity data
+      type: string
+    - contextPath: Insight.Entity.DHCP.start_lease_as_long
+      description: Start Date as a long value
+      type: number
+    description: Get DHCP information about an IP address.
+  - name: insight-get-entity-file
+    arguments:
+    - name: hash
+      required: true
+      description: File hash. Can be an MD5, SHA1, or SHA256 hash of the file
+    outputs:
+    - contextPath: Insight.Entity.File.entity
+      description: The entity identifier
+      type: string
+    - contextPath: Insight.Entity.File.sha1
+      description: The entity SHA1 hash
+      type: string
+    - contextPath: Insight.Entity.File.sha256
+      description: The entity SHA256 hash
+      type: string
+    - contextPath: Insight.Entity.File.md5
+      description: The entity MD5 hash
+      type: string
+    - contextPath: Insight.Entity.File.customer_id
+      description: ID code of the customer account
+      type: string
+    - contextPath: Insight.Entity.File.names
+      description: File names for the entity
+      type: string
+    - contextPath: Insight.Entity.File.prevalence_count_internal
+      description: Prevalence for this file within the environment
+      type: number
+    - contextPath: Insight.Entity.File.last_seen
+      description: Last seen date for this file
+      type: date
+    - contextPath: Insight.Entity.File.mime_type
+      description: File MIME type
+      type: string
+    - contextPath: Insight.Entity.File.first_seen
+      description: First seen date for this file
+      type: date
+    - contextPath: Insight.Entity.File.bytes
+      description: File size
+      type: number
+    - contextPath: Insight.Entity.File.pe
+      description: File Portable Executable attributes
+      type: string
+    description: Get information about a file.
+  - name: insight-get-telemetry-events
+    arguments:
+    - name: interval
+      auto: PREDEFINED
+      predefined:
+      - hour
+      - day
+      description: 'Interval to group by: hour (default) or day.'
+    - name: start_date
+      description: Start date/time to query for. The default is 1 day ago for interval=hour or 30 days ago for interval=day.
+    - name: end_date
+      description: End date/time to query for. The default is the current time.
+    - name: account_uuid
+      description: Account uuid to filter by.
+    - name: account_code
+      description: Account code to filter by.
+    - name: sensor_id
+      description: Sensor id to filter by.
+    - name: event_type
+      auto: PREDEFINED
+      predefined:
+      - flow
+      - dns
+      - http
+      - ssl
+      - x509
+      description: The type of event. Limited to flow, dns, http, ssl, and x509.
+    - name: group_by
+      auto: PREDEFINED
+      predefined:
+      - sensor_id
+      - event_type
+      description: 'Optionally group results by: sensor_id, event_type.'
+    outputs:
+    - contextPath: Insight.Telemetry.Events.timestamp
+      description: Timestamp of the grouped data
+      type: date
+    - contextPath: Insight.Telemetry.Events.event_count
+      description: Number of events
+      type: number
+    - contextPath: Insight.Telemetry.Events.sensor_id
+      description: Sensor name (if grouped by sensor_id)
+      type: string
+    - contextPath: Insight.Telemetry.Events.event_type
+      description: Type of event (if grouped by event_type)
+      type: string
+    description: Get event telemetry data grouped by time.
+  - name: insight-get-telemetry-packetstats
+    arguments:
+    - name: sensor_id
+      description: Scopes the returned metrics to the interfaces of the specified sensor ID.
+    - name: start_date
+      description: Scopes the returned metrics to dates after the given start_date. If empty returns most current packet stats.
+    - name: end_date
+      description: Scopes the returned metrics to dates before the given end_date. If empty returns most current packet stats
+    - name: interval
+      description: Aggregation interval. 1 hr is not specified by default.
+    - name: group_by
+      auto: PREDEFINED
+      predefined:
+      - interface_name
+      - sensor_id
+      - account_code
+      description: 'Option to group by the following fields: interface_name, sensor_id, account_code.'
+    - name: account_code
+      description: Account code to filter by.
+    outputs:
+    - contextPath: Insight.Telemetry.Packetstats.account_code
+      description: Account code the data was filtered by
+      type: string
+    - contextPath: Insight.Telemetry.Packetstats.timestamp
+      description: Timestamp of the grouped data
+      type: date
+    - contextPath: Insight.Telemetry.Packetstats.interface_name
+      description: Interface the packet data was recorded from
+      type: string
+    - contextPath: Insight.Telemetry.Packetstats.rx_bits_per_second
+      description: Receive throughput (bits per second)
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.rx_bytes
+      description: Receive data size (bytes)
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.rx_errors
+      description: Number of receive errors
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.rx_packets
+      description: Number of receive packets
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.sensor_id
+      description: Sensor ID packet data was recorded from
+      type: string
+    - contextPath: Insight.Telemetry.Packetstats.tx_bytes
+      description: Transmit data size (bytes)
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.tx_errors
+      description: Number of transmit errors
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.tx_packets
+      description: Number of transmit packets
+      type: number
+    description: Get network metrics to a given sensor's interfaces
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   runonce: false
   subtype: python3
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
