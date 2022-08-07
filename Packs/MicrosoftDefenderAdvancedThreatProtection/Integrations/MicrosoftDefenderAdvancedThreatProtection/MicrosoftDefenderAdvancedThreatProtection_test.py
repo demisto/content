@@ -25,7 +25,7 @@ def mock_demisto(mocker):
 client_mocker = MsClient(
     tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url', verify='use_ssl',
     proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
-    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10')
+    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', grant_type='client_credentials')
 
 
 def atp_mocker(mocker, file_name):
