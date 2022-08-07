@@ -100,7 +100,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: if set to true, additional 6 API calls will be performed.'
+      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.'
       isArray: false
       name: threat_model_association
       predefined:
@@ -174,52 +174,52 @@ script:
       description: Tags assigned to the IP.
       type: Unknown
     - contextPath: ThreatStream.IP.IType
-      description: The iType of the indicator associated with the specified model.
+      description: The itype of the indicator associated with the specified model.
       type: String
     - contextPath: IP.Tags
-      description: List of IP Tags.
+      description: List of IP tags.
       type: Unknown
     - contextPath: IP.ThreatTypes
       description: Threat types associated with the IP.
       type: Unknown
     - contextPath: ThreatStream.IP.Actor.assignee_user
-      description: The Assignee User of the Threat Actor
+      description: The assignee user of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.IP.Actor.association_info.comment
       description: The comment in the association info of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.IP.Actor.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.IP.Actor.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.IP.Actor.can_add_public_tags
-      description: Can we add a public tags or not to the threat actor.
+      description: Whether you can add public tags to the threat actor.
       type: Boolean
     - contextPath: ThreatStream.IP.Actor.created_ts
-      description: When was the threat actor cretad.
+      description: The date the threat actor was created.
       type: Date
     - contextPath: ThreatStream.IP.Actor.feed_id
       description: The feed ID of the threat actor.
       type: Number
     - contextPath: ThreatStream.IP.Actor.id
-      description: The id of the threat actor.
+      description: The ID of the threat actor.
       type: Number
     - contextPath: ThreatStream.IP.Actor.is_anonymous
-      description: Whether the threat actor anonymus or not.
+      description: Whether the threat actor is anonymous.
       type: Boolean
     - contextPath: ThreatStream.IP.Actor.is_cloneable
-      description: Whether the threat actor clonable or not.
+      description: Whether the threat actor is cloneable.
       type: String
     - contextPath: ThreatStream.IP.Actor.is_public
-      description: Whether the threat actor is public or not.
+      description: Whether the threat actor is public.
       type: Boolean
     - contextPath: ThreatStream.IP.Actor.is_team
-      description: Whether the threat actor in a team or not.
+      description: Whether the threat actor is a team.
       type: Boolean
     - contextPath: ThreatStream.IP.Actor.modified_ts
-      description: When was the threat actor modified.
+      description: The date the threat actor was modified.
       type: Date
     - contextPath: ThreatStream.IP.Actor.name
       description: The name of the threat actor.
@@ -237,76 +237,76 @@ script:
       description: The publication status of the threat actor.
       type: String
     - contextPath: ThreatStream.IP.Actor.published_ts
-      description: When was the threat actor published.
+      description: The date the threat actor was published.
       type: Date
     - contextPath: ThreatStream.IP.Actor.resource_level
       description: The resource level of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.IP.Actor.resource_uri
-      description: The resource uri of the threat actor.
+      description: The resource URI of the threat actor.
       type: String
     - contextPath: ThreatStream.IP.Actor.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.IP.Actor.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.IP.Actor.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.IP.Actor.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.IP.Actor.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.IP.Actor.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.IP.Actor.tlp
-      description: The tlp of the threat actor.
+      description: The TLP of the threat actor.
       type: String
     - contextPath: ThreatStream.IP.Actor.uuid
-      description: The uuid of the threat actor.
+      description: The UUID of the threat actor.
       type: String
     - contextPath: ThreatStream.IP.Signature.assignee_user
-      description: The Assignee User of the signature
+      description: The assignee user of the signature.
       type: Unknown
     - contextPath: ThreatStream.IP.Signature.association_info.comment
       description: The comment in the association info of the signature.
       type: Unknown
     - contextPath: ThreatStream.IP.Signature.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.IP.Signature.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.IP.Signature.can_add_public_tags
-      description: Can we add a public tags or not to the signature.
+      description: Whether you can add public tags to the signature.
       type: Boolean
     - contextPath: ThreatStream.IP.Signature.created_ts
-      description: When was the signature cretad.
+      description: The date the signature was created.
       type: Date
     - contextPath: ThreatStream.IP.Signature.feed_id
       description: The feed ID of the signature.
       type: Number
     - contextPath: ThreatStream.IP.Signature.id
-      description: The id of the signature.
+      description: The ID of the signature.
       type: Number
     - contextPath: ThreatStream.IP.Signature.is_anonymous
-      description: Whether the signature anonymous or not.
+      description: Whether the signature was anonymous.
       type: Boolean
     - contextPath: ThreatStream.IP.Signature.is_cloneable
-      description: Whether the signature clonable or not.
+      description: Whether the signature is cloneable.
       type: String
     - contextPath: ThreatStream.IP.Signature.is_public
-      description: Whether the signature is public or not.
+      description: Whether the signature is public.
       type: Boolean
     - contextPath: ThreatStream.IP.Signature.is_team
-      description: Whether the signature in a team or not.
+      description: Whether the signature is a team signature.
       type: Boolean
     - contextPath: ThreatStream.IP.Signature.modified_ts
-      description: When was the signature modified.
+      description: The date the signature was modified.
       type: Date
     - contextPath: ThreatStream.IP.Signature.name
       description: The name of the signature.
@@ -324,40 +324,40 @@ script:
       description: The publication status of the signature.
       type: String
     - contextPath: ThreatStream.IP.Signature.published_ts
-      description: When was the signature published.
+      description: The date the signature was published.
       type: Date
     - contextPath: ThreatStream.IP.Signature.resource_level
       description: The resource level of the signature.
       type: Unknown
     - contextPath: ThreatStream.IP.Signature.resource_uri
-      description: The resource uri of the signature.
+      description: The resource URI of the signature.
       type: String
     - contextPath: ThreatStream.IP.Signature.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.IP.Signature.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.IP.Signature.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.IP.Signature.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.IP.Signature.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.IP.Signature.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.IP.Signature.tlp
-      description: The tlp of the signature.
+      description: The TLP of the signature.
       type: String
     - contextPath: ThreatStream.IP.Signature.uuid
-      description: The uuid of the signature.
+      description: The UUID of the signature.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.all_circles_visible
-      description: Are all of the circles visible.
+      description: Whether all of the circles are visible.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.assignee_org
       description: The assignee organization.
@@ -381,10 +381,10 @@ script:
       description: The comment in the association info of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.IP.ThreatBulletin.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.IP.ThreatBulletin.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.body_content_type
       description: The body content type.
@@ -393,10 +393,10 @@ script:
       description: The campaign of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.IP.ThreatBulletin.can_add_public_tags
-      description: Can we add public tags.
+      description: Whether you can add public tags.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.created_ts
-      description: When was the threat bulletin created.
+      description: The date the threat bulletin was created.
       type: Date
     - contextPath: ThreatStream.IP.ThreatBulletin.feed_id
       description: The feed ID of the threat bulletin.
@@ -405,22 +405,22 @@ script:
       description: The ID of the threat bulletin.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.is_anonymous
-      description: Whether the threat bulletin anonymous.
+      description: Whether the threat bulletin is anonymous.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.is_cloneable
-      description: Whether the threat bulletin cloneble.
+      description: Whether the threat bulletin is cloneable.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.is_editable
-      description: Whether the threat bulletin editable.
+      description: Whether the threat bulletin is editable.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.is_email
-      description: Whether the threat bulletin an email.
+      description: Whether the threat bulletin is an email.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.is_public
-      description: Whether the threat bulletin is public or not.
+      description: Whether the threat bulletin is public.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.modified_ts
-      description: When was the threat bulletin modified.
+      description: The date the threat bulletin was modified.
       type: Date
     - contextPath: ThreatStream.IP.ThreatBulletin.name
       description: The name of the threat bulletin.
@@ -432,25 +432,25 @@ script:
       description: The original source ID of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_org.id
-      description: The owner organizetion ID.
+      description: The owner organization ID.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_org.name
-      description: The owner organizetion name.
+      description: The owner organization name.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_org.resource_uri
-      description: The owner organizetion uri.
+      description: The owner organization URI.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_org_id
-      description: The id of the owner user.
+      description: The ID of the owner user.
       type: Number
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_org_name
       description: The name of the owner organization.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user.avatar_s3_url
-      description: The url of the owner user.
+      description: The URL of the owner user.
       type: Unknown
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user.can_share_intelligence
-      description: Can we share intelligence or not.
+      description: Whether you can share intelligence.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user.email
       description: The email of the owner user.
@@ -459,19 +459,19 @@ script:
       description: The ID of the owner user.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user.is_active
-      description: Is the owner user active.
+      description: Whether the owner user is active.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user.is_readonly
-      description: Is the owner user read only.
+      description: Whether the owner user has read-only permission.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user.must_change_password
-      description: Does the owner user must change password.
+      description: Whether the owner user must change the password.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user.name
       description: The owner user name.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user.nickname
-      description: The owner user nickname
+      description: The owner user nickname.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user.organization.id
       description: The ID of the owner user organization.
@@ -480,10 +480,10 @@ script:
       description: The name of the owner user organization.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user.organization.resource_uri
-      description: The resource uri of the owner user organization.
+      description: The resource URI of the owner user organization.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user.resource_uri
-      description: The resource uri of the owner user.
+      description: The resource URI of the owner user.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.owner_user_id
       description: The owner user ID of the threat bulletin.
@@ -495,25 +495,25 @@ script:
       description: The parent of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.IP.ThreatBulletin.published_ts
-      description: When was the threat bulletin published.
+      description: The date the threat bulletin was published.
       type: Unknown
     - contextPath: ThreatStream.IP.ThreatBulletin.resource_uri
-      description: The resource uri of the threat bulletin.
+      description: The resource URI of the threat bulletin.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.source
       description: The source of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.IP.ThreatBulletin.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.IP.ThreatBulletin.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.IP.ThreatBulletin.starred_by_me
-      description: Was the threat bulletin started bt me.
+      description: Whether the threat bulletin was started by me.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.starred_total_count
-      description: The total count of times the threat bulletin was starred.
+      description: The total number of times the threat bulletin was starred.
       type: Number
     - contextPath: ThreatStream.IP.ThreatBulletin.status
       description: The status of the threat bulletin.
@@ -531,55 +531,55 @@ script:
       description: The UUID of the threat bulletin.
       type: String
     - contextPath: ThreatStream.IP.ThreatBulletin.votes.me
-      description: How nany votes by me.
+      description: The number of votes by me.
       type: Unknown
     - contextPath: ThreatStream.IP.ThreatBulletin.votes.total
-      description: How many votes total.
+      description: The number of total votes.
       type: Number
     - contextPath: ThreatStream.IP.ThreatBulletin.watched_by_me
-      description: Was the threat bulletin watched by me?
+      description: Whether the threat bulletin was watched by me.
       type: Boolean
     - contextPath: ThreatStream.IP.ThreatBulletin.watched_total_count
-      description: The total count of watchers.
+      description: The total number of watchers.
       type: Number
     - contextPath: ThreatStream.IP.TTP.assignee_user
-      description: The Assignee User of the TTP.
+      description: The assignee user of the TTP.
       type: Unknown
     - contextPath: ThreatStream.IP.TTP.association_info.comment
       description: The comment in the association info of the TTP.
       type: Unknown
     - contextPath: ThreatStream.IP.TTP.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.IP.TTP.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.IP.TTP.can_add_public_tags
-      description: Can we add a public tags or not to the TTP.
+      description: Whether you can add public tags to the TTP.
       type: Boolean
     - contextPath: ThreatStream.IP.TTP.created_ts
-      description: When was the TTP cretad.
+      description: The date the TTP was created.
       type: Date
     - contextPath: ThreatStream.IP.TTP.feed_id
       description: The feed ID of the TTP.
       type: Number
     - contextPath: ThreatStream.IP.TTP.id
-      description: The id of the TTP.
+      description: The ID of the TTP.
       type: Number
     - contextPath: ThreatStream.IP.TTP.is_anonymous
-      description: Whether the TTP anonymus or not.
+      description: Whether the TTP was anonymous.
       type: Boolean
     - contextPath: ThreatStream.IP.TTP.is_cloneable
-      description: Whether the TTP clonable or not.
+      description: Whether the TTP was cloneable.
       type: String
     - contextPath: ThreatStream.IP.TTP.is_public
-      description: Whether the TTP public or not.
+      description: Whether the TTP is public.
       type: Boolean
     - contextPath: ThreatStream.IP.TTP.is_team
-      description: Whether the TTP in a team or not.
+      description: Whether the TTP is a team.
       type: Boolean
     - contextPath: ThreatStream.IP.TTP.modified_ts
-      description: When was the TTP modified.
+      description: The date the TTP was modified.
       type: Date
     - contextPath: ThreatStream.IP.TTP.name
       description: The name of the TTP.
@@ -597,52 +597,52 @@ script:
       description: The publication status of the TTP.
       type: String
     - contextPath: ThreatStream.IP.TTP.published_ts
-      description: When was the TTP published.
+      description: The date the TTP was published.
       type: Date
     - contextPath: ThreatStream.IP.TTP.resource_level
       description: The resource level of the TTP.
       type: Unknown
     - contextPath: ThreatStream.IP.TTP.resource_uri
-      description: The resource uri of the TTP.
+      description: The resource URI of the TTP.
       type: String
     - contextPath: ThreatStream.IP.TTP.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.IP.TTP.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.IP.TTP.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.IP.TTP.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.IP.TTP.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.IP.TTP.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.IP.TTP.tlp
-      description: The tlp of the TTP.
+      description: The TLP of the TTP.
       type: String
     - contextPath: ThreatStream.IP.TTP.uuid
-      description: The uuid of the TTP.
+      description: The UUID of the TTP.
       type: String
     - contextPath: ThreatStream.IP.Vulnerability.assignee_user
-      description: The Assignee User of the vulnerability.
+      description: The assignee user of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.IP.Vulnerability.association_info.comment
       description: The comment in the association info of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.IP.Vulnerability.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.IP.Vulnerability.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.IP.Vulnerability.can_add_public_tags
-      description: Can we add a public tags or not to the vulnerability.
+      description: Whether you can add public tags to the threat actor.
       type: Boolean
     - contextPath: ThreatStream.IP.Vulnerability.circles.id
       description: The ID of the circle.
@@ -651,10 +651,10 @@ script:
       description: The name of the circle.
       type: String
     - contextPath: ThreatStream.IP.Vulnerability.circles.resource_uri
-      description: The resource uri of the circle.
+      description: The resource URI of the circle.
       type: String
     - contextPath: ThreatStream.IP.Vulnerability.created_ts
-      description: When was the vulnerability created.
+      description: The date the vulnerability was created.
       type: Date
     - contextPath: ThreatStream.IP.Vulnerability.feed_id
       description: The feed ID of the vulnerability.
@@ -663,19 +663,19 @@ script:
       description: The ID of the vulnerability.
       type: Number
     - contextPath: ThreatStream.IP.Vulnerability.is_anonymous
-      description: Whether the vulnerability anonymus or not.
+      description: Whether the vulnerability is anonymous.
       type: Boolean
     - contextPath: ThreatStream.IP.Vulnerability.is_cloneable
-      description: Whether the vulnerability clonable or not.
+      description: Whether the vulnerability is cloneable.
       type: String
     - contextPath: ThreatStream.IP.Vulnerability.is_public
-      description: Whether the vulnerability public or not.
+      description: Whether the vulnerability is public.
       type: Boolean
     - contextPath: ThreatStream.IP.Vulnerability.is_system
-      description: Whether the vulnerability in the system or not.
+      description: Whether the vulnerability is in the system.
       type: Boolean
     - contextPath: ThreatStream.IP.Vulnerability.modified_ts
-      description: When was the vulnerability modified.
+      description: The date the vulnerability was modified.
       type: Date
     - contextPath: ThreatStream.IP.Vulnerability.name
       description: The name of the vulnerability.
@@ -690,10 +690,10 @@ script:
       description: The publication status of the vulnerability.
       type: String
     - contextPath: ThreatStream.IP.Vulnerability.published_ts
-      description: When was the vulnerability published.
+      description: The date the vulnerability was published.
       type: Date
     - contextPath: ThreatStream.IP.Vulnerability.resource_uri
-      description: The resource uri of the vulnerability.
+      description: The resource URI of the vulnerability.
       type: String
     - contextPath: ThreatStream.IP.Vulnerability.source
       description: The source of the vulnerability.
@@ -702,19 +702,19 @@ script:
       description: The feed ID of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.IP.Vulnerability.source_modified
-      description: Was the source modified.
+      description: Whether the source was modified.
       type: Unknown
     - contextPath: ThreatStream.IP.Vulnerability.tags
       description: The tags of the vulnerability.
       type: String
     - contextPath: ThreatStream.IP.Vulnerability.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.IP.Vulnerability.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.IP.Vulnerability.tlp
-      description: The tlp of the vulnerability.
+      description: The TLP of the vulnerability.
       type: String
     - contextPath: ThreatStream.IP.Vulnerability.update_id
       description: The update ID of the vulnerability.
@@ -723,22 +723,22 @@ script:
       description: The UUID of the vulnerability.
       type: String
     - contextPath: ThreatStream.IP.Campaign.assignee_user
-      description: The Assignee User of the vulnerability.
+      description: The assignee user of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.IP.Campaign.association_info.comment
       description: The comment in the association info of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.IP.Campaign.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.IP.Campaign.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.IP.Campaign.can_add_public_tags
-      description: Can we add a public tags or not to the campaign.
+      description: Whether you can add public tags to the campaign.
       type: Boolean
     - contextPath: ThreatStream.IP.Campaign.created_ts
-      description: When was the campaign created.
+      description: The date the campaign was created.
       type: Date
     - contextPath: ThreatStream.IP.Campaign.end_date
       description: The end date of the campaign.
@@ -750,19 +750,19 @@ script:
       description: The ID of the campaign.
       type: Number
     - contextPath: ThreatStream.IP.Campaign.is_anonymous
-      description: Whether the campaign anonymus or not.
+      description: Whether the campaign is anonymous.
       type: Boolean
     - contextPath: ThreatStream.IP.Campaign.is_cloneable
-      description: Whether the campaign clonable or not.
+      description: Whether the campaign is cloneable.
       type: String
     - contextPath: ThreatStream.IP.Campaign.is_public
-      description: Whether the campaign public or not.
+      description: Whether the campaign is public.
       type: Boolean
     - contextPath: ThreatStream.IP.Campaign.modified_ts
-      description: When was the campain modified.
+      description: The date the campaign was modified.
       type: Date
     - contextPath: ThreatStream.IP.Campaign.name
-      description: The name of the Campaign.
+      description: The name of the campaign.
       type: String
     - contextPath: ThreatStream.IP.Campaign.objective
       description: The objective of the campaign.
@@ -774,19 +774,19 @@ script:
       description: The owner user ID of the campaign.
       type: Number
     - contextPath: ThreatStream.IP.Campaign.publication_status
-      description: The publication status of the campaign
+      description: The publication status of the campaign.
       type: String
     - contextPath: ThreatStream.IP.Campaign.published_ts
-      description: When was the campaign published.
+      description: The date the campaign was published.
       type: Unknown
     - contextPath: ThreatStream.IP.Campaign.resource_uri
-      description: The resource uri of the campaign.
+      description: The resource URI of the campaign.
       type: String
     - contextPath: ThreatStream.IP.Campaign.source_created
-      description: When was the campaign created.
+      description: The date the campaign was created.
       type: Date
     - contextPath: ThreatStream.IP.Campaign.source_modified
-      description: Was the source modified or not.
+      description: Whether the source was modified.
       type: Date
     - contextPath: ThreatStream.IP.Campaign.start_date
       description: The start date of the campaign.
@@ -795,13 +795,13 @@ script:
       description: The display name of the status.
       type: String
     - contextPath: ThreatStream.IP.Campaign.status.id
-      description: The id of the status of the campaign.
+      description: The ID of the status of the campaign.
       type: Number
     - contextPath: ThreatStream.IP.Campaign.status.resource_uri
-      description: The resource uri of the status of the campaign.
+      description: The resource URI of the status of the campaign.
       type: String
     - contextPath: ThreatStream.IP.Campaign.tlp
-      description: The tlp of the campaign.
+      description: The TLP of the campaign.
       type: String
     - contextPath: ThreatStream.IP.Campaign.uuid
       description: The UUID of the campaign.
@@ -814,7 +814,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If confidence is greater than the threshold the Domain is considered malicious, otherwise it is considered good. This argument overrides the default Domain threshold defined as a parameter.
+      description: If confidence is greater than the threshold the domain is considered malicious, otherwise it is considered good. This argument overrides the default domain threshold defined as a parameter.
       isArray: false
       name: threshold
       required: false
@@ -832,7 +832,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: if set to true, additional 6 API calls will be performed.'
+      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.'
       isArray: false
       name: threat_model_association
       predefined:
@@ -849,7 +849,7 @@ script:
       description: The domain name.
       type: String
     - contextPath: Domain.DNS
-      description: The IP addresses resolved by DNS.
+      description: The IP addresses resolved by the DNS.
       type: String
     - contextPath: Domain.WHOIS.CreationDate
       description: |-
@@ -862,7 +862,7 @@ script:
         for time in UTC time.
       type: Date
     - contextPath: Domain.WHOIS.Registrant.Name
-      description: The registant name.
+      description: The registrant name.
       type: String
     - contextPath: Domain.WHOIS.Registrant.Email
       description: The registrant email address.
@@ -921,7 +921,7 @@ script:
       description: Tags assigned to the domain.
       type: Unknown
     - contextPath: ThreatStream.Domain.IType
-      description: The iType of the indicator associated with the specified model.
+      description: The itype of the indicator associated with the specified model.
       type: String
     - contextPath: Domain.Tags
       description: List of domain tags.
@@ -930,43 +930,43 @@ script:
       description: Threat types associated with the domain.
       type: Unknown
     - contextPath: ThreatStream.Domain.Actor.assignee_user
-      description: The Assignee User of the Threat Actor
+      description: The assignee user of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.Domain.Actor.association_info.comment
       description: The comment in the association info of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.Domain.Actor.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.Domain.Actor.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.Domain.Actor.can_add_public_tags
-      description: Can we add a public tags or not to the threat actor.
+      description: Whether you can add public tags to the threat actor.
       type: Boolean
     - contextPath: ThreatStream.Domain.Actor.created_ts
-      description: When was the threat actor cretad.
+      description: The date the threat actor was created.
       type: Date
     - contextPath: ThreatStream.Domain.Actor.feed_id
       description: The feed ID of the threat actor.
       type: Number
     - contextPath: ThreatStream.Domain.Actor.id
-      description: The id of the threat actor.
+      description: The ID of the threat actor.
       type: Number
     - contextPath: ThreatStream.Domain.Actor.is_anonymous
-      description: Whether the threat actor anonymus or not.
+      description: Whether the threat actor is anonymous.
       type: Boolean
     - contextPath: ThreatStream.Domain.Actor.is_cloneable
-      description: Whether the threat actor clonable or not.
+      description: Whether the threat actor is cloneable.
       type: String
     - contextPath: ThreatStream.Domain.Actor.is_public
-      description: Whether the threat actor public or not.
+      description: Whether the threat actor is public.
       type: Boolean
     - contextPath: ThreatStream.Domain.Actor.is_team
-      description: Whether the threat actor in a team or not.
+      description: Whether the threat actor is a team.
       type: Boolean
     - contextPath: ThreatStream.Domain.Actor.modified_ts
-      description: When was the threat actor modified.
+      description: The date the threat actor was modified.
       type: Date
     - contextPath: ThreatStream.Domain.Actor.name
       description: The name of the threat actor.
@@ -984,76 +984,76 @@ script:
       description: The publication status of the threat actor.
       type: String
     - contextPath: ThreatStream.Domain.Actor.published_ts
-      description: When was the threat actor published.
+      description: The date the threat actor was published.
       type: Date
     - contextPath: ThreatStream.Domain.Actor.resource_level
       description: The resource level of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.Domain.Actor.resource_uri
-      description: The resource uri of the threat actor.
+      description: The resource URI of the threat actor.
       type: String
     - contextPath: ThreatStream.Domain.Actor.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.Domain.Actor.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.Domain.Actor.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.Domain.Actor.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.Domain.Actor.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.Domain.Actor.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.Domain.Actor.tlp
-      description: The tlp of the threat actor.
+      description: The TLP of the threat actor.
       type: String
     - contextPath: ThreatStream.Domain.Actor.uuid
-      description: The uuid of the threat actor.
+      description: The UUID of the threat actor.
       type: String
     - contextPath: ThreatStream.Domain.Signature.assignee_user
-      description: The Assignee User of the signature
+      description: The assignee user of the signature.
       type: Unknown
     - contextPath: ThreatStream.Domain.Signature.association_info.comment
       description: The comment in the association info of the signature.
       type: Unknown
     - contextPath: ThreatStream.Domain.Signature.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.Domain.Signature.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.Domain.Signature.can_add_public_tags
-      description: Can we add a public tags or not to the signature.
+      description: Whether you can add public tags to the signature.
       type: Boolean
     - contextPath: ThreatStream.Domain.Signature.created_ts
-      description: When was the signature cretad.
+      description: The date the signature was created.
       type: Date
     - contextPath: ThreatStream.Domain.Signature.feed_id
       description: The feed ID of the signature.
       type: Number
     - contextPath: ThreatStream.Domain.Signature.id
-      description: The id of the signature.
+      description: The ID of the signature.
       type: Number
     - contextPath: ThreatStream.Domain.Signature.is_anonymous
-      description: Whether the signature anonymus or not.
+      description: Whether the signature is anonymous.
       type: Boolean
     - contextPath: ThreatStream.Domain.Signature.is_cloneable
-      description: Whether the signature clonable or not.
+      description: Whether the signature is cloneable.
       type: String
     - contextPath: ThreatStream.Domain.Signature.is_public
-      description: Whether the signature public or not.
+      description: Whether the signature is public.
       type: Boolean
     - contextPath: ThreatStream.Domain.Signature.is_team
-      description: Whether the signature in a team or not.
+      description: Whether the signature is a team signature.
       type: Boolean
     - contextPath: ThreatStream.Domain.Signature.modified_ts
-      description: When was the signature modified.
+      description: The date the signature was modified.
       type: Date
     - contextPath: ThreatStream.Domain.Signature.name
       description: The name of the signature.
@@ -1071,40 +1071,40 @@ script:
       description: The publication status of the signature.
       type: String
     - contextPath: ThreatStream.Domain.Signature.published_ts
-      description: When was the signature published.
+      description: The date the signature was published.
       type: Date
     - contextPath: ThreatStream.Domain.Signature.resource_level
       description: The resource level of the signature.
       type: Unknown
     - contextPath: ThreatStream.Domain.Signature.resource_uri
-      description: The resource uri of the signature.
+      description: The resource URI of the signature.
       type: String
     - contextPath: ThreatStream.Domain.Signature.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.Domain.Signature.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.Domain.Signature.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.Domain.Signature.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.Domain.Signature.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.Domain.Signature.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.Domain.Signature.tlp
-      description: The tlp of the signature.
+      description: The TLP of the signature.
       type: String
     - contextPath: ThreatStream.Domain.Signature.uuid
-      description: The uuid of the signature.
+      description: The UUID of the signature.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.all_circles_visible
-      description: Are all of the circles visible.
+      description: Whether all of the circles are visible.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.assignee_org
       description: The assignee organization.
@@ -1128,10 +1128,10 @@ script:
       description: The comment in the association info of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.Domain.ThreatBulletin.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.Domain.ThreatBulletin.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.body_content_type
       description: The body content type.
@@ -1140,10 +1140,10 @@ script:
       description: The campaign of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.Domain.ThreatBulletin.can_add_public_tags
-      description: Can we add public tags.
+      description: Whether you can add public tags.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.created_ts
-      description: When was the threat bulletin created.
+      description: The date the threat bulletin was created.
       type: Date
     - contextPath: ThreatStream.Domain.ThreatBulletin.feed_id
       description: The feed ID of the threat bulletin.
@@ -1152,22 +1152,22 @@ script:
       description: The ID of the threat bulletin.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.is_anonymous
-      description: Whether the threat bulletin anonymous.
+      description: Whether the threat bulletin is anonymous.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.is_cloneable
-      description: Whether the threat bulletin cloneble.
+      description: Whether the threat bulletin is cloneable.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.is_editable
-      description: Whether the threat bulletin editable.
+      description: Whether the threat bulletin is editable.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.is_email
-      description: Whether the threat bulletin an email.
+      description: Whether the threat bulletin is an email.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.is_public
-      description: Whether the threat bulletin public.
+      description: Whether the threat bulletin is public.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.modified_ts
-      description: When was the threat bulletin modified.
+      description: The date the threat bulletin was modified.
       type: Date
     - contextPath: ThreatStream.Domain.ThreatBulletin.name
       description: The name of the threat bulletin.
@@ -1179,25 +1179,25 @@ script:
       description: The original source ID of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_org.id
-      description: The owner organizetion ID.
+      description: The owner organization ID.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_org.name
-      description: The owner organizetion name.
+      description: The owner organization name.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_org.resource_uri
-      description: The owner organizetion uri.
+      description: The owner organization URI.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_org_id
-      description: The id of the owner user.
+      description: The ID of the owner user.
       type: Number
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_org_name
       description: The name of the owner organization.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user.avatar_s3_url
-      description: The url of the owner user.
+      description: The URL of the owner user.
       type: Unknown
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user.can_share_intelligence
-      description: Can we share intelligence or not.
+      description: Whether you can share intelligence.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user.email
       description: The email of the owner user.
@@ -1206,19 +1206,19 @@ script:
       description: The ID of the owner user.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user.is_active
-      description: Is the owner user active.
+      description: Whether the owner user is active.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user.is_readonly
-      description: Is the owner user read only.
+      description: Whether the owner user has read-only permission.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user.must_change_password
-      description: Does the owner user must change password.
+      description: Whether the owner user must change the password.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user.name
       description: The owner user name.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user.nickname
-      description: The owner user nickname
+      description: The owner user nickname.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user.organization.id
       description: The ID of the owner user organization.
@@ -1227,10 +1227,10 @@ script:
       description: The name of the owner user organization.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user.organization.resource_uri
-      description: The resource uri of the owner user organization.
+      description: The resource URI of the owner user organization.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user.resource_uri
-      description: The resource uri of the owner user.
+      description: The resource URI of the owner user.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.owner_user_id
       description: The owner user ID of the threat bulletin.
@@ -1242,25 +1242,25 @@ script:
       description: The parent of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.Domain.ThreatBulletin.published_ts
-      description: When was the threat bulletin published.
+      description: The date the threat bulletin was published.
       type: Unknown
     - contextPath: ThreatStream.Domain.ThreatBulletin.resource_uri
-      description: The resource uri of the threat bulletin.
+      description: The resource URI of the threat bulletin.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.source
       description: The source of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.Domain.ThreatBulletin.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.Domain.ThreatBulletin.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.Domain.ThreatBulletin.starred_by_me
-      description: Was the threat bulletin started bt me.
+      description: Whether the threat bulletin was started by me.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.starred_total_count
-      description: The total count of times the threat bulletin was starred.
+      description: The total number of times the threat bulletin was starred.
       type: Number
     - contextPath: ThreatStream.Domain.ThreatBulletin.status
       description: The status of the threat bulletin.
@@ -1278,55 +1278,55 @@ script:
       description: The UUID of the threat bulletin.
       type: String
     - contextPath: ThreatStream.Domain.ThreatBulletin.votes.me
-      description: How nany votes by me.
+      description: The number of votes by me.
       type: Unknown
     - contextPath: ThreatStream.Domain.ThreatBulletin.votes.total
-      description: How many votes total.
+      description: The number of total votes.
       type: Number
     - contextPath: ThreatStream.Domain.ThreatBulletin.watched_by_me
-      description: Was the threat bulletin watched by me?
+      description: Whether the threat bulletin was watched by me.
       type: Boolean
     - contextPath: ThreatStream.Domain.ThreatBulletin.watched_total_count
-      description: The total count of watchers.
+      description: The total number of watchers.
       type: Number
     - contextPath: ThreatStream.Domain.TTP.assignee_user
-      description: The Assignee User of the TTP.
+      description: The assignee user of the TTP.
       type: Unknown
     - contextPath: ThreatStream.Domain.TTP.association_info.comment
       description: The comment in the association info of the TTP.
       type: Unknown
     - contextPath: ThreatStream.Domain.TTP.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.Domain.TTP.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.Domain.TTP.can_add_public_tags
-      description: Can we add a public tags or not to the TTP.
+      description: Whether you can add public tags to the TTP.
       type: Boolean
     - contextPath: ThreatStream.Domain.TTP.created_ts
-      description: When was the TTP cretad.
+      description: The date the TTP was created.
       type: Date
     - contextPath: ThreatStream.Domain.TTP.feed_id
       description: The feed ID of the TTP.
       type: Number
     - contextPath: ThreatStream.Domain.TTP.id
-      description: The id of the TTP.
+      description: The ID of the TTP.
       type: Number
     - contextPath: ThreatStream.Domain.TTP.is_anonymous
-      description: Whether the TTP anonymus or not.
+      description: Whether the TTP was anonymous.
       type: Boolean
     - contextPath: ThreatStream.Domain.TTP.is_cloneable
-      description: Whether the TTP clonable or not.
+      description: Whether the TTP was cloneable.
       type: String
     - contextPath: ThreatStream.Domain.TTP.is_public
-      description: Whether the TTP public or not.
+      description: Whether the TTP is public.
       type: Boolean
     - contextPath: ThreatStream.Domain.TTP.is_team
-      description: Whether the TTP in a team or not.
+      description: Whether the TTP is a team.
       type: Boolean
     - contextPath: ThreatStream.Domain.TTP.modified_ts
-      description: When was the TTP modified.
+      description: The date the TTP was modified.
       type: Date
     - contextPath: ThreatStream.Domain.TTP.name
       description: The name of the TTP.
@@ -1344,52 +1344,52 @@ script:
       description: The publication status of the TTP.
       type: String
     - contextPath: ThreatStream.Domain.TTP.published_ts
-      description: When was the TTP published.
+      description: The date the TTP was published.
       type: Date
     - contextPath: ThreatStream.Domain.TTP.resource_level
       description: The resource level of the TTP.
       type: Unknown
     - contextPath: ThreatStream.Domain.TTP.resource_uri
-      description: The resource uri of the TTP.
+      description: The resource URI of the TTP.
       type: String
     - contextPath: ThreatStream.Domain.TTP.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.Domain.TTP.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.Domain.TTP.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.Domain.TTP.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.Domain.TTP.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.Domain.TTP.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.Domain.TTP.tlp
-      description: The tlp of the TTP.
+      description: The TLP of the TTP.
       type: String
     - contextPath: ThreatStream.Domain.TTP.uuid
-      description: The uuid of the TTP.
+      description: The UUID of the TTP.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.assignee_user
-      description: The Assignee User of the vulnerability.
+      description: The assignee user of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.Domain.Vulnerability.association_info.comment
       description: The comment in the association info of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.Domain.Vulnerability.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.Domain.Vulnerability.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.Domain.Vulnerability.can_add_public_tags
-      description: Can we add a public tags or not to the vulnerability.
+      description: Whether you can add public tags to the threat actor.
       type: Boolean
     - contextPath: ThreatStream.Domain.Vulnerability.circles.id
       description: The ID of the circle.
@@ -1398,10 +1398,10 @@ script:
       description: The name of the circle.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.circles.resource_uri
-      description: The resource uri of the circle.
+      description: The resource URI of the circle.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.created_ts
-      description: When was the vulnerability created.
+      description: The date the vulnerability was created.
       type: Date
     - contextPath: ThreatStream.Domain.Vulnerability.feed_id
       description: The feed ID of the vulnerability.
@@ -1410,19 +1410,19 @@ script:
       description: The ID of the vulnerability.
       type: Number
     - contextPath: ThreatStream.Domain.Vulnerability.is_anonymous
-      description: Whether the vulnerability anonymus or not.
+      description: Whether the vulnerability is anonymous.
       type: Boolean
     - contextPath: ThreatStream.Domain.Vulnerability.is_cloneable
-      description: Whether the vulnerability clonable or not.
+      description:  Whether the vulnerability is cloneable.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.is_public
-      description: Whether the vulnerability public or not.
+      description: Whether the vulnerability is public.
       type: Boolean
     - contextPath: ThreatStream.Domain.Vulnerability.is_system
-      description: Whether the vulnerability in the system or not.
+      description: Whether the vulnerability is in the system.
       type: Boolean
     - contextPath: ThreatStream.Domain.Vulnerability.modified_ts
-      description: When was the vulnerability modified.
+      description: The date the vulnerability was modified.
       type: Date
     - contextPath: ThreatStream.Domain.Vulnerability.name
       description: The name of the vulnerability.
@@ -1437,10 +1437,10 @@ script:
       description: The publication status of the vulnerability.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.published_ts
-      description: When was the vulnerability published.
+      description: The date the vulnerability was published.
       type: Date
     - contextPath: ThreatStream.Domain.Vulnerability.resource_uri
-      description: The resource uri of the vulnerability.
+      description: The resource URI of the vulnerability.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.source
       description: The source of the vulnerability.
@@ -1449,19 +1449,19 @@ script:
       description: The feed ID of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.Domain.Vulnerability.source_modified
-      description: Was the source modified.
+      description: Whether the source was modified.
       type: Unknown
     - contextPath: ThreatStream.Domain.Vulnerability.tags
       description: The tags of the vulnerability.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.tlp
-      description: The tlp of the vulnerability.
+      description: The TLP of the vulnerability.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.update_id
       description: The update ID of the vulnerability.
@@ -1470,22 +1470,22 @@ script:
       description: The UUID of the vulnerability.
       type: String
     - contextPath: ThreatStream.Domain.Campaign.assignee_user
-      description: The Assignee User of the vulnerability.
+      description: The assignee user of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.Domain.Campaign.association_info.comment
       description: The comment in the association info of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.Domain.Campaign.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.Domain.Campaign.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.Domain.Campaign.can_add_public_tags
-      description: Can we add a public tags or not to the campaign.
+      description: Whether you can add public tags to the campaign.
       type: Boolean
     - contextPath: ThreatStream.Domain.Campaign.created_ts
-      description: When was the campaign created.
+      description: The date the campaign was created.
       type: Date
     - contextPath: ThreatStream.Domain.Campaign.end_date
       description: The end date of the campaign.
@@ -1497,19 +1497,19 @@ script:
       description: The ID of the campaign.
       type: Number
     - contextPath: ThreatStream.Domain.Campaign.is_anonymous
-      description: Whether the campaign anonymus or not.
+      description: Whether the campaign is anonymous.
       type: Boolean
     - contextPath: ThreatStream.Domain.Campaign.is_cloneable
-      description: Whether the campaign clonable or not.
+      description: Whether the campaign is cloneable.
       type: String
     - contextPath: ThreatStream.Domain.Campaign.is_public
-      description: Whether the campaign public or not.
+      description: Whether the campaign is public.
       type: Boolean
     - contextPath: ThreatStream.Domain.Campaign.modified_ts
-      description: When was the campain modified.
+      description: The date the campaign was modified.
       type: Date
     - contextPath: ThreatStream.Domain.Campaign.name
-      description: The name of the Campaign.
+      description: The name of the campaign.
       type: String
     - contextPath: ThreatStream.Domain.Campaign.objective
       description: The objective of the campaign.
@@ -1521,19 +1521,19 @@ script:
       description: The owner user ID of the campaign.
       type: Number
     - contextPath: ThreatStream.Domain.Campaign.publication_status
-      description: The publication status of the campaign
+      description: The publication status of the campaign.
       type: String
     - contextPath: ThreatStream.Domain.Campaign.published_ts
-      description: When was the campaign published.
+      description: The date the campaign was published.
       type: Unknown
     - contextPath: ThreatStream.Domain.Campaign.resource_uri
-      description: The resource uri of the campaign.
+      description: The resource URI of the campaign.
       type: String
     - contextPath: ThreatStream.Domain.Campaign.source_created
-      description: When was the campaign created.
+      description: The date the campaign was created.
       type: Date
     - contextPath: ThreatStream.Domain.Campaign.source_modified
-      description: Was the source modified or not.
+      description: Whether the source was modified.
       type: Date
     - contextPath: ThreatStream.Domain.Campaign.start_date
       description: The start date of the campaign.
@@ -1542,13 +1542,13 @@ script:
       description: The display name of the status.
       type: String
     - contextPath: ThreatStream.Domain.Campaign.status.id
-      description: The id of the status of the campaign.
+      description: The ID of the status of the campaign.
       type: Number
     - contextPath: ThreatStream.Domain.Campaign.status.resource_uri
-      description: The resource uri of the status of the campaign.
+      description: The resource URI of the status of the campaign.
       type: String
     - contextPath: ThreatStream.Domain.Campaign.tlp
-      description: The tlp of the campaign.
+      description: The TLP of the campaign.
       type: String
     - contextPath: ThreatStream.Domain.Campaign.uuid
       description: The UUID of the campaign.
@@ -1579,7 +1579,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: if set to true, additional 6 API calls will be performed.'
+      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.'
       isArray: false
       name: threat_model_association
       predefined:
@@ -1655,7 +1655,7 @@ script:
       description: Tags assigned to the file.
       type: Unknown
     - contextPath: ThreatStream.File.IType
-      description: The iType of the indicator associated with the specified model.
+      description: The itype of the indicator associated with the specified model.
       type: String
     - contextPath: File.Tags
       description: List of file tags.
@@ -1664,43 +1664,43 @@ script:
       description: Threat types associated with the file.
       type: Unknown
     - contextPath: ThreatStream.File.Actor.assignee_user
-      description: The Assignee User of the Threat Actor
+      description: The assignee user of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.File.Actor.association_info.comment
       description: The comment in the association info of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.File.Actor.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.File.Actor.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.File.Actor.can_add_public_tags
-      description: Can we add a public tags or not to the threat actor.
+      description: Whether you can add public tags to the threat actor.
       type: Boolean
     - contextPath: ThreatStream.File.Actor.created_ts
-      description: When was the threat actor cretad.
+      description: The date the threat actor was created.
       type: Date
     - contextPath: ThreatStream.File.Actor.feed_id
       description: The feed ID of the threat actor.
       type: Number
     - contextPath: ThreatStream.File.Actor.id
-      description: The id of the threat actor.
+      description: The ID of the threat actor.
       type: Number
     - contextPath: ThreatStream.File.Actor.is_anonymous
-      description: Whether the threat actor anonymus or not.
+      description: Whether the threat actor is anonymous.
       type: Boolean
     - contextPath: ThreatStream.File.Actor.is_cloneable
-      description: Whether the threat actor clonable or not.
+      description: Whether the threat actor is cloneable.
       type: String
     - contextPath: ThreatStream.File.Actor.is_public
-      description: Whether the threat actor public or not.
+      description: Whether the threat actor is public.
       type: Boolean
     - contextPath: ThreatStream.File.Actor.is_team
-      description: Whether the threat actor in a team or not.
+      description: Whether the threat actor is a team.
       type: Boolean
     - contextPath: ThreatStream.File.Actor.modified_ts
-      description: When was the threat actor modified.
+      description: The date the threat actor was modified.
       type: Date
     - contextPath: ThreatStream.File.Actor.name
       description: The name of the threat actor.
@@ -1718,76 +1718,76 @@ script:
       description: The publication status of the threat actor.
       type: String
     - contextPath: ThreatStream.File.Actor.published_ts
-      description: When was the threat actor published.
+      description: The date the threat actor was published.
       type: Date
     - contextPath: ThreatStream.File.Actor.resource_level
       description: The resource level of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.File.Actor.resource_uri
-      description: The resource uri of the threat actor.
+      description: The resource URI of the threat actor.
       type: String
     - contextPath: ThreatStream.File.Actor.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.File.Actor.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.File.Actor.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.File.Actor.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.File.Actor.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.File.Actor.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.File.Actor.tlp
-      description: The tlp of the threat actor.
+      description: The TLP of the threat actor.
       type: String
     - contextPath: ThreatStream.File.Actor.uuid
-      description: The uuid of the threat actor.
+      description: The UUID of the threat actor.
       type: String
     - contextPath: ThreatStream.File.Signature.assignee_user
-      description: The Assignee User of the signature
+      description: The assignee user of the signature.
       type: Unknown
     - contextPath: ThreatStream.File.Signature.association_info.comment
       description: The comment in the association info of the signature.
       type: Unknown
     - contextPath: ThreatStream.File.Signature.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.File.Signature.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.File.Signature.can_add_public_tags
-      description: Can we add a public tags or not to the signature.
+      description: Whether you can add public tags to the signature.
       type: Boolean
     - contextPath: ThreatStream.File.Signature.created_ts
-      description: When was the signature cretad.
+      description: The date the signature was created.
       type: Date
     - contextPath: ThreatStream.File.Signature.feed_id
       description: The feed ID of the signature.
       type: Number
     - contextPath: ThreatStream.File.Signature.id
-      description: The id of the signature.
+      description: The ID of the signature.
       type: Number
     - contextPath: ThreatStream.File.Signature.is_anonymous
-      description: Whether the signature anonymous or not.
+      description: Whether the signature is anonymous.
       type: Boolean
     - contextPath: ThreatStream.File.Signature.is_cloneable
-      description: Whether the signature clonable or not.
+      description: Whether the signature is cloneable.
       type: String
     - contextPath: ThreatStream.File.Signature.is_public
-      description: Whether the signature public or not.
+      description: Whether the signature is public.
       type: Boolean
     - contextPath: ThreatStream.File.Signature.is_team
-      description: Whether the signature in a team or not.
+      description: Whether the signature is a team signature.
       type: Boolean
     - contextPath: ThreatStream.File.Signature.modified_ts
-      description: When was the signature modified.
+      description: The date the signature was modified.
       type: Date
     - contextPath: ThreatStream.File.Signature.name
       description: The name of the signature.
@@ -1805,40 +1805,40 @@ script:
       description: The publication status of the signature.
       type: String
     - contextPath: ThreatStream.File.Signature.published_ts
-      description: When was the signature published.
+      description: The date the signature was published.
       type: Date
     - contextPath: ThreatStream.File.Signature.resource_level
       description: The resource level of the signature.
       type: Unknown
     - contextPath: ThreatStream.File.Signature.resource_uri
-      description: The resource uri of the signature.
+      description: The resource URI of the signature.
       type: String
     - contextPath: ThreatStream.File.Signature.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.File.Signature.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.File.Signature.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.File.Signature.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.File.Signature.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.File.Signature.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.File.Signature.tlp
-      description: The tlp of the signature.
+      description: The TLP of the signature.
       type: String
     - contextPath: ThreatStream.File.Signature.uuid
-      description: The uuid of the signature.
+      description: The UUID of the signature.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.all_circles_visible
-      description: Are all of the circles visible.
+      description: Whether all of the circles are visible.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.assignee_org
       description: The assignee organization.
@@ -1862,10 +1862,10 @@ script:
       description: The comment in the association info of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.File.ThreatBulletin.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.File.ThreatBulletin.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.body_content_type
       description: The body content type.
@@ -1874,10 +1874,10 @@ script:
       description: The campaign of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.File.ThreatBulletin.can_add_public_tags
-      description: Can we add public tags.
+      description: Whether you can add public tags.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.created_ts
-      description: When was the threat bulletin created.
+      description: The date the threat bulletin was created.
       type: Date
     - contextPath: ThreatStream.File.ThreatBulletin.feed_id
       description: The feed ID of the threat bulletin.
@@ -1886,22 +1886,22 @@ script:
       description: The ID of the threat bulletin.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.is_anonymous
-      description: Whether the threat bulletin anonymous.
+      description: Whether the threat bulletin is anonymous.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.is_cloneable
-      description: Whether the threat bulletin cloneble.
+      description: Whether the threat bulletin is cloneable.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.is_editable
-      description: Whether the threat bulletin editable.
+      description: Whether the threat bulletin is editable.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.is_email
-      description: Whether the threat bulletin an email.
+      description: Whether the threat bulletin is an email.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.is_public
-      description: Whether the threat bulletin public.
+      description: Whether the threat bulletin is public.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.modified_ts
-      description: When was the threat bulletin modified.
+      description: The date the threat bulletin was modified.
       type: Date
     - contextPath: ThreatStream.File.ThreatBulletin.name
       description: The name of the threat bulletin.
@@ -1913,25 +1913,25 @@ script:
       description: The original source ID of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.File.ThreatBulletin.owner_org.id
-      description: The owner organizetion ID.
+      description: The owner organization ID.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.owner_org.name
-      description: The owner organizetion name.
+      description: The owner organization name.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.owner_org.resource_uri
-      description: The owner organizetion uri.
+      description: The owner organization URI.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.owner_org_id
-      description: The id of the owner user.
+      description: The ID of the owner user.
       type: Number
     - contextPath: ThreatStream.File.ThreatBulletin.owner_org_name
       description: The name of the owner organization.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user.avatar_s3_url
-      description: The url of the owner user.
+      description: The URL of the owner user.
       type: Unknown
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user.can_share_intelligence
-      description: Can we share intelligence or not.
+      description: Whether you can share intelligence.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user.email
       description: The email of the owner user.
@@ -1940,19 +1940,19 @@ script:
       description: The ID of the owner user.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user.is_active
-      description: Is the owner user active.
+      description: Whether the owner user is active.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user.is_readonly
-      description: Is the owner user read only.
+      description: Whether the owner user has read-only permission.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user.must_change_password
-      description: Does the owner user must change password.
+      description: Whether the owner user must change the password.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user.name
       description: The owner user name.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user.nickname
-      description: The owner user nickname
+      description: The owner user nickname.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user.organization.id
       description: The ID of the owner user organization.
@@ -1961,10 +1961,10 @@ script:
       description: The name of the owner user organization.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user.organization.resource_uri
-      description: The resource uri of the owner user organization.
+      description: The resource URI of the owner user organization.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user.resource_uri
-      description: The resource uri of the owner user.
+      description: The resource URI of the owner user.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.owner_user_id
       description: The owner user ID of the threat bulletin.
@@ -1976,25 +1976,25 @@ script:
       description: The parent of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.File.ThreatBulletin.published_ts
-      description: When was the threat bulletin published.
+      description: The date the threat bulletin was published.
       type: Unknown
     - contextPath: ThreatStream.File.ThreatBulletin.resource_uri
-      description: The resource uri of the threat bulletin.
+      description: The resource URI of the threat bulletin.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.source
       description: The source of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.File.ThreatBulletin.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.File.ThreatBulletin.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.File.ThreatBulletin.starred_by_me
-      description: Was the threat bulletin started bt me.
+      description: Whether the threat bulletin was started by me.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.starred_total_count
-      description: The total count of times the threat bulletin was starred.
+      description: The total number of times the threat bulletin was starred.
       type: Number
     - contextPath: ThreatStream.File.ThreatBulletin.status
       description: The status of the threat bulletin.
@@ -2012,55 +2012,55 @@ script:
       description: The UUID of the threat bulletin.
       type: String
     - contextPath: ThreatStream.File.ThreatBulletin.votes.me
-      description: How nany votes by me.
+      description: The number of votes by me.
       type: Unknown
     - contextPath: ThreatStream.File.ThreatBulletin.votes.total
-      description: How many votes total.
+      description: The number of total votes.
       type: Number
     - contextPath: ThreatStream.File.ThreatBulletin.watched_by_me
-      description: Was the threat bulletin watched by me?
+      description: Whether the threat bulletin was watched by me.
       type: Boolean
     - contextPath: ThreatStream.File.ThreatBulletin.watched_total_count
-      description: The total count of watchers.
+      description: The total number of watchers.
       type: Number
     - contextPath: ThreatStream.File.TTP.assignee_user
-      description: The Assignee User of the TTP.
+      description: The assignee user of the TTP.
       type: Unknown
     - contextPath: ThreatStream.File.TTP.association_info.comment
       description: The comment in the association info of the TTP.
       type: Unknown
     - contextPath: ThreatStream.File.TTP.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.File.TTP.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.File.TTP.can_add_public_tags
-      description: Can we add a public tags or not to the TTP.
+      description: Whether you can add public tags to the TTP.
       type: Boolean
     - contextPath: ThreatStream.File.TTP.created_ts
-      description: When was the TTP cretad.
+      description: The date the TTP was created.
       type: Date
     - contextPath: ThreatStream.File.TTP.feed_id
       description: The feed ID of the TTP.
       type: Number
     - contextPath: ThreatStream.File.TTP.id
-      description: The id of the TTP.
+      description: The ID of the TTP.
       type: Number
     - contextPath: ThreatStream.File.TTP.is_anonymous
-      description: Whether the TTP anonymus or not.
+      description: Whether the TTP was anonymous.
       type: Boolean
     - contextPath: ThreatStream.File.TTP.is_cloneable
-      description: Whether the TTP clonable or not.
+      description: Whether the TTP was cloneable.
       type: String
     - contextPath: ThreatStream.File.TTP.is_public
-      description: Whether the TTP public or not.
+      description: Whether the TTP is public.
       type: Boolean
     - contextPath: ThreatStream.File.TTP.is_team
-      description: Whether the TTP in a team or not.
+      description: Whether the TTP is a team.
       type: Boolean
     - contextPath: ThreatStream.File.TTP.modified_ts
-      description: When was the TTP modified.
+      description: The date the TTP was modified.
       type: Date
     - contextPath: ThreatStream.File.TTP.name
       description: The name of the TTP.
@@ -2078,52 +2078,52 @@ script:
       description: The publication status of the TTP.
       type: String
     - contextPath: ThreatStream.File.TTP.published_ts
-      description: When was the TTP published.
+      description: The date the TTP was published.
       type: Date
     - contextPath: ThreatStream.File.TTP.resource_level
       description: The resource level of the TTP.
       type: Unknown
     - contextPath: ThreatStream.File.TTP.resource_uri
-      description: The resource uri of the TTP.
+      description: The resource URI of the TTP.
       type: String
     - contextPath: ThreatStream.File.TTP.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.File.TTP.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.File.TTP.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.File.TTP.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.File.TTP.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.File.TTP.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.File.TTP.tlp
-      description: The tlp of the TTP.
+      description: The TLP of the TTP.
       type: String
     - contextPath: ThreatStream.File.TTP.uuid
-      description: The uuid of the TTP.
+      description: The UUID of the TTP.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.assignee_user
-      description: The Assignee User of the vulnerability.
+      description: The assignee user of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.File.Vulnerability.association_info.comment
       description: The comment in the association info of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.File.Vulnerability.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.File.Vulnerability.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.File.Vulnerability.can_add_public_tags
-      description: Can we add a public tags or not to the vulnerability.
+      description: Whether you can add public tags to the threat actor.
       type: Boolean
     - contextPath: ThreatStream.File.Vulnerability.circles.id
       description: The ID of the circle.
@@ -2132,10 +2132,10 @@ script:
       description: The name of the circle.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.circles.resource_uri
-      description: The resource uri of the circle.
+      description: The resource URI of the circle.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.created_ts
-      description: When was the vulnerability created.
+      description: The date the vulnerability was created.
       type: Date
     - contextPath: ThreatStream.File.Vulnerability.feed_id
       description: The feed ID of the vulnerability.
@@ -2144,19 +2144,19 @@ script:
       description: The ID of the vulnerability.
       type: Number
     - contextPath: ThreatStream.File.Vulnerability.is_anonymous
-      description: Whether the vulnerability anonymus or not.
+      description: Whether the vulnerability is anonymous.
       type: Boolean
     - contextPath: ThreatStream.File.Vulnerability.is_cloneable
-      description: Whether the vulnerability clonable or not.
+      description:  Whether the vulnerability is cloneable.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.is_public
-      description: Whether the vulnerability public or not.
+      description: Whether the vulnerability is public.
       type: Boolean
     - contextPath: ThreatStream.File.Vulnerability.is_system
-      description: Whether the vulnerability in the system or not.
+      description: Whether the vulnerability is in the system.
       type: Boolean
     - contextPath: ThreatStream.File.Vulnerability.modified_ts
-      description: When was the vulnerability modified.
+      description: The date the vulnerability was modified.
       type: Date
     - contextPath: ThreatStream.File.Vulnerability.name
       description: The name of the vulnerability.
@@ -2171,10 +2171,10 @@ script:
       description: The publication status of the vulnerability.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.published_ts
-      description: When was the vulnerability published.
+      description: The date the vulnerability was published.
       type: Date
     - contextPath: ThreatStream.File.Vulnerability.resource_uri
-      description: The resource uri of the vulnerability.
+      description: The resource URI of the vulnerability.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.source
       description: The source of the vulnerability.
@@ -2183,19 +2183,19 @@ script:
       description: The feed ID of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.File.Vulnerability.source_modified
-      description: Was the source modified.
+      description: Whether the source was modified.
       type: Unknown
     - contextPath: ThreatStream.File.Vulnerability.tags
       description: The tags of the vulnerability.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.tlp
-      description: The tlp of the vulnerability.
+      description: The TLP of the vulnerability.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.update_id
       description: The update ID of the vulnerability.
@@ -2204,22 +2204,22 @@ script:
       description: The UUID of the vulnerability.
       type: String
     - contextPath: ThreatStream.File.Campaign.assignee_user
-      description: The Assignee User of the vulnerability.
+      description: The assignee user of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.File.Campaign.association_info.comment
       description: The comment in the association info of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.File.Campaign.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.File.Campaign.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.File.Campaign.can_add_public_tags
-      description: Can we add a public tags or not to the campaign.
+      description: Whether you can add public tags to the campaign.
       type: Boolean
     - contextPath: ThreatStream.File.Campaign.created_ts
-      description: When was the campaign created.
+      description: The date the campaign was created.
       type: Date
     - contextPath: ThreatStream.File.Campaign.end_date
       description: The end date of the campaign.
@@ -2231,19 +2231,19 @@ script:
       description: The ID of the campaign.
       type: Number
     - contextPath: ThreatStream.File.Campaign.is_anonymous
-      description: Whether the campaign anonymus or not.
+      description: Whether the campaign is anonymous.
       type: Boolean
     - contextPath: ThreatStream.File.Campaign.is_cloneable
-      description: Whether the campaign clonable or not.
+      description: Whether the campaign is cloneable.
       type: String
     - contextPath: ThreatStream.File.Campaign.is_public
-      description: Whether the campaign public or not.
+      description: Whether the campaign is public.
       type: Boolean
     - contextPath: ThreatStream.File.Campaign.modified_ts
-      description: When was the campain modified.
+      description: The date the campaign was modified.
       type: Date
     - contextPath: ThreatStream.File.Campaign.name
-      description: The name of the Campaign.
+      description: The name of the campaign.
       type: String
     - contextPath: ThreatStream.File.Campaign.objective
       description: The objective of the campaign.
@@ -2255,19 +2255,19 @@ script:
       description: The owner user ID of the campaign.
       type: Number
     - contextPath: ThreatStream.File.Campaign.publication_status
-      description: The publication status of the campaign
+      description: The publication status of the campaign.
       type: String
     - contextPath: ThreatStream.File.Campaign.published_ts
-      description: When was the campaign published.
+      description: The date the campaign was published.
       type: Unknown
     - contextPath: ThreatStream.File.Campaign.resource_uri
-      description: The resource uri of the campaign.
+      description: The resource URI of the campaign.
       type: String
     - contextPath: ThreatStream.File.Campaign.source_created
-      description: When was the campaign created.
+      description: The date the campaign was created.
       type: Date
     - contextPath: ThreatStream.File.Campaign.source_modified
-      description: Was the source modified or not.
+      description: Whether the source was modified.
       type: Date
     - contextPath: ThreatStream.File.Campaign.start_date
       description: The start date of the campaign.
@@ -2276,13 +2276,13 @@ script:
       description: The display name of the status.
       type: String
     - contextPath: ThreatStream.File.Campaign.status.id
-      description: The id of the status of the campaign.
+      description: The ID of the status of the campaign.
       type: Number
     - contextPath: ThreatStream.File.Campaign.status.resource_uri
-      description: The resource uri of the status of the campaign.
+      description: The resource URI of the status of the campaign.
       type: String
     - contextPath: ThreatStream.File.Campaign.tlp
-      description: The tlp of the campaign.
+      description: The TLP of the campaign.
       type: String
     - contextPath: ThreatStream.File.Campaign.uuid
       description: The UUID of the campaign.
@@ -2366,7 +2366,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Possible values are "IP" or "Domain".
+      description: The values that can be sent to the API should correspond to the type that is chosen. For example,if IP is chosen in the type argument, then a valid IP address should be sent in the value argument.
       isArray: false
       name: value
       required: true
@@ -2390,7 +2390,7 @@ script:
       description: The IP value.
       type: String
     - contextPath: ThreatStream.PassiveDNS.Rrtype
-      description: The Rrtype value.
+      description: The RRTYPE value.
       type: String
     - contextPath: ThreatStream.PassiveDNS.Source
       description: The source value.
@@ -2427,7 +2427,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: exploit
-      description: Type of threat associated with the imported observables. Can be "adware", "anomalous", "anonymization", "apt", "bot", "brute", "c2", "compromised", "crypto", "data_leakage", "ddos", "dyn_dns", "exfil", "exploit", "hack_tool", "i2p", "informational", "malware", "p2p", "parked", "phish", "scan", "sinkhole", "spam", "suppress", "suspicious", "tor", or "vps".
+      description: Type of threat associated with the imported observables.
       isArray: false
       name: threat_type
       predefined:
@@ -2464,7 +2464,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: low
-      description: The potential impact of the indicator type with which the observable is believed to be associated. Can be "low", "medium", "high", or "very-high".
+      description: The potential impact of the indicator type with which the observable is believed to be associated.
       isArray: false
       name: severity
       predefined:
@@ -2476,7 +2476,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The import type of the indicator. Can be "datatext", "file-id", or "url".
+      description: The import type of the indicator. 
       isArray: false
       name: import_type
       predefined:
@@ -2546,7 +2546,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The severity to assign to the observable when it is imported. Can be "low", "medium", "high" , or "very-high".
+      description: The severity to assign to the observable when it is imported. 
       isArray: false
       name: severity
       predefined:
@@ -2580,7 +2580,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether unresolved domain observables are included in the file will be accepted as valid in ThreatStream and imported.
+      description: Whether unresolved domain observables included in the file will be accepted as valid in ThreatStream and imported.
       isArray: false
       name: allow_unresolved
       predefined:
@@ -2601,7 +2601,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The threat model of the returned list. Can be "actor", "campaign", "incident", "signature", "ttp", "vulnerability", or "tipreport".
+      description: The threat model of the returned list. 
       isArray: false
       name: model
       predefined:
@@ -2641,7 +2641,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The threat model. Can be "actor", "campaign", "incident", "signature", "ttp", "vulnerability", or "tipreport".
+      description: The threat model. 
       isArray: false
       name: model
       predefined:
@@ -2674,7 +2674,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The threat model. Can be "actor", "campaign", "incident", "signature", "ttp", "vulnerability", or "tipreport".
+      description: The threat model. 
       isArray: false
       name: model
       predefined:
@@ -2718,7 +2718,7 @@ script:
       description: The ID of the indicator associated with the specified model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.IType
-      description: The iType of the indicator associated with the specified model.
+      description: The itype of the indicator associated with the specified model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.Severity
       description: The indicator severity associated with the specified model.
@@ -2727,7 +2727,7 @@ script:
       description: The confidence of the indicator associated with the specified model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.Country
-      description: The country of the indicator associated with the specified model
+      description: The country of the indicator associated with the specified model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.Organization
       description: The organization of the indicator associated with the specified model.
@@ -2754,7 +2754,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: private
-      description: Classification of the Sandbox submission. Can be "private" or "public".
+      description: Classification of the sandbox submission.
       isArray: false
       name: submission_classification
       predefined:
@@ -2765,7 +2765,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: WINDOWS7
-      description: The platform on which the submitted URL or file is run. To obtain a list supported platforms run the threatstream-supported-platforms command. Can be "WINDOWS7", or "WINDOWSXP".
+      description: The platform on which the submitted URL or file is run. To obtain a list of supported platforms, run the threatstream-supported-platforms command.
       isArray: false
       name: report_platform
       predefined:
@@ -2776,7 +2776,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: file
-      description: The detonation type. Can be "file" or "url".
+      description: The detonation type.
       isArray: false
       name: submission_type
       predefined:
@@ -2908,7 +2908,7 @@ script:
     - contextPath: ThreatStream.Analysis.Network.HttpSource
       description: The source of the HTTP address.
       type: String
-    - contextPath: ThreatStream.Analysis.Network.HttpDestinaton
+    - contextPath: ThreatStream.Analysis.Network.HttpDestination
       description: The destination of the HTTP address.
       type: String
     - contextPath: ThreatStream.Analysis.Network.HttpPort
@@ -2917,7 +2917,7 @@ script:
     - contextPath: ThreatStream.Analysis.Network.HttpsSource
       description: The source of the HTTPS address.
       type: String
-    - contextPath: ThreatStream.Analysis.Network.HttpsDestinaton
+    - contextPath: ThreatStream.Analysis.Network.HttpsDestination
       description: The destination of the HTTPS address.
       type: String
     - contextPath: ThreatStream.Analysis.Network.HttpsPort
@@ -2958,7 +2958,7 @@ script:
       secret: false
     - default: false
       description: |-
-        When the indicator was first seen on
+        The date the indicator was first seen on
         the ThreatStream cloud platform. The date must be specified in this format:
         YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time.
         For example, 2014-10-02T20:44:35.
@@ -2996,7 +2996,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The status assigned to the indicator. Can be "active", "inactive", or "falsepos".
+      description: The status assigned to the indicator.
       isArray: false
       name: status
       predefined:
@@ -3013,7 +3013,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of indicator. Can be "domain", "email", "ip", "MD5", "string", or "url".
+      description: The type of indicator. 
       isArray: false
       name: type
       predefined:
@@ -3033,7 +3033,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: The maximum number of results to return from ThreatStream. Default is 20.
+      description: The maximum number of results to return from ThreatStream. 
       isArray: false
       name: limit
       required: false
@@ -3085,7 +3085,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: intelligence
-      description: The type of threat model entity to which to add the tag. Can be "actor", "campaign", "incident", "intelligence", "signature", "tipreport", "ttp", or "vulnerability".
+      description: The type of threat model entity to which to add the tag. 
       isArray: false
       name: model
       predefined:
@@ -3100,7 +3100,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma separated list of tags applied to the specified threat model entities or observable. '
+      description: 'A comma-separated list of tags applied to the specified threat model entities or observables. '
       isArray: true
       name: tags
       required: true
@@ -3118,7 +3118,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of threat model to create. Can be "actor", "campaign", "incident", "ttp", "vulnerability", or "tipreport".
+      description: The type of threat model to create. 
       isArray: false
       name: model
       predefined:
@@ -3150,7 +3150,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: red
-      description: The Traffic Light Protocol designation for the threat model. Can be "red", "amber", "green", or "white".
+      description: The Traffic Light Protocol designation for the threat model. 
       isArray: false
       name: tlp
       predefined:
@@ -3161,13 +3161,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma separated list of tags.
+      description: A comma-separated list of tags.
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: A comma separated list of indicators IDs associated with the threat model on the ThreatStream platform.
+      description: A comma-separated list of indicators IDs associated with the threat model on the ThreatStream platform.
       isArray: false
       name: intelligence
       required: false
@@ -3196,7 +3196,7 @@ script:
       description: The ID of the indicator associated with the specified model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.IType
-      description: The iType of the indicator associated with the specified model.
+      description: The itype of the indicator associated with the specified model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.Severity
       description: The severity of the indicator associated with the specified model.
@@ -3205,7 +3205,7 @@ script:
       description: The confidence of the indicator associated with the specified model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.Country
-      description: The country of the indicator associated with the specified model
+      description: The country of the indicator associated with the specified model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.Organization
       description: The organization of the indicator associated with the specified model.
@@ -3231,7 +3231,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of threat model to update. Can be "actor", "campaign", "incident", "ttp", "vulnerability", or "tipreport".
+      description: The type of threat model to update.
       isArray: false
       name: model
       predefined:
@@ -3269,7 +3269,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: red
-      description: The Traffic Light Protocol designation for the threat model. Can be "red", "amber", "green", or "white".
+      description: The Traffic Light Protocol designation for the threat model.
       isArray: false
       name: tlp
       predefined:
@@ -3280,13 +3280,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma separated list of tags.
+      description: A comma-separated list of tags.
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: A comma separated list of indicator IDs associated with the threat model on the ThreatStream platform.
+      description: A comma-separated list of indicator IDs associated with the threat model on the ThreatStream platform.
       isArray: false
       name: intelligence
       required: false
@@ -3315,7 +3315,7 @@ script:
       description: The ID of the indicator associated with the specified model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.IType
-      description: The iType of the indicator associated with the specified model.
+      description: The itype of the indicator associated with the specified model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.Severity
       description: The severity of the indicator associated with the specified model.
@@ -3351,7 +3351,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: default
-      description: The type of sandbox ("default" or "premium").
+      description: The type of sandbox.
       isArray: false
       name: sandbox_type
       predefined:
@@ -3365,22 +3365,22 @@ script:
     name: threatstream-supported-platforms
     outputs:
     - contextPath: ThreatStream.PremiumPlatforms.Name
-      description: The name of the supported platform for premium sandbox.
+      description: The name of the supported platform for the premium sandbox.
       type: String
     - contextPath: ThreatStream.PremiumPlatforms.Types
-      description: The type of supported submissions for premium sandbox.
+      description: The type of supported submissions for the premium sandbox.
       type: String
     - contextPath: ThreatStream.PremiumPlatforms.Label
-      description: The display name of the supported platform of premium sandbox.
+      description: The display name of the supported platform of the premium sandbox.
       type: String
     - contextPath: ThreatStream.DefaultPlatforms.Name
-      description: The name of the supported platform for standard sandbox.
+      description: The name of the supported platform for the standard sandbox.
       type: String
     - contextPath: ThreatStream.DefaultPlatforms.Types
-      description: The type of the supported submissions for standard sandbox.
+      description: The type of the supported submissions for the standard sandbox.
       type: String
     - contextPath: ThreatStream.DefaultPlatforms.Label
-      description: The display name of the supported platform of standard sandbox.
+      description: The display name of the supported platform of the standard sandbox.
       type: String
   - arguments:
     - default: true
@@ -3409,7 +3409,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: if set to true, additional 6 API calls will be performed.'
+      description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.'
       isArray: false
       name: threat_model_association
       predefined:
@@ -3473,7 +3473,7 @@ script:
       description: Tags assigned to the URL.
       type: Unknown
     - contextPath: ThreatStream.URL.IType
-      description: The iType of the indicator associated with the specified model.
+      description: The itype of the indicator associated with the specified model.
       type: String
     - contextPath: URL.Tags
       description: List of URL tags.
@@ -3482,43 +3482,43 @@ script:
       description: Threat types associated with the url.
       type: Unknown
     - contextPath: ThreatStream.URL.Actor.assignee_user
-      description: The Assignee User of the Threat Actor
+      description: The assignee user of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.URL.Actor.association_info.comment
       description: The comment in the association info of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.URL.Actor.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.URL.Actor.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.URL.Actor.can_add_public_tags
-      description: Can we add a public tags or not to the threat actor.
+      description: Whether you can add public tags to the threat actor.
       type: Boolean
     - contextPath: ThreatStream.URL.Actor.created_ts
-      description: When was the threat actor cretad.
+      description: The date the threat actor was created.
       type: Date
     - contextPath: ThreatStream.URL.Actor.feed_id
       description: The feed ID of the threat actor.
       type: Number
     - contextPath: ThreatStream.URL.Actor.id
-      description: The id of the threat actor.
+      description: The ID of the threat actor.
       type: Number
     - contextPath: ThreatStream.URL.Actor.is_anonymous
-      description: Whether the threat actor anonymus or not.
+      description: Whether the threat actor is anonymous.
       type: Boolean
     - contextPath: ThreatStream.URL.Actor.is_cloneable
-      description: Whether the threat actor clonable or not.
+      description: Whether the threat actor is cloneable.
       type: String
     - contextPath: ThreatStream.URL.Actor.is_public
-      description: Whether the threat actor public or not.
+      description: Whether the threat actor is public.
       type: Boolean
     - contextPath: ThreatStream.URL.Actor.is_team
-      description: Whether the threat actor in a team or not.
+      description: Whether the threat actor is a team.
       type: Boolean
     - contextPath: ThreatStream.URL.Actor.modified_ts
-      description: When was the threat actor modified.
+      description: The date the threat actor was modified.
       type: Date
     - contextPath: ThreatStream.URL.Actor.name
       description: The name of the threat actor.
@@ -3536,76 +3536,76 @@ script:
       description: The publication status of the threat actor.
       type: String
     - contextPath: ThreatStream.URL.Actor.published_ts
-      description: When was the threat actor published.
+      description: The date the threat actor was published.
       type: Date
     - contextPath: ThreatStream.URL.Actor.resource_level
       description: The resource level of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.URL.Actor.resource_uri
-      description: The resource uri of the threat actor.
+      description: The resource URI of the threat actor.
       type: String
     - contextPath: ThreatStream.URL.Actor.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.URL.Actor.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.URL.Actor.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.URL.Actor.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.URL.Actor.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.URL.Actor.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.URL.Actor.tlp
-      description: The tlp of the threat actor.
+      description: The TLP of the threat actor.
       type: String
     - contextPath: ThreatStream.URL.Actor.uuid
-      description: The uuid of the threat actor.
+      description: The UUID of the threat actor.
       type: String
     - contextPath: ThreatStream.URL.Signature.assignee_user
-      description: The Assignee User of the signature
+      description: The assignee user of the signature.
       type: Unknown
     - contextPath: ThreatStream.URL.Signature.association_info.comment
       description: The comment in the association info of the signature.
       type: Unknown
     - contextPath: ThreatStream.URL.Signature.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.URL.Signature.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.URL.Signature.can_add_public_tags
-      description: Can we add a public tags or not to the signature.
+      description: Whether you can add public tags to the signature.
       type: Boolean
     - contextPath: ThreatStream.URL.Signature.created_ts
-      description: When was the signature cretad.
+      description: The date the signature was created.
       type: Date
     - contextPath: ThreatStream.URL.Signature.feed_id
       description: The feed ID of the signature.
       type: Number
     - contextPath: ThreatStream.URL.Signature.id
-      description: The id of the signature.
+      description: The ID of the signature.
       type: Number
     - contextPath: ThreatStream.URL.Signature.is_anonymous
-      description: Whether the signature anonymus or not.
+      description: Whether the signature is anonymous. 
       type: Boolean
     - contextPath: ThreatStream.URL.Signature.is_cloneable
-      description: Whether the signature clonable or not.
+      description: Whether the signature is cloneable.
       type: String
     - contextPath: ThreatStream.URL.Signature.is_public
-      description: Whether the signature public or not.
+      description: Whether the signature is public.
       type: Boolean
     - contextPath: ThreatStream.URL.Signature.is_team
-      description: Whether the signature in a team or not.
+      description: Whether the signature is a team signature.
       type: Boolean
     - contextPath: ThreatStream.URL.Signature.modified_ts
-      description: When was the signature modified.
+      description: The date the signature was modified.
       type: Date
     - contextPath: ThreatStream.URL.Signature.name
       description: The name of the signature.
@@ -3623,40 +3623,40 @@ script:
       description: The publication status of the signature.
       type: String
     - contextPath: ThreatStream.URL.Signature.published_ts
-      description: When was the signature published.
+      description: The date the signature was published.
       type: Date
     - contextPath: ThreatStream.URL.Signature.resource_level
       description: The resource level of the signature.
       type: Unknown
     - contextPath: ThreatStream.URL.Signature.resource_uri
-      description: The resource uri of the signature.
+      description: The resource URI of the signature.
       type: String
     - contextPath: ThreatStream.URL.Signature.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.URL.Signature.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.URL.Signature.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.URL.Signature.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.URL.Signature.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.URL.Signature.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.URL.Signature.tlp
-      description: The tlp of the signature.
+      description: The TLP of the signature.
       type: String
     - contextPath: ThreatStream.URL.Signature.uuid
-      description: The uuid of the signature.
+      description: The UUID of the signature.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.all_circles_visible
-      description: Are all of the circles visible.
+      description: Whether all of the circles are visible.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.assignee_org
       description: The assignee organization.
@@ -3680,10 +3680,10 @@ script:
       description: The comment in the association info of the threat actor.
       type: Unknown
     - contextPath: ThreatStream.URL.ThreatBulletin.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.URL.ThreatBulletin.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.body_content_type
       description: The body content type.
@@ -3692,10 +3692,10 @@ script:
       description: The campaign of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.URL.ThreatBulletin.can_add_public_tags
-      description: Can we add public tags.
+      description: Whether you can add public tags.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.created_ts
-      description: When was the threat bulletin created.
+      description: The date the threat bulletin was created.
       type: Date
     - contextPath: ThreatStream.URL.ThreatBulletin.feed_id
       description: The feed ID of the threat bulletin.
@@ -3704,22 +3704,22 @@ script:
       description: The ID of the threat bulletin.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.is_anonymous
-      description: Is the threat bulletin anonymous.
+      description: Whether the threat bulletin is anonymous.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.is_cloneable
-      description: Whether the threat bulletin cloneble.
+      description: Whether the threat bulletin is cloneable.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.is_editable
-      description: Whether the threat bulletin editable.
+      description: Whether the threat bulletin is editable.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.is_email
-      description: Whether the threat bulletin an email.
+      description: Whether the threat bulletin is an email.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.is_public
-      description: Whether the threat bulletin public.
+      description: Whether the threat bulletin is public.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.modified_ts
-      description: When was the threat bulletin modified.
+      description: The date the threat bulletin was modified.
       type: Date
     - contextPath: ThreatStream.URL.ThreatBulletin.name
       description: The name of the threat bulletin.
@@ -3731,25 +3731,25 @@ script:
       description: The original source ID of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_org.id
-      description: The owner organizetion ID.
+      description: The owner organization ID.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_org.name
-      description: The owner organizetion name.
+      description: The owner organization name.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_org.resource_uri
-      description: The owner organizetion uri.
+      description: The owner organization URI.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_org_id
-      description: The id of the owner user.
+      description: The ID of the owner user.
       type: Number
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_org_name
       description: The name of the owner organization.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user.avatar_s3_url
-      description: The url of the owner user.
+      description: The URL of the owner user.
       type: Unknown
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user.can_share_intelligence
-      description: Can we share intelligence or not.
+      description: Whether you can share intelligence.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user.email
       description: The email of the owner user.
@@ -3758,19 +3758,19 @@ script:
       description: The ID of the owner user.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user.is_active
-      description: Is the owner user active.
+      description: Whether the owner user is active.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user.is_readonly
-      description: Is the owner user read only.
+      description: Whether the owner user has read-only permission.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user.must_change_password
-      description: Does the owner user must change password.
+      description: Whether the owner user must change the password.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user.name
       description: The owner user name.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user.nickname
-      description: The owner user nickname
+      description: The owner user nickname.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user.organization.id
       description: The ID of the owner user organization.
@@ -3779,10 +3779,10 @@ script:
       description: The name of the owner user organization.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user.organization.resource_uri
-      description: The resource uri of the owner user organization.
+      description: The resource URI of the owner user organization.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user.resource_uri
-      description: The resource uri of the owner user.
+      description: The resource URI of the owner user.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.owner_user_id
       description: The owner user ID of the threat bulletin.
@@ -3794,25 +3794,25 @@ script:
       description: The parent of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.URL.ThreatBulletin.published_ts
-      description: When was the threat bulletin published.
+      description: The date the threat bulletin was published.
       type: Unknown
     - contextPath: ThreatStream.URL.ThreatBulletin.resource_uri
-      description: The resource uri of the threat bulletin.
+      description: The resource URI of the threat bulletin.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.source
       description: The source of the threat bulletin.
       type: Unknown
     - contextPath: ThreatStream.URL.ThreatBulletin.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.URL.ThreatBulletin.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.URL.ThreatBulletin.starred_by_me
-      description: Was the threat bulletin started bt me.
+      description: Whether the threat bulletin was started by me.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.starred_total_count
-      description: The total count of times the threat bulletin was starred.
+      description: The total number of times the threat bulletin was starred.
       type: Number
     - contextPath: ThreatStream.URL.ThreatBulletin.status
       description: The status of the threat bulletin.
@@ -3830,55 +3830,55 @@ script:
       description: The UUID of the threat bulletin.
       type: String
     - contextPath: ThreatStream.URL.ThreatBulletin.votes.me
-      description: How nany votes by me.
+      description: The number of votes by me.
       type: Unknown
     - contextPath: ThreatStream.URL.ThreatBulletin.votes.total
-      description: How many votes total.
+      description: The number of total votes.
       type: Number
     - contextPath: ThreatStream.URL.ThreatBulletin.watched_by_me
-      description: Was the threat bulletin watched by me?
+      description: Whether the threat bulletin was watched by me.
       type: Boolean
     - contextPath: ThreatStream.URL.ThreatBulletin.watched_total_count
-      description: The total count of watchers.
+      description: The total number of watchers.
       type: Number
     - contextPath: ThreatStream.URL.TTP.assignee_user
-      description: The Assignee User of the TTP.
+      description: The assignee user of the TTP.
       type: Unknown
     - contextPath: ThreatStream.URL.TTP.association_info.comment
       description: The comment in the association info of the TTP.
       type: Unknown
     - contextPath: ThreatStream.URL.TTP.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.URL.TTP.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.URL.TTP.can_add_public_tags
-      description: Can we add a public tags or not to the TTP.
+      description: Whether you can add public tags to the TTP.
       type: Boolean
     - contextPath: ThreatStream.URL.TTP.created_ts
-      description: When was the TTP cretad.
+      description: The date the TTP was created.
       type: Date
     - contextPath: ThreatStream.URL.TTP.feed_id
       description: The feed ID of the TTP.
       type: Number
     - contextPath: ThreatStream.URL.TTP.id
-      description: The id of the TTP.
+      description: The ID of the TTP.
       type: Number
     - contextPath: ThreatStream.URL.TTP.is_anonymous
-      description: Whether the TTP anonymus or not.
+      description: Whether the TTP was anonymous.
       type: Boolean
     - contextPath: ThreatStream.URL.TTP.is_cloneable
-      description: Whether the TTP clonable or not.
+      description: Whether the TTP was cloneable.
       type: String
     - contextPath: ThreatStream.URL.TTP.is_public
-      description: Whether the TTP public or not.
+      description: Whether the TTP is public.
       type: Boolean
     - contextPath: ThreatStream.URL.TTP.is_team
-      description: Whether the TTP in a team or not.
+      description: Whether the TTP is a team.
       type: Boolean
     - contextPath: ThreatStream.URL.TTP.modified_ts
-      description: When was the TTP modified.
+      description: The date the TTP was modified.
       type: Date
     - contextPath: ThreatStream.URL.TTP.name
       description: The name of the TTP.
@@ -3896,52 +3896,52 @@ script:
       description: The publication status of the TTP.
       type: String
     - contextPath: ThreatStream.URL.TTP.published_ts
-      description: When was the TTP published.
+      description: The date the TTP was published.
       type: Date
     - contextPath: ThreatStream.URL.TTP.resource_level
       description: The resource level of the TTP.
       type: Unknown
     - contextPath: ThreatStream.URL.TTP.resource_uri
-      description: The resource uri of the TTP.
+      description: The resource URI of the TTP.
       type: String
     - contextPath: ThreatStream.URL.TTP.source_created
-      description: When was the source created.
+      description: The date the source was created.
       type: Unknown
     - contextPath: ThreatStream.URL.TTP.source_modified
-      description: When was the source modified.
+      description: The date the source was modified.
       type: Unknown
     - contextPath: ThreatStream.URL.TTP.start_date
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.URL.TTP.tags
-      description: The tags of the threat indicator
+      description: The tags of the threat indicator.
       type: String
     - contextPath: ThreatStream.URL.TTP.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.URL.TTP.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.URL.TTP.tlp
-      description: The tlp of the TTP.
+      description: The TLP of the TTP.
       type: String
     - contextPath: ThreatStream.URL.TTP.uuid
-      description: The uuid of the TTP.
+      description: The UUID of the TTP.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.assignee_user
-      description: The Assignee User of the vulnerability.
+      description: The assignee user of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.URL.Vulnerability.association_info.comment
       description: The comment in the association info of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.URL.Vulnerability.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.URL.Vulnerability.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.URL.Vulnerability.can_add_public_tags
-      description: Can we add a public tags or not to the vulnerability.
+      description: Whether you can add public tags to the threat actor.
       type: Boolean
     - contextPath: ThreatStream.URL.Vulnerability.circles.id
       description: The ID of the circle.
@@ -3950,10 +3950,10 @@ script:
       description: The name of the circle.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.circles.resource_uri
-      description: The resource uri of the circle.
+      description: The resource URI of the circle.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.created_ts
-      description: When was the vulnerability created.
+      description: The date the vulnerability was created.
       type: Date
     - contextPath: ThreatStream.URL.Vulnerability.feed_id
       description: The feed ID of the vulnerability.
@@ -3962,19 +3962,19 @@ script:
       description: The ID of the vulnerability.
       type: Number
     - contextPath: ThreatStream.URL.Vulnerability.is_anonymous
-      description: Whether the vulnerability anonymus or not.
+      description: Whether the vulnerability is anonymous.
       type: Boolean
     - contextPath: ThreatStream.URL.Vulnerability.is_cloneable
-      description: Whether the vulnerability clonable or not.
+      description:  Whether the vulnerability is cloneable.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.is_public
-      description: Whether the vulnerability public or not.
+      description: Whether the vulnerability is public.
       type: Boolean
     - contextPath: ThreatStream.URL.Vulnerability.is_system
-      description: Whether the vulnerability in the system or not.
+      description: Whether the vulnerability is in the system.
       type: Boolean
     - contextPath: ThreatStream.URL.Vulnerability.modified_ts
-      description: When was the vulnerability modified.
+      description: The date the vulnerability was modified.
       type: Date
     - contextPath: ThreatStream.URL.Vulnerability.name
       description: The name of the vulnerability.
@@ -3989,10 +3989,10 @@ script:
       description: The publication status of the vulnerability.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.published_ts
-      description: When was the vulnerability published.
+      description: The date the vulnerability was published.
       type: Date
     - contextPath: ThreatStream.URL.Vulnerability.resource_uri
-      description: The resource uri of the vulnerability.
+      description: The resource URI of the vulnerability.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.source
       description: The source of the vulnerability.
@@ -4001,19 +4001,19 @@ script:
       description: The feed ID of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.URL.Vulnerability.source_modified
-      description: Was the source modified.
+      description: Whether the source was modified.
       type: Unknown
     - contextPath: ThreatStream.URL.Vulnerability.tags
       description: The tags of the vulnerability.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.tags_v2.id
-      description: The id of the tag.
+      description: The ID of the tag.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.tags_v2.name
       description: The name of the tag.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.tlp
-      description: The tlp of the vulnerability.
+      description: The TLP of the vulnerability.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.update_id
       description: The update ID of the vulnerability.
@@ -4022,22 +4022,22 @@ script:
       description: The UUID of the vulnerability.
       type: String
     - contextPath: ThreatStream.URL.Campaign.assignee_user
-      description: The Assignee User of the vulnerability.
+      description: The assignee user of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.URL.Campaign.association_info.comment
       description: The comment in the association info of the vulnerability.
       type: Unknown
     - contextPath: ThreatStream.URL.Campaign.association_info.created
-      description: When was the association info created.
+      description: The date the association info was created.
       type: Date
     - contextPath: ThreatStream.URL.Campaign.association_info.from_id
-      description: From which id the association info is related.
+      description: The ID from which the association info is related.
       type: Number
     - contextPath: ThreatStream.URL.Campaign.can_add_public_tags
-      description: Can we add a public tags or not to the campaign.
+      description: Whether you can add public tags to the campaign.
       type: Boolean
     - contextPath: ThreatStream.URL.Campaign.created_ts
-      description: When was the campaign created.
+      description: The date the campaign was created.
       type: Date
     - contextPath: ThreatStream.URL.Campaign.end_date
       description: The end date of the campaign.
@@ -4049,19 +4049,19 @@ script:
       description: The ID of the campaign.
       type: Number
     - contextPath: ThreatStream.URL.Campaign.is_anonymous
-      description: Whether the campaign anonymus or not.
+      description: Whether the campaign is anonymous.
       type: Boolean
     - contextPath: ThreatStream.URL.Campaign.is_cloneable
-      description: Whether the campaign clonable or not.
+      description: Whether the campaign is cloneable.
       type: String
     - contextPath: ThreatStream.URL.Campaign.is_public
-      description: Whether the campaign public or not.
+      description: Whether the campaign is public.
       type: Boolean
     - contextPath: ThreatStream.URL.Campaign.modified_ts
-      description: When was the campain modified.
+      description: The date the campaign was modified.
       type: Date
     - contextPath: ThreatStream.URL.Campaign.name
-      description: The name of the Campaign.
+      description: The name of the campaign.
       type: String
     - contextPath: ThreatStream.URL.Campaign.objective
       description: The objective of the campaign.
@@ -4073,19 +4073,19 @@ script:
       description: The owner user ID of the campaign.
       type: Number
     - contextPath: ThreatStream.URL.Campaign.publication_status
-      description: The publication status of the campaign
+      description: The publication status of the campaign.
       type: String
     - contextPath: ThreatStream.URL.Campaign.published_ts
-      description: When was the campaign published.
+      description: The date the campaign was published.
       type: Unknown
     - contextPath: ThreatStream.URL.Campaign.resource_uri
-      description: The resource uri of the campaign.
+      description: The resource URI of the campaign.
       type: String
     - contextPath: ThreatStream.URL.Campaign.source_created
-      description: When was the campaign created.
+      description: The date the campaign was created.
       type: Date
     - contextPath: ThreatStream.URL.Campaign.source_modified
-      description: Was the source modified or not.
+      description: Whether the source was modified.
       type: Date
     - contextPath: ThreatStream.URL.Campaign.start_date
       description: The start date of the campaign.
@@ -4094,13 +4094,13 @@ script:
       description: The display name of the status.
       type: String
     - contextPath: ThreatStream.URL.Campaign.status.id
-      description: The id of the status of the campaign.
+      description: The ID of the status of the campaign.
       type: Number
     - contextPath: ThreatStream.URL.Campaign.status.resource_uri
-      description: The resource uri of the status of the campaign.
+      description: The resource URI of the status of the campaign.
       type: String
     - contextPath: ThreatStream.URL.Campaign.tlp
-      description: The tlp of the campaign.
+      description: The TLP of the campaign.
       type: String
     - contextPath: ThreatStream.URL.Campaign.uuid
       description: The UUID of the campaign.
@@ -4113,7 +4113,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The uuid of an intelligence. When several uuids stated, an “OR” operator is used.
+      description: The UUID of an intelligence. When several UUIDs stated, an “OR” operator is used.
       isArray: true
       name: uuid
       required: false
@@ -4133,7 +4133,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The itype of an intelligence. (e.g. apt_ip, apt_email).
+      description: The itType of an intelligence. (e.g., apt_ip, apt_email).
       isArray: false
       name: itype
       required: false
@@ -4150,7 +4150,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The tags of an intelligence. Comma-seperated list. When several tags stated, an “OR” operator is used.
+      description: The tags of an intelligence. Comma-separated list. When several tags are stated, an “OR” operator is used.
       isArray: true
       name: tags
       required: false
@@ -4162,7 +4162,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The confidence of an intelligence. Input will be operator then value, I.e. “gt 65” or “lt 85”. If only value is stated, then we use exact.
+      description: The confidence of an intelligence. Input will be operator then value, i.e., “gt 65” or “lt 85”. If only a value is stated, then it must match exactly.
       isArray: false
       name: confidence
       required: false
@@ -4174,13 +4174,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Whether the intelligence is public or not.
+      description: Whether the intelligence is public.
       isArray: false
       name: is_public
       required: false
       secret: false
     - default: false
-      description: Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, <, >, and so on) and not the descriptive form (exact, lt, gt, and so on). e.g. (confidence>=90+AND+(itype="apt_ip"+OR+itype="bot_ip"+OR+itype="c2_ip"))
+      description: Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, <, >, and so on) and not the descriptive form (exact, lt, gt, and so on). E.g., (confidence>=90+AND+(itype="apt_ip"+OR+itype="bot_ip"+OR+itype="c2_ip"))
       isArray: false
       name: query
       required: false
@@ -4199,7 +4199,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return from ThreatStream. Default is 50, the maximum number of returned results is 1000. For more results, use the page and page_size arguments.
+      description: The maximum number of results to return from ThreatStream. The maximum number of returned results is 1000. For more results, use the page and page_size arguments.
       isArray: false
       name: limit
       required: false
@@ -4222,7 +4222,7 @@ script:
     name: threatstream-search-intelligence
     outputs:
     - contextPath: ThreatStream.Intelligence.SourceCreated
-      description: The Source from which the intelligence was created.
+      description: The source from which the intelligence was created.
       type: String
     - contextPath: ThreatStream.Intelligence.Status
       description: The status of the intelligence.
@@ -4231,94 +4231,94 @@ script:
       description: The itype of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.ExpirationTS
-      description: The Expiration timestamp  of the intelligence.
+      description: The expiration timestamp of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.IP
-      description: The IP  of the intelligence.
+      description: The IP address of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.IsEditable
-      description: Is the Intelligence editable.
+      description: Whether the intelligence is editable.
       type: Boolean
     - contextPath: ThreatStream.Intelligence.FeedID
-      description: The feed ID of the Intelligence.
+      description: The feed ID of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.UpdateID
-      description: The update ID of the Intelligence
+      description: The update ID of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.Value
-      description: The value of the Intelligence.
+      description: The value of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.IsPublic
-      description: Is the Intelligence public.
+      description: Whether the intelligence is public.
       type: Boolean
     - contextPath: ThreatStream.Intelligence.ThreatType
-      description: The threat type of the Intelligence.
+      description: The threat type of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.WorkGroups
-      description: The work groups of the Intelligence.
+      description: The work groups of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.Confidence
-      description: The confidence of the Intelligence.
+      description: The confidence of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.UUID
-      description: The uuid of the Intelligence.
+      description: The UUID of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.RetinaConfidence
-      description: The retina confidence of the Intelligence.
+      description: The retina confidence of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.TrustedCircleIDs
-      description: The trusted circleIDs of the Intelligence.
+      description: The trusted circleIDs of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.ID
-      description: The id of the Intelligence.
+      description: The ID of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.Source
-      description: The source of the Intelligence.
+      description: The source of the iIntelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.OwnerOrganizationID
       description: The owner organization ID of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.ImportSessionID
-      description: The ImportSessionID of the Intelligence.
+      description: The import session ID of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.SourceModified
-      description: Is the source modified or not.
+      description: Whether the the source was modified.
       type: Boolean
     - contextPath: ThreatStream.Intelligence.Type
-      description: The type of the Intelligence.
+      description: The type of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.Description
-      description: The description of the Intelligence.
+      description: The description of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.Tags
-      description: The tags of the Intelligence.
+      description: The tags of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.Threatscore
-      description: The threat score of the Intelligence.
+      description: The threat score of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.Latitude
-      description: The latitude of the Intelligence.
+      description: The latitude of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.Longitude
-      description: The longitude of the Intelligence.
+      description: The longitude of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.Modified
-      description: When was the intelligence modified.
+      description: The date the intelligence was modified.
       type: String
     - contextPath: ThreatStream.Intelligence.Organization
-      description: the organization of the Intelligence.
+      description: The organization of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.ASN
       description: The ASN of the intelligence.
       type: Number
     - contextPath: ThreatStream.Intelligence.CreatedTime
-      description: When was the intelligence created.
+      description: The date the intelligence was created.
       type: String
     - contextPath: ThreatStream.Intelligence.TLP
       description: The TLP of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.IsAnonymous
-      description: Is the intelligence anonymous.
+      description: Whether the intelligence is anonymous.
       type: Boolean
     - contextPath: ThreatStream.Intelligence.Country
       description: The country of the intelligence.
