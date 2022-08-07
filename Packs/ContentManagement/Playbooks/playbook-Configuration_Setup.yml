@@ -4,27 +4,27 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Configuration Setup
 description: Playbook for the configuration incident type.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 56a47cd0-a894-45ca-86e0-3789bb3971f9
     type: start
     task:
       id: 56a47cd0-a894-45ca-86e0-3789bb3971f9
       description: Start Task
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 480,
           "y": 50
         }
       }
@@ -35,8 +35,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 70090998-8edf-4e41-8fe2-a07ea531cda6
     type: regular
     task:
@@ -47,10 +47,10 @@ tasks:
       scriptName: ConfigurationSetup
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
     scriptarguments:
       configuration_file_entry_id:
         complex:
@@ -69,8 +69,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 545
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -80,8 +80,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: f565187c-1885-43fa-8e28-8074da0d36e7
     type: title
     task:
@@ -91,13 +91,13 @@ tasks:
       name: DONE
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 2555
+          "x": 527.5,
+          "y": 3060
         }
       }
     note: false
@@ -107,8 +107,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: b468ef52-00b3-45c2-8a03-8fc321a97f7a
     type: regular
     task:
@@ -122,7 +122,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       custompacksinstalled:
         simple: ${ConfigurationSetup.CustomPacks}
@@ -130,8 +130,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1575,
-          "y": 1535
+          "x": 1220,
+          "y": 2030
         }
       }
     note: false
@@ -141,8 +141,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: a6a6d0f2-5ee2-4df7-836a-55b2d0b64b1c
     type: regular
     task:
@@ -156,7 +156,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "17"
+      - '11'
     scriptarguments:
       marketplacepacksinstalled:
         simple: ${ConfigurationSetup.MarketplacePacks}
@@ -164,8 +164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1535
+          "x": 1022.5,
+          "y": 1185
         }
       }
     note: false
@@ -175,8 +175,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: b3e084ec-bcc9-4ebf-809f-b325f474a217
     type: regular
     task:
@@ -190,7 +190,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       listscreated:
         simple: ${ConfigurationSetup.Lists}
@@ -198,8 +198,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1535
+          "x": 147.5,
+          "y": 2010
         }
       }
     note: false
@@ -209,8 +209,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: ae17aef1-b139-4f96-8539-73cf2e27f008
     type: regular
     task:
@@ -224,7 +224,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     scriptarguments:
       jobscreated:
         simple: ${ConfigurationSetup.Jobs}
@@ -232,8 +232,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 2205
+          "x": 640,
+          "y": 2710
         }
       }
     note: false
@@ -243,8 +243,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: 2845d11d-c192-4747-8fd3-e7addeb59871
     type: regular
     task:
@@ -258,7 +258,7 @@ tasks:
       brand: Google Cloud Storage
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       object_name:
         simple: ${ConfigurationSetup.CustomPacks.packurl}
@@ -266,8 +266,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 1185
+          "x": 930,
+          "y": 1700
         }
       }
     note: false
@@ -277,8 +277,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: fe44aea6-1d68-4c78-8540-a5efdef8e35c
     type: title
     task:
@@ -288,15 +288,84 @@ tasks:
       name: Install Custom Packs
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1472.5,
+          "x": 1022.5,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 40f6accf-f21b-4600-8250-15967d864f0d
+    type: regular
+    task:
+      id: 40f6accf-f21b-4600-8250-15967d864f0d
+      version: -1
+      name: Install Custom Packs
+      description: Custom packs installer for the content management pack.
+      scriptName: CustomPackInstaller
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      pack_id:
+        simple: ${ConfigurationSetup.CustomPacks.packid}
+      retry-count:
+        simple: '3'
+      using:
+        complex:
+          root: inputs.InstanceName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 2135c722-279a-41f1-86b8-3a91d3351cc3
+    type: title
+    task:
+      id: 2135c722-279a-41f1-86b8-3a91d3351cc3
+      version: -1
+      name: Install Marketplace Packs
+      description: Install Marketplace Packs
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
           "y": 865
         }
       }
@@ -307,88 +376,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: b27bb8f2-7ab1-46f4-896d-a2ca922ff0f9
+  '14':
+    id: '14'
+    taskid: f79ad792-f32e-45e2-8801-9ffc97e1685a
     type: regular
     task:
-      id: b27bb8f2-7ab1-46f4-896d-a2ca922ff0f9
-      version: -1
-      name: Install Custom Packs
-      description: Custom packs installer for the content management pack.
-      scriptName: CustomPackInstaller
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      pack_id:
-        simple: ${ConfigurationSetup.CustomPacks.packid}
-      retry-count:
-        simple: "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1575,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 2135c722-279a-41f1-86b8-3a91d3351cc3
-    type: title
-    task:
-      id: 2135c722-279a-41f1-86b8-3a91d3351cc3
-      version: -1
-      name: Install Marketplace Packs
-      description: Install Marketplace Packs
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 1200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 52ddaccc-bef7-40a4-86da-0c313f6e8552
-    type: regular
-    task:
-      id: 52ddaccc-bef7-40a4-86da-0c313f6e8552
+      id: f79ad792-f32e-45e2-8801-9ffc97e1685a
       version: -1
       name: Install Marketplace Packs
       description: Marketplace packs installer for the content management pack.
-      scriptName: ContentPackInstaller
+      scriptName: MarketplacePackInstaller
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       pack_id_key:
         simple: packid
@@ -396,12 +399,15 @@ tasks:
         simple: packversion
       packs_data:
         simple: ${ConfigurationSetup.MarketplacePacks}
+      using:
+        complex:
+          root: inputs.InstanceName
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1360
+          "x": 1022.5,
+          "y": 1010
         }
       }
     note: false
@@ -411,8 +417,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 0850e0e3-60e0-4a41-8339-040874f1f3ed
     type: title
     task:
@@ -422,16 +428,16 @@ tasks:
       description: Configure the lists
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "33"
+      - '33'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1025
+          "y": 1520
         }
       }
     note: false
@@ -441,8 +447,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 63d6392e-96a5-4aeb-8a03-ec7e9cdd1e1e
     type: title
     task:
@@ -452,16 +458,16 @@ tasks:
       description: Configure the jobs
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1710
+          "x": 527.5,
+          "y": 2215
         }
       }
     note: false
@@ -471,8 +477,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: c2ae399f-b45c-4b1c-8f16-a43ab45a03fb
     type: regular
     task:
@@ -483,10 +489,10 @@ tasks:
       scriptName: JobCreator
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       job_name:
         simple: ${ConfigurationSetup.Jobs.name}
@@ -494,19 +500,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 2030
+          "x": 640,
+          "y": 2535
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 9ba2b5d4-b0c8-452a-805d-dbe89fd77702
     type: regular
     task:
@@ -517,10 +523,10 @@ tasks:
       scriptName: ListCreator
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       list_data:
         simple: ${ConfigurationSetup.Lists.listdata}
@@ -530,8 +536,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1360
+          "x": 147.5,
+          "y": 1860
         }
       }
     note: false
@@ -541,8 +547,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: af67a5f0-6252-43be-8a8d-0fe14fa241d9
     type: regular
     task:
@@ -553,22 +559,22 @@ tasks:
       script: '|||GitHub-get-file-content'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     scriptarguments:
       branch_name:
         simple: ${incident.branchname}
       create_file_from_content:
-        simple: "true"
+        simple: 'true'
       file_path:
         simple: ${incident.configfilepath}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 480,
           "y": 370
         }
       }
@@ -579,8 +585,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 7e57a07a-efc1-4285-8154-3df69e775e3d
     type: condition
     task:
@@ -590,14 +596,14 @@ tasks:
       description: Determines from where to get the configuration file.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       Attachment:
-      - "2"
+      - '2'
       GitHub:
-      - "22"
+      - '22'
       Gitlab:
-      - "35"
+      - '35'
     separatecontext: false
     conditions:
     - label: Attachment
@@ -633,7 +639,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 480,
           "y": 195
         }
       }
@@ -644,8 +650,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: 8278de62-5015-4d59-8797-a2302fe7d8a5
     type: regular
     task:
@@ -656,10 +662,10 @@ tasks:
       scriptName: ConfigurationSetup
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
     scriptarguments:
       configuration_file_entry_id:
         complex:
@@ -678,7 +684,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 695,
           "y": 545
         }
       }
@@ -689,8 +695,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     taskid: a166e331-540f-47d2-89e9-ce4fe4f00f19
     type: title
     task:
@@ -700,17 +706,16 @@ tasks:
       description: Configurations
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
-      - "13"
-      - "11"
+      - '15'
+      - '13'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 480,
           "y": 720
         }
       }
@@ -721,29 +726,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 060c98ae-2150-4d71-8dd6-f71d98728610
+  '29':
+    id: '29'
+    taskid: 7884abcb-78cc-4ee5-8055-035ec88e531d
     type: condition
     task:
-      id: 060c98ae-2150-4d71-8dd6-f71d98728610
+      id: 7884abcb-78cc-4ee5-8055-035ec88e531d
       version: -1
       name: What is the Source of the Custom Packs?
       description: Determines where to get the custom pack files to install.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "17"
-      AWS S3:
-      - "36"
+      - '31'
       Attachments:
-      - "12"
+      - '12'
       Google Cloud Storage:
-      - "10"
+      - '10'
       HTTP request:
-      - "30"
+      - '30'
     separatecontext: false
     conditions:
     - label: Attachments
@@ -776,21 +779,11 @@ tasks:
           right:
             value:
               simple: HTTP request
-    - label: AWS S3
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.custompackssource
-            iscontext: true
-          right:
-            value:
-              simple: AWS S3
     view: |-
       {
         "position": {
-          "x": 1472.5,
-          "y": 1010
+          "x": 1022.5,
+          "y": 1505
         }
       }
     note: false
@@ -800,46 +793,35 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 6009275f-d453-4f60-85dd-281d89081cc5
+  '30':
+    id: '30'
+    taskid: 56b086df-0caf-401f-81df-6a00c2f7074e
     type: regular
     task:
-      id: 6009275f-d453-4f60-85dd-281d89081cc5
+      id: 56b086df-0caf-401f-81df-6a00c2f7074e
       version: -1
       name: Download Custom Packs using an HTTP request
       description: Sends an HTTP request. Returns the response as a JSON file.
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
-      filename:
-        complex:
-          root: ${ConfigurationSetup.CustomPacks
-          accessor: packid}
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: .zip
       method:
-        simple: GET
+        simple: POST
       saveAsFile:
-        simple: "yes"
+        simple: yes
       url:
         simple: ${ConfigurationSetup.CustomPacks.packurl}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1790,
-          "y": 1185
+          "x": 1472.5,
+          "y": 1700
         }
       }
     note: false
@@ -849,8 +831,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: cb82ea65-8eca-4fbd-8b91-bcfb2618e137
     type: regular
     task:
@@ -864,13 +846,13 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 2380
+          "x": 527.5,
+          "y": 2885
         }
       }
     note: false
@@ -880,8 +862,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: ce7b9c34-e320-4e2b-804a-4f7e243d68e5
     type: condition
     task:
@@ -894,12 +876,12 @@ tasks:
       brand: Builtin
     nexttasks:
       '#default#':
-      - "17"
-      "yes":
-      - "20"
+      - '17'
+      yes:
+      - '20'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -910,7 +892,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1185
+          "y": 1680
         }
       }
     note: false
@@ -920,8 +902,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: 33a19d8e-4b9d-433e-8d66-6d413841ca69
     type: condition
     task:
@@ -934,12 +916,12 @@ tasks:
       brand: Builtin
     nexttasks:
       '#default#':
-      - "32"
-      "yes":
-      - "18"
+      - '32'
+      yes:
+      - '18'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -949,8 +931,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1855
+          "x": 527.5,
+          "y": 2360
         }
       }
     note: false
@@ -960,36 +942,38 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 5bdef339-b6d6-4115-840f-d897b76d1ca9
+  '35':
+    id: '35'
+    taskid: e0d41201-8cd9-4f42-88d9-23ee4419064b
     type: regular
     task:
-      id: 5bdef339-b6d6-4115-840f-d897b76d1ca9
+      id: e0d41201-8cd9-4f42-88d9-23ee4419064b
       version: -1
       name: Get Configuration File From Gitlab
       description: Get raw file
-      script: GitLab|||gitlab-raw-file-get
+      script: '|||gitlab-raw-file-get'
       type: regular
       iscommand: true
-      brand: GitLab
+      brand: ''
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     scriptarguments:
       create_file_from_content:
-        simple: "true"
+        simple: 'true'
       file_path:
         simple: ${incident.configfilepath}
       project_id:
-        simple: "3606"
+        simple: '3606'
       ref:
         simple: ${incident.branchname}
+      using:
+        simple: Gitlab Gold
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 910,
           "y": 370
         }
       }
@@ -1000,31 +984,37 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 080e1d9c-d0d4-447c-802b-19d951ab8081
-    type: regular
+  '31':
+    id: '31'
+    taskid: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
+    type: condition
     task:
-      id: 080e1d9c-d0d4-447c-802b-19d951ab8081
+      id: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
       version: -1
-      name: aws-s3-download-file
-      description: Download a file from S3 bucket to war room.
-      script: AWS - S3|||aws-s3-download-file
-      type: regular
-      iscommand: true
-      brand: AWS - S3
+      name: If there is no source provided, then no custom packs should be installed.
+      description: Checks whether there are custom packs to install when no source is provided. In that case, the playbook will stop with an error.
+      type: condition
+      iscommand: false
+      brand: ''
     nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      key:
-        simple: ${ConfigurationSetup.CustomPacks.packurl}
+      yes:
+      - '17'
     separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: ConfigurationSetup
+                accessor: CustomPacks
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 2220,
-          "y": 1185
+          "x": 530,
+          "y": 1700
         }
       }
     note: false
@@ -1039,14 +1029,19 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2570,
-        "width": 2550,
+        "height": 3075,
+        "width": 1802.5,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: InstanceName
+  value: {}
+  required: false
+  description: Demisto REST API instance name to use.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)
