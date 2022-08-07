@@ -1,5 +1,5 @@
 Dome9 integration allows to easily manage the security and compliance of the public cloud.
-This integration was integrated and tested with version xx of checkpointdome9
+This integration was integrated and tested with version 2 of checkpointdome9
 
 ## Configure Check Point Dome9 (CloudGuard) on Cortex XSOAR
 
@@ -1893,9 +1893,9 @@ Get top results for each service.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.GlobalSearch.Alerts.id | String | The Global Search alert ID. |
-| CheckPointDome9.GlobalSearch.Alerts.type | String | The Global Search alert type. |
-| CheckPointDome9.GlobalSearch.Alerts.severity | String | The Global Search alert severity. |
+| CheckPointDome9.GlobalSearch.Alert.id | String | The Global Search alert ID. |
+| CheckPointDome9.GlobalSearch.Alert.type | String | The Global Search alert type. |
+| CheckPointDome9.GlobalSearch.Alert.severity | String | The Global Search alert severity. |
 
 #### Command example
 ```!dome9-global-search-get```

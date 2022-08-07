@@ -1,6 +1,5 @@
 id: Dome9
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Dome9
 starttaskid: "0"
 tasks:
@@ -14,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -52,7 +51,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -83,7 +81,6 @@ tasks:
       '#none#':
       - "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -156,7 +153,6 @@ tasks:
             value:
               simple: CheckPointDome9.AccessLease.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -190,7 +186,6 @@ tasks:
       lease_id:
         simple: 184513ac-a61e-4471-b11d-27aace262caf
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -221,7 +216,6 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -274,7 +268,6 @@ tasks:
             value:
               simple: CheckPointDome9.AccessLease.Invitation.recipientName
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -308,7 +301,6 @@ tasks:
       invitation_id:
         simple: ac88b05f-aace-444d-a254-180fd6f58fd4
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -339,7 +331,6 @@ tasks:
       '#none#':
       - "9"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -404,7 +395,6 @@ tasks:
             value:
               simple: CheckPointDome9.Findings.alertType
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -440,7 +430,6 @@ tasks:
       name:
         simple: name8899
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -490,7 +479,6 @@ tasks:
             value:
               simple: CheckPointDome9.IpList.description
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -530,7 +518,6 @@ tasks:
       update_mode:
         simple: add_new_items
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -561,7 +548,6 @@ tasks:
       '#none#':
       - "14"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -616,7 +602,6 @@ tasks:
             value:
               simple: CheckPointDome9.IpList.items
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -650,7 +635,6 @@ tasks:
       list_id:
         simple: "130301"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -681,7 +665,6 @@ tasks:
       '#none#':
       - "17"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -736,7 +719,6 @@ tasks:
             value:
               simple: CheckPointDome9.IpList.Metadata.classificaiton
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -774,7 +756,6 @@ tasks:
       name:
         simple: new0408
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -829,7 +810,6 @@ tasks:
             value:
               simple: CheckPointDome9.IpList.Metadata.classificaiton
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -865,7 +845,6 @@ tasks:
       list_metadata_id:
         simple: 270301-196.88.6.3/32
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -918,7 +897,6 @@ tasks:
             value:
               simple: CheckPointDome9.IpList.Metadata.classificaiton
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -956,7 +934,6 @@ tasks:
       mask:
         simple: "32"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -987,7 +964,6 @@ tasks:
       '#none#':
       - "24"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1045,7 +1021,6 @@ tasks:
             value:
               simple: CheckPointDome9.ComplianceRemediation.cloudBots
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1085,7 +1060,6 @@ tasks:
       ruleset_id:
         simple: "-41"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1127,7 +1101,6 @@ tasks:
       ruleset_id:
         simple: "-10"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1161,7 +1134,6 @@ tasks:
       remediation_id:
         simple: e72a5b2a-713b-49c0-9887-a092303339dd
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1192,7 +1164,6 @@ tasks:
       '#none#':
       - "29"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1245,7 +1216,6 @@ tasks:
             value:
               simple: CheckPointDome9.ComplianceRuleset.description
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1276,7 +1246,6 @@ tasks:
       '#none#':
       - "31"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1334,7 +1303,6 @@ tasks:
             value:
               simple: CheckPointDome9.ComplianceRuleset.Rule.description
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1372,7 +1340,6 @@ tasks:
       sg_id:
         simple: '18817113 '
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1408,7 +1375,6 @@ tasks:
       sg_id:
         simple: '18817113 '
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1446,7 +1412,6 @@ tasks:
       value:
         simple: v1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1486,7 +1451,6 @@ tasks:
       sg_id:
         simple: "18817113"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1541,7 +1505,6 @@ tasks:
             value:
               simple: CheckPointDome9.SecurityGroup.Service.port
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1583,7 +1546,6 @@ tasks:
       sg_id:
         simple: "18817113"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1638,7 +1600,6 @@ tasks:
             value:
               simple: CheckPointDome9.SecurityGroup.Service.port
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1676,7 +1637,6 @@ tasks:
       sg_id:
         simple: "18817113"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1707,7 +1667,6 @@ tasks:
       '#none#':
       - "41"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1762,7 +1721,6 @@ tasks:
             value:
               simple: CheckPointDome9.Instance.name
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1798,7 +1756,6 @@ tasks:
       sg_id:
         simple: "18817113"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1829,7 +1786,6 @@ tasks:
       '#none#':
       - "44"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1860,7 +1816,6 @@ tasks:
       '#none#':
       - "45"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1898,7 +1853,6 @@ tasks:
             value:
               simple: CheckPointDome9.SecurityGroup.security_group_id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1929,7 +1883,6 @@ tasks:
       '#none#':
       - "47"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1967,7 +1920,6 @@ tasks:
             value:
               simple: CheckPointDome9.SecurityGroup.security_group_id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1998,7 +1950,6 @@ tasks:
       '#none#':
       - "49"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2046,7 +1997,6 @@ tasks:
             value:
               simple: CheckPointDome9.GlobalSearch.Alert.severity
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2077,7 +2027,6 @@ tasks:
       '#none#':
       - "51"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2130,7 +2079,6 @@ tasks:
             value:
               simple: CheckPointDome9.CloudTrail.accountId
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2161,7 +2109,6 @@ tasks:
       '#none#':
       - "53"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2214,7 +2161,6 @@ tasks:
             value:
               simple: CheckPointDome9.OrganizationalUnitView.children
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2245,7 +2191,6 @@ tasks:
       '#none#':
       - "55"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2298,7 +2243,6 @@ tasks:
             value:
               simple: CheckPointDome9.OrganizationalUnitFlat.parentId
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2329,7 +2273,6 @@ tasks:
       '#none#':
       - "57"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2382,7 +2325,6 @@ tasks:
             value:
               simple: CheckPointDome9.OrganizationalUnit.parentId
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2416,7 +2358,6 @@ tasks:
       finding_id:
         simple: fac67d9a-246a-42b9-8bfa-7fc02457da4d
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2486,7 +2427,6 @@ tasks:
             value:
               simple: CheckPointDome9.Finding.cloudAccountId
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2522,7 +2462,6 @@ tasks:
       rule_logic_hash:
         simple: aeW4uZDz3l+HqMQKXsPYkw
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2582,7 +2521,6 @@ tasks:
             value:
               simple: CheckPointDome9.FindingsBundle.region
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2608,8 +2546,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2638,3 +2576,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.2.0
+description: Dome9 TestPlayBook
