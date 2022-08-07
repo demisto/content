@@ -468,6 +468,7 @@ class MicrosoftClient(BaseClient):
             data['grant_type'] = DEVICE_CODE
             if integration_context:
                 data['code'] = integration_context.get('device_code')
+
         response_json: dict = {}
         try:
             response = requests.post(self.token_retrieval_url, data, verify=self.verify)
