@@ -194,6 +194,35 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 description: Use the Chronicle integration to retrieve Asset alerts or IOC Domain
   matches as Incidents. Use it to fetch a list of infected assets based on the indicator
   accessed. This integration also provides reputation and threat enrichment of indicators
@@ -3254,7 +3283,7 @@ script:
       description: A page token that can be provided to the next call to view the
         next page of Rules. Absent if this is the last page.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.29031
+  dockerimage: demisto/googleapi-python3:1.0.0.32437
   feed: false
   isfetch: true
   longRunning: false
