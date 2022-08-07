@@ -48,7 +48,7 @@ class CollectionReason(str, Enum):
     MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
-    ALWAYS_INSTALLED_PACKS = 'always installed packs'
+    ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
@@ -509,7 +509,7 @@ class NightlyTestCollector(TestCollector, ABC):
                 result.append(CollectionResult(
                     test=playbook.id_, pack=playbook.pack_id,
                     reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
-                    reason_description=f'({self.marketplace.value})',
+                    reason_description=self.marketplace.value,
                     version_range=playbook.version_range,
                     conf=self.conf, id_set=self.id_set)
                 )
@@ -545,7 +545,7 @@ class NightlyTestCollector(TestCollector, ABC):
 
         return CollectionResult.union(
             tuple(CollectionResult(test=None, pack=pack, reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
-                                   version_range=None, reason_description=f'({self.marketplace.value})',
+                                   version_range=None, reason_description=self.marketplace.value,
                                    conf=self.conf, id_set=self.id_set)
                   for pack in packs)
         )
