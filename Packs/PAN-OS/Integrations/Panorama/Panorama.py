@@ -885,6 +885,11 @@ def panorama_push_to_template_stack(args: dict):
     return result
 
 
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('timeout', 120))
+)
 def panorama_push_to_device_group_command(args: dict):
     """
     Push Panorama configuration and show message in war-room
@@ -892,20 +897,22 @@ def panorama_push_to_device_group_command(args: dict):
     if not DEVICE_GROUP:
         raise Exception("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
+    demisto.info(f'{args.get("push_job_id")=}')
+
     if push_job_id := args.get('push_job_id'):
+        result = panorama_push_status(job_id=push_job_id)
+
         push_status = panorama_push_status(job_id=push_job_id).get('response', {}).get('result', {})
-        job_result = push_status.get('job', {}).get('result')
-        push_output = {
-            'DeviceGroup': DEVICE_GROUP,
-            'JobID': push_job_id,
-            'Status': 'Success' if job_result == 'OK' else 'Failure'
-        }
+
+        push_output = parse_push_status_response(result)
+        push_output['DeviceGroup'] = DEVICE_GROUP
+
         return PollResult(
             response=CommandResults(  # this is what the response will be in case job has finished
                 outputs_prefix='Panorama.Push',
                 outputs_key_field='JobID',
                 outputs=push_output,
-                readable_output=tableToMarkdown('Commit Status:', push_output, removeNull=True)
+                readable_output=tableToMarkdown('Push to Device Group:', push_output, removeNull=True)
             ),
             continue_to_poll=push_status.get('job', {}).get('status') != 'FIN'  # continue polling if job isn't done
         )
@@ -926,20 +933,24 @@ def panorama_push_to_device_group_command(args: dict):
                 readable_output=tableToMarkdown('Push to Device Group:', context_output, removeNull=True)
             )
         else:
-            push_output = result.get('response', {}).get('msg') or 'There are no changes to commit.' # type: ignore[assignment]
+            push_output = result.get('response', {}).get('msg') or 'There are no changes to push.' # type: ignore[assignment]
             continue_to_poll = False
+
+        args_for_next_run = {
+                'push_job_id': job_id,
+                'polling': argToBoolean(args.get('polling', False)),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
+                'timeout': arg_to_number(args.get('timeout', 120))
+            }
+
+        demisto.info(f'{args_for_next_run=}')
 
         return PollResult(
             response=push_output,
             continue_to_poll=continue_to_poll,
-            args_for_next_run={
-                'push_job_id': job_id,
-                'polling': argToBoolean(args.get('polling')),
-                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
-                'timeout': arg_to_number(args.get('timeout'))
-            },
+            args_for_next_run=args_for_next_run,
             partial_result=CommandResults(
-                readable_output=f'Waiting for push with Job-ID {job_id} to push changes device-group {DEVICE_GROUP}...'
+                readable_output=f'Waiting for push with Job-ID {job_id} to push changes to device-group {DEVICE_GROUP}...'
             )
         )
     # if 'result' in result['response']:
@@ -1059,13 +1070,7 @@ def safeget(dct: dict, keys: List[str]):
     return dct
 
 
-def panorama_push_status_command(args: dict):
-    """
-    Check jobID of push status
-    """
-    job_id = args.get('job_id')
-    target = args.get('target')
-    result = panorama_push_status(job_id, target)
+def parse_push_status_response(result: dict):
     job = result.get('response', {}).get('result', {}).get('job', {})
     if job.get('type', '') not in ('CommitAll', 'ValidateAll'):
         raise Exception('JobID given is not of a Push neither of a validate.')
@@ -1100,6 +1105,19 @@ def panorama_push_status_command(args: dict):
             status_errors.extend([] if not device_errors else device_errors)
     push_status_output["Warnings"] = status_warnings
     push_status_output["Errors"] = status_errors
+
+    return push_status_output
+
+
+def panorama_push_status_command(args: dict):
+    """
+    Check jobID of push status
+    """
+    job_id = args.get('job_id')
+    target = args.get('target')
+    result = panorama_push_status(job_id, target)
+
+    push_status_output = parse_push_status_response(result)
 
     return_results({
         'Type': entryTypes['note'],
