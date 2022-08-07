@@ -94,6 +94,7 @@ If MFA is enabled for your user, follow the next steps:
 | update_timestamp_field | Timestamp field to query for updates as part of the mirroring flow. | False |
 | mirror_limit | The maximum number of incidents to mirror incoming each time | False |
 | close_incident | Close XSOAR Incident. When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
+| close_ticket_multiple_options | Define how to close the mirrored tickets, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
 | close_ticket | Close ServiceNow Ticket. When selected, closing the XSOAR incident is mirrored in ServiceNow. | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |

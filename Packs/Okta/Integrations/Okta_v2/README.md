@@ -40,7 +40,7 @@ There is no context output for this command.
 ```!okta-unlock-user username=testForDocs@test.com```
 
 ##### Human Readable Output
-User testForDocs@test.com unlocked
+>User testForDocs@test.com unlocked
 
 ### okta-deactivate-user
 ***
@@ -65,7 +65,7 @@ There is no context output for this command.
 ```!okta-deactivate-user username=testForDocs@test.com```
 
 ##### Human Readable Output
-User testForDocs@test.com deactivated
+>User testForDocs@test.com deactivated
 
 ### okta-activate-user
 ***
@@ -90,7 +90,7 @@ There is no context output for this command.
 ```!okta-activate-user username=testForDocs@test.com```
 
 ##### Human Readable Output
-### testForDocs@test.com is active now
+>### testForDocs@test.com is active now
 
 ### okta-suspend-user
 ***
@@ -115,7 +115,7 @@ There is no context output for this command.
 ```!okta-suspend-user username=testForDocs@test.com```
 
 ##### Human Readable Output
-### testForDocs@test.com status is Suspended
+>### testForDocs@test.com status is Suspended
 
 ### okta-unsuspend-user
 ***
@@ -140,7 +140,7 @@ There is no context output for this command.
 ```!okta-unsuspend-user username=testForDocs@test.com```
 
 ##### Human Readable Output
-### testForDocs@test.com is no longer SUSPENDED
+>### testForDocs@test.com is no longer SUSPENDED
 
 ### okta-get-user-factors
 ***
@@ -209,13 +209,13 @@ Returns all the enrolled factors for the specified user.
 ```
 
 ##### Human Readable Output
-Factors for user: 00upt1w8tgFQM2v0h7
- ### Factors
-|FactorType|ID|Profile|Provider|Status|
-|---|---|---|---|---|
-| sms | mbgt21nffaaN5F060h7 | phoneNumber: +12025550191 | OKTA | PENDING_ACTIVATION |
-| token:software:totp | uftptgdrDJ7fDOq0h7 | credentialId: factor@test.com | GOOGLE | PENDING_ACTIVATION |
-| push | opfg1joeaArlg27g0h7 |  | OKTA | PENDING_ACTIVATION |
+>Factors for user: 00upt1w8tgFQM2v0h7
+>### Factors
+>|FactorType|ID|Profile|Provider|Status|
+>|---|---|---|---|---|
+>| sms | mbgt21nffaaN5F060h7 | phoneNumber: +12025550191 | OKTA | PENDING_ACTIVATION |
+>| token:software:totp | uftptgdrDJ7fDOq0h7 | credentialId: factor@test.com | GOOGLE | PENDING_ACTIVATION |
+>| push | opfg1joeaArlg27g0h7 |  | OKTA | PENDING_ACTIVATION |
 
 
 ### okta-reset-factor
@@ -243,7 +243,7 @@ There is no context output for this command.
 ```!okta-reset-factor factorId=ufsq7cvptfbjQa72c0h7 userId=00upt1w8t40wFQM2v6t4```
 
 ##### Human Readable Output
-Factor: ufsq7cvptfbjQa72c0h7 deleted
+>Factor: ufsq7cvptfbjQa72c0h7 deleted
 
 ### okta-set-password
 ***
@@ -269,7 +269,7 @@ There is no context output for this command.
 ```!okta-set-password username=testForDocs@test.com password=N3wPa55word!```
 
 ##### Human Readable Output
-testForDocs@test.com password was last changed on 2020-03-26T13:57:13.000Z
+>testForDocs@test.com password was last changed on 2020-03-26T13:57:13.000Z
 
 ### okta-add-to-group
 ***
@@ -297,7 +297,7 @@ There is no context output for this command.
 ```!okta-add-to-group groupName=Demisto username=testForDocs@test.com```
 
 ##### Human Readable Output
-User: 00uqk1qesl3k0SRbH0h7 added to group: Demisto successfully
+>User: 00uqk1qesl3k0SRbH0h7 added to group: Demisto successfully
 
 ### okta-remove-from-group
 ***
@@ -325,7 +325,7 @@ There is no context output for this command.
 ```!okta-remove-from-group groupName=demisto username=testForDocs@test.com```
 
 ##### Human Readable Output
-User: 00uqk1qesl3k0SRbH0h7 was removed from group: demisto successfully
+>User: 00uqk1qesl3k0SRbH0h7 was removed from group: demisto successfully
 
 ### okta-get-groups
 ***
@@ -398,12 +398,12 @@ Returns all user groups associated with a specified user.
 ```
 
 ##### Human Readable Output
-Okta groups for user: testForDocs@test.com
- ### Groups
-|Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
-|---|---|---|---|---|---|---|---|
-| 2016-04-12T15:01:50.000Z | All users in your organization | 00g66lckgAJpLcNc0h7 | 2020-03-26T13:56:49.000Z | 2016-04-12T15:01:50.000Z | Everyone | okta:user_group | BUILT_IN |
-| 2018-01-19T02:02:06.000Z |  | 00gdougcgzEaf7c50h7 | 2020-03-26T13:49:47.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
+>Okta groups for user: testForDocs@test.com
+>### Groups
+>|Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
+>|---|---|---|---|---|---|---|---|
+>| 2016-04-12T15:01:50.000Z | All users in your organization | 00g66lckgAJpLcNc0h7 | 2020-03-26T13:56:49.000Z | 2016-04-12T15:01:50.000Z | Everyone | okta:user_group | BUILT_IN |
+>| 2018-01-19T02:02:06.000Z |  | 00gdougcgzEaf7c50h7 | 2020-03-26T13:49:47.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
 
 
 ### okta-verify-push-factor
@@ -434,7 +434,7 @@ Enrolls and verifies a push factor for the specified user.
 ```!okta-verify-push-factor factorId=opfpt1joeaArlg27g0h7 userId=00upt1w8t40wFQM2v0h7```
 
 ##### Human Readable Output
-Verify push factor result for user 00upt1w8t40wgQM2v0h7: WAITING
+>Verify push factor result for user 00upt1w8t40wgQM2v0h7: WAITING
 
 ##### Context Example
 ```
@@ -559,12 +559,12 @@ Searches for Okta users.
 ```
 
 ##### Human Readable Output
-### Okta users found:
-### User:bartest@test.com
-### Profile
-|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
-|---|---|---|---|---|---|
-| bartest@test.com | bar | test | bartest@test.com |  |  |
+>Okta users found:
+>User:bartest@test.com
+>### Profile
+>|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
+>|---|---|---|---|---|---|
+>| bartest@test.com | bar | test | bartest@test.com |  |  |
 
  ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
@@ -645,11 +645,11 @@ Fetches information for a single user. You must enter one or more parameters for
 ```
 
 ##### Human Readable Output
-### User:testForDocs@test.com
-### Profile
-|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
-|---|---|---|---|---|---|
-| testForDocs@test.com | test | that | testForDocs@test.com |  |  |
+>### User:testForDocs@test.com
+>### Profile
+>|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
+>|---|---|---|---|---|---|
+>| testForDocs@test.com | test | that | testForDocs@test.com |  |  |
 
  ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
@@ -747,10 +747,10 @@ Creates a new user with an option of setting a password, recovery question, and 
 ```
 
 ##### Human Readable Output
-### Okta User Created: testForDocs@test.com:
-|First Name|ID|Last Login|Last Name|Login|Mobile Phone|Status|
-|---|---|---|---|---|---|---|
-| test | 00uqk1qesl3k0SRbH0h7 |  | that | testForDocs@test.com |  | STAGED |
+>### Okta User Created: testForDocs@test.com:
+>|First Name|ID|Last Login|Last Name|Login|Mobile Phone|Status|
+>|---|---|---|---|---|---|---|
+>| test | 00uqk1qesl3k0SRbH0h7 |  | that | testForDocs@test.com |  | STAGED |
 
 
 ### okta-update-user
@@ -811,10 +811,10 @@ There is no context output for this command.
 ```!okta-update-user username=testForDocs@test.com firstName="First Name Updated"```
 
 ##### Human Readable Output
-### Okta user: testForDocs@test.com Updated:
-|email|firstName|lastName|login|mobilePhone|secondEmail|
-|---|---|---|---|---|---|
-| testForDocs@test.com | First Name Updated | that | testForDocs@test.com |  |  |
+>### Okta user: testForDocs@test.com Updated:
+>|email|firstName|lastName|login|mobilePhone|secondEmail|
+>|---|---|---|---|---|---|
+>| testForDocs@test.com | First Name Updated | that | testForDocs@test.com |  |  |
 
 
 ### okta-get-group-members
@@ -872,12 +872,12 @@ Enumerates all users that are members of a group.
 ```
 
 ##### Human Readable Output
-### Users for group: Demisto:
- ### User:Test@demisto.com
-### Profile
-|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
-|---|---|---|---|---|---|
-| XSOAR@demisto.com | Test | Demisto | XSOAR@demisto.com |  |  |
+>### Users for group: Demisto:
+>### User:Test@demisto.com
+>### Profile
+>|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
+>|---|---|---|---|---|---|
+>| XSOAR@demisto.com | Test | Demisto | XSOAR@demisto.com |  |  |
 
  ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
@@ -939,10 +939,10 @@ Lists groups in your organization. A subset of groups can be returned that match
 ```
 
 ##### Human Readable Output
-### Groups
-|Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
-|---|---|---|---|---|---|---|---|
-| 2018-01-19T02:02:06.000Z |  | 00gdougctEaf7c50h7 | 2020-03-26T13:56:56.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
+>### Groups
+>|Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
+>|---|---|---|---|---|---|---|---|
+>| 2018-01-19T02:02:06.000Z |  | 00gdougctEaf7c50h7 | 2020-03-26T13:56:56.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
 
 
 ### okta-get-failed-logins
@@ -1105,10 +1105,10 @@ Returns failed login events.
 ```
 
 ##### Human Readable Output
-### Failed Login Events
-|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
-|---|---|---|---|---|---|---|---|---|---|
-| unknown (User) | admin | 127.0.0.1 | CHROME on Windows 10 Computer | User login to Okta | FAILURE: VERIFICATION_ERROR | INFO | 127.0.0.1 | - | 09/30/2019, 18:42:38 |
+>### Failed Login Events
+>|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
+>|---|---|---|---|---|---|---|---|---|---|
+>| unknown (User) | admin | 127.0.0.1 | CHROME on Windows 10 Computer | User login to Okta | FAILURE: VERIFICATION_ERROR | INFO | 127.0.0.1 | - | 09/30/2019, 18:42:38 |
 
 
 ### okta-get-logs
@@ -1288,10 +1288,10 @@ Gets logs by providing optional filters.
 ```
 
 ##### Human Readable Output
-### Okta Events
-|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
-|---|---|---|---|---|---|---|---|---|---|
-| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Remove user from group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 03/03/2020, 20:23:17 |
+>### Okta Events
+>|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
+>|---|---|---|---|---|---|---|---|---|---|
+>| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Remove user from group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 03/03/2020, 20:23:17 |
 
 
 ### okta-get-group-assignments
@@ -1468,10 +1468,10 @@ Gets events for when a user was added to a group.
 ```
 
 ##### Human Readable Output
-### Group Assignment Events
-|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
-|---|---|---|---|---|---|---|---|---|---|
-| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 09/29/2019, 03:47:46 |
+>### Group Assignment Events
+>|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
+>|---|---|---|---|---|---|---|---|---|---|
+>| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 09/29/2019, 03:47:46 |
 
 
 ### okta-get-application-assignments
@@ -1656,10 +1656,10 @@ Returns events for when a user was assigned to an application.
 ```
 
 ##### Human Readable Output
-### Application Assignment Events
-|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
-|---|---|---|---|---|---|---|---|---|---|
-| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to application membership | SUCCESS | INFO | 127.0.0.1 | Test 1 that (AppUser) ShrikSAML (AppInstance) Test 1 that (User)  | 02/27/2020, 17:55:12 |
+>### Application Assignment Events
+>|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
+>|---|---|---|---|---|---|---|---|---|---|
+>| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to application membership | SUCCESS | INFO | 127.0.0.1 | Test 1 that (AppUser) ShrikSAML (AppInstance) Test 1 that (User)  | 02/27/2020, 17:55:12 |
 
 
 ### okta-get-application-authentication
@@ -1841,10 +1841,10 @@ Returns logs using specified filters.
 ```
 
 ##### Human Readable Output
-### Application Authentication Events
-|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
-|---|---|---|---|---|---|---|---|---|---|
-| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 127.0.0.1 | BenziPermanent (AppInstance) Test Demisto (AppUser)  | 10/14/2019, 12:16:53 |
+>### Application Authentication Events
+>|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
+>|---|---|---|---|---|---|---|---|---|---|
+>| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 127.0.0.1 | BenziPermanent (AppInstance) Test Demisto (AppUser)  | 10/14/2019, 12:16:53 |
 
 
 ### okta-delete-user
@@ -1872,7 +1872,7 @@ There is no context output for this command.
 
 
 ##### Human Readable Output
-User: testForDocs@test.com was Deleted successfully
+>User: testForDocs@test.com was Deleted successfully
 
 ### okta-clear-user-sessions
 ***
@@ -1900,7 +1900,7 @@ There is no context output for this command.
 
 
 ##### Human Readable Output
-### User session was cleared for: 00ui5brmwtJpMdoZZ0h7
+>### User session was cleared for: 00ui5brmwtJpMdoZZ0h7
 
 
 ### okta-list-zones
@@ -2033,7 +2033,6 @@ Get an Okta Zone object
 ```
 
 #### Human Readable Output
-
 >### Okta Zones
 >|name|id|gateways|status|system|lastUpdated|created|
 >|---|---|---|---|---|---|---|
