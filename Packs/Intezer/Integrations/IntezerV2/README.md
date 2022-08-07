@@ -273,6 +273,8 @@ Required** |
 | DBotScore.Vendor     | string | Vendor used to calculate the score | 
 | DBotScore.Score      | number | The actual score |
 | File.SHA256          | string | Hash SHA256 | 
+| File.SHA1            | string | Hash SHA1 | 
+| File.MD5             | string | Hash MD5 | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision | 
 | File.Metadata        | Unknown | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metedata will be retuned only for supported files. | 
 | File.ExistsInIntezer | Boolean | Does the file exists on intezer genome database |

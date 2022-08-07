@@ -2,6 +2,7 @@ import pytest
 from PwnedV2 import pwned_domain_command, pwned_username_command
 import PwnedV2
 from requests_mock import ANY
+import demistomock as demisto
 
 RETURN_ERROR_TARGET = 'PwnedV2.return_error'
 
@@ -14,7 +15,8 @@ username_context = {
         }, 'Malicious': {'Vendor': 'Have I Been Pwned? V2', 'Description': 'The domain has been compromised'
                          }
     }, 'DBotScore': {
-        'Indicator': 'jondon', 'Type': 'domain', 'Vendor': 'Have I Been Pwned? V2', 'Score': 3
+        'Indicator': 'jondon', 'Type': 'domain', 'Vendor': 'Have I Been Pwned? V2', 'Score': 3,
+        'Reliability': 'A - Completely reliable'
     }
 }
 
@@ -26,8 +28,8 @@ domain_context = {
             }
         }, 'Malicious': {'Vendor': 'Have I Been Pwned? V2', 'Description': 'The domain has been compromised'
                          }
-    }, 'DBotScore': {'Indicator': 'adobe.com', 'Type': 'domain', 'Vendor': 'Have I Been Pwned? V2', 'Score': 3
-                     }
+    }, 'DBotScore': {'Indicator': 'adobe.com', 'Type': 'domain', 'Vendor': 'Have I Been Pwned? V2', 'Score': 3,
+                     'Reliability': 'A - Completely reliable'}
 }
 
 username_req = [
@@ -52,14 +54,16 @@ username_req = [
                                             u'Usernames', u'Website activity'], u'IsRetired': False, u'IsSpamList':
         False, u'BreachDate': u'2011-06-25',
         u'IsFabricated': False, u'ModifiedDate': '2014-05-11T10:30:43Z', u'LogoPath': u'https://haveibeenpwned.com/'
-        u'Content/Images/PwnedLogos/HackForums.png', 'AddedDate': u'2014-05-11T10:30:43Z', u'IsVerified': True,
+                                                                                      u'Content/Images/PwnedLogos/HackForums.png',
+        'AddedDate': u'2014-05-11T10:30:43Z', u'IsVerified': True,
         u'Description': 'In June 2011, the hacktivist group known as "LulzSec" leaked <a href='
-        u'"http://www.forbes.com/sites/andygreenberg/2011/06/25/lulzsec-says-goodbye-'
-        u'dumping-nato-att-gamer-data/" target="_blank" rel="noopener">one final large'
-        u' data breach they titled "50 days of lulz"</a>. The compromised data came from'
-        u' sources such as AT&T, Battlefield Heroes and the <a href="http://hackforums.'
-        u'net" target="_blank" rel="noopener">hackforums.net website</a>. The leaked '
-        u'Hack Forums data included credentials and personal information of nearly 200,000 registered forum users.'
+                        u'"http://www.forbes.com/sites/andygreenberg/2011/06/25/lulzsec-says-goodbye-'
+                        u'dumping-nato-att-gamer-data/" target="_blank" rel="noopener">one final large'
+                        u' data breach they titled "50 days of lulz"</a>. The compromised data came from'
+                        u' sources such as AT&T, Battlefield Heroes and the <a href="http://hackforums.'
+                        u'net" target="_blank" rel="noopener">hackforums.net website</a>. The leaked '
+                        u'Hack Forums data included credentials and personal '
+                        u'information of nearly 200,000 registered forum users.'
     }
 ]
 
@@ -69,16 +73,16 @@ domain_req = [
         u'Adobe', u'DataClasses': [u'Email addresses', u'Password hints', u'Passwords', u'Usernames'], u'IsRetired':
         False, 'IsSpamList': False, u'BreachDate': u'2013-10-04', u'IsFabricated': False, u'ModifiedDate':
         u'2013-12-04T00:00:00Z', u'LogoPath': u'https://haveibeenpwned.com/Content/Images/PwnedLogos/Adobe'
-        u'.png', u'AddedDate': u'2013-12-04T00:00:00Z', u'IsVerified':
+                                              u'.png', u'AddedDate': u'2013-12-04T00:00:00Z', u'IsVerified':
         True, u'Description': u'In October 2013, 153 million Adobe accounts were breached with each'
-        u' containing an internal ID, username, email, <em>encrypted</em> password and'
-        u' a password hint in plain text. The password cryptography was poorly done'
-        u' and <a href="http://stricture-group.com/files/adobe-top100.txt" target="_'
-        u'blank" rel="noopener">many were quickly resolved back to plain text</a>. '
-        u'The unencrypted hints also <a href="http://www.troyhunt.com/2013/11/adobe-'
-        u'credentials-and-serious.html" target="_blank" rel="noopener">disclosed much'
-        u' about the passwords</a> adding further to the risk that hundreds of '
-        u'millions of Adobe customers already faced.'
+                              u' containing an internal ID, username, email, <em>encrypted</em> password and'
+                              u' a password hint in plain text. The password cryptography was poorly done'
+                              u' and <a href="http://stricture-group.com/files/adobe-top100.txt" target="_'
+                              u'blank" rel="noopener">many were quickly resolved back to plain text</a>. '
+                              u'The unencrypted hints also <a href="http://www.troyhunt.com/2013/11/adobe-'
+                              u'credentials-and-serious.html" target="_blank" rel="noopener">disclosed much'
+                              u' about the passwords</a> adding further to the risk that hundreds of '
+                              u'millions of Adobe customers already faced.'
     }
 ]
 
@@ -104,6 +108,7 @@ def test_pwned_commands(command, args, response, expected_result, mocker):
     - create the context
     validate the expected_result and the created context
     """
+    mocker.patch.object(demisto, 'params', return_value={'integrationReliability': 'A - Completely reliable'})
     mocker.patch('PwnedV2.http_request', return_value=response)
     md_list, ec_list, api_email_res_list = command(args)
     for hr, outputs, raw in zip(md_list, ec_list, api_email_res_list):

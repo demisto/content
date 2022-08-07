@@ -1,0 +1,21 @@
+{
+    "name": "Simple SFTP",
+    "description": "Simple SFTP Integration to copy files from SFTP Server using paramiko.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Rahul Vijaydev and Vibhu A Bharadwaj",
+    "url": "",
+    "email": "",
+    "created": "2022-06-27T23:59:06Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "vibhuabharadwaj"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
