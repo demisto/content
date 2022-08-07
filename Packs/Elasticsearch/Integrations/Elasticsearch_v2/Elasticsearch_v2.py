@@ -56,33 +56,28 @@ INSECURE = not param.get('insecure', False)
 TIME_METHOD = param.get('time_method', 'Simple-Date')
 TIMEOUT = int(param.get('timeout') or 60)
 MAP_LABELS = param.get('map_labels', True)
-TIME_RANGE_START = param.get('time_range_start')
-TIME_RANGE_END = param.get('time_range_end')
 
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
 
-def get_timestamp_first_fetch(last_fetch):
-    """Gets the last fetch time as a datetime and converts it to the relevant timestamp format.
+def convert_date_to_timestamp(date):
+    """converts datetime to the relevant timestamp format.
 
     Args:
-        last_fetch(datetime): A datetime object setting up the last fetch time
+        date(datetime): A datetime object setting up the last fetch time
 
     Returns:
         (num).The formatted timestamp
     """
     # this theoretically shouldn't happen but just in case
-    if str(last_fetch).isdigit():
-        return int(last_fetch)
+    if str(date).isdigit():
+        return int(date)
 
     if TIME_METHOD == 'Timestamp-Seconds':
-        return int(last_fetch.timestamp())
+        return int(date.timestamp())
 
-    elif TIME_METHOD == 'Timestamp-Milliseconds':
-        return int(last_fetch.timestamp() * 1000)
-
-    else:
-        return int(last_fetch.timestamp() * 1000)
+    else:  # this case includes "Timestamp-Milliseconds"
+        return int(date.timestamp() * 1000)
 
 
 def timestamp_to_date(timestamp_string):
@@ -606,10 +601,14 @@ def format_to_iso(date_string):
     return date_string
 
 
-def get_time_range(last_fetch: Union[str, None] = None, fetch_time=FETCH_TIME, time_range_start=TIME_RANGE_START,
-                   time_range_end=TIME_RANGE_END, time_field=TIME_FIELD) -> Dict:
+def get_time_range(last_fetch: Union[str, None] = None, fetch_time=FETCH_TIME, time_range_start=None,
+                   time_range_end=None, time_field=TIME_FIELD) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
+    The filter is using timestamps with the following logic:
+        start date (gt) - if this is the first fetch: use time_range_start param if provided, else use fetch time param.
+                          if this is not the fetch: use the last fetch provided
+        end date (lt) - use the given time range end param.
     Args:
 
         last_fetch (str): last fetch time stamp
@@ -622,15 +621,16 @@ def get_time_range(last_fetch: Union[str, None] = None, fetch_time=FETCH_TIME, t
         dictionary (Ex. {"range":{'gt': 1000 'lt':1001}})
     """
     range_dict = {}
-    if not last_fetch:
+    if not last_fetch:  # this is the first fetch
+        # if time range start provided we will use it instead of fetch time.
         if time_range_start:
             start_date = dateparser.parse(time_range_start)
         elif fetch_time:
             start_date = dateparser.parse(fetch_time)
         else:
-            raise DemistoException("Missing First fetch timestamp and Time Range Start, please provide one of them.")
+            raise DemistoException("Missing First fetch timestamp or Time Range Start, please provide one of them.")
 
-        start_time = get_timestamp_first_fetch(start_date)
+        start_time = convert_date_to_timestamp(start_date)
     else:
         start_time = last_fetch
 
@@ -638,7 +638,7 @@ def get_time_range(last_fetch: Union[str, None] = None, fetch_time=FETCH_TIME, t
 
     if time_range_end:
         end_date = dateparser.parse(time_range_end)
-        end_time = get_timestamp_first_fetch(end_date)
+        end_time = convert_date_to_timestamp(end_date)
         range_dict['lt'] = end_time
 
     return {'range': {time_field: range_dict}}

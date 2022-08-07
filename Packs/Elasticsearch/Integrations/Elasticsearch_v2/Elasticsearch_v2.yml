@@ -37,27 +37,15 @@ configuration:
   name: fetch_index
   required: false
   type: 0
-- display: Query by which to fetch incidents (Lucene syntax)
+- display: Query String
   name: fetch_query
   required: false
   type: 0
-- additionalinfo: Will replace the ‘fetch_query’ lucene syntax string.
+- additionalinfo: Query by which to fetch incidents (Lucene syntax)
+- additionalinfo: Will override the 'Query String' Lucene syntax string.
   display: Raw Query
   hidden: false
   name: raw_query
-  required: false
-  type: 0
-- additionalinfo: Query time range expressions, start time. Will replace the First
-    Fetch field.
-  display: Query Time Range - Start
-  hidden: false
-  name: time_range_start
-  required: false
-  type: 0
-- additionalinfo: Query time range expressions, end time.
-  display: Query Time Range - End
-  hidden: false
-  name: time_range_end
   required: false
   type: 0
 - display: Index time field (for sorting sort and limiting data)
@@ -179,7 +167,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used instead of ‘query'.
+      description: Will overwrite the ‘query' argument.
       isArray: false
       name: query_dsl
       required: false
