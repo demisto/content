@@ -6944,10 +6944,13 @@ def return_error(message, error='', outputs=None):
         :rtype: ``dict``
     """
     is_command = hasattr(demisto, 'command')
-    is_server_handled = is_command and demisto.command() in ('fetch-incidents',
-                                                             'fetch-credentials',
-                                                             'long-running-execution',
-                                                             'fetch-indicators')
+    try:
+        is_server_handled = is_command and demisto.command() in ('fetch-incidents',
+                                                                 'fetch-credentials',
+                                                                 'long-running-execution',
+                                                                 'fetch-indicators')
+    except Exception:
+        is_server_handled = False
     message = LOG(message)
     if error:
         LOG(str(error))
