@@ -151,8 +151,7 @@ def remove_special_chars_from_start_and_end_of_url(url_: str) -> str:
 
         if ":" in last_part:
             # Checks for port in URL to handle it as a special case
-            tld = last_part.split(":", 1)[0]
-            port = last_part.split(":", 1)[1]
+            tld, port = last_part.split(":", 1)
 
             if not port.isnumeric() or (not tld.isalpha() and not 1 <= int(tld) <= 255):
                 # Not the correct format, removing all characters but tld
