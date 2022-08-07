@@ -55,3 +55,27 @@ def test_install_custom_pack_success(mocker, pack_id, context, err_massage, res)
     result, error_message = install_custom_pack(pack_id, 'true', 'true')
     assert result == res
     assert error_message == err_massage
+
+
+def test_install_custom_pack_specify_instance(mocker):
+    from CustomPackInstaller import install_custom_pack
+    context = {"File": [{"Name": "Pack1.zip", "EntryID": "1234"}]}
+
+    mocker.patch.object(demisto, 'context', return_value=context)
+    execute_command_mock = mocker.patch('CustomPackInstaller.execute_command', return_value=('Ok', ''))
+
+    _, _ = install_custom_pack('Pack1', 'true', 'true', 'instance1')
+    execute_command_args = execute_command_mock.call_args_list[0][0]
+    assert execute_command_args[1]['using'] == 'instance1'
+
+
+def test_install_custom_pack_no_specify_instance(mocker):
+    from CustomPackInstaller import install_custom_pack
+    context = {"File": [{"Name": "Pack1.zip", "EntryID": "1234"}]}
+
+    mocker.patch.object(demisto, 'context', return_value=context)
+    execute_command_mock = mocker.patch('CustomPackInstaller.execute_command', return_value=('Ok', ''))
+
+    _, _ = install_custom_pack('Pack1', 'true', 'true')
+    execute_command_args = execute_command_mock.call_args_list[0][0]
+    assert 'using' not in execute_command_args[1].keys()
