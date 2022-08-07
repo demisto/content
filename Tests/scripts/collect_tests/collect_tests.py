@@ -607,9 +607,6 @@ def output(result: Optional[CollectionResult]):
     """
     writes to both log and files
     """
-    if not result:
-        raise RuntimeError('Nothing was collected, not even sanity tests')
-
     machines = tuple(result.machines) if result.machines else ()
 
     test_str = '\n'.join(sorted(result.tests, key=lambda x: x.lower()))
