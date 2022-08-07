@@ -1,0 +1,6 @@
+name: Zscaler Internet Access Modeling Rule
+id: zscaler_internet_access_modeling_rule
+fromversion: 6.8.0
+tags: Zscaler Internet Access
+rules: ''
+schema: ''

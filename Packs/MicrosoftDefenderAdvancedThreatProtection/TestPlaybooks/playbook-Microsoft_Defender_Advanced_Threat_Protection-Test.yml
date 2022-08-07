@@ -5,20 +5,19 @@ contentitemexportablefields:
 name: Microsoft Defender Advanced Threat Protection - Test
 starttaskid: '0'
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 8bef91c1-cfb0-42dc-8578-d6bf65128e39
     type: start
     task:
       id: 8bef91c1-cfb0-42dc-8578-d6bf65128e39
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     separatecontext: false
     view: |-
       {
@@ -34,8 +33,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: c5a401d6-67eb-4d78-8181-996e5f290822
     type: regular
     task:
@@ -45,14 +44,14 @@ tasks:
       script: '|||microsoft-atp-list-alerts'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '25'
-      - '52'
+      - "25"
+      - "52"
     scriptarguments:
       retry-count:
-        simple: '3'
+        simple: "3"
       severity:
         simple: Informational
     separatecontext: false
@@ -70,8 +69,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: 1a890e15-b0a6-4284-8652-b8b4b51d39f7
     type: condition
     task:
@@ -80,13 +79,13 @@ tasks:
       name: Assert an alert was fetched
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '20'
+      "yes":
+      - "20"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -99,7 +98,7 @@ tasks:
                   args:
                     index:
                       value:
-                        simple: '0'
+                        simple: "0"
             iscontext: true
     view: |-
       {
@@ -115,8 +114,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 2c2f23f3-32ca-44f1-8438-10f733f3b169
     type: title
     task:
@@ -125,8 +124,7 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
     view: |-
       {
@@ -142,28 +140,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: fb7c48dc-ba78-4203-88bd-c29bdb65fa69
     type: regular
     task:
       id: fb7c48dc-ba78-4203-88bd-c29bdb65fa69
       version: -1
       name: Get machines by health status
-      description: Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+      description: Retrieves a collection of machines that have communicated with
+        WDATP cloud on the last 30 days
       script: '|||microsoft-atp-get-machines'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '46'
-      - '2'
+      - "46"
+      - "2"
     scriptarguments:
       health_status:
         simple: Active
       retry-count:
-        simple: '3'
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -179,8 +178,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: 78072c40-0dc4-47af-8c13-4e29d6025722
     type: regular
     task:
@@ -190,10 +189,10 @@ tasks:
       script: '|||microsoft-atp-create-alert'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '43'
+      - "43"
     scriptarguments:
       category:
         simple: None
@@ -210,7 +209,7 @@ tasks:
                 value:
                   simple: Timestamp
       execution-timeout:
-        simple: '10'
+        simple: "10"
       machine_id:
         complex:
           root: MicrosoftATP
@@ -220,7 +219,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       recommended_action:
         simple: test alert
       report_id:
@@ -234,7 +233,7 @@ tasks:
                 value:
                   simple: ReportId
       retry-count:
-        simple: '3'
+        simple: "3"
       severity:
         simple: Medium
       title:
@@ -254,8 +253,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: 9e0a39cd-87e8-4257-815a-b15bc6cb31bb
     type: condition
     task:
@@ -264,13 +263,13 @@ tasks:
       name: Assert alert created
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '8'
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -293,8 +292,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     taskid: e77601e5-148a-47b9-8dd9-9e0b0e03f31f
     type: regular
     task:
@@ -304,15 +303,15 @@ tasks:
       script: '|||microsoft-atp-advanced-hunting'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '21'
+      - "21"
     scriptarguments:
       query:
         simple: DeviceLogonEvents | take 1 | project DeviceId, ReportId, tostring(Timestamp)
       retry-count:
-        simple: '3'
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -328,8 +327,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: f0230385-c706-4940-8fe4-b59077a1226c
     type: condition
     task:
@@ -338,13 +337,13 @@ tasks:
       name: Assert query results
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '18'
+      "yes":
+      - "18"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -367,32 +366,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: 2e8a4ce6-cded-4ea8-84d7-1b57c91b91e1
     type: regular
     task:
       id: 2e8a4ce6-cded-4ea8-84d7-1b57c91b91e1
       version: -1
       name: Get machine related to domain
-      description: Retrieves a collection of machines that have communicated to or from a given domain address.
+      description: Retrieves a collection of machines that have communicated to or
+        from a given domain address.
       script: '|||microsoft-atp-get-domain-machines'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
-      - '28'
-      - '26'
-      - '29'
-      - '44'
-      - '50'
+      - "15"
+      - "28"
+      - "26"
+      - "29"
+      - "44"
+      - "50"
     scriptarguments:
       domain:
         simple: google.com
       retry-count:
-        simple: '3'
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -408,8 +408,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '25':
-    id: '25'
+  "25":
+    id: "25"
     taskid: 364358c6-bfae-48ec-8dc1-d7e2d6346488
     type: regular
     task:
@@ -420,10 +420,10 @@ tasks:
       script: '|||microsoft-atp-get-alert-related-files'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       id:
         complex:
@@ -434,11 +434,11 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       limit:
-        simple: '10'
+        simple: "10"
       retry-count:
-        simple: '3'
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -454,8 +454,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '26':
-    id: '26'
+  "26":
+    id: "26"
     taskid: dadd8195-0ae3-420d-89df-f22c4d017029
     type: regular
     task:
@@ -466,15 +466,15 @@ tasks:
       script: '|||microsoft-atp-get-domain-alerts'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '36'
+      - "36"
     scriptarguments:
       domain:
         simple: ${MicrosoftATP.DomainMachine.Domain}
       retry-count:
-        simple: '3'
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -490,8 +490,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '27':
-    id: '27'
+  "27":
+    id: "27"
     taskid: 664687ce-7205-46bd-8783-b060b13605e0
     type: regular
     task:
@@ -502,13 +502,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
     separatecontext: false
     view: |-
       {
@@ -524,8 +524,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '28':
-    id: '28'
+  "28":
+    id: "28"
     taskid: daa8d75a-86ce-4964-8668-fdda409605c9
     type: regular
     task:
@@ -536,15 +536,15 @@ tasks:
       script: '|||microsoft-atp-get-domain-statistics'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
+      - "34"
     scriptarguments:
       domain:
         simple: ${MicrosoftATP.DomainMachine.Domain}
       retry-count:
-        simple: '3'
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -560,22 +560,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '29':
-    id: '29'
+  "29":
+    id: "29"
     taskid: d11dfad4-164c-4374-85e1-f7c87883287b
     type: regular
     task:
       id: d11dfad4-164c-4374-85e1-f7c87883287b
       version: -1
       name: Get machine action data
-      description: Return the machine's actions. If you set an action id it will return the info on the specific action
+      description: Return the machine's actions. If you set an action id it will return
+        the info on the specific action
       script: '|||microsoft-atp-list-machine-actions-details'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '38'
+      - "38"
     scriptarguments:
       machine_id:
         complex:
@@ -586,9 +587,9 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       retry-count:
-        simple: '3'
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -604,8 +605,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '34':
-    id: '34'
+  "34":
+    id: "34"
     taskid: c88d764e-7b9c-4e41-84fb-8118f38c3876
     type: regular
     task:
@@ -616,15 +617,15 @@ tasks:
       script: '|||microsoft-atp-get-file-statistics'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '35'
+      - "35"
     scriptarguments:
       file_hash:
         simple: E2101519714F8A4056A9DE18443BC6E8A1F1B977
       retry-count:
-        simple: '3'
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -640,8 +641,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '35':
-    id: '35'
+  "35":
+    id: "35"
     taskid: ff3040b6-281e-472a-81d8-1b4b66462d4a
     type: regular
     task:
@@ -652,15 +653,15 @@ tasks:
       script: '|||microsoft-atp-get-ip-statistics'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       ip:
         simple: 8.8.8.8
       retry-count:
-        simple: '3'
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -676,8 +677,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '36':
-    id: '36'
+  "36":
+    id: "36"
     taskid: a550f13f-85da-4b50-880b-bb245257c52e
     type: regular
     task:
@@ -688,13 +689,13 @@ tasks:
       script: '|||microsoft-atp-get-user-alerts'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '37'
+      - "37"
     scriptarguments:
       retry-count:
-        simple: '3'
+        simple: "3"
       username:
         simple: demisto
     separatecontext: false
@@ -712,8 +713,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '37':
-    id: '37'
+  "37":
+    id: "37"
     taskid: 260686d7-004e-48d1-81d0-2dbaba7069a9
     type: regular
     task:
@@ -724,13 +725,13 @@ tasks:
       script: '|||microsoft-atp-get-user-machines'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       retry-count:
-        simple: '3'
+        simple: "3"
       username:
         simple: demisto
     separatecontext: false
@@ -748,8 +749,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '38':
-    id: '38'
+  "38":
+    id: "38"
     taskid: 59327076-1b2b-486e-855d-26492368b4f7
     type: regular
     task:
@@ -760,10 +761,10 @@ tasks:
       script: '|||microsoft-atp-add-remove-machine-tag'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '39'
+      - "39"
     scriptarguments:
       action:
         simple: Add
@@ -776,9 +777,9 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       retry-count:
-        simple: '3'
+        simple: "3"
       tag:
         simple: testing
     separatecontext: false
@@ -796,8 +797,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '39':
-    id: '39'
+  "39":
+    id: "39"
     taskid: 395ca733-05f0-4727-856d-b72ddf263f14
     type: regular
     task:
@@ -808,17 +809,17 @@ tasks:
       script: '|||microsoft-atp-add-remove-machine-tag'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       action:
         simple: Remove
       machine_id:
         simple: ${MicrosoftATP.Machine.ID}
       retry-count:
-        simple: '3'
+        simple: "3"
       tag:
         simple: testing
     separatecontext: false
@@ -836,8 +837,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '43':
-    id: '43'
+  "43":
+    id: "43"
     taskid: a8c95a85-7898-4751-81ab-177d01061edf
     type: regular
     task:
@@ -848,10 +849,10 @@ tasks:
       script: '|||microsoft-atp-update-alert'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
+      - "19"
     scriptarguments:
       alert_id:
         complex:
@@ -862,13 +863,13 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
       classification:
         simple: Unknown
       comment:
         simple: testing
       retry-count:
-        simple: '3'
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -884,8 +885,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '44':
-    id: '44'
+  "44":
+    id: "44"
     taskid: 6acf11e6-c69e-406d-879d-0d165ac4cb8f
     type: regular
     task:
@@ -896,10 +897,10 @@ tasks:
       script: '|||microsoft-atp-start-investigation'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '45'
+      - "45"
     scriptarguments:
       comment:
         simple: testing
@@ -920,25 +921,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '45':
-    id: '45'
+  "45":
+    id: "45"
     taskid: 8b90b6b9-1f94-43f2-8904-6b07ef94921f
     type: regular
     task:
       id: 8b90b6b9-1f94-43f2-8904-6b07ef94921f
       version: -1
       name: List investigations
-      description: Retrieves a collection of investigations or retrieves a specific investigation by its ID.
+      description: Retrieves a collection of investigations or retrieves a specific
+        investigation by its ID.
       script: '|||microsoft-atp-list-investigations'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       limit:
-        simple: '5'
+        simple: "5"
     separatecontext: false
     view: |-
       {
@@ -954,22 +956,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '46':
-    id: '46'
+  "46":
+    id: "46"
     taskid: 6fba3149-402d-45da-8ddb-112b3a0a0648
     type: regular
     task:
       id: 6fba3149-402d-45da-8ddb-112b3a0a0648
       version: -1
       name: endpoint command
-      description: Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required ip, hostanme ot id. Otherwise, an error appears.
+      description: Gets machines that have communicated with Microsoft Defender for
+        Endpoint cloud. At least one of the following arguments is required ip, hostanme
+        ot id. Otherwise, an error appears.
       script: Microsoft Defender Advanced Threat Protection|||endpoint
       type: regular
       iscommand: true
       brand: Microsoft Defender Advanced Threat Protection
     nexttasks:
       '#none#':
-      - '47'
+      - "47"
     scriptarguments:
       hostname:
         simple: ${MicrosoftATP.Machine.ComputerDNSName}
@@ -990,22 +994,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '47':
-    id: '47'
+  "47":
+    id: "47"
     taskid: b0037170-b58a-4d93-8fa6-5e606e209682
     type: condition
     task:
       id: b0037170-b58a-4d93-8fa6-5e606e209682
       version: -1
       name: verify endpoint ID
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '48'
+      "yes":
+      - "48"
     scriptarguments:
       left:
         simple: ${Endpoint.ID}
@@ -1028,22 +1033,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '48':
-    id: '48'
+  "48":
+    id: "48"
     taskid: b4af1e7d-461f-4a1f-8091-7b3e99603a3e
     type: condition
     task:
       id: b4af1e7d-461f-4a1f-8091-7b3e99603a3e
       version: -1
       name: verify endpoint hostname
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '49'
+      "yes":
+      - "49"
     scriptarguments:
       left:
         simple: ${Endpoint.Hostname}
@@ -1066,24 +1072,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '49':
-    id: '49'
+  "49":
+    id: "49"
     taskid: 6e77e2fc-30dd-4a2e-8c36-6525dc88c640
     type: condition
     task:
       id: 6e77e2fc-30dd-4a2e-8c36-6525dc88c640
       version: -1
       name: verify endpoint vendor
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '8'
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -1107,8 +1114,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '50':
-    id: '50'
+  "50":
+    id: "50"
     taskid: 5154fab7-c5a2-4ba5-8e69-abcad1fd8036
     type: regular
     task:
@@ -1119,10 +1126,10 @@ tasks:
       script: '|||microsoft-atp-get-file-info'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '51'
+      - "51"
     scriptarguments:
       hash:
         simple: 3395856ce81f2b7382dee72602f798b642f14140,db79e9e669c42b5ac46fc6d6b590ca990687958b
@@ -1141,8 +1148,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '51':
-    id: '51'
+  "51":
+    id: "51"
     taskid: 57a8b9c5-60f9-4b90-8cd7-5c15a11a6e94
     type: regular
     task:
@@ -1153,10 +1160,10 @@ tasks:
       script: '|||microsoft-atp-list-machines-by-vulnerability'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       cve_id:
         simple: CVE-2021-32810,CVE-2020-12321
@@ -1175,8 +1182,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '52':
-    id: '52'
+  "52":
+    id: "52"
     taskid: e32a8a3f-5d76-4f76-8f5a-f0a96cab096b
     type: regular
     task:
@@ -1187,10 +1194,10 @@ tasks:
       script: '|||microsoft-atp-get-machine-alerts'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '53'
+      - "53"
     scriptarguments:
       machine_id:
         complex:
@@ -1201,7 +1208,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
     separatecontext: false
     view: |-
       {
@@ -1217,8 +1224,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '53':
-    id: '53'
+  "53":
+    id: "53"
     taskid: 73f9141b-e974-4bdf-8f77-b55f12d7ca76
     type: condition
     task:
@@ -1227,13 +1234,13 @@ tasks:
       name: Assert related alerts
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '54'
+      "yes":
+      - "54"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -1254,76 +1261,41 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '54':
-    id: '54'
-    taskid: fdb35c24-b226-4b7a-8aa5-8029df05fafa
+  "54":
+    id: "54"
+    taskid: a9f67a69-f5e4-45de-85ff-e53b9dc06bd0
     type: regular
     task:
-      id: fdb35c24-b226-4b7a-8aa5-8029df05fafa
+      id: a9f67a69-f5e4-45de-85ff-e53b9dc06bd0
       version: -1
       name: Get machine logged on users
       description: Retrieves a collection of logged on users on a specific device.
       script: '|||microsoft-atp-get-machine-users'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '55'
+      - "8"
     scriptarguments:
       machine_id:
         complex:
-          root: MicrosoftATP.Alert
-          accessor: MachineID
-          transformers:
-          - operator: atIndex
-            args:
-              index:
+          root: MicrosoftATP.Machine.ID
+          filters:
+          - - operator: startWith
+              left:
                 value:
-                  simple: '0'
+                  simple: MicrosoftATP.Machine.ID
+                iscontext: true
+              right:
+                value:
+                  simple: "489903"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
           "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '55':
-    id: '55'
-    taskid: 1182807f-4851-4b1e-8519-a8c7251fb4eb
-    type: condition
-    task:
-      id: 1182807f-4851-4b1e-8519-a8c7251fb4eb
-      version: -1
-      name: Assert logged on users
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      yes:
-      - '8'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: MicrosoftATP.MachineUser.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1945
         }
       }
     note: false
