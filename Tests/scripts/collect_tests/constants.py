@@ -11,6 +11,12 @@ DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
     'reputations.json Test',
     'Indicators reputation-.json Test',
 )
+
+ALWAYS_INSTALLED_PACKS = (
+    'Base',
+    'DeveloperTools',
+)
+
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
 
 SKIPPED_CONTENT_ITEMS: set[str] = {

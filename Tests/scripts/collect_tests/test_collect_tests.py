@@ -79,6 +79,9 @@ class MockerCases:
     J = CollectTestsMocker(TEST_DATA / 'J')
 
 
+ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
+
+
 def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, collector_class: Callable,
           expected_tests: Iterable[str], expected_packs: Iterable[str], expected_machines: Optional[Iterable[Machine]],
           collector_class_args: tuple[Any, ...] = ()):
@@ -117,8 +120,9 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
 
     if expected_tests is not None:
         assert collected.tests == set(expected_tests)
-    if expected_packs is not None:
-        assert collected.packs == set(expected_packs)
+
+    assert collected.packs == set(expected_packs or ()) | set(ALWAYS_INSTALLED_PACKS)
+
     if expected_machines is not None:
         assert set(collected.machines) == set(expected_machines)
 
@@ -134,6 +138,7 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
 
 
 NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
+
 NIGHTLY_TESTS: tuple = (
     (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
     (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),

@@ -278,6 +278,8 @@ class PackManager:
 
     def validate_pack(self, pack: str) -> None:
         """raises InvalidPackException if the pack name is not valid."""
+        if pack in ALWAYS_INSTALLED_PACKS:
+            return
         if not pack:
             raise BlankPackNameException(pack)
         if pack in PackManager.skipped_packs:

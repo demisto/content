@@ -7,17 +7,19 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional
 
-from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
+from constants import (ALWAYS_INSTALLED_PACKS,
+                       DEFAULT_MARKETPLACE_WHEN_MISSING,
                        DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
                        SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
                                                str2bool)
-from exceptions import (DeprecatedPackException,
+from exceptions import (DeprecatedPackException, InvalidTestException,
                         NonDictException, NoTestsConfiguredException,
                         NothingToCollectException, NotUnderPackException,
-                        SkippedPackException, UnsupportedPackException, SkippedTestException, PrivateTestException,
-                        InvalidTestException, TestMissingFromIdSetException)
+                        PrivateTestException, SkippedPackException,
+                        SkippedTestException, TestMissingFromIdSetException,
+                        UnsupportedPackException)
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
@@ -45,6 +47,7 @@ class CollectionReason(str, Enum):
     MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
+    ALWAYS_INSTALLED_PACKS = 'always installed packs'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
@@ -102,7 +105,8 @@ class CollectionResult:
         """
         Validates the arguments of the constructor.
         """
-        if reason != CollectionReason.DUMMY_OBJECT_FOR_COMBINING:
+        if reason not in {CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
+                          CollectionReason.ALWAYS_INSTALLED_PACKS}:
             for (arg, arg_name) in ((conf, 'conf.json'), (id_set, 'id_set')):
                 if not arg:
                     # may be None only when reason==DUMMY_OBJECT_FOR_COMBINING
@@ -179,6 +183,14 @@ class TestCollector(ABC):
         )
 
     @property
+    def _always_installed_packs(self):
+        return CollectionResult.union(tuple(
+            CollectionResult(test=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
+                             version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True)
+            for pack in ALWAYS_INSTALLED_PACKS)
+        )
+
+    @property
     def _sanity_test_names(self) -> tuple[str, ...]:
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
@@ -211,6 +223,7 @@ class TestCollector(ABC):
                 return None
 
         self._validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
+        result += self._always_installed_packs
         result.machines = Machine.get_suitable_machines(result.version_range, run_nightly)  # type:ignore[union-attr]
         return result
 
