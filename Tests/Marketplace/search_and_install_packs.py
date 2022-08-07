@@ -632,7 +632,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     lock = Lock()
 
-    with ThreadPoolExecutor(max_workers=175) as pool:  # 175 to match ElasticSearch's limit of 180 connections
+    with ThreadPoolExecutor(max_workers=90) as pool:
         for pack_id in pack_ids:
             pool.submit(search_pack_and_its_dependencies,
                         client, pack_id, packs_to_install, installation_request_body, lock)
