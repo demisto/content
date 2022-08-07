@@ -1084,6 +1084,34 @@ There is no context output for this command.
 
 >success
 
+### cb-edr-watchlist-update-action
+***
+Updates a Watchlist action that is specified using ID.
+
+
+#### Base Command
+
+`cb-edr-watchlist-update-action`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The watchlist ID. | Required | 
+| action_type | Action type specified for the watchlist. Options are syslog, email and alert. | Required | 
+| enabled | Whether the watchlist is enabled or not. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cb-edr-watchlist-update id=2406 action_type=alert enabled=True```
+
+#### Human Readable Output
+
+>success
+
 ### cb-edr-watchlist-create
 ***
 Creates a new Watchlist within EDR,
