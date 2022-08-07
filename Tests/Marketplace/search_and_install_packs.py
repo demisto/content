@@ -638,8 +638,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
                                                      'packs_to_install': packs_to_install,
                                                      'installation_request_body': installation_request_body,
                                                      'lock': lock,
-                                                     } for pack_id in pack_ids)
-                 )
+                                                     } for pack_id in pack_ids))
 
     install_packs(client, host, installation_request_body)
 
