@@ -78,7 +78,6 @@ FILE_INDICATOR_MAPPING = {
     'itype': 'IType',
 }
 
-
 INDICATOR_EXTENDED_MAPPING = {
     'Value': 'value',
     'ID': 'id',
@@ -92,47 +91,6 @@ INDICATOR_EXTENDED_MAPPING = {
     'Modified': 'modified_ts',
     'Source': 'source',
     'Type': 'type',
-    'Severity': 'severity'
-}
-
-INTELLIGENCE_EXTENDED_MAPPING = {
-    'SourceCreated': 'source_created',
-    'Status': 'status',
-    'IType': 'itype',
-    'ExpirationTS': 'expiration_ts',
-    'IP': 'ip',
-    'IsEditable': 'is_editable',
-    'FeedID': 'feed_id',
-    'UpdateID': 'update_id',
-    'Value': 'value',
-    'IsPublic': 'is_public',
-    'ThreatType': 'threat_type',
-    'WorkGroups': 'workgroups',
-    'Confidence': 'confidence',
-    'UUID': 'uuid',
-    'RetinaConfidence': 'retina_confidence',
-    'TrustedCircleIDs': 'trusted_circle_ids',
-    'ID': 'id',
-    'Source': 'source',
-    'OwnerOrganizationID': 'owner_organization_id',
-    'ImportSessionID': 'import_session_id',
-    'SourceModified': 'source_modified',
-    'Type': 'type',
-    'Description': 'description',
-    'Tags': 'tags',
-    'Threatscore': 'threatscore',
-    'Latitude': 'latitude',
-    'Longitude': 'longitude',
-    'Modified': 'modified_ts',
-    'Organization': 'org',
-    'ASN': 'asn',
-    'CreatedTime': 'created_ts',
-    'TLP': 'tlp',
-    'IsAnonymous': 'is_anonymous',
-    'Country': 'country',
-    'SourceReportedConfidence': 'source_reported_confidence',
-    'Subtype': 'subtype',
-    'ResourceURI': 'resource_uri',
     'Severity': 'severity'
 }
 
@@ -438,18 +396,6 @@ def parse_indicators_list(iocs_list):
                              for (key, ioc_key) in INDICATOR_EXTENDED_MAPPING.items()})
 
     return iocs_context
-
-
-def parse_intelligence_list(intelligence_list):
-    """
-        Parses the indicator list and returns dictionary that will be set to context.
-    """
-    intelligence_context = []
-    for intelligence in intelligence_list:
-        intelligence_context.append({key: intelligence.get(intelligence_key)
-                                     for (key, intelligence_key) in INTELLIGENCE_EXTENDED_MAPPING.items()})
-
-    return intelligence_context
 
 
 def build_model_data(model, name, is_public, tlp, tags, intelligence, description):
@@ -1380,12 +1326,12 @@ def search_intelligence(client: Client, **kwargs):
     if not intelligence_list:
         return 'No intelligence found from ThreatStream'
 
-    intelligence_context = parse_intelligence_list(intelligence_list)
-    intelligence_table = tableToMarkdown('The intelligence results', intelligence_context, removeNull=True)
+    intelligence_table = tableToMarkdown('The intelligence results', intelligence_list, removeNull=True,
+                                          headerTransform=string_to_table_header)
 
     return CommandResults(
         outputs_prefix=f'{THREAT_STREAM}.Intelligence',
-        outputs=intelligence_context,
+        outputs=intelligence_list,
         readable_output=intelligence_table,
         raw_response=intelligence_list
     )
