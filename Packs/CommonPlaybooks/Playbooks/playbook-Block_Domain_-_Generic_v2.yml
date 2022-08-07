@@ -25,15 +25,15 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       "#none#":
-      - "2"
-      - "3"
-      - "4"
-      - "6"
-      - "7"
-      - "9"
+        - "2"
+        - "3"
+        - "4"
+        - "6"
+        - "7"
+        - "9"
     separatecontext: false
     view: |-
       {
@@ -61,10 +61,10 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       "#none#":
-      - "5"
+        - "5"
     separatecontext: true
     loop:
       iscommand: false
@@ -97,10 +97,10 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       "#none#":
-      - "5"
+        - "5"
     scriptarguments:
       Domain:
         complex:
@@ -142,7 +142,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-      - "5"
+        - "5"
     scriptarguments:
       Domain:
         complex:
@@ -178,7 +178,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -206,10 +206,10 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       "#none#":
-      - "5"
+        - "5"
     separatecontext: true
     loop:
       iscommand: false
@@ -242,10 +242,10 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       "#none#":
-      - "5"
+        - "5"
     separatecontext: true
     loop:
       iscommand: false
@@ -278,10 +278,10 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       "#none#":
-      - "5"
+        - "5"
     scriptarguments:
       Domain:
         simple: ${inputs.Domain}
@@ -301,7 +301,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -318,19 +318,19 @@ view: |-
     }
   }
 inputs:
-- key: Domain
-  value: {}
-  required: false
-  description: The Domain to block.
-  playbookInputQuery:
-- key: DomainBlackListID
-  value: {}
-  required: false
-  description: |-
-    The Domain List ID to add the Domain to.
-    product: Proofpoint Threat Response
-  playbookInputQuery:
+  - key: Domain
+    value: {}
+    required: false
+    description: The Domain to block.
+    playbookInputQuery:
+  - key: DomainBlackListID
+    value: {}
+    required: false
+    description: |-
+      The Domain List ID to add the Domain to.
+      product: Proofpoint Threat Response
+    playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.5.0
