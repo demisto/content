@@ -9,6 +9,29 @@ configuration:
   name: app_id
   required: true
   type: 0
+- display: Use a self-deployed Azure application
+  name: self_deployed
+  required: false
+  type: 8
+- display: Tenant ID (for Client Credentials mode)
+  name: _tenant_id
+  required: false
+  type: 0
+- display: Client Secret (for Client Credentials mode)
+  displaypassword: Client Secret (for Client Credentials mode)
+  hiddenusername: true
+  name: credentials
+  required: false
+  type: 9
+- display: Application redirect URI (for self-deployed mode)
+  name: redirect_uri
+  required: false
+  type: 0
+- display: Authorization code (for self-deployed mode - received from the authorization step. see Detailed
+    Instructions (?) section)
+  name: auth_code
+  required: false
+  type: 4
 - display: Subscription ID
   hidden: false
   name: subscription_id
