@@ -41,7 +41,6 @@ configuration:
   name: fetch_query
   required: false
   type: 0
-- additionalinfo: Query by which to fetch incidents (Lucene syntax)
 - additionalinfo: Will override the 'Query String' Lucene syntax string.
   display: Raw Query
   hidden: false
