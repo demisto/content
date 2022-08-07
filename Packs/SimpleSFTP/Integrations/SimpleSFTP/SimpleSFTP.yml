@@ -1,0 +1,55 @@
+commonfields:
+  id: Simple SFTP
+  version: -1
+name: Simple SFTP
+display: Simple SFTP
+category: Utilities
+description: Simple SFTP Integration to copy files from SFTP Server using paramiko.
+configuration:
+- display: Host
+  name: host
+  type: 0
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Username
+  name: authentication
+  type: 9
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "22"
+  type: 0
+  required: false
+  additionalinfo: Defaults to 22
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: sftp-listdir
+    arguments:
+    - name: directory
+      defaultValue: .
+      description: The directory from which to list the all directories.
+    description: List Directories SFTP command given directory path. Defaults to current directory upon sftp login.
+  - name: sftp-copyfrom
+    arguments:
+    - name: filePath
+      required: true
+      description: Please provide file path as seen by the sftp user upon login
+    - name: returnFile
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Defaults to False where text based file content will be printed. Please specify as True to download the file in case of non-text based files.
+      defaultValue: "False"
+    description: Copies contents of file specified from the sftp server and prints it to the war room
+  dockerimage: demisto/netmiko:1.0.0.24037
+  runonce: false
+  subtype: python3
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
