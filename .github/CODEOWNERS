@@ -77,3 +77,6 @@ poetry.lock @ilaner
 
 # Devcontainers
 .devcontainer/* @ilaner
+
+# Demisto Class
+Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @daryakoval
