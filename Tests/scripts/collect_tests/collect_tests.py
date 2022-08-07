@@ -10,7 +10,8 @@ from typing import Iterable, Optional
 from constants import (ALWAYS_INSTALLED_PACKS,
                        DEFAULT_MARKETPLACE_WHEN_MISSING,
                        DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
-                       SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
+                       SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS,
+                       XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
                                                str2bool)
@@ -176,11 +177,17 @@ class TestCollector(ABC):
     @property
     def sanity_tests(self) -> Optional[CollectionResult]:
         return CollectionResult.union(tuple(
-            CollectionResult(test=test, pack=None, reason=CollectionReason.SANITY_TESTS,
-                             version_range=None, reason_description=str(self.marketplace.value),
-                             conf=self.conf, id_set=self.id_set, is_sanity=True)
-            for test in self._sanity_test_names)
-        )
+            CollectionResult(
+                test=test,
+                pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
+                reason=CollectionReason.SANITY_TESTS,
+                version_range=None, reason_description=str(self.marketplace.value),
+                conf=self.conf,
+                id_set=self.id_set,
+                is_sanity=True
+            )
+            for test in self._sanity_test_names
+        ))
 
     @property
     def _always_installed_packs(self):

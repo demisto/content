@@ -16,6 +16,8 @@ from packaging._structures import InfinityType, NegativeInfinityType
 from packaging.version import Version
 from path_manager import PathManager
 
+from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS
+
 
 def find_pack_folder(path: Path) -> Path:
     """
