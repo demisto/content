@@ -1,0 +1,14 @@
+[MODEL: dataset=ubuntu_syslog_raw, model=Endpoint]
+filter _log_source_file_name ~= "syslog"
+
+| alter timestamp = arrayindex(regextract(_raw_log , "^(\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s)"), 0)
+| alter hostname =  arrayindex(regextract(_raw_log , "^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+(\w+)\s"), 0)
+| alter process_name =  arrayindex(regextract(_raw_log , "^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s([\w|\-\/]+)\[*"), 0)
+| alter pid = arrayindex(regextract(_raw_log , "^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s\w+\S*?(\d*)\]") ,0)
+| alter event_description = arrayindex(regextract(_raw_log , "^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s\S+\:(.+$)") ,0)
+
+| alter XDM.Endpoint.event_timestamp = parse_timestamp("%c", timestamp)
+| alter XDM.Endpoint.Target.host.hostname = hostname
+| alter XDM.Endpoint.Target.process.name = process_name
+| alter XDM.Endpoint.Target.process.pid = to_number(pid)
+| alter XDM.Endpoint.original_event_description = event_description;

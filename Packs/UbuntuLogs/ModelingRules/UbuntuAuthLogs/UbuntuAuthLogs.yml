@@ -1,0 +1,17 @@
+name: UbuntuAuthLogs
+id: UbuntuAuthLogs
+fromversion: 3.3.0
+rules: ''
+schema: |-
+  {
+    "ubuntu_syslog_raw": {
+      "_raw_log": {
+        "type": "string",
+        "is_array": false
+      },
+      "_log_source_file_name": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

@@ -1,0 +1,16 @@
+{
+    "name": "Debian Ubuntu",
+    "description": "Ubuntu is a Debian based, modern, open source operating system on Linux for the enterprise server, desktop, cloud, and IoT.",
+    "support": "xsoar",
+    "currentVersion": "2.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
