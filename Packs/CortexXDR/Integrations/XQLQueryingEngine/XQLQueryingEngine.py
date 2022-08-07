@@ -621,7 +621,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     parse_result_file_to_context = argToBoolean(args.get('parse_result_file_to_context', 'false'))
     integration_context, _ = get_integration_context_with_version()
     command_data_raw = integration_context.get(query_id, args)
-    command_data = json.loads(command_data_raw) if type(command_data_raw) is str\
+    command_data = json.loads(command_data_raw) if isinstance(command_data_raw, str)\
         else integration_context.get(query_id, args)
     command_name = command_data.get('command_name', demisto.command())
     interval_in_secs = int(args.get('interval_in_seconds', 10))
