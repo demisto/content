@@ -1,0 +1,50 @@
+{
+    "data": [
+        {
+            "id": "b71e385c-1c8a-42fc-94e4-54bccbd148b9",
+            "name": "cid-1252366",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "allow",
+            "source_hip": [
+                "any"
+            ],
+            "destination_hip": [
+                "any"
+            ],
+            "from": [
+                "trust"
+            ],
+            "to": [
+                "trust"
+            ],
+            "source": [
+                "PA-GP-Mobile-User-Pool"
+            ],
+            "destination": [
+                "PA-GP-Mobile-User-Pool"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "category": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "application-default"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "profile_setting": {
+                "group": [
+                    "best-practice"
+                ]
+            }
+        }
+    ],
+    "offset": 0,
+    "total": 1,
+    "limit": 1
+}

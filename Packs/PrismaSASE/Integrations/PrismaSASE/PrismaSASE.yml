@@ -1,0 +1,291 @@
+category: Network Security
+commonfields:
+  id: Prisma SASE
+  version: -1
+configuration:
+- defaultvalue: https://api.sase.paloaltonetworks.com
+  display: API Gateway URL (https://api.sase.paloaltonetworks.com)
+  name: url
+  required: true
+  type: 0
+- display: API Client ID
+  displaypassword: API Client Secret
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: ""
+  name: tsg_id
+  required: false
+  type: 0
+- defaultvalue: https://auth.apps.paloaltonetworks.com/am/oauth2/access_token
+  display: Prisma API OAUTH URL
+  name: oauth_url
+  required: false
+  type: 0
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Integrate Prisma SASE API
+display: Prisma SASE
+name: Prisma SASE
+script:
+  commands:
+  - arguments:
+    - description: Prisma Access Folder Location for the Rule
+      name: folder
+      required: true
+    - description: Rule position (pre or post)
+      name: position
+      required: true
+      predefined:
+      - pre
+      - post
+    - description: Tenant services group ID
+      name: tsg_id
+    - description: Friendly Name of the Rule
+      name: name
+      required: true
+    - description: Rule action
+      name: action
+      required: true
+    - description: Rule description
+      name: description
+    - description: Rule log setting
+      name: log_setting
+    - description: Application(s).  Use , as a delimiter for multiple applications.
+      name: application
+      required: true
+    - description: Category(s).  Use , as a delimiter for multiple categories.
+      isArray: true
+      name: category
+      required: true
+    - description: Destination network(s).  Use , as a delimiter for multiple networks.
+      name: destination
+      required: true
+    - description: Destination HIP(s).  Use , as a delimiter for multiple HIPs.
+      name: destination_hip
+    - description: Security profiles to apply to traffic
+      name: profile_setting
+    - description: Services the rule applies to
+      name: service
+      required: true
+    - description: Source network(s).  Use , as a delimiter for multiple networks.
+      isArray: true
+      name: source
+      required: true
+    - description: Source HIP(s).  Use , as a delimiter for multiple HIPs.
+      name: source_hip
+    - description: Source user(s).  Use ; as a delimeter for multiple users or groups.
+      isArray: true
+      name: source_user
+      required: true
+    - description: Rule tag(s).  Use , as a delimiter for multiple tags.
+      isArray: true
+      name: tag
+    - description: Source zone(s).  Use , as a delimiter for multiple zones.
+      isArray: true
+      name: from
+      required: true
+    - description: Destination zone(s).  Use , as a delimiter for multiple zones.
+      isArray: true
+      name: to
+      required: true
+    - description: Rule disabled?
+      name: disabled
+    - description: Negate source
+      name: negate_source
+    - description: Negate destination
+      name: negate_destination
+    description: Create a new security rule
+    name: prisma-access-create-security-rule
+    outputs:
+    - contextPath: PrismaAccess.CreatedSecurityRule
+      description: Created security rule
+  - arguments:
+    - description: '"Shared" "Mobile Users" "Remote Networks" "Service Connections" "Mobile Users Container" "Mobile Users Explicit Proxy"'
+      name: folder
+      required: true
+    - auto: PREDEFINED
+      description: Security rule position (pre, post)
+      name: position
+      predefined:
+      - pre
+      - post
+      required: true
+    - description: name of the security rule
+      name: name
+    - auto: PREDEFINED
+      defaultValue: "10"
+      description: Results paging limit
+      name: limit
+    - description: Results paging offset
+      name: offset
+    - description: Tenant services group ID
+      name: tsg_id
+    description: List security rules
+    name: prisma-access-list-security-rules
+    outputs:
+    - contextPath: PrismaAccess.FoundSecurityRule
+      description: Found security rule
+  - arguments:
+    - description: Comma separated list of targets (Remote Networks, Mobile Users, Service Connections)
+      name: devices
+    - description: Config Push Job Description
+      name: description
+    - description: Tenant services group ID
+      name: tsg_id
+    description: Push the candidate configuration
+    name: prisma-access-push-candidate-config
+    outputs:
+    - contextPath: PrismaAccess.ConfigPush
+      description: Config Job info
+  - arguments:
+    - description: ID of the rule to be changed
+      name: id
+      required: true
+    - description: Tenant services group ID
+      name: tsg_id
+    - description: Friendly Name of the Rule
+      name: name
+      required: true
+    - description: Rule action
+      name: action
+      required: true
+    - description: Rule description
+      name: description
+    - description: Rule log setting
+      name: log_setting
+    - description: Application(s).  Use , as a delimiter for multiple applications.
+      name: application
+      required: true
+    - description: Category(s).  Use , as a delimiter for multiple categories.
+      isArray: true
+      name: category
+      required: true
+    - description: Destination network(s).  Use , as a delimiter for multiple networks.
+      name: destination
+      required: true
+    - description: Destination HIP(s).  Use , as a delimiter for multiple HIPs.
+      name: destination_hip
+    - description: Security profiles to apply to traffic
+      name: profile_setting
+    - description: Services the rule applies to
+      name: service
+      required: true
+    - description: Source network(s).  Use , as a delimiter for multiple networks.
+      isArray: true
+      name: source
+      required: true
+    - description: Source HIP(s).  Use , as a delimiter for multiple HIPs.
+      name: source_hip
+    - description: Source user(s).  Use ; as a delimeter for multiple users or groups.
+      isArray: true
+      name: source_user
+      required: true
+    - description: Rule tag(s).  Use , as a delimiter for multiple tags.
+      isArray: true
+      name: tag
+    - description: Source zone(s).  Use , as a delimiter for multiple zones.
+      isArray: true
+      name: from
+      required: true
+    - description: Destination zone(s).  Use , as a delimiter for multiple zones.
+      isArray: true
+      name: to
+      required: true
+    - description: Rule disabled?
+      name: disabled
+    - description: Negate source
+      name: negate_source
+    - description: Negate destination
+      name: negate_destination
+    description: Edit or update existing security rule
+    name: prisma-access-update-security-rule
+    outputs:
+    - contextPath: PrismaAccess.UpdatedSecurityRule
+      description: Updated security rule
+
+  - arguments:
+    - description: Tenant services group ID
+      name: tsg_id
+    - description: Query data
+      name: query_data
+    - description: 'Aggregate Monitor URI to query (for example: mt/monitor/v1/agg/threats)'
+      name: uri
+      required: true
+    description: Query the aggregate monitor API
+    name: prisma-access-query-agg-monitor-api
+    outputs:
+    - contextPath: PrismaSASE.AggregateQueryResponse
+      description: Aggregate Query Response
+  - arguments:
+    - description: 'Name of security rule to search '
+      name: name
+      required: true
+    - description: Prisma Access Folder Location for the Rule
+      name: folder
+      required: true
+    - description: Rule position (pre, post)
+      name: position
+      required: true
+      predefined:
+      - pre
+      - post
+    - description: Tenant services group ID
+      name: tsg_id
+    description: Get a security rule using the name
+    name: prisma-access-get-security-rule-by-name
+    outputs:
+    - contextPath: PrismaAccess.FoundSecurityRule
+      description: Found security rule
+  - arguments:
+    - description: Config Job ID
+      isArray: true
+      name: id
+      required: true
+    - description: Tenant services group ID
+      name: tsg_id
+    description: Get specific config job by the jobid
+    name: prisma-access-get-config-jobs-by-id
+    outputs:
+    - contextPath: PrismaAccess.ConfigJob
+      description: Config job details
+  - arguments:
+    - description: Tenant services group ID
+      name: tsg_id
+    - defaultValue: "200"
+      description: Query limit
+      name: limit
+    - description: Query offset
+      name: offset
+    description: List config jobs
+    name: prisma-access-list-config-jobs
+    outputs:
+    - contextPath: PrismaAccess.ConfigJob
+      description: Config job details
+  - arguments:
+    - description: Rule ID of the rule to be deleted
+      name: rule_id
+      required: true
+    - description: Tenant services group ID
+      name: tsg_id
+    description: Delete security rule
+    name: prisma-access-delete-security-rule
+    outputs:
+    - contextPath: PrismaAccess.DeletedSecurityRule
+      description: Deleted security rule info
+  dockerimage: demisto/python3:3.10.5.31928
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
