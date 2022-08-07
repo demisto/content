@@ -43,7 +43,7 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | self_deployed | Whether to use a self deployed Azure Application. | False |
 | incidentType | The incident type. | False |
 | display_full_email_body | Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required. | False
-
+| look_back | Advanced: Time in minutes to look back when fetching emails. | False
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Using National Cloud
@@ -60,6 +60,7 @@ Refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/d
 * The larger the attachment, the longer it would take for a command that supports adding attachments to run.
 * Requires the permission of Mail.ReadWrite (Application) - to send attachments > 3mb
 * When sending mails with large attachments, it could take up to 5 minutes for the mail to actually be sent.
+
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
