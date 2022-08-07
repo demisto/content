@@ -14,6 +14,7 @@ import os
 import re
 import socket
 import sys
+import tempfile
 import time
 import traceback
 import types
@@ -8263,6 +8264,7 @@ if 'requests' in sys.modules:
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
+            self._cert = create_crt_param(cert_text=cert_text, key_text=key_text)
 
             # the following condition was added to overcome the security hardening happened in Python 3.10.
             # https://github.com/python/cpython/pull/25778
@@ -8583,6 +8585,30 @@ if 'requests' in sys.modules:
             if status_codes:
                 return response.status_code in status_codes
             return response.ok
+
+
+def create_crt_param(cert_text, key_text):
+    if not cert_text and not key_text:
+        return None
+    elif not cert_text or not key_text:
+        raise Exception('You can not configure either certificate text or key, both are required.')
+    elif cert_text and key_text:
+        cert_text_list = cert_text.split('-----')
+        # replace spaces with newline characters
+        cert_text_fixed = '-----'.join(
+            cert_text_list[:2] + [cert_text_list[2].replace(' ', '\n')] + cert_text_list[3:])
+        cf = tempfile.NamedTemporaryFile(delete=False)
+        cf.write(cert_text_fixed.encode())
+        cf.flush()
+
+        key_text_list = key_text.split('-----')
+        # replace spaces with newline characters
+        key_text_fixed = '-----'.join(
+            key_text_list[:2] + [key_text_list[2].replace(' ', '\n')] + key_text_list[3:])
+        kf = tempfile.NamedTemporaryFile(delete=False)
+        kf.write(key_text_fixed.encode())
+        kf.flush()
+        return (cf.name, kf.name)
 
 
 def batch(iterable, batch_size=1):
