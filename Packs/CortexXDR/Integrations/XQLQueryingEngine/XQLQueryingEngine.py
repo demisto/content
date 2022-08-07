@@ -3,7 +3,6 @@ import gzip
 import hashlib
 import secrets
 import string
-import traceback
 from typing import Any, Dict, Tuple
 
 import requests
