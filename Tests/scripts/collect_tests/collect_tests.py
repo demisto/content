@@ -465,7 +465,15 @@ class BranchTestCollector(TestCollector):
             diff = f'{diff}\n{contrib_diff}'
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
-        return tuple((value.split()[1] for value in filter(None, diff.split('\n'))))
+        files = []
+        for line in filter(None, diff.splitlines()):
+            status, path = line.split(' ')
+            if status != 'D':
+                files.append(path)
+            else:
+                logger.warning(f'Found a file deleted from git {path}, '
+                               f'skipping it as TestCollector cannot properly find the appropriate tests (by design)')
+        return tuple(files)
 
 
 class UploadCollector(BranchTestCollector):
