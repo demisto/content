@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, Iterable, Optional, Any
+from typing import Any, Callable, Iterable, Optional
 
 import collect_tests
 import pytest

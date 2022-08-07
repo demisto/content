@@ -6,14 +6,13 @@ from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
-from packaging._structures import NegativeInfinityType, InfinityType
-
-from exceptions import (DeprecatedPackException, BlankPackNameException,
+from exceptions import (BlankPackNameException, DeprecatedPackException,
                         NonDictException, NonexistentPackException,
                         NoTestsConfiguredException, NotUnderPackException,
                         SkippedPackException, UnsupportedPackException)
 from logger import logger
 from packaging import version
+from packaging._structures import InfinityType, NegativeInfinityType
 from packaging.version import Version
 from path_manager import PathManager
 
