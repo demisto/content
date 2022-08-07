@@ -115,10 +115,14 @@ FORMAT_URL_ADDITIONAL_TEST_CASES = [
     ('https://test.com#fragment3', 'https://test.com#fragment3'),
     ('https://test.com#fragment3#fragment3', 'https://test.com#fragment3#fragment3'),
     ('http://_23_11.redacted.com./#redactedredactedredacted', 'http://_23_11.redacted.com./#redactedredactedredacted'),
-    ('[http://[2001:db8:3333:4444:5555:6666:7777:8888]]', 'http://[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
-    ('[2001:db8:3333:4444:5555:6666:7777:8888]', '[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
-    ('[http://2001:db8:3333:4444:5555:6666:7777:8888]', 'http://2001:db8:3333:4444:5555:6666:7777:8888'),  # disable-secrets-detection
-    ('2001:db8:3333:4444:5555:6666:7777:8888', '2001:db8:3333:4444:5555:6666:7777:8888'),  # disable-secrets-detection
+    ('[http://[2001:db8:3333:4444:5555:6666:7777:8888]]',
+     'http://[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
+    ('[2001:db8:3333:4444:5555:6666:7777:8888]',
+     '[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
+    ('[http://2001:db8:3333:4444:5555:6666:7777:8888]',
+     'http://2001:db8:3333:4444:5555:6666:7777:8888'),  # disable-secrets-detection
+    ('2001:db8:3333:4444:5555:6666:7777:8888',
+     '2001:db8:3333:4444:5555:6666:7777:8888'),  # disable-secrets-detection
 ]
 
 REDIRECT_NON_ATP_PROOF_POINT = [('https://www.test.test.com/test.html?redirectURL=https://evil.com/mal.html',
