@@ -19,6 +19,22 @@ configuration:
   name: resource_group_name
   required: true
   type: 0
+- additionalinfo: Use a self-deployed Azure application and authenticate using the
+    Client Credentials flow.
+  display: Use Client Credentials Authorization Flow
+  name: use_client_credentials
+  required: false
+  type: 8
+- display: Tenant ID (for Client Credentials mode)
+  name: tenant_id
+  required: false
+  type: 0
+- display: Client Secret (for Client Credentials mode)
+  displaypassword: Client Secret (for Client Credentials mode)
+  hiddenusername: true
+  name: credentials
+  required: false
+  type: 9
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   hidden: false

@@ -20,8 +20,8 @@ class Client:
     """
 
     @logger
-    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy,
-                 azure_ad_endpoint='https://login.microsoftonline.com'):
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, tenant_id, use_client_credentials,
+                 enc_key, azure_ad_endpoint='https://login.microsoftonline.com'):
         self.resource_group_name = resource_group_name
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
@@ -29,21 +29,23 @@ class Client:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}'
-        client_args = {
-            'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
+        client_args = assign_params(
+            self_deployed=True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
-            'auth_id': app_id,
-            'token_retrieval_url': 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            'grant_type': DEVICE_CODE,  # disable-secrets-detection
-            'base_url': base_url,
-            'verify': verify,
-            'proxy': proxy,
-            'resource': 'https://management.core.windows.net',  # disable-secrets-detection
-            'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
-            'ok_codes': (200, 201, 202, 204),
-            'azure_ad_endpoint': azure_ad_endpoint
-        }
+            auth_id=app_id,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            grant_type=CLIENT_CREDENTIALS if use_client_credentials else DEVICE_CODE,  # disable-secrets-detection
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            resource='https://management.core.windows.net',  # disable-secrets-detection
+            scope='https://management.azure.com/user_impersonation offline_access user.read' if not use_client_credentials else 'https://management.azure.com/.default',
+            ok_codes=(200, 201, 202, 204),
+            azure_ad_endpoint=azure_ad_endpoint,
+            tenant_id=tenant_id,
+            enc_key=enc_key
+        )
         self.ms_client = MicrosoftClient(**client_args)
 
     @logger
@@ -449,6 +451,9 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
+            tenant_id=params.get('tenant_id'),
+            use_client_credentials=params.get('use_client_credentials'),
+            enc_key=params.get('credentials').get('password'),
             app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
             resource_group_name=params.get('resource_group_name', ''),
