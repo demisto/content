@@ -1,5 +1,5 @@
 Integrate Prisma SASE API
-This integration was integrated and tested with version xx of Prisma SASE
+This integration was integrated and tested with version 1.0 of Prisma SASE
 
 ## Configure Prisma SASE on Cortex XSOAR
 
