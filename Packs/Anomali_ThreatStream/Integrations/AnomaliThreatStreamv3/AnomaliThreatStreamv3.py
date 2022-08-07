@@ -569,7 +569,7 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
         reliability=client.reliability,
     )
 
-    if threat_model_association:
+    if threat_model_association:  # pragma: no cover
         intelligence_relationships, outputs = get_intelligence(client,
                                                                indicator,
                                                                FeedIndicatorType.IP
@@ -636,7 +636,7 @@ def get_intelligence_information(client: Client, indicator, ioc_type, intelligen
     return relationships, intelligences
 
 
-def create_human_readable(intelligence_outputs): # pragma: no cover
+def create_human_readable(intelligence_outputs):  # pragma: no cover
     table = ''
     for intelligence in intelligence_outputs.keys():
         table += tableToMarkdown(f'{intelligence} details:', intelligence_outputs[intelligence], headers=['name', 'id'])
@@ -695,7 +695,7 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
         score=score_calc.calculate_score(DBotScoreType.DOMAIN, indicator, threshold),
     )
 
-    if threat_model_association:
+    if threat_model_association:  # pragma: no cover
         intelligence_relationships, outputs = get_intelligence(client,
                                                                indicator,
                                                                FeedIndicatorType.Domain
@@ -783,7 +783,7 @@ def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, s
         score=score_calc.calculate_score(DBotScoreType.FILE, indicator, threshold),
     )
 
-    if threat_model_association:
+    if threat_model_association:  # pragma: no cover
         intelligence_relationships, outputs = get_intelligence(client,
                                                                indicator,
                                                                FeedIndicatorType.File
@@ -864,7 +864,7 @@ def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, sta
         score=score_calc.calculate_score(DBotScoreType.URL, indicator, threshold),
     )
 
-    if threat_model_association:
+    if threat_model_association:  # pragma: no cover
         intelligence_relationships, outputs = get_intelligence(client,
                                                                indicator,
                                                                FeedIndicatorType.URL
