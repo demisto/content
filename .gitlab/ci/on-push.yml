@@ -94,20 +94,20 @@ create-instances:
   stage: create-instances
   script:
     - echo "Not in a section"
-    - python3 logging_color_poc.py
-    - python3 logging_color_poc.py wrapper
-    - ./test_logging_colors.sh
+    - python3 Tests/scripts/logging_color_poc.py
+    - python3 Tests/scripts/logging_color_poc.py wrapper
+    - ./Tests/scripts/test_logging_colors.sh
 
     - section_start "In a collapse section" --collapsed
-    - python3 logging_color_poc.py
-    - python3 logging_color_poc.py wrapper
-    - ./test_logging_colors.sh
+    - python3 Tests/scripts/logging_color_poc.py
+    - python3 Tests/scripts/logging_color_poc.py wrapper
+    - ./Tests/scripts/test_logging_colors.sh
     - section_end "In a collapse section"
 
     - section_start "In an uncollapse section"
-    - python3 logging_color_poc.py
-    - python3 logging_color_poc.py wrapper
-    - ./test_logging_colors.sh
+    - python3 Tests/scripts/logging_color_poc.py
+    - python3 Tests/scripts/logging_color_poc.py wrapper
+    - ./Tests/scripts/test_logging_colors.sh
     - section_end "In an uncollapse section"
 
 prepare-testing-bucket-mpv2:
