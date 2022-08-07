@@ -636,7 +636,7 @@ def get_intelligence_information(client: Client, indicator, ioc_type, intelligen
     return relationships, intelligences
 
 
-def create_human_readable(intelligence_outputs):
+def create_human_readable(intelligence_outputs): # pragma: no cover
     table = ''
     for intelligence in intelligence_outputs.keys():
         table += tableToMarkdown(f'{intelligence} details:', intelligence_outputs[intelligence], headers=['name', 'id'])
