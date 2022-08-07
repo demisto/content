@@ -1,5 +1,5 @@
 {
-    "name": "Cisco Security Management Appliance",
+    "name": " Cisco SMA ",
     "description": "Modeling Rules for the Cisco Security Management Appliance logs collector",
     "support": "xsoar",
     "currentVersion": "1.0.0",
