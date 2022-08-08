@@ -20,7 +20,6 @@ identifier = credentials["identifier"]
 password = credentials["password"]
 suspicious_threshold = params["suspicious_threshold"]
 malicious_threshold = params["malicious_threshold"]
-reliability = params["reliability"]
 authTokenRequest = {
     "loginUsername": identifier,
     "loginPassword": password
@@ -123,7 +122,7 @@ def toDBotScore(indicator_type, percentile, lookup_key):
         "Type": indicator_type,
         "Indicator": lookup_key,
         "Score": score,
-        "Reliability": reliability,
+        "Reliability": demisto.params().get('integrationReliability')
     }
 
 
@@ -177,7 +176,7 @@ def lookupDevice():
             "Type": 'device',
             "Indicator": lookup_key,
             "Score": 0,
-            "Reliability": reliability,
+            "Reliability": demisto.params().get('integrationReliability')
         }
     humanReadable = displayTable([contents], humanReadableFields)
     contents["device"] = lookup_key
@@ -207,7 +206,7 @@ def lookupDomain():
             "Type": 'domain',
             "Indicator": lookup_key,
             "Score": 0,
-            "Reliability": reliability,
+            "Reliability": demisto.params().get('integrationReliability')
         }
     humanReadable = displayTable([contents], humanReadableFields)
     contents["domain"] = lookup_key
@@ -239,7 +238,7 @@ def lookupEmail():
             "Type": 'email',
             "Indicator": lookup_key,
             "Score": 0,
-            "Reliability": reliability,
+            "Reliability": demisto.params().get('integrationReliability')
         }
     humanReadable = displayTable(contents, humanReadableFields)
     for content in contents:
@@ -261,7 +260,7 @@ def lookupIp():
         "Type": 'ip',
         "Indicator": lookup_key,
         "Score": 0,
-        "Reliability": reliability,
+        "Reliability": demisto.params().get('integrationReliability')
     }
     # Note: No DBotScore for IP addresses as we do not score them.
     # Our product scores devices rather than IP addresses.
