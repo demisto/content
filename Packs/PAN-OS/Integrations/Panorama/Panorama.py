@@ -7943,10 +7943,7 @@ class Topology:
         :param device: Either Panorama or Firewall Pandevice instance
         """
         if isinstance(device, Panorama):
-            if device.serial:
-                serial_number_or_hostname = device.serial
-            else:
-                serial_number_or_hostname = device.hostname
+            serial_number_or_hostname = device.serial if device.serial else device.hostname
 
             # Check if HA is active and if so, what the system state is.
             panorama_ha_state_result = run_op_command(device, "show high-availability state")
