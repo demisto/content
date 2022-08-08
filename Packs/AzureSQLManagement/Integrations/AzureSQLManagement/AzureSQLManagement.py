@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from Packs.ApiModules.Scripts.MicrosoftApiModule.MicrosoftApiModule import DEVICE_CODE, AUTHORIZATION_CODE  # noqa
 
 import urllib3
 import copy
@@ -11,6 +12,15 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2019-06-01-preview'
+AUTH_TYPES_DICT = {'user_auth_flow': {'grant_type': AUTHORIZATION_CODE,
+                                      'resource': None,
+                                      'scope': 'https://management.azure.com/.default'
+                                      },
+                   'device_code_flow': {'grant_type': DEVICE_CODE,
+                                        'resource': 'https://management.core.windows.net',
+                                        'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
+                                        }
+                   }
 ''' CLIENT CLASS '''
 
 
@@ -22,16 +32,6 @@ class Client:
     def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, tenant_id, auth_type,
                  enc_key, auth_code, redirect_uri, azure_ad_endpoint='https://login.microsoftonline.com'):
         self.resource_group_name = resource_group_name
-
-        AUTH_TYPES_DICT = {'user_auth_flow': {'grant_type': AUTHORIZATION_CODE,
-                                              'resource': None,
-                                              'scope': 'https://management.azure.com/.default'},
-                           'device_code_flow': {'grant_type': DEVICE_CODE,
-                                                'resource': 'https://management.core.windows.net',
-                                                'scope':
-                                                'https://management.azure.com/user_impersonation offline_access user.read'
-                                                }
-                           }
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()

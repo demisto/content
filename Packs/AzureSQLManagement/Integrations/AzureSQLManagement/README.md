@@ -17,12 +17,50 @@ In order to connect to the Azure SQL Management using either Cortex XSOAR Azure 
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Tenant ID (for User Auth mode) | Tenant ID | False |
+    | Client Secret (for User Auth mode) | Encryption key given by the admin | False |
+    | Authentication Type | The request authentication type for the instance | False |
+    | Authorization code | as received from the authorization step | False |
+    | Application redirect URI | the redirect URI entered in the Azure portal | False |
+
    
 2. Run the ***!azure-sql-auth-start*** command. 
 3. Follow the instructions that appear.
 4. Run the ***!azure-sql-auth-complete*** command.
 
-At the end of the process you'll see a message that you've logged in successfully. 
+At the end of the process you'll see a message that you've logged in successfully.
+
+
+### Authentication Using the Device Code Flow
+Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
+to link Azure SQL Management with Cortex XSOAR.
+
+To connect to the Azure SQL Management:
+1. Fill in the required parameters.
+2. Run the ***!azure-sql-auth-start*** command. 
+3. Follow the instructions that appear.
+4. Run the ***!azure-sql-auth-complete*** command.
+
+### Self-Deployed Application - User Authentication Flow
+
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Authorize on behalf of a user](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user).
+
+#### Required Permissions
+The required API permissions are for the ***Microsoft Threat Protection*** app.
+ * offline_access - Delegate
+ * Incident.ReadWrite.All - Application
+ * AdvancedHunting.Read.All - Application
+
+Follow these steps for a self-deployed configuration:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. choose the user_auth_flow option in the ***Authentication Type*** parameter.
+3. Enter your Client/Application ID in the ***Application ID*** parameter. 
+4. Enter your Client Secret in the ***Client Secret*** parameter.
+5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
+7. Enter your Authorization code in the ***Authorization code*** parameter.
+
 
 #### Cortex XSOAR Azure App
 
