@@ -458,7 +458,7 @@ class BranchTestCollector(TestCollector):
             logger.info(f'contribution branch, {contrib_diff=}')
 
         diff: str = run_command(f'git diff --name-status {current_commit}...{previous_commit}')
-        logger.debug(f'Changed files: {diff}')
+        logger.debug(f'Changed files:\n{diff}')
 
         if contrib_diff:
             logger.debug('adding contrib_diff to diff')
