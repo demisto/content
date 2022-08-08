@@ -25,10 +25,10 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 Follow these steps for a **self-deployed configuration**:
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
-2. Select the ***client-credentials*** Authentication Type.
-3. Enter your Client/Application ID in the ***Application ID*** parameter. 
-4. Enter your Client Secret in the ***Client Secret*** parameter.
-5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+2. Select the **client-credentials** Authentication Type.
+3. Enter your Client/Application ID in the *Application ID* parameter. 
+4. Enter your Client Secret in the *Client Secret* parameter.
+5. Enter your Tenant ID in the *Tenant ID* parameter.
 6. Save the instance.
 7. Run the ***!azure-risky-users-auth-test*** command - a 'Success' message should be printed to the war-room.
 
