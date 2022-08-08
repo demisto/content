@@ -196,6 +196,7 @@ def test_module(client: Client) -> str:
     test_connection(client)
     return "ok"
 
+
 def main():
     handle_proxy()
     demisto.debug(f'Command being called is {demisto.command()}')
