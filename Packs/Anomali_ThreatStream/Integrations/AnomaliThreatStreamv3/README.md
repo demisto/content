@@ -59,7 +59,7 @@ Checks the reputation of the given IP address.
 | ip | The IP to check. | Required | 
 | threshold | If confidence is greater than the threshold the IP address is considered malicious, otherwise it is considered good. This argument overrides the default IP threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
-| threat_model_association | Note: if set to true, additional 6 API calls will be performed. Possible values are: True, False. Default is False. | Optional | 
+| threat_model_association | Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed. Possible values are: True, False. Default is False. | Optional | 
 
 
 #### Context Output
@@ -86,68 +86,68 @@ Checks the reputation of the given IP address.
 | ThreatStream.IP.Source | String | The indicator source. | 
 | IP.Malicious.Vendor | String | The vendor that reported the indicator as malicious. | 
 | ThreatStream.IP.Tags | Unknown | Tags assigned to the IP. | 
-| ThreatStream.IP.IType | String | The iType of the indicator associated with the specified model. | 
-| IP.Tags | Unknown | List of IP Tags. | 
+| ThreatStream.IP.IType | String | The itype of the indicator associated with the specified model. | 
+| IP.Tags | Unknown | List of IP tags. | 
 | IP.ThreatTypes | Unknown | Threat types associated with the IP. | 
-| ThreatStream.IP.Actor.assignee_user | Unknown | The Assignee User of the Threat Actor | 
+| ThreatStream.IP.Actor.assignee_user | Unknown | The assignee user of the threat actor. | 
 | ThreatStream.IP.Actor.association_info.comment | Unknown | The comment in the association info of the threat actor. | 
-| ThreatStream.IP.Actor.association_info.created | Date | When was the association info created. | 
-| ThreatStream.IP.Actor.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.IP.Actor.can_add_public_tags | Boolean | Can we add a public tags or not to the threat actor. | 
-| ThreatStream.IP.Actor.created_ts | Date | When was the threat actor cretad. | 
+| ThreatStream.IP.Actor.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.IP.Actor.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.IP.Actor.can_add_public_tags | Boolean | Whether you can add public tags to the threat actor. | 
+| ThreatStream.IP.Actor.created_ts | Date | The date the threat actor was created. | 
 | ThreatStream.IP.Actor.feed_id | Number | The feed ID of the threat actor. | 
-| ThreatStream.IP.Actor.id | Number | The id of the threat actor. | 
-| ThreatStream.IP.Actor.is_anonymous | Boolean | Is the threat actor anonymus or not. | 
-| ThreatStream.IP.Actor.is_cloneable | String | Is the threat actor clonable or not. | 
-| ThreatStream.IP.Actor.is_public | Boolean | Is the threat actor public or not. | 
-| ThreatStream.IP.Actor.is_team | Boolean | Is the threat actor in a team or not. | 
-| ThreatStream.IP.Actor.modified_ts | Date | When was the threat actor modified. | 
+| ThreatStream.IP.Actor.id | Number | The ID of the threat actor. | 
+| ThreatStream.IP.Actor.is_anonymous | Boolean | Whether the threat actor is anonymous. | 
+| ThreatStream.IP.Actor.is_cloneable | String | Whether the threat actor is cloneable. | 
+| ThreatStream.IP.Actor.is_public | Boolean | Whether the threat actor is public. | 
+| ThreatStream.IP.Actor.is_team | Boolean | Whether the threat actor is a team. | 
+| ThreatStream.IP.Actor.modified_ts | Date | The date the threat actor was modified. | 
 | ThreatStream.IP.Actor.name | String | The name of the threat actor. | 
 | ThreatStream.IP.Actor.organization_id | Number | The organization ID of the threat actor. | 
 | ThreatStream.IP.Actor.owner_user_id | Number | The owner user ID of the threat actor. | 
 | ThreatStream.IP.Actor.primary_motivation | Unknown | The primary motivation of the threat actor. | 
 | ThreatStream.IP.Actor.publication_status | String | The publication status of the threat actor. | 
-| ThreatStream.IP.Actor.published_ts | Date | When was the threat actor published. | 
+| ThreatStream.IP.Actor.published_ts | Date | The date the threat actor was published. | 
 | ThreatStream.IP.Actor.resource_level | Unknown | The resource level of the threat actor. | 
-| ThreatStream.IP.Actor.resource_uri | String | The resource uri of the threat actor. | 
-| ThreatStream.IP.Actor.source_created | Unknown | When was the source created. | 
-| ThreatStream.IP.Actor.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.IP.Actor.resource_uri | String | The resource URI of the threat actor. | 
+| ThreatStream.IP.Actor.source_created | Unknown | The date the source was created. | 
+| ThreatStream.IP.Actor.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.IP.Actor.start_date | Unknown | The start date. | 
-| ThreatStream.IP.Actor.tags | String | The tags of the threat indicator | 
-| ThreatStream.IP.Actor.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.IP.Actor.tags | String | The tags of the threat indicator. | 
+| ThreatStream.IP.Actor.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.IP.Actor.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.IP.Actor.tlp | String | The tlp of the threat actor. | 
-| ThreatStream.IP.Actor.uuid | String | The uuid of the threat actor. | 
-| ThreatStream.IP.Signature.assignee_user | Unknown | The Assignee User of the signature | 
+| ThreatStream.IP.Actor.tlp | String | The TLP of the threat actor. | 
+| ThreatStream.IP.Actor.uuid | String | The UUID of the threat actor. | 
+| ThreatStream.IP.Signature.assignee_user | Unknown | The assignee user of the signature. | 
 | ThreatStream.IP.Signature.association_info.comment | Unknown | The comment in the association info of the signature. | 
-| ThreatStream.IP.Signature.association_info.created | Date | When was the association info created. | 
-| ThreatStream.IP.Signature.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.IP.Signature.can_add_public_tags | Boolean | Can we add a public tags or not to the signature. | 
-| ThreatStream.IP.Signature.created_ts | Date | When was the signature cretad. | 
+| ThreatStream.IP.Signature.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.IP.Signature.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.IP.Signature.can_add_public_tags | Boolean | Whether you can add public tags to the signature. | 
+| ThreatStream.IP.Signature.created_ts | Date | The date the signature was created. | 
 | ThreatStream.IP.Signature.feed_id | Number | The feed ID of the signature. | 
-| ThreatStream.IP.Signature.id | Number | The id of the signature. | 
-| ThreatStream.IP.Signature.is_anonymous | Boolean | Is the signature anonymus or not. | 
-| ThreatStream.IP.Signature.is_cloneable | String | Is the signature clonable or not. | 
-| ThreatStream.IP.Signature.is_public | Boolean | Is the signature public or not. | 
-| ThreatStream.IP.Signature.is_team | Boolean | Is the signature in a team or not. | 
-| ThreatStream.IP.Signature.modified_ts | Date | When was the signature modified. | 
+| ThreatStream.IP.Signature.id | Number | The ID of the signature. | 
+| ThreatStream.IP.Signature.is_anonymous | Boolean | Whether the signature was anonymous. | 
+| ThreatStream.IP.Signature.is_cloneable | String | Whether the signature is cloneable. | 
+| ThreatStream.IP.Signature.is_public | Boolean | Whether the signature is public. | 
+| ThreatStream.IP.Signature.is_team | Boolean | Whether the signature is a team signature. | 
+| ThreatStream.IP.Signature.modified_ts | Date | The date the signature was modified. | 
 | ThreatStream.IP.Signature.name | String | The name of the signature. | 
 | ThreatStream.IP.Signature.organization_id | Number | The organization ID of the signature. | 
 | ThreatStream.IP.Signature.owner_user_id | Number | The owner user ID of the signature. | 
 | ThreatStream.IP.Signature.primary_motivation | Unknown | The primary motivation of the signature. | 
 | ThreatStream.IP.Signature.publication_status | String | The publication status of the signature. | 
-| ThreatStream.IP.Signature.published_ts | Date | When was the signature published. | 
+| ThreatStream.IP.Signature.published_ts | Date | The date the signature was published. | 
 | ThreatStream.IP.Signature.resource_level | Unknown | The resource level of the signature. | 
-| ThreatStream.IP.Signature.resource_uri | String | The resource uri of the signature. | 
-| ThreatStream.IP.Signature.source_created | Unknown | When was the source created. | 
-| ThreatStream.IP.Signature.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.IP.Signature.resource_uri | String | The resource URI of the signature. | 
+| ThreatStream.IP.Signature.source_created | Unknown | The date the source was created. | 
+| ThreatStream.IP.Signature.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.IP.Signature.start_date | Unknown | The start date. | 
-| ThreatStream.IP.Signature.tags | String | The tags of the threat indicator | 
-| ThreatStream.IP.Signature.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.IP.Signature.tags | String | The tags of the threat indicator. | 
+| ThreatStream.IP.Signature.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.IP.Signature.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.IP.Signature.tlp | String | The tlp of the signature. | 
-| ThreatStream.IP.Signature.uuid | String | The uuid of the signature. | 
-| ThreatStream.IP.ThreatBulletin.all_circles_visible | Boolean | Are all of the circles visible. | 
+| ThreatStream.IP.Signature.tlp | String | The TLP of the signature. | 
+| ThreatStream.IP.Signature.uuid | String | The UUID of the signature. | 
+| ThreatStream.IP.ThreatBulletin.all_circles_visible | Boolean | Whether all of the circles are visible. | 
 | ThreatStream.IP.ThreatBulletin.assignee_org | String | The assignee organization. | 
 | ThreatStream.IP.ThreatBulletin.assignee_org_id | String | The assignee organization ID. | 
 | ThreatStream.IP.ThreatBulletin.assignee_org_name | String | The assignee organization name. | 
@@ -155,170 +155,170 @@ Checks the reputation of the given IP address.
 | ThreatStream.IP.ThreatBulletin.assignee_user_id | String | The assignee user ID. | 
 | ThreatStream.IP.ThreatBulletin.assignee_user_name | Unknown | The assignee user name. | 
 | ThreatStream.IP.ThreatBulletin.association_info.comment | Unknown | The comment in the association info of the threat actor. | 
-| ThreatStream.IP.ThreatBulletin.association_info.created | Date | When was the association info created. | 
-| ThreatStream.IP.ThreatBulletin.association_info.from_id | String | From which id the association info is related. | 
+| ThreatStream.IP.ThreatBulletin.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.IP.ThreatBulletin.association_info.from_id | String | The ID from which the association info is related. | 
 | ThreatStream.IP.ThreatBulletin.body_content_type | String | The body content type. | 
 | ThreatStream.IP.ThreatBulletin.campaign | Unknown | The campaign of the threat bulletin. | 
-| ThreatStream.IP.ThreatBulletin.can_add_public_tags | Boolean | Can we add public tags. | 
-| ThreatStream.IP.ThreatBulletin.created_ts | Date | When was the threat bulletin created. | 
+| ThreatStream.IP.ThreatBulletin.can_add_public_tags | Boolean | Whether you can add public tags. | 
+| ThreatStream.IP.ThreatBulletin.created_ts | Date | The date the threat bulletin was created. | 
 | ThreatStream.IP.ThreatBulletin.feed_id | Number | The feed ID of the threat bulletin. | 
 | ThreatStream.IP.ThreatBulletin.id | String | The ID of the threat bulletin. | 
-| ThreatStream.IP.ThreatBulletin.is_anonymous | Boolean | Is the threat bulletin anonymous. | 
-| ThreatStream.IP.ThreatBulletin.is_cloneable | String | Is the threat bulletin cloneble. | 
-| ThreatStream.IP.ThreatBulletin.is_editable | Boolean | Is the threat bulletin editable. | 
-| ThreatStream.IP.ThreatBulletin.is_email | Boolean | Is the threat bulletin an email. | 
-| ThreatStream.IP.ThreatBulletin.is_public | Boolean | Is the threat bulletin public. | 
-| ThreatStream.IP.ThreatBulletin.modified_ts | Date | When was the threat bulletin modified. | 
+| ThreatStream.IP.ThreatBulletin.is_anonymous | Boolean | Whether the threat bulletin is anonymous. | 
+| ThreatStream.IP.ThreatBulletin.is_cloneable | String | Whether the threat bulletin is cloneable. | 
+| ThreatStream.IP.ThreatBulletin.is_editable | Boolean | Whether the threat bulletin is editable. | 
+| ThreatStream.IP.ThreatBulletin.is_email | Boolean | Whether the threat bulletin is an email. | 
+| ThreatStream.IP.ThreatBulletin.is_public | Boolean | Whether the threat bulletin is public. | 
+| ThreatStream.IP.ThreatBulletin.modified_ts | Date | The date the threat bulletin was modified. | 
 | ThreatStream.IP.ThreatBulletin.name | String | The name of the threat bulletin. | 
 | ThreatStream.IP.ThreatBulletin.original_source | String | The original source of the threat bulletin. | 
 | ThreatStream.IP.ThreatBulletin.original_source_id | Unknown | The original source ID of the threat bulletin. | 
-| ThreatStream.IP.ThreatBulletin.owner_org.id | String | The owner organizetion ID. | 
-| ThreatStream.IP.ThreatBulletin.owner_org.name | String | The owner organizetion name. | 
-| ThreatStream.IP.ThreatBulletin.owner_org.resource_uri | String | The owner organizetion uri. | 
-| ThreatStream.IP.ThreatBulletin.owner_org_id | Number | The id of the owner user. | 
+| ThreatStream.IP.ThreatBulletin.owner_org.id | String | The owner organization ID. | 
+| ThreatStream.IP.ThreatBulletin.owner_org.name | String | The owner organization name. | 
+| ThreatStream.IP.ThreatBulletin.owner_org.resource_uri | String | The owner organization URI. | 
+| ThreatStream.IP.ThreatBulletin.owner_org_id | Number | The ID of the owner user. | 
 | ThreatStream.IP.ThreatBulletin.owner_org_name | String | The name of the owner organization. | 
-| ThreatStream.IP.ThreatBulletin.owner_user.avatar_s3_url | Unknown | The url of the owner user. | 
-| ThreatStream.IP.ThreatBulletin.owner_user.can_share_intelligence | Boolean | Can we share intelligence or not. | 
+| ThreatStream.IP.ThreatBulletin.owner_user.avatar_s3_url | Unknown | The URL of the owner user. | 
+| ThreatStream.IP.ThreatBulletin.owner_user.can_share_intelligence | Boolean | Whether you can share intelligence. | 
 | ThreatStream.IP.ThreatBulletin.owner_user.email | String | The email of the owner user. | 
 | ThreatStream.IP.ThreatBulletin.owner_user.id | String | The ID of the owner user. | 
-| ThreatStream.IP.ThreatBulletin.owner_user.is_active | Boolean | Is the owner user active. | 
-| ThreatStream.IP.ThreatBulletin.owner_user.is_readonly | Boolean | Is the owner user read only. | 
-| ThreatStream.IP.ThreatBulletin.owner_user.must_change_password | Boolean | Does the owner user must change password. | 
+| ThreatStream.IP.ThreatBulletin.owner_user.is_active | Boolean | Whether the owner user is active. | 
+| ThreatStream.IP.ThreatBulletin.owner_user.is_readonly | Boolean | Whether the owner user has read-only permission. | 
+| ThreatStream.IP.ThreatBulletin.owner_user.must_change_password | Boolean | Whether the owner user must change the password. | 
 | ThreatStream.IP.ThreatBulletin.owner_user.name | String | The owner user name. | 
-| ThreatStream.IP.ThreatBulletin.owner_user.nickname | String | The owner user nickname | 
+| ThreatStream.IP.ThreatBulletin.owner_user.nickname | String | The owner user nickname. | 
 | ThreatStream.IP.ThreatBulletin.owner_user.organization.id | String | The ID of the owner user organization. | 
 | ThreatStream.IP.ThreatBulletin.owner_user.organization.name | String | The name of the owner user organization. | 
-| ThreatStream.IP.ThreatBulletin.owner_user.organization.resource_uri | String | The resource uri of the owner user organization. | 
-| ThreatStream.IP.ThreatBulletin.owner_user.resource_uri | String | The resource uri of the owner user. | 
+| ThreatStream.IP.ThreatBulletin.owner_user.organization.resource_uri | String | The resource URI of the owner user organization. | 
+| ThreatStream.IP.ThreatBulletin.owner_user.resource_uri | String | The resource URI of the owner user. | 
 | ThreatStream.IP.ThreatBulletin.owner_user_id | Number | The owner user ID of the threat bulletin. | 
 | ThreatStream.IP.ThreatBulletin.owner_user_name | String | The owner user name of the threat bulletin. | 
 | ThreatStream.IP.ThreatBulletin.parent | Unknown | The parent of the threat bulletin. | 
-| ThreatStream.IP.ThreatBulletin.published_ts | Unknown | When was the threat bulletin published. | 
-| ThreatStream.IP.ThreatBulletin.resource_uri | String | The resource uri of the threat bulletin. | 
+| ThreatStream.IP.ThreatBulletin.published_ts | Unknown | The date the threat bulletin was published. | 
+| ThreatStream.IP.ThreatBulletin.resource_uri | String | The resource URI of the threat bulletin. | 
 | ThreatStream.IP.ThreatBulletin.source | Unknown | The source of the threat bulletin. | 
-| ThreatStream.IP.ThreatBulletin.source_created | Unknown | When was the source created. | 
-| ThreatStream.IP.ThreatBulletin.source_modified | Unknown | When was the source modified. | 
-| ThreatStream.IP.ThreatBulletin.starred_by_me | Boolean | Was the threat bulletin started bt me. | 
-| ThreatStream.IP.ThreatBulletin.starred_total_count | Number | The total count of times the threat bulletin was starred. | 
+| ThreatStream.IP.ThreatBulletin.source_created | Unknown | The date the source was created. | 
+| ThreatStream.IP.ThreatBulletin.source_modified | Unknown | The date the source was modified. | 
+| ThreatStream.IP.ThreatBulletin.starred_by_me | Boolean | Whether the threat bulletin was started by me. | 
+| ThreatStream.IP.ThreatBulletin.starred_total_count | Number | The total number of times the threat bulletin was starred. | 
 | ThreatStream.IP.ThreatBulletin.status | String | The status of the threat bulletin. | 
 | ThreatStream.IP.ThreatBulletin.threat_actor | Unknown | The threat actor of the threat bulletin. | 
 | ThreatStream.IP.ThreatBulletin.tlp | Unknown | The TLP of the threat bulletin. | 
 | ThreatStream.IP.ThreatBulletin.ttp | Unknown | The TTP of the threat bulletin. | 
 | ThreatStream.IP.ThreatBulletin.uuid | String | The UUID of the threat bulletin. | 
-| ThreatStream.IP.ThreatBulletin.votes.me | Unknown | How nany votes by me. | 
-| ThreatStream.IP.ThreatBulletin.votes.total | Number | How many votes total. | 
-| ThreatStream.IP.ThreatBulletin.watched_by_me | Boolean | Was the threat bulletin watched by me? | 
-| ThreatStream.IP.ThreatBulletin.watched_total_count | Number | The total count of watchers. | 
-| ThreatStream.IP.TTP.assignee_user | Unknown | The Assignee User of the TTP. | 
+| ThreatStream.IP.ThreatBulletin.votes.me | Unknown | The number of votes by me. | 
+| ThreatStream.IP.ThreatBulletin.votes.total | Number | The number of total votes. | 
+| ThreatStream.IP.ThreatBulletin.watched_by_me | Boolean | Whether the threat bulletin was watched by me. | 
+| ThreatStream.IP.ThreatBulletin.watched_total_count | Number | The total number of watchers. | 
+| ThreatStream.IP.TTP.assignee_user | Unknown | The assignee user of the TTP. | 
 | ThreatStream.IP.TTP.association_info.comment | Unknown | The comment in the association info of the TTP. | 
-| ThreatStream.IP.TTP.association_info.created | Date | When was the association info created. | 
-| ThreatStream.IP.TTP.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.IP.TTP.can_add_public_tags | Boolean | Can we add a public tags or not to the TTP. | 
-| ThreatStream.IP.TTP.created_ts | Date | When was the TTP cretad. | 
+| ThreatStream.IP.TTP.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.IP.TTP.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.IP.TTP.can_add_public_tags | Boolean | Whether you can add public tags to the TTP. | 
+| ThreatStream.IP.TTP.created_ts | Date | The date the TTP was created. | 
 | ThreatStream.IP.TTP.feed_id | Number | The feed ID of the TTP. | 
-| ThreatStream.IP.TTP.id | Number | The id of the TTP. | 
-| ThreatStream.IP.TTP.is_anonymous | Boolean | Is the TTP anonymus or not. | 
-| ThreatStream.IP.TTP.is_cloneable | String | Is the TTP clonable or not. | 
-| ThreatStream.IP.TTP.is_public | Boolean | Is the TTP public or not. | 
-| ThreatStream.IP.TTP.is_team | Boolean | Is the TTP in a team or not. | 
-| ThreatStream.IP.TTP.modified_ts | Date | When was the TTP modified. | 
+| ThreatStream.IP.TTP.id | Number | The ID of the TTP. | 
+| ThreatStream.IP.TTP.is_anonymous | Boolean | Whether the TTP was anonymous. | 
+| ThreatStream.IP.TTP.is_cloneable | String | Whether the TTP was cloneable. | 
+| ThreatStream.IP.TTP.is_public | Boolean | Whether the TTP is public. | 
+| ThreatStream.IP.TTP.is_team | Boolean | Whether the TTP is a team. | 
+| ThreatStream.IP.TTP.modified_ts | Date | The date the TTP was modified. | 
 | ThreatStream.IP.TTP.name | String | The name of the TTP. | 
 | ThreatStream.IP.TTP.organization_id | Number | The organization ID of the TTP. | 
 | ThreatStream.IP.TTP.owner_user_id | Number | The owner user ID of the TTP. | 
 | ThreatStream.IP.TTP.primary_motivation | Unknown | The primary motivation of the TTP. | 
 | ThreatStream.IP.TTP.publication_status | String | The publication status of the TTP. | 
-| ThreatStream.IP.TTP.published_ts | Date | When was the TTP published. | 
+| ThreatStream.IP.TTP.published_ts | Date | The date the TTP was published. | 
 | ThreatStream.IP.TTP.resource_level | Unknown | The resource level of the TTP. | 
-| ThreatStream.IP.TTP.resource_uri | String | The resource uri of the TTP. | 
-| ThreatStream.IP.TTP.source_created | Unknown | When was the source created. | 
-| ThreatStream.IP.TTP.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.IP.TTP.resource_uri | String | The resource URI of the TTP. | 
+| ThreatStream.IP.TTP.source_created | Unknown | The date the source was created. | 
+| ThreatStream.IP.TTP.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.IP.TTP.start_date | Unknown | The start date. | 
-| ThreatStream.IP.TTP.tags | String | The tags of the threat indicator | 
-| ThreatStream.IP.TTP.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.IP.TTP.tags | String | The tags of the threat indicator. | 
+| ThreatStream.IP.TTP.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.IP.TTP.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.IP.TTP.tlp | String | The tlp of the TTP. | 
-| ThreatStream.IP.TTP.uuid | String | The uuid of the TTP. | 
-| ThreatStream.IP.Vulnerability.assignee_user | Unknown | The Assignee User of the vulnerability. | 
+| ThreatStream.IP.TTP.tlp | String | The TLP of the TTP. | 
+| ThreatStream.IP.TTP.uuid | String | The UUID of the TTP. | 
+| ThreatStream.IP.Vulnerability.assignee_user | Unknown | The assignee user of the vulnerability. | 
 | ThreatStream.IP.Vulnerability.association_info.comment | Unknown | The comment in the association info of the vulnerability. | 
-| ThreatStream.IP.Vulnerability.association_info.created | Date | When was the association info created. | 
-| ThreatStream.IP.Vulnerability.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.IP.Vulnerability.can_add_public_tags | Boolean | Can we add a public tags or not to the vulnerability. | 
+| ThreatStream.IP.Vulnerability.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.IP.Vulnerability.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.IP.Vulnerability.can_add_public_tags | Boolean | Whether you can add public tags to the threat actor. | 
 | ThreatStream.IP.Vulnerability.circles.id | String | The ID of the circle. | 
 | ThreatStream.IP.Vulnerability.circles.name | String | The name of the circle. | 
-| ThreatStream.IP.Vulnerability.circles.resource_uri | String | The resource uri of the circle. | 
-| ThreatStream.IP.Vulnerability.created_ts | Date | When was the vulnerability created. | 
+| ThreatStream.IP.Vulnerability.circles.resource_uri | String | The resource URI of the circle. | 
+| ThreatStream.IP.Vulnerability.created_ts | Date | The date the vulnerability was created. | 
 | ThreatStream.IP.Vulnerability.feed_id | Number | The feed ID of the vulnerability. | 
 | ThreatStream.IP.Vulnerability.id | Number | The ID of the vulnerability. | 
-| ThreatStream.IP.Vulnerability.is_anonymous | Boolean | Is the vulnerability anonymus or not. | 
-| ThreatStream.IP.Vulnerability.is_cloneable | String | Is the vulnerability clonable or not. | 
-| ThreatStream.IP.Vulnerability.is_public | Boolean | Is the vulnerability public or not. | 
-| ThreatStream.IP.Vulnerability.is_system | Boolean | Is the vulnerability in the system or not. | 
-| ThreatStream.IP.Vulnerability.modified_ts | Date | When was the vulnerability modified. | 
+| ThreatStream.IP.Vulnerability.is_anonymous | Boolean | Whether the vulnerability is anonymous. | 
+| ThreatStream.IP.Vulnerability.is_cloneable | String | Whether the vulnerability is cloneable. | 
+| ThreatStream.IP.Vulnerability.is_public | Boolean | Whether the vulnerability is public. | 
+| ThreatStream.IP.Vulnerability.is_system | Boolean | Whether the vulnerability is in the system. | 
+| ThreatStream.IP.Vulnerability.modified_ts | Date | The date the vulnerability was modified. | 
 | ThreatStream.IP.Vulnerability.name | String | The name of the vulnerability. | 
 | ThreatStream.IP.Vulnerability.organization_id | Number | The organization ID of the vulnerability. | 
 | ThreatStream.IP.Vulnerability.owner_user_id | Unknown | The owner user ID of the vulnerability. | 
 | ThreatStream.IP.Vulnerability.publication_status | String | The publication status of the vulnerability. | 
-| ThreatStream.IP.Vulnerability.published_ts | Date | When was the vulnerability published. | 
-| ThreatStream.IP.Vulnerability.resource_uri | String | The resource uri of the vulnerability. | 
+| ThreatStream.IP.Vulnerability.published_ts | Date | The date the vulnerability was published. | 
+| ThreatStream.IP.Vulnerability.resource_uri | String | The resource URI of the vulnerability. | 
 | ThreatStream.IP.Vulnerability.source | String | The source of the vulnerability. | 
 | ThreatStream.IP.Vulnerability.source_created | Unknown | The feed ID of the vulnerability. | 
-| ThreatStream.IP.Vulnerability.source_modified | Unknown | Was the source modified. | 
+| ThreatStream.IP.Vulnerability.source_modified | Unknown | Whether the source was modified. | 
 | ThreatStream.IP.Vulnerability.tags | String | The tags of the vulnerability. | 
-| ThreatStream.IP.Vulnerability.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.IP.Vulnerability.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.IP.Vulnerability.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.IP.Vulnerability.tlp | String | The tlp of the vulnerability. | 
+| ThreatStream.IP.Vulnerability.tlp | String | The TLP of the vulnerability. | 
 | ThreatStream.IP.Vulnerability.update_id | Number | The update ID of the vulnerability. | 
 | ThreatStream.IP.Vulnerability.uuid | String | The UUID of the vulnerability. | 
-| ThreatStream.IP.Campaign.assignee_user | Unknown | The Assignee User of the vulnerability. | 
+| ThreatStream.IP.Campaign.assignee_user | Unknown | The assignee user of the vulnerability. | 
 | ThreatStream.IP.Campaign.association_info.comment | Unknown | The comment in the association info of the vulnerability. | 
-| ThreatStream.IP.Campaign.association_info.created | Date | When was the association info created. | 
-| ThreatStream.IP.Campaign.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.IP.Campaign.can_add_public_tags | Boolean | Can we add a public tags or not to the campaign. | 
-| ThreatStream.IP.Campaign.created_ts | Date | When was the campaign created. | 
+| ThreatStream.IP.Campaign.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.IP.Campaign.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.IP.Campaign.can_add_public_tags | Boolean | Whether you can add public tags to the campaign. | 
+| ThreatStream.IP.Campaign.created_ts | Date | The date the campaign was created. | 
 | ThreatStream.IP.Campaign.end_date | Unknown | The end date of the campaign. | 
 | ThreatStream.IP.Campaign.feed_id | Number | The feed ID of the campaign. | 
 | ThreatStream.IP.Campaign.id | Number | The ID of the campaign. | 
-| ThreatStream.IP.Campaign.is_anonymous | Boolean | Is the campaign anonymus or not. | 
-| ThreatStream.IP.Campaign.is_cloneable | String | Is the campaign clonable or not. | 
-| ThreatStream.IP.Campaign.is_public | Boolean | Is the campaign public or not. | 
-| ThreatStream.IP.Campaign.modified_ts | Date | When was the campain modified. | 
-| ThreatStream.IP.Campaign.name | String | The name of the Campaign. | 
+| ThreatStream.IP.Campaign.is_anonymous | Boolean | Whether the campaign is anonymous. | 
+| ThreatStream.IP.Campaign.is_cloneable | String | Whether the campaign is cloneable. | 
+| ThreatStream.IP.Campaign.is_public | Boolean | Whether the campaign is public. | 
+| ThreatStream.IP.Campaign.modified_ts | Date | The date the campaign was modified. | 
+| ThreatStream.IP.Campaign.name | String | The name of the campaign. | 
 | ThreatStream.IP.Campaign.objective | Unknown | The objective of the campaign. | 
 | ThreatStream.IP.Campaign.organization_id | Number | The organization ID of the campaign. | 
 | ThreatStream.IP.Campaign.owner_user_id | Number | The owner user ID of the campaign. | 
-| ThreatStream.IP.Campaign.publication_status | String | The publication status of the campaign | 
-| ThreatStream.IP.Campaign.published_ts | Unknown | When was the campaign published. | 
-| ThreatStream.IP.Campaign.resource_uri | String | The resource uri of the campaign. | 
-| ThreatStream.IP.Campaign.source_created | Date | When was the campaign created. | 
-| ThreatStream.IP.Campaign.source_modified | Date | Was the source modified or not. | 
+| ThreatStream.IP.Campaign.publication_status | String | The publication status of the campaign. | 
+| ThreatStream.IP.Campaign.published_ts | Unknown | The date the campaign was published. | 
+| ThreatStream.IP.Campaign.resource_uri | String | The resource URI of the campaign. | 
+| ThreatStream.IP.Campaign.source_created | Date | The date the campaign was created. | 
+| ThreatStream.IP.Campaign.source_modified | Date | Whether the source was modified. | 
 | ThreatStream.IP.Campaign.start_date | Unknown | The start date of the campaign. | 
 | ThreatStream.IP.Campaign.status.display_name | String | The display name of the status. | 
-| ThreatStream.IP.Campaign.status.id | Number | The id of the status of the campaign. | 
-| ThreatStream.IP.Campaign.status.resource_uri | String | The resource uri of the status of the campaign. | 
-| ThreatStream.IP.Campaign.tlp | String | The tlp of the campaign. | 
+| ThreatStream.IP.Campaign.status.id | Number | The ID of the status of the campaign. | 
+| ThreatStream.IP.Campaign.status.resource_uri | String | The resource URI of the status of the campaign. | 
+| ThreatStream.IP.Campaign.tlp | String | The TLP of the campaign. | 
 | ThreatStream.IP.Campaign.uuid | String | The UUID of the campaign. | 
 
 #### Command example
-```!ip ip=1.1.1.1 threat_model_association=True```
+```!ip ip=23.98.23.98 threat_model_association=True```
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "1.1.1.1",
+        "Indicator": "23.98.23.98",
         "Reliability": "B - Usually reliable",
         "Score": 3,
         "Type": "ip",
         "Vendor": "Anomali ThreatStream v3 May"
     },
     "IP": {
-        "Address": "1.1.1.1",
+        "Address": "23.98.23.98",
         "Malicious": {
             "Description": null,
             "Vendor": "Anomali ThreatStream v3 May"
         },
         "Relationships": [
             {
-                "EntityA": "1.1.1.1",
+                "EntityA": "23.98.23.98",
                 "EntityAType": "IP",
                 "EntityB": "Test Investigation",
                 "EntityBType": "Campaign",
@@ -340,7 +340,7 @@ Checks the reputation of the given IP address.
         "IP": {
             "ASN": "",
             "Actor": [],
-            "Address": "1.1.1.1",
+            "Address": "23.98.23.98",
             "Campaign": [
                 {
                     "assignee_user": {
@@ -414,10 +414,10 @@ Checks the reputation of the given IP address.
 
 #### Human Readable Output
 
->### IP reputation for: 1.1.1.1
+>### IP reputation for: 23.98.23.98
 >|ASN|Address|Confidence|Country|IType|Modified|Organization|Severity|Source|Status|Tags|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | 1.1.1.1 | 100 |  | apt_ip | 2022-08-01T09:46:41.715Z |  | very-high | Analyst | active | apt, PANW_Test | ip |
+>|  | 23.98.23.98 | 100 |  | apt_ip | 2022-08-01T09:46:41.715Z |  | very-high | Analyst | active | apt, PANW_Test | ip |
 >### Actor details:
 >**No entries.**
 >### Signature details:
@@ -447,9 +447,9 @@ Checks the reputation of the given domain name.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | The domain name to check. | Required | 
-| threshold | If confidence is greater than the threshold the Domain is considered malicious, otherwise it is considered good. This argument overrides the default Domain threshold defined as a parameter. | Optional | 
+| threshold | If confidence is greater than the threshold the domain is considered malicious, otherwise it is considered good. This argument overrides the default domain threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
-| threat_model_association | Note: if set to true, additional 6 API calls will be performed. Possible values are: True, False. Default is False. | Optional | 
+| threat_model_association | Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed. Possible values are: True, False. Default is False. | Optional | 
 
 
 #### Context Output
@@ -457,12 +457,12 @@ Checks the reputation of the given domain name.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.Name | String | The domain name. | 
-| Domain.DNS | String | The IP addresses resolved by DNS. | 
+| Domain.DNS | String | The IP addresses resolved by the DNS. | 
 | Domain.WHOIS.CreationDate | Date | The date the domain was created. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
 for time in UTC time. | 
 | Domain.WHOIS.UpdatedDate | Date | The date the domain was last updated. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
 for time in UTC time. | 
-| Domain.WHOIS.Registrant.Name | String | The registant name. | 
+| Domain.WHOIS.Registrant.Name | String | The registrant name. | 
 | Domain.WHOIS.Registrant.Email | String | The registrant email address. | 
 | Domain.WHOIS.Registrant.Phone | String | The registrant phone number. | 
 | ThreatStream.Domain.ASN | String | The Autonomous System \(AS\) number associated with the indicator. | 
@@ -482,68 +482,68 @@ for time in UTC time. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | ThreatStream.Domain.Tags | Unknown | Tags assigned to the domain. | 
-| ThreatStream.Domain.IType | String | The iType of the indicator associated with the specified model. | 
+| ThreatStream.Domain.IType | String | The itype of the indicator associated with the specified model. | 
 | Domain.Tags | Unknown | List of domain tags. | 
 | Domain.ThreatTypes | Unknown | Threat types associated with the domain. | 
-| ThreatStream.Domain.Actor.assignee_user | Unknown | The Assignee User of the Threat Actor | 
+| ThreatStream.Domain.Actor.assignee_user | Unknown | The assignee user of the threat actor. | 
 | ThreatStream.Domain.Actor.association_info.comment | Unknown | The comment in the association info of the threat actor. | 
-| ThreatStream.Domain.Actor.association_info.created | Date | When was the association info created. | 
-| ThreatStream.Domain.Actor.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.Domain.Actor.can_add_public_tags | Boolean | Can we add a public tags or not to the threat actor. | 
-| ThreatStream.Domain.Actor.created_ts | Date | When was the threat actor cretad. | 
+| ThreatStream.Domain.Actor.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.Domain.Actor.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.Domain.Actor.can_add_public_tags | Boolean | Whether you can add public tags to the threat actor. | 
+| ThreatStream.Domain.Actor.created_ts | Date | The date the threat actor was created. | 
 | ThreatStream.Domain.Actor.feed_id | Number | The feed ID of the threat actor. | 
-| ThreatStream.Domain.Actor.id | Number | The id of the threat actor. | 
-| ThreatStream.Domain.Actor.is_anonymous | Boolean | Is the threat actor anonymus or not. | 
-| ThreatStream.Domain.Actor.is_cloneable | String | Is the threat actor clonable or not. | 
-| ThreatStream.Domain.Actor.is_public | Boolean | Is the threat actor public or not. | 
-| ThreatStream.Domain.Actor.is_team | Boolean | Is the threat actor in a team or not. | 
-| ThreatStream.Domain.Actor.modified_ts | Date | When was the threat actor modified. | 
+| ThreatStream.Domain.Actor.id | Number | The ID of the threat actor. | 
+| ThreatStream.Domain.Actor.is_anonymous | Boolean | Whether the threat actor is anonymous. | 
+| ThreatStream.Domain.Actor.is_cloneable | String | Whether the threat actor is cloneable. | 
+| ThreatStream.Domain.Actor.is_public | Boolean | Whether the threat actor is public. | 
+| ThreatStream.Domain.Actor.is_team | Boolean | Whether the threat actor is a team. | 
+| ThreatStream.Domain.Actor.modified_ts | Date | The date the threat actor was modified. | 
 | ThreatStream.Domain.Actor.name | String | The name of the threat actor. | 
 | ThreatStream.Domain.Actor.organization_id | Number | The organization ID of the threat actor. | 
 | ThreatStream.Domain.Actor.owner_user_id | Number | The owner user ID of the threat actor. | 
 | ThreatStream.Domain.Actor.primary_motivation | Unknown | The primary motivation of the threat actor. | 
 | ThreatStream.Domain.Actor.publication_status | String | The publication status of the threat actor. | 
-| ThreatStream.Domain.Actor.published_ts | Date | When was the threat actor published. | 
+| ThreatStream.Domain.Actor.published_ts | Date | The date the threat actor was published. | 
 | ThreatStream.Domain.Actor.resource_level | Unknown | The resource level of the threat actor. | 
-| ThreatStream.Domain.Actor.resource_uri | String | The resource uri of the threat actor. | 
-| ThreatStream.Domain.Actor.source_created | Unknown | When was the source created. | 
-| ThreatStream.Domain.Actor.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.Domain.Actor.resource_uri | String | The resource URI of the threat actor. | 
+| ThreatStream.Domain.Actor.source_created | Unknown | The date the source was created. | 
+| ThreatStream.Domain.Actor.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.Domain.Actor.start_date | Unknown | The start date. | 
-| ThreatStream.Domain.Actor.tags | String | The tags of the threat indicator | 
-| ThreatStream.Domain.Actor.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.Domain.Actor.tags | String | The tags of the threat indicator. | 
+| ThreatStream.Domain.Actor.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.Domain.Actor.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.Domain.Actor.tlp | String | The tlp of the threat actor. | 
-| ThreatStream.Domain.Actor.uuid | String | The uuid of the threat actor. | 
-| ThreatStream.Domain.Signature.assignee_user | Unknown | The Assignee User of the signature | 
+| ThreatStream.Domain.Actor.tlp | String | The TLP of the threat actor. | 
+| ThreatStream.Domain.Actor.uuid | String | The UUID of the threat actor. | 
+| ThreatStream.Domain.Signature.assignee_user | Unknown | The assignee user of the signature. | 
 | ThreatStream.Domain.Signature.association_info.comment | Unknown | The comment in the association info of the signature. | 
-| ThreatStream.Domain.Signature.association_info.created | Date | When was the association info created. | 
-| ThreatStream.Domain.Signature.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.Domain.Signature.can_add_public_tags | Boolean | Can we add a public tags or not to the signature. | 
-| ThreatStream.Domain.Signature.created_ts | Date | When was the signature cretad. | 
+| ThreatStream.Domain.Signature.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.Domain.Signature.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.Domain.Signature.can_add_public_tags | Boolean | Whether you can add public tags to the signature. | 
+| ThreatStream.Domain.Signature.created_ts | Date | The date the signature was created. | 
 | ThreatStream.Domain.Signature.feed_id | Number | The feed ID of the signature. | 
-| ThreatStream.Domain.Signature.id | Number | The id of the signature. | 
-| ThreatStream.Domain.Signature.is_anonymous | Boolean | Is the signature anonymus or not. | 
-| ThreatStream.Domain.Signature.is_cloneable | String | Is the signature clonable or not. | 
-| ThreatStream.Domain.Signature.is_public | Boolean | Is the signature public or not. | 
-| ThreatStream.Domain.Signature.is_team | Boolean | Is the signature in a team or not. | 
-| ThreatStream.Domain.Signature.modified_ts | Date | When was the signature modified. | 
+| ThreatStream.Domain.Signature.id | Number | The ID of the signature. | 
+| ThreatStream.Domain.Signature.is_anonymous | Boolean | Whether the signature is anonymous. | 
+| ThreatStream.Domain.Signature.is_cloneable | String | Whether the signature is cloneable. | 
+| ThreatStream.Domain.Signature.is_public | Boolean | Whether the signature is public. | 
+| ThreatStream.Domain.Signature.is_team | Boolean | Whether the signature is a team signature. | 
+| ThreatStream.Domain.Signature.modified_ts | Date | The date the signature was modified. | 
 | ThreatStream.Domain.Signature.name | String | The name of the signature. | 
 | ThreatStream.Domain.Signature.organization_id | Number | The organization ID of the signature. | 
 | ThreatStream.Domain.Signature.owner_user_id | Number | The owner user ID of the signature. | 
 | ThreatStream.Domain.Signature.primary_motivation | Unknown | The primary motivation of the signature. | 
 | ThreatStream.Domain.Signature.publication_status | String | The publication status of the signature. | 
-| ThreatStream.Domain.Signature.published_ts | Date | When was the signature published. | 
+| ThreatStream.Domain.Signature.published_ts | Date | The date the signature was published. | 
 | ThreatStream.Domain.Signature.resource_level | Unknown | The resource level of the signature. | 
-| ThreatStream.Domain.Signature.resource_uri | String | The resource uri of the signature. | 
-| ThreatStream.Domain.Signature.source_created | Unknown | When was the source created. | 
-| ThreatStream.Domain.Signature.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.Domain.Signature.resource_uri | String | The resource URI of the signature. | 
+| ThreatStream.Domain.Signature.source_created | Unknown | The date the source was created. | 
+| ThreatStream.Domain.Signature.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.Domain.Signature.start_date | Unknown | The start date. | 
-| ThreatStream.Domain.Signature.tags | String | The tags of the threat indicator | 
-| ThreatStream.Domain.Signature.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.Domain.Signature.tags | String | The tags of the threat indicator. | 
+| ThreatStream.Domain.Signature.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.Domain.Signature.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.Domain.Signature.tlp | String | The tlp of the signature. | 
-| ThreatStream.Domain.Signature.uuid | String | The uuid of the signature. | 
-| ThreatStream.Domain.ThreatBulletin.all_circles_visible | Boolean | Are all of the circles visible. | 
+| ThreatStream.Domain.Signature.tlp | String | The TLP of the signature. | 
+| ThreatStream.Domain.Signature.uuid | String | The UUID of the signature. | 
+| ThreatStream.Domain.ThreatBulletin.all_circles_visible | Boolean | Whether all of the circles are visible. | 
 | ThreatStream.Domain.ThreatBulletin.assignee_org | String | The assignee organization. | 
 | ThreatStream.Domain.ThreatBulletin.assignee_org_id | String | The assignee organization ID. | 
 | ThreatStream.Domain.ThreatBulletin.assignee_org_name | String | The assignee organization name. | 
@@ -551,147 +551,147 @@ for time in UTC time. |
 | ThreatStream.Domain.ThreatBulletin.assignee_user_id | String | The assignee user ID. | 
 | ThreatStream.Domain.ThreatBulletin.assignee_user_name | Unknown | The assignee user name. | 
 | ThreatStream.Domain.ThreatBulletin.association_info.comment | Unknown | The comment in the association info of the threat actor. | 
-| ThreatStream.Domain.ThreatBulletin.association_info.created | Date | When was the association info created. | 
-| ThreatStream.Domain.ThreatBulletin.association_info.from_id | String | From which id the association info is related. | 
+| ThreatStream.Domain.ThreatBulletin.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.Domain.ThreatBulletin.association_info.from_id | String | The ID from which the association info is related. | 
 | ThreatStream.Domain.ThreatBulletin.body_content_type | String | The body content type. | 
 | ThreatStream.Domain.ThreatBulletin.campaign | Unknown | The campaign of the threat bulletin. | 
-| ThreatStream.Domain.ThreatBulletin.can_add_public_tags | Boolean | Can we add public tags. | 
-| ThreatStream.Domain.ThreatBulletin.created_ts | Date | When was the threat bulletin created. | 
+| ThreatStream.Domain.ThreatBulletin.can_add_public_tags | Boolean | Whether you can add public tags. | 
+| ThreatStream.Domain.ThreatBulletin.created_ts | Date | The date the threat bulletin was created. | 
 | ThreatStream.Domain.ThreatBulletin.feed_id | Number | The feed ID of the threat bulletin. | 
 | ThreatStream.Domain.ThreatBulletin.id | String | The ID of the threat bulletin. | 
-| ThreatStream.Domain.ThreatBulletin.is_anonymous | Boolean | Is the threat bulletin anonymous. | 
-| ThreatStream.Domain.ThreatBulletin.is_cloneable | String | Is the threat bulletin cloneble. | 
-| ThreatStream.Domain.ThreatBulletin.is_editable | Boolean | Is the threat bulletin editable. | 
-| ThreatStream.Domain.ThreatBulletin.is_email | Boolean | Is the threat bulletin an email. | 
-| ThreatStream.Domain.ThreatBulletin.is_public | Boolean | Is the threat bulletin public. | 
-| ThreatStream.Domain.ThreatBulletin.modified_ts | Date | When was the threat bulletin modified. | 
+| ThreatStream.Domain.ThreatBulletin.is_anonymous | Boolean | Whether the threat bulletin is anonymous. | 
+| ThreatStream.Domain.ThreatBulletin.is_cloneable | String | Whether the threat bulletin is cloneable. | 
+| ThreatStream.Domain.ThreatBulletin.is_editable | Boolean | Whether the threat bulletin is editable. | 
+| ThreatStream.Domain.ThreatBulletin.is_email | Boolean | Whether the threat bulletin is an email. | 
+| ThreatStream.Domain.ThreatBulletin.is_public | Boolean | Whether the threat bulletin is public. | 
+| ThreatStream.Domain.ThreatBulletin.modified_ts | Date | The date the threat bulletin was modified. | 
 | ThreatStream.Domain.ThreatBulletin.name | String | The name of the threat bulletin. | 
 | ThreatStream.Domain.ThreatBulletin.original_source | String | The original source of the threat bulletin. | 
 | ThreatStream.Domain.ThreatBulletin.original_source_id | Unknown | The original source ID of the threat bulletin. | 
-| ThreatStream.Domain.ThreatBulletin.owner_org.id | String | The owner organizetion ID. | 
-| ThreatStream.Domain.ThreatBulletin.owner_org.name | String | The owner organizetion name. | 
-| ThreatStream.Domain.ThreatBulletin.owner_org.resource_uri | String | The owner organizetion uri. | 
-| ThreatStream.Domain.ThreatBulletin.owner_org_id | Number | The id of the owner user. | 
+| ThreatStream.Domain.ThreatBulletin.owner_org.id | String | The owner organization ID. | 
+| ThreatStream.Domain.ThreatBulletin.owner_org.name | String | The owner organization name. | 
+| ThreatStream.Domain.ThreatBulletin.owner_org.resource_uri | String | The owner organization URI. | 
+| ThreatStream.Domain.ThreatBulletin.owner_org_id | Number | The ID of the owner user. | 
 | ThreatStream.Domain.ThreatBulletin.owner_org_name | String | The name of the owner organization. | 
-| ThreatStream.Domain.ThreatBulletin.owner_user.avatar_s3_url | Unknown | The url of the owner user. | 
-| ThreatStream.Domain.ThreatBulletin.owner_user.can_share_intelligence | Boolean | Can we share intelligence or not. | 
+| ThreatStream.Domain.ThreatBulletin.owner_user.avatar_s3_url | Unknown | The URL of the owner user. | 
+| ThreatStream.Domain.ThreatBulletin.owner_user.can_share_intelligence | Boolean | Whether you can share intelligence. | 
 | ThreatStream.Domain.ThreatBulletin.owner_user.email | String | The email of the owner user. | 
 | ThreatStream.Domain.ThreatBulletin.owner_user.id | String | The ID of the owner user. | 
-| ThreatStream.Domain.ThreatBulletin.owner_user.is_active | Boolean | Is the owner user active. | 
-| ThreatStream.Domain.ThreatBulletin.owner_user.is_readonly | Boolean | Is the owner user read only. | 
-| ThreatStream.Domain.ThreatBulletin.owner_user.must_change_password | Boolean | Does the owner user must change password. | 
+| ThreatStream.Domain.ThreatBulletin.owner_user.is_active | Boolean | Whether the owner user is active. | 
+| ThreatStream.Domain.ThreatBulletin.owner_user.is_readonly | Boolean | Whether the owner user has read-only permission. | 
+| ThreatStream.Domain.ThreatBulletin.owner_user.must_change_password | Boolean | Whether the owner user must change the password. | 
 | ThreatStream.Domain.ThreatBulletin.owner_user.name | String | The owner user name. | 
-| ThreatStream.Domain.ThreatBulletin.owner_user.nickname | String | The owner user nickname | 
+| ThreatStream.Domain.ThreatBulletin.owner_user.nickname | String | The owner user nickname. | 
 | ThreatStream.Domain.ThreatBulletin.owner_user.organization.id | String | The ID of the owner user organization. | 
 | ThreatStream.Domain.ThreatBulletin.owner_user.organization.name | String | The name of the owner user organization. | 
-| ThreatStream.Domain.ThreatBulletin.owner_user.organization.resource_uri | String | The resource uri of the owner user organization. | 
-| ThreatStream.Domain.ThreatBulletin.owner_user.resource_uri | String | The resource uri of the owner user. | 
+| ThreatStream.Domain.ThreatBulletin.owner_user.organization.resource_uri | String | The resource URI of the owner user organization. | 
+| ThreatStream.Domain.ThreatBulletin.owner_user.resource_uri | String | The resource URI of the owner user. | 
 | ThreatStream.Domain.ThreatBulletin.owner_user_id | Number | The owner user ID of the threat bulletin. | 
 | ThreatStream.Domain.ThreatBulletin.owner_user_name | String | The owner user name of the threat bulletin. | 
 | ThreatStream.Domain.ThreatBulletin.parent | Unknown | The parent of the threat bulletin. | 
-| ThreatStream.Domain.ThreatBulletin.published_ts | Unknown | When was the threat bulletin published. | 
-| ThreatStream.Domain.ThreatBulletin.resource_uri | String | The resource uri of the threat bulletin. | 
+| ThreatStream.Domain.ThreatBulletin.published_ts | Unknown | The date the threat bulletin was published. | 
+| ThreatStream.Domain.ThreatBulletin.resource_uri | String | The resource URI of the threat bulletin. | 
 | ThreatStream.Domain.ThreatBulletin.source | Unknown | The source of the threat bulletin. | 
-| ThreatStream.Domain.ThreatBulletin.source_created | Unknown | When was the source created. | 
-| ThreatStream.Domain.ThreatBulletin.source_modified | Unknown | When was the source modified. | 
-| ThreatStream.Domain.ThreatBulletin.starred_by_me | Boolean | Was the threat bulletin started bt me. | 
-| ThreatStream.Domain.ThreatBulletin.starred_total_count | Number | The total count of times the threat bulletin was starred. | 
+| ThreatStream.Domain.ThreatBulletin.source_created | Unknown | The date the source was created. | 
+| ThreatStream.Domain.ThreatBulletin.source_modified | Unknown | The date the source was modified. | 
+| ThreatStream.Domain.ThreatBulletin.starred_by_me | Boolean | Whether the threat bulletin was started by me. | 
+| ThreatStream.Domain.ThreatBulletin.starred_total_count | Number | The total number of times the threat bulletin was starred. | 
 | ThreatStream.Domain.ThreatBulletin.status | String | The status of the threat bulletin. | 
 | ThreatStream.Domain.ThreatBulletin.threat_actor | Unknown | The threat actor of the threat bulletin. | 
 | ThreatStream.Domain.ThreatBulletin.tlp | Unknown | The TLP of the threat bulletin. | 
 | ThreatStream.Domain.ThreatBulletin.ttp | Unknown | The TTP of the threat bulletin. | 
 | ThreatStream.Domain.ThreatBulletin.uuid | String | The UUID of the threat bulletin. | 
-| ThreatStream.Domain.ThreatBulletin.votes.me | Unknown | How nany votes by me. | 
-| ThreatStream.Domain.ThreatBulletin.votes.total | Number | How many votes total. | 
-| ThreatStream.Domain.ThreatBulletin.watched_by_me | Boolean | Was the threat bulletin watched by me? | 
-| ThreatStream.Domain.ThreatBulletin.watched_total_count | Number | The total count of watchers. | 
-| ThreatStream.Domain.TTP.assignee_user | Unknown | The Assignee User of the TTP. | 
+| ThreatStream.Domain.ThreatBulletin.votes.me | Unknown | The number of votes by me. | 
+| ThreatStream.Domain.ThreatBulletin.votes.total | Number | The number of total votes. | 
+| ThreatStream.Domain.ThreatBulletin.watched_by_me | Boolean | Whether the threat bulletin was watched by me. | 
+| ThreatStream.Domain.ThreatBulletin.watched_total_count | Number | The total number of watchers. | 
+| ThreatStream.Domain.TTP.assignee_user | Unknown | The assignee user of the TTP. | 
 | ThreatStream.Domain.TTP.association_info.comment | Unknown | The comment in the association info of the TTP. | 
-| ThreatStream.Domain.TTP.association_info.created | Date | When was the association info created. | 
-| ThreatStream.Domain.TTP.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.Domain.TTP.can_add_public_tags | Boolean | Can we add a public tags or not to the TTP. | 
-| ThreatStream.Domain.TTP.created_ts | Date | When was the TTP cretad. | 
+| ThreatStream.Domain.TTP.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.Domain.TTP.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.Domain.TTP.can_add_public_tags | Boolean | Whether you can add public tags to the TTP. | 
+| ThreatStream.Domain.TTP.created_ts | Date | The date the TTP was created. | 
 | ThreatStream.Domain.TTP.feed_id | Number | The feed ID of the TTP. | 
-| ThreatStream.Domain.TTP.id | Number | The id of the TTP. | 
-| ThreatStream.Domain.TTP.is_anonymous | Boolean | Is the TTP anonymus or not. | 
-| ThreatStream.Domain.TTP.is_cloneable | String | Is the TTP clonable or not. | 
-| ThreatStream.Domain.TTP.is_public | Boolean | Is the TTP public or not. | 
-| ThreatStream.Domain.TTP.is_team | Boolean | Is the TTP in a team or not. | 
-| ThreatStream.Domain.TTP.modified_ts | Date | When was the TTP modified. | 
+| ThreatStream.Domain.TTP.id | Number | The ID of the TTP. | 
+| ThreatStream.Domain.TTP.is_anonymous | Boolean | Whether the TTP was anonymous. | 
+| ThreatStream.Domain.TTP.is_cloneable | String | Whether the TTP was cloneable. | 
+| ThreatStream.Domain.TTP.is_public | Boolean | Whether the TTP is public. | 
+| ThreatStream.Domain.TTP.is_team | Boolean | Whether the TTP is a team. | 
+| ThreatStream.Domain.TTP.modified_ts | Date | The date the TTP was modified. | 
 | ThreatStream.Domain.TTP.name | String | The name of the TTP. | 
 | ThreatStream.Domain.TTP.organization_id | Number | The organization ID of the TTP. | 
 | ThreatStream.Domain.TTP.owner_user_id | Number | The owner user ID of the TTP. | 
 | ThreatStream.Domain.TTP.primary_motivation | Unknown | The primary motivation of the TTP. | 
 | ThreatStream.Domain.TTP.publication_status | String | The publication status of the TTP. | 
-| ThreatStream.Domain.TTP.published_ts | Date | When was the TTP published. | 
+| ThreatStream.Domain.TTP.published_ts | Date | The date the TTP was published. | 
 | ThreatStream.Domain.TTP.resource_level | Unknown | The resource level of the TTP. | 
-| ThreatStream.Domain.TTP.resource_uri | String | The resource uri of the TTP. | 
-| ThreatStream.Domain.TTP.source_created | Unknown | When was the source created. | 
-| ThreatStream.Domain.TTP.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.Domain.TTP.resource_uri | String | The resource URI of the TTP. | 
+| ThreatStream.Domain.TTP.source_created | Unknown | The date the source was created. | 
+| ThreatStream.Domain.TTP.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.Domain.TTP.start_date | Unknown | The start date. | 
-| ThreatStream.Domain.TTP.tags | String | The tags of the threat indicator | 
-| ThreatStream.Domain.TTP.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.Domain.TTP.tags | String | The tags of the threat indicator. | 
+| ThreatStream.Domain.TTP.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.Domain.TTP.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.Domain.TTP.tlp | String | The tlp of the TTP. | 
-| ThreatStream.Domain.TTP.uuid | String | The uuid of the TTP. | 
-| ThreatStream.Domain.Vulnerability.assignee_user | Unknown | The Assignee User of the vulnerability. | 
+| ThreatStream.Domain.TTP.tlp | String | The TLP of the TTP. | 
+| ThreatStream.Domain.TTP.uuid | String | The UUID of the TTP. | 
+| ThreatStream.Domain.Vulnerability.assignee_user | Unknown | The assignee user of the vulnerability. | 
 | ThreatStream.Domain.Vulnerability.association_info.comment | Unknown | The comment in the association info of the vulnerability. | 
-| ThreatStream.Domain.Vulnerability.association_info.created | Date | When was the association info created. | 
-| ThreatStream.Domain.Vulnerability.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.Domain.Vulnerability.can_add_public_tags | Boolean | Can we add a public tags or not to the vulnerability. | 
+| ThreatStream.Domain.Vulnerability.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.Domain.Vulnerability.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.Domain.Vulnerability.can_add_public_tags | Boolean | Whether you can add public tags to the threat actor. | 
 | ThreatStream.Domain.Vulnerability.circles.id | String | The ID of the circle. | 
 | ThreatStream.Domain.Vulnerability.circles.name | String | The name of the circle. | 
-| ThreatStream.Domain.Vulnerability.circles.resource_uri | String | The resource uri of the circle. | 
-| ThreatStream.Domain.Vulnerability.created_ts | Date | When was the vulnerability created. | 
+| ThreatStream.Domain.Vulnerability.circles.resource_uri | String | The resource URI of the circle. | 
+| ThreatStream.Domain.Vulnerability.created_ts | Date | The date the vulnerability was created. | 
 | ThreatStream.Domain.Vulnerability.feed_id | Number | The feed ID of the vulnerability. | 
 | ThreatStream.Domain.Vulnerability.id | Number | The ID of the vulnerability. | 
-| ThreatStream.Domain.Vulnerability.is_anonymous | Boolean | Is the vulnerability anonymus or not. | 
-| ThreatStream.Domain.Vulnerability.is_cloneable | String | Is the vulnerability clonable or not. | 
-| ThreatStream.Domain.Vulnerability.is_public | Boolean | Is the vulnerability public or not. | 
-| ThreatStream.Domain.Vulnerability.is_system | Boolean | Is the vulnerability in the system or not. | 
-| ThreatStream.Domain.Vulnerability.modified_ts | Date | When was the vulnerability modified. | 
+| ThreatStream.Domain.Vulnerability.is_anonymous | Boolean | Whether the vulnerability is anonymous. | 
+| ThreatStream.Domain.Vulnerability.is_cloneable | String | Whether the vulnerability is cloneable. | 
+| ThreatStream.Domain.Vulnerability.is_public | Boolean | Whether the vulnerability is public. | 
+| ThreatStream.Domain.Vulnerability.is_system | Boolean | Whether the vulnerability is in the system. | 
+| ThreatStream.Domain.Vulnerability.modified_ts | Date | The date the vulnerability was modified. | 
 | ThreatStream.Domain.Vulnerability.name | String | The name of the vulnerability. | 
 | ThreatStream.Domain.Vulnerability.organization_id | Number | The organization ID of the vulnerability. | 
 | ThreatStream.Domain.Vulnerability.owner_user_id | Unknown | The owner user ID of the vulnerability. | 
 | ThreatStream.Domain.Vulnerability.publication_status | String | The publication status of the vulnerability. | 
-| ThreatStream.Domain.Vulnerability.published_ts | Date | When was the vulnerability published. | 
-| ThreatStream.Domain.Vulnerability.resource_uri | String | The resource uri of the vulnerability. | 
+| ThreatStream.Domain.Vulnerability.published_ts | Date | The date the vulnerability was published. | 
+| ThreatStream.Domain.Vulnerability.resource_uri | String | The resource URI of the vulnerability. | 
 | ThreatStream.Domain.Vulnerability.source | String | The source of the vulnerability. | 
 | ThreatStream.Domain.Vulnerability.source_created | Unknown | The feed ID of the vulnerability. | 
-| ThreatStream.Domain.Vulnerability.source_modified | Unknown | Was the source modified. | 
+| ThreatStream.Domain.Vulnerability.source_modified | Unknown | Whether the source was modified. | 
 | ThreatStream.Domain.Vulnerability.tags | String | The tags of the vulnerability. | 
-| ThreatStream.Domain.Vulnerability.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.Domain.Vulnerability.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.Domain.Vulnerability.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.Domain.Vulnerability.tlp | String | The tlp of the vulnerability. | 
+| ThreatStream.Domain.Vulnerability.tlp | String | The TLP of the vulnerability. | 
 | ThreatStream.Domain.Vulnerability.update_id | Number | The update ID of the vulnerability. | 
 | ThreatStream.Domain.Vulnerability.uuid | String | The UUID of the vulnerability. | 
-| ThreatStream.Domain.Campaign.assignee_user | Unknown | The Assignee User of the vulnerability. | 
+| ThreatStream.Domain.Campaign.assignee_user | Unknown | The assignee user of the vulnerability. | 
 | ThreatStream.Domain.Campaign.association_info.comment | Unknown | The comment in the association info of the vulnerability. | 
-| ThreatStream.Domain.Campaign.association_info.created | Date | When was the association info created. | 
-| ThreatStream.Domain.Campaign.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.Domain.Campaign.can_add_public_tags | Boolean | Can we add a public tags or not to the campaign. | 
-| ThreatStream.Domain.Campaign.created_ts | Date | When was the campaign created. | 
+| ThreatStream.Domain.Campaign.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.Domain.Campaign.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.Domain.Campaign.can_add_public_tags | Boolean | Whether you can add public tags to the campaign. | 
+| ThreatStream.Domain.Campaign.created_ts | Date | The date the campaign was created. | 
 | ThreatStream.Domain.Campaign.end_date | Unknown | The end date of the campaign. | 
 | ThreatStream.Domain.Campaign.feed_id | Number | The feed ID of the campaign. | 
 | ThreatStream.Domain.Campaign.id | Number | The ID of the campaign. | 
-| ThreatStream.Domain.Campaign.is_anonymous | Boolean | Is the campaign anonymus or not. | 
-| ThreatStream.Domain.Campaign.is_cloneable | String | Is the campaign clonable or not. | 
-| ThreatStream.Domain.Campaign.is_public | Boolean | Is the campaign public or not. | 
-| ThreatStream.Domain.Campaign.modified_ts | Date | When was the campain modified. | 
-| ThreatStream.Domain.Campaign.name | String | The name of the Campaign. | 
+| ThreatStream.Domain.Campaign.is_anonymous | Boolean | Whether the campaign is anonymous. | 
+| ThreatStream.Domain.Campaign.is_cloneable | String | Whether the campaign is cloneable. | 
+| ThreatStream.Domain.Campaign.is_public | Boolean | Whether the campaign is public. | 
+| ThreatStream.Domain.Campaign.modified_ts | Date | The date the campaign was modified. | 
+| ThreatStream.Domain.Campaign.name | String | The name of the campaign. | 
 | ThreatStream.Domain.Campaign.objective | Unknown | The objective of the campaign. | 
 | ThreatStream.Domain.Campaign.organization_id | Number | The organization ID of the campaign. | 
 | ThreatStream.Domain.Campaign.owner_user_id | Number | The owner user ID of the campaign. | 
-| ThreatStream.Domain.Campaign.publication_status | String | The publication status of the campaign | 
-| ThreatStream.Domain.Campaign.published_ts | Unknown | When was the campaign published. | 
-| ThreatStream.Domain.Campaign.resource_uri | String | The resource uri of the campaign. | 
-| ThreatStream.Domain.Campaign.source_created | Date | When was the campaign created. | 
-| ThreatStream.Domain.Campaign.source_modified | Date | Was the source modified or not. | 
+| ThreatStream.Domain.Campaign.publication_status | String | The publication status of the campaign. | 
+| ThreatStream.Domain.Campaign.published_ts | Unknown | The date the campaign was published. | 
+| ThreatStream.Domain.Campaign.resource_uri | String | The resource URI of the campaign. | 
+| ThreatStream.Domain.Campaign.source_created | Date | The date the campaign was created. | 
+| ThreatStream.Domain.Campaign.source_modified | Date | Whether the source was modified. | 
 | ThreatStream.Domain.Campaign.start_date | Unknown | The start date of the campaign. | 
 | ThreatStream.Domain.Campaign.status.display_name | String | The display name of the status. | 
-| ThreatStream.Domain.Campaign.status.id | Number | The id of the status of the campaign. | 
-| ThreatStream.Domain.Campaign.status.resource_uri | String | The resource uri of the status of the campaign. | 
-| ThreatStream.Domain.Campaign.tlp | String | The tlp of the campaign. | 
+| ThreatStream.Domain.Campaign.status.id | Number | The ID of the status of the campaign. | 
+| ThreatStream.Domain.Campaign.status.resource_uri | String | The resource URI of the status of the campaign. | 
+| ThreatStream.Domain.Campaign.tlp | String | The TLP of the campaign. | 
 | ThreatStream.Domain.Campaign.uuid | String | The UUID of the campaign. | 
 
 #### Command example
@@ -699,25 +699,16 @@ for time in UTC time. |
 #### Context Example
 ```json
 {
-    "DBotScore": [
-        {
-            "Indicator": "y.gp",
-            "Reliability": "C - Fairly reliable",
-            "Score": 1,
-            "Type": "domain",
-            "Vendor": "VirusTotal"
-        },
-        {
-            "Indicator": "y.gp",
-            "Reliability": "B - Usually reliable",
-            "Score": 2,
-            "Type": "domain",
-            "Vendor": "Anomali ThreatStream v3 May"
-        }
-    ],
+    "DBotScore": {
+        "Indicator": "y.gp",
+        "Reliability": "B - Usually reliable",
+        "Score": 2,
+        "Type": "domain",
+        "Vendor": "Anomali ThreatStream v3 May"
+    },
     "Domain": {
         "CreationDate": "2021-03-31T10:17:13.553Z",
-        "DNS": "1.1.1.1",
+        "DNS": "144.76.162.245",
         "Geo": {
             "Country": "DE",
             "Location": "51.2993,9.491"
@@ -728,7 +719,7 @@ for time in UTC time. |
             {
                 "EntityA": "y.gp",
                 "EntityAType": "Domain",
-                "EntityB": "1.1.1.1",
+                "EntityB": "144.76.162.245",
                 "EntityBType": "IP",
                 "Relationship": "resolved-from"
             }
@@ -744,44 +735,6 @@ for time in UTC time. |
         ],
         "TrafficLightProtocol": "amber",
         "UpdatedDate": "2021-03-31T10:17:56.207Z",
-        "VirusTotal": {
-            "CommunicatingHashes": [],
-            "DetectedURLs": [
-                {
-                    "positives": 1,
-                    "scan_date": "2019-11-03 20:08:55",
-                    "total": 71,
-                    "url": "url"
-                }
-            ],
-            "DownloadedHashes": [],
-            "ReferrerHashes": [
-                {
-                    "date": "2020-07-21 07:51:14",
-                    "positives": 57,
-                    "sha256": "38e44d856a42e005551efc9b2e65bb9fc682295708f6cb7a8a9051f3428811ec",
-                    "total": 76
-                }
-            ],
-            "Resolutions": [
-                {
-                    "ip_address": "1.1.1.1",
-                    "last_resolved": "2022-02-25 08:37:14"
-                }
-            ],
-            "Subdomains": [],
-            "UnAVDetectedCommunicatingHashes": [],
-            "UnAVDetectedDownloadedHashes": [],
-            "UnAVDetectedReferrerHashes": [
-                {
-                    "date": "2020-07-21 07:48:17",
-                    "positives": 0,
-                    "sha256": "2eed3146a5a6a6794fc6da57a32df0037f0e5299f1de09ee8a29bb105c51d63c",
-                    "total": 75
-                }
-            ],
-            "Whois": "Admin Email : mail"
-        },
         "WHOIS": {
             "CreationDate": "2021-03-31T10:17:13.553Z",
             "UpdatedDate": "2021-03-31T10:17:56.207Z"
@@ -849,7 +802,7 @@ Checks the reputation of the given hash of the file.
 | file | The hash of file to check. | Required | 
 | threshold | If the confidence is greater than the threshold the hash of the file is considered malicious, otherwise it is considered good. This argument overrides the default file threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
-| threat_model_association | Note: if set to true, additional 6 API calls will be performed. Possible values are: True, False. Default is False. | Optional | 
+| threat_model_association | Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed. Possible values are: True, False. Default is False. | Optional | 
 
 
 #### Context Output
@@ -877,68 +830,68 @@ Checks the reputation of the given hash of the file.
 for time in UTC time. | 
 | ThreatStream.File.Source | String | The indicator source. | 
 | ThreatStream.File.Tags | Unknown | Tags assigned to the file. | 
-| ThreatStream.File.IType | String | The iType of the indicator associated with the specified model. | 
+| ThreatStream.File.IType | String | The itype of the indicator associated with the specified model. | 
 | File.Tags | Unknown | List of file tags. | 
 | File.ThreatTypes | Unknown | Threat types associated with the file. | 
-| ThreatStream.File.Actor.assignee_user | Unknown | The Assignee User of the Threat Actor | 
+| ThreatStream.File.Actor.assignee_user | Unknown | The assignee user of the threat actor. | 
 | ThreatStream.File.Actor.association_info.comment | Unknown | The comment in the association info of the threat actor. | 
-| ThreatStream.File.Actor.association_info.created | Date | When was the association info created. | 
-| ThreatStream.File.Actor.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.File.Actor.can_add_public_tags | Boolean | Can we add a public tags or not to the threat actor. | 
-| ThreatStream.File.Actor.created_ts | Date | When was the threat actor cretad. | 
+| ThreatStream.File.Actor.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.File.Actor.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.File.Actor.can_add_public_tags | Boolean | Whether you can add public tags to the threat actor. | 
+| ThreatStream.File.Actor.created_ts | Date | The date the threat actor was created. | 
 | ThreatStream.File.Actor.feed_id | Number | The feed ID of the threat actor. | 
-| ThreatStream.File.Actor.id | Number | The id of the threat actor. | 
-| ThreatStream.File.Actor.is_anonymous | Boolean | Is the threat actor anonymus or not. | 
-| ThreatStream.File.Actor.is_cloneable | String | Is the threat actor clonable or not. | 
-| ThreatStream.File.Actor.is_public | Boolean | Is the threat actor public or not. | 
-| ThreatStream.File.Actor.is_team | Boolean | Is the threat actor in a team or not. | 
-| ThreatStream.File.Actor.modified_ts | Date | When was the threat actor modified. | 
+| ThreatStream.File.Actor.id | Number | The ID of the threat actor. | 
+| ThreatStream.File.Actor.is_anonymous | Boolean | Whether the threat actor is anonymous. | 
+| ThreatStream.File.Actor.is_cloneable | String | Whether the threat actor is cloneable. | 
+| ThreatStream.File.Actor.is_public | Boolean | Whether the threat actor is public. | 
+| ThreatStream.File.Actor.is_team | Boolean | Whether the threat actor is a team. | 
+| ThreatStream.File.Actor.modified_ts | Date | The date the threat actor was modified. | 
 | ThreatStream.File.Actor.name | String | The name of the threat actor. | 
 | ThreatStream.File.Actor.organization_id | Number | The organization ID of the threat actor. | 
 | ThreatStream.File.Actor.owner_user_id | Number | The owner user ID of the threat actor. | 
 | ThreatStream.File.Actor.primary_motivation | Unknown | The primary motivation of the threat actor. | 
 | ThreatStream.File.Actor.publication_status | String | The publication status of the threat actor. | 
-| ThreatStream.File.Actor.published_ts | Date | When was the threat actor published. | 
+| ThreatStream.File.Actor.published_ts | Date | The date the threat actor was published. | 
 | ThreatStream.File.Actor.resource_level | Unknown | The resource level of the threat actor. | 
-| ThreatStream.File.Actor.resource_uri | String | The resource uri of the threat actor. | 
-| ThreatStream.File.Actor.source_created | Unknown | When was the source created. | 
-| ThreatStream.File.Actor.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.File.Actor.resource_uri | String | The resource URI of the threat actor. | 
+| ThreatStream.File.Actor.source_created | Unknown | The date the source was created. | 
+| ThreatStream.File.Actor.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.File.Actor.start_date | Unknown | The start date. | 
-| ThreatStream.File.Actor.tags | String | The tags of the threat indicator | 
-| ThreatStream.File.Actor.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.File.Actor.tags | String | The tags of the threat indicator. | 
+| ThreatStream.File.Actor.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.File.Actor.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.File.Actor.tlp | String | The tlp of the threat actor. | 
-| ThreatStream.File.Actor.uuid | String | The uuid of the threat actor. | 
-| ThreatStream.File.Signature.assignee_user | Unknown | The Assignee User of the signature | 
+| ThreatStream.File.Actor.tlp | String | The TLP of the threat actor. | 
+| ThreatStream.File.Actor.uuid | String | The UUID of the threat actor. | 
+| ThreatStream.File.Signature.assignee_user | Unknown | The assignee user of the signature. | 
 | ThreatStream.File.Signature.association_info.comment | Unknown | The comment in the association info of the signature. | 
-| ThreatStream.File.Signature.association_info.created | Date | When was the association info created. | 
-| ThreatStream.File.Signature.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.File.Signature.can_add_public_tags | Boolean | Can we add a public tags or not to the signature. | 
-| ThreatStream.File.Signature.created_ts | Date | When was the signature cretad. | 
+| ThreatStream.File.Signature.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.File.Signature.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.File.Signature.can_add_public_tags | Boolean | Whether you can add public tags to the signature. | 
+| ThreatStream.File.Signature.created_ts | Date | The date the signature was created. | 
 | ThreatStream.File.Signature.feed_id | Number | The feed ID of the signature. | 
-| ThreatStream.File.Signature.id | Number | The id of the signature. | 
-| ThreatStream.File.Signature.is_anonymous | Boolean | Is the signature anonymus or not. | 
-| ThreatStream.File.Signature.is_cloneable | String | Is the signature clonable or not. | 
-| ThreatStream.File.Signature.is_public | Boolean | Is the signature public or not. | 
-| ThreatStream.File.Signature.is_team | Boolean | Is the signature in a team or not. | 
-| ThreatStream.File.Signature.modified_ts | Date | When was the signature modified. | 
+| ThreatStream.File.Signature.id | Number | The ID of the signature. | 
+| ThreatStream.File.Signature.is_anonymous | Boolean | Whether the signature is anonymous. | 
+| ThreatStream.File.Signature.is_cloneable | String | Whether the signature is cloneable. | 
+| ThreatStream.File.Signature.is_public | Boolean | Whether the signature is public. | 
+| ThreatStream.File.Signature.is_team | Boolean | Whether the signature is a team signature. | 
+| ThreatStream.File.Signature.modified_ts | Date | The date the signature was modified. | 
 | ThreatStream.File.Signature.name | String | The name of the signature. | 
 | ThreatStream.File.Signature.organization_id | Number | The organization ID of the signature. | 
 | ThreatStream.File.Signature.owner_user_id | Number | The owner user ID of the signature. | 
 | ThreatStream.File.Signature.primary_motivation | Unknown | The primary motivation of the signature. | 
 | ThreatStream.File.Signature.publication_status | String | The publication status of the signature. | 
-| ThreatStream.File.Signature.published_ts | Date | When was the signature published. | 
+| ThreatStream.File.Signature.published_ts | Date | The date the signature was published. | 
 | ThreatStream.File.Signature.resource_level | Unknown | The resource level of the signature. | 
-| ThreatStream.File.Signature.resource_uri | String | The resource uri of the signature. | 
-| ThreatStream.File.Signature.source_created | Unknown | When was the source created. | 
-| ThreatStream.File.Signature.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.File.Signature.resource_uri | String | The resource URI of the signature. | 
+| ThreatStream.File.Signature.source_created | Unknown | The date the source was created. | 
+| ThreatStream.File.Signature.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.File.Signature.start_date | Unknown | The start date. | 
-| ThreatStream.File.Signature.tags | String | The tags of the threat indicator | 
-| ThreatStream.File.Signature.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.File.Signature.tags | String | The tags of the threat indicator. | 
+| ThreatStream.File.Signature.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.File.Signature.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.File.Signature.tlp | String | The tlp of the signature. | 
-| ThreatStream.File.Signature.uuid | String | The uuid of the signature. | 
-| ThreatStream.File.ThreatBulletin.all_circles_visible | Boolean | Are all of the circles visible. | 
+| ThreatStream.File.Signature.tlp | String | The TLP of the signature. | 
+| ThreatStream.File.Signature.uuid | String | The UUID of the signature. | 
+| ThreatStream.File.ThreatBulletin.all_circles_visible | Boolean | Whether all of the circles are visible. | 
 | ThreatStream.File.ThreatBulletin.assignee_org | String | The assignee organization. | 
 | ThreatStream.File.ThreatBulletin.assignee_org_id | String | The assignee organization ID. | 
 | ThreatStream.File.ThreatBulletin.assignee_org_name | String | The assignee organization name. | 
@@ -946,147 +899,147 @@ for time in UTC time. |
 | ThreatStream.File.ThreatBulletin.assignee_user_id | String | The assignee user ID. | 
 | ThreatStream.File.ThreatBulletin.assignee_user_name | Unknown | The assignee user name. | 
 | ThreatStream.File.ThreatBulletin.association_info.comment | Unknown | The comment in the association info of the threat actor. | 
-| ThreatStream.File.ThreatBulletin.association_info.created | Date | When was the association info created. | 
-| ThreatStream.File.ThreatBulletin.association_info.from_id | String | From which id the association info is related. | 
+| ThreatStream.File.ThreatBulletin.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.File.ThreatBulletin.association_info.from_id | String | The ID from which the association info is related. | 
 | ThreatStream.File.ThreatBulletin.body_content_type | String | The body content type. | 
 | ThreatStream.File.ThreatBulletin.campaign | Unknown | The campaign of the threat bulletin. | 
-| ThreatStream.File.ThreatBulletin.can_add_public_tags | Boolean | Can we add public tags. | 
-| ThreatStream.File.ThreatBulletin.created_ts | Date | When was the threat bulletin created. | 
+| ThreatStream.File.ThreatBulletin.can_add_public_tags | Boolean | Whether you can add public tags. | 
+| ThreatStream.File.ThreatBulletin.created_ts | Date | The date the threat bulletin was created. | 
 | ThreatStream.File.ThreatBulletin.feed_id | Number | The feed ID of the threat bulletin. | 
 | ThreatStream.File.ThreatBulletin.id | String | The ID of the threat bulletin. | 
-| ThreatStream.File.ThreatBulletin.is_anonymous | Boolean | Is the threat bulletin anonymous. | 
-| ThreatStream.File.ThreatBulletin.is_cloneable | String | Is the threat bulletin cloneble. | 
-| ThreatStream.File.ThreatBulletin.is_editable | Boolean | Is the threat bulletin editable. | 
-| ThreatStream.File.ThreatBulletin.is_email | Boolean | Is the threat bulletin an email. | 
-| ThreatStream.File.ThreatBulletin.is_public | Boolean | Is the threat bulletin public. | 
-| ThreatStream.File.ThreatBulletin.modified_ts | Date | When was the threat bulletin modified. | 
+| ThreatStream.File.ThreatBulletin.is_anonymous | Boolean | Whether the threat bulletin is anonymous. | 
+| ThreatStream.File.ThreatBulletin.is_cloneable | String | Whether the threat bulletin is cloneable. | 
+| ThreatStream.File.ThreatBulletin.is_editable | Boolean | Whether the threat bulletin is editable. | 
+| ThreatStream.File.ThreatBulletin.is_email | Boolean | Whether the threat bulletin is an email. | 
+| ThreatStream.File.ThreatBulletin.is_public | Boolean | Whether the threat bulletin is public. | 
+| ThreatStream.File.ThreatBulletin.modified_ts | Date | The date the threat bulletin was modified. | 
 | ThreatStream.File.ThreatBulletin.name | String | The name of the threat bulletin. | 
 | ThreatStream.File.ThreatBulletin.original_source | String | The original source of the threat bulletin. | 
 | ThreatStream.File.ThreatBulletin.original_source_id | Unknown | The original source ID of the threat bulletin. | 
-| ThreatStream.File.ThreatBulletin.owner_org.id | String | The owner organizetion ID. | 
-| ThreatStream.File.ThreatBulletin.owner_org.name | String | The owner organizetion name. | 
-| ThreatStream.File.ThreatBulletin.owner_org.resource_uri | String | The owner organizetion uri. | 
-| ThreatStream.File.ThreatBulletin.owner_org_id | Number | The id of the owner user. | 
+| ThreatStream.File.ThreatBulletin.owner_org.id | String | The owner organization ID. | 
+| ThreatStream.File.ThreatBulletin.owner_org.name | String | The owner organization name. | 
+| ThreatStream.File.ThreatBulletin.owner_org.resource_uri | String | The owner organization URI. | 
+| ThreatStream.File.ThreatBulletin.owner_org_id | Number | The ID of the owner user. | 
 | ThreatStream.File.ThreatBulletin.owner_org_name | String | The name of the owner organization. | 
-| ThreatStream.File.ThreatBulletin.owner_user.avatar_s3_url | Unknown | The url of the owner user. | 
-| ThreatStream.File.ThreatBulletin.owner_user.can_share_intelligence | Boolean | Can we share intelligence or not. | 
+| ThreatStream.File.ThreatBulletin.owner_user.avatar_s3_url | Unknown | The URL of the owner user. | 
+| ThreatStream.File.ThreatBulletin.owner_user.can_share_intelligence | Boolean | Whether you can share intelligence. | 
 | ThreatStream.File.ThreatBulletin.owner_user.email | String | The email of the owner user. | 
 | ThreatStream.File.ThreatBulletin.owner_user.id | String | The ID of the owner user. | 
-| ThreatStream.File.ThreatBulletin.owner_user.is_active | Boolean | Is the owner user active. | 
-| ThreatStream.File.ThreatBulletin.owner_user.is_readonly | Boolean | Is the owner user read only. | 
-| ThreatStream.File.ThreatBulletin.owner_user.must_change_password | Boolean | Does the owner user must change password. | 
+| ThreatStream.File.ThreatBulletin.owner_user.is_active | Boolean | Whether the owner user is active. | 
+| ThreatStream.File.ThreatBulletin.owner_user.is_readonly | Boolean | Whether the owner user has read-only permission. | 
+| ThreatStream.File.ThreatBulletin.owner_user.must_change_password | Boolean | Whether the owner user must change the password. | 
 | ThreatStream.File.ThreatBulletin.owner_user.name | String | The owner user name. | 
-| ThreatStream.File.ThreatBulletin.owner_user.nickname | String | The owner user nickname | 
+| ThreatStream.File.ThreatBulletin.owner_user.nickname | String | The owner user nickname. | 
 | ThreatStream.File.ThreatBulletin.owner_user.organization.id | String | The ID of the owner user organization. | 
 | ThreatStream.File.ThreatBulletin.owner_user.organization.name | String | The name of the owner user organization. | 
-| ThreatStream.File.ThreatBulletin.owner_user.organization.resource_uri | String | The resource uri of the owner user organization. | 
-| ThreatStream.File.ThreatBulletin.owner_user.resource_uri | String | The resource uri of the owner user. | 
+| ThreatStream.File.ThreatBulletin.owner_user.organization.resource_uri | String | The resource URI of the owner user organization. | 
+| ThreatStream.File.ThreatBulletin.owner_user.resource_uri | String | The resource URI of the owner user. | 
 | ThreatStream.File.ThreatBulletin.owner_user_id | Number | The owner user ID of the threat bulletin. | 
 | ThreatStream.File.ThreatBulletin.owner_user_name | String | The owner user name of the threat bulletin. | 
 | ThreatStream.File.ThreatBulletin.parent | Unknown | The parent of the threat bulletin. | 
-| ThreatStream.File.ThreatBulletin.published_ts | Unknown | When was the threat bulletin published. | 
-| ThreatStream.File.ThreatBulletin.resource_uri | String | The resource uri of the threat bulletin. | 
+| ThreatStream.File.ThreatBulletin.published_ts | Unknown | The date the threat bulletin was published. | 
+| ThreatStream.File.ThreatBulletin.resource_uri | String | The resource URI of the threat bulletin. | 
 | ThreatStream.File.ThreatBulletin.source | Unknown | The source of the threat bulletin. | 
-| ThreatStream.File.ThreatBulletin.source_created | Unknown | When was the source created. | 
-| ThreatStream.File.ThreatBulletin.source_modified | Unknown | When was the source modified. | 
-| ThreatStream.File.ThreatBulletin.starred_by_me | Boolean | Was the threat bulletin started bt me. | 
-| ThreatStream.File.ThreatBulletin.starred_total_count | Number | The total count of times the threat bulletin was starred. | 
+| ThreatStream.File.ThreatBulletin.source_created | Unknown | The date the source was created. | 
+| ThreatStream.File.ThreatBulletin.source_modified | Unknown | The date the source was modified. | 
+| ThreatStream.File.ThreatBulletin.starred_by_me | Boolean | Whether the threat bulletin was started by me. | 
+| ThreatStream.File.ThreatBulletin.starred_total_count | Number | The total number of times the threat bulletin was starred. | 
 | ThreatStream.File.ThreatBulletin.status | String | The status of the threat bulletin. | 
 | ThreatStream.File.ThreatBulletin.threat_actor | Unknown | The threat actor of the threat bulletin. | 
 | ThreatStream.File.ThreatBulletin.tlp | Unknown | The TLP of the threat bulletin. | 
 | ThreatStream.File.ThreatBulletin.ttp | Unknown | The TTP of the threat bulletin. | 
 | ThreatStream.File.ThreatBulletin.uuid | String | The UUID of the threat bulletin. | 
-| ThreatStream.File.ThreatBulletin.votes.me | Unknown | How nany votes by me. | 
-| ThreatStream.File.ThreatBulletin.votes.total | Number | How many votes total. | 
-| ThreatStream.File.ThreatBulletin.watched_by_me | Boolean | Was the threat bulletin watched by me? | 
-| ThreatStream.File.ThreatBulletin.watched_total_count | Number | The total count of watchers. | 
-| ThreatStream.File.TTP.assignee_user | Unknown | The Assignee User of the TTP. | 
+| ThreatStream.File.ThreatBulletin.votes.me | Unknown | The number of votes by me. | 
+| ThreatStream.File.ThreatBulletin.votes.total | Number | The number of total votes. | 
+| ThreatStream.File.ThreatBulletin.watched_by_me | Boolean | Whether the threat bulletin was watched by me. | 
+| ThreatStream.File.ThreatBulletin.watched_total_count | Number | The total number of watchers. | 
+| ThreatStream.File.TTP.assignee_user | Unknown | The assignee user of the TTP. | 
 | ThreatStream.File.TTP.association_info.comment | Unknown | The comment in the association info of the TTP. | 
-| ThreatStream.File.TTP.association_info.created | Date | When was the association info created. | 
-| ThreatStream.File.TTP.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.File.TTP.can_add_public_tags | Boolean | Can we add a public tags or not to the TTP. | 
-| ThreatStream.File.TTP.created_ts | Date | When was the TTP cretad. | 
+| ThreatStream.File.TTP.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.File.TTP.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.File.TTP.can_add_public_tags | Boolean | Whether you can add public tags to the TTP. | 
+| ThreatStream.File.TTP.created_ts | Date | The date the TTP was created. | 
 | ThreatStream.File.TTP.feed_id | Number | The feed ID of the TTP. | 
-| ThreatStream.File.TTP.id | Number | The id of the TTP. | 
-| ThreatStream.File.TTP.is_anonymous | Boolean | Is the TTP anonymus or not. | 
-| ThreatStream.File.TTP.is_cloneable | String | Is the TTP clonable or not. | 
-| ThreatStream.File.TTP.is_public | Boolean | Is the TTP public or not. | 
-| ThreatStream.File.TTP.is_team | Boolean | Is the TTP in a team or not. | 
-| ThreatStream.File.TTP.modified_ts | Date | When was the TTP modified. | 
+| ThreatStream.File.TTP.id | Number | The ID of the TTP. | 
+| ThreatStream.File.TTP.is_anonymous | Boolean | Whether the TTP was anonymous. | 
+| ThreatStream.File.TTP.is_cloneable | String | Whether the TTP was cloneable. | 
+| ThreatStream.File.TTP.is_public | Boolean | Whether the TTP is public. | 
+| ThreatStream.File.TTP.is_team | Boolean | Whether the TTP is a team. | 
+| ThreatStream.File.TTP.modified_ts | Date | The date the TTP was modified. | 
 | ThreatStream.File.TTP.name | String | The name of the TTP. | 
 | ThreatStream.File.TTP.organization_id | Number | The organization ID of the TTP. | 
 | ThreatStream.File.TTP.owner_user_id | Number | The owner user ID of the TTP. | 
 | ThreatStream.File.TTP.primary_motivation | Unknown | The primary motivation of the TTP. | 
 | ThreatStream.File.TTP.publication_status | String | The publication status of the TTP. | 
-| ThreatStream.File.TTP.published_ts | Date | When was the TTP published. | 
+| ThreatStream.File.TTP.published_ts | Date | The date the TTP was published. | 
 | ThreatStream.File.TTP.resource_level | Unknown | The resource level of the TTP. | 
-| ThreatStream.File.TTP.resource_uri | String | The resource uri of the TTP. | 
-| ThreatStream.File.TTP.source_created | Unknown | When was the source created. | 
-| ThreatStream.File.TTP.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.File.TTP.resource_uri | String | The resource URI of the TTP. | 
+| ThreatStream.File.TTP.source_created | Unknown | The date the source was created. | 
+| ThreatStream.File.TTP.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.File.TTP.start_date | Unknown | The start date. | 
-| ThreatStream.File.TTP.tags | String | The tags of the threat indicator | 
-| ThreatStream.File.TTP.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.File.TTP.tags | String | The tags of the threat indicator. | 
+| ThreatStream.File.TTP.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.File.TTP.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.File.TTP.tlp | String | The tlp of the TTP. | 
-| ThreatStream.File.TTP.uuid | String | The uuid of the TTP. | 
-| ThreatStream.File.Vulnerability.assignee_user | Unknown | The Assignee User of the vulnerability. | 
+| ThreatStream.File.TTP.tlp | String | The TLP of the TTP. | 
+| ThreatStream.File.TTP.uuid | String | The UUID of the TTP. | 
+| ThreatStream.File.Vulnerability.assignee_user | Unknown | The assignee user of the vulnerability. | 
 | ThreatStream.File.Vulnerability.association_info.comment | Unknown | The comment in the association info of the vulnerability. | 
-| ThreatStream.File.Vulnerability.association_info.created | Date | When was the association info created. | 
-| ThreatStream.File.Vulnerability.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.File.Vulnerability.can_add_public_tags | Boolean | Can we add a public tags or not to the vulnerability. | 
+| ThreatStream.File.Vulnerability.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.File.Vulnerability.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.File.Vulnerability.can_add_public_tags | Boolean | Whether you can add public tags to the threat actor. | 
 | ThreatStream.File.Vulnerability.circles.id | String | The ID of the circle. | 
 | ThreatStream.File.Vulnerability.circles.name | String | The name of the circle. | 
-| ThreatStream.File.Vulnerability.circles.resource_uri | String | The resource uri of the circle. | 
-| ThreatStream.File.Vulnerability.created_ts | Date | When was the vulnerability created. | 
+| ThreatStream.File.Vulnerability.circles.resource_uri | String | The resource URI of the circle. | 
+| ThreatStream.File.Vulnerability.created_ts | Date | The date the vulnerability was created. | 
 | ThreatStream.File.Vulnerability.feed_id | Number | The feed ID of the vulnerability. | 
 | ThreatStream.File.Vulnerability.id | Number | The ID of the vulnerability. | 
-| ThreatStream.File.Vulnerability.is_anonymous | Boolean | Is the vulnerability anonymus or not. | 
-| ThreatStream.File.Vulnerability.is_cloneable | String | Is the vulnerability clonable or not. | 
-| ThreatStream.File.Vulnerability.is_public | Boolean | Is the vulnerability public or not. | 
-| ThreatStream.File.Vulnerability.is_system | Boolean | Is the vulnerability in the system or not. | 
-| ThreatStream.File.Vulnerability.modified_ts | Date | When was the vulnerability modified. | 
+| ThreatStream.File.Vulnerability.is_anonymous | Boolean | Whether the vulnerability is anonymous. | 
+| ThreatStream.File.Vulnerability.is_cloneable | String | Whether the vulnerability is cloneable. | 
+| ThreatStream.File.Vulnerability.is_public | Boolean | Whether the vulnerability is public. | 
+| ThreatStream.File.Vulnerability.is_system | Boolean | Whether the vulnerability is in the system. | 
+| ThreatStream.File.Vulnerability.modified_ts | Date | The date the vulnerability was modified. | 
 | ThreatStream.File.Vulnerability.name | String | The name of the vulnerability. | 
 | ThreatStream.File.Vulnerability.organization_id | Number | The organization ID of the vulnerability. | 
 | ThreatStream.File.Vulnerability.owner_user_id | Unknown | The owner user ID of the vulnerability. | 
 | ThreatStream.File.Vulnerability.publication_status | String | The publication status of the vulnerability. | 
-| ThreatStream.File.Vulnerability.published_ts | Date | When was the vulnerability published. | 
-| ThreatStream.File.Vulnerability.resource_uri | String | The resource uri of the vulnerability. | 
+| ThreatStream.File.Vulnerability.published_ts | Date | The date the vulnerability was published. | 
+| ThreatStream.File.Vulnerability.resource_uri | String | The resource URI of the vulnerability. | 
 | ThreatStream.File.Vulnerability.source | String | The source of the vulnerability. | 
 | ThreatStream.File.Vulnerability.source_created | Unknown | The feed ID of the vulnerability. | 
-| ThreatStream.File.Vulnerability.source_modified | Unknown | Was the source modified. | 
+| ThreatStream.File.Vulnerability.source_modified | Unknown | Whether the source was modified. | 
 | ThreatStream.File.Vulnerability.tags | String | The tags of the vulnerability. | 
-| ThreatStream.File.Vulnerability.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.File.Vulnerability.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.File.Vulnerability.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.File.Vulnerability.tlp | String | The tlp of the vulnerability. | 
+| ThreatStream.File.Vulnerability.tlp | String | The TLP of the vulnerability. | 
 | ThreatStream.File.Vulnerability.update_id | Number | The update ID of the vulnerability. | 
 | ThreatStream.File.Vulnerability.uuid | String | The UUID of the vulnerability. | 
-| ThreatStream.File.Campaign.assignee_user | Unknown | The Assignee User of the vulnerability. | 
+| ThreatStream.File.Campaign.assignee_user | Unknown | The assignee user of the vulnerability. | 
 | ThreatStream.File.Campaign.association_info.comment | Unknown | The comment in the association info of the vulnerability. | 
-| ThreatStream.File.Campaign.association_info.created | Date | When was the association info created. | 
-| ThreatStream.File.Campaign.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.File.Campaign.can_add_public_tags | Boolean | Can we add a public tags or not to the campaign. | 
-| ThreatStream.File.Campaign.created_ts | Date | When was the campaign created. | 
+| ThreatStream.File.Campaign.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.File.Campaign.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.File.Campaign.can_add_public_tags | Boolean | Whether you can add public tags to the campaign. | 
+| ThreatStream.File.Campaign.created_ts | Date | The date the campaign was created. | 
 | ThreatStream.File.Campaign.end_date | Unknown | The end date of the campaign. | 
 | ThreatStream.File.Campaign.feed_id | Number | The feed ID of the campaign. | 
 | ThreatStream.File.Campaign.id | Number | The ID of the campaign. | 
-| ThreatStream.File.Campaign.is_anonymous | Boolean | Is the campaign anonymus or not. | 
-| ThreatStream.File.Campaign.is_cloneable | String | Is the campaign clonable or not. | 
-| ThreatStream.File.Campaign.is_public | Boolean | Is the campaign public or not. | 
-| ThreatStream.File.Campaign.modified_ts | Date | When was the campain modified. | 
-| ThreatStream.File.Campaign.name | String | The name of the Campaign. | 
+| ThreatStream.File.Campaign.is_anonymous | Boolean | Whether the campaign is anonymous. | 
+| ThreatStream.File.Campaign.is_cloneable | String | Whether the campaign is cloneable. | 
+| ThreatStream.File.Campaign.is_public | Boolean | Whether the campaign is public. | 
+| ThreatStream.File.Campaign.modified_ts | Date | The date the campaign was modified. | 
+| ThreatStream.File.Campaign.name | String | The name of the campaign. | 
 | ThreatStream.File.Campaign.objective | Unknown | The objective of the campaign. | 
 | ThreatStream.File.Campaign.organization_id | Number | The organization ID of the campaign. | 
 | ThreatStream.File.Campaign.owner_user_id | Number | The owner user ID of the campaign. | 
-| ThreatStream.File.Campaign.publication_status | String | The publication status of the campaign | 
-| ThreatStream.File.Campaign.published_ts | Unknown | When was the campaign published. | 
-| ThreatStream.File.Campaign.resource_uri | String | The resource uri of the campaign. | 
-| ThreatStream.File.Campaign.source_created | Date | When was the campaign created. | 
-| ThreatStream.File.Campaign.source_modified | Date | Was the source modified or not. | 
+| ThreatStream.File.Campaign.publication_status | String | The publication status of the campaign. | 
+| ThreatStream.File.Campaign.published_ts | Unknown | The date the campaign was published. | 
+| ThreatStream.File.Campaign.resource_uri | String | The resource URI of the campaign. | 
+| ThreatStream.File.Campaign.source_created | Date | The date the campaign was created. | 
+| ThreatStream.File.Campaign.source_modified | Date | Whether the source was modified. | 
 | ThreatStream.File.Campaign.start_date | Unknown | The start date of the campaign. | 
 | ThreatStream.File.Campaign.status.display_name | String | The display name of the status. | 
-| ThreatStream.File.Campaign.status.id | Number | The id of the status of the campaign. | 
-| ThreatStream.File.Campaign.status.resource_uri | String | The resource uri of the status of the campaign. | 
-| ThreatStream.File.Campaign.tlp | String | The tlp of the campaign. | 
+| ThreatStream.File.Campaign.status.id | Number | The ID of the status of the campaign. | 
+| ThreatStream.File.Campaign.status.resource_uri | String | The resource URI of the status of the campaign. | 
+| ThreatStream.File.Campaign.tlp | String | The TLP of the campaign. | 
 | ThreatStream.File.Campaign.uuid | String | The UUID of the campaign. | 
 
 #### Command example
@@ -1166,12 +1119,17 @@ for time in UTC time. |
                     "source_modified": null,
                     "start_date": null,
                     "tags": [
+                        "packetstorm",
                         "microsoft"
                     ],
                     "tags_v2": [
                         {
                             "id": "gvp",
                             "name": "microsoft"
+                        },
+                        {
+                            "id": "wli",
+                            "name": "packetstorm"
                         }
                     ],
                     "tlp": "red",
@@ -1948,24 +1906,9 @@ Returns the report of a file or URL submitted to the sandbox.
             "Duration": 152,
             "Network": [
                 {
-                    "UdpDestination": "8.8.8.8",
+                    "UdpDestinaton": "8.8.8.8",
                     "UdpPort": 53,
                     "UdpSource": "192.168.2.4"
-                },
-                {
-                    "TcpDestination": "78.78.78.67",
-                    "TcpPort": 443,
-                    "TcpSource": "78.78.78.67"
-                },
-                {
-                    "TcpDestination": "78.78.78.67",
-                    "TcpPort": 443,
-                    "TcpSource": "78.78.78.67"
-                },
-                {
-                    "HttpsDestination": "78.78.78.67",
-                    "HttpsPort": 443,
-                    "HttpsSource": "78.78.78.67"
                 },
                 {
                     "Hosts": "78.78.78.67"
@@ -2353,7 +2296,7 @@ Checks the reputation of the given URL.
 | url | The URL to check. | Required | 
 | threshold | If confidence is greater than the threshold the URL is considered malicious, otherwise it is considered good. This argument overrides the default URL threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
-| threat_model_association | Note: if set to true, additional 6 API calls will be performed. Possible values are: True, False. Default is False. | Optional | 
+| threat_model_association | Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed. Possible values are: True, False. Default is False. | Optional | 
 
 
 #### Context Output
@@ -2377,68 +2320,68 @@ for time in UTC time. |
 | ThreatStream.URL.Source | String | The indicator source. | 
 | ThreatStream.URL.Severity | String | The indicator severity \("very-high", "high", "medium", or "low"\). | 
 | ThreatStream.URL.Tags | Unknown | Tags assigned to the URL. | 
-| ThreatStream.URL.IType | String | The iType of the indicator associated with the specified model. | 
+| ThreatStream.URL.IType | String | The itype of the indicator associated with the specified model. | 
 | URL.Tags | Unknown | List of URL tags. | 
 | URL.ThreatTypes | Unknown | Threat types associated with the url. | 
-| ThreatStream.URL.Actor.assignee_user | Unknown | The Assignee User of the Threat Actor | 
+| ThreatStream.URL.Actor.assignee_user | Unknown | The assignee user of the threat actor. | 
 | ThreatStream.URL.Actor.association_info.comment | Unknown | The comment in the association info of the threat actor. | 
-| ThreatStream.URL.Actor.association_info.created | Date | When was the association info created. | 
-| ThreatStream.URL.Actor.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.URL.Actor.can_add_public_tags | Boolean | Can we add a public tags or not to the threat actor. | 
-| ThreatStream.URL.Actor.created_ts | Date | When was the threat actor cretad. | 
+| ThreatStream.URL.Actor.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.URL.Actor.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.URL.Actor.can_add_public_tags | Boolean | Whether you can add public tags to the threat actor. | 
+| ThreatStream.URL.Actor.created_ts | Date | The date the threat actor was created. | 
 | ThreatStream.URL.Actor.feed_id | Number | The feed ID of the threat actor. | 
-| ThreatStream.URL.Actor.id | Number | The id of the threat actor. | 
-| ThreatStream.URL.Actor.is_anonymous | Boolean | Is the threat actor anonymus or not. | 
-| ThreatStream.URL.Actor.is_cloneable | String | Is the threat actor clonable or not. | 
-| ThreatStream.URL.Actor.is_public | Boolean | Is the threat actor public or not. | 
-| ThreatStream.URL.Actor.is_team | Boolean | Is the threat actor in a team or not. | 
-| ThreatStream.URL.Actor.modified_ts | Date | When was the threat actor modified. | 
+| ThreatStream.URL.Actor.id | Number | The ID of the threat actor. | 
+| ThreatStream.URL.Actor.is_anonymous | Boolean | Whether the threat actor is anonymous. | 
+| ThreatStream.URL.Actor.is_cloneable | String | Whether the threat actor is cloneable. | 
+| ThreatStream.URL.Actor.is_public | Boolean | Whether the threat actor is public. | 
+| ThreatStream.URL.Actor.is_team | Boolean | Whether the threat actor is a team. | 
+| ThreatStream.URL.Actor.modified_ts | Date | The date the threat actor was modified. | 
 | ThreatStream.URL.Actor.name | String | The name of the threat actor. | 
 | ThreatStream.URL.Actor.organization_id | Number | The organization ID of the threat actor. | 
 | ThreatStream.URL.Actor.owner_user_id | Number | The owner user ID of the threat actor. | 
 | ThreatStream.URL.Actor.primary_motivation | Unknown | The primary motivation of the threat actor. | 
 | ThreatStream.URL.Actor.publication_status | String | The publication status of the threat actor. | 
-| ThreatStream.URL.Actor.published_ts | Date | When was the threat actor published. | 
+| ThreatStream.URL.Actor.published_ts | Date | The date the threat actor was published. | 
 | ThreatStream.URL.Actor.resource_level | Unknown | The resource level of the threat actor. | 
-| ThreatStream.URL.Actor.resource_uri | String | The resource uri of the threat actor. | 
-| ThreatStream.URL.Actor.source_created | Unknown | When was the source created. | 
-| ThreatStream.URL.Actor.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.URL.Actor.resource_uri | String | The resource URI of the threat actor. | 
+| ThreatStream.URL.Actor.source_created | Unknown | The date the source was created. | 
+| ThreatStream.URL.Actor.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.URL.Actor.start_date | Unknown | The start date. | 
-| ThreatStream.URL.Actor.tags | String | The tags of the threat indicator | 
-| ThreatStream.URL.Actor.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.URL.Actor.tags | String | The tags of the threat indicator. | 
+| ThreatStream.URL.Actor.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.URL.Actor.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.URL.Actor.tlp | String | The tlp of the threat actor. | 
-| ThreatStream.URL.Actor.uuid | String | The uuid of the threat actor. | 
-| ThreatStream.URL.Signature.assignee_user | Unknown | The Assignee User of the signature | 
+| ThreatStream.URL.Actor.tlp | String | The TLP of the threat actor. | 
+| ThreatStream.URL.Actor.uuid | String | The UUID of the threat actor. | 
+| ThreatStream.URL.Signature.assignee_user | Unknown | The assignee user of the signature. | 
 | ThreatStream.URL.Signature.association_info.comment | Unknown | The comment in the association info of the signature. | 
-| ThreatStream.URL.Signature.association_info.created | Date | When was the association info created. | 
-| ThreatStream.URL.Signature.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.URL.Signature.can_add_public_tags | Boolean | Can we add a public tags or not to the signature. | 
-| ThreatStream.URL.Signature.created_ts | Date | When was the signature cretad. | 
+| ThreatStream.URL.Signature.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.URL.Signature.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.URL.Signature.can_add_public_tags | Boolean | Whether you can add public tags to the signature. | 
+| ThreatStream.URL.Signature.created_ts | Date | The date the signature was created. | 
 | ThreatStream.URL.Signature.feed_id | Number | The feed ID of the signature. | 
-| ThreatStream.URL.Signature.id | Number | The id of the signature. | 
-| ThreatStream.URL.Signature.is_anonymous | Boolean | Is the signature anonymus or not. | 
-| ThreatStream.URL.Signature.is_cloneable | String | Is the signature clonable or not. | 
-| ThreatStream.URL.Signature.is_public | Boolean | Is the signature public or not. | 
-| ThreatStream.URL.Signature.is_team | Boolean | Is the signature in a team or not. | 
-| ThreatStream.URL.Signature.modified_ts | Date | When was the signature modified. | 
+| ThreatStream.URL.Signature.id | Number | The ID of the signature. | 
+| ThreatStream.URL.Signature.is_anonymous | Boolean | Whether the signature is anonymous. | 
+| ThreatStream.URL.Signature.is_cloneable | String | Whether the signature is cloneable. | 
+| ThreatStream.URL.Signature.is_public | Boolean | Whether the signature is public. | 
+| ThreatStream.URL.Signature.is_team | Boolean | Whether the signature is a team signature. | 
+| ThreatStream.URL.Signature.modified_ts | Date | The date the signature was modified. | 
 | ThreatStream.URL.Signature.name | String | The name of the signature. | 
 | ThreatStream.URL.Signature.organization_id | Number | The organization ID of the signature. | 
 | ThreatStream.URL.Signature.owner_user_id | Number | The owner user ID of the signature. | 
 | ThreatStream.URL.Signature.primary_motivation | Unknown | The primary motivation of the signature. | 
 | ThreatStream.URL.Signature.publication_status | String | The publication status of the signature. | 
-| ThreatStream.URL.Signature.published_ts | Date | When was the signature published. | 
+| ThreatStream.URL.Signature.published_ts | Date | The date the signature was published. | 
 | ThreatStream.URL.Signature.resource_level | Unknown | The resource level of the signature. | 
-| ThreatStream.URL.Signature.resource_uri | String | The resource uri of the signature. | 
-| ThreatStream.URL.Signature.source_created | Unknown | When was the source created. | 
-| ThreatStream.URL.Signature.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.URL.Signature.resource_uri | String | The resource URI of the signature. | 
+| ThreatStream.URL.Signature.source_created | Unknown | The date the source was created. | 
+| ThreatStream.URL.Signature.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.URL.Signature.start_date | Unknown | The start date. | 
-| ThreatStream.URL.Signature.tags | String | The tags of the threat indicator | 
-| ThreatStream.URL.Signature.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.URL.Signature.tags | String | The tags of the threat indicator. | 
+| ThreatStream.URL.Signature.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.URL.Signature.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.URL.Signature.tlp | String | The tlp of the signature. | 
-| ThreatStream.URL.Signature.uuid | String | The uuid of the signature. | 
-| ThreatStream.URL.ThreatBulletin.all_circles_visible | Boolean | Are all of the circles visible. | 
+| ThreatStream.URL.Signature.tlp | String | The TLP of the signature. | 
+| ThreatStream.URL.Signature.uuid | String | The UUID of the signature. | 
+| ThreatStream.URL.ThreatBulletin.all_circles_visible | Boolean | Whether all of the circles are visible. | 
 | ThreatStream.URL.ThreatBulletin.assignee_org | String | The assignee organization. | 
 | ThreatStream.URL.ThreatBulletin.assignee_org_id | String | The assignee organization ID. | 
 | ThreatStream.URL.ThreatBulletin.assignee_org_name | String | The assignee organization name. | 
@@ -2446,147 +2389,147 @@ for time in UTC time. |
 | ThreatStream.URL.ThreatBulletin.assignee_user_id | String | The assignee user ID. | 
 | ThreatStream.URL.ThreatBulletin.assignee_user_name | Unknown | The assignee user name. | 
 | ThreatStream.URL.ThreatBulletin.association_info.comment | Unknown | The comment in the association info of the threat actor. | 
-| ThreatStream.URL.ThreatBulletin.association_info.created | Date | When was the association info created. | 
-| ThreatStream.URL.ThreatBulletin.association_info.from_id | String | From which id the association info is related. | 
+| ThreatStream.URL.ThreatBulletin.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.URL.ThreatBulletin.association_info.from_id | String | The ID from which the association info is related. | 
 | ThreatStream.URL.ThreatBulletin.body_content_type | String | The body content type. | 
 | ThreatStream.URL.ThreatBulletin.campaign | Unknown | The campaign of the threat bulletin. | 
-| ThreatStream.URL.ThreatBulletin.can_add_public_tags | Boolean | Can we add public tags. | 
-| ThreatStream.URL.ThreatBulletin.created_ts | Date | When was the threat bulletin created. | 
+| ThreatStream.URL.ThreatBulletin.can_add_public_tags | Boolean | Whether you can add public tags. | 
+| ThreatStream.URL.ThreatBulletin.created_ts | Date | The date the threat bulletin was created. | 
 | ThreatStream.URL.ThreatBulletin.feed_id | Number | The feed ID of the threat bulletin. | 
 | ThreatStream.URL.ThreatBulletin.id | String | The ID of the threat bulletin. | 
-| ThreatStream.URL.ThreatBulletin.is_anonymous | Boolean | Is the threat bulletin anonymous. | 
-| ThreatStream.URL.ThreatBulletin.is_cloneable | String | Is the threat bulletin cloneble. | 
-| ThreatStream.URL.ThreatBulletin.is_editable | Boolean | Is the threat bulletin editable. | 
-| ThreatStream.URL.ThreatBulletin.is_email | Boolean | Is the threat bulletin an email. | 
-| ThreatStream.URL.ThreatBulletin.is_public | Boolean | Is the threat bulletin public. | 
-| ThreatStream.URL.ThreatBulletin.modified_ts | Date | When was the threat bulletin modified. | 
+| ThreatStream.URL.ThreatBulletin.is_anonymous | Boolean | Whether the threat bulletin is anonymous. | 
+| ThreatStream.URL.ThreatBulletin.is_cloneable | String | Whether the threat bulletin is cloneable. | 
+| ThreatStream.URL.ThreatBulletin.is_editable | Boolean | Whether the threat bulletin is editable. | 
+| ThreatStream.URL.ThreatBulletin.is_email | Boolean | Whether the threat bulletin is an email. | 
+| ThreatStream.URL.ThreatBulletin.is_public | Boolean | Whether the threat bulletin is public. | 
+| ThreatStream.URL.ThreatBulletin.modified_ts | Date | The date the threat bulletin was modified. | 
 | ThreatStream.URL.ThreatBulletin.name | String | The name of the threat bulletin. | 
 | ThreatStream.URL.ThreatBulletin.original_source | String | The original source of the threat bulletin. | 
 | ThreatStream.URL.ThreatBulletin.original_source_id | Unknown | The original source ID of the threat bulletin. | 
-| ThreatStream.URL.ThreatBulletin.owner_org.id | String | The owner organizetion ID. | 
-| ThreatStream.URL.ThreatBulletin.owner_org.name | String | The owner organizetion name. | 
-| ThreatStream.URL.ThreatBulletin.owner_org.resource_uri | String | The owner organizetion uri. | 
-| ThreatStream.URL.ThreatBulletin.owner_org_id | Number | The id of the owner user. | 
+| ThreatStream.URL.ThreatBulletin.owner_org.id | String | The owner organization ID. | 
+| ThreatStream.URL.ThreatBulletin.owner_org.name | String | The owner organization name. | 
+| ThreatStream.URL.ThreatBulletin.owner_org.resource_uri | String | The owner organization URI. | 
+| ThreatStream.URL.ThreatBulletin.owner_org_id | Number | The ID of the owner user. | 
 | ThreatStream.URL.ThreatBulletin.owner_org_name | String | The name of the owner organization. | 
-| ThreatStream.URL.ThreatBulletin.owner_user.avatar_s3_url | Unknown | The url of the owner user. | 
-| ThreatStream.URL.ThreatBulletin.owner_user.can_share_intelligence | Boolean | Can we share intelligence or not. | 
+| ThreatStream.URL.ThreatBulletin.owner_user.avatar_s3_url | Unknown | The URL of the owner user. | 
+| ThreatStream.URL.ThreatBulletin.owner_user.can_share_intelligence | Boolean | Whether you can share intelligence. | 
 | ThreatStream.URL.ThreatBulletin.owner_user.email | String | The email of the owner user. | 
 | ThreatStream.URL.ThreatBulletin.owner_user.id | String | The ID of the owner user. | 
-| ThreatStream.URL.ThreatBulletin.owner_user.is_active | Boolean | Is the owner user active. | 
-| ThreatStream.URL.ThreatBulletin.owner_user.is_readonly | Boolean | Is the owner user read only. | 
-| ThreatStream.URL.ThreatBulletin.owner_user.must_change_password | Boolean | Does the owner user must change password. | 
+| ThreatStream.URL.ThreatBulletin.owner_user.is_active | Boolean | Whether the owner user is active. | 
+| ThreatStream.URL.ThreatBulletin.owner_user.is_readonly | Boolean | Whether the owner user has read-only permission. | 
+| ThreatStream.URL.ThreatBulletin.owner_user.must_change_password | Boolean | Whether the owner user must change the password. | 
 | ThreatStream.URL.ThreatBulletin.owner_user.name | String | The owner user name. | 
-| ThreatStream.URL.ThreatBulletin.owner_user.nickname | String | The owner user nickname | 
+| ThreatStream.URL.ThreatBulletin.owner_user.nickname | String | The owner user nickname. | 
 | ThreatStream.URL.ThreatBulletin.owner_user.organization.id | String | The ID of the owner user organization. | 
 | ThreatStream.URL.ThreatBulletin.owner_user.organization.name | String | The name of the owner user organization. | 
-| ThreatStream.URL.ThreatBulletin.owner_user.organization.resource_uri | String | The resource uri of the owner user organization. | 
-| ThreatStream.URL.ThreatBulletin.owner_user.resource_uri | String | The resource uri of the owner user. | 
+| ThreatStream.URL.ThreatBulletin.owner_user.organization.resource_uri | String | The resource URI of the owner user organization. | 
+| ThreatStream.URL.ThreatBulletin.owner_user.resource_uri | String | The resource URI of the owner user. | 
 | ThreatStream.URL.ThreatBulletin.owner_user_id | Number | The owner user ID of the threat bulletin. | 
 | ThreatStream.URL.ThreatBulletin.owner_user_name | String | The owner user name of the threat bulletin. | 
 | ThreatStream.URL.ThreatBulletin.parent | Unknown | The parent of the threat bulletin. | 
-| ThreatStream.URL.ThreatBulletin.published_ts | Unknown | When was the threat bulletin published. | 
-| ThreatStream.URL.ThreatBulletin.resource_uri | String | The resource uri of the threat bulletin. | 
+| ThreatStream.URL.ThreatBulletin.published_ts | Unknown | The date the threat bulletin was published. | 
+| ThreatStream.URL.ThreatBulletin.resource_uri | String | The resource URI of the threat bulletin. | 
 | ThreatStream.URL.ThreatBulletin.source | Unknown | The source of the threat bulletin. | 
-| ThreatStream.URL.ThreatBulletin.source_created | Unknown | When was the source created. | 
-| ThreatStream.URL.ThreatBulletin.source_modified | Unknown | When was the source modified. | 
-| ThreatStream.URL.ThreatBulletin.starred_by_me | Boolean | Was the threat bulletin started bt me. | 
-| ThreatStream.URL.ThreatBulletin.starred_total_count | Number | The total count of times the threat bulletin was starred. | 
+| ThreatStream.URL.ThreatBulletin.source_created | Unknown | The date the source was created. | 
+| ThreatStream.URL.ThreatBulletin.source_modified | Unknown | The date the source was modified. | 
+| ThreatStream.URL.ThreatBulletin.starred_by_me | Boolean | Whether the threat bulletin was started by me. | 
+| ThreatStream.URL.ThreatBulletin.starred_total_count | Number | The total number of times the threat bulletin was starred. | 
 | ThreatStream.URL.ThreatBulletin.status | String | The status of the threat bulletin. | 
 | ThreatStream.URL.ThreatBulletin.threat_actor | Unknown | The threat actor of the threat bulletin. | 
 | ThreatStream.URL.ThreatBulletin.tlp | Unknown | The TLP of the threat bulletin. | 
 | ThreatStream.URL.ThreatBulletin.ttp | Unknown | The TTP of the threat bulletin. | 
 | ThreatStream.URL.ThreatBulletin.uuid | String | The UUID of the threat bulletin. | 
-| ThreatStream.URL.ThreatBulletin.votes.me | Unknown | How nany votes by me. | 
-| ThreatStream.URL.ThreatBulletin.votes.total | Number | How many votes total. | 
-| ThreatStream.URL.ThreatBulletin.watched_by_me | Boolean | Was the threat bulletin watched by me? | 
-| ThreatStream.URL.ThreatBulletin.watched_total_count | Number | The total count of watchers. | 
-| ThreatStream.URL.TTP.assignee_user | Unknown | The Assignee User of the TTP. | 
+| ThreatStream.URL.ThreatBulletin.votes.me | Unknown | The number of votes by me. | 
+| ThreatStream.URL.ThreatBulletin.votes.total | Number | The number of total votes. | 
+| ThreatStream.URL.ThreatBulletin.watched_by_me | Boolean | Whether the threat bulletin was watched by me. | 
+| ThreatStream.URL.ThreatBulletin.watched_total_count | Number | The total number of watchers. | 
+| ThreatStream.URL.TTP.assignee_user | Unknown | The assignee user of the TTP. | 
 | ThreatStream.URL.TTP.association_info.comment | Unknown | The comment in the association info of the TTP. | 
-| ThreatStream.URL.TTP.association_info.created | Date | When was the association info created. | 
-| ThreatStream.URL.TTP.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.URL.TTP.can_add_public_tags | Boolean | Can we add a public tags or not to the TTP. | 
-| ThreatStream.URL.TTP.created_ts | Date | When was the TTP cretad. | 
+| ThreatStream.URL.TTP.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.URL.TTP.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.URL.TTP.can_add_public_tags | Boolean | Whether you can add public tags to the TTP. | 
+| ThreatStream.URL.TTP.created_ts | Date | The date the TTP was created. | 
 | ThreatStream.URL.TTP.feed_id | Number | The feed ID of the TTP. | 
-| ThreatStream.URL.TTP.id | Number | The id of the TTP. | 
-| ThreatStream.URL.TTP.is_anonymous | Boolean | Is the TTP anonymus or not. | 
-| ThreatStream.URL.TTP.is_cloneable | String | Is the TTP clonable or not. | 
-| ThreatStream.URL.TTP.is_public | Boolean | Is the TTP public or not. | 
-| ThreatStream.URL.TTP.is_team | Boolean | Is the TTP in a team or not. | 
-| ThreatStream.URL.TTP.modified_ts | Date | When was the TTP modified. | 
+| ThreatStream.URL.TTP.id | Number | The ID of the TTP. | 
+| ThreatStream.URL.TTP.is_anonymous | Boolean | Whether the TTP was anonymous. | 
+| ThreatStream.URL.TTP.is_cloneable | String | Whether the TTP was cloneable. | 
+| ThreatStream.URL.TTP.is_public | Boolean | Whether the TTP is public. | 
+| ThreatStream.URL.TTP.is_team | Boolean | Whether the TTP is a team. | 
+| ThreatStream.URL.TTP.modified_ts | Date | The date the TTP was modified. | 
 | ThreatStream.URL.TTP.name | String | The name of the TTP. | 
 | ThreatStream.URL.TTP.organization_id | Number | The organization ID of the TTP. | 
 | ThreatStream.URL.TTP.owner_user_id | Number | The owner user ID of the TTP. | 
 | ThreatStream.URL.TTP.primary_motivation | Unknown | The primary motivation of the TTP. | 
 | ThreatStream.URL.TTP.publication_status | String | The publication status of the TTP. | 
-| ThreatStream.URL.TTP.published_ts | Date | When was the TTP published. | 
+| ThreatStream.URL.TTP.published_ts | Date | The date the TTP was published. | 
 | ThreatStream.URL.TTP.resource_level | Unknown | The resource level of the TTP. | 
-| ThreatStream.URL.TTP.resource_uri | String | The resource uri of the TTP. | 
-| ThreatStream.URL.TTP.source_created | Unknown | When was the source created. | 
-| ThreatStream.URL.TTP.source_modified | Unknown | When was the source modified. | 
+| ThreatStream.URL.TTP.resource_uri | String | The resource URI of the TTP. | 
+| ThreatStream.URL.TTP.source_created | Unknown | The date the source was created. | 
+| ThreatStream.URL.TTP.source_modified | Unknown | The date the source was modified. | 
 | ThreatStream.URL.TTP.start_date | Unknown | The start date. | 
-| ThreatStream.URL.TTP.tags | String | The tags of the threat indicator | 
-| ThreatStream.URL.TTP.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.URL.TTP.tags | String | The tags of the threat indicator. | 
+| ThreatStream.URL.TTP.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.URL.TTP.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.URL.TTP.tlp | String | The tlp of the TTP. | 
-| ThreatStream.URL.TTP.uuid | String | The uuid of the TTP. | 
-| ThreatStream.URL.Vulnerability.assignee_user | Unknown | The Assignee User of the vulnerability. | 
+| ThreatStream.URL.TTP.tlp | String | The TLP of the TTP. | 
+| ThreatStream.URL.TTP.uuid | String | The UUID of the TTP. | 
+| ThreatStream.URL.Vulnerability.assignee_user | Unknown | The assignee user of the vulnerability. | 
 | ThreatStream.URL.Vulnerability.association_info.comment | Unknown | The comment in the association info of the vulnerability. | 
-| ThreatStream.URL.Vulnerability.association_info.created | Date | When was the association info created. | 
-| ThreatStream.URL.Vulnerability.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.URL.Vulnerability.can_add_public_tags | Boolean | Can we add a public tags or not to the vulnerability. | 
+| ThreatStream.URL.Vulnerability.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.URL.Vulnerability.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.URL.Vulnerability.can_add_public_tags | Boolean | Whether you can add public tags to the threat actor. | 
 | ThreatStream.URL.Vulnerability.circles.id | String | The ID of the circle. | 
 | ThreatStream.URL.Vulnerability.circles.name | String | The name of the circle. | 
-| ThreatStream.URL.Vulnerability.circles.resource_uri | String | The resource uri of the circle. | 
-| ThreatStream.URL.Vulnerability.created_ts | Date | When was the vulnerability created. | 
+| ThreatStream.URL.Vulnerability.circles.resource_uri | String | The resource URI of the circle. | 
+| ThreatStream.URL.Vulnerability.created_ts | Date | The date the vulnerability was created. | 
 | ThreatStream.URL.Vulnerability.feed_id | Number | The feed ID of the vulnerability. | 
 | ThreatStream.URL.Vulnerability.id | Number | The ID of the vulnerability. | 
-| ThreatStream.URL.Vulnerability.is_anonymous | Boolean | Is the vulnerability anonymus or not. | 
-| ThreatStream.URL.Vulnerability.is_cloneable | String | Is the vulnerability clonable or not. | 
-| ThreatStream.URL.Vulnerability.is_public | Boolean | Is the vulnerability public or not. | 
-| ThreatStream.URL.Vulnerability.is_system | Boolean | Is the vulnerability in the system or not. | 
-| ThreatStream.URL.Vulnerability.modified_ts | Date | When was the vulnerability modified. | 
+| ThreatStream.URL.Vulnerability.is_anonymous | Boolean | Whether the vulnerability is anonymous. | 
+| ThreatStream.URL.Vulnerability.is_cloneable | String | Whether the vulnerability is cloneable. | 
+| ThreatStream.URL.Vulnerability.is_public | Boolean | Whether the vulnerability is public. | 
+| ThreatStream.URL.Vulnerability.is_system | Boolean | Whether the vulnerability is in the system. | 
+| ThreatStream.URL.Vulnerability.modified_ts | Date | The date the vulnerability was modified. | 
 | ThreatStream.URL.Vulnerability.name | String | The name of the vulnerability. | 
 | ThreatStream.URL.Vulnerability.organization_id | Number | The organization ID of the vulnerability. | 
 | ThreatStream.URL.Vulnerability.owner_user_id | Unknown | The owner user ID of the vulnerability. | 
 | ThreatStream.URL.Vulnerability.publication_status | String | The publication status of the vulnerability. | 
-| ThreatStream.URL.Vulnerability.published_ts | Date | When was the vulnerability published. | 
-| ThreatStream.URL.Vulnerability.resource_uri | String | The resource uri of the vulnerability. | 
+| ThreatStream.URL.Vulnerability.published_ts | Date | The date the vulnerability was published. | 
+| ThreatStream.URL.Vulnerability.resource_uri | String | The resource URI of the vulnerability. | 
 | ThreatStream.URL.Vulnerability.source | String | The source of the vulnerability. | 
 | ThreatStream.URL.Vulnerability.source_created | Unknown | The feed ID of the vulnerability. | 
-| ThreatStream.URL.Vulnerability.source_modified | Unknown | Was the source modified. | 
+| ThreatStream.URL.Vulnerability.source_modified | Unknown | Whether the source was modified. | 
 | ThreatStream.URL.Vulnerability.tags | String | The tags of the vulnerability. | 
-| ThreatStream.URL.Vulnerability.tags_v2.id | String | The id of the tag. | 
+| ThreatStream.URL.Vulnerability.tags_v2.id | String | The ID of the tag. | 
 | ThreatStream.URL.Vulnerability.tags_v2.name | String | The name of the tag. | 
-| ThreatStream.URL.Vulnerability.tlp | String | The tlp of the vulnerability. | 
+| ThreatStream.URL.Vulnerability.tlp | String | The TLP of the vulnerability. | 
 | ThreatStream.URL.Vulnerability.update_id | Number | The update ID of the vulnerability. | 
 | ThreatStream.URL.Vulnerability.uuid | String | The UUID of the vulnerability. | 
-| ThreatStream.URL.Campaign.assignee_user | Unknown | The Assignee User of the vulnerability. | 
+| ThreatStream.URL.Campaign.assignee_user | Unknown | The assignee user of the vulnerability. | 
 | ThreatStream.URL.Campaign.association_info.comment | Unknown | The comment in the association info of the vulnerability. | 
-| ThreatStream.URL.Campaign.association_info.created | Date | When was the association info created. | 
-| ThreatStream.URL.Campaign.association_info.from_id | Number | From which id the association info is related. | 
-| ThreatStream.URL.Campaign.can_add_public_tags | Boolean | Can we add a public tags or not to the campaign. | 
-| ThreatStream.URL.Campaign.created_ts | Date | When was the campaign created. | 
+| ThreatStream.URL.Campaign.association_info.created | Date | The date the association info was created. | 
+| ThreatStream.URL.Campaign.association_info.from_id | Number | The ID from which the association info is related. | 
+| ThreatStream.URL.Campaign.can_add_public_tags | Boolean | Whether you can add public tags to the campaign. | 
+| ThreatStream.URL.Campaign.created_ts | Date | The date the campaign was created. | 
 | ThreatStream.URL.Campaign.end_date | Unknown | The end date of the campaign. | 
 | ThreatStream.URL.Campaign.feed_id | Number | The feed ID of the campaign. | 
 | ThreatStream.URL.Campaign.id | Number | The ID of the campaign. | 
-| ThreatStream.URL.Campaign.is_anonymous | Boolean | Is the campaign anonymus or not. | 
-| ThreatStream.URL.Campaign.is_cloneable | String | Is the campaign clonable or not. | 
-| ThreatStream.URL.Campaign.is_public | Boolean | Is the campaign public or not. | 
-| ThreatStream.URL.Campaign.modified_ts | Date | When was the campain modified. | 
-| ThreatStream.URL.Campaign.name | String | The name of the Campaign. | 
+| ThreatStream.URL.Campaign.is_anonymous | Boolean | Whether the campaign is anonymous. | 
+| ThreatStream.URL.Campaign.is_cloneable | String | Whether the campaign is cloneable. | 
+| ThreatStream.URL.Campaign.is_public | Boolean | Whether the campaign is public. | 
+| ThreatStream.URL.Campaign.modified_ts | Date | The date the campaign was modified. | 
+| ThreatStream.URL.Campaign.name | String | The name of the campaign. | 
 | ThreatStream.URL.Campaign.objective | Unknown | The objective of the campaign. | 
 | ThreatStream.URL.Campaign.organization_id | Number | The organization ID of the campaign. | 
 | ThreatStream.URL.Campaign.owner_user_id | Number | The owner user ID of the campaign. | 
-| ThreatStream.URL.Campaign.publication_status | String | The publication status of the campaign | 
-| ThreatStream.URL.Campaign.published_ts | Unknown | When was the campaign published. | 
-| ThreatStream.URL.Campaign.resource_uri | String | The resource uri of the campaign. | 
-| ThreatStream.URL.Campaign.source_created | Date | When was the campaign created. | 
-| ThreatStream.URL.Campaign.source_modified | Date | Was the source modified or not. | 
+| ThreatStream.URL.Campaign.publication_status | String | The publication status of the campaign. | 
+| ThreatStream.URL.Campaign.published_ts | Unknown | The date the campaign was published. | 
+| ThreatStream.URL.Campaign.resource_uri | String | The resource URI of the campaign. | 
+| ThreatStream.URL.Campaign.source_created | Date | The date the campaign was created. | 
+| ThreatStream.URL.Campaign.source_modified | Date | Whether the source was modified. | 
 | ThreatStream.URL.Campaign.start_date | Unknown | The start date of the campaign. | 
 | ThreatStream.URL.Campaign.status.display_name | String | The display name of the status. | 
-| ThreatStream.URL.Campaign.status.id | Number | The id of the status of the campaign. | 
-| ThreatStream.URL.Campaign.status.resource_uri | String | The resource uri of the status of the campaign. | 
-| ThreatStream.URL.Campaign.tlp | String | The tlp of the campaign. | 
+| ThreatStream.URL.Campaign.status.id | Number | The ID of the status of the campaign. | 
+| ThreatStream.URL.Campaign.status.resource_uri | String | The resource URI of the status of the campaign. | 
+| ThreatStream.URL.Campaign.tlp | String | The TLP of the campaign. | 
 | ThreatStream.URL.Campaign.uuid | String | The UUID of the campaign. | 
 
 #### Command example
@@ -2594,34 +2537,26 @@ for time in UTC time. |
 #### Context Example
 ```json
 {
-    "DBotScore": [
-        {
-            "Indicator": "http://www.ujhy1.com/",
-            "Reliability": "C - Fairly reliable",
-            "Score": 1,
-            "Type": "url",
-            "Vendor": "VirusTotal"
-        },
-        {
-            "Indicator": "http://www.ujhy1.com/",
-            "Message": "No results found.",
-            "Reliability": "B - Usually reliable",
-            "Score": 0,
-            "Type": "url",
-            "Vendor": "Anomali ThreatStream v3 May"
-        }
-    ],
+    "DBotScore": {
+        "Indicator": "http://www.ujhy1.com/",
+        "Message": "No results found.",
+        "Reliability": "B - Usually reliable",
+        "Score": 0,
+        "Type": "url",
+        "Vendor": "Anomali ThreatStream v3 May"
+    },
     "URL": {
-        "Data": "http://www.ujhy1.com/",
-        "DetectionEngines": 88,
-        "PositiveDetections": 0,
-        "VirusTotal": {
-            "ScanID": "264ffc62c96d2672a4b3b1e2641067bf7c1b9928f672573f40e0aecd137d7dca-1626005775",
-            "vtLink": "link"
-        }
+        "Data": "http://www.ujhy1.com/"
     }
 }
 ```
+
+#### Human Readable Output
+
+>### Anomali ThreatStream v3 May:
+>|URL|Result|
+>|---|---|
+>| http:<span>//</span>www.ujhy1.com/ | Not found |
 
 
 ## Additional Considerations for this version
@@ -2630,7 +2565,7 @@ for time in UTC time. |
 - Add ***Include inactive results*** checkbox in integration settings for the ability to get inactive results.
 ### threatstream-search-intelligence
 ***
-Return filtered intelligence from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
+Returns filtered intelligence from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
 
 
 #### Base Command
@@ -2641,19 +2576,19 @@ Return filtered intelligence from ThreatStream. If a query is defined, it overri
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The value of an intelligence. | Optional | 
-| uuid | The uuid of an intelligence. When several uuids stated, an “OR” operator is used. | Optional | 
+| uuid | The UUID of an intelligence. When several UUIDs stated, an “OR” operator is used. | Optional | 
 | type | The type of an intelligence. Possible values are: domain, email, ip, md5, string, url. | Optional | 
-| itype | The itype of an intelligence. | Optional | 
+| itype | The itType of an intelligence. (e.g., apt_ip, apt_email). | Optional | 
 | status | The status of an intelligence. Possible values are: active, inactive, falsepos. | Optional | 
-| tags | The tags of an intelligence. Comma-seperated list. When several tags stated, an “OR” operator is used. | Optional | 
+| tags | The tags of an intelligence. Comma-separated list. When several tags are stated, an “OR” operator is used. | Optional | 
 | asn | The ASN of an intelligence. | Optional | 
-| confidence | The confidence of an intelligence. Input will be operator then value, I.e. “gt 65” or “lt 85”. If only value is stated, then we use exact. | Optional | 
+| confidence | The confidence of an intelligence. Input will be operator then value, i.e., “gt 65” or “lt 85”. If only a value is stated, then it must match exactly. | Optional | 
 | threat_type | The threat type of an intelligence. | Optional | 
-| is_public | Is the intelligence public or not. | Optional | 
-| query | Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, &lt;, &gt;, and so on) and not the descriptive form (exact, lt, gt, and so on). For more information, see page 19 in API documentation. | Optional | 
-| update_id_gt | If specified, then it is recommended to use order_by=update_id. | Optional | 
+| is_public | Whether the intelligence is public. | Optional | 
+| query | Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, &lt;, &gt;, and so on) and not the descriptive form (exact, lt, gt, and so on). E.g., (confidence&gt;=90+AND+(itype="apt_ip"+OR+itype="bot_ip"+OR+itype="c2_ip")). | Optional | 
+| update_id_gt | An incrementing numeric identifier associated with each update to intelligence on ThreatStream. If specified, then it is recommended to use order_by=update_id. | Optional | 
 | order_by | How to order the results. | Optional | 
-| limit | The maximum number of results to return from ThreatStream. Default is 50. Default is 50. | Optional | 
+| limit | The maximum number of results to return from ThreatStream. The maximum number of returned results is 1000. For more results, use the page and page_size arguments. Default is 50. | Optional | 
 | page | Page number to get result from. Needs to be used with page_size argument. | Optional | 
 | page_size | The page size of the returned results. Needs to be used with the page argument. | Optional | 
 
@@ -2662,131 +2597,113 @@ Return filtered intelligence from ThreatStream. If a query is defined, it overri
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatStream.Intelligence.SourceCreated | String | The Source from which the intelligence was created. | 
-| ThreatStream.Intelligence.Status | String | The status of the intelligence. | 
-| ThreatStream.Intelligence.IType | String | The itype of the intelligence. | 
-| ThreatStream.Intelligence.ExpirationTS | String | The Expiration timestamp  of the intelligence. | 
-| ThreatStream.Intelligence.IP | String | The IP  of the intelligence. | 
-| ThreatStream.Intelligence.IsEditable | Boolean | Is the Intelligence editable. | 
-| ThreatStream.Intelligence.FeedID | String | The feed ID of the Intelligence. | 
-| ThreatStream.Intelligence.UpdateID | String | The update ID of the Intelligence | 
-| ThreatStream.Intelligence.Value | String | The value of the Intelligence. | 
-| ThreatStream.Intelligence.IsPublic | Boolean | Is the Intelligence public. | 
-| ThreatStream.Intelligence.ThreatType | String | The threat type of the Intelligence. | 
-| ThreatStream.Intelligence.WorkGroups | String | The work groups of the Intelligence. | 
-| ThreatStream.Intelligence.Confidence | String | The confidence of the Intelligence. | 
-| ThreatStream.Intelligence.UUID | String | The uuid of the Intelligence. | 
-| ThreatStream.Intelligence.RetinaConfidence | String | The retina confidence of the Intelligence. | 
-| ThreatStream.Intelligence.TrustedCircleIDs | String | The trusted circleIDs of the Intelligence. | 
-| ThreatStream.Intelligence.ID | String | The id of the Intelligence. | 
-| ThreatStream.Intelligence.Source | String | The source of the Intelligence. | 
-| ThreatStream.Intelligence.OwnerOrganizationID | String | The owner organization ID of the intelligence. | 
-| ThreatStream.Intelligence.ImportSessionID | String | The ImportSessionID of the Intelligence. | 
-| ThreatStream.Intelligence.SourceModified | Boolean | Is the source modified or not. | 
-| ThreatStream.Intelligence.Type | String | The type of the Intelligence. | 
-| ThreatStream.Intelligence.Description | String | The description of the Intelligence. | 
-| ThreatStream.Intelligence.Tags | String | The tags of the Intelligence. | 
-| ThreatStream.Intelligence.Threatscore | String | The threat score of the Intelligence. | 
-| ThreatStream.Intelligence.Latitude | String | The latitude of the Intelligence. | 
-| ThreatStream.Intelligence.Longitude | String | The longitude of the Intelligence. | 
-| ThreatStream.Intelligence.Modified | String | When was the intelligence modified. | 
-| ThreatStream.Intelligence.Organization | String | the organization of the Intelligence. | 
-| ThreatStream.Intelligence.ASN | Number | The ASN of the intelligence. | 
-| ThreatStream.Intelligence.CreatedTime | String | When was the intelligence created. | 
-| ThreatStream.Intelligence.TLP | String | The TLP of the intelligence. | 
-| ThreatStream.Intelligence.IsAnonymous | Boolean | Is the intelligence anonymous. | 
-| ThreatStream.Intelligence.Country | String | The country of the intelligence. | 
-| ThreatStream.Intelligence.SourceReportedConfidence | String | The confidence of the reported source. | 
-| ThreatStream.Intelligence.Subtype | String | The subtype of the intelligence. | 
-| ThreatStream.Intelligence.ResourceURI | String | The resource URI of the intelligence | 
-| ThreatStream.Intelligence.Severity | String | The severity of the intelligence. | 
+| ThreatStream.Intelligence.source_created | String | The source from which the intelligence was created. | 
+| ThreatStream.Intelligence.status | String | The status of the intelligence. | 
+| ThreatStream.Intelligence.itype | String | The itype of the intelligence. | 
+| ThreatStream.Intelligence.expiration_ts | Date | The expiration timestamp of the intelligence. | 
+| ThreatStream.Intelligence.ip | String | The IP address of the intelligence. | 
+| ThreatStream.Intelligence.is_editable | Boolean | Whether the intelligence is editable. | 
+| ThreatStream.Intelligence.feed_id | String | The feed ID of the intelligence. | 
+| ThreatStream.Intelligence.update_id | String | The update ID of the intelligence. | 
+| ThreatStream.Intelligence.value | String | The value of the intelligence. | 
+| ThreatStream.Intelligence.is_public | Boolean | Whether the intelligence is public. | 
+| ThreatStream.Intelligence.threattype | String | The threat type of the intelligence. | 
+| ThreatStream.Intelligence.workgroups | String | The work groups of the intelligence. | 
+| ThreatStream.Intelligence.confidence | String | The confidence of the intelligence. | 
+| ThreatStream.Intelligence.uuid | String | The UUID of the intelligence. | 
+| ThreatStream.Intelligence.retina_confidence | String | The retina confidence of the intelligence. | 
+| ThreatStream.Intelligence.trusted_circle_ids | String | The trusted circleIDs of the intelligence. | 
+| ThreatStream.Intelligence.id | String | The ID of the intelligence. | 
+| ThreatStream.Intelligence.source | String | The source of the iIntelligence. | 
+| ThreatStream.Intelligence.owner_organization_id | String | The owner organization ID of the intelligence. | 
+| ThreatStream.Intelligence.import_session_id | String | The import session ID of the intelligence. | 
+| ThreatStream.Intelligence.source_modified | Boolean | Whether the the source was modified. | 
+| ThreatStream.Intelligence.type | String | The type of the intelligence. | 
+| ThreatStream.Intelligence.description | String | The description of the intelligence. | 
+| ThreatStream.Intelligence.tags | String | The tags of the intelligence. | 
+| ThreatStream.Intelligence.threatscore | String | The threat score of the intelligence. | 
+| ThreatStream.Intelligence.latitude | String | The latitude of the intelligence. | 
+| ThreatStream.Intelligence.longitude | String | The longitude of the intelligence. | 
+| ThreatStream.Intelligence.modified_ts | Date | The date the intelligence was modified. | 
+| ThreatStream.Intelligence.org | String | The organization of the intelligence. | 
+| ThreatStream.Intelligence.asn | Number | The ASN of the intelligence. | 
+| ThreatStream.Intelligence.created_ts | Date | The date the intelligence was created. | 
+| ThreatStream.Intelligence.tlp | String | The TLP of the intelligence. | 
+| ThreatStream.Intelligence.is_anonymous | Boolean | Whether the intelligence is anonymous. | 
+| ThreatStream.Intelligence.country | String | The country of the intelligence. | 
+| ThreatStream.Intelligence.source_reported_confidence | String | The confidence of the reported source. | 
+| ThreatStream.Intelligence.subtype | String | The subtype of the intelligence. | 
+| ThreatStream.Intelligence.resource_uri | String | The resource URI of the intelligence | 
+| ThreatStream.Intelligence.severity | String | The severity of the intelligence. | 
 
 #### Command example
-```!threatstream-search-intelligence limit=2 status=inactive value=1.1.1.1```
+```!threatstream-search-intelligence limit=1 status=inactive value=1.2.4.5```
 #### Context Example
 ```json
 {
     "ThreatStream": {
         "Intelligence": [
             {
-                "ASN": "",
-                "Confidence": 100,
-                "Country": null,
-                "CreatedTime": "2022-04-21T14:27:51.242Z",
-                "Description": null,
-                "ExpirationTS": "2022-07-20T14:27:51.041Z",
-                "FeedID": 0,
-                "ID": 355250247,
-                "IP": "1.1.1.1",
-                "IType": "c2_ip",
-                "ImportSessionID": null,
-                "IsAnonymous": false,
-                "IsEditable": false,
-                "IsPublic": true,
-                "Latitude": null,
-                "Longitude": null,
-                "Modified": "2022-07-20T14:30:02.307Z",
-                "Organization": "",
-                "OwnerOrganizationID": 67,
-                "ResourceURI": "/api/v2/intelligence/355250247/",
-                "RetinaConfidence": -1,
-                "Severity": "medium",
-                "Source": "Analyst",
-                "SourceCreated": null,
-                "SourceModified": null,
-                "SourceReportedConfidence": 100,
-                "Status": "inactive",
-                "Subtype": null,
-                "TLP": null,
-                "Tags": "abc,feb3fbcf-d18c-4a1a-89af-fbe054e16f6c,Playboook_source_without_approval_on_cloud",
-                "ThreatType": "c2",
-                "Threatscore": 70,
-                "TrustedCircleIDs": null,
-                "Type": "ip",
-                "UUID": "3e141a49-6fc9-4567-8efb-919565a39752",
-                "UpdateID": 940700580,
-                "Value": "1.1.1.1",
-                "WorkGroups": []
-            },
-            {
-                "ASN": "",
-                "Confidence": 100,
-                "Country": null,
-                "CreatedTime": "2022-04-21T14:18:13.074Z",
-                "Description": null,
-                "ExpirationTS": "2022-07-20T14:18:13.044Z",
-                "FeedID": 0,
-                "ID": 355250241,
-                "IP": "1.1.1.1",
-                "IType": "c2_ip",
-                "ImportSessionID": null,
-                "IsAnonymous": false,
-                "IsEditable": false,
-                "IsPublic": true,
-                "Latitude": null,
-                "Longitude": null,
-                "Modified": "2022-07-20T14:20:02.201Z",
-                "Organization": "",
-                "OwnerOrganizationID": 70,
-                "ResourceURI": "/api/v2/intelligence/355250241/",
-                "RetinaConfidence": -1,
-                "Severity": "high",
-                "Source": "Analyst",
-                "SourceCreated": null,
-                "SourceModified": null,
-                "SourceReportedConfidence": 100,
-                "Status": "inactive",
-                "Subtype": null,
-                "TLP": null,
-                "Tags": "Playboook_source_without_approval_on_cloud",
-                "ThreatType": "c2",
-                "Threatscore": 70,
-                "TrustedCircleIDs": null,
-                "Type": "ip",
-                "UUID": "15cb41a2-3a0a-4bbf-b056-a0b87232807c",
-                "UpdateID": 940700059,
-                "Value": "1.1.1.1",
-                "WorkGroups": []
+                "asn": "",
+                "can_add_public_tags": true,
+                "confidence": 100,
+                "country": null,
+                "created_ts": "2022-04-21T14:27:51.242Z",
+                "description": null,
+                "expiration_ts": "2022-07-20T14:27:51.041Z",
+                "feed_id": 0,
+                "id": 355250247,
+                "import_session_id": null,
+                "ip": "1.2.4.5",
+                "is_anonymous": false,
+                "is_editable": false,
+                "is_public": true,
+                "itype": "c2_ip",
+                "latitude": null,
+                "longitude": null,
+                "meta": {
+                    "detail2": "bifocals_deactivated_on_2022-07-20_14:30:00.151050",
+                    "severity": "medium"
+                },
+                "modified_ts": "2022-07-20T14:30:02.307Z",
+                "org": "",
+                "owner_organization_id": 67,
+                "rdns": null,
+                "resource_uri": "/api/v2/intelligence/355250247/",
+                "retina_confidence": -1,
+                "sort": [
+                    1658327402307,
+                    "355250247"
+                ],
+                "source": "Analyst",
+                "source_created": null,
+                "source_modified": null,
+                "source_reported_confidence": 100,
+                "status": "inactive",
+                "subtype": null,
+                "tags": [
+                    {
+                        "id": "4w0",
+                        "name": "abc"
+                    },
+                    {
+                        "id": "o8x",
+                        "name": "feb3fbcf-d18c-4a1a-89af-fbe054e16f6c"
+                    },
+                    {
+                        "id": "vuj",
+                        "name": "Playboook_source_without_approval_on_cloud"
+                    }
+                ],
+                "threat_type": "c2",
+                "threatscore": 70,
+                "tlp": null,
+                "trusted_circle_ids": null,
+                "type": "ip",
+                "update_id": 940700580,
+                "uuid": "3e141a49-6fc9-4567-8efb-919565a39752",
+                "value": "1.2.4.5",
+                "workgroups": []
             }
         ]
     }
@@ -2796,8 +2713,7 @@ Return filtered intelligence from ThreatStream. If a query is defined, it overri
 #### Human Readable Output
 
 >### The intelligence results
->|Confidence|CreatedTime|ExpirationTS|FeedID|ID|IP|IType|IsAnonymous|IsEditable|IsPublic|Modified|OwnerOrganizationID|ResourceURI|RetinaConfidence|Severity|Source|SourceReportedConfidence|Status|Tags|ThreatType|Threatscore|Type|UUID|UpdateID|Value|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 100 | 2022-04-21T14:27:51.242Z | 2022-07-20T14:27:51.041Z | 0 | 355250247 | 1.1.1.1 | c2_ip | false | false | true | 2022-07-20T14:30:02.307Z | 67 | /api/v2/intelligence/355250247/ | -1 | medium | Analyst | 100 | inactive | abc,feb3fbcf-d18c-4a1a-89af-fbe054e16f6c,Playboook_source_without_approval_on_cloud | c2 | 70 | ip | 3e141a49-6fc9-4567-8efb-919565a39752 | 940700580 | 1.1.1.1 |
->| 100 | 2022-04-21T14:18:13.074Z | 2022-07-20T14:18:13.044Z | 0 | 355250241 | 1.1.1.1 | c2_ip | false | false | true | 2022-07-20T14:20:02.201Z | 70 | /api/v2/intelligence/355250241/ | -1 | high | Analyst | 100 | inactive | Playboook_source_without_approval_on_cloud | c2 | 70 | ip | 15cb41a2-3a0a-4bbf-b056-a0b87232807c | 940700059 | 1.1.1.1 |
+>|Can Add Public Tags|Confidence|Created Ts|Expiration Ts|Feed Id|Id|Ip|Is Anonymous|Is Editable|Is Public|Itype|Meta|Modified Ts|Owner Organization Id|Resource Uri|Retina Confidence|Sort|Source|Source Reported Confidence|Status|Tags|Threat Type|Threatscore|Type|Update Id|Uuid|Value|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| true | 100 | 2022-04-21T14:27:51.242Z | 2022-07-20T14:27:51.041Z | 0 | 355250247 | 1.2.4.5 | false | false | true | c2_ip | detail2: bifocals_deactivated_on_2022-07-20_14:30:00.151050<br/>severity: medium | 2022-07-20T14:30:02.307Z | 67 | /api/v2/intelligence/355250247/ | -1 | 1658327402307,<br/>355250247 | Analyst | 100 | inactive | {'id': '4w0', 'name': 'abc'},<br/>{'id': 'o8x', 'name': 'feb3fbcf-d18c-4a1a-89af-fbe054e16f6c'},<br/>{'id': 'vuj', 'name': 'Playboook_source_without_approval_on_cloud'} | c2 | 70 | ip | 940700580 | 3e141a49-6fc9-4567-8efb-919565a39752 | 1.2.4.5 |
 

@@ -1413,7 +1413,7 @@ script:
       description: Whether the vulnerability is anonymous.
       type: Boolean
     - contextPath: ThreatStream.Domain.Vulnerability.is_cloneable
-      description:  Whether the vulnerability is cloneable.
+      description: Whether the vulnerability is cloneable.
       type: String
     - contextPath: ThreatStream.Domain.Vulnerability.is_public
       description: Whether the vulnerability is public.
@@ -2147,7 +2147,7 @@ script:
       description: Whether the vulnerability is anonymous.
       type: Boolean
     - contextPath: ThreatStream.File.Vulnerability.is_cloneable
-      description:  Whether the vulnerability is cloneable.
+      description: Whether the vulnerability is cloneable.
       type: String
     - contextPath: ThreatStream.File.Vulnerability.is_public
       description: Whether the vulnerability is public.
@@ -2476,7 +2476,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The import type of the indicator. 
+      description: The import type of the indicator.
       isArray: false
       name: import_type
       predefined:
@@ -2546,7 +2546,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The severity to assign to the observable when it is imported. 
+      description: The severity to assign to the observable when it is imported.
       isArray: false
       name: severity
       predefined:
@@ -2601,7 +2601,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The threat model of the returned list. 
+      description: The threat model of the returned list.
       isArray: false
       name: model
       predefined:
@@ -2641,7 +2641,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The threat model. 
+      description: The threat model.
       isArray: false
       name: model
       predefined:
@@ -2674,7 +2674,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The threat model. 
+      description: The threat model.
       isArray: false
       name: model
       predefined:
@@ -2908,7 +2908,7 @@ script:
     - contextPath: ThreatStream.Analysis.Network.HttpSource
       description: The source of the HTTP address.
       type: String
-    - contextPath: ThreatStream.Analysis.Network.HttpDestination
+    - contextPath: ThreatStream.Analysis.Network.HttpDestinaton
       description: The destination of the HTTP address.
       type: String
     - contextPath: ThreatStream.Analysis.Network.HttpPort
@@ -2917,7 +2917,7 @@ script:
     - contextPath: ThreatStream.Analysis.Network.HttpsSource
       description: The source of the HTTPS address.
       type: String
-    - contextPath: ThreatStream.Analysis.Network.HttpsDestination
+    - contextPath: ThreatStream.Analysis.Network.HttpsDestinaton
       description: The destination of the HTTPS address.
       type: String
     - contextPath: ThreatStream.Analysis.Network.HttpsPort
@@ -3013,7 +3013,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of indicator. 
+      description: The type of indicator.
       isArray: false
       name: type
       predefined:
@@ -3033,7 +3033,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: The maximum number of results to return from ThreatStream. 
+      description: The maximum number of results to return from ThreatStream.
       isArray: false
       name: limit
       required: false
@@ -3085,7 +3085,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: intelligence
-      description: The type of threat model entity to which to add the tag. 
+      description: The type of threat model entity to which to add the tag.
       isArray: false
       name: model
       predefined:
@@ -3118,7 +3118,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of threat model to create. 
+      description: The type of threat model to create.
       isArray: false
       name: model
       predefined:
@@ -3150,7 +3150,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: red
-      description: The Traffic Light Protocol designation for the threat model. 
+      description: The Traffic Light Protocol designation for the threat model.
       isArray: false
       name: tlp
       predefined:
@@ -3593,7 +3593,7 @@ script:
       description: The ID of the signature.
       type: Number
     - contextPath: ThreatStream.URL.Signature.is_anonymous
-      description: Whether the signature is anonymous. 
+      description: Whether the signature is anonymous.
       type: Boolean
     - contextPath: ThreatStream.URL.Signature.is_cloneable
       description: Whether the signature is cloneable.
@@ -3965,7 +3965,7 @@ script:
       description: Whether the vulnerability is anonymous.
       type: Boolean
     - contextPath: ThreatStream.URL.Vulnerability.is_cloneable
-      description:  Whether the vulnerability is cloneable.
+      description: Whether the vulnerability is cloneable.
       type: String
     - contextPath: ThreatStream.URL.Vulnerability.is_public
       description: Whether the vulnerability is public.
@@ -4221,118 +4221,118 @@ script:
     execution: false
     name: threatstream-search-intelligence
     outputs:
-    - contextPath: ThreatStream.Intelligence.SourceCreated
+    - contextPath: ThreatStream.Intelligence.source_created
       description: The source from which the intelligence was created.
       type: String
-    - contextPath: ThreatStream.Intelligence.Status
+    - contextPath: ThreatStream.Intelligence.status
       description: The status of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.IType
+    - contextPath: ThreatStream.Intelligence.itype
       description: The itype of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.ExpirationTS
+    - contextPath: ThreatStream.Intelligence.expiration_ts
       description: The expiration timestamp of the intelligence.
-      type: String
-    - contextPath: ThreatStream.Intelligence.IP
+      type: Date
+    - contextPath: ThreatStream.Intelligence.ip
       description: The IP address of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.IsEditable
+    - contextPath: ThreatStream.Intelligence.is_editable
       description: Whether the intelligence is editable.
       type: Boolean
-    - contextPath: ThreatStream.Intelligence.FeedID
+    - contextPath: ThreatStream.Intelligence.feed_id
       description: The feed ID of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.UpdateID
+    - contextPath: ThreatStream.Intelligence.update_id
       description: The update ID of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.Value
+    - contextPath: ThreatStream.Intelligence.value
       description: The value of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.IsPublic
+    - contextPath: ThreatStream.Intelligence.is_public
       description: Whether the intelligence is public.
       type: Boolean
-    - contextPath: ThreatStream.Intelligence.ThreatType
+    - contextPath: ThreatStream.Intelligence.threattype
       description: The threat type of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.WorkGroups
+    - contextPath: ThreatStream.Intelligence.workgroups
       description: The work groups of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.Confidence
+    - contextPath: ThreatStream.Intelligence.confidence
       description: The confidence of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.UUID
+    - contextPath: ThreatStream.Intelligence.uuid
       description: The UUID of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.RetinaConfidence
+    - contextPath: ThreatStream.Intelligence.retina_confidence
       description: The retina confidence of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.TrustedCircleIDs
+    - contextPath: ThreatStream.Intelligence.trusted_circle_ids
       description: The trusted circleIDs of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.ID
+    - contextPath: ThreatStream.Intelligence.id
       description: The ID of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.Source
+    - contextPath: ThreatStream.Intelligence.source
       description: The source of the iIntelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.OwnerOrganizationID
+    - contextPath: ThreatStream.Intelligence.owner_organization_id
       description: The owner organization ID of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.ImportSessionID
+    - contextPath: ThreatStream.Intelligence.import_session_id
       description: The import session ID of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.SourceModified
+    - contextPath: ThreatStream.Intelligence.source_modified
       description: Whether the the source was modified.
       type: Boolean
-    - contextPath: ThreatStream.Intelligence.Type
+    - contextPath: ThreatStream.Intelligence.type
       description: The type of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.Description
+    - contextPath: ThreatStream.Intelligence.description
       description: The description of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.Tags
+    - contextPath: ThreatStream.Intelligence.tags
       description: The tags of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.Threatscore
+    - contextPath: ThreatStream.Intelligence.threatscore
       description: The threat score of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.Latitude
+    - contextPath: ThreatStream.Intelligence.latitude
       description: The latitude of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.Longitude
+    - contextPath: ThreatStream.Intelligence.longitude
       description: The longitude of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.Modified
+    - contextPath: ThreatStream.Intelligence.modified_ts
       description: The date the intelligence was modified.
-      type: String
-    - contextPath: ThreatStream.Intelligence.Organization
+      type: Date
+    - contextPath: ThreatStream.Intelligence.org
       description: The organization of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.ASN
+    - contextPath: ThreatStream.Intelligence.asn
       description: The ASN of the intelligence.
       type: Number
-    - contextPath: ThreatStream.Intelligence.CreatedTime
+    - contextPath: ThreatStream.Intelligence.created_ts
       description: The date the intelligence was created.
-      type: String
-    - contextPath: ThreatStream.Intelligence.TLP
+      type: Date
+    - contextPath: ThreatStream.Intelligence.tlp
       description: The TLP of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.IsAnonymous
+    - contextPath: ThreatStream.Intelligence.is_anonymous
       description: Whether the intelligence is anonymous.
       type: Boolean
-    - contextPath: ThreatStream.Intelligence.Country
+    - contextPath: ThreatStream.Intelligence.country
       description: The country of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.SourceReportedConfidence
+    - contextPath: ThreatStream.Intelligence.source_reported_confidence
       description: The confidence of the reported source.
       type: String
-    - contextPath: ThreatStream.Intelligence.Subtype
+    - contextPath: ThreatStream.Intelligence.subtype
       description: The subtype of the intelligence.
       type: String
-    - contextPath: ThreatStream.Intelligence.ResourceURI
+    - contextPath: ThreatStream.Intelligence.resource_uri
       description: The resource URI of the intelligence
       type: String
-    - contextPath: ThreatStream.Intelligence.Severity
+    - contextPath: ThreatStream.Intelligence.severity
       description: The severity of the intelligence.
       type: String
   dockerimage: demisto/py3-tools:1.0.0.31193

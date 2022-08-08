@@ -1327,7 +1327,7 @@ def search_intelligence(client: Client, **kwargs):
         return 'No intelligence found from ThreatStream'
 
     intelligence_table = tableToMarkdown('The intelligence results', intelligence_list, removeNull=True,
-                                          headerTransform=string_to_table_header)
+                                         headerTransform=string_to_table_header)
 
     return CommandResults(
         outputs_prefix=f'{THREAT_STREAM}.Intelligence',
