@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Deprecated. Use the CrowdStrike Falcon Sandbox V2 integration instead.</p>
+<p>Deprecated. Use the CrowdStrike Falcon Sandbox v2 integration instead.</p>
 <h4>Supported File Types</h4>
 <p>The maximum file upload size is 100 MB.</p>
 <ul>

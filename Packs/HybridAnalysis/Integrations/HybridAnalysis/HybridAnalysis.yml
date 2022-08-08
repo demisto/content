@@ -5,7 +5,7 @@ fromversion: 5.0.0
 name: Hybrid Analysis
 display: Hybrid Analysis (Deprecated)
 category: Forensics & Malware Analysis
-description: Deprecated. Use CrowdStrike Falcon Sandbox V2 instead.
+description: Deprecated. Use CrowdStrike Falcon Sandbox v2 instead.
 configuration:
 - display: Server URL (e.g. https://216.3.128.82)
   name: serverUrl
