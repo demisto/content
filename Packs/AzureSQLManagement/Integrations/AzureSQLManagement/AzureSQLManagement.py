@@ -9,7 +9,6 @@ import copy
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2019-06-01-preview'
 ''' CLIENT CLASS '''
@@ -20,9 +19,19 @@ class Client:
     """
 
     @logger
-    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, tenant_id, use_client_credentials,
-                 enc_key, azure_ad_endpoint='https://login.microsoftonline.com'):
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, tenant_id, auth_type,
+                 enc_key, auth_code, redirect_uri, azure_ad_endpoint='https://login.microsoftonline.com'):
         self.resource_group_name = resource_group_name
+
+        AUTH_TYPES_DICT = {'user_auth_flow': {'grant_type': AUTHORIZATION_CODE,
+                                              'resource': None,
+                                              'scope': 'https://management.azure.com/.default'},
+                           'device_code_flow': {'grant_type': DEVICE_CODE,
+                                                'resource': 'https://management.core.windows.net',
+                                                'scope':
+                                                'https://management.azure.com/user_impersonation offline_access user.read'
+                                                }
+                           }
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -35,13 +44,15 @@ class Client:
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=CLIENT_CREDENTIALS if use_client_credentials else DEVICE_CODE,  # disable-secrets-detection
+            grant_type=AUTH_TYPES_DICT[auth_type]['grant_type'],  # disable-secrets-detection
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            resource='https://management.core.windows.net',  # disable-secrets-detection
-            scope='https://management.azure.com/user_impersonation offline_access user.read' if not use_client_credentials else 'https://management.azure.com/.default',
+            resource=AUTH_TYPES_DICT[auth_type]['resource'],  # disable-secrets-detection
+            scope=AUTH_TYPES_DICT[auth_type]['scope'],
             ok_codes=(200, 201, 202, 204),
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
             azure_ad_endpoint=azure_ad_endpoint,
             tenant_id=tenant_id,
             enc_key=enc_key
@@ -415,8 +426,12 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[
 
 @logger
 def test_connection(client: Client) -> CommandResults:
-    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
-    return CommandResults(readable_output='✅ Success!')
+    if demisto.params().get('auth_type') == 'device_code_flow':
+        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+        return CommandResults(readable_output='✅ Success!')
+    else:
+        client.azure_sql_servers_list()  # If fails, MicrosoftApiModule returns an error
+        return CommandResults(readable_output='✅ Success!')
 
 
 @logger
@@ -438,6 +453,22 @@ def reset_auth(client: Client) -> CommandResults:
                                           '**!azure-sql-auth-start** and **!azure-sql-auth-complete**.')
 
 
+@logger
+def test_module(client, _):
+    """
+    Performs basic GET request to check if the API is reachable and authentication is successful.
+    Returns ok if successful.
+    """
+    if demisto.params().get('auth_type') == 'device_code_flow':
+        raise Exception("When using device code flow configuration, "
+              "Please enable the integration and run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to log in. You can "
+              "validate the connection by running `!azure-sql-auth-test`\nFor more details press the (?) button.")
+
+    elif demisto.params().get('auth_type') == 'user_auth_flow':
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !msgraph-user-test command in order to test it")
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -452,7 +483,9 @@ def main() -> None:
     try:
         client = Client(
             tenant_id=params.get('tenant_id'),
-            use_client_credentials=params.get('use_client_credentials'),
+            auth_type=params.get('auth_type'),
+            auth_code=params.get('auth_code'),
+            redirect_uri=params.get('redirect_uri'),
             enc_key=params.get('credentials').get('password'),
             app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
@@ -463,10 +496,7 @@ def main() -> None:
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
         )
         if command == 'test-module':
-            return_error(
-                'Please run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to log in. '
-                'You can validate the connection by running `!azure-sql-auth-test`\n '
-                'For more details press the (?) button.')
+            return_results(test_module(client, args))
 
         elif command == 'azure-sql-servers-list':
             return_results(azure_sql_servers_list_command(client, args))

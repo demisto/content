@@ -19,12 +19,14 @@ configuration:
   name: resource_group_name
   required: true
   type: 0
-- additionalinfo: Use a self-deployed Azure application and authenticate using the
-    Client Credentials flow.
-  display: Use Client Credentials Authorization Flow
-  name: use_client_credentials
-  required: false
-  type: 8
+- additionalinfo: Type of authentication - could be User Authorization Flow (recommended) or Device Flow.
+  display: Authentication Type
+  name: auth_type
+  required: true
+  options:
+  - user_auth_flow
+  - device_code_flow
+  type: 15
 - display: Tenant ID (for Client Credentials mode)
   name: tenant_id
   required: false
@@ -35,6 +37,15 @@ configuration:
   name: credentials
   required: false
   type: 9
+- display: Application redirect URI (for self-deployed mode)
+  name: redirect_uri
+  required: false
+  type: 0
+- display: Authorization code (for self-deployed mode - received from the authorization step. see Detailed
+    Instructions (?) section)
+  name: auth_code
+  required: false
+  type: 4
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   hidden: false
