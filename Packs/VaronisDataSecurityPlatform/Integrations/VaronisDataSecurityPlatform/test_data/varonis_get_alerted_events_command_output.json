@@ -8,6 +8,7 @@
             "Description": "The DNS Server has resolved successfully ",
             "Country": "",
             "State": "",
+            "ExternalIP": "",
             "Details": {
                 "IsBlacklist": false,
                 "Operation": "Request"
@@ -37,7 +38,8 @@
                 "SAMAccountName": "",
                 "UserAccountType": "",
                 "DestinationIP": "",
-                "DestinationDevice": ""
+                "DestinationDevice": "",
+                "Path": ""
             }
         }
     ],

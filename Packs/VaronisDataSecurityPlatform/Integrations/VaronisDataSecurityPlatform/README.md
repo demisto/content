@@ -218,6 +218,7 @@ Get events applied to specific alerts
 | Varonis.Event.Description | String | Description of the activity | 
 | Varonis.Event.Country | String | Name of the country from which the event occurred | 
 | Varonis.Event.State | String | Name of the state or regional subdivision from which the event occurred | 
+| Varonis.Event.ExternalIP | String | Device external IP | 
 | Varonis.Event.Details.IsBlacklist | Boolean | Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred | 
 | Varonis.Event.Details.Operation | String | Type of operation that occurred during the event. Options are:<br/>- Accessed<br/>- Added<br/>- Changed<br/>- Removed<br/>- Sent<br/>- Received<br/>- Requested | 
 | Varonis.Event.ByUser.Name | String | Name of the user that triggered the event | 

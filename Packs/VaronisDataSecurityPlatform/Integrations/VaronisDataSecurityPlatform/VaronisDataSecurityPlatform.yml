@@ -363,6 +363,9 @@ script:
       description: Name of the state or regional subdivision from which the event
         occurred
       type: String
+    - contextPath: Varonis.Event.ExternalIP
+      description: Device external IP
+      type: String
     - contextPath: Varonis.Event.Details.IsBlacklist
       description: Whether any of the geographical locations from which an alerted
         activity originated was on the blacklist at the time the activity occurred
