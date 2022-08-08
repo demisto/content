@@ -3791,6 +3791,9 @@ def get_id_set_entity_by_display_name(display_name: str, pack_folder: str, id_se
     """
     logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
 
+    if not id_set:
+        return None
+
     for id_set_entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]:
 
         if list(id_set_entity.values())[0]['display_name'] == display_name:
