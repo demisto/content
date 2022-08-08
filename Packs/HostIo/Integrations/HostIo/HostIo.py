@@ -101,6 +101,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
             integration_name='HostIo',
             indicator_type=DBotScoreType.DOMAIN,
             score=score,
+            reliability=demisto.params().get('integrationReliability')
         )
 
         domain_standard_context = Common.Domain(
