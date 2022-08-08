@@ -23,7 +23,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics
 
 try:
     from StringIO import StringIO
@@ -8230,3 +8230,17 @@ def test_is_scheduled_command_retry(mocker):
 
     # The run should not be considered a scheduled command
     assert is_scheduled_command_retry() is False
+
+
+def test_appen_metrics(mocker):
+    mocker.patch.object(demisto, 'demistoVersion', return_value={
+        'version': '6.8.0',
+        'buildNumber': '12345'
+    })
+    metrics = ExecutionMetrics()
+    results = []
+    metrics.success += 1
+
+    results = CommonServerPython.append_metrics(metrics, results)
+    assert len(results) == 1
+
