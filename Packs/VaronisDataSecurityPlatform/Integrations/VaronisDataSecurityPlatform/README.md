@@ -50,6 +50,7 @@ Get alerts from Varonis DA
 | sam_account_name | List of sam account names (up to 5). | Optional |
 | email | List of emails (up to 5). | Optional |
 | last_days | Number of days you want the search to go back to. | Optional |
+| descending_order | Indicates whether alerts should be ordered in newest to oldest order. | Optional |
 | page | Page number. Default is 1. | Optional | 
 
 
@@ -72,7 +73,7 @@ Get alerts from Varonis DA
 | Varonis.Alert.UserName | String | Name of the users triggered alerts | 
 | Varonis.Alert.By.SamAccountName | String | Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0. In the dashboards \(other than the Alert dashboard\), this is the SAM account name of the user or group | 
 | Varonis.Alert.By.PrivilegedAccountType | String | Privileged account. Options are:<br/>- Service accounts<br/>- Admin accounts<br/>- Executive accounts | 
-| Varonis.Alert.By.HasFollowUpIndicators | Boolean | Whether global flags, tags or notes are associated with the user | 
+| Varonis.Alert.By.Department | String | User`s department | 
 | Varonis.Alert.On.ContainsFlaggedData | Boolean | Whether the data affected by the alerted events has global flags | 
 | Varonis.Alert.On.ContainsSensitiveData | Boolean | Filters according to whether the resource on which the event was performed is sensitive \(including subfolders\) | 
 | Varonis.Alert.On.Platform | String | Type of platform on which the server resides. For example, Windows, Exchange, or SharePoint | 
@@ -205,6 +206,7 @@ Get events applied to specific alerts
 | alert_id | List of alert IDs. | Required | 
 | max_results | Maximum number of alerts to retrieve (up to 5k). | Optional | 
 | page | Page number. Default is 1. | Optional | 
+| descending_order | Indicates whether events should be ordered in newest to oldest order. | Optional |
 
 
 #### Context Output
@@ -217,6 +219,7 @@ Get events applied to specific alerts
 | Varonis.Event.Description | String | Description of the activity | 
 | Varonis.Event.Country | String | Name of the country from which the event occurred | 
 | Varonis.Event.State | String | Name of the state or regional subdivision from which the event occurred | 
+| Varonis.Event.ExternalIP | String | Device external IP | 
 | Varonis.Event.Details.IsBlacklist | Boolean | Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred | 
 | Varonis.Event.Details.Operation | String | Type of operation that occurred during the event. Options are:<br/>- Accessed<br/>- Added<br/>- Changed<br/>- Removed<br/>- Sent<br/>- Received<br/>- Requested | 
 | Varonis.Event.ByUser.Name | String | Name of the user that triggered the event | 
@@ -225,7 +228,7 @@ Get events applied to specific alerts
 | Varonis.Event.ByUser.Domain | String | Domain of the user that triggered the event | 
 | Varonis.Event. ByUser.DisabledAccount | Boolean | Whether the account is disabled | 
 | Varonis.Event.ByUser.StaleAccount | Boolean | Whether the account is stale | 
-| Varonis.Event.ByUser.LockoutAccounts | Boolean | Wwhether the account is lockout | 
+| Varonis.Event.ByUser.LockoutAccounts | Boolean | Whether the account is lockout | 
 | Varonis.Event.SourceIP | String | Source IP of the device triggered the event | 
 | Varonis.Event. IsMaliciousIP | Boolean | Whether the IP is known to be malicious | 
 | Varonis.Event. IPReputation | Number | Reputation score of the IP. The score is a numeric value from 1-100 | 
@@ -241,6 +244,7 @@ Get events applied to specific alerts
 | Varonis.Event.OnObject.UserAccountType | String | Specified type of privileged account.<br/>Options are:<br/>- Service accounts<br/>- Admin accounts<br/>- Executive accounts<br/>- Test accounts | 
 | Varonis.Event.OnObject.DestinationIP | String | Destination IP address within the organization | 
 | Varonis.Event.OnObject.DestinationDevice | String | Destination host name for relevant services | 
+| Varonis.Event.OnObject.Path | String | Path of asset | 
 | Varonis.Pagination.Page | Number | Current page number requested by user | 
 | Varonis.Pagination.PageSize | Number | Number of records on the page | 
 

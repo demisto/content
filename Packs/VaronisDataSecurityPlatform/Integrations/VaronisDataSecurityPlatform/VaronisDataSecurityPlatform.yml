@@ -32,9 +32,9 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: '100'
+- defaultvalue: '50'
   display: Maximum number of incidents per fetch
-  additionalinfo: Maximum value is 100
+  additionalinfo: Maximum value is 50
   hidden: false
   name: max_fetch
   required: false
@@ -150,6 +150,12 @@ script:
       name: last_days
       required: false
       secret: false
+    - default: false
+      description: Indicates whether alerts should be ordered in newest to oldest order
+      isArray: false
+      name: descending_order
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: Page number
@@ -229,9 +235,9 @@ script:
         - Admin accounts
         - Executive accounts
       type: String
-    - contextPath: Varonis.Alert.By.HasFollowUpIndicators
-      description: Whether global flags, tags or notes are associated with the user
-      type: Boolean
+    - contextPath: Varonis.Alert.By.Department
+      description: User`s department
+      type: String
     - contextPath: Varonis.Alert.On.ContainsFlaggedData
       description: Whether the data affected by the alerted events has global flags
       type: Boolean
@@ -330,6 +336,12 @@ script:
       name: page
       required: false
       secret: false
+    - default: false
+      description: Indicates whether events should be ordered in newest to oldest order
+      isArray: false
+      name: descending_order
+      required: false
+      secret: false
     deprecated: false
     description: Get events applied to specific alerts
     execution: false
@@ -356,6 +368,9 @@ script:
     - contextPath: Varonis.Event.State
       description: Name of the state or regional subdivision from which the event
         occurred
+      type: String
+    - contextPath: Varonis.Event.ExternalIP
+      description: Device external IP
       type: String
     - contextPath: Varonis.Event.Details.IsBlacklist
       description: Whether any of the geographical locations from which an alerted
@@ -393,7 +408,7 @@ script:
       description: Whether the account is stale
       type: Boolean
     - contextPath: Varonis.Event.ByUser.LockoutAccounts
-      description: Wwhether the account is lockout
+      description: Whether the account is lockout
       type: Boolean
     - contextPath: Varonis.Event.SourceIP
       description: Source IP of the device triggered the event
@@ -448,6 +463,9 @@ script:
       type: String
     - contextPath: Varonis.Event.OnObject.DestinationDevice
       description: Destination host name for relevant services
+      type: String
+    - contextPath: Varonis.Event.OnObject.Path
+      description: Path of asset
       type: String
     - contextPath: Varonis.Pagination.Page
       description: Current page number requested by user
