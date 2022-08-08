@@ -7943,6 +7943,11 @@ class Topology:
         :param device: Either Panorama or Firewall Pandevice instance
         """
         if isinstance(device, Panorama):
+            if device.serial:
+                serial_number_or_hostname = device.serial
+            else:
+                serial_number_or_hostname = device.hostname
+
             # Check if HA is active and if so, what the system state is.
             panorama_ha_state_result = run_op_command(device, "show high-availability state")
             enabled = panorama_ha_state_result.find("./result/enabled")
@@ -7952,7 +7957,7 @@ class Topology:
                     state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
                     if "active" in state:
                         # TODO: Work out how to get the Panorama peer serial..
-                        self.ha_active_devices[device.serial] = "peer serial not implemented here.."
+                        self.ha_active_devices[serial_number_or_hostname] = "peer serial not implemented here.."
                         self.get_all_child_firewalls(device)
                         return
                 else:
@@ -7961,8 +7966,8 @@ class Topology:
                 self.get_all_child_firewalls(device)
 
             # This is a bit of a hack - if no ha, treat it as active
-            self.ha_active_devices[device.serial] = "STANDALONE"
-            self.panorama_objects[device.serial] = device
+            self.ha_active_devices[serial_number_or_hostname] = "STANDALONE"
+            self.panorama_objects[serial_number_or_hostname] = device
 
             return
 
