@@ -92,10 +92,10 @@ CONTEXT_PATH = {
 }
 
 TABLE_TLP = {
-    0: "WHITE",
-    1: "GREEN",
+    4: "WHITE",
+    3: "GREEN",
     2: "AMBER",
-    3: "RED"
+    1: "RED"
 }
 
 ''' HELPER FUNCTIONS '''
@@ -156,7 +156,7 @@ def get_errors_string_from_bad_request(bad_request_results, status_code):
 def get_tlp_from_indicator(sources):
     if not sources:
         return None
-    tlp = -1
+    tlp = 0
     for source in sources:
         try:
             tlp = int(source.get('TLP')) if int(source.get('TLP')) > tlp else tlp
