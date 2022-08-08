@@ -1,15 +1,12 @@
-import base64
-import json
-import traceback
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('Cisco Umbrella Cloud Security', 'start', __line__())
-
-
 ''' IMPORTS '''
 
+
+import base64
+import json
+import traceback
 
 ''' CLIENT CLASS '''
 
@@ -255,5 +252,3 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
-
-register_module_line('Cisco Umbrella Cloud Security', 'end', __line__())
