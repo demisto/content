@@ -2442,3 +2442,86 @@ Replace the featured hosts\users\ip addresses\active directory groups listed in 
 >|---|---|
 >| new ip address | 1.1.1.1 |
 
+### xdr-script-run
+***
+This command will soon be deprecated; prefer xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
+
+
+#### Base Command
+
+`xdr-script-run`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| script_uid | Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command. | Required | 
+| parameters | Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}. | Optional | 
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
+| polling_interval_in_seconds | Interval in seconds between each poll. Default is 10. | Optional | 
+| polling_timeout_in_seconds | Polling timeout in seconds. Default is 600. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ScriptResult.action_id | Number | ID of the action initiated. | 
+| PaloAltoNetworksXDR.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_name | String | Number of successfully retrieved files. | 
+| PaloAltoNetworksXDR.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_status | String | Endpoint status. | 
+| PaloAltoNetworksXDR.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_id | String | Endpoint ID. | 
+| PaloAltoNetworksXDR.ScriptResult.results.execution_status | String | Execution status of this endpoint. | 
+| PaloAltoNetworksXDR.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
+| PaloAltoNetworksXDR.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
+| PaloAltoNetworksXDR.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
+
+#### Command example
+```!xdr-script-run endpoint_ids=1 script_uid=123```
+#### Human Readable Output
+
+>Waiting for the script to finish running on the following endpoints: ['1']...
+
+>### Script Execution Results - 10368
+>|_return_value|domain|endpoint_id|endpoint_ip_address|endpoint_name|endpoint_status|execution_status|failed_files|retention_date|retrieved_files|standard_output|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| Name: return value | WORKGROUP | 1 | 1.1.1.1 | WIN10X64 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY | 0 |  | 0 |  |
+
+
+#### Context Example
+```json
+{
+  "PaloAltoNetworksXDR": {
+    "ScriptResult": {
+      "results": [
+        {
+          "domain": "WORKGROUP",
+          "endpoint_name": "WIN10X64",
+          "retrieved_files": 0,
+          "failed_files": 0,
+          "standard_output": "",
+          "_return_value": [
+            "return_value"
+          ],
+          "command_output": [
+            "command_output"
+          ],
+          "endpoint_status": "STATUS_010_CONNECTED",
+          "command": "_return_value",
+          "endpoint_id": "1",
+          "endpoint_ip_address": [
+            "1.1.1.1"
+          ],
+          "execution_status": "COMPLETED_SUCCESSFULLY",
+          "retention_date": null
+        }
+      ],
+      "action_id": 4444
+    }
+  }
+}
+```

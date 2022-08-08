@@ -1,6 +1,6 @@
 {
     "name": "Oletools",
-    "description": "Oletools pack allows performing some basic oletools commands from Cortex XSOAR. oletools is a tools to analyze Microsoft OLE2 files",
+    "description": "Oletools pack allows performing some basic oletools commands from Cortex XSOAR. oletools is a tool to analyze Microsoft OLE2 files",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

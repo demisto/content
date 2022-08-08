@@ -6944,10 +6944,13 @@ def return_error(message, error='', outputs=None):
         :rtype: ``dict``
     """
     is_command = hasattr(demisto, 'command')
-    is_server_handled = is_command and demisto.command() in ('fetch-incidents',
-                                                             'fetch-credentials',
-                                                             'long-running-execution',
-                                                             'fetch-indicators')
+    try:
+        is_server_handled = is_command and demisto.command() in ('fetch-incidents',
+                                                                 'fetch-credentials',
+                                                                 'long-running-execution',
+                                                                 'fetch-indicators')
+    except Exception:
+        is_server_handled = False
     message = LOG(message)
     if error:
         LOG(str(error))
@@ -7072,7 +7075,7 @@ class ExecutionMetrics(object):
 
     @staticmethod
     def is_supported():
-        if is_demisto_version_ge('7.0.0'):
+        if is_demisto_version_ge('6.8.0'):
             return True
         return False
 
@@ -8223,17 +8226,17 @@ if 'requests' in sys.modules:
         :type proxy: ``bool``
         :param proxy: Whether to run the integration using the system proxy.
 
-        :type ok_codes: ``tuple``
+        :type ok_codes: ``tuple`` or ``None``
         :param ok_codes:
             The request codes to accept as OK, for example: (200, 201, 204).
-            If you specify "None", will use requests.Response.ok
+            Will use requests.Response.ok if set to None.
 
-        :type headers: ``dict``
+        :type headers: ``dict`` or ``None``
         :param headers:
             The request headers, for example: {'Accept`: `application/json`}.
             Can be None.
 
-        :type auth: ``dict`` or ``tuple``
+        :type auth: ``dict`` or ``tuple`` or ``None``
         :param auth:
             The request authorization, for example: (username, password).
             Can be None.
