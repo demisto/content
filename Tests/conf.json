@@ -5425,7 +5425,6 @@
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "_comment4": "~~~ OTHER ~~~",
