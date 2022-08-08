@@ -76,8 +76,6 @@ def ip_reputation_command(client: Client, args: Dict[str, Any]) -> List[CommandR
         command_res = CommandResults(indicator=common_ip)
 
         command_results.append(command_res)
-        command_results.append(common_ip)
-
         ip_data.append(result)
 
     readable_output = tableToMarkdown('IP-API', ip_data)
