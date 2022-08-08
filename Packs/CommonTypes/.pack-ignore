@@ -294,6 +294,7 @@ ignore=IF100
 [known_words]
 SysAid
 longText
+XSOAR
 
 [file:classifier-Mail-listener.json]
 ignore=BA101
