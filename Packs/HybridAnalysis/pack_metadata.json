@@ -1,6 +1,6 @@
 {
-    "name": "Hybrid Analysis",
-    "description": "Fully automated malware analysis with unique Hybrid Analysis.",
+    "name": "Hybrid Analysis (Deprecated)",
+    "description": "Deprecated. Use the CrowdStrike Falcon Sandbox V2 integration instead. Fully automated malware analysis with unique Hybrid Analysis.",
     "support": "xsoar",
     "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",

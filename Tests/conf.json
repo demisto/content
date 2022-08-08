@@ -2905,19 +2905,6 @@
             "instance_names": "palo_alto_panorama"
         },
         {
-            "integrations": "Hybrid Analysis",
-            "playbookID": "HybridAnalysis-Test",
-            "timeout": 500,
-            "fromversion": "4.1.0",
-            "is_mockable": false
-        },
-        {
-            "integrations": "Hybrid Analysis",
-            "playbookID": "Detonate File - HybridAnalysis - Test",
-            "fromversion": "5.5.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v7",
             "playbookID": "Elasticsearch_v2_test"
@@ -5266,7 +5253,6 @@
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
         "TestIPQualityScorePlaybook": "Issue 40915",
         "VerifyOOBV2Predictions-Test": "Issue 37947",
-        "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
         "AutoFocusTagsFeed-test": "shares API quota with the other test",
         "Carbon Black Edr - Test": "Jira ticket XDR-43185",
