@@ -49,7 +49,7 @@ script:
     execution: false
     name: azure-risky-users-auth-test
   - deprecated: false
-    description: Starts the authorization process. You then follow the instructions
+    description: Starts the authorization process. Follow the instructions
       in the command results.
     execution: false
     name: azure-risky-users-auth-start
@@ -65,9 +65,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Sets the Risk State to retrieve. Possible values are: "atRisk",
-        "confirmedCompromised", "remediated", or "dismissed"'
-      isArray: false
+      description: Sets the Risk State to retrieve.
       name: risk_state
       predefined:
       - atRisk
@@ -92,8 +90,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Sets the Risk Level to retrieve. Possible values are: "low", "medium",
-        or "high"'
+      description: Sets the Risk Level to retrieve. 
       isArray: false
       name: risk_level
       predefined:
@@ -103,7 +100,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a comma separated list of all risky users and their properties.
+    description: Returns a comma-separated list of all risky users and their properties.
     execution: false
     name: azure-risky-users-list
     outputs:
@@ -210,8 +207,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Sets the Risk State to retrieve. Possible values are: "atRisk",
-        "confirmedCompromised", "remediated", or "dismissed"'
+      description: Sets the Risk State to retrieve. 
       isArray: false
       name: risk_state
       predefined:
@@ -224,8 +220,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Sets the Risk Level to retrieve. Possible values are: "low", "medium",
-        or "high".'
+      description: Sets the Risk Level to retrieve. 
       isArray: false
       name: risk_level
       predefined:
@@ -235,7 +230,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a comma separated list of the Risk Detection objects and
+    description: Returns a comma-separated list of the Risk Detection objects and
       their properties.
     execution: false
     name: azure-risky-users-risk-detections-list
