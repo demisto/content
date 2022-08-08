@@ -9240,6 +9240,7 @@ class ObjectGetter:
         "SecurityProfileGroup": SecurityProfileGroup,
         "SecurityRule": SecurityRule,
         "NatRule": NatRule,
+        "LogForwardingProfile": LogForwardingProfile,
     }
 
     @staticmethod
