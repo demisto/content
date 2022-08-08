@@ -902,4 +902,3 @@ def test_search_intelligence(mocker):
 
     assert result.outputs[0].get('itype') == 'c2_ip'
     assert result.outputs_prefix == 'ThreatStream.Intelligence'
-    
