@@ -1134,18 +1134,18 @@ This is visible
 </~XSOAR>
 - **Field Name 3**
 ''', 'marketplacev2', "#### Incident Fields\n- **Field Name 1**\n\n\n#### Scripts\n##### Script Name\n- Fixed script"),
-#         ('''
-# #### Integrations
-# ##### Integration Display Name
-# <~XSIAM>
-# - Fixed an issue
-# </~XSIAM>
+        #         ('''
+        # #### Integrations
+        # ##### Integration Display Name
+        # <~XSIAM>
+        # - Fixed an issue
+        # </~XSIAM>
 
-# #### Scripts
-# ##### Script Name
-# <~XSIAM>
-# - Fixed script
-# </~XSIAM>''', 'xsoar', ''),
+        # #### Scripts
+        # ##### Script Name
+        # <~XSIAM>
+        # - Fixed script
+        # </~XSIAM>''', 'xsoar', ''),
         ('''
 #### Integrations
 ##### Integration Display Name
