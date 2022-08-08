@@ -1762,7 +1762,8 @@ class Pack(object):
 
             # Filters the RN entries by the entity display name
             display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
-            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header, pack_folder, id_set)
+            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header,
+                                                                                 pack_folder, id_set)
 
             if filtered_release_notes_entries:
                 filtered_release_notes[rn_header] = filtered_release_notes_entries
@@ -1787,7 +1788,8 @@ class Pack(object):
 
             logging.debug(f"Searching display name '{display_name}' in '{display_names}'.")
             if display_name != '[special_msg]' and display_name.replace("New: ", "") not in display_names \
-                and not get_id_set_entity_by_display_name(display_name.replace("New: ", ""), pack_folder, id_set):
+                    and not get_id_set_entity_by_display_name(display_name.replace("New: ", ""),
+                                                              pack_folder, id_set):
                 continue
 
             if display_name == '[special_msg]':
@@ -3778,7 +3780,7 @@ def get_id_set_entity_by_display_name(display_name: str, pack_folder: str, id_se
     """
     Get the full entity dict from the id set of the entity given it's display name, if it does not exist in the id set
     return None.
-    
+
     Args:
         display_name: The display name of the entity (content item)
         pack_folder: containing folder of that item
