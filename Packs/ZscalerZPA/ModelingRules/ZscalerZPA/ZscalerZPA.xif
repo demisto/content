@@ -1,5 +1,6 @@
 [MODEL:model="Network", dataset="zscaler_zpa_raw"]
-alter XDM.Network.rule = policy ,
+filter cat in ("ZPA User Status", "ZPA User Activity")
+| alter XDM.Network.rule = policy ,
  XDM.Network.Destination.port = dstPort,
  XDM.Network.event_timestamp = _time,
 XDM.Network.Destination.ipv4=dst,
