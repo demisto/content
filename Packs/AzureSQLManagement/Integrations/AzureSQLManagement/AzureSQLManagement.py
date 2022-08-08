@@ -23,7 +23,7 @@ class Client:
     def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, auth_type, tenant_id=None,
                  enc_key=None, auth_code=None, redirect_uri=None, azure_ad_endpoint='https://login.microsoftonline.com'):
         self.resource_group_name = resource_group_name
-        AUTH_TYPES_DICT = {'User Auth': {
+        AUTH_TYPES_DICT: dict = {'User Auth': {
             'grant_type': AUTHORIZATION_CODE,
             'resource': None,
             'scope': 'https://management.azure.com/.default'},
