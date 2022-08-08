@@ -960,6 +960,8 @@ def identity_enrichment(service, notable_data, num_enrichment_events):
     return job
 
 
+
+
 def asset_enrichment(service, notable_data, num_enrichment_events):
     """ Performs an asset enrichment.
 
