@@ -8233,6 +8233,13 @@ def test_is_scheduled_command_retry(mocker):
 
 
 def test_appen_metrics(mocker):
+    """
+
+    Given: CommandResults list and Execution_metrics object to be added to the list.
+    When: Metrics need to be added after reputation commands ran.
+    Then: Metrics added as the last object of the list.
+
+    """
     mocker.patch.object(demisto, 'demistoVersion', return_value={
         'version': '6.8.0',
         'buildNumber': '12345'
