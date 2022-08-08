@@ -305,6 +305,10 @@ script:
     - description: The status of the user.
       name: status
       required: false
+      auto: PREDEFINED
+      predefined:
+        - 'active'
+        - 'disabled'
     - description: Notes for the user.
       name: notes
       required: false

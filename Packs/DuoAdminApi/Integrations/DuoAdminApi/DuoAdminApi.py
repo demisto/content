@@ -381,19 +381,19 @@ def get_all_admins():
     demisto.results(entry)
 
 
-def modify_admin_user(user_id: str = None, name: str = None, phone: str = None, password: str = None,
-                      password_change_required: str = None, status: str = None) -> CommandResults:
+def modify_admin_user(user_id=None, name=None, phone=None, password=None,
+                      password_change_required=None, status=None):
     admin_api.update_admin(user_id, name, phone, password, password_change_required, status)
-    return CommandResults(readable_output='Status for' + user_id + ' Successful updated to ' + status)
+    return CommandResults(readable_output='Status for user id ' + user_id + ' Successfully updated to ' + status)
 
 
-def modify_user(user_id: str = None, user_name: str = None, real_name: str = None, status: str = None,
-                notes: str = None, email: str = None, first_name: str = None, last_name: str = None, alias1: str = None,
-                alias2: str = None, alias3: str = None,
-                alias4: str = None, aliases: str = None) -> CommandResults:
+def modify_user(user_id=None, user_name=None, real_name=None, status=None,
+                notes=None, email=None, first_name=None, last_name=None, alias1=None,
+                alias2=None, alias3=None,
+                alias4=None, aliases=None):
     admin_api.update_user(user_id, user_name, real_name, status, notes, email, first_name,
                           last_name, alias1, alias2, alias3, alias4, argToList(aliases))
-    return CommandResults(readable_output='Status for' + user_id + ' Successful updated to ' + status)
+    return CommandResults(readable_output='Status for user id ' + user_id + ' Successfully updated to ' + status)
 
 
 # Execution
@@ -442,7 +442,6 @@ try:
 
 
 except Exception as e:
+    print(e)
     demisto.error("Duo Admin failed on: {} on this command {}".format(e, demisto.command))
     return_error(e.message)
-sys.exit(0)
-
