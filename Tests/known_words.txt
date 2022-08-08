@@ -194,8 +194,8 @@ lookback
 subclass
 pagination
 XDM
-<<<<<<< HEAD
 Fortinet
-=======
 ADFS
->>>>>>> master
+https://install.python-poetry.org
+https://pyenv.run
+jsdoc-to-markdown
