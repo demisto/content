@@ -146,7 +146,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
 
     requests_mock.get(
         'https://test.com/api/alert/alert/GetAlerts'
-        '?ruleName=Suspicious&fromAlertId=150&status=Open&severity=high&severity=medium&descendingOrder=True'
+        '?ruleName=Suspicious&fromAlertSeqId=150&status=Open&severity=high&severity=medium&descendingOrder=True'
         '&aggregate=True&offset=0&maxResult=100',
         json=fetch_output)
 

@@ -234,7 +234,7 @@ class Client(BaseClient):
             request_params['sidId'] = sid_ids
 
         if from_alert_id is not None:
-            request_params['fromAlertId'] = from_alert_id
+            request_params['fromAlertSeqId'] = from_alert_id
 
         if alert_statuses and len(alert_statuses) > 0:
             request_params['status'] = alert_statuses
