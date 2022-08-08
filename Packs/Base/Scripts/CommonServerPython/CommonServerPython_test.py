@@ -8232,7 +8232,7 @@ def test_is_scheduled_command_retry(mocker):
     assert is_scheduled_command_retry() is False
 
 
-def test_appen_metrics(mocker):
+def test_append_metrics(mocker):
     """
 
     Given: CommandResults list and Execution_metrics object to be added to the list.
@@ -8240,10 +8240,7 @@ def test_appen_metrics(mocker):
     Then: Metrics added as the last object of the list.
 
     """
-    mocker.patch.object(demisto, 'demistoVersion', return_value={
-        'version': '6.8.0',
-        'buildNumber': '12345'
-    })
+    mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
     metrics = ExecutionMetrics()
     results = []
     metrics.success += 1
