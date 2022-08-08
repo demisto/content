@@ -71,9 +71,9 @@ class Client:
             return Scopes.graph
 
         else:  # Device Flow
-            return ('https://graph.microsoft.com/IdentityRiskyUser.Read.All '
-                    'IdentityRiskEvent.ReadWrite.All IdentityRiskyUser.Read.All ' 
-                    'IdentityRiskyUser.ReadWrite.All offline_access')
+            return ('https://graph.microsoft.com/IdentityRiskyUser.Read.All'
+                    ' IdentityRiskEvent.ReadWrite.All IdentityRiskyUser.Read.All' 
+                    ' IdentityRiskyUser.ReadWrite.All offline_access')
 
     @staticmethod
     def get_token_retrieval_url_by_auth_type(authentication_type: str) -> Union[None, str]:

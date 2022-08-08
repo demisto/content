@@ -1,4 +1,4 @@
-from AzureRiskyUsers import Client
+from AzureRiskyUsers import Client, CLIENT_CREDENTIALS_FLOW, DEVICE_FLOW
 import json
 
 
@@ -19,7 +19,8 @@ def load_mock_response(file_name: str) -> dict:
 def mock_client():
     return Client(client_id='client_id',
                   verify=False,
-                  proxy=False)
+                  proxy=False,
+                  authentication_type=DEVICE_FLOW)
 
 
 def test_risky_users_list_command(requests_mock) -> None:
