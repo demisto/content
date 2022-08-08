@@ -16,7 +16,8 @@ def mock_client(mocker, http_request_result=None):
         subscription_id='subscriptionID',
         resource_group_name='resourceGroupName',
         verify=False,
-        proxy=False
+        proxy=False,
+        auth_type='Device'
     )
     if http_request_result:
         mocker.patch.object(client, 'http_request', return_value=http_request_result)

@@ -20,8 +20,8 @@ class Client:
     """
 
     @logger
-    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, tenant_id, auth_type,
-                 enc_key, auth_code, redirect_uri, azure_ad_endpoint='https://login.microsoftonline.com'):
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, auth_type, tenant_id=None,
+                 enc_key=None, auth_code=None, redirect_uri=None, azure_ad_endpoint='https://login.microsoftonline.com'):
         self.resource_group_name = resource_group_name
         AUTH_TYPES_DICT = {'User Auth': {
             'grant_type': AUTHORIZATION_CODE,

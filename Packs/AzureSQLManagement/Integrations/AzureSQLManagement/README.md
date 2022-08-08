@@ -32,9 +32,10 @@ to link Azure SQL Management with Cortex XSOAR.
 
 To connect to the Azure SQL Management:
 1. Fill in the required parameters.
-2. Run the ***!azure-sql-auth-start*** command. 
-3. Follow the instructions that appear.
-4. Run the ***!azure-sql-auth-complete*** command.
+2. choose the user_auth_flow option in the ***Device*** parameter.
+3. Run the ***!azure-sql-auth-start*** command. 
+4. Follow the instructions that appear.
+5. Run the ***!azure-sql-auth-complete*** command.
 
 ### Self-Deployed Application - User Authentication Flow
 
