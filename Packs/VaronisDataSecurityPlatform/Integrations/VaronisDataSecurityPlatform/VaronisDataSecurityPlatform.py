@@ -18,7 +18,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 MAX_USERS_TO_SEARCH = 5
 NON_EXISTENT_SID = -1000
-MAX_INCIDENTS_TO_FETCH = 100
+MAX_INCIDENTS_TO_FETCH = 50
 THREAT_MODEL_ENUM_ID = 5821
 ALERT_STATUSES = {'open': 1, 'under investigation': 2, 'closed': 3}
 ALERT_SEVERITIES = ['high', 'medium', 'low']

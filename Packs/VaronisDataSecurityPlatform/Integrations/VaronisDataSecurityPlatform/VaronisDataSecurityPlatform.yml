@@ -32,9 +32,9 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: '100'
+- defaultvalue: '50'
   display: Maximum number of incidents per fetch
-  additionalinfo: Maximum value is 100
+  additionalinfo: Maximum value is 50
   hidden: false
   name: max_fetch
   required: false
