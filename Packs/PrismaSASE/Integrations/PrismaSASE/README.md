@@ -496,7 +496,7 @@ Get specific config job by the jobid
             "summary": "",
             "type_i": "53",
             "type_str": "CommitAndPush",
-            "uname": "APIGateway@ProdInternal.com"
+            "uname": "example user"
         }
     ]
 }
