@@ -452,7 +452,7 @@ def main():
             return_results(get_mapping_fields_command(client))
 
     except Exception as e:
-        return_error(f'Failed to execute {command} command. Error: {e}. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command. Error: {e}.')
 
 
 from IAMApiModule import *  # noqa: E402

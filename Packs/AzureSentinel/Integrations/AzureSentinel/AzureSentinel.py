@@ -40,7 +40,7 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
 
 DEFAULT_LIMIT = 50
 
-DEFAULT_SOURCE = 'Azure Sentinel'
+DEFAULT_SOURCE = 'Microsoft Sentinel'
 
 THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
 
@@ -203,7 +203,8 @@ def incident_data_to_xsoar_format(inc_data):
         'BookmarksCount': properties.get('additionalData', {}).get('bookmarksCount'),
         'CommentsCount': properties.get('additionalData', {}).get('commentsCount'),
         'AlertProductNames': properties.get('additionalData', {}).get('alertProductNames'),
-        'Tactics': properties.get('tactics'),
+        'Tactics': properties.get('additionalData', {}).get('tactics'),
+        'Techniques': properties.get('additionalData', {}).get('techniques'),
         'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),
         'LastActivityTimeGenerated': format_date(properties.get('lastActivityTimeGenerated')),
         'Etag': inc_data.get('etag'),
@@ -295,7 +296,9 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
     classification_comment = args.get('classification_comment')
     classification_reason = args.get('classification_reason')
     assignee_email = args.get('assignee_email')
+    user_principal_name = args.get('user_principal_name')
     labels = argToList(args.get('labels', ''))
+    owner = demisto.get(fetched_incident_data, 'properties.owner', {})
 
     if not title:
         title = demisto.get(fetched_incident_data, 'properties.title')
@@ -305,8 +308,10 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
         severity = demisto.get(fetched_incident_data, 'properties.severity')
     if not status:
         status = demisto.get(fetched_incident_data, 'properties.status')
-    if not assignee_email:
-        assignee_email = demisto.get(fetched_incident_data, 'properties.owner.email')
+    if user_principal_name:
+        owner = {'userPrincipalName': user_principal_name}
+    if assignee_email:
+        owner['email'] = assignee_email
 
     existing_labels = demisto.get(fetched_incident_data, 'properties.labels')
     if not labels:  # not provided as arg
@@ -326,7 +331,7 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
             'classificationComment': classification_comment,
             'classificationReason': classification_reason,
             'labels': labels_formatted,
-            'owner': {'email': assignee_email}
+            'owner': owner
         }
     }
     remove_nulls_from_dictionary(incident_data['properties'])
@@ -992,7 +997,7 @@ def threat_indicators_data_to_xsoar_format(ind_data):
     """
 
     properties = ind_data.get('properties', {})
-    pattern = properties.get('parsedPattern', [])[0]
+    pattern = properties.get('parsedPattern', [])[0] if properties.get('parsedPattern', []) else {}
 
     formatted_data = {
         'ID': ind_data.get('id'),
@@ -1016,20 +1021,19 @@ def threat_indicators_data_to_xsoar_format(ind_data):
             'KillChainName': phase.get('killChainName'),
             'PhaseName': phase.get('phaseName')
         } for phase in properties.get('KillChainPhases', [])],
-
         'ParsedPattern': {
             'PatternTypeKey': pattern.get('patternTypeKey'),
             'PatternTypeValues': {
-                'Value': pattern.get('patternTypeValues')[0].get('value'),
-                'ValueType': pattern.get('patternTypeValues')[0].get('valueType')
+                'Value': dict_safe_get(pattern, ['patternTypeValues', 0, 'value']),
+                'ValueType': dict_safe_get(pattern, ['patternTypeValues', 0, 'valueType']),
             }
-        },
+        } if pattern else None,
 
         'Pattern': properties.get('pattern', ''),
         'PatternType': properties.get('patternType', ''),
         'ValidFrom': format_date(properties.get('validFrom', '')),
         'ValidUntil': format_date(properties.get('validUntil', '')),
-        'Values': pattern.get('patternTypeValues')[0].get('value'),
+        'Values': dict_safe_get(pattern, ['patternTypeValues', 0, 'value']),
         'Deleted': False
     }
     remove_nulls_from_dictionary(formatted_data)
@@ -1069,7 +1073,7 @@ def build_query_filter(args):
     return filtering_args
 
 
-def build_threat_indicator_data(args):
+def build_threat_indicator_data(args, source):
     value = args.get('value')
 
     data = {
@@ -1079,7 +1083,7 @@ def build_threat_indicator_data(args):
         'confidence': arg_to_number(args.get('confidence')),
         'threatTypes': argToList(args.get('threat_types')),
         'includeDisabled': args.get('include_disabled', ''),
-        'source': DEFAULT_SOURCE,
+        'source': source,
         'threatIntelligenceTags': argToList(args.get('tags')),
         'validFrom': format_date(args.get('valid_from', '')),
         'validUntil': format_date(args.get('valid_until', '')),
@@ -1119,7 +1123,9 @@ def build_threat_indicator_data(args):
 
 def build_updated_indicator_data(new_ind_data, original_ind_data):
     original_extracted_data = extract_original_data_from_indicator(original_ind_data.get('properties'))
-    new_data = build_threat_indicator_data(new_ind_data)
+    # When updating an indicator, one can not change the original source
+    source = original_extracted_data.get('source')
+    new_data = build_threat_indicator_data(new_ind_data, source)
 
     original_extracted_data.update(new_data)
 
@@ -1140,7 +1146,7 @@ def extract_original_data_from_indicator(original_data):
         'created': original_data.get('created', ''),
         'externalId': original_data.get('externalId'),
         'displayName': original_data.get('displayName'),
-        'source': original_data.get('source')
+        'source': original_data.get('source', DEFAULT_SOURCE)
     }
 
     remove_nulls_from_dictionary(extracted_data)
@@ -1229,7 +1235,7 @@ def query_threat_indicators_command(client, args):
 def create_threat_indicator_command(client, args):
     url_suffix = 'threatIntelligence/main/createIndicator'
 
-    data = {'kind': 'indicator', 'properties': build_threat_indicator_data(args)}
+    data = {'kind': 'indicator', 'properties': build_threat_indicator_data(args, source=DEFAULT_SOURCE)}
 
     result = client.http_request('POST', url_suffix, data=data)
 
@@ -1425,7 +1431,6 @@ def main():
             return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(
             f'Failed to execute {demisto.command()} command. Error: {str(e)}'
         )

@@ -11,7 +11,8 @@ At the end of the process you'll see a message that you've logged in successfull
 
 #### Cortex XSOAR Graph App
 
-In order to use the Cortex XSOAR Azure application, use the default application ID (597c0375-766f-4e6d-ad2a-f48117044ac5).
+In order to use the Cortex XSOAR Azure application, use the default application ID (597c0375-766f-4e6d-ad2a-f48117044ac5).  
+Detailed explanation on how to register an app can be found [here](https://docs.microsoft.com/en-us/power-apps/developer/data-platform/walkthrough-register-app-azure-active-directory)
 
 #### Self-Deployed Graph App
 

@@ -1,7 +1,6 @@
-`Note`: For the Phishing use case, see the [Phishing Investigation - Generic v3 playbook](https://xsoar.pan.dev/docs/reference/playbooks/phishing---generic-v3).
-
 
 Email security gateways produce a high volume of phishing alerts. To protect an organization from malicious emails, analysts investigating phishing alerts need to adjust their response procedures by email type, severity, or content to identify campaigns and inspect IoCs.
+
 This content pack enables analysts to retrieve, process, and analyze email files to manage phishing alert incidents. 
 The out-of-the-box items are robust enough to get you started, but are easily customizable to fit your specific requirements.
 
@@ -21,4 +20,6 @@ The out-of-the-box items are robust enough to get you started, but are easily cu
 This content pack also includes out-of-the-box phishing incident views, a full layout, and automation scripts. All of these are easily customizable to suit the needs of your organization.
 
 
-![Phishing_Investigation_Generic_v2](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/PhishingAlerts/doc_files/Phishing_Alerts_Investigation.png)
+##### Additional Information
+
+_The Phishing content pack is the main content pack for all phishing purposes and is required for this content pack to respond to phishing alerts. See our documentation for information about the [Phishing](https://xsoar.pan.dev/docs/reference/packs/Phishing-Alerts) content pack._

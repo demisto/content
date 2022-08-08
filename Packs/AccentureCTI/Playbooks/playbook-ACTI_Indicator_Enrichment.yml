@@ -1,25 +1,25 @@
 id: ACTI Indicator Enrichment
 version: -1
 name: ACTI Indicator Enrichment
-description: This playbook automatically queries ACTI Threat Indicator, Report, and Fundamental API to pull context for IOC and associated intelligence reports into XSOAR incidents.
-starttaskid: "0"
+description: Deprecated. No available replacement.
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: eb9c9546-178d-4c18-8f0f-870e82981c7a
     type: start
     task:
       id: eb9c9546-178d-4c18-8f0f-870e82981c7a
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "5"
-      - "6"
-      - "7"
+      - '5'
+      - '6'
+      - '7'
     separatecontext: false
     view: |-
       {
@@ -35,8 +35,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 5069f263-0f81-45c7-877a-1b3c2a889a33
     type: regular
     task:
@@ -50,7 +50,7 @@ tasks:
       brand: ACTI Indicator Query
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       ip:
         simple: ${inputs.IP_Pre_Enrich}
@@ -70,8 +70,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 9f3afc15-29f3-4b78-86c9-c77251735d1f
     type: regular
     task:
@@ -85,7 +85,7 @@ tasks:
       brand: ACTI Indicator Query
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       domain:
         simple: ${inputs.Domain_Pre_Enrich}
@@ -105,8 +105,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 36a9f602-9202-4ed9-86a4-9289030134ca
     type: regular
     task:
@@ -120,7 +120,7 @@ tasks:
       brand: ACTI Indicator Query
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       url:
         simple: ${inputs.URL_Pre_Enrich}
@@ -140,8 +140,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: af197b76-f9d9-4cd0-8f04-76d356721ac1
     type: title
     task:
@@ -150,7 +150,7 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
@@ -167,8 +167,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: a801c2a3-4161-40f4-8a75-0a67812c5a8c
     type: condition
     task:
@@ -179,12 +179,12 @@ tasks:
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "4"
-      "yes":
-      - "1"
+      no:
+      - '4'
+      yes:
+      - '1'
     scriptarguments:
       value:
         simple: ${inputs.IP_Pre_Enrich}
@@ -203,8 +203,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 9d0d5b89-a5b1-41ba-8934-baee187ad3ec
     type: condition
     task:
@@ -215,12 +215,12 @@ tasks:
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "4"
-      "yes":
-      - "3"
+      no:
+      - '4'
+      yes:
+      - '3'
     scriptarguments:
       value:
         simple: ${inputs.URL_Pre_Enrich}
@@ -239,8 +239,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: bd629917-ce9f-45f0-8cfc-39c8f1640f4b
     type: condition
     task:
@@ -251,12 +251,12 @@ tasks:
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "4"
-      "yes":
-      - "2"
+      no:
+      - '4'
+      yes:
+      - '2'
     scriptarguments:
       value:
         simple: ${inputs.Domain_Pre_Enrich}
@@ -290,21 +290,21 @@ view: |-
 inputs:
 - key: IP_Pre_Enrich
   value:
-    simple: ${ExtractedIndicators.IP}
+    simple: ${IP.Address}
   required: false
-  description: ""
+  description: ''
   playbookInputQuery:
 - key: Domain_Pre_Enrich
   value:
-    simple: ${ExtractedIndicators.Domain}
+    simple: ${Domain.Name}
   required: false
-  description: ""
+  description: ''
   playbookInputQuery:
 - key: URL_Pre_Enrich
   value:
-    simple: ${ExtractedIndicators.URL}
+    simple: ${URL.Data}
   required: false
-  description: ""
+  description: ''
   playbookInputQuery:
 outputs:
 - contextPath: IP
@@ -326,5 +326,6 @@ outputs:
   type: unknown
   description: ''
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
 fromversion: 6.0.0
+deprecated: true

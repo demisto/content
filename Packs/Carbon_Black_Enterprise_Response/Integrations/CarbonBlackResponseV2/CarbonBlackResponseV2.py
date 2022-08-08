@@ -1,3 +1,4 @@
+import struct
 import dateparser
 import demistomock as demisto
 from CommonServerPython import *
@@ -92,6 +93,22 @@ class regmod_complete(ProcessEventDetail):
     def format(self):
         for entry in self.fields:
             entry['operation_type'] = self.OPERATION_TYPE.get(entry.get('operation_type', ''), '')
+        return self.fields
+
+
+class netconn_complete(ProcessEventDetail):
+    """
+    For netconn_complete, the v2 API and newer return an array of JSON objects instead of piped-versioned fields.
+    https://developer.carbonblack.com/reference/enterprise-response/5.1/rest-api/#netconn_complete
+    """
+    def __init__(self, fields):
+        self.fields = fields
+
+    def format(self):
+        for entry in self.fields:
+            for ipfield in ("remote_ip", "local_ip"):
+                if isinstance(entry[ipfield], int):
+                    entry[ipfield] = socket.inet_ntoa(struct.pack('>i', entry[ipfield]))
         return self.fields
 
 
@@ -229,7 +246,8 @@ class Client(BaseClient):
 
     def get_formatted_ProcessEventDetail(self, process_json: dict):
         complex_fields = {'filemod_complete': filemod_complete, 'modload_complete': modload_complete,
-                          'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete}
+                          'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete,
+                          'netconn_complete': netconn_complete}
         formatted_json = {}
         for field in process_json:
             if field in complex_fields:
@@ -931,7 +949,6 @@ def main() -> None:
             raise NotImplementedError(f'command {command} was not implemented in this integration.')
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

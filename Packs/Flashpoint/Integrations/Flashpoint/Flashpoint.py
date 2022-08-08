@@ -10,7 +10,7 @@ from typing import Dict, Tuple, List, Any
 requests.packages.urllib3.disable_warnings()
 
 """ CONSTANTS """
-INTEGRATION_VERSION = "v1.3.2"
+INTEGRATION_VERSION = "v1.3.3"
 INTEGRATION_PLATFORM = "XSOAR Cortex"
 FIRST_FETCH = "3 days"
 MAX_FETCH = 15
@@ -144,7 +144,7 @@ class Client:
             full_url = self.url + url_suffix
 
         headers = {
-            'Authorization': self.api_key,
+            'Authorization': f"Bearer {self.api_key}",
             'X-FP-IntegrationPlatform': INTEGRATION_PLATFORM,
             'X-FP-IntegrationPlatformVersion': get_demisto_version_as_str(),
             'X-FP-IntegrationVersion': INTEGRATION_VERSION
@@ -1003,7 +1003,8 @@ def ip_lookup_command(client, ip):
             indicator_type=DBotScoreType.IP,
             integration_name=BRAND,
             score=3,
-            malicious_description=MALICIOUS_DESCRIPTION
+            malicious_description=MALICIOUS_DESCRIPTION,
+            reliability=demisto.params().get('integrationReliability')
 
         )
         relationships = create_relationships_list(client, events_details, ip)
@@ -1059,7 +1060,8 @@ def ip_lookup_command(client, ip):
                     'Indicator': ip,
                     'Type': 'ip',
                     'Vendor': 'Flashpoint',
-                    'Score': 2
+                    'Score': 2,
+                    'Reliability': demisto.params().get('integrationReliability')
                 }
             }
             command_results = CommandResults(
@@ -1089,7 +1091,8 @@ def ip_lookup_command(client, ip):
                         'Indicator': ip,
                         'Type': 'ip',
                         'Vendor': 'Flashpoint',
-                        'Score': 2
+                        'Score': 2,
+                        'Reliability': demisto.params().get('integrationReliability')
                     }
                 }
                 command_results = CommandResults(
@@ -1105,7 +1108,8 @@ def ip_lookup_command(client, ip):
                         'Indicator': ip,
                         'Type': 'ip',
                         'Vendor': 'Flashpoint',
-                        'Score': 0
+                        'Score': 0,
+                        'Reliability': demisto.params().get('integrationReliability')
                     }
                 }
                 command_results = CommandResults(
@@ -1151,8 +1155,8 @@ def domain_lookup_command(client, domain):
             indicator_type=DBotScoreType.DOMAIN,
             integration_name=BRAND,
             score=3,
-            malicious_description=MALICIOUS_DESCRIPTION
-
+            malicious_description=MALICIOUS_DESCRIPTION,
+            reliability=demisto.params().get('integrationReliability')
         )
         relationships = []
         if client.create_relationships:
@@ -1204,7 +1208,8 @@ def domain_lookup_command(client, domain):
                 'Indicator': domain,
                 'Type': 'domain',
                 'Vendor': 'Flashpoint',
-                'Score': 0
+                'Score': 0,
+                'Reliability': demisto.params().get('integrationReliability')
             }
         }
         command_results = CommandResults(
@@ -1294,7 +1299,8 @@ def filename_lookup_command(client, filename):
                 'Indicator': filename,
                 'Type': 'filename',
                 'Vendor': 'Flashpoint',
-                'Score': 0
+                'Score': 0,
+                'Reliability': demisto.params().get('integrationReliability')
             }
         }
 
@@ -1337,7 +1343,8 @@ def url_lookup_command(client, url):
             indicator_type=DBotScoreType.URL,
             integration_name=BRAND,
             score=3,
-            malicious_description=MALICIOUS_DESCRIPTION
+            malicious_description=MALICIOUS_DESCRIPTION,
+            reliability=demisto.params().get('integrationReliability')
         )
 
         relationships = []
@@ -1390,7 +1397,8 @@ def url_lookup_command(client, url):
                 'Indicator': url,
                 'Type': 'url',
                 'Vendor': 'Flashpoint',
-                'Score': 0
+                'Score': 0,
+                'Reliability': demisto.params().get('integrationReliability')
             }
         }
         command_results = CommandResults(
@@ -1437,7 +1445,8 @@ def file_lookup_command(client, file):
             indicator_type=DBotScoreType.FILE,
             integration_name=BRAND,
             score=3,
-            malicious_description=MALICIOUS_DESCRIPTION
+            malicious_description=MALICIOUS_DESCRIPTION,
+            reliability=demisto.params().get('integrationReliability')
         )
 
         relationships = []
@@ -1497,13 +1506,15 @@ def file_lookup_command(client, file):
                         'Indicator': file,
                         'Type': 'file',
                         'Vendor': 'Flashpoint',
-                        'Score': 0
+                        'Score': 0,
+                        'Reliability': demisto.params().get('integrationReliability')
                     },
                     {
                         'Indicator': file,
                         'Type': 'hash',
                         'Vendor': 'Flashpoint',
-                        'Score': 0
+                        'Score': 0,
+                        'Reliability': demisto.params().get('integrationReliability')
                     }
 
                 ]
@@ -1524,7 +1535,7 @@ def email_lookup_command(client, email):
     :param email: email address or subject
     :return: command output
     """
-    query = r'+type:("email-dst", "email-src", "email-src-display-name", "email-subject") +value.\*.keyword:"' \
+    query = r'+type:("email-dst", "email-src", "email-src-display-name", "email-subject", "email") +value.\*.keyword:"' \
             + email + '" '
     resp = client.http_request("GET", url_suffix=get_url_suffix(query))
 
@@ -1593,7 +1604,8 @@ def email_lookup_command(client, email):
                 'Indicator': email,
                 'Type': 'email',
                 'Vendor': 'Flashpoint',
-                'Score': 0
+                'Score': 0,
+                'Reliability': demisto.params().get('integrationReliability')
             }
         }
 
@@ -1646,7 +1658,8 @@ def common_lookup_command(client, indicator_value):
             'Indicator': indicator_value,
             'Type': indicator_type,
             'Vendor': 'Flashpoint',
-            'Score': 3
+            'Score': 3,
+            'Reliability': demisto.params().get('integrationReliability')
         }}
 
         return hr, ec, resp

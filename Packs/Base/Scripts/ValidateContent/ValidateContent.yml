@@ -6,8 +6,7 @@ script: ''
 type: python
 subtype: python3
 tags: []
-comment: Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs.
-  This automation script is used as part of the content validation that runs as part of the contribution flow.
+comment: Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs. This automation script is used as part of the content validation that runs as part of the contribution flow.
 enabled: true
 args:
 - default: false
@@ -31,17 +30,17 @@ args:
 - name: use_system_proxy
   auto: PREDEFINED
   predefined:
-    - "yes"
-    - "no"
+  - yes
+  - no
   description: Use system proxy settings to download required models from GitHub.
-  defaultValue: "yes"
+  defaultValue: yes
 - name: trust_any_certificate
   auto: PREDEFINED
   predefined:
-    - "yes"
-    - "no"
+  - yes
+  - no
   description: Trust any certificate (not secure) to download required models from GitHub.
-  defaultValue: "no"
+  defaultValue: no
 outputs:
 - contextPath: ValidationResult.Name
   description: Name of validated item.
@@ -57,6 +56,6 @@ timeout: 600ns
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.5.0
-dockerimage: demisto/xsoar-tools:1.0.0.25075
+dockerimage: demisto/xsoar-tools-hf:1.0.0.31061
 tests:
 - ValidateContent - Test

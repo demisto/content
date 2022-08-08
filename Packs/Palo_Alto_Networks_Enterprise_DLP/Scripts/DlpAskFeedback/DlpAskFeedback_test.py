@@ -90,7 +90,7 @@ def test_slack_ask_user(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'user_id': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
+        'messenger': 'Slack', 'user_id': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
         'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse', 'using-brand': 'SlackV3'
     })
     mocker.patch.object(demisto, 'results')
@@ -103,3 +103,23 @@ def test_slack_ask_user(mocker):
     # Assert
     assert call_args[1]['using-brand'] == 'SlackV3'
     assert call_args[1]['to'] == 'alexios'
+
+
+def test_teams_ask_user(mocker):
+    # Set
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
+    mocker.patch.object(demisto, 'args', return_value={
+        'messenger': 'Microsoft Teams', 'user_id': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
+        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse', 'using-brand': 'SlackV3'
+    })
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
+
+    # Arrange
+    DlpAskFeedback.main()
+    call_args = demisto.executeCommand.call_args[0]
+
+    # Assert
+    assert call_args[1]['using-brand'] == 'Microsoft Teams'
+    assert call_args[1]['team_member'] == 'alexios'

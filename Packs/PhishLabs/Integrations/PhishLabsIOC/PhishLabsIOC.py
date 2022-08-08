@@ -8,12 +8,7 @@ import requests
 from typing import Callable
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
-''' TYPES '''
-
-Response = requests.models.Response
-
+requests.packages.urllib3.disable_warnings()  # type: ignore
 
 ''' GLOBALS/PARAMS '''
 
@@ -51,7 +46,7 @@ class Client:
         data: dict = data if data is not None else {}
 
         try:
-            res: Response = requests.request(
+            res: requests.Response = requests.request(
                 method,
                 self.base_url + path,
                 auth=(self.user_name, self.password),

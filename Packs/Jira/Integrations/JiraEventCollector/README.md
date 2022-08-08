@@ -9,12 +9,10 @@ This integration was integrated and tested with version 3 of Jira Event Collecto
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
-    | Vendor name | For the dataset name for example: jira | True |
-    | Password | For the dataset name for example: jira | True |
     | User name | The user name. For example, `admin@example.com` | True |
     | Password |  | True |
     | First fetch time |(&lt;number&gt; &lt;time unit&gt;. For example, 12 hours, 1 day, 3 months). Default is 3 days. |  | True |
-    | The maximum number of incidents per fetch. | Default is 100 maximum is 1000. |  | True |
+    | The maximum number of incidents per fetch. | Default is 1000. |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -37,7 +35,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description**                                                                                          | **Required** |
 |-------------------|----------------------------------------------------------------------------------------------------------|--------------|
-| max_fetch         | The maximum number of events per fetch. Default is 100 maximum is 1000.                                  | Optional     | 
+| max_fetch         | The maximum number of events per fetch. Default is 1000.                                 | Optional     | 
 | first_fetch       | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). default is 3 days. | Optional     | 
 
 #### Command example

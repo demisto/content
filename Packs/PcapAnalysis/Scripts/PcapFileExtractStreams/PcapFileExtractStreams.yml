@@ -1,0 +1,97 @@
+args:
+- description: The entry_id of the PCAP file from which to extract streams.
+  name: entry_id
+  required: true
+- auto: PREDEFINED
+  defaultValue: text-based-protocol
+  description: The mode of how to convert the binary to text.
+  name: bin2txt_mode
+  predefined:
+  - text-based-protocol
+  - human-readable
+- description: 'Filter to apply on PCAP. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html'
+  name: pcap_filter
+- description: The entry ID for the RSA decryption key.
+  name: rsa_decrypt_key_entry_id
+- description: The WPA password. By providing the password you will be able to decrypt encrypted traffic data.
+  name: wpa_password
+- description: Keys of output items by which to filter them.
+  name: filter_keys
+  type: unknown
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Set to true to generate stream entries, otherwise false.
+  name: verbose
+  predefined:
+  - 'true'
+  - 'false'
+  type: unknown
+- defaultValue: 1-49151
+  description: Default server port numbers by which to decide the direction.
+  name: server_ports
+comment: Extract payloads of each stream from a pcap file.
+commonfields:
+  id: PcapFileExtractStreams
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/pcap-miner:1.0.0.30520
+enabled: true
+name: PcapFileExtractStreams
+outputs:
+- contextPath: PCAPStream.protocol
+  description: Protocol.
+  type: string
+- contextPath: PCAPStream.client_ip
+  description: Client IP address.
+  type: string
+- contextPath: PCAPStream.client_port
+  description: Client port number.
+  type: number
+- contextPath: PCAPStream.server_ip
+  description: Server IP address.
+  type: string
+- contextPath: PCAPStream.server_poprt
+  description: Server port number.
+  type: number
+- contextPath: PCAPStream.stream_size
+  description: Size of the stream data in bytes.
+  type: number
+- contextPath: PCAPStream.stream_text
+  description: The data stream in text.
+  type: string
+- contextPath: PCAPStream.stream_base64
+  description: The data stream in base64.
+  type: string
+- contextPath: PCAPStream.outgoing_size
+  description: Size of the outgoing data in bytes.
+  type: number
+- contextPath: PCAPStream.outgoing_text
+  description: The outgoing data stream in text.
+  type: string
+- contextPath: PCAPStream.outgoing_base64
+  description: The outgoing data stream in base64.
+  type: string
+- contextPath: PCAPStream.incoming_size
+  description: Size of the incoming data in bytes.
+  type: number
+- contextPath: PCAPStream.incoming_text
+  description: The incoming data stream in text.
+  type: string
+- contextPath: PCAPStream.incoming_base64
+  description: The incoming data stream in base64.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- pcap
+- file
+- Utility
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

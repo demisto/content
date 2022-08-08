@@ -1,5 +1,6 @@
-Upload sample to ReversingLabs  A1000 appliance and automatically retrieve the analysis report.
-
+Upload sample to ReversingLabs A1000 appliance and automatically retrieve
+  full & classification reports. Calculate final classification.
+  
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
@@ -10,9 +11,10 @@ This playbook does not use any sub-playbooks.
 * ReversingLabs A1000 v2
 
 ### Scripts
-This playbook does not use any scripts.
+* A1000FinalClassification
 
 ### Commands
+* reversinglabs-a1000-get-classification
 * reversinglabs-a1000-upload-sample-and-get-results
 
 ## Playbook Inputs
@@ -43,4 +45,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Detonate File - ReversingLabs A1000](doc_imgs/Detonate_File_-_ReversingLabs_A1000_Fri_Oct_08_2021.png)
+![Detonate File - ReversingLabs A1000](doc_imgs/Detonate_File_-_ReversingLabs_A1000_Thu_Jun_09_2022.png)

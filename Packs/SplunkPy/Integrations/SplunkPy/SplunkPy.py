@@ -2577,7 +2577,7 @@ def get_store_data(service):
     for store in stores:
         store = service.kvstore[store]
         query = build_kv_store_query(store, args)
-        if 'limit' not in query:
+        if isinstance(query, (str, unicode)):
             query = {'query': query}
         yield store.data.query(**query)
 
@@ -2624,6 +2624,7 @@ def main():
         connection_args['username'] = username
         connection_args['password'] = password
         connection_args['autologin'] = True
+        connection_args['basic'] = True
 
     if use_requests_handler:
         handle_proxy()

@@ -1129,6 +1129,20 @@ class MsClient:
         kwargs.pop('should_use_security_center')
         return self.ms_client.http_request(*args, **kwargs)
 
+    def offboard_machine(self, machine_id, comment):
+        """ Offboard machine from defender.
+
+         Args:
+            machine_id (str): Machine ID
+            comment (str): Comment to associate with the
+        """
+        cmd_url = f'/machines/{machine_id}/offboard'
+        json_data = {
+            "Comment": comment
+        }
+        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return response
+
     def isolate_machine(self, machine_id, comment, isolation_type):
         """Isolates a machine from accessing external network.
 
@@ -1983,6 +1997,43 @@ def get_user_data(user_response):
     return user_data
 
 
+def offboard_machine_command(client: MsClient, args: dict):
+    """Offboard machine from defender.
+
+    Returns:
+       CommandResults. Human readable, context, raw response
+    """
+    if not args.get('machine_id') or not args.get('comment'):
+        raise ValueError("Not all mandatory arguments are provided. Provide both machine_id and comment.")
+    headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
+    machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
+    comment = args.get('comment')
+    machines_action_data = []
+    raw_response = []
+    failed_machines = {}  # if we got an error, we will return the machine ids that failed
+    for machine_id in machine_ids:
+        try:
+            machine_action_response = client.offboard_machine(machine_id, comment)
+            raw_response.append(machine_action_response)
+            machines_action_data.append(get_machine_action_data(machine_action_response))
+        except Exception as e:
+            # if we got an error for a machine, we want to get result for the other ones
+            failed_machines[machine_id] = e
+            continue
+
+    human_readable = tableToMarkdown("The offboard request has been submitted successfully:", machines_action_data,
+                                     headers=headers, removeNull=True)
+    human_readable += add_error_message(failed_machines, machine_ids)
+
+    return CommandResults(
+        outputs=machines_action_data,
+        outputs_prefix="MicrosoftATP.OffboardMachine",
+        outputs_key_field=["ID", "MachineID"],
+        readable_output=human_readable,
+        raw_response=raw_response
+    )
+
+
 def isolate_machine_command(client: MsClient, args: dict):
     """Isolates a machine from accessing external network.
 
@@ -2700,9 +2751,20 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+def get_machine_investigation_package(client: MsClient, args: dict):
+
+    machine_id = args.get('machine_id')
+    comment = args.get('comment')
+    res = client.get_investigation_package(machine_id, comment)
+    human_readable = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
+
+    return CommandResults(outputs_prefix='MicrosoftATP.MachineAction',
+                          readable_output=human_readable, outputs={'action_id': res['id']})
+
+
 def request_download_investigation_package_command(client: MsClient, args: dict):
     return run_polling_command(client, args, 'microsoft-atp-request-and-download-investigation-package',
-                               get_machine_investigation_package_command,
+                               get_machine_investigation_package,
                                get_machine_action_command, download_file_after_successful_status)
 
 
@@ -2776,7 +2838,7 @@ def get_machine_investigation_package_command(client: MsClient, args: dict):
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
     }
-    return CommandResults(readable_output=human_readable, outputs=entry_context, raw_response=machine_action_response)
+    return human_readable, entry_context, machine_action_response
 
 
 def get_investigation_package_sas_uri_command(client: MsClient, args: dict):
@@ -4470,9 +4532,10 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     is_first_run = 'machine_action_id' not in args
     if is_first_run:
         command_results = action_func(client, args)
+        outputs = command_results.outputs
         # schedule next poll
         polling_args = {
-            'machine_action_id': command_results.raw_response.get("id"),
+            'machine_action_id': outputs.get('action_id'),
             'interval_in_seconds': interval_in_secs,
             'polling': True,
             **args,
@@ -4489,15 +4552,19 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     command_result = results_function(client, args)
     action_status = command_result.outputs.get("status")
     demisto.debug(f"action status is: {action_status}")
+
+    # In case command is one of the put/get file/ run script there is command section, otherwise there isnt.
     if command_result.outputs.get("commands", []):
         command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
     else:
         command_status = 'Completed' if action_status == "Succeeded" else None
+
     if action_status in ['Failed', 'Cancelled'] or command_status == 'Failed':
         error_msg = f"Command {action_status}."
         if command_result.outputs.get("commands", []):
             error_msg += f'{command_result.outputs.get("commands", [{}])[0].get("errors")}'
         raise Exception(error_msg)
+
     elif command_status != 'Completed' or action_status == 'InProgress':
         demisto.debug("action status is not completed")
         # schedule next poll
@@ -4838,7 +4905,7 @@ def main():  # pragma: no cover
             return_outputs(*get_machine_action_by_id_command(client, args))
 
         elif command == 'microsoft-atp-collect-investigation-package':
-            return_results(get_machine_investigation_package_command(client, args))
+            return_outputs(*get_machine_investigation_package_command(client, args))
 
         elif command == 'microsoft-atp-get-investigation-package-sas-uri':
             return_outputs(*get_investigation_package_sas_uri_command(client, args))
@@ -4945,6 +5012,8 @@ def main():  # pragma: no cover
             return_results(tampering_command(client, args))
         elif command == 'microsoft-atp-advanced-hunting-cover-up':
             return_results(cover_up_command(client, args))
+        elif command == 'microsoft-atp-offboard-machine':
+            return_results(offboard_machine_command(client, args))
         elif command == 'microsoft-atp-get-machine-users':
             return_results(get_machine_users_command(client, args))
         elif command == 'microsoft-atp-get-machine-alerts':
