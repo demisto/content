@@ -42,11 +42,14 @@ configuration:
   name: redirect_uri
   required: false
   type: 0
-- display: Authorization code (for user-auth mode - received from the authorization step. see Detailed
-    Instructions (?) section)
+- display: Authorization code
+  displaypassword: Authorization code
+  additionalinfo: for user-auth mode - received from the authorization step. see Detailed
+    Instructions (?) section
+  hiddenusername: true
   name: auth_code
   required: false
-  type: 4
+  type: 9
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   hidden: false

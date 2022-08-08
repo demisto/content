@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from Packs.ApiModules.Scripts.MicrosoftApiModule.MicrosoftApiModule import DEVICE_CODE, AUTHORIZATION_CODE  # noqa
+# from Packs.ApiModules.Scripts.MicrosoftApiModule.MicrosoftApiModule import DEVICE_CODE, AUTHORIZATION_CODE  # noqa
 
 import urllib3
 import copy
@@ -12,15 +12,6 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2019-06-01-preview'
-AUTH_TYPES_DICT = {'User Auth': {'grant_type': AUTHORIZATION_CODE,
-                                      'resource': None,
-                                      'scope': 'https://management.azure.com/.default'
-                                      },
-                   'Device': {'grant_type': DEVICE_CODE,
-                                        'resource': 'https://management.core.windows.net',
-                                        'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
-                                        }
-                   }
 ''' CLIENT CLASS '''
 
 
@@ -32,6 +23,15 @@ class Client:
     def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, tenant_id, auth_type,
                  enc_key, auth_code, redirect_uri, azure_ad_endpoint='https://login.microsoftonline.com'):
         self.resource_group_name = resource_group_name
+        AUTH_TYPES_DICT = {'User Auth': {
+            'grant_type': AUTHORIZATION_CODE,
+            'resource': None,
+            'scope': 'https://management.azure.com/.default'},
+            'Device': {
+            'grant_type': DEVICE_CODE,
+            'resource': 'https://management.core.windows.net',
+            'scope': 'https://management.azure.com/user_impersonation offline_access user.read'}
+        }
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -461,8 +461,9 @@ def test_module(client, _):
     """
     if demisto.params().get('auth_type') == 'Device':
         raise Exception("When using device code flow configuration, "
-              "Please enable the integration and run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to log in. You can "
-              "validate the connection by running `!azure-sql-auth-test`\nFor more details press the (?) button.")
+                        "Please enable the integration and run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to log in."
+                        " You can validate the connection by running `!azure-sql-auth-test`\n"
+                        "For more details press the (?) button.")
 
     elif demisto.params().get('auth_type') == 'User Auth':
         raise Exception("When using user auth flow configuration, "
@@ -484,7 +485,7 @@ def main() -> None:
         client = Client(
             tenant_id=params.get('tenant_id'),
             auth_type=params.get('auth_type'),
-            auth_code=params.get('auth_code'),
+            auth_code=params.get('auth_code', {}).get('password'),
             redirect_uri=params.get('redirect_uri'),
             enc_key=params.get('credentials').get('password'),
             app_id=params.get('app_id', ''),
