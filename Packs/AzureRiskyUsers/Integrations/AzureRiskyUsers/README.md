@@ -1,8 +1,27 @@
 Azure Risky Users provides access to all at-risk users and risk detections in Azure AD environment.
 This integration was integrated and tested with version 1.0 of Microsoft Graph Azure Risky Users.
-## Authorization
-In order to connect to the Azure Risky Users use either the Cortex XSOAR Azure App or the Self-Deployed Azure App.
-In both options, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
+# Self-Deployed Application
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+
+The application must have *IdentityRiskEvent.Read.All* ,
+*IdentityRiskEvent.ReadWrite.All*, *IdentityRiskyUser.Read.All*, *IdentityRiskyUser.ReadWrite.All* and *User.Read* permissions. In case you want to use Device code flow you must allow public client flows (can be found under the **Authentication** section of the app).
+
+## Authentication Using the Client Credentials Flow (recommended)
+
+Follow these steps for a self-deployed configuration:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. Select the ***client-credentials*** Authentication Type.
+3. Enter your Client/Application ID in the ***Application ID*** parameter. 
+4. Enter your Client Secret in the ***Client Secret*** parameter.
+5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+6. Save the instance.
+7. Run the ***!azure-risky-users-auth-test*** command - a 'Success' message should be printed to the war-room.
+
+
+## Authentication Using the Device Code Flow -
+
+Follow these steps for a self-deployed configuration:
 
 1. Fill in the required parameters.
 2. Run the ***!azure-risky-users-auth-start*** command.
@@ -11,12 +30,20 @@ In both options, the [device authorization grant flow](https://docs.microsoft.co
 
 At end of the process you'll see a message that you've logged in successfully.
 
-## Azure Application
 
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+# Cortex XSOAR Application
+In order to use the Cortex XSOAR Azure application, 
+use the Client ID - (application_id) (***ec854987-95fa-4c8f-8056-768dd0f409ac***).
 
-The application must have *IdentityRiskEvent.Read.All* ,
-*IdentityRiskEvent.ReadWrite.All*, *IdentityRiskyUser.Read.All*, *IdentityRiskyUser.ReadWrite.All* and *User.Read* permissions and must allow public client flows (can be found under the **Authentication** section of the app).
+## Authentication Using the Device Code Flow -
+In order to connect to the Azure Risky Users using the Cortex XSOAR Azure App with Device Code flow authentication [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
+
+1. Fill in the required parameters - use the above mentioned Client ID - (application_id).
+2. Run the ***!azure-risky-users-auth-start*** command.
+3. Follow the instructions that appear.
+4. Run the ***!azure-risky-users-auth-complete*** command.
+
+At end of the process you'll see a message that you've logged in successfully.
 
 
 ## Configure AzureRiskyUsers on Cortex XSOAR
@@ -27,9 +54,12 @@ The application must have *IdentityRiskEvent.Read.All* ,
 
     | **Parameter** | **Required** |
     | --- | --- |
+    | Client ID | True |
+    | Authentication Type | True |
+    | Tenant ID (for Client Credentials mode) | False |
+    | Client Secret (for Client Credentials mode) | False |
     | Use system proxy | False |
     | Trust any certificate | False |
-    | Client ID | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
