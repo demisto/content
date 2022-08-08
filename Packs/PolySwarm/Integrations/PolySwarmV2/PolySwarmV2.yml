@@ -112,6 +112,21 @@ script:
     - contextPath: PolySwarm.Artifact
       description: The artifact queried.
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
   - arguments:
     - default: true
       description: The IP address for which to retrieve the reputation information.
@@ -423,5 +438,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/polyswarm:1.0.0.18926
+  dockerimage: demisto/polyswarm:1.0.0.29536
 fromversion: 5.0.0
