@@ -15,6 +15,16 @@ configuration:
   name: url
   required: true
   type: 0
+- additionalinfo: Add a certificate file as text for client certificate authentication.
+  display: Certificate File as Text
+  name: cert_text
+  required: false
+  type: 12
+- additionalinfo: Add a key file as text for client certificate authentication.
+  display: Key File as Text
+  name: key_text
+  required: false
+  type: 14
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Bad

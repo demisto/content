@@ -136,6 +136,11 @@ def main() -> None:
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
 
+    # if you want to use client side certificate authorization, provide to the BaseClient
+    # cert_text and key_text parameters, containing the private key and the certificate text
+    cert_text = demisto.params().get('cert_text')
+    key_text = demisto.params().get('key_text')
+
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
@@ -147,7 +152,10 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+            cert_text=cert_text,
+            key_text=key_text
+        )
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

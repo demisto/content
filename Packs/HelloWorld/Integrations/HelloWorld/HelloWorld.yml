@@ -38,6 +38,16 @@ configuration:
   name: apikey
   required: true
   type: 4
+- additionalinfo: Add a certificate file as text for client certificate authentication.
+  display: Certificate File as Text
+  name: cert_text
+  required: false
+  type: 12
+- additionalinfo: Add a key file as text for client certificate authentication.
+  display: Key File as Text
+  name: key_text
+  required: false
+  type: 14
 - defaultvalue: '65'
   display: Score threshold for IP reputation command
   additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
