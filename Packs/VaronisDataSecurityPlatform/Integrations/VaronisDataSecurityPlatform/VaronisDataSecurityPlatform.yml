@@ -336,6 +336,12 @@ script:
       name: page
       required: false
       secret: false
+    - default: false
+      description: Indicates whether events should be ordered in newest to oldest order
+      isArray: false
+      name: descending_order
+      required: false
+      secret: false
     deprecated: false
     description: Get events applied to specific alerts
     execution: false
@@ -402,7 +408,7 @@ script:
       description: Whether the account is stale
       type: Boolean
     - contextPath: Varonis.Event.ByUser.LockoutAccounts
-      description: Wwhether the account is lockout
+      description: Whether the account is lockout
       type: Boolean
     - contextPath: Varonis.Event.SourceIP
       description: Source IP of the device triggered the event

@@ -137,7 +137,8 @@ class Client(BaseClient):
             '/api/alert/alert/SetStatusToAlerts',
             json_data=query)
 
-    def varonis_get_alerted_events(self, alerts: List[str], count: int, page: int) -> List[Dict[str, Any]]:
+    def varonis_get_alerted_events(self, alerts: List[str], count: int, page: int,
+                                   descending_order: bool) -> List[Dict[str, Any]]:
         """Get alerted events
 
         :type alerts: ``List[str]``
@@ -149,6 +150,9 @@ class Client(BaseClient):
         :type page: ``int``
         :param page: Page number
 
+        :type descendingOrder: ``bool``
+        :param descendingOrder: Indicates whether events should be ordered in newest to oldest order
+
         :return: Alerted events
         :rtype: ``List[Dict[str, Any]]``
         """
@@ -157,6 +161,7 @@ class Client(BaseClient):
         request_params['alertId'] = alerts
         request_params['maxResults'] = count
         request_params['offset'] = (page - 1) * count
+        request_params['descendingOrder'] = descending_order
 
         return self._http_request(
             'GET',
@@ -825,7 +830,8 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
         all command arguments, usually passed from ``demisto.args()``.
         ``args['alert_id']`` List of alert ids
         ``args['page']`` Page number (default 1)
-        ``args['max_results']`` The max number of alerts to retrieve (up to 5k)
+        ``args['max_results']`` The max number of events to retrieve (up to 5k)
+        ``args['descending_order']`` Indicates whether events should be ordered in newest to oldest order
 
     :return:
         A ``CommandResults`` object
@@ -835,6 +841,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     alerts = args.get('alert_id', None)
     page = args.get('page', '1')
     max_results = args.get('max_results', '100')
+    descending_order = args.get('descending_order', True)
 
     alerts = try_convert(alerts, lambda x: argToList(x))
     max_results = try_convert(
@@ -848,7 +855,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
         ValueError(f'page should be integer, but it is {page}.')
     )
 
-    events = client.varonis_get_alerted_events(alerts, max_results, page)
+    events = client.varonis_get_alerted_events(alerts, max_results, page, descending_order)
     page_size = len(events)
     outputs = dict()
     outputs['Event'] = events

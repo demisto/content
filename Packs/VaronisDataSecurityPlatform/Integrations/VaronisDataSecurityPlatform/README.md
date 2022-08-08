@@ -206,6 +206,7 @@ Get events applied to specific alerts
 | alert_id | List of alert IDs. | Required | 
 | max_results | Maximum number of alerts to retrieve (up to 5k). | Optional | 
 | page | Page number. Default is 1. | Optional | 
+| descending_order | Indicates whether events should be ordered in newest to oldest order. | Optional |
 
 
 #### Context Output
@@ -227,7 +228,7 @@ Get events applied to specific alerts
 | Varonis.Event.ByUser.Domain | String | Domain of the user that triggered the event | 
 | Varonis.Event. ByUser.DisabledAccount | Boolean | Whether the account is disabled | 
 | Varonis.Event.ByUser.StaleAccount | Boolean | Whether the account is stale | 
-| Varonis.Event.ByUser.LockoutAccounts | Boolean | Wwhether the account is lockout | 
+| Varonis.Event.ByUser.LockoutAccounts | Boolean | Whether the account is lockout | 
 | Varonis.Event.SourceIP | String | Source IP of the device triggered the event | 
 | Varonis.Event. IsMaliciousIP | Boolean | Whether the IP is known to be malicious | 
 | Varonis.Event. IPReputation | Number | Reputation score of the IP. The score is a numeric value from 1-100 | 

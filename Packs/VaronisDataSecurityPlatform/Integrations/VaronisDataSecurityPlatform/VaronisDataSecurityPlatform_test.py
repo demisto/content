@@ -147,7 +147,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     requests_mock.get(
         'https://test.com/api/alert/alert/GetAlerts'
         '?ruleName=Suspicious&fromAlertSeqId=150&status=Open&severity=high&severity=medium&descendingOrder=True'
-        '&aggregate=True&offset=0&maxResult=100',
+        '&aggregate=True&offset=0&maxResult=50',
         json=fetch_output)
 
     client = Client(
@@ -170,7 +170,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
 
     next_run, incidents = fetch_incidents(
         client=client,
-        max_results=100,
+        max_results=50,
         alert_status='Open',
         severity='Medium',
         threat_model='Suspicious',
