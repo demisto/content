@@ -21,6 +21,51 @@ configuration:
   name: defaultOrg
   required: false
   type: 0
+- additionalinfo: The group type to filter by
+  defaultValue: Incident
+  display: Group Type
+  name: group_type
+  options:
+  - Incident
+  - Event
+  required: false
+  type: 16
+- additionalinfo: The status to filter the results by
+  display: Status
+  name: status
+  options:
+  - Deleted
+  - Rejected
+  - Closed
+  - Incident Reported
+  - Restoration Achieved
+  - Containment Achieved
+  - Stalled
+  - Open
+  - New
+  - Escalated
+  - No Further Action
+  - False Positive
+  - Needs Review
+  required: false
+  type: 16
+- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
+    3 months, 1 year)
+  name: first_fetch_time
+  type: 0
+  required: true
+  defaultvalue: 3 days
+- additionalinfo: The metadata we want to collect.
+  display: Incident Metadata
+  name: fields
+  options:
+  - associatedGroups
+  - associatedIndicators
+  - tags
+  - securityLabels
+  - associatedVictimAssets
+  required: false
+  type: 16
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -445,7 +490,7 @@ script:
       type: Unknown
   - arguments:
     - description: The name of the tag.
-      name: tags
+      name: tag
       required: true
     - description: The indicator to tag. For example, for an IP indicator, "8.8.8.8".
       name: indicator
@@ -749,10 +794,20 @@ script:
       name: indicatorType
       predefined:
       - Address
-      - EmailAddress
-      - URL
+      - Agent
+      - User
+      - Registry Key
+      - Mutex
+      - Hashtag
+      - Email Subject
+      - Subject
+      - Email
+      - CIDR
       - Host
+      - URL
+      - ASN
       - File
+      - EmailAddress
       required: true
     - auto: PREDEFINED
       description: The type of hash for file indicator.
@@ -862,13 +917,13 @@ script:
   - arguments:
     - default: true
       description: The name of the incident group.
-      name: name
+      name: incidentName
       required: true
     - description: The creation time of an incident in the "2017-03-21T00:00:00Z"
         format.
       name: eventDate
     - description: A comma-separated list of The tags applied to the incident.
-      name: tags
+      name: tag
     - auto: PREDEFINED
       description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
         "TLP:AMBER", or "TLP:WHITE".
@@ -929,7 +984,7 @@ script:
       name: incidentId
       required: true
     - default: true
-      description: The name of the indicator.
+      description: The id of the indicator.
       name: indicator
       required: true
     description: Associates an indicator with an existing incident. The indicator
@@ -1103,10 +1158,8 @@ script:
   - arguments:
     - default: true
       description: The ID of the incident.
-      name: id
+      name: incidentId
       required: true
-    - description: A list of indicators filtered by the owner.
-      name: owner
     description: Returns indicators that are related to a specific incident.
     name: tc-get-incident-associate-indicators
     outputs:
@@ -1334,11 +1387,11 @@ script:
       description: The web link of the indicator.
       type: string
   - arguments:
-    - description: The name of the indicator from which to remove a tag.
+    - description: The id of the indicator from which to remove a tag.
       name: indicator
       required: true
     - description: The name of the tag to remove from the indicator.
-      name: tags
+      name: tag
       required: true
     description: Removes a tag from a specified indicator.
     name: tc-delete-indicator-tag
@@ -1429,7 +1482,7 @@ script:
       type: string
   - arguments:
     - description: The id of the indicator to delete.
-      name: indicatorId
+      name: indicator
       required: true
     description: Deletes an indicator from ThreatConnect.
     name: tc-delete-indicator
@@ -1555,8 +1608,8 @@ script:
     name: tc-delete-group
   - arguments:
     - description: The ID of the group to which to add attributes. To get the ID of
-        the group, run the tc-get-groups command.
-      name: id
+        the group, run the tc-list-groups command.
+      name: group_id
       required: true
     - description: The type of attribute to add to the group. The type is located
         in the UI in a specific group or under Org Config.
@@ -1717,22 +1770,22 @@ script:
       name: filter
       type: string
     - description: Add group tags metadata to the results.
-      name: includeTags
+      name: include_tags
       type: bool
     - description: Add group security labels metadata to the results.
-      name: includeSecurityLabels
+      name: include_security_labels
       type: bool
     - description: Add group attributes metadata to the results.
-      name: includeAttributes
+      name: include_attributes
       type: bool
     - description: Add group associated groups metadata to the results.
-      name: includeAssociatedGroups
+      name: include_associated_groups
       type: bool
     - description: Add group associated indicators metadata to the results.
-      name: includeAssociatedIndicators
+      name: include_associated_indicators
       type: bool
     - description: Add all group metadata to the results.
-      name: includeAllMetaData
+      name: include_all_metaData
       type: bool
     description: Returns all groups.
     name: tc-list-groups
@@ -1757,8 +1810,8 @@ script:
       type: Number
   - arguments:
     - description: The ID of the group to which to add the security label. To get
-        the ID, run the tc-get-groups command.
-      name: id
+        the ID, run the tc-list-groups command.
+      name: group_id
       required: true
     - auto: PREDEFINED
       description: The security label applied to the document. Can be "TLP:RED", "TLP:GREEN",
@@ -1775,8 +1828,8 @@ script:
     name: tc-add-group-security-label
   - arguments:
     - description: The ID of the group to which to add the tag. To get the ID, run
-        the tc-get-groups command.
-      name: id
+        the tc-list-groups command.
+      name: group_id
       required: true
     - description: The name of the tag to add to the group.
       name: tag_name
@@ -1811,11 +1864,11 @@ script:
       type: String
   - arguments:
     - description: The name/id of the indicator
-      name: associated_indicator_id
+      name: indicator
       required: true
-    - description: The ID of the group. To get the ID of the group, run the tc-get-groups
+    - description: The ID of the group. To get the ID of the group, run the tc-list-groups
         command.
-      name: id
+      name: group_id
       required: true
     deprecated: true
     description: Deprecated, replaced by tc-update-group.
@@ -1880,9 +1933,9 @@ script:
       description: The ID of the group to which the attribute was added.
       type: Number
   - arguments:
-    - description: The ID of the group to retrieve. To get the ID, run the tc-get-groups
+    - description: The ID of the group to retrieve. To get the ID, run the tc-list-groups
         command.
-      name: id
+      name: group_id
       required: true
     deprecated: true
     description: Deprecated, replaced by tc-list-groups.
@@ -1911,7 +1964,7 @@ script:
       type: String
   - arguments:
     - description: The ID of the group for which to return the attribute. To get the
-        ID, run the tc-get-groups command.
+        ID, run the tc-list-groups command.
       name: group_id
       required: true
     deprecated: true
@@ -1938,8 +1991,8 @@ script:
       type: String
   - arguments:
     - description: The ID of the group for which to return the security labels. To
-        get the ID, run the tc-get-groups command.
-      name: id
+        get the ID, run the tc-list-groups command.
+      name: group_id
       required: true
     deprecated: true
     description: Deprecated, replaced by tc-list-groups.
@@ -1956,8 +2009,8 @@ script:
       type: Date
   - arguments:
     - description: The ID of the group for which to return the tags. To get the ID,
-        run the tc-get-groups command.
-      name: id
+        run the tc-list-groups command.
+      name: group_id
       required: true
     deprecated: true
     description: Deprecated, replaced by tc-list-groups.
@@ -2005,8 +2058,8 @@ script:
       type: String
   - arguments:
     - description: The ID of the group for which to return the indicators. To get
-        the ID, run the tc-get-groups command.
-      name: id
+        the ID, run the tc-list-groups command.
+      name: group_id
       required: true
     deprecated: true
     description: Deprecated. Use tc-list-groups instead.
@@ -2062,9 +2115,9 @@ script:
       description: The type of the group.
       type: String
   - arguments:
-    - description: The ID of the group. To get the ID of the group, run the tc-get-groups
+    - description: The ID of the group. To get the ID of the group, run the tc-list-groups
         command.
-      name: id
+      name: group_id
       required: true
     - description: The ID of the group to associate.
       name: associated_group_id
@@ -2187,6 +2240,7 @@ script:
       type: string
   dockerimage: demisto/threatconnect-py3-sdk:1.0.0.23423
   runonce: false
+  isfetch: true
   script: ''
   subtype: python3
   type: python

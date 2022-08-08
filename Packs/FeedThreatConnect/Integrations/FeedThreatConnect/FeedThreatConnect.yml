@@ -22,56 +22,11 @@ configuration:
   name: tags
   required: false
   type: 0
-- additionalinfo: The group type to filter by
-  defaultValue: Incident
-  display: Group Type
-  name: group_type
-  options:
-  - Incident
-  - Event
-  required: false
-  type: 16
-- additionalinfo: The status to filter the results by
-  display: Status
-  name: status
-  options:
-  - Deleted
-  - Rejected
-  - Closed
-  - Incident Reported
-  - Restoration Achieved
-  - Containment Achieved
-  - Stalled
-  - Open
-  - New
-  - Escalated
-  - No Further Action
-  - False Positive
-  - Needs Review
-  required: false
-  type: 16
 - additionalinfo: Comma-separated list of owners to fetch indicators from.
-  display: Source
+  display: Owners
   name: owners
   required: false
   type: 0
-- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
-    3 months, 1 year)
-  name: first_fetch_time
-  type: 0
-  required: true
-  defaultvalue: 3 days
-- additionalinfo: The metadat we want to collect.
-  display: Incident Metadata
-  name: fields
-  options:
-  - associatedGroups
-  - associatedIndicators
-  - tags
-  - securityLabels
-  - associatedVictimAssets
-  required: false
-  type: 16
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
