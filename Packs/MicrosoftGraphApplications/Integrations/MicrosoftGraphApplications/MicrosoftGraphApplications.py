@@ -212,7 +212,7 @@ def main():
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
             enc_key=(params.get('credentials') or {}).get('password'),
             tenant_id=params.get('tenant_id'),
-            connection_type=params.get('authentication_type')
+            connection_type=params.get('authentication_type', 'Device')
         )
 
         if command == 'test-module':
