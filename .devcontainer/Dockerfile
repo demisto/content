@@ -41,7 +41,6 @@ RUN apt-get update && apt-get -y --no-install-recommends upgrade && apt-get inst
     software-properties-common \
     apt-transport-https \
     dpkg-dev \
-    gcc \
     libbz2-dev \
     libc6-dev \
     libdb-dev \
@@ -64,12 +63,11 @@ RUN apt-get update && apt-get -y --no-install-recommends upgrade && apt-get inst
     && pip install pipx \
     && pipx ensurepath \
     && source ~/.zshrc \
-    && source ~/.zshrc \
     && python --version \
     && poetry --version \
     && pyenv --version \
     && source ~/.zshrc \
     && npm install -g jsdoc-to-markdown@5.0.3 \
     # install poetry plugin for oh my zsh 
-    && poetry completions zsh > $HOME/.oh-my-zsh/custom/plugins/poetry
-
+    && poetry completions zsh > $HOME/.oh-my-zsh/custom/plugins/poetry \
+    && apt-get autoclean && apt-get clean
