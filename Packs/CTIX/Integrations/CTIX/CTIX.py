@@ -266,7 +266,8 @@ def ip_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
                 indicator=ip_data.get("name2"),
                 indicator_type=DBotScoreType.IP,
                 integration_name='CTIX',
-                score=score
+                score=score,
+                reliability=demisto.params().get('integrationReliability')
             )
             ip_standard_context = Common.IP(
                 ip=ip_data.get("name2"),
@@ -286,6 +287,7 @@ def ip_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
                 indicator_type=DBotScoreType.IP,
                 integration_name="CTIX",
                 score=0,
+                reliability=demisto.params().get('integrationReliability')
             )
             ip_standard_context = Common.IP(
                 ip=ip_key,
@@ -335,7 +337,8 @@ def domain_details_command(client: Client, args: Dict[str, Any]) -> List[Command
                 indicator=domain_key,
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name='CTIX',
-                score=score
+                score=score,
+                reliability=demisto.params().get('integrationReliability')
             )
             domain_standard_context = Common.Domain(
                 domain=domain_key,
@@ -354,6 +357,7 @@ def domain_details_command(client: Client, args: Dict[str, Any]) -> List[Command
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name="CTIX",
                 score=0,
+                reliability=demisto.params().get('integrationReliability')
             )
             domain_standard_context = Common.Domain(
                 domain=domain_key,
@@ -403,6 +407,7 @@ def url_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
                 indicator_type=DBotScoreType.URL,
                 integration_name='CTIX',
                 score=score,
+                reliability=demisto.params().get('integrationReliability')
             )
             url_standard_context = Common.URL(
                 url=url_key,
@@ -413,7 +418,7 @@ def url_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
                 outputs_prefix='CTIX.URL',
                 outputs_key_field='name2',
                 outputs=url_data,
-                indicator=url_standard_context
+                indicator=url_standard_context,
             ))
         else:
             dbot_score = Common.DBotScore(
@@ -421,6 +426,7 @@ def url_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
                 indicator_type=DBotScoreType.URL,
                 integration_name="CTIX",
                 score=0,
+                reliability=demisto.params().get('integrationReliability')
             )
             url_standard_context = Common.URL(
                 url=url_key,
@@ -469,7 +475,8 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
                 indicator=file_key,
                 indicator_type=DBotScoreType.FILE,
                 integration_name='CTIX',
-                score=score
+                score=score,
+                reliability=demisto.params().get('integrationReliability')
             )
             file_standard_context = Common.File(
                 name=file_key,
@@ -497,6 +504,7 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
                 indicator_type=DBotScoreType.FILE,
                 integration_name="CTIX",
                 score=0,
+                reliability=demisto.params().get('integrationReliability')
             )
             file_standard_context = Common.File(
                 name=file_key,
