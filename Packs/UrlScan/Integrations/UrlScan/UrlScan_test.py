@@ -1,9 +1,11 @@
+import json
 import time
 from threading import Thread
-import pytest
-import demistomock as demisto
-import json
 
+import pytest
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 RETURN_ERROR_TARGET = 'UrlScan.return_error'
 SCAN_URL = 'https://urlscan.io/api/v1/scan/'
@@ -29,11 +31,14 @@ def test_continue_on_blacklisted_error_arg(mocker, requests_mock, continue_on_bl
     mocker.patch.object(demisto, 'args', return_value=args)
     client = Client()
 
-    http_request(client, 'POST', 'scan/', json=json.dumps(data))
+    response = http_request(client, 'POST', 'scan/', json=json.dumps(data))
     if continue_on_blacklisted_urls:
         assert return_error_mock.call_count == 0
     else:
-        assert return_error_mock.call_count == 1
+        assert response[0].get('is_error') is True
+        assert response[0].get('error_string') == 'Error in API call to URLScan.io [400] - None: The submitted domain' \
+                                                  ' is on our blacklist. For your own safety we did not perform this' \
+                                                  ' scan...'
 
 
 def test_endless_loop_on_failed_response(requests_mock, mocker):
@@ -56,3 +61,40 @@ def test_endless_loop_on_failed_response(requests_mock, mocker):
     thread.start()
     time.sleep(10)
     assert not thread.is_alive(), 'format_results method have probably entered an endless loop'
+
+
+def test_urlscan_submit_url(requests_mock, mocker):
+    """
+    Given
+    - Two URLs which are rate limited
+    When
+    - running the !url command
+    Then
+    - Assert the items are scheduled and the metrics are correct.
+    """
+    from UrlScan import urlscan_submit_command, Client
+    import CommonServerPython
+
+    response_json = {
+        'is_error': True
+    }
+    args = {
+        'url': 'https://something.com,https://somethingelse.com'
+    }
+    requests_mock.post(SCAN_URL, status_code=429, json=response_json, headers={'X-Rate-Limit-Reset-After': '123'})
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+
+    client = Client()
+
+    response = urlscan_submit_command(client=client)
+    scheduled_command = response[0].scheduled_command
+    scheduled_command_args = scheduled_command._args
+    assert scheduled_command_args['polling'] is True
+    assert scheduled_command_args['url'] == ['https://something.com', 'https://somethingelse.com']
+    assert scheduled_command._next_run == '123'
+    assert scheduled_command._items_remaining == 2
+
+    metrics = response[1]
+    assert metrics.execution_metrics == [{'Type': 'QuotaError', 'APICallsCount': 2}]
