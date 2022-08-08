@@ -72,7 +72,7 @@ class Client:
 
         else:  # Device Flow
             return ('https://graph.microsoft.com/IdentityRiskyUser.Read.All'
-                    ' IdentityRiskEvent.ReadWrite.All IdentityRiskyUser.Read.All' 
+                    ' IdentityRiskEvent.ReadWrite.All IdentityRiskyUser.Read.All'
                     ' IdentityRiskyUser.ReadWrite.All offline_access')
 
     @staticmethod
