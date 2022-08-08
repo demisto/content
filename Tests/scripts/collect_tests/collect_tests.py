@@ -322,7 +322,11 @@ class BranchTestCollector(TestCollector):
                     raise ValueError(f'test playbook with id {yml.id_} is missing from conf.test_ids')
 
             case FileType.INTEGRATION:
-                tests = tuple(self.conf.integrations_to_tests[yml.id_])
+                if yml.id_ in self.conf.integrations_to_tests:
+                    tests = tuple(self.conf.integrations_to_tests[yml.id_])
+                else:
+                    logger.warning(f'no tests in conf.json for integration {yml.id_}')
+                    tests = ()
                 reason = CollectionReason.INTEGRATION_CHANGED
 
             case FileType.SCRIPT | FileType.PLAYBOOK:
@@ -332,11 +336,11 @@ class BranchTestCollector(TestCollector):
 
                 except NoTestsConfiguredException:
                     # collecting all tests that implement this script/playbook
-                    source = {
+                    id_to_tests = {
                         FileType.SCRIPT: self.id_set.implemented_scripts_to_tests,
                         FileType.PLAYBOOK: self.id_set.implemented_playbooks_to_tests
                     }[actual_content_type]
-                    tests = tuple(test.name for test in source.get(yml.id_, ()))
+                    tests = tuple(test.name for test in id_to_tests.get(yml.id_, ()))
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED_NO_TESTS
 
                     if not tests:  # no tests were found in yml nor in id_set
