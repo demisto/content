@@ -1,6 +1,5 @@
 [MODEL:model="Network", dataset="zscaler_zpa_raw"]
- filter cat in ("ZPA User Activity")
-|alter XDM.Network.rule = policy ,
+alter XDM.Network.rule = policy ,
  XDM.Network.Destination.port = dstPort,
  XDM.Network.event_timestamp = _time,
 XDM.Network.Destination.ipv4=dst,
@@ -47,22 +46,3 @@ XDM.Audit.session_context_id	=	SessionID,
 XDM.Audit.TriggeredBy.location.country	=	CountryCode,
 XDM.Audit.audited_resource_before.type	=	SessionType;
 
-[MODEL:model="Network", dataset="zscaler_zpa_raw"]
-filter cat in ("ZPA User Status")
-| alter XDM.Network.Source.bytes= srcBytes,
- XDM.Network.Destination.bytes= dstBytes,
- XDM.Network.event_timestamp = _time,
- XDM.Network.observation_timestamp = _insert_time,
- XDM.Network.Source.ipv4 = src,
- XDM.Network.Observer.vendor=_vendor,
- XDM.Network.Observer.product=_product,
- XDM.Network.Source.user.username = usrName ,
- XDM.Network.Source.host.os_family=Platform,
- XDM.Network.Source.host.ipv4_addresses=arraycreate(coalesce(srcPreNAT, "")),
- XDM.Network.session_context_id=SessionID,
- XDM.Network.outcome=SessionStatus,
- XDM.Network.Source.location.country=ClientCountryCode ,
- XDM.Network.original_event_type = cat,
- XDM.Network.tls.client_certificate.subject=CertificateCN,
-XDM.Network.Source.location.geo=concat("lat: ", to_string(ClientLatitude), " lon: ", to_string(ClientLongitude)),
- XDM.Network.Source.host.hostname=identHostName;
