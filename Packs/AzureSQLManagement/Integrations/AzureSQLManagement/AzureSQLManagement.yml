@@ -22,11 +22,11 @@ configuration:
 - additionalinfo: Type of authentication - could be User Authorization Flow (recommended) or Device Flow.
   display: Authentication Type
   name: auth_type
-  required: true
-  defaultvalue: device_code_flow
+  required: false
+  defaultvalue: Device
   options:
-  - user_auth_flow
-  - device_code_flow
+  - User Auth
+  - Device
   type: 15
 - display: Tenant ID (for user-auth mode)
   name: tenant_id

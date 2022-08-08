@@ -23,11 +23,6 @@ In order to connect to the Azure SQL Management using either Cortex XSOAR Azure 
     | Authorization code | as received from the authorization step | False |
     | Application redirect URI | the redirect URI entered in the Azure portal | False |
 
-   
-2. Run the ***!azure-sql-auth-start*** command. 
-3. Follow the instructions that appear.
-4. Run the ***!azure-sql-auth-complete*** command.
-
 At the end of the process you'll see a message that you've logged in successfully.
 
 
