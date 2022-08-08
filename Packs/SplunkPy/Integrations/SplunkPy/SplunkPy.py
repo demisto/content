@@ -557,7 +557,6 @@ class Notable:
             'mirror_instance': demisto.integrationInstance(),
             'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
         })
-        incident["rawJSON"] = json.dumps(notable_data)
 
         labels = []
         if demisto.get(demisto.params(), 'parseNotableEventsRaw'):
@@ -567,6 +566,11 @@ class Notable:
                 for rawKey in rawDict:
                     val = rawDict[rawKey] if isinstance(rawDict[rawKey], str) else convert_to_str(rawDict[rawKey])
                     labels.append({'type': rawKey, 'value': val})
+                    if rawKey not in notable_data:
+                        notable_data.update({rawKey: val})
+
+        demisto.info("================json is: =====================\n"+ json.dumps(notable_data))
+        incident["rawJSON"] = json.dumps(notable_data)
         if demisto.get(notable_data, 'security_domain'):
             labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
         incident['labels'] = labels
