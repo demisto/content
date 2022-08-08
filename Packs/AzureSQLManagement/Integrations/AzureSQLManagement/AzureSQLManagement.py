@@ -44,12 +44,12 @@ class Client:
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=AUTH_TYPES_DICT[auth_type]['grant_type'],  # disable-secrets-detection
+            grant_type=AUTH_TYPES_DICT.get(auth_type, {}).get('grant_type'),  # disable-secrets-detection
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            resource=AUTH_TYPES_DICT[auth_type]['resource'],  # disable-secrets-detection
-            scope=AUTH_TYPES_DICT[auth_type]['scope'],
+            resource=AUTH_TYPES_DICT.get(auth_type, {}).get('resource'),  # disable-secrets-detection
+            scope=AUTH_TYPES_DICT.get(auth_type, {}).get('scope'),
             ok_codes=(200, 201, 202, 204),
             redirect_uri=redirect_uri,
             auth_code=auth_code,
