@@ -900,5 +900,6 @@ def test_search_intelligence(mocker):
     # run
     result = search_intelligence(client, **args)
 
-    assert result.outputs[0].get('Itype') == 'c2_ip'
+    assert result.outputs[0].get('itype') == 'c2_ip'
     assert result.outputs_prefix == 'ThreatStream.Intelligence'
+    

@@ -708,7 +708,7 @@ for time in UTC time. |
     },
     "Domain": {
         "CreationDate": "2021-03-31T10:17:13.553Z",
-        "DNS": "144.76.162.245",
+        "DNS": "1.1.1.1",
         "Geo": {
             "Country": "DE",
             "Location": "51.2993,9.491"
@@ -719,7 +719,7 @@ for time in UTC time. |
             {
                 "EntityA": "y.gp",
                 "EntityAType": "Domain",
-                "EntityB": "144.76.162.245",
+                "EntityB": "1.1.1.1",
                 "EntityBType": "IP",
                 "Relationship": "resolved-from"
             }
