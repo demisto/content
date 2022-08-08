@@ -2596,12 +2596,12 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
 
 
 def panorama_get_url_category_command(
-        url_cmd: str,
-        url: str,
-        additional_suspicious: list,
-        additional_malicious: list,
-        reliability: str,
-        target: Optional[str] = None
+    url_cmd: str,
+    url: str,
+    additional_suspicious: list,
+    additional_malicious: list,
+    reliability: str,
+    target: Optional[str] = None
 ):
     """
     Get the url category from Palo Alto URL Filtering
@@ -2638,7 +2638,8 @@ def panorama_get_url_category_command(
                 indicator=url,
                 indicator_type=DBotScoreType.URL,
                 integration_name='PAN-OS',
-                score=max_url_dbot_score
+                score=max_url_dbot_score,
+                reliability=reliability
             )
             url_obj = Common.URL(
                 url=url,
@@ -2658,7 +2659,8 @@ def panorama_get_url_category_command(
                 indicator=url,
                 indicator_type=DBotScoreType.URL,
                 integration_name='PAN-OS',
-                score=score
+                score=score,
+                reliability=reliability
             )
             url_obj = Common.URL(
                 url=url,
