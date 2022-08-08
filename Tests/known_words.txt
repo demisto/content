@@ -196,6 +196,3 @@ pagination
 XDM
 Fortinet
 ADFS
-https://install.python-poetry.org
-https://pyenv.run
-jsdoc-to-markdown
