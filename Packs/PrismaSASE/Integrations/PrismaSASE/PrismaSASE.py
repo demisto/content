@@ -443,7 +443,7 @@ def push_candidate_config_command(client: Client, args: dict, default_tsg_id: st
 
 def list_security_rules_command(client: Client, args: dict, default_tsg_id: str):
 
-   # Get all security rules for a given Prisma Access Folder / Position
+    # Get all security rules for a given Prisma Access Folder / Position
 
     query_params = {
         'folder': encode_string_results(args.get('folder')),
