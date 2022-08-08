@@ -49,15 +49,14 @@ or _raw_log contains "euqgui_logs: Info: login:" or _raw_log contains "euqgui_lo
 | alter appliance= arrayindex(regextract(_raw_log ,"Appliance:\s([^\,]+)") ,0)
 | alter location= arrayindex(regextract(_raw_log ,"Location\:\s([^\,]+)") ,0)
 | alter event_id= arrayindex(regextract(_raw_log ,"Event\:\s([^\.]+)") ,0)
-
 | alter XDM.Auth.observation_timestamp =parse_timestamp("%h %e %T",Timestamp)
 | alter XDM.Auth.original_event_description = Message
 | alter XDM.Auth.original_event_type = log_category
 | alter XDM.Auth.Client.user.username= Username
-| alter XDM.Auth.Client.process.pid= Process_id
+| alter XDM.Auth.Client.process.pid= to_number(Process_id)
 | alter XDM.Auth.Server.process.command_line= command 
-| alter XDM.Auth.Client.host.ipv4_addresses = Destination_ip
-| alter XDM.Auth.Client.ipv4 = Sourceip
+| alter XDM.Auth.Client.host.ipv4_addresses = arraycreate(coalesce(destination_ip, ""))
+| alter XDM.Auth.Client.ipv4 = Sourceip 
 | alter XDM.Auth.Observer.product= appliance
 | alter XDM.Auth.Server.process.executable.path= location
 | alter XDM.Auth.original_event_id= event_id;
