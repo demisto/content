@@ -62,7 +62,7 @@
 	"features": {
 		"docker-in-docker": "latest",
 		"git": "os-provided",
-		"github-cli": "latest",
+		"github-cli": "latest"
 	},
 	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc && pipx install demisto-sdk --force && NO_HOOKS=1 .hooks/bootstrap"
 }
