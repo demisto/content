@@ -7178,11 +7178,11 @@ def append_metrics(execution_metrics, results):
     """
     :type execution_metrics: ``ExecutionMetrics``
     :param execution_metrics: metrics object to be added to CommandResults list.
-    :type results: ``List``
+    :type results: ``list``
     :param results: Command results list to append metrics to.
 
     :return: the list appended with the metrics if the server version is supported.
-    :rtype: ``List``
+    :rtype: ``list``
     """
 
     if execution_metrics.metrics is not None and execution_metrics.is_supported():
