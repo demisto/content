@@ -190,7 +190,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       ('.gitlab/helper_functions.sh',)),
 
      # Empty content folder: expecting XSIAM collector to not collect anything
-     (MockerCases.empty, (), ALWAYS_INSTALLED_PACKS, None, XSIAM_BRANCH_ARGS, ()),
+     (MockerCases.empty, (), (), None, XSIAM_BRANCH_ARGS, ()),
 
      # Case A, yml file changes, expect the test playbook testing the integration to be collected
      (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
