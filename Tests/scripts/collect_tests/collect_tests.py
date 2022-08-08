@@ -626,7 +626,7 @@ def output(result: Optional[CollectionResult]):
 
     test_str = '\n'.join(sorted(result.tests, key=lambda x: x.lower()))
     pack_str = '\n'.join(sorted(result.packs, key=lambda x: x.lower()))
-    machine_str = ','.join(str(m) for m in machines)
+    machine_str = ', '.join(str(m) for m in machines)
 
     logger.info(f'collected {len(result.tests)} tests:\n{test_str}')
     logger.info(f'collected {len(result.packs)} packs:\n{pack_str}')
