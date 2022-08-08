@@ -457,11 +457,11 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
         raw.append(entry)
         flat.append(flat_entry)
-    decode_cookie = b64_encode(cookie) if cookie else None
+    encode_cookie = b64_encode(cookie) if cookie else None
     return {
         "raw": raw,
         "flat": flat,
-        "page_cookie": decode_cookie
+        "page_cookie": encode_cookie
     }
 
 
@@ -549,7 +549,8 @@ def free_search(default_base_dn, page_size):
     )
 
     ec = {} if context_output == 'no' else {'ActiveDirectory.Search(obj.dn == val.dn)': entries['flat'],
-                                            'ActiveDirectory.SearchPageCookie': entries['page_cookie'],
+                                            'ActiveDirectory(obj.SearchPageCookie)': {
+                                                'SearchPageCookie': entries['page_cookie']}
                                             }
     demisto_entry = {
         'ContentsFormat': formats['json'],
@@ -641,7 +642,6 @@ def search_users(default_base_dn, page_size):
             if args.get('user-account-control-out', '') == 'true':
                 user['userAccountControl'] = COMMON_ACCOUNT_CONTROL_FLAGS.get(
                     user_account_control) or user_account_control
-
     demisto_entry = {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
@@ -652,7 +652,7 @@ def search_users(default_base_dn, page_size):
             'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
             # 'backward compatability' with ADGetUser script
             'Account(obj.ID == val.ID)': accounts,
-            'ActiveDirectory.UsersPageCookie': entries['page_cookie']
+            'ActiveDirectory(obj.UsersPageCookie)': {'UsersPageCookie': entries['page_cookie']}
         }
     }
     demisto.results(demisto_entry)
@@ -776,7 +776,7 @@ def search_computers(default_base_dn, page_size):
                 'ActiveDirectory.Computers(obj.dn == val.dn)': entries['flat'],
                 # 'backward compatability' with ADGetComputer script
                 'Endpoint(obj.ID == val.ID)': endpoints,
-                'ActiveDirectory.ComputersPageCookie': entries['page_cookie']
+                'ActiveDirectory(obj.ComputersPageCookie)': {'ComputersPageCookie': entries['page_cookie']}
             },
             raw_response=entries['raw'],
         )
@@ -797,7 +797,6 @@ def search_group_members(default_base_dn, page_size):
     nested_search = '' if args.get('disable-nested-search') == 'true' else ':1.2.840.113556.1.4.1941:'
     time_limit = int(args.get('time_limit', 180))
     account_name = args.get('sAMAccountName')
-
     custom_attributes: List[str] = []
 
     default_attribute_mapping = {
@@ -834,9 +833,7 @@ def search_group_members(default_base_dn, page_size):
         size_limit=size_limit,
         page_cookie=page_cookie
     )
-
     members = [{'dn': entry['dn'], 'category': member_type} for entry in entries['flat']]
-
     demisto_entry = {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
@@ -848,7 +845,7 @@ def search_group_members(default_base_dn, page_size):
                 'dn': group_dn,
                 'members': members
             },
-            'ActiveDirectory.GroupsPageCookie': entries['page_cookie']
+            'ActiveDirectory(obj.GroupsPageCookie)': {'GroupsPageCookie': entries['page_cookie']}
         }
     }
 
