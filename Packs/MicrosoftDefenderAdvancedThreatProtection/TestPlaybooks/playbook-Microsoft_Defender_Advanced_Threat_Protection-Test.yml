@@ -1276,7 +1276,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "55"
+      - "8"
     scriptarguments:
       machine_id:
         complex:
@@ -1296,54 +1296,6 @@ tasks:
         "position": {
           "x": 910,
           "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
-    taskid: 72616323-5fe2-44a6-878a-91f674ee97a3
-    type: condition
-    task:
-      id: 72616323-5fe2-44a6-878a-91f674ee97a3
-      version: -1
-      name: Assert logged on users
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: MicrosoftATP.MachineUser.ID
-            iscontext: true
-          right:
-            value:
-              simple: demisto
-      - - operator: startWith
-          left:
-            value:
-              simple: MicrosoftATP.MachineUser.MachineID
-            iscontext: true
-          right:
-            value:
-              simple: "4899036"
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1945
         }
       }
     note: false
