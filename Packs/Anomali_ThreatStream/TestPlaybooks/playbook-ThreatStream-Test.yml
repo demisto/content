@@ -513,7 +513,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2320
+          "y": 2310
         }
       }
     note: false
@@ -1011,10 +1011,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 31d2e740-d3ea-4042-836b-0bdea96ed84f
+    taskid: 13ba55e8-5415-4606-8445-f92edf04159e
     type: regular
     task:
-      id: 31d2e740-d3ea-4042-836b-0bdea96ed84f
+      id: 13ba55e8-5415-4606-8445-f92edf04159e
       version: -1
       name: threatstream-search-intelligence
       description: Return filtered intelligence from ThreatStream. If a query is defined,
@@ -1025,10 +1025,10 @@ tasks:
       brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
-      - "28"
+      - "29"
     scriptarguments:
       limit:
-        simple: "2"
+        simple: "1"
       type:
         simple: ip
       value:
@@ -1087,18 +1087,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: 7d18ad37-bed3-4187-834d-eeb6e4baf065
+  "29":
+    id: "29"
+    taskid: eb4c681c-94ac-4e6c-85c8-48dca9044e00
     type: condition
     task:
-      id: 7d18ad37-bed3-4187-834d-eeb6e4baf065
+      id: eb4c681c-94ac-4e6c-85c8-48dca9044e00
       version: -1
-      name: ValidateContent
-      description: Runs validation and linting using the Demisto SDK on content items,
-        such as integrations, automations and content packs. This automation script
-        is used as part of the content validation that runs as part of the contribution
-        flow.
+      name: Validate Context
       type: condition
       iscommand: false
       brand: ""
@@ -1107,28 +1103,23 @@ tasks:
       - "14"
     separatecontext: false
     conditions:
-    - label: condition-1
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ThreatStream.Intelligence.itype
+              simple: ThreatStream.Intelligence.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
               simple: ThreatStream.Intelligence.ip
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatStream.Intelligence.type
-            iscontext: true
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 2140
+          "y": 2120
         }
       }
     note: false
@@ -1143,7 +1134,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2775,
+        "height": 2765,
         "width": 2100,
         "x": 50,
         "y": -390
@@ -1153,5 +1144,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-system: true
 description: ''
