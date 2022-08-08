@@ -8242,6 +8242,18 @@ if 'requests' in sys.modules:
             The request authorization, for example: (username, password).
             Can be None.
 
+        :type cert_text: ``dict`` or ``tuple`` or ``None``
+        :param auth:
+            The request authorization Client Certificate (text from param).
+            Can be None.
+            If you use certificate, add private key as well.
+
+        :type key_text: ``dict`` or ``tuple`` or ``None``
+        :param auth:
+            The request authorization private key (text from param).
+            Can be None.
+            If you use private key, add certificate as well.
+
         :return: No data returned
         :rtype: ``None``
         """
@@ -8257,6 +8269,8 @@ if 'requests' in sys.modules:
             headers=None,
             auth=None,
             timeout=REQUESTS_TIMEOUT,
+            cert_text=None,
+            key_text=None,
         ):
             self._base_url = base_url
             self._verify = verify
@@ -8264,7 +8278,7 @@ if 'requests' in sys.modules:
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
-            self._cert = create_crt_param(cert_text=cert_text, key_text=key_text)
+            self._cert = create_crt_files(cert_text=cert_text, key_text=key_text)
 
             # the following condition was added to overcome the security hardening happened in Python 3.10.
             # https://github.com/python/cpython/pull/25778
@@ -8375,7 +8389,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, empty_valid_codes=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, cert=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -8467,6 +8481,11 @@ if 'requests' in sys.modules:
             :param error_handler: Given an error entery, the error handler outputs the
                 new formatted error message.
 
+            :type cert: ``tuple``
+            :param cert:
+                The client side certificate: tuple of certificate and private key files' paths.
+                if None, will use self._cert.
+
             :type empty_valid_codes: ``list``
             :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
                 can vary)
@@ -8477,6 +8496,7 @@ if 'requests' in sys.modules:
                 address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
+                cert = cert if cert else self._cert
                 if retries:
                     self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
                 if not timeout:
@@ -8494,6 +8514,7 @@ if 'requests' in sys.modules:
                     headers=headers,
                     auth=auth,
                     timeout=timeout,
+                    cert=cert,
                     **kwargs
                 )
                 # Handle error responses gracefully
@@ -8587,7 +8608,7 @@ if 'requests' in sys.modules:
             return response.ok
 
 
-def create_crt_param(cert_text, key_text):
+def create_crt_files(cert_text, key_text):
     if not cert_text and not key_text:
         return None
     elif not cert_text or not key_text:
