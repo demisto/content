@@ -36,7 +36,7 @@ def trigger_generic_webhook(options):
     }
     # post to Content Gold
     res = requests.post(SECRETS_INSTANCE_URL, json=body, auth=(username, password))
-    raise Exception(f'{res=}, {body=}, and {bool(username)}, {bool(password)}')
+    raise Exception(f'{res.json()=}, {body=}, and {bool(username)}, {bool(password)}')
 
     if res.status_code != 200:
         raise ConnectionError(
