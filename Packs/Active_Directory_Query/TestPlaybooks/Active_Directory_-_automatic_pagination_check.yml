@@ -1,14 +1,7 @@
-id: de52e7db-3d37-4afb-8826-0fe846bf7060
-version: 2
+id: Active Directory - automatic pagination check
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: ""
-    itemVersion: 1.0.1
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Active Directory - automatic pagination check
 starttaskid: "0"
 tasks:
@@ -22,11 +15,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -85,7 +78,6 @@ tasks:
                       value:
                         simple: active
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -111,8 +103,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -135,9 +127,7 @@ tasks:
       id: eaee78fa-f9a0-4f90-86e0-2b0a66e9c9fa
       version: -1
       name: Run ad-get-user with limit
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -149,7 +139,6 @@ tasks:
       limit:
         simple: "100"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -195,7 +184,6 @@ tasks:
           right:
             value:
               simple: "100"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -227,7 +215,6 @@ tasks:
       message:
         simple: '"limit is not set currently" '
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -262,7 +249,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -296,10 +282,9 @@ tasks:
     scriptarguments:
       filter:
         simple: (&(objectCategory=person)(objectClass=user)(!(cn=andy)))
-      limit:
+      size-limit:
         simple: "100"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -322,9 +307,7 @@ tasks:
       id: 5be3b908-5657-48ac-86c2-8bd37b19683a
       version: -1
       name: Run ad-get-computer with limit
-      description: Retrieves detailed information about a computer account. The computer
-        can be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filters are provided, all computers are returned.
+      description: Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
       script: '|||ad-get-computer'
       type: regular
       iscommand: true
@@ -336,7 +319,6 @@ tasks:
       limit:
         simple: "100"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -359,8 +341,7 @@ tasks:
       id: 1b0eecff-2af1-4976-844f-b6055556b07f
       version: -1
       name: Run ad-get-group-members with limit
-      description: Retrieves the list of users or computers that are members of the
-        specified group.
+      description: Retrieves the list of users or computers that are members of the specified group.
       script: '|||ad-get-group-members'
       type: regular
       iscommand: true
@@ -374,7 +355,6 @@ tasks:
       limit:
         simple: "100"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -420,8 +400,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "50"
-    continueonerrortype: ""
+              simple: "100"
     view: |-
       {
         "position": {
@@ -468,7 +447,6 @@ tasks:
           right:
             value:
               simple: "2"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -515,7 +493,6 @@ tasks:
           right:
             value:
               simple: "3"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -547,7 +524,7 @@ inputs:
   value: {}
   required: false
   description: Search for user by the sAMAccountName attribute in Active Directory.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UserEmail
   value:
     complex:
@@ -557,7 +534,7 @@ inputs:
       - operator: uniq
   required: false
   description: Search for user by the email attribute in Active Directory.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: UserManagerEmail
   description: The email of the user's manager.
@@ -565,3 +542,5 @@ outputs:
   description: The display name of the user's manager.
   type: unknown
 sourceplaybookid: Active Directory - Get User Manager Details
+fromversion: 5.0.0
+description: Checked the Automatic Pagination, in case limit argument was given

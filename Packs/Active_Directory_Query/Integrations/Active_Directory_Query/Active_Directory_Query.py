@@ -521,7 +521,7 @@ def free_search(default_base_dn, page_size):
     args = demisto.args()
 
     search_filter = args.get('filter')
-    size_limit = int(args.get('limit', '0'))
+    size_limit = int(args.get('size-limit', '0'))
     time_limit = int(args.get('time-limit', '0'))
     search_base = args.get('base-dn') or default_base_dn
     attributes = args.get('attributes')

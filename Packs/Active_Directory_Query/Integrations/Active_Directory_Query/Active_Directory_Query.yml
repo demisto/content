@@ -130,7 +130,7 @@ script:
     - name: attributes
       description: A CSV list of the object attributes to return. For example, "dn,memberOf".
         To return all object attributes, specify 'ALL'.
-    - name: limit
+    - name: size-limit
       description: The maximum number of records to return.
       defaultValue: "50"
     - name: time-limit
@@ -148,15 +148,15 @@ script:
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
-    - contextPath: ActiveDirectory.SearchPageCookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
-      type: string
     - contextPath: 'ActiveDirectory.Search.dn'
       description: The distinguished names that match the query.
       type: string
     - contextPath: 'ActiveDirectory.Search'
       description: The result of the search.
       type: unknown
+    - contextPath: ActiveDirectory.SearchPageCookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
+      type: string
     description: Runs Active Directory queries.
   - name: ad-add-to-group
     arguments:
@@ -308,7 +308,7 @@ script:
     - name: attributes
       description: Adds AD attributes of the resulting objects to the default attributes.
     - name: attributes-to-exclude
-      description: Excludes these attributes of the resulting objects.
+      description: Removes AD attributes of the resulting objects from the attributes.
     - name: custom-field-type
       description: Queries users by custom field type.
     - name: custom-field-data
@@ -473,9 +473,6 @@ script:
     - name: limit
       description: The maximum number of records to return.
     outputs:
-    - contextPath: ActiveDirectory.ComputersPageCookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
-      type: string
     - contextPath: 'ActiveDirectory.Computers.dn'
       description: The computer distinguished name.
     - contextPath: 'ActiveDirectory.Computers.memberOf'
@@ -488,6 +485,9 @@ script:
       description: The computer host name.
     - contextPath: 'Endpoint.Groups'
       description: Groups for which the computer is listed as a member.
+    - contextPath: ActiveDirectory.ComputersPageCookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
+      type: string
     description: 'Retrieves detailed information about a computer account. The computer
       can be specified by name, email address, or as an Active Directory Distinguished
       Name (DN). If no filters are provided, all computers are returned.'
@@ -539,9 +539,6 @@ script:
     - name: limit
       description: The maximum number of records to return.
     outputs:
-    - contextPath: ActiveDirectory.GroupsPageCookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
-      type: string
     - contextPath: 'ActiveDirectory.Groups.dn'
       description: The group DN.
       type: string
@@ -550,6 +547,9 @@ script:
       type: string
     - contextPath: 'ActiveDirectory.Groups.members.category'
       description: The group members category.
+      type: string
+    - contextPath: ActiveDirectory.GroupsPageCookie
+      description: An opaque string received in a paged search, used for requesting subsequent entries.
       type: string
     description: Retrieves the list of users or computers that are members of the
       specified group.

@@ -1,14 +1,7 @@
-id: 7ef9dcb9-3414-44a2-8129-276bf3a74aa8
-version: 2
+id: Active Directory - manual pagination check
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: ""
-    itemVersion: 1.0.1
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Active Directory - manual pagination check
 starttaskid: "0"
 tasks:
@@ -22,11 +15,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -85,7 +78,6 @@ tasks:
                       value:
                         simple: active
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -111,8 +103,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -135,9 +127,7 @@ tasks:
       id: a880cc1f-870d-4d37-8eb6-64e8e5576159
       version: -1
       name: Run ad-get-user with page-size=1
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -149,7 +139,6 @@ tasks:
       page-size:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -195,7 +184,6 @@ tasks:
           right:
             value:
               simple: "1"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -227,7 +215,6 @@ tasks:
       message:
         simple: '"Default limit is not set currently" '
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -262,7 +249,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -285,9 +271,7 @@ tasks:
       id: b251a209-e871-4105-8f84-cb2a6281f8c0
       version: -1
       name: Run ad-get-user with page-cookie
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -301,7 +285,6 @@ tasks:
       page-size:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -330,7 +313,6 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -376,7 +358,6 @@ tasks:
           right:
             value:
               simple: "2"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -399,9 +380,7 @@ tasks:
       id: c0f4bb7a-192d-44d4-89d5-70cc08d10500
       version: -1
       name: Run ad-get-computer with page-size=1
-      description: Retrieves detailed information about a computer account. The computer
-        can be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filters are provided, all computers are returned.
+      description: Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
       script: '|||ad-get-computer'
       type: regular
       iscommand: true
@@ -413,7 +392,6 @@ tasks:
       page-size:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -460,7 +438,6 @@ tasks:
           right:
             value:
               simple: "1"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -483,9 +460,7 @@ tasks:
       id: 81c5834a-b786-413e-8d0b-0db9d416d0f6
       version: -1
       name: Run ad-get-computer with page-cookie
-      description: Retrieves detailed information about a computer account. The computer
-        can be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filters are provided, all computers are returned.
+      description: Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
       script: '|||ad-get-computer'
       type: regular
       iscommand: true
@@ -499,7 +474,6 @@ tasks:
       page-size:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -546,7 +520,6 @@ tasks:
           right:
             value:
               simple: "2"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -583,7 +556,6 @@ tasks:
       page-size:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -630,7 +602,6 @@ tasks:
           right:
             value:
               simple: "1"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -669,7 +640,6 @@ tasks:
       page-size:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -716,7 +686,6 @@ tasks:
           right:
             value:
               simple: "2"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -739,8 +708,7 @@ tasks:
       id: 3530049b-227c-4ead-826a-954ce080e19f
       version: -1
       name: Run ad-get-group-members with page-size=1
-      description: Retrieves the list of users or computers that are members of the
-        specified group.
+      description: Retrieves the list of users or computers that are members of the specified group.
       script: '|||ad-get-group-members'
       type: regular
       iscommand: true
@@ -754,7 +722,6 @@ tasks:
       page-size:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -801,7 +768,6 @@ tasks:
           right:
             value:
               simple: "1"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -840,7 +806,6 @@ tasks:
       page-size:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -882,7 +847,6 @@ tasks:
           right:
             value:
               simple: "1"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -929,7 +893,6 @@ tasks:
           right:
             value:
               simple: "1"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -952,8 +915,7 @@ tasks:
       id: 7158f587-f369-4efc-8380-7c07e93b11f3
       version: -1
       name: Run ad-get-group-members with page-cookie
-      description: Retrieves the list of users or computers that are members of the
-        specified group.
+      description: Retrieves the list of users or computers that are members of the specified group.
       script: '|||ad-get-group-members'
       type: regular
       iscommand: true
@@ -969,7 +931,6 @@ tasks:
       page-size:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1016,7 +977,6 @@ tasks:
           right:
             value:
               simple: "2"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1051,7 +1011,7 @@ inputs:
   value: {}
   required: false
   description: Search for user by the sAMAccountName attribute in Active Directory.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UserEmail
   value:
     complex:
@@ -1061,7 +1021,7 @@ inputs:
       - operator: uniq
   required: false
   description: Search for user by the email attribute in Active Directory.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: UserManagerEmail
   description: The email of the user's manager.
@@ -1069,3 +1029,5 @@ outputs:
   description: The display name of the user's manager.
   type: unknown
 sourceplaybookid: Active Directory - Get User Manager Details
+fromversion: 5.0.0
+description: Checked the Manual Pagination, by using the page-cookie and page-size arguments
