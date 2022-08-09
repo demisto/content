@@ -52,6 +52,13 @@ class CollectionReason(str, Enum):
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
+REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
+    # these may be used without an id_set or conf.json object, see _validate_args.
+    CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
+    CollectionReason.ALWAYS_INSTALLED_PACKS
+}
+
+
 class CollectionResult:
     def __init__(
             self,
@@ -76,8 +83,8 @@ class CollectionResult:
         :param reason: CollectionReason explaining the collection
         :param version_range: XSOAR versions on which the content should be tested, matching the from/toversion fields.
         :param reason_description: free text elaborating on the collection, e.g. path of the changed file.
-        :param conf: a ConfJson object. It may be None only when reason==DUMMY_OBJECT_FOR_COMBINING.
-        :param id_set: an IdSet object. It may be None only when reason==DUMMY_OBJECT_FOR_COMBINING.
+        :param conf: a ConfJson object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
+        :param id_set: an IdSet object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
         :param is_sanity: whether the test is a sanity test. Sanity tests do not have to be in the id_set.
         """
         self.tests: set[str] = set()
@@ -106,16 +113,15 @@ class CollectionResult:
         """
         Validates the arguments of the constructor.
         """
-        if reason not in {CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
-                          CollectionReason.ALWAYS_INSTALLED_PACKS}:
+        if reason not in REASONS_ALLOWING_NO_ID_SET_OR_CONF:
             for (arg, arg_name) in ((conf, 'conf.json'), (id_set, 'id_set')):
                 if not arg:
-                    # may be None only when reason==DUMMY_OBJECT_FOR_COMBINING
+                    # may be None only when reason not in REASONS_ALLOWING_NO_ID_SET_OR_CONF
                     raise ValueError(f'no {arg_name} was provided')
 
-            if not any((pack, test)):
-                # should not be none unless reason==DUMMY_OBJECT_FOR_COMBINING
-                raise ValueError('neither pack nor test were provided')
+        if not any((pack, test)) and reason != CollectionReason.DUMMY_OBJECT_FOR_COMBINING:
+            # at least one is required, unless the reason is DUMMY_OBJECT_FOR_COMBINING
+            raise ValueError('neither pack nor test were provided')
 
         if test:
             if not is_sanity:  # sanity tests do not show in the id_set
@@ -480,12 +486,12 @@ class BranchTestCollector(TestCollector):
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
         files = []
         for line in filter(None, diff.splitlines()):
-            status, path = line.split()
-            if status != 'D':
-                files.append(path)
-            else:
-                logger.warning(f'Found a file deleted from git {path}, '
+            git_status, file_path = line.split()
+            if git_status == 'D':  # git-deleted file
+                logger.warning(f'Found a file deleted from git {file_path}, '
                                f'skipping it as TestCollector cannot properly find the appropriate tests (by design)')
+                continue
+            files.append(file_path)  # non-deleted files (added, modified)
         return tuple(files)
 
 
