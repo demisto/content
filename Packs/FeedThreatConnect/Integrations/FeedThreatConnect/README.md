@@ -1,5 +1,5 @@
 This integration fetches indicators from ThreatConnect.
-This integration was integrated and tested with version xx of ThreatConnect Feed
+This integration was integrated and tested with version 3 of ThreatConnect Feed
 
 ## Configure ThreatConnect Feed on Cortex XSOAR
 
