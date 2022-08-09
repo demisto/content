@@ -13,6 +13,7 @@ description: |-
   * Forcepoint
   * Checkpoint
   * Netcraft
+  * EDL
 starttaskid: "0"
 tasks:
   "0":
@@ -128,7 +129,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: Blocklist.URL
@@ -584,7 +585,7 @@ tasks:
     task:
       id: 21af0a6a-234a-4061-884a-86f3209ae79e
       version: -1
-      name: No URL was definded
+      name: No URL was defined
       type: title
       iscommand: false
       brand: ""
@@ -795,7 +796,9 @@ tasks:
         type: multiSelect
         options: []
         optionsarg:
-        - simple: ${inputs.URL}
+        - complex:
+            root: inputs.URL
+        - {}
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
@@ -1013,7 +1016,8 @@ tasks:
       key:
         simple: Blocklist.URL
       value:
-        simple: ${inputs.URL}
+        - complex:
+            root: inputs.URL
     separatecontext: false
     view: |-
       {
@@ -1115,7 +1119,8 @@ tasks:
       - "2"
     scriptarguments:
       attack:
-        simple: ${inputs.URL}
+        - complex:
+            root: inputs.URL
       comment:
         simple: Malicious - Added by Netcraft Integration
     separatecontext: false
@@ -1192,6 +1197,14 @@ inputs:
   value: {}
   required: false
   description: The list of categories. Relevant from PAN-OS v9.x.
+  playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values:True/False. Default:True.
+    Specify if User Verification is Requrired
   playbookInputQuery:
 outputs: []
 tests:

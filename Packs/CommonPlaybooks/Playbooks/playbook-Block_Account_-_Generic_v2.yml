@@ -9,6 +9,13 @@ description: |-
   Supported integrations for this playbook:
   * Active Directory
   * PAN-OS - This requires PAN-OS 9.1 or higher.
+  * SailPoint
+  * PingOne
+  * AWS IAM
+  * Clarizen IAM
+  * Envoy IAM
+  * ExceedLMS IAM
+  * Okta
 starttaskid: "0"
 tasks:
   "0":
@@ -1578,8 +1585,7 @@ view: |-
   }
 inputs:
   - key: Username
-    value:
-      simple: DEM359748,DEM531065,DEM185402,cpwquwbs@test.com,b1d4aqjp
+    value: {}
     required: false
     description: Array of malicious usernames to block.
     playbookInputQuery:
@@ -1590,8 +1596,7 @@ inputs:
     description: PAN-OS Tag name to apply to the username that you want to block.
     playbookInputQuery:
   - key: NamingConvention
-    value:
-      simple: DEM,106
+    value: {}
     required: false
     description: In case you are using naming convention in your IDP, please specify a prefix for special/service accounts (use comma separated)
     playbookInputQuery:
