@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-# from Packs.ApiModules.Scripts.MicrosoftApiModule.MicrosoftApiModule import DEVICE_CODE, AUTHORIZATION_CODE  # noqa
 
 import urllib3
 import copy
@@ -427,10 +426,10 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[
 @logger
 def test_connection(client: Client) -> CommandResults:
     if demisto.params().get('auth_type') == 'Device':
-        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+        client.azure_sql_servers_list()  # If fails, MicrosoftApiModule returns an error
         return CommandResults(readable_output='✅ Success!')
     else:
-        client.azure_sql_servers_list()  # If fails, MicrosoftApiModule returns an error
+        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
         return CommandResults(readable_output='✅ Success!')
 
 
