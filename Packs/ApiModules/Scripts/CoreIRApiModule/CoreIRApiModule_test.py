@@ -2959,3 +2959,53 @@ class TestPollingCommands:
             ]
         }
         assert command_result[0].outputs_prefix == 'PaloAltoNetworksXDR.ScriptResult'
+
+
+@pytest.mark.parametrize(
+    'args, expected_filters',
+    [
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test'},
+            [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}]
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'status': 'disconnected'},
+            [{'field': 'endpoint_status', 'operator': 'IN', 'value': ['disconnected']}]
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'hostname': 'hostname', 'group_name': 'test_group'},
+            [
+                {'field': 'group_name', 'operator': 'in', 'value': ['test_group']},
+                {'field': 'hostname', 'operator': 'in', 'value': ['hostname']}
+            ]
+        )
+    ]
+)
+def test_add_tag_endpoint(requests_mock, args, expected_filters):
+    """
+    Given:
+      - command arguments
+      - expected filters as a body rquest
+
+    When:
+      - executing the core-add-tag-endpoint command
+
+    Then:
+      - make sure the body request was sent as expected to the api request and that human readable is valid.
+    """
+    from CoreIRApiModule import add_tag_to_endpoints_command
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    add_tag_mock = requests_mock.post(f'{Core_URL}/public_api/v1/tags/agents/assign/', json={})
+
+    result = add_tag_to_endpoints_command(client=client, args=args)
+
+    assert result.readable_output == "Successfully added tag test to endpoint(s) ['1', '2']"
+    assert add_tag_mock.last_request.json() == {
+        'context': {
+            'lcaas_id': ['1', '2'],
+        },
+        'request_data': {
+            'filters': expected_filters,
+            'tag': 'test'
+        }
+    }

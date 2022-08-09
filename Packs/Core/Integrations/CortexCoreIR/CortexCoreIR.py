@@ -440,6 +440,9 @@ def main():  # pragma: no cover
         elif command == 'core-get-dynamic-analysis':
             return_results(get_dynamic_analysis_command(client, args))
 
+        elif command == 'core-add-endpoint-tag':
+            return_results(add_endpoint_tag_command(client, args))
+
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
 
