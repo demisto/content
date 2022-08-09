@@ -9,7 +9,7 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "DisableMonthly": true,
+    "disableMonthly": true,
     "tags": [
         "Email"
     ],
