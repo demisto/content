@@ -4,7 +4,7 @@ import demistomock as demisto
 import pytest
 
 from AzureKubernetesServices import (API_VERSION, AKSClient,
-                                     clusters_addon_update, clusters_list, test_module)
+                                     clusters_addon_update, clusters_list)
 
 app_id = 'app_id'
 subscription_id = 'subscription_id'
@@ -95,7 +95,7 @@ def test_clusters_addon_update(client, requests_mock):
 @pytest.mark.parametrize('params, expected_results', [
     ({'auth_type': 'Device'}, "When using device code flow configuration"),
     ({'auth_type': 'User Auth'}, "When using user auth flow configuration")])
-def test_test_module_command(mocker, client, params, expected_results):
+def test_test_module_command(mocker, params, expected_results):
     """
         Given:
             - Case 1: Integration params with 'Device' as auth_type.
@@ -107,7 +107,8 @@ def test_test_module_command(mocker, client, params, expected_results):
             - Case 1: Should throw an exception related to Device-code-flow config and return True.
             - Case 2: Should throw an exception related to User-Auth-flow config and return True.
     """
+    from AzureKubernetesServices import test_module
     mocker.patch.object(demisto, 'params', return_value=params)
     with pytest.raises(Exception) as e:
-        test_module(client=client)
+        test_module(None)
     assert expected_results in str(e.value)

@@ -1,35 +1,15 @@
 Deploy and manage containerized applications with a fully managed Kubernetes service.
 This integration was integrated and tested with API version 2021-09-01 of AKS.
 
-## Authorization
-In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
+# Self-Deployed Application
+To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
+* The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
+* The application must allow **public client flows** (can be found under the *Authentication* section of the Azure Kubernetes Services app registrations).
 
-### Authentication Using the Device Code Flow
-Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
-to link Azure SQL Management with Cortex XSOAR.
+In case you want to use Device code flow, you must allow public client flows (can be found under the **Authentication** section of the app).
 
-In order to connect to the Azure Kubernetes Services using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
-
-To connect to the Azure SQL Management:
-1. Fill in the required parameters.
-2. choose the user_auth_flow option in the ***Device*** parameter.
-3. Run the ***!azure-ks-auth-start*** command. 
-4. Follow the instructions that appear.
-5. Run the ***!azure-ks-auth-complete*** command.
-
-At end of the process you'll see a message that you've logged in successfully. 
-
-
-### Self-Deployed Application - User Authentication Flow
-
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Authorize on behalf of a user](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user).
-
-#### Required Permissions
-The required API permissions are for the ***Microsoft Threat Protection*** app.
- * offline_access - Delegate
- * Incident.ReadWrite.All - Application
- * AdvancedHunting.Read.All - Application
+### Authentication Using the User - Authentication Flow
 
 Follow these steps for a self-deployed configuration:
 
@@ -40,21 +20,23 @@ Follow these steps for a self-deployed configuration:
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
 6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
 7. Enter your Authorization code in the ***Authorization code*** parameter.
-
+7. Save the instance.
+8. Run the ***!azure-ks-auth-test*** command - a 'Success' message should be printed to the War Room.
 
 #### Cortex XSOAR Azure App
 
 In order to use the Cortex XSOAR Azure application, use the default application ID (ab217a43-e09b-4f80-ae93-482fc7a3d1a3).
 
-You only need to fill in your subscription ID and resource group name. For more details, follow [Azure Integrations Parameters](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
+### Authentication Using the Device Code Flow
+Follow these steps for a self-deployed configuration:
 
-#### Self-Deployed Azure App
+1. Fill in the required parameters.
+2. choose the 'Device' option in the ***user_auth_flow*** parameter.
+3. Run the ***!azure-ks-auth-start*** command. 
+4. Follow the instructions that appear.
+5. Run the ***!azure-ks-auth-complete*** command.
 
-To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
-
-* The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
-* The application must allow **public client flows** (can be found under the *Authentication* section of the Azure Kubernetes Services app registrations).
-
+At end of the process you'll see a message that you've logged in successfully. 
 
 ## Configure Azure Kubernetes Services on Cortex XSOAR
 
@@ -70,6 +52,11 @@ To use a self-configured Azure application, you need to add a [new Azure App Reg
     | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
+    | Tenant ID (for User Auth mode) | Tenant ID | False |
+    | Client Secret (for User Auth mode) | Encryption key given by the admin | False |
+    | Authentication Type | The request authentication type for the instance | False |
+    | Authorization code | as received from the authorization step | False |
+    | Application redirect URI | the redirect URI entered in the Azure portal | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
