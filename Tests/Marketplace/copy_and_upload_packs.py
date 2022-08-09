@@ -356,7 +356,7 @@ def main():
     logging.debug(f"os.path.exists(packs_results_file_path_2): {os.path.exists(packs_results_file_path_2)}")
 
     pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict, \
-        pc_uploaded_images = get_upload_data(packs_results_file_path_2, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        pc_uploaded_images = get_upload_data(packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
 
 
 

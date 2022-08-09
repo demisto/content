@@ -332,6 +332,8 @@ force-pack-upload:
   needs: ["create-instances-upload-flow"]
   rules:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   extends:
     - .default-job-settings
   script:
