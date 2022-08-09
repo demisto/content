@@ -102,6 +102,7 @@ class Pack(object):
         self._partner_name = None  # initialized in enhance_pack_attributes function
         self._content_commit_hash = None  # initialized in enhance_pack_attributes function
         self._preview_only = None  # initialized in enhance_pack_attributes function
+        self._disable_monthly = None  # initialized in enhance_pack_attributes
         self._tags = None  # initialized in enhance_pack_attributes function
         self._categories = None  # initialized in enhance_pack_attributes function
         self._content_items = None  # initialized in collect_content_items function
@@ -660,7 +661,8 @@ class Pack(object):
                 Metadata.PARTNER_ID: self._partner_id,
                 Metadata.PARTNER_NAME: self._partner_name,
                 Metadata.CONTENT_COMMIT_HASH: self._content_commit_hash,
-                Metadata.PREVIEW_ONLY: self._preview_only
+                Metadata.PREVIEW_ONLY: self._preview_only,
+                Metadata.DISABLE_MONTHLY: self._disable_monthly
             })
 
         return pack_metadata
@@ -2352,6 +2354,7 @@ class Pack(object):
                 self._partner_id = self.user_metadata.get(Metadata.PARTNER_ID, "")
                 self._partner_name = self.user_metadata.get(Metadata.PARTNER_NAME, "")
                 self._content_commit_hash = self.user_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
+                self._disable_monthly = self.user_metadata.get(Metadata.DISABLE_MONTHLY, False)
                 # Currently all content packs are legacy.
                 # Since premium packs cannot be legacy, we directly set this attribute to false.
                 self._legacy = False
