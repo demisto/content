@@ -650,8 +650,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     pprof = demisto_client.generic_request_func(client, host, '/monitoring/pprof', 'GET')
     logging.info(f'pprof after installing:\n{pprof}')
     health = demisto_client.generic_request_func(client, host, '/monitoring/health', 'GET')
-    logging.info(f'health after getting dependencies:\n{health}')
+    logging.info(f'health after installing:\n{health}')
     dbstats = demisto_client.generic_request_func(client, host, '/monitoring/dbstats', 'GET')
-    logging.info(f'dbstats after getting dependencies:\n{dbstats}')
+    logging.info(f'dbstats after installing:\n{dbstats}')
 
     return packs_to_install, SUCCESS_FLAG
