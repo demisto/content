@@ -699,6 +699,47 @@ script:
     execution: false
     name: triage-update-profile
     description: Update an existing profile
+  - name: triage-query-search
+    arguments:
+      - name: query
+        required: true
+        description: The search query for Triage
+    outputs:
+      - contextPath: Triage.submissions.completed
+        description: Date the sample analysis was completed
+        type: date
+      - contextPath: Triage.submissions.filename
+        description: Name of the file submitted
+        type: string
+      - contextPath: Triage.submissions.id
+        description: Unique identifier of the submission
+        type: string
+      - contextPath: Triage.submissions.kind
+        description: Type of analysis
+        type: string
+      - contextPath: Triage.submissions.private
+        description: If the submissions is private or publically viewable
+        type: boolean
+      - contextPath: Triage.submissions.status
+        description: Status of the submitted file
+        type: string
+      - contextPath: Triage.submissions.submitted
+        description: Date the sample was submitted
+        type: date
+      - contextPath: Triage.submissions.tasks.id
+        description: Array of tasks that have been applied to the sample (static, behavioral,
+          etc)
+        type: string
+      - contextPath: Triage.submissions.tasks.status
+        description: Status of the task
+        type: string
+      - contextPath: Triage.submissions.tasks.target
+        description: Sample the task is being run on
+        type: string
+      - contextPath: Triage.submissions.url
+        description: URL that was submitted
+        type: string
+    description: Get a list of private and public samples matching the search query
   - arguments:
     - default: false
       isArray: false

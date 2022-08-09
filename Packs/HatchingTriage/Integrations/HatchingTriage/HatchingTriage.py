@@ -190,9 +190,14 @@ def get_report_triage(client: Client, **args) -> CommandResults:
     """
     sample_id = args.get("sample_id")
     task_id = args.get("task_id")
+    if not task_id.startswith("behavioral"):
+        return_error(
+            "Only behavioral reports can be retrieved with this command. "
+            "Task ID must be 'behavioral' followed by a number. "
+            "E.G: 'behavioral1'"
+        )
 
     r = client._http_request("GET", f"samples/{sample_id}/{task_id}/report_triage.json")
-
     score = 0
     indicator: Any
     if 'sample' in r:
@@ -435,6 +440,16 @@ def delete_profile(client: Client, **args) -> str:
     return results
 
 
+def query_search(client, **args) -> CommandResults:
+    params = {"query": args.get("query")}
+
+    r = client._http_request("GET", "search", params=params)
+
+    results = CommandResults(
+        outputs_prefix="Triage.samples", outputs_key_field="id", outputs=r["data"]
+    )
+    return results
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -447,6 +462,7 @@ def main():
     commands = {
         "test-module": test_module,
         "triage-query-samples": query_samples,
+        "triage-query-search": query_search,
         "triage-submit-sample": submit_sample,
         "triage-get-sample": get_sample,
         "triage-get-sample-summary": get_sample_summary,
