@@ -13,25 +13,37 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-- display: Tenant ID (for Client Credentials mode)
-  name: _tenant_id
+- additionalinfo: Type of authentication - could be User Authorization Flow (recommended) or Device Flow.
+  display: Authentication Type
+  name: auth_type
+  required: false
+  defaultvalue: Device
+  options:
+  - User Auth
+  - Device
+  type: 15
+- display: Tenant ID (for user-auth mode)
+  name: tenant_id
   required: false
   type: 0
-- display: Client Secret (for Client Credentials mode)
-  displaypassword: Client Secret (for Client Credentials mode)
+- display: Client Secret (for user-auth mode)
+  displaypassword: Client Secret (for user-auth mode)
   hiddenusername: true
   name: credentials
   required: false
   type: 9
-- display: Application redirect URI (for self-deployed mode)
+- display: Application redirect URI (for user-auth mode)
   name: redirect_uri
   required: false
   type: 0
-- display: Authorization code (for self-deployed mode - received from the authorization step. see Detailed
-    Instructions (?) section)
+- display: Authorization code
+  displaypassword: Authorization code
+  additionalinfo: for user-auth mode - received from the authorization step. see Detailed
+    Instructions (?) section
+  hiddenusername: true
   name: auth_code
   required: false
-  type: 4
+  type: 9
 - display: Subscription ID
   hidden: false
   name: subscription_id

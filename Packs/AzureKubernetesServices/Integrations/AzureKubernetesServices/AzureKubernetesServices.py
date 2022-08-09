@@ -12,7 +12,16 @@ API_VERSION = '2021-09-01'
 class AKSClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com', tenant_id: str = None,
-                 enc_key: str = None, self_deployed: bool = False, redirect_uri: str = None, auth_code: str = None):
+                 enc_key: str = None, auth_type: str = 'Device', redirect_uri: str = None, auth_code: str = None):
+        AUTH_TYPES_DICT: dict = {'User Auth': {
+            'grant_type': AUTHORIZATION_CODE,
+            'resource': None,
+            'scope': 'https://management.azure.com/.default'},
+            'Device': {
+            'grant_type': DEVICE_CODE,
+            'resource': 'https://management.core.windows.net',
+            'scope': 'https://management.azure.com/user_impersonation offline_access user.read'}
+        }
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -22,13 +31,13 @@ class AKSClient:
         self.ms_client = MicrosoftClient(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url=None if self_deployed else 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=AUTHORIZATION_CODE if self_deployed else DEVICE_CODE,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            grant_type=AUTH_TYPES_DICT.get(auth_type, {}).get('grant_type'),
             base_url=f'https://management.azure.com/subscriptions/{subscription_id}',
             verify=verify,
             proxy=proxy,
-            resource=None if self_deployed else 'https://management.core.windows.net',
-            scope=None if self_deployed else 'https://management.azure.com/user_impersonation offline_access user.read',
+            resource=AUTH_TYPES_DICT.get(auth_type, {}).get('resource'),
+            scope=AUTH_TYPES_DICT.get(auth_type, {}).get('scope'),
             azure_ad_endpoint=azure_ad_endpoint,
             # used for self-deployed
             tenant_id=tenant_id,
@@ -168,11 +177,11 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = AKSClient(
-            tenant=params.get('tenant_id'),
-            enc_key=params.get('credentials') or {}).get('password',
-            self_deployed=params.get('self_deployed', False),
+            tenant_id=params.get('tenant_id', ''),
+            auth_type=params.get('auth_type', ''),
+            auth_code=params.get('auth_code').get('password', ''),
             redirect_uri=params.get('redirect_uri', ''),
-            auth_code=params.get('auth_code', ''),
+            enc_key=params.get('credentials').get('password', ''),
             app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
             resource_group_name=params.get('resource_group_name', ''),
