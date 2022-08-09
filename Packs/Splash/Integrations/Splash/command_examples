@@ -1,0 +1,13 @@
+!splash-list-events
+!splash-get-event event_id=458498730
+!splash-event-details event_id=458498730
+!splash-update-event event_id=458498730 update_data="""{"title": "A Brand New Event"}"""
+!splash-list-group-contacts
+!splash-get-group-contact group_contact_id=553823053
+!splash-get-event-group-contacts event_id=458498730
+!splash-create-group-contact event_id=458498730 contact_data="{\"first_name\": \"Adam\", \"last_name\": \"Hunter\", \"email\": \"adam@paloaltonetworks.com\"}"
+!splash-list-contacts
+!splash-get-contact contact_id=141408389
+!splash-get-contact-history contact_id=141408389
+!splash-delete-contact contact_id=141408389
+!splash-delete-event ids=458498730

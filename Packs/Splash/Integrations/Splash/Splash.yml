@@ -1,0 +1,2127 @@
+commonfields:
+  id: Splash
+  version: -1
+name: Splash
+display: Splash
+category: Utilities
+description: "Welcome to the Splash API! This integration has been assembled to make it easier to navigate the API
+  and access your Splash data."
+configuration:
+- name: url
+  display: Server URL
+  defaultvalue: https://api.splashthat.com/
+  type: 0
+  required: true
+- name: credentials
+  display: Credentials
+  type: 9
+  required: true
+- name: client_id
+  display: Client ID
+  type: 4
+  required: true
+- name: client_secret
+  display: Client Secret
+  type: 4
+  required: true
+- name: proxy
+  display: Use system proxy settings
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.5.31928
+  isfetch: false
+  commands:
+  - name: splash-list-events
+    description: "Retrieve a list of Events."
+    arguments:
+    - name: limit
+      description: 'Limits how many events are returned. If no limit is specified, the default is set to 5.'
+      required: false
+      isArray: false
+    - name: page
+      description: 'When using a limit, this will allow you to specify which page of results to retrieve.'
+      required: false
+      isArray: false
+    - name: search
+      description: 'Use a search string to refine your results.'
+      required: false
+      isArray: false
+    - name: sort
+      description: 'Sort the results by a requested field.'
+      auto: PREDEFINED
+      predefined:
+      - 'created_desc'
+      - 'created_asc'
+      - 'event_start_desc'
+      - 'event_start_asc'
+      - 'title_asc'
+      - 'title_desc'
+      - 'modified_asc'
+      - 'modified_desc'
+      required: false
+      isArray: false
+    - name: upcoming
+      description: 'Constrains your results to events with a start date later than 2 days ago.'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      isArray: false
+    - name: past
+      description: 'Include past events.'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      isArray: false
+    - name: tbd
+      description: 'Include or exclude events with TBD dates.'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      isArray: false
+    - name: event_start_after
+      description: 'Only return events that start after a certain date (format: yyyy-mm-dd hh:mm:ss).'
+      required: false
+      isArray: false
+    - name: event_start_before
+      description: 'Only return events that start before a certain date (format: yyyy-mm-dd hh:mm:ss).'
+      required: false
+      isArray: false
+    - name: tag_names
+      description: 'Search your Splash events by their tags.'
+      required: false
+      isArray: false
+    - name: venues
+      description: 'Specify the venues by which you would like to constrain your results.'
+      required: false
+      isArray: false
+    - name: event_type_ids
+      description: 'Enter the event types by which you would like to filter.'
+      required: false
+      isArray: false
+    - name: include_themes
+      description: 'Include themes in the event list.'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      isArray: false
+    - name: theme_ids
+      description: 'Enter theme IDs to only retrieve events that use that specified theme.'
+      required: false
+      isArray: false
+    - name: exclude_ids
+      description: 'Exclude specific event IDs from your request.'
+      required: false
+      isArray: false
+    - name: rsvp_events
+      description: 'Limit your request to only RSVP events.'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      isArray: false
+    - name: ticketed_events
+      description: 'Limit your request to only return ticketed events.'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Splash.Event.stats.name
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.stats.count
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_owner_first_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_owner_last_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_owner_email
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.registration_updating_enabled
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.registration_updating_deadline
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.id
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_type.id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_type.name
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.splash_theme.id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.splash_theme.name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.splash_theme.abbr
+      description: ''
+    - type: String
+      contextPath: Splash.Event.splash_theme.image_url
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.splash_theme.thumbnail_url
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.splash_theme.sort
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.splash_theme.active
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.splash_theme.created
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.header_image
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.rsvp_open
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.wait_list
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_setting.id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.rsvp_method
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.lat
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.lng
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_hashtag
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_setting.rsvp_max
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.custom_questions.type
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.custom_questions.name
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.custom_questions.required
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.custom_questions.column_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_cards.x1
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_cards.x2
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_cards.x3
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_setting.venue_tbd
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.rsvp_guest_display
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.rsvp_closed_state
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.event_setting.rsvp_closed_at
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.rsvp_closed_team_notified
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.page_privacy_type
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_host
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.statistics
+      description: ''
+    - type: String
+      contextPath: Splash.Event.group_ids
+      description: ''
+    - type: String
+      contextPath: Splash.Event.title
+      description: ''
+    - type: String
+      contextPath: Splash.Event.description
+      description: ''
+    - type: String
+      contextPath: Splash.Event.description_text
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.event_start
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.event_end
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.hide_event_time
+      description: ''
+    - type: String
+      contextPath: Splash.Event.venue_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.address
+      description: ''
+    - type: String
+      contextPath: Splash.Event.city
+      description: ''
+    - type: String
+      contextPath: Splash.Event.state
+      description: ''
+    - type: String
+      contextPath: Splash.Event.zip_code
+      description: ''
+    - type: String
+      contextPath: Splash.Event.country
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.created_at
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.modified_at
+      description: ''
+    - type: String
+      contextPath: Splash.Event.domain
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.paid_for_domain
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.deleted
+      description: ''
+    - type: String
+      contextPath: Splash.Event.custom_domain
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.hub
+      description: ''
+    - type: String
+      contextPath: Splash.Event.mobility_account_id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.mobility_wholesaler_id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.fq_url
+      description: ''
+    - type: String
+      contextPath: Splash.Event.mobile_check_in_url
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.email_settings.cached_maps.wide
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.email_settings.cached_maps.square
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.email_settings.google_map_url
+      description: ''
+  - name: splash-get-event
+    description: "Retrieve a single event."
+    arguments:
+    - name: event_id
+      description: 'The ID of the event for which details are needed.'
+      required: true
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Splash.Event.stats.name
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.stats.count
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_owner_first_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_owner_last_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_owner_email
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.registration_updating_enabled
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.registration_updating_deadline
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.id
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_type.id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_type.name
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.splash_theme.id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.splash_theme.name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.splash_theme.abbr
+      description: ''
+    - type: String
+      contextPath: Splash.Event.splash_theme.image_url
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.splash_theme.thumbnail_url
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.splash_theme.sort
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.splash_theme.active
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.splash_theme.created
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.header_image
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.rsvp_open
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.wait_list
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_setting.id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.rsvp_method
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.lat
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.lng
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_hashtag
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_setting.rsvp_max
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.custom_questions.type
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.custom_questions.name
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.custom_questions.required
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.custom_questions.column_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_cards.x1
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_cards.x2
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_cards.x3
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_setting.venue_tbd
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.rsvp_guest_display
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.rsvp_closed_state
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.event_setting.rsvp_closed_at
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.rsvp_closed_team_notified
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.page_privacy_type
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_host
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.statistics
+      description: ''
+    - type: String
+      contextPath: Splash.Event.group_ids
+      description: ''
+    - type: String
+      contextPath: Splash.Event.title
+      description: ''
+    - type: String
+      contextPath: Splash.Event.description
+      description: ''
+    - type: String
+      contextPath: Splash.Event.description_text
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.event_start
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.event_end
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.hide_event_time
+      description: ''
+    - type: String
+      contextPath: Splash.Event.venue_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.address
+      description: ''
+    - type: String
+      contextPath: Splash.Event.city
+      description: ''
+    - type: String
+      contextPath: Splash.Event.state
+      description: ''
+    - type: String
+      contextPath: Splash.Event.zip_code
+      description: ''
+    - type: String
+      contextPath: Splash.Event.country
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.created_at
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.modified_at
+      description: ''
+    - type: String
+      contextPath: Splash.Event.domain
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.paid_for_domain
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.deleted
+      description: ''
+    - type: String
+      contextPath: Splash.Event.custom_domain
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.hub
+      description: ''
+    - type: String
+      contextPath: Splash.Event.mobility_account_id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.mobility_wholesaler_id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.fq_url
+      description: ''
+    - type: String
+      contextPath: Splash.Event.mobile_check_in_url
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.email_settings.cached_maps.wide
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.email_settings.cached_maps.square
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.email_settings.google_map_url
+      description: ''
+  - name: splash-event-details
+    description: Some event object fields are not returned in the basic event data. This will return additional details.
+    arguments:
+    - name: event_id
+      description: 'The ID of the event for which details are needed.'
+      required: true
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Splash.Event.title
+      description: ''
+    - type: String
+      contextPath: Splash.Event.domain
+      description: ''
+    - type: String
+      contextPath: Splash.Event.custom_domain
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.paid_for_domain
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.white_label
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.start_time
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.end_time
+      description: ''
+    - type: String
+      contextPath: Splash.Event.venue.name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.venue.address
+      description: ''
+    - type: String
+      contextPath: Splash.Event.venue.city
+      description: ''
+    - type: String
+      contextPath: Splash.Event.venue.region
+      description: ''
+    - type: String
+      contextPath: Splash.Event.venue.country
+      description: ''
+    - type: String
+      contextPath: Splash.Event.venue.postal_code
+      description: ''
+    - type: String
+      contextPath: Splash.Event.venue.lat
+      description: ''
+    - type: String
+      contextPath: Splash.Event.venue.lon
+      description: ''
+    - type: String
+      contextPath: Splash.Event.type
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_host
+      description: ''
+    - type: String
+      contextPath: Splash.Event.status
+      description: ''
+    - type: String
+      contextPath: Splash.Event.page_action
+      description: ''
+    - type: String
+      contextPath: Splash.Event.tags
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.waitlist
+      description: ''
+    - type: String
+      contextPath: Splash.Event.currency
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.meta_title
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.meta_description
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.meta_calendar_description
+      description: ''
+    - type: String
+      contextPath: Splash.Event.favicon_url
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.no_index
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.limit_one_per_email
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.is_invite_only
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.page_password
+      description: ''
+    - type: String
+      contextPath: Splash.Event.page_privacy_type
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.require_captcha
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.facebook_title
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.facebook_description
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.twitter_default
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.linkedin_title
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.linkedin_description
+      description: ''
+    - type: String
+      contextPath: Splash.Event.hashtag
+      description: ''
+    - type: String
+      contextPath: Splash.Event.salesforce_campaign_id
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.sessions_overlap
+      description: ''
+    - type: String
+      contextPath: Splash.Event.share_image_url
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.time_zone_id
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.invite_link_privacy_bypass
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.registration_updating_enabled
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.registration_updating_deadline
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.splash_hub_auto_subscribe
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.form_email_domain_restriction
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.email_white_label_key
+      description: ''
+    - type: String
+      contextPath: Splash.Event.description_text
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.user.event_types.id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.user.event_types.name
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.is_rsvp_open
+      description: ''
+  - name: splash-update-event
+    description: Update and make changes to an existing Event with a known ID.
+    arguments:
+    - name: event_id
+      description: 'Event ID to update.'
+      required: true
+      isArray: false
+    - name: update_data
+      description: 'The JSON Dict of data to update.'
+      required: true
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Splash.Event.stats.name
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.stats.count
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_owner_first_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_owner_last_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_owner_email
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.registration_updating_enabled
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.registration_updating_deadline
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.id
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_type.id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_type.name
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.splash_theme.id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.splash_theme.name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.splash_theme.abbr
+      description: ''
+    - type: String
+      contextPath: Splash.Event.splash_theme.image_url
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.splash_theme.thumbnail_url
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.splash_theme.sort
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.splash_theme.active
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.splash_theme.created
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.header_image
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.rsvp_open
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.wait_list
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_setting.id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.rsvp_method
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.lat
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.lng
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_hashtag
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_setting.rsvp_max
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.custom_questions.type
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.custom_questions.name
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.custom_questions.required
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.custom_questions.column_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_cards.x1
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_cards.x2
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_cards.x3
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.event_setting.venue_tbd
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.rsvp_guest_display
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.rsvp_closed_state
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.event_setting.rsvp_closed_at
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.event_setting.rsvp_closed_team_notified
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.page_privacy_type
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.event_host
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Event.statistics
+      description: ''
+    - type: String
+      contextPath: Splash.Event.group_ids
+      description: ''
+    - type: String
+      contextPath: Splash.Event.title
+      description: ''
+    - type: String
+      contextPath: Splash.Event.description
+      description: ''
+    - type: String
+      contextPath: Splash.Event.description_text
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.event_start
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.event_end
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.hide_event_time
+      description: ''
+    - type: String
+      contextPath: Splash.Event.venue_name
+      description: ''
+    - type: String
+      contextPath: Splash.Event.address
+      description: ''
+    - type: String
+      contextPath: Splash.Event.city
+      description: ''
+    - type: String
+      contextPath: Splash.Event.state
+      description: ''
+    - type: String
+      contextPath: Splash.Event.zip_code
+      description: ''
+    - type: String
+      contextPath: Splash.Event.country
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.created_at
+      description: ''
+    - type: Date
+      contextPath: Splash.Event.modified_at
+      description: ''
+    - type: String
+      contextPath: Splash.Event.domain
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.paid_for_domain
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Event.deleted
+      description: ''
+    - type: String
+      contextPath: Splash.Event.custom_domain
+      description: ''
+    - type: Number
+      contextPath: Splash.Event.hub
+      description: ''
+    - type: String
+      contextPath: Splash.Event.mobility_account_id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.mobility_wholesaler_id
+      description: ''
+    - type: String
+      contextPath: Splash.Event.fq_url
+      description: ''
+    - type: String
+      contextPath: Splash.Event.mobile_check_in_url
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.email_settings.cached_maps.wide
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.email_settings.cached_maps.square
+      description: ''
+    - type: String
+      contextPath: Splash.Event.event_setting.email_settings.google_map_url
+      description: ''
+  - name: splash-delete-event
+    description: Batch delete Events.
+    arguments:
+    - name: ids
+      description: 'CSV of Event IDs to delete'
+      required: true
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Splash.DeleteEvent.meta.code
+      description: ''
+    - type: Unknown
+      contextPath: Splash.DeleteEvent.data
+      description: ''
+    - type: Boolean
+      contextPath: Splash.DeleteEvent.success
+      description: ''
+  - name: splash-get-event-group-contacts
+    description: Retrieve the group contacts just for a specific event.
+    arguments:
+    - name: event_id
+      description: 'The ID of the event for which you would like to see the group contacts (attendees).'
+      required: true
+      isArray: false
+    - name: limit
+      description: 'Limits how many group contacts are returned. If no limit is specified, Splash will default to 5.'
+      required: false
+      isArray: false
+    - name: page
+      description: 'When using a limit, this allows you to specify which page of results you would like to retrieve.'
+      required: false
+      isArray: false
+    - name: sort
+      description: 'Sort the results by a requested field.'
+      required: false
+      isArray: false
+    - name: status
+      description: 'Use this parameter to limit your results by the RSVP status of the attendees.'
+      required: false
+      isArray: false
+    - name: text_filter
+      description: 'This parameter can constrain results to those that match a particular text string.'
+      required: false
+      isArray: false
+    - name: event_rsvp_conditions
+      description: ''
+      required: false
+      isArray: false
+    - name: custom_question_ids
+      description: ''
+      required: false
+      isArray: false
+    - name: statistics
+      description: ''
+      required: false
+      isArray: false
+    - name: additional_columns
+      description: 'Use this parameter to specify particular columns to be included in the response.'
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Splash.Event.id
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.id
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.contact.id
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.last_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.primary_email
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.title
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.notes
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.organization_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.avatar_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.phone
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.facebook_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.linkedin_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.instagram_url
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.contact.createdate
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.unsubscribed
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.vip
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.salesforce_id
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.bounced
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.invalid_email
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.event_id
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.contact_id
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ticket_sale
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.tracking_link
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.parent_event_rsvp
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.checked_out
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.id
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.last_name
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.guest_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.email
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.plus_one
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.created
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.modified
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.date_rsvped
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ip_address
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.attending
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.deleted
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.checked_in
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.unsub_tag
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ticket_number
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.vip
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.waitlist
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.qr_url
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.unsubscribed
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_lists
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.status
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.created
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.modified
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.deleted
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.salesforce_campaign_member_id
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp
+      description: ''
+  - name: splash-get-group-contact
+    description: Retrieve a single group contact if their group contact ID is known.
+    arguments:
+    - name: group_contact_id
+      description: 'The group contact ID of the individual for which you would like to retrieve data.'
+      required: true
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Splash.GroupContact.id
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.contact.id
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.last_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.primary_email
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.title
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.notes
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.organization_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.avatar_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.phone
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.facebook_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.linkedin_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.instagram_url
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.contact.createdate
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.unsubscribed
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.vip
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.salesforce_id
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.bounced
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.invalid_email
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.event_id
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.contact_id
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ticket_sale
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.tracking_link
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.parent_event_rsvp
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.checked_out
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.id
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.last_name
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.guest_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.email
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.plus_one
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.created
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.modified
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.date_rsvped
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ip_address
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.attending
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.deleted
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.checked_in
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.unsub_tag
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ticket_number
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.vip
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.waitlist
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.qr_url
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.unsubscribed
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_lists
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.status
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.created
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.modified
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.deleted
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.salesforce_campaign_member_id
+      description: ''
+  - name: splash-list-group-contacts
+    description: List Group Contacts. By excluding an event ID, you can query your entire group contacts database. This can return a large result set, so pagination is highly recommended. You can still apply all of the same search parameters to this call.
+    arguments:
+    - name: event_id
+      description: 'The ID of the event you would like to see the group contacts (attendees) for.'
+      required: false
+      isArray: false
+    - name: limit
+      description: 'Limits how many group contacts are returned. If no limit is specified, Splash will default to 5.'
+      required: false
+      isArray: false
+    - name: page
+      description: 'When using a limit, this allows you to specify which page of results you would like to retrieve.'
+      required: false
+      isArray: false
+    - name: sort
+      description: 'Sort the results by a requested field.'
+      required: false
+      isArray: false
+    - name: status
+      description: 'Use this parameter to limit your results by the RSVP status of the attendees.'
+      required: false
+      isArray: false
+    - name: text_filter
+      description: 'This parameter can constrain results to those that match a particular text string.'
+      required: false
+      isArray: false
+    - name: event_rsvp_conditions
+      description: ''
+      required: false
+      isArray: false
+    - name: custom_question_ids
+      description: ''
+      required: false
+      isArray: false
+    - name: statistics
+      description: ''
+      required: false
+      isArray: false
+    - name: additional_columns
+      description: 'Use this parameter to specify particular columns to be included in the response.'
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Splash.GroupContact.id
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.contact.id
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.last_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.primary_email
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.title
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.notes
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.organization_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.avatar_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.phone
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.facebook_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.linkedin_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.instagram_url
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.contact.createdate
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.unsubscribed
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.vip
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.salesforce_id
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.bounced
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.invalid_email
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.event_id
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.contact_id
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ticket_sale
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.tracking_link
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.parent_event_rsvp
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.checked_out
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.id
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.last_name
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.guest_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.email
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.plus_one
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.created
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.modified
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.date_rsvped
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ip_address
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.attending
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.deleted
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.checked_in
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.unsub_tag
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ticket_number
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.vip
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.waitlist
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.qr_url
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.unsubscribed
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_lists
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.status
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.created
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.modified
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.deleted
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.salesforce_campaign_member_id
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp
+      description: ''
+    - type: Number
+      contextPath: Splash.AllGroupContacts.pagination.limit
+      description: ''
+    - type: Number
+      contextPath: Splash.AllGroupContacts.pagination.count
+      description: ''
+    - type: Number
+      contextPath: Splash.AllGroupContacts.pagination.page
+      description: ''
+    - type: Number
+      contextPath: Splash.AllGroupContacts.pagination.pages
+      description: ''
+    - type: Unknown
+      contextPath: Splash.AllGroupContacts.pagination.cursor
+      description: ''
+    - type: Number
+      contextPath: Splash.AllGroupContacts.limit
+      description: ''
+    - type: Number
+      contextPath: Splash.AllGroupContacts.count
+      description: ''
+    - type: Number
+      contextPath: Splash.AllGroupContacts.page
+      description: ''
+    - type: Number
+      contextPath: Splash.AllGroupContacts.pages
+      description: ''
+    - type: Unknown
+      contextPath: Splash.AllGroupContacts.cursor
+      description: ''
+  - name: splash-create-group-contact
+    description: "Create additional group contacts in your events, one-at-a-time. New attendees are defined via a JSON object, which you can find in the example request body. They require an *event_id* field to tell Splash to which event they should be added. Additional fields include *confirmation email, email, first_name, last_name,* and *status.* \n\n__Note:__ The behavior of this endpoint can vary depending upon the guest's status. If a guest with that email address already has _\"added\"_ or _\"invited\"_, they will be updated. Any other status creates a duplicate guest with that email address. As such, we recommend limiting the use of this endpoint to one-off creations of new guests."
+    arguments:
+    - name: event_id
+      description: 'The event ID to which to add the contact to.'
+      required: true
+      isArray: false
+    - name: contact_data
+      description: 'A JSON dictionary of the group contact information.'
+      required: true
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Splash.GroupContact.id
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.contact.id
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.last_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.primary_email
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.contact.title
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.contact.notes
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.contact.organization_name
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.contact.avatar_url
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.contact.phone
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.contact.facebook_url
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.contact.linkedin_url
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.contact.instagram_url
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.contact.createdate
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.unsubscribed
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.vip
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.contact.salesforce_id
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.bounced
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.invalid_email
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.status
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.created
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.modified
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.deleted
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.salesforce_campaign_member_id
+      description: ''
+  - name: splash-update-group-contact
+    description: "Updating a group contact is how you can change information about your guests, as well as alter their status - such as checking them in, waitlisting them, etc. Reference the body parameter to see which fields you can alter. Include the fields and values for the ones you would like to change in the JSON body. If you have custom questions for your guests, you can use an array in the \"answer\" field and include the question ID and the answer for that guest for each custom question. \n\nAlso, know that the guest statuses used by our backend server functions are different than the ones seen on the frontend of the Splash UI. See the table below for a mapping of the front-end statuses to the back-end statuses. \n\n| Backend Status | Frontend Status | \n|-|-|\n| _added_ | _-- (No Status) --_ |\n_invited_ | _Awaiting Reply_ |\n| _waitlisted_ | _Waitlisted_ |\n| _rsvp\\_no_ | _Not Attending_ |\n| _rsvp\\_yes_ | _Attending_ |\n| _checkin\\_yes_ | _Checked In_ |\n| _checkin\\_no_ | _Checked Out_ |"
+    arguments:
+    - name: group_contact_id
+      description: ''
+      required: true
+      isArray: false
+    - name: update_data
+      description: 'JSON dictionary of the updates.'
+      required: true
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Splash.GroupContact.id
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.contact.id
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.last_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.primary_email
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.title
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.notes
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.organization_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.avatar_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.phone
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.facebook_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.linkedin_url
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.instagram_url
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.contact.createdate
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.unsubscribed
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.vip
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.contact.salesforce_id
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.bounced
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.contact.invalid_email
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.event_id
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.contact_id
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ticket_sale
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.tracking_link
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.parent_event_rsvp
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.checked_out
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.id
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.last_name
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.guest_name
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.email
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.plus_one
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.created
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.modified
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.event_rsvp.date_rsvped
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ip_address
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.attending
+      description: ''
+    - type: Number
+      contextPath: Splash.GroupContact.event_rsvp.deleted
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.checked_in
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.unsub_tag
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_rsvp.ticket_number
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.vip
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.waitlist
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.event_rsvp.qr_url
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.event_rsvp.unsubscribed
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.event_lists
+      description: ''
+    - type: String
+      contextPath: Splash.GroupContact.status
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.created
+      description: ''
+    - type: Date
+      contextPath: Splash.GroupContact.modified
+      description: ''
+    - type: Boolean
+      contextPath: Splash.GroupContact.deleted
+      description: ''
+    - type: Unknown
+      contextPath: Splash.GroupContact.salesforce_campaign_member_id
+      description: ''
+  - name: splash-batch-cancel-rsvps
+    description: To cancel the RSVP of a guest when their *group contact id* number is known, use the DELETE and _id_ to change their status in your event to RSVP No.
+    arguments:
+    - name: group_contact_id
+      description: ''
+      required: false
+      isArray: false
+  - name: splash-list-contacts
+    description: List Contacts.
+    arguments:
+    - name: limit
+      description: ''
+      required: false
+      isArray: false
+    - name: page
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Splash.Contacts.id
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.last_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.middle_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.primary_email
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.title
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.notes
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.organization_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.avatar_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.profile_image
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.street
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.city
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.state
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.zip
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.phone
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.twitter_display_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.twitter_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.facebook_display_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.facebook_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.linkedin_display_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.linkedin_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.pinterest_display_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.pinterest_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.instagram_display_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.instagram_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.website
+      description: ''
+    - type: Date
+      contextPath: Splash.Contacts.createdate
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.gender
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Contacts.unsubscribed
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.birthday
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Contacts.vip
+      description: ''
+    - type: String
+      contextPath: Splash.Contacts.salesforce_id
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Contacts.bounced
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Contacts.invalid_email
+      description: ''
+  - name: splash-get-contact
+    description: Retrieve the information for an individual contact. The contact you want to retrieve is specified by a *contact ID* in the URL path and is rendered as JSON in the response.
+    arguments:
+    - name: contact_id
+      description: ''
+      required: true
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Splash.Contact.id
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.last_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.middle_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.primary_email
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.title
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.notes
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.organization_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.avatar_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.profile_image
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.street
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.city
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.state
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.zip
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.phone
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.twitter_display_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.twitter_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.facebook_display_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.facebook_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.linkedin_display_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.linkedin_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.pinterest_display_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.pinterest_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.instagram_display_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.instagram_url
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.website
+      description: ''
+    - type: Date
+      contextPath: Splash.Contact.createdate
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.gender
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Contact.unsubscribed
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.birthday
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Contact.vip
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.salesforce_id
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Contact.bounced
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Contact.invalid_email
+      description: ''
+  - name: splash-get-contact-history
+    description: Part of privacy compliance is the ability to be transparent about the data you have. The Contact History API call helps meet this compliance necessity by responding to a *contact ID* with a record of the events with which this contact has been associated in Splash.
+    arguments:
+    - name: contact_id
+      description: ''
+      required: true
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Splash.Contact.History.history.history.type
+      description: ''
+    - type: Number
+      contextPath: Splash.Contact.History.history.object.event.user.id
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.History.history.object.event.user.email
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.History.history.object.event.user.first_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.History.history.object.event.user.last_name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.History.history.object.event.user.cognito_id
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.History.history.object.event.event_type.name
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.History.history.object.event.title
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.History.history.object.event.domain
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Contact.History.history.object.ticket_sale
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Contact.History.history.object.checked_out
+      description: ''
+    - type: Number
+      contextPath: Splash.Contact.History.history.object.id
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.History.history.object.email
+      description: ''
+    - type: Date
+      contextPath: Splash.Contact.History.history.object.created
+      description: ''
+    - type: Date
+      contextPath: Splash.Contact.History.history.object.date_rsvped
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Contact.History.history.object.attending
+      description: ''
+    - type: Unknown
+      contextPath: Splash.Contact.History.history.object.checked_in
+      description: ''
+    - type: Boolean
+      contextPath: Splash.Contact.History.history.object.vip
+      description: ''
+    - type: String
+      contextPath: Splash.Contact.History.history.text
+      description: ''
+    - type: Number
+      contextPath: Splash.Contact.History.history.created
+      description: ''
+    - type: List
+      contextPath: Splash.Contact.History.custom
+      description: ''
+    - type: List
+      contextPath: Splash.Contact.History.tags
+      description: ''
+  - name: splash-delete-contact
+    description: Delete a Contact. If you know a *contact ID*, it can be used to delete that _Contact_ from your list of _Splash Contacts_. Make certain it is the contact you want to delete and not just an event guest (group contact). Keep in mind this is just a __soft delete__ that makes contacts invisible to Splash users and does not remove them from the Splash database. For GDPR-related use cases and removing personal information, Splash recommends using the anonymize endpoint which is designed to be compliant with privacy laws.
+    arguments:
+    - name: contact_id
+      description: ''
+      required: true
+      isArray: false
+  - name: splash-anonymize-contact
+    description: "Anonymize Contact. Splash takes compliance with privacy laws very seriously. This directly led to the creation of the anonymize contact endpoint as a GDPR compliance tool. Be absolutely certain you want to do this! Once a contact has been anonymized, it cannot be undone.\n\n**Note:**\nUtilizing the Anonymize Contacts endpoint requires special privileges for your API user. Inadequate privileges are indicated by a 403 error when using this endpoint. This privilege is only available to organization admins. Contact your Customer Success Representative to learn how to gain appropriate privileges for access.  \nAlternatively, you can use the Incoming Webhook integration to accomplish anonymizations and unsubscribes."
+    arguments:
+    - name: contact_id
+      description: 'This is the contact ID of the person whose information will be anonymized in the Splash database.'
+      required: true
+      isArray: false
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
