@@ -409,7 +409,9 @@ def tc_get_indicator_owners(client: Client) -> Any:  # pragma: no cover
 
 
 def get_group_associated_groups(client: Client) -> Any:  # pragma: no cover
-    response, status_code = list_groups(client, include_associated_groups='true', return_raw=True)
+    args = demisto.args()
+    group_id = args.get('group_id')
+    response, status_code = list_groups(client, include_associated_groups='true', return_raw=True, group_id=group_id)
     headers = ['GroupID', 'Name', 'Type', 'OwnerName', 'DateAdded']
     if status_code != 200:
         return_error('Error from the API: ' + response.get('message',
@@ -914,7 +916,7 @@ def tc_delete_indicator_command(client: Client) -> None:  # pragma: no cover
 
 def create_document_group(client: Client) -> None:  # pragma: no cover
     name = demisto.args().get('name')
-    security_label = demisto.args().get('securityLabel')
+    security_label = demisto.args().get('security_label')
     description = demisto.args().get('description', '')
     response, status = create_group(client, security_labels=security_label, name=name, group_type='Document',
                                     description=description)

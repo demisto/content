@@ -1856,7 +1856,7 @@ script:
     - auto: PREDEFINED
       description: The security label applied to the document. Can be "TLP:RED", "TLP:GREEN",
         "TLP:AMBER", or "TLP:WHITE".
-      name: securityLabel
+      name: security_label
       predefined:
       - TLP:RED
       - TLP:GREEN
@@ -2050,7 +2050,7 @@ script:
       type: Date
   - arguments:
     - description: The ID of the group. To get the ID, run the tc-list-groups command.
-      name: id
+      name: group_id
       required: true
     description: Returns groups associated with a specified group.
     name: tc-get-associated-groups
@@ -2089,20 +2089,8 @@ script:
       description: The ID of the group to associate to.
       type: Number
   - arguments:
-    - description: Indicator Value
+    - description: Indicator ID
       name: indicator
-      required: true
-    - auto: PREDEFINED
-      description: The type of the indicator. Can be "ADDRESSES", "EMAIL_ADDRESSES",
-        "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
-      name: indicatorType
-      predefined:
-      - addresses
-      - email_addresses
-      - urls
-      - hosts
-      - files
-      - custom_indicators
       required: true
     description: Get Owner for Indicator
     name: tc-get-indicator-owners
