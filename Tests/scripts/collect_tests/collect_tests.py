@@ -480,7 +480,8 @@ class BranchTestCollector(TestCollector):
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
         files = []
         for line in filter(None, diff.splitlines()):
-            status, path = line.split(' ')
+            print(f'{line=}')
+            status, path = line.split()
             if status != 'D':
                 files.append(path)
             else:
