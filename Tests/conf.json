@@ -5160,7 +5160,12 @@
                 "Github Event Collector"
             ],
             "playbookID": "Github Event Collector-test",
-            "fromversion": "6.8.0"
+            "fromversion": "6.6.0"
+        },
+        {
+            "integrations": "CheckPointSandBlast",
+            "playbookID": "playbook-CheckPointSandBlast_Test",
+            "fromversion": "6.2.0"
         },
         {
             "integrations": [
