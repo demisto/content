@@ -34,8 +34,10 @@ def trigger_generic_webhook(options):
         "name": "GenericWebhook_Secrets",
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number},
     }
+    print(f'{body=}, and {bool(username)}, {bool(password)}')
     # post to Content Gold
     res = requests.post(SECRETS_INSTANCE_URL, json=body, auth=(username, password))
+    print(f'{res=}')
 
     if res.status_code != 200:
         raise ConnectionError(
