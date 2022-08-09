@@ -12,7 +12,9 @@ The web server for the integration runs within a long-running Docker container. 
 ![image](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/MicrosoftTeamsProtocalDiagram.png)
 
 ## Important Information
- - The messaging endpoint must be either the URL of the Cortex XSOAR server, including the configured port, or the proxy that redirects the messages received from Teams to the Cortex XSOAR server. 
+ - The messaging endpoint must be either the URL of the Cortex XSOAR server, including the configured port, or the proxy that redirects the messages received from Teams to the Cortex XSOAR server.
+ - Microsoft Teams will send events to the messaging endpoints via HTTPS request, which means the messaging endpoint must be accesible for Microsoft Teams to reach to it. As follows, the messaging endpoint can not contain private IP address or any DNS that will block the request from Microsoft Teams.
+In order to verify that the messaging endpoint is open as expected, you can surf to the messaging endpoint from a browser in an environment which is disconnected from the Cortex XSOAR environment.
  - It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
  - For additional security, we recommend placing the Teams integration webserver behind a reverse proxy (such as NGINX).
  - By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
@@ -26,7 +28,16 @@ The web server for the integration runs within a long-running Docker container. 
      ...
      -----END PRIVATE KEY-----
     ```
+ - You must not set a certificate and/or private key if you are using the Cortex XSOAR rerouting setup.
  - Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
+ In order to verify which certificate is used, run the following (replace <MESSAGING-ENDPOINT> with the messaging endpoint):
+     ```bash
+     curl <MESSAGING-ENDPOINT> -vI
+     ```
+     Make sure the output does not contain the followin:
+     ```
+     curl: (60) SSL certificate problem: self signed certificate
+     ```
  - The following domains are used by this integration:
     - microsoft.com
     - botframework.com
