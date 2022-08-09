@@ -125,12 +125,12 @@ class AzureWAFClient:
 
 
 def test_connection(client: AzureWAFClient, params: Dict):
-    if params.get('self_deployed', False) and not params.get('auth_code'):
-        return_error('You must enter an authorization code in a self-deployed configuration.')
-    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
-    # should return error if user does not have permissions for the service.
-    client.get_policy_list_by_resource_group_name(client.resource_group_name)
-    return '✅ Great Success!'
+    if demisto.params().get('auth_type') == 'Device':
+        client.get_policy_list_by_resource_group_name(client.resource_group_name)  # If fails, MicrosoftApiModule returns an error
+        return CommandResults(readable_output='✅ Success!')
+    else:
+        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+        return CommandResults(readable_output='✅ Success!')
 
 
 @logger
@@ -345,6 +345,23 @@ def reset_auth(client: AzureWAFClient):
                                           '**!azure-waf-auth-start** and **!azure-waf-auth-complete**.')
 
 
+@logger
+def test_module(client):
+    """
+    Performs basic GET request to check if the API is reachable and authentication is successful.
+    Returns ok if successful.
+    """
+    if demisto.params().get('auth_type') == 'Device':
+        raise Exception("When using device code flow configuration, "
+                        "Please enable the integration and run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to log in."
+                        " You can validate the connection by running `!azure-waf-auth-test`\n"
+                        "For more details press the (?) button.")
+
+    elif demisto.params().get('auth_type') == 'User Auth':
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !azure-waf-auth-test command in order to test it")
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -383,8 +400,7 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-            raise ValueError("Please run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to log in."
-                             " For more details press the (?) button.")
+            return_results(test_module(client))
         if command == 'azure-waf-auth-test':
             return_results(test_connection(client, params))
         else:
