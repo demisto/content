@@ -91,6 +91,7 @@ def test_clusters_addon_update(client, requests_mock):
     }
     assert result == 'The request to update the managed cluster was sent successfully.'
 
+
 @pytest.mark.parametrize('params, expected_results', [
     ({'auth_type': 'Device'}, "When using device code flow configuration"),
     ({'auth_type': 'User Auth'}, "When using user auth flow configuration")])
@@ -110,4 +111,3 @@ def test_test_module_command(mocker, params, expected_results):
     with pytest.raises(Exception) as e:
         test_module(None, {})
     assert expected_results in str(e.value)
-    
