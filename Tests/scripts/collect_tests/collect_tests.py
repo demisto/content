@@ -83,7 +83,7 @@ class CollectionResult:
         self.tests: set[str] = set()
         self.packs: set[str] = set()
         self.version_range = None if version_range and version_range.is_default else version_range
-        self.machines: Optional[Iterable[Machine]] = None
+        self.machines: Optional[tuple[Machine, ...]] = None
 
         try:
             self._validate_args(pack, test, reason, conf, id_set, is_sanity)  # raises if invalid
@@ -635,11 +635,11 @@ def output(result: Optional[CollectionResult]):
     """
     writes to both log and files
     """
-    machines = tuple(result.machines) if result.machines else ()
-
-    test_str = '\n'.join(sorted(result.tests, key=lambda x: x.lower()))
-    pack_str = '\n'.join(sorted(result.packs, key=lambda x: x.lower()))
+    machines = result.machines if result and result.machines else ()
     machine_str = ', '.join(str(m) for m in machines)
+
+    test_str = '\n'.join(sorted(result.tests, key=lambda x: x.lower())) if result else ''
+    pack_str = '\n'.join(sorted(result.packs, key=lambda x: x.lower())) if result else ''
 
     logger.info(f'collected {len(result.tests)} tests:\n{test_str}')
     logger.info(f'collected {len(result.packs)} packs:\n{pack_str}')
