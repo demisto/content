@@ -71,7 +71,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Email addresses of the recipients.
+      description: A comma-separated list of email addresses of the recipients.
       isArray: true
       name: to
       required: true
@@ -116,13 +116,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Additional recipient email addresses (CC).
+      description: A comma-separated list of additional recipient email addresses (CC).
       isArray: true
       name: cc
       required: false
       secret: false
     - default: false
-      description: Additional recipient email addresses (BCC).
+      description: A comma-separated list of additional recipient email addresses (BCC).
       isArray: true
       name: bcc
       required: false
@@ -156,21 +156,21 @@ script:
       secret: false
     - default: false
       description: |-
-        Textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+        Textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"
       isArray: true
       name: transientFile
       required: false
       secret: false
     - default: false
       description: |-
-        Content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+        Content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"
       isArray: true
       name: transientFileContent
       required: false
       secret: false
     - default: false
       description: |-
-        CID image for an attached file to include within the email body. Multiple files are supported as a comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+        CID image for an attached file to include within the email body. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"
       isArray: true
       name: transientFileCID
       required: false
@@ -275,7 +275,7 @@ script:
       secret: false
     - default: false
       description: >-
-        A comma-separated list of new names to renamfor existing
+        A comma-separated list of new names to rename for existing
         attachments, which relates to the order that they were attached to
         the email.
                 For example, rename the first and third file attachNames=new_fileName1,,new_fileName3
