@@ -1065,7 +1065,7 @@ The following sections list the changes in this version.
 #### The following arguments were added in this version:
 
 In the *ad-get-user* command:
-* *attributes_to_exclude*
+* *attributes-to-exclude*
 
 In the *ad-search* command, support pagination with the following arguments:
 * *page-size*
