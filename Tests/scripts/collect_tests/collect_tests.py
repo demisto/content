@@ -635,14 +635,16 @@ def output(result: Optional[CollectionResult]):
     """
     writes to both log and files
     """
+    tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
+    packs = sorted(result.packs, key=lambda x: x.lower()) if result else ()
     machines = result.machines if result and result.machines else ()
-    machine_str = ', '.join(str(m) for m in machines)
 
-    test_str = '\n'.join(sorted(result.tests, key=lambda x: x.lower())) if result else ''
-    pack_str = '\n'.join(sorted(result.packs, key=lambda x: x.lower())) if result else ''
+    test_str = '\n'.join(tests)
+    pack_str = '\n'.join(packs)
+    machine_str = ', '.join(sorted(map(str, machines)))
 
-    logger.info(f'collected {len(result.tests)} tests:\n{test_str}')
-    logger.info(f'collected {len(result.packs)} packs:\n{pack_str}')
+    logger.info(f'collected {len(tests)} tests:\n{test_str}')
+    logger.info(f'collected {len(packs)} packs:\n{pack_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
 
     PATHS.output_tests_file.write_text(test_str)
