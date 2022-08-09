@@ -39,7 +39,6 @@ class AKSClient:
             resource=AUTH_TYPES_DICT.get(auth_type, {}).get('resource'),
             scope=AUTH_TYPES_DICT.get(auth_type, {}).get('scope'),
             azure_ad_endpoint=azure_ad_endpoint,
-            # used for self-deployed
             tenant_id=tenant_id,
             enc_key=enc_key,
             redirect_uri=redirect_uri,
@@ -178,8 +177,8 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = AKSClient(
-            tenant_id=params.get('tenant_id', ''),
-            auth_type=params.get('auth_type', ''),
+            tenant_id=params.get('tenant_id'),
+            auth_type=params.get('auth_type'),
             auth_code=params.get('auth_code', {}).get('password'),
             redirect_uri=params.get('redirect_uri'),
             enc_key=params.get('credentials', {}).get('password'),
