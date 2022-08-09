@@ -450,27 +450,7 @@ view: |-
       }
     }
   }
-inputs:
-- key: IP
-  value:
-    complex:
-      root: IP
-      accessor: Address
-      transformers:
-      - operator: uniq
-  required: false
-  description: The IP address to enrich.
-  playbookInputQuery:
-- key: Hostname
-  value:
-    complex:
-      root: Endpoint
-      accessor: Hostname
-      transformers:
-      - operator: uniq
-  required: false
-  description: The hostname of the endpoint to enrich.
-  playbookInputQuery:
+inputs: []
 outputs:
 - contextPath: Traps.IsolateResult.Status
   description: The status of the isolation operation.

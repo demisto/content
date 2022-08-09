@@ -18,14 +18,6 @@ This playbook does not use any scripts.
 ### Commands
 This playbook does not use any commands.
 
-## Playbook Inputs
----
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| IP | The IP address to enrich. | IP.Address | Optional |
-| Hostname | The hostname of the endpoint to enrich. | Endpoint.Hostname | Optional |
-
 ## Playbook Outputs
 ---
 
