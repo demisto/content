@@ -191,6 +191,7 @@ class ContentItem(DictFileBased):
         super().__init__(path)
         self.pack_path = find_pack_folder(self.path)
         self.deprecated = self.get('deprecated', warn_if_missing=False)
+        self._tests = self.get('tests', warn_if_missing=False)
 
     @property
     def id_(self) -> Optional[str]:  # Optional as pack_metadata (for example) doesn't have this field
@@ -203,14 +204,16 @@ class ContentItem(DictFileBased):
 
     @property
     def tests(self) -> list[str]:
-        tests = self.get('tests', [], warn_if_missing=False)
-        if len(tests) == 1 and 'no tests' in tests[0].lower():
+        if self.explicitly_no_tests():
             raise NoTestsConfiguredException(self.id_ or str(self.path))
-        return tests
+        return self._tests
 
     @property
     def pack_id(self):
         return self.pack_path.name
+
+    def explicitly_no_tests(self) -> bool:
+        return len(self.tests) == 1 and 'no tests' in self.tests[0].lower()
 
 
 def read_skipped_test_playbooks(pack_folder: Path) -> set[str]:

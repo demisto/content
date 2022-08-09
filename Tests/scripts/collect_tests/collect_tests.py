@@ -322,11 +322,20 @@ class BranchTestCollector(TestCollector):
                     raise ValueError(f'test playbook with id {yml.id_} is missing from conf.test_ids')
 
             case FileType.INTEGRATION:
-                if yml.id_ in self.conf.integrations_to_tests:
-                    tests = tuple(self.conf.integrations_to_tests[yml.id_])
-                else:
-                    logger.warning(f'no tests in conf.json for integration {yml.id_}')
+
+                if yml.explicitly_no_tests():
+                    logger.debug(f'{yml.id_} explicitly states `tests: no tests`')
                     tests = ()
+
+                elif yml.id_ not in self.conf.integrations_to_tests:
+                    raise ValueError(
+                        f'integration id={yml.id_} is both '
+                        f'(1) missing from conf.json, and'
+                        ' (2) does not explicitly state `tests: no tests`. '
+                        'Please change one of these to allow test collection.'
+                    )
+                else:
+                    tests = tuple(self.conf.integrations_to_tests[yml.id_])
                 reason = CollectionReason.INTEGRATION_CHANGED
 
             case FileType.SCRIPT | FileType.PLAYBOOK:
@@ -642,7 +651,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info(f'TestCollector v2022-08-08')
+    logger.info('TestCollector v2022-08-08')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
