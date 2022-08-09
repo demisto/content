@@ -1,4 +1,3 @@
-# type: ignore
 from typing import Any, Dict, Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -59,7 +58,9 @@ class Client(BaseClient):
     def findings_search_request(self,
                                 max_fetch: int,
                                 alert_severity: List[str] = None,
-                                alert_region: List[str] = None) -> Dict[str, Any]:
+                                alert_region: List[str] = None,
+                                alert_entity_type: List[str] = None,
+                                alert_acknowledged: bool = None) -> Dict[str, Any]:
         """ Search findings.
             Filter findings by account, region, VPC, IP, or instance name.
 
@@ -72,6 +73,12 @@ class Client(BaseClient):
 
         for region in (alert_region or []):
             fields.append({"name": "region", "value": region})
+
+        for entity_type in (alert_entity_type or []):
+            fields.append({"name": "entityTypeByEnvironmentType", "value": entity_type})
+
+        if alert_acknowledged:
+            fields.append({"name": "acknowledged", "value": alert_acknowledged})
 
         data = {
             "pageSize": max_fetch,
@@ -90,7 +97,7 @@ class Client(BaseClient):
     def ip_list_create_request(self,
                                name: str,
                                description: str,
-                               items: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+                               items: List[Dict[str, Any]] = None) -> Dict[str, Any]:
         """ Create a new IP list.
 
         Args:
@@ -456,9 +463,11 @@ class Client(BaseClient):
                 "type": scope_type
             }]
         })
+        print(data)
         response = self._http_request('POST',
                                       f'cloudsecuritygroup/{sg_id}/services/{policy_type}',
                                       json_data=data)
+        print(response)
         return response
 
     def security_group_service_update_request(
@@ -809,7 +818,7 @@ def get_service_type_and_data(service: list) -> list:
     return service_type, service_data
 
 
-def create_url_prefix(path_variable: str = None) -> str:
+def create_url_prefix(path_variable: str) -> str:
     """ Create url prefix for request.
 
     Args:
@@ -973,10 +982,13 @@ def findings_search_command(client: Client, args: Dict[str, Any]) -> CommandResu
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     severity = argToList(args.get('severity'))
+    acknowledged = arg_to_boolean(args.get('acknowledged'))
+    entity_type = argToList(args.get('entity_type'))
     region = argToList(args.get('region'))
     page_size = arg_to_number(args.get('limit'))
 
-    response = client.findings_search_request(page_size, severity, region)
+    response = client.findings_search_request(page_size, severity, region, entity_type,
+                                              acknowledged)
     output = response['findings']
 
     fix_output, pagination_message = pagination(output, args)
@@ -991,7 +1003,7 @@ def findings_search_command(client: Client, args: Dict[str, Any]) -> CommandResu
                                       headerTransform=string_to_table_header)
 
     command_results = CommandResults(readable_output=readable_output,
-                                     outputs_prefix='CheckPointDome9.Findings',
+                                     outputs_prefix='CheckPointDome9.Finding',
                                      outputs_key_field='id',
                                      outputs=fix_output,
                                      raw_response=output)
@@ -1564,12 +1576,14 @@ def security_group_service_update_command(client: Client, args: Dict[str, Any]) 
     inbound = args.get('inbound')
     icmptype = args.get('icmptype')
     icmpv6type = args.get('icmpv6type')
+    print('port - %d', port)
 
     response = client.security_group_service_update_request(sg_id, service_name, protocol_type,
                                                             port, policy_type, open_for_all,
                                                             description, data_id, data_name,
                                                             scope_type, is_valid, inbound, icmptype,
                                                             icmpv6type)
+    print('response - %d', response)
 
     sg_service = [{
         'id': response['id'],
@@ -1581,7 +1595,7 @@ def security_group_service_update_command(client: Client, args: Dict[str, Any]) 
         # 'scopeType': response['scope'][0]['type'],
         #    'scopeData': f"{response['scope'][0]['data']['id']} - {response['scope'][0]['data']['name']}",
     }]
-
+    print('sg_service - %d', sg_service)
     readable_output = tableToMarkdown(name='Security group service updated successfully',
                                       t=sg_service,
                                       headerTransform=string_to_table_header)
@@ -1836,7 +1850,7 @@ def global_search_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
     command_results = CommandResults(readable_output=readable_output,
                                      outputs_prefix='CheckPointDome9.GlobalSearch.Alert',
                                      outputs_key_field='id',
-                                     outputs=response,
+                                     outputs=alerts,
                                      raw_response=response)
 
     return command_results
@@ -1896,7 +1910,7 @@ def findings_bundle_get_command(client: Client, args: Dict[str, Any]) -> Command
                                       t=response,
                                       headerTransform=string_to_table_header)
     command_results = CommandResults(readable_output=readable_output,
-                                     outputs_prefix='CheckPointDome9.FindingsBundle',
+                                     outputs_prefix='CheckPointDome9.FindingBundle',
                                      outputs_key_field='id',
                                      outputs=response,
                                      raw_response=response)
@@ -2093,12 +2107,12 @@ def fetch_incidents(client: Client, args: dict) -> None:
         demisto.setLastRun({'time': last_run_time, 'id': last_run_id})
 
 
-def test_module(client: Client):
+def test_module(client: Client) -> None:
     try:
         client.access_lease_list_request()
     except DemistoException as e:
-        if 'Authorization' in str(e):
-            return 'Authorization Error: make sure API key & secret are correctly set'
+        if 'password' in str(e):
+            return 'Authorization Error: make sure API key ID & secret are correctly set'
         else:
             raise e
     return 'ok'
