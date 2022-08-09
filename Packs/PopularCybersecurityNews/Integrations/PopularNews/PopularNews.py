@@ -65,7 +65,8 @@ def scrape_tp():
 
 def aggregate(feed, source):
     for elem in feed:
-        TABLE.append({"Article": elem[0], "Link": elem[1][0], "Date": elem[1][1], "Source": source})
+        clickable_link = "[" + elem[1][0] + "](" + elem[1][0] + ")"
+        TABLE.append({"Article": elem[0], "Link": clickable_link, "Date": elem[1][1], "Source": source})
 
 
 def main():
@@ -101,10 +102,12 @@ def main():
         'Type': entryTypes['note'],
         'Contents': TABLE,
         'EntryContext': {},
-        'IgnoreAutoExtract': True,
+        'IgnoreAutoExtract': True
     }
 
     if TABLE:
+        result['ReadableContentsFormat'] = formats['markdown']
+        result['HumanReadable'] = tableToMarkdown('Your popular cybersecurity digest', TABLE, ["Article", "Link", "Date"])
         result['EntryContext'] = {"News": TABLE}
 
     demisto.results(result)
