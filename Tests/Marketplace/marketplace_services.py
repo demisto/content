@@ -1787,8 +1787,9 @@ class Pack(object):
         for display_name, rn_entry in release_notes[rn_header].items():
 
             logging.debug(f"Searching display name '{display_name}' in '{display_names}'.")
-            if display_name != '[special_msg]' and not get_id_set_entity_by_display_name(
-                    display_name.replace("New: ", ""), pack_folder, id_set):
+            if display_name != '[special_msg]' and display_name.replace("New: ", "") not in display_names \
+                    and not get_id_set_entity_by_display_name(display_name.replace("New: ", ""),
+                                                              pack_folder, id_set):
                 continue
 
             if display_name == '[special_msg]':
