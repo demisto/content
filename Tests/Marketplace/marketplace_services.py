@@ -2272,7 +2272,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
-            self._eula_link = user_metadata.get(Metadata.DISABLE_MONTHLY, False)
+            self._disable_monthly = user_metadata.get(Metadata.DISABLE_MONTHLY, False)
             self._marketplaces = user_metadata.get('marketplaces', ['xsoar'])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
