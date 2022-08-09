@@ -865,7 +865,7 @@ def get_domain_command():
                 execution_metrics.quota_error += 1
                 results.append(
                     CommandResults(
-                        readable_output=f"Quota exceeded.",
+                        readable_output="Quota exceeded.",
                         outputs=context,
                         raw_response=contents
 
