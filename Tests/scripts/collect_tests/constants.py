@@ -16,6 +16,8 @@ DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOA
 SKIPPED_CONTENT_ITEMS: set[str] = {
     # these are not under packs, and are not supported anymore.
     'playbook-Jask_Test-4.0.0.yml'
+    'playbook-Recorded_Future_Test_4_0.yml',
+    'playbook-TestCommonPython_4_1.yml',
 }
 
 ONLY_INSTALL_PACK: set[FileType] = {
