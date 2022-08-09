@@ -213,7 +213,7 @@ class ContentItem(DictFileBased):
         return self.pack_path.name
 
     def explicitly_no_tests(self) -> bool:
-        return len(self.tests) == 1 and 'no tests' in self.tests[0].lower()
+        return len(self._tests) == 1 and 'no tests' in self._tests[0].lower()
 
 
 def read_skipped_test_playbooks(pack_folder: Path) -> set[str]:
