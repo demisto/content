@@ -14,7 +14,7 @@ resource_group_name = 'resource_group_name'
 @pytest.fixture()
 def client(mocker):
     mocker.patch('AzureKubernetesServices.MicrosoftClient.get_access_token', return_value='token')
-    return AKSClient(app_id, subscription_id, resource_group_name, False, False)
+    return AKSClient(app_id, subscription_id, resource_group_name, False, False, 'Device')
 
 
 def load_test_data(path):
@@ -109,5 +109,5 @@ def test_test_module_command(mocker, params, expected_results):
     """
     mocker.patch.object(demisto, 'params', return_value=params)
     with pytest.raises(Exception) as e:
-        test_module(None, {})
+        test_module(None)
     assert expected_results in str(e.value)
