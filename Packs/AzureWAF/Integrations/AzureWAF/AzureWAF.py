@@ -27,9 +27,18 @@ POLICY_PATH = 'providers/Microsoft.Network/ApplicationGatewayWebApplicationFirew
 
 class AzureWAFClient:
     @logger
-    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy,
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, auth_type, tenant_id=None,
+                 enc_key=None, auth_code=None, redirect_uri=None,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
-
+        AUTH_TYPES_DICT: dict = {'User Auth': {
+            'grant_type': AUTHORIZATION_CODE,
+            'resource': None,
+            'scope': 'https://management.azure.com/.default'},
+            'Device': {
+            'grant_type': DEVICE_CODE,
+            'resource': 'https://management.core.windows.net',
+            'scope': 'https://management.azure.com/user_impersonation offline_access user.read'}
+        }
         # for dev environment use:
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
@@ -39,21 +48,25 @@ class AzureWAFClient:
         base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
-        client_args = {
-            'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
+        client_args = assign_params(
+            self_deployed=True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
-            'auth_id': app_id,
-            'token_retrieval_url': 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            'grant_type': DEVICE_CODE,
-            'base_url': base_url,
-            'verify': verify,
-            'proxy': proxy,
-            'resource': 'https://management.core.windows.net',  # disable-secrets-detection
-            'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
-            'ok_codes': (200, 201, 202, 204),
-            'azure_ad_endpoint': azure_ad_endpoint
-        }
+            auth_id=app_id,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            grant_type=AUTH_TYPES_DICT.get(auth_type, {}).get('grant_type'),  # disable-secrets-detection
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            resource=AUTH_TYPES_DICT.get(auth_type, {}).get('resource'),  # disable-secrets-detection
+            scope=AUTH_TYPES_DICT.get(auth_type, {}).get('scope'),
+            ok_codes=(200, 201, 202, 204),
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
+            azure_ad_endpoint=azure_ad_endpoint,
+            tenant_id=tenant_id,
+            enc_key=enc_key
+        )
 
         self.ms_client = MicrosoftClient(**client_args)
 
@@ -352,6 +365,11 @@ def main() -> None:
     args = demisto.args()
 
     client = AzureWAFClient(
+        tenant_id=params.get('tenant_id', ''),
+        auth_type=params.get('auth_type', ''),
+        auth_code=params.get('auth_code', {}).get('password', ''),
+        redirect_uri=params.get('redirect_uri', ''),
+        enc_key=params.get('credentials', {}).get('password', ''),
         app_id=params.get('app_id', ''),
         subscription_id=params.get('subscription_id', ''),
         resource_group_name=params.get('resource_group_name', ''),
