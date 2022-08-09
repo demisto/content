@@ -126,7 +126,7 @@ tasks:
     conditions:
       - label: "yes"
         condition:
-          - - operator: isExists
+          - - operator: isNotEmpty
               left:
                 value:
                   simple: inputs.Username
