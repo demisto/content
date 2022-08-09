@@ -48,10 +48,8 @@ def get_destination_domains(client, organizationId, destinationListId):
     page_limit, page, r = get_first_page_of_destinations(client, organizationId, destinationListId)
 
     destination_domains = []
-    while r.get('meta').get('total') <= page_limit:
+    while r.get('data'):
         if r.get('meta').get('total') == 0:
-            # currently, r.meta.total continually returns 100 until the last page, where it will return a value <= 100
-            # and will never return 0. but if it does, then it's likely the API changed
             uri = f'/{organizationId}/destinationlists/{destinationListId}/destinations'
             demisto.info(f'Unexpected "total" value of 0 returned from Umbrella {uri} API call')
             break
@@ -67,10 +65,8 @@ def get_destination_domain(client, organizationId, destinationListId, domain):
     page_limit, page, r = get_first_page_of_destinations(client, organizationId, destinationListId)
 
     destination_domain = None
-    while r.get('meta').get('total') <= page_limit and not destination_domain:
+    while r.get('data') and not destination_domain:
         if r.get('meta').get('total') == 0:
-            # currently, r.meta.total continually returns 100 until the last page, where it will return a value <= 100
-            # and will never return 0. but if it does, then it's likely the API changed
             uri = f'/{organizationId}/destinationlists/{destinationListId}/destinations'
             demisto.info(f'Unexpected "total" value of 0 returned from Umbrella {uri} API call')
             break
@@ -89,10 +85,8 @@ def search_destination_domains(client, organizationId, destinationListId, domain
     page_limit, page, r = get_first_page_of_destinations(client, organizationId, destinationListId)
 
     destination_domains = []
-    while r.get('meta').get('total') <= page_limit:
+    while r.get('data'):
         if r.get('meta').get('total') == 0:
-            # currently, r.meta.total continually returns 100 until the last page, where it will return a value <= 100
-            # and will never return 0. but if it does, then it's likely the API changed
             uri = f'/{organizationId}/destinationlists/{destinationListId}/destinations'
             demisto.info(f'Unexpected "total" value of 0 returned from Umbrella {uri} API call')
             break
@@ -101,10 +95,12 @@ def search_destination_domains(client, organizationId, destinationListId, domain
         r = client.get_destinations(organizationId, destinationListId, params={'page': page, 'limit': page_limit})
 
     destination_domains_found = []
-    for domain in domains:
-        if domain in demisto.dt(destination_domains, 'destination'):
-            destination_domains_found += [d for d in destination_domains if d.get('destination') == domain]
-            demisto.debug(f'destination_domains_found: {destination_domains_found}')
+
+    if destination_domains:
+        for domain in domains:
+            if domain in demisto.dt(destination_domains, 'destination'):
+                destination_domains_found += [d for d in destination_domains if d.get('destination') == domain]
+                demisto.debug(f'destination_domains_found: {destination_domains_found}')
 
     return destination_domains_found
 
