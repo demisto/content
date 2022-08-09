@@ -22,5 +22,5 @@ Please note that an Exodus Intelligence account is necessary to access the API. 
 - Max XI Score
 
 ## Available Commands:
-!exodus-get-indicator: Runs the integration
+!exodus-get-indicators: Runs the integration
 !exodus-reset-data-stream: Reset the integration data stream to a later date. Ie: `!exodus-reset-data-stream reset=100` will reset the data stream 100 days in the past.
