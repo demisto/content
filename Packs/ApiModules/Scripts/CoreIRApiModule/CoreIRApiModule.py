@@ -129,6 +129,8 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
+MIRROR_IN_CLOSE_REASON = 'Closed during mirroring-in due to the remote incident being closed.'
+
 
 class CoreClient(BaseClient):
 
@@ -1767,6 +1769,8 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
 
 
 def get_endpoints_command(client, args):
+    integration_context_brand = args.pop('integration_context_brand', 'CoreApiModule')
+    integration_name = args.pop("integration_name", "CoreApiModule")
     page_number = arg_to_int(
         arg=args.get('page', '0'),
         arg_name='Failed to parse "page". Must be a number.',
@@ -1838,7 +1842,6 @@ def get_endpoints_command(client, args):
             username=username
         )
 
-    integration_name = args.get("integration_name", "CoreApiModule")
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
     endpoint_context_list = []
     for endpoint in standard_endpoints:
@@ -1846,9 +1849,9 @@ def get_endpoints_command(client, args):
         endpoint_context_list.append(endpoint_context)
 
     context = {
-        f'{args.get("integration_context_brand", "CoreApiModule")}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
+        f'{integration_context_brand}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
         Common.Endpoint.CONTEXT_PATH: endpoint_context_list,
-        f'{args.get("integration_context_brand", "CoreApiModule")}.Endpoint.count': len(standard_endpoints)
+        f'{integration_context_brand}.Endpoint.count': len(standard_endpoints)
     }
     account_context = create_account_context(endpoints)
     if account_context:
@@ -2645,9 +2648,12 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
-        update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
-        demisto.debug(f"Closing Remote incident with status {update_args['status']}")
-        update_args['resolve_comment'] = update_args.get('closeNotes', '')
+        if MIRROR_IN_CLOSE_REASON not in update_args.get('closeNotes', ''):
+            update_args['resolve_comment'] = update_args.get('closeNotes', '')
+            update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
+            demisto.debug(f"Closing Remote incident with status {update_args['status']}")
+        else:
+            demisto.debug('Ignore closing Remote incident because incident closed during mirroring in')
 
 
 def get_update_args(delta, inc_status):
