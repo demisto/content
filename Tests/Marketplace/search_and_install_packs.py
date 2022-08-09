@@ -632,11 +632,25 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     lock = Lock()
 
-    with ThreadPoolExecutor(max_workers=130) as pool:
-        for pack_id in pack_ids:
-            pool.submit(search_pack_and_its_dependencies,
-                        client, pack_id, packs_to_install, installation_request_body, lock)
+    # install first pack
+    logging.info(f'getting depedency for first pack for debug purposes ({pack_ids[0]})')
+    search_pack_and_its_dependencies(client, pack_ids[0], packs_to_install, installation_request_body, lock)
 
+    pprof = client.generic_request_func(host, '/monitoring/pprof', 'GET')
+    logging.info(f'pprof after getting dependencies:\n{pprof}')
+    health = client.generic_request_func(host, '/monitoring/health', 'GET')
+    logging.info(f'health after getting dependencies:\n{health}')
+    dbstats = client.generic_request_func(host, '/monitoring/dbstats', 'GET')
+    logging.info(f'dbstats after getting dependencies:\n{dbstats}')
+
+    logging.info('installing first pack')
     install_packs(client, host, installation_request_body)
+
+    pprof = client.generic_request_func(host, '/monitoring/pprof', 'GET')
+    logging.info(f'pprof after installing:\n{pprof}')
+    health = client.generic_request_func(host, '/monitoring/health', 'GET')
+    logging.info(f'health after getting dependencies:\n{health}')
+    dbstats = client.generic_request_func(host, '/monitoring/dbstats', 'GET')
+    logging.info(f'dbstats after getting dependencies:\n{dbstats}')
 
     return packs_to_install, SUCCESS_FLAG
