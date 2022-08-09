@@ -79,7 +79,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
     - section_end "Collect Test List and Content Packs"
     - section_start "Calculate Packs Dependencies" --collapsed
-    - python3 ./Tests/Marketplace/packs_dependencies.py -i $ARTIFACTS_FOLDER/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - demisto-sdk find-dependencies -idp $ARTIFACTS_FOLDER/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
     - section_end "Calculate Packs Dependencies"
 
 
@@ -104,11 +104,17 @@ demisto-sdk-nightly:create-instance:
 
 demisto-sdk-nightly:run-commands-against-instance:
   tags:
-    - gke
+    - gce # can't run docker in docker on gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
+  services:  # needed for running lint
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+      alias: docker
   variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
   stage: run-instances
   script:
@@ -140,7 +146,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - demisto-sdk validate -i Packs/HelloWorld/
     - section_end "Run Validate"
     - section_start "Run Lint" --collapsed
-    - demisto-sdk lint -i Packs/HelloWorld/
+    - demisto-sdk lint -i Packs/HelloWorld/ -vvv
     - section_end "Run Lint"
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar

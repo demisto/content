@@ -679,7 +679,7 @@ Retrieve the download link for the requested scanned file.
 ### Sonar On-Demand Scan Result
 |Scan result CSV Download Link|
 |---|
-| Download the [CSV](dummy-download-link) file to see the result. |
+| Download the [CSV](https://www.example.com/csv_file) file to see the result. |
 
 
 
@@ -717,7 +717,7 @@ Request for the analysis and retrieve the download link for the Radar CSV analyz
 ### Radar Anomaly CSV Analysis
 |CSV Download Link|
 |---|
-| Download the analyzed [CSV](dummy_link) file. |
+| Download the analyzed [CSV](https://www.example.com/csv_file) file. |
 
 
 
@@ -912,8 +912,6 @@ Enumerates the available SLA Domains to apply to the on-demand snapshot as a ret
 | show_cluster_slas_only | Whether to show Cluster SLAs and not Global SLAs. "False" value will result in showing only Global SLAs. <br/><br/>Possible values are: "True", "False". Default is True. | Optional | 
 | sort_by | Specify the field to use for sorting the response.<br/><br/>Possible values are: "NAME", "PROTECTED_OBJECT_COUNT". Default is NAME. | Optional | 
 | sort_order | Specify the order to sort the data in.<br/><br/>Possible values are: "ASC", "DESC". Default is ASC. | Optional | 
-| limit | The number of results to retrieve in the response. Maximum allowed size is 1000. Default is 50. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
 
 
 #### Context Output
@@ -986,9 +984,6 @@ Enumerates the available SLA Domains to apply to the on-demand snapshot as a ret
 | RubrikPolaris.GPSSLADomain.objectSpecificConfigs.sapHanaConfig.logRetention.unit | String | Unit of duration of retentioning SAP HANA Database logs. | 
 | RubrikPolaris.GPSSLADomain.objectSpecificConfigs.vmwareVmConfig.logRetentionSeconds | Number | Seconds of retentioning VMWare virtual machine logs. | 
 | RubrikPolaris.GPSSLADomain.objectTypes | Unknown | List of object types associated with this SLA Domain. | 
-| RubrikPolaris.PageToken.GPSSLADomain.next_page_token | String | Next page token. | 
-| RubrikPolaris.PageToken.GPSSLADomain.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.GPSSLADomain.has_next_page | Boolean | Whether the result has the next page or not. | 
 
 
 #### Command Example
@@ -1000,8 +995,6 @@ Enumerates the available SLA Domains to apply to the on-demand snapshot as a ret
 |---|---|---|---|---|---|---|---|
 | 00000000-0000-0000-0000-000000000002 | Bronzecd | 1 Days | 0 | AWS S3:bucket-1234 | Rubrik default Bronze level SLA Domain policy | sand2-rbk01 | sand2-rbk02 |
 | 00000000-0000-0000-0000-000000000000 | Gold | 4 Hours | 0 |  | Rubrik default Gold level SLA Domain policy | sand2-rbk01 |  |
-
- Note: To retrieve the next set of results use, "next_page_token" = xyz
 
 
 
@@ -1035,7 +1028,7 @@ Retrieve the download link for the requested Sonar CSV Snapshot file.
 ### Sonar CSV Result
 |Download URL|
 |---|
-| Download the [CSV](dummy_link) file to see the result. |
+| Download the [CSV](https://www.example.com/csv_file) file to see the result. |
 
 
 
@@ -1590,7 +1583,7 @@ Retrieve the result of an asynchronous request. This command will retrieve the r
 ### GPS Asynchronous Request Result
 |ID|Status|Node ID|Links|
 |---|---|---|---|
-| dummy_id | FAILED | cluster:::RVMHM219S004941 | [self](dummy_link)<br/> |
+| dummy_id | FAILED | cluster:::RVMHM219S004941 | [self](https://www.example.com/)<br/> |
 
 
 
@@ -1608,8 +1601,6 @@ Retrieve the list of the available rubrik clusters.
 | --- | --- | --- |
 | type | Filter out clusters based on their type. Supports comma separated values.<br/><br/>Possible values are: "Cloud", "Robo", "ExoCompute", "OnPrem", "Polaris", "Unknown". | Optional | 
 | name | Filter out clusters based on name. Supports comma separated values. | Optional | 
-| limit | Number of results to retrieve in the response. Maximum size allowed is 1000. Default is 50. | Optional | 
-| next_page_token | The next page cursor to retrieve the next set of results. | Optional | 
 | sort_by | Specify the field to use for sorting the response.<br/><br/>Possible values are: "ClusterName", "ClusterType", "RegisteredAt", "ESTIMATED_RUNWAY". Default is ClusterName. | Optional | 
 | sort_order | Specify the order to sort the data in.<br/><br/>Possible values are: "Asc", "Desc". Default is Asc. | Optional | 
 
@@ -1649,9 +1640,6 @@ Retrieve the list of the available rubrik clusters.
 | RubrikPolaris.GPSCluster.connectivityLastUpdated | String | The date-time of when the cluster was last polled for connectivity. | 
 | RubrikPolaris.GPSCluster.lambdaFeatureHistory.wasRadarEverEnabled | Boolean | Whether Polaris Radar was ever enabled on the cluster. | 
 | RubrikPolaris.GPSCluster.lambdaFeatureHistory.wasSonarEverEnabled | Boolean | Whether Polaris Sonar was ever enabled on the cluster. | 
-| RubrikPolaris.PageToken.GPSCluster.has_next_page | Boolean | Whether the result has the next page or not. | 
-| RubrikPolaris.PageToken.GPSCluster.name | String | Name of the command. | 
-| RubrikPolaris.PageToken.GPSCluster.next_page_token | String | Next page token. | 
 
 
 #### Command Example

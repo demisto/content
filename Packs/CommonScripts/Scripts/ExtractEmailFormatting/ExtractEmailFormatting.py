@@ -31,7 +31,8 @@ def verify_is_email(email_address: str) -> bool:
 def main():
     emails = argToList(demisto.args().get('input'))
 
-    list_results = [email_address.replace("[@]", "@") for email_address in emails if verify_is_email(email_address)]
+    list_results = [email_address.replace("[@]", "@") if verify_is_email(email_address) else '' for email_address in
+                    emails]
 
     if list_results:
         return_results(list_results)

@@ -1,5 +1,9 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
+from datetime import timedelta
+import dateparser
+
+TOKEN_LIFE_TIME = timedelta(minutes=28)
 
 
 class CrowdStrikeClient(BaseClient):
@@ -16,7 +20,7 @@ class CrowdStrikeClient(BaseClient):
         super().__init__(base_url=params.get('server_url', 'https://api.crowdstrike.com/'),
                          verify=not params.get('insecure', False), ok_codes=tuple(),
                          proxy=params.get('proxy', False))  # type: ignore[misc]
-        self._token = self._generate_token()
+        self._token = self._get_token()
         self._headers = {'Authorization': 'bearer ' + self._token}
 
     @staticmethod
@@ -98,6 +102,32 @@ class CrowdStrikeClient(BaseClient):
                                      json_data=json_data, params=params, data=data, files=files, timeout=timeout,
                                      ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
                                      error_handler=self._error_handler)
+
+    def _get_token(self, force_gen_new_token=False):
+        """
+            Retrieves the token from the server if it's expired and updates the global HEADERS to include it
+
+            :param force_gen_new_token: If set to True will generate a new token regardless of time passed
+
+            :rtype: ``str``
+            :return: Token
+        """
+        now = datetime.now()
+        ctx = get_integration_context()
+        if not ctx or force_gen_new_token:
+            # new token is needed
+            auth_token = self._generate_token()
+        else:
+            time_passed = now - dateparser.parse(ctx.get('generation_time'))
+            if time_passed < TOKEN_LIFE_TIME:
+                # token hasn't expired
+                return ctx.get('auth_token')
+            else:
+                # token expired
+                auth_token = self._generate_token()
+
+        set_integration_context({'auth_token': auth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")})
+        return auth_token
 
     def _generate_token(self) -> str:
         """Generate an Access token using the user name and password

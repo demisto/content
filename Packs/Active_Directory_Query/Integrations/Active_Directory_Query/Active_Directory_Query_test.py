@@ -10,7 +10,6 @@ import json
 from IAMApiModule import *
 from unittest.mock import patch
 
-
 BASE_TEST_PARAMS = {
     'server_ip': '127.0.0.1',
     'secure_connection': 'None',
@@ -420,6 +419,7 @@ def test_search_group_members(mocker):
         result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
 
         def search(self, *args, **kwargs):
+            time.sleep(1)
             return
 
     expected_results = {'ContentsFormat': 'json', 'Type': 1,
@@ -435,7 +435,7 @@ def test_search_group_members(mocker):
     expected_results = f'demisto results: {json.dumps(expected_results, indent=4, sort_keys=True)}'
 
     mocker.patch.object(demisto, 'args',
-                        return_value={'member-type': 'group', 'group-dn': 'dn'})
+                        return_value={'member-type': 'group', 'group-dn': 'dn', 'time_limit': '1'})
 
     Active_Directory_Query.conn = ConnectionMocker()
 
@@ -511,3 +511,101 @@ def test_user_account_to_boolean_fields():
 
     fields = Active_Directory_Query.user_account_to_boolean_fields(0x50)
     assert {k for k, v in fields.items() if v} == {'LOCKOUT', 'PASSWD_CANT_CHANGE'}
+
+
+@pytest.mark.parametrize('flags', [512, 0, 544])
+def test_restore_user(mocker, flags):
+    """
+    Given:
+        A disabled user.
+    When:
+        Calling restore_user method.
+    Then:
+        Verify the existing flag is returned.
+    """
+    from Active_Directory_Query import restore_user
+
+    re_val = {'flat': [{'userAccountControl': [flags]}]}
+    mocker.patch('Active_Directory_Query.search_with_paging', return_value=re_val)
+    mocker.patch.object(demisto, 'args')
+
+    assert restore_user('test_user', 0) == flags
+
+
+def test_enable_user_with_restore_user_option(mocker):
+    """
+    Given:
+        A disabled user.
+    When:
+        Calling enable_user method.
+    Then:
+        Verify the existing flag is returned with the disable bit off.
+    """
+    from Active_Directory_Query import enable_user
+    disabled_account_with_properties = 546
+    enabled_account_with_properties = 544
+    mocker.patch('Active_Directory_Query.restore_user', return_value=disabled_account_with_properties)
+    mocker.patch('Active_Directory_Query.user_dn', return_value='test_dn')
+    modify_data = mocker.patch('Active_Directory_Query.modify_object')
+    mocker.patch.object(demisto, 'args')
+
+    enable_user('test_user', 0)
+
+    assert modify_data.call_args.args[1].get('userAccountControl')[0][1] == enabled_account_with_properties
+
+
+def test_search_with_paging_bug(mocker):
+    """
+     Given:
+        page size larger than 1.
+    When:
+        running get-group-members command.
+    Then:
+        time_limit results returned.
+
+    """
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            return '{"dn": "dn","attributes": {"memberOf": ["memberOf"], "name": ["name"]}}'
+
+    class ConnectionMocker:
+        entries = []
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+
+        def search(self, *args, **kwargs):
+            page_size = kwargs.get('paged_size')
+            if page_size:
+                self.entries = [EntryMocker() for i in range(page_size)]
+                time.sleep(1)
+            return
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'args',
+                        return_value={'member-type': 'group', 'group-dn': 'dn', 'time_limit': '3'})
+
+    Active_Directory_Query.conn = ConnectionMocker()
+
+    with patch('logging.Logger.info'):
+        Active_Directory_Query.search_group_members('dc', 1)
+        assert len(demisto.results.call_args[0][0]['Contents']) == 3
+
+
+def test_password_not_expire_missing_username(mocker):
+    """
+     Given:
+        A demisto args object with missing username and a valid value.
+    When:
+        running set_password_not_expire command.
+    Then:
+        Verify that a a missing username exception is raised.
+
+    """
+    from Active_Directory_Query import set_password_not_expire
+    mocker.patch.object(demisto, 'args', return_value={'username': None, 'value': True})
+    default_base_dn = {}
+
+    with pytest.raises(Exception) as err:
+        set_password_not_expire(default_base_dn)
+    assert err.value.args[0] == 'Missing argument - You must specify a username (sAMAccountName).'

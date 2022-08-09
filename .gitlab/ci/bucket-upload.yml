@@ -67,7 +67,7 @@ prepare-testing-bucket-mpv2-upload-flow:
    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
-.install_packs_in_server:
+.install_packs_in_xsoar_server:
   tags:
     - gke
   needs: ["create-instances-upload-flow"]
@@ -108,32 +108,94 @@ prepare-testing-bucket-mpv2-upload-flow:
     - exit "$EXIT_CODE"
 
 
-install-packs-in-server6_2:
-  extends: .install_packs_in_server
+install-packs-in-server6_5:
+  extends: .install_packs_in_xsoar_server
   variables:
-    INSTANCE_ROLE: "Server 6.2"
+    INSTANCE_ROLE: "Server 6.5"
 
-
-install-packs-in-server6_1:
-  extends: .install_packs_in_server
+install-packs-in-server6_6:
+  extends: .install_packs_in_xsoar_server
   variables:
-    INSTANCE_ROLE: "Server 6.1"
+    INSTANCE_ROLE: "Server 6.6"
+
+install-packs-in-server6_8:
+  extends: .install_packs_in_xsoar_server
+  variables:
+    INSTANCE_ROLE: "Server 6.8"
 
 
 install-packs-in-server-master:
-  extends: .install_packs_in_server
+  extends: .install_packs_in_xsoar_server
   variables:
     INSTANCE_ROLE: "Server Master"
 
 
-# TO-DO: Job to test installation of mpv2 packs - issue https://github.com/demisto/etc/issues/44769
-# install-mpv2-pack-on-mpv2-instances
+.install-mpv2-packs-on-xsiam-instances:
+  tags:
+    - gke
+  needs: ["prepare-testing-bucket-mpv2-upload-flow"]
+  stage: run-instances
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - /builds/xsoar/content/artifacts/*
+    when: always
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
+    INSTANCE_CREATED: "true"
+    TIME_TO_LIVE: ""
+  extends:
+    - .bucket-upload-rule
+    - .default-job-settings
+  script:
+    - EXIT_CODE=0
+    - section_start "Download configuration"
+    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+    - section_end "Download configuration"
+
+    - section_start "Lock XSIAM Machine"
+    - echo "Authenticating GCP"
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+    - echo "Auth done successfully"
+    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
+    - source XSIAMEnvVariables
+    - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
+    - section_end "Lock XSIAM Machine"
+
+    - section_start "Clean XSIAM Machine"
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh
+    - section_end "Clean XSIAM Machine"
+
+    - section_start "Get Instance Variables"
+    - echo INSTANCE_ROLE="$INSTANCE_ROLE"
+    - echo INSTANCE_CREATED="$INSTANCE_CREATED"
+    - section_end "Get Instance Variables"
+
+    - section_start "Install Packs"
+    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - section_end "Install Packs"
+
+    - exit "$EXIT_CODE"
+  after_script:
+    - echo "Job finished, removing lock file"
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
+    - echo "Finished removing lock file"
+
+
+install-packs-in-xsiam-master:
+  extends: .install-mpv2-packs-on-xsiam-instances
+  variables:
+    INSTANCE_ROLE: "XSIAM Master"
+    GCS_QUEUE_FILE: "queue-master"
+    TEST_MACHINES_LIST: "test-machines-master"
 
 
 upload-packs-to-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_2", "install-packs-in-server6_1", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_5", "install-packs-in-server6_6", "install-packs-in-server6_8", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -208,7 +270,7 @@ upload-packs-to-marketplace:
 upload-packs-to-marketplace-v2:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-mpv2-upload-flow"]
+  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-mpv2-upload-flow", "install-packs-in-xsiam-master"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs

@@ -77,7 +77,7 @@ What if R1 is deleted rule id? Would it be able to fetch R2 and R3 detections?
     * __Time window (in minutes)__
     * __Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection).__
     * __Detections to fetch by Rule ID or Version ID__
-    * __Fetch all live rules detections__
+    * __Fetch all rules detections__
     * __Filter detections by alert state__
     * __List Basis__  
     * __Trust any certificate (not secure)__
@@ -103,7 +103,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
     - 45
     - 60
  - Detections to fetch by Rule ID or Version ID **Only applicable for Detection alerts**
- - Fetch all live rules detections **Only applicable for Detection alerts**
+ - Fetch all rules detections **Only applicable for Detection alerts**
  - Filter detections by alert state: **Only applicable for Detection alerts**
    - ALERTING
    - NOT ALERTING
@@ -116,7 +116,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | Chronicle Alert Type (Select the type of data to consider for fetch incidents). | IOC Domain matches (Default), Assets with alerts, Detection alerts and User alerts | 
 | Time window (in minutes) | 15 |
 | Detections to fetch by Rule ID or Version ID | empty |
-| Fetch all live rules detections | Not selected |
+| Fetch all rules detections | Not selected |
 | Filter detections by alert state | Not selected |
 
 #### Incident field mapping - Asset Alerts

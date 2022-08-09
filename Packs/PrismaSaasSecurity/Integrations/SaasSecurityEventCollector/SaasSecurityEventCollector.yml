@@ -1,0 +1,164 @@
+category: Analytics & SIEM
+commonfields:
+  id: SaaS Security Event Collector
+  version: -1
+configuration:
+- additionalinfo: 'The instance configuration URL based on the server location: <br/>US:
+    https://api.aperture.paloaltonetworks.com<br/> EU: https://api.aperture-eu.paloaltonetworks.com<br/>
+    APAC: https://api.aperture-apac.paloaltonetworks.com'
+  defaultvalue: https://api.aperture.paloaltonetworks.com
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The SaaS Security Client ID and Client Secret.
+  display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: The maximum number of events per fetch.
+  additionalinfo: The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to SaaS-Security api limitations. Default is 1000. In case this is empty, all available events will be fetched.
+  defaultvalue: 1000
+  name: max_fetch
+  required: false
+  type: 0
+- display: The vendor corresponding to the integration that produced the events.
+  name: vendor
+  type: 0
+  defaultvalue: paloaltonetworks
+- display: The product corresponding to the integration that produced the events.
+  name: product
+  type: 0
+  defaultvalue: saassecurity
+  required: false
+description: Palo Alto Networks SaaS Security Event Collector integration for XSIAM.
+display: SaaS Security Event Collector
+name: SaaS Security Event Collector
+script:
+  commands:
+  - deprecated: false
+    description: Manual command to fetch events and display them.
+    execution: false
+    name: saas-security-get-events
+    arguments:
+      - name: limit
+        description: The maximum number of events to get. Must be divisible by 100 due to SaaS-Security api limitations. Overrides the max-fetch parameter of the integration.
+      - auto: PREDEFINED
+        defaultValue: 'False'
+        description: Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*
+        isArray: false
+        name: should_push_events
+        predefined:
+          - 'True'
+          - 'False'
+        required: true
+    outputs:
+    - contextPath: SaasSecurity.Event.log_type
+      description: Event type.
+      type: String
+    - contextPath: SaasSecurity.Event.item_type
+      description: Item type (File, Folder, or User).
+      type: String
+    - contextPath: SaasSecurity.Event.item_name
+      description: Name of the file, folder, or user associated with the event.
+      type: String
+    - contextPath: SaasSecurity.Event.item_unique_id
+      description: Unique ID number for an asset’s related asset.
+      type: String
+    - contextPath: SaasSecurity.Event.user
+      description: Cloud app user that performed the action.
+      type: String
+    - contextPath: SaasSecurity.Event.source_ip
+      description: Original session source IP address.
+      type: String
+    - contextPath: SaasSecurity.Event.location
+      description: Location of the cloud app user that performed the event.
+      type: String
+    - contextPath: SaasSecurity.Event.action
+      description: Action performed.
+      type: String
+    - contextPath: SaasSecurity.Event.target_name
+      description: Target name.
+      type: String
+    - contextPath: SaasSecurity.Event.target_type
+      description: Target type.
+      type: String
+    - contextPath: SaasSecurity.Event.serial
+      description: Serial number of the organization using the service (tenant).
+      type: String
+    - contextPath: SaasSecurity.Event.cloud_app_instance
+      description: Cloud app name (not cloud app type).
+      type: String
+    - contextPath: SaasSecurity.Event.timestamp
+      description: ISO8601 timestamp to show when the event occurred.
+      type: Date
+    - contextPath: SaasSecurity.Event.severity
+      description: Severity (0-5).
+      type: Number
+    - contextPath: SaasSecurity.Event.incident_id
+      description: Incident/risk id.
+      type: String
+    - contextPath: SaasSecurity.Event.exposure
+      description: Exposure level (public, external, company, or internal).
+      type: String
+    - contextPath: SaasSecurity.Event.asset_id
+      description: The asset ID.
+      type: String
+    - contextPath: SaasSecurity.Event.item_owner
+      description: The item owner.
+      type: String
+    - contextPath: SaasSecurity.Event.container_name
+      description: Item’s container name.
+      type: String
+    - contextPath: SaasSecurity.Event.item_creator
+      description: Item creator.
+      type: String
+    - contextPath: SaasSecurity.Event.occurrences_by_rule
+      description: Number of times the asset violated the policy.
+      type: Number
+    - contextPath: SaasSecurity.Event.policy_rule_name
+      description: Violated policy’s name.
+      type: String
+    - contextPath: SaasSecurity.Event.incident_owner
+      description: Incident owner.
+      type: String
+    - contextPath: SaasSecurity.Event.incident_category
+      description: Incident category.
+      type: String
+    - contextPath: SaasSecurity.Event.item_creator_email
+      description: Item creator’s email.
+      type: String
+    - contextPath: SaasSecurity.Event.action_taken
+      description: Action taken.
+      type: String
+    - contextPath: SaasSecurity.Event.action_taken_by
+      description: Action taken by.
+      type: String
+    - contextPath: SaasSecurity.Event.field
+      description: Name of field (optional).
+      type: String
+    - contextPath: SaasSecurity.Event.resource_value_old
+      description: Old resource value. (optional).
+      type: String
+    - contextPath: SaasSecurity.Event.resource_value_new
+      description: New resource value. (optional).
+      type: String
+  dockerimage: demisto/python3:3.10.4.30607
+  isfetchevents: true
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0

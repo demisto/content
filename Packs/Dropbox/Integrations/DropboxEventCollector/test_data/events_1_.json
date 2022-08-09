@@ -1,0 +1,173 @@
+{
+    "events": [
+        {
+            "timestamp": "2022-05-16T11:34:29Z",
+            "event_category": {
+                ".tag": "members"
+            },
+            "actor": {
+                ".tag": "admin",
+                "admin": {
+                    ".tag": "team_member",
+                    "account_id": "456789",
+                    "display_name": "John Smith",
+                    "email": "example@example.com",
+                    "team_member_id": "123456"
+                }
+            },
+            "origin": {
+                "geo_location": {
+                    "city": "Tel Aviv",
+                    "region": "Tel Aviv",
+                    "country": "IL",
+                    "ip_address": "1.1.1.1"
+                },
+                "access_method": {
+                    ".tag": "end_user",
+                    "end_user": {
+                        ".tag": "web",
+                        "session_id": "111111"
+                    }
+                }
+            },
+            "involve_non_team_member": false,
+            "context": {
+                ".tag": "team_member",
+                "account_id": "456789",
+                "display_name": "John Smith",
+                "email": "example@example.com",
+                "team_member_id": "123456"
+            },
+            "participants": [],
+            "assets": [],
+            "event_type": {
+                ".tag": "member_change_status",
+                "description": "Changed member status (invited, joined, suspended, etc.)"
+            },
+            "details": {
+                ".tag": "member_change_status_details",
+                "previous_value": {
+                    ".tag": "not_joined"
+                },
+                "new_value": {
+                    ".tag": "active"
+                },
+                "action": {
+                    ".tag": "team_join_details",
+                    "linked_apps": [],
+                    "linked_devices": [],
+                    "linked_shared_folders": [],
+                    "has_linked_apps": false,
+                    "has_linked_devices": true,
+                    "has_linked_shared_folders": false
+                }
+            }
+        },
+        {
+            "timestamp": "2022-05-16T11:34:33Z",
+            "event_category": {
+                ".tag": "team_policies"
+            },
+            "actor": {
+                ".tag": "admin",
+                "admin": {
+                    ".tag": "team_member",
+                    "account_id": "456789",
+                    "display_name": "John Smith",
+                    "email": "example@example.com",
+                    "team_member_id": "123456"
+                }
+            },
+            "origin": {
+                "geo_location": {
+                    "city": "Tel Aviv",
+                    "region": "Tel Aviv",
+                    "country": "IL",
+                    "ip_address": "1.1.1.1"
+                },
+                "access_method": {
+                    ".tag": "end_user",
+                    "end_user": {
+                        ".tag": "web",
+                        "session_id": "111111"
+                    }
+                }
+            },
+            "involve_non_team_member": false,
+            "context": {
+                ".tag": "team"
+            },
+            "participants": [],
+            "assets": [],
+            "event_type": {
+                ".tag": "member_send_invite_policy_changed",
+                "description": "Changed member send invite policy for team"
+            },
+            "details": {
+                ".tag": "member_send_invite_policy_changed_details",
+                "new_value": {
+                    ".tag": "everyone"
+                },
+                "previous_value": {
+                    ".tag": "specific_members"
+                }
+            }
+        },
+        {
+            "timestamp": "2022-05-16T11:34:29Z",
+            "event_category": {
+                ".tag": "members"
+            },
+            "actor": {
+                ".tag": "admin",
+                "admin": {
+                    ".tag": "team_member",
+                    "account_id": "456789",
+                    "display_name": "John Smith",
+                    "email": "example@example.com",
+                    "team_member_id": "123456"
+                }
+            },
+            "origin": {
+                "geo_location": {
+                    "city": "Tel Aviv",
+                    "region": "Tel Aviv",
+                    "country": "IL",
+                    "ip_address": "1.1.1.1"
+                },
+                "access_method": {
+                    ".tag": "end_user",
+                    "end_user": {
+                        ".tag": "web",
+                        "session_id": "111111"
+                    }
+                }
+            },
+            "involve_non_team_member": false,
+            "context": {
+                ".tag": "team_member",
+                "account_id": "456789",
+                "display_name": "John Smith",
+                "email": "example@example.com",
+                "team_member_id": "123456"
+            },
+            "participants": [],
+            "assets": [],
+            "event_type": {
+                ".tag": "member_change_admin_role",
+                "description": "Changed team member admin role"
+            },
+            "details": {
+                ".tag": "member_change_admin_role_details",
+                "new_value": {
+                    ".tag": "team_admin"
+                },
+                "previous_value": {
+                    ".tag": "member_only"
+                }
+            }
+        }
+    ],
+    "cursor": "123456",
+    "has_more": true
+}

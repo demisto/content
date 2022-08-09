@@ -7,7 +7,8 @@ type: javascript
 tags:
 - carbon-black
 - endpoint
-comment: Runs 'process list' command on a remote Carbon Black sensor
+deprecated: true
+comment: "Deprecated. No available replacement."
 system: true
 args:
 - name: sessionid

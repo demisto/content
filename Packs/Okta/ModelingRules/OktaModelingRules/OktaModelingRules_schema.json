@@ -1,0 +1,24 @@
+{
+  "okta_okta_raw": {
+    "client": {
+      "type": "string",
+      "is_array": false
+    },
+    "eventType": {
+      "type": "string",
+      "is_array": false
+    },
+    "outcome": {
+      "type": "string",
+      "is_array": false
+    },
+    "target": {
+      "type": "string",
+      "is_array": true
+    },
+    "authenticationContext": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

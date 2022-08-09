@@ -1,0 +1,6 @@
+name: Github Modeling Rule
+id: github_modeling_rule
+fromversion: 6.8.0
+tags: github
+rules: ''
+schema: ''

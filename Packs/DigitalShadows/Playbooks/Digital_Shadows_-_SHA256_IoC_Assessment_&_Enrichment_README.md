@@ -11,18 +11,17 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 * AddEvidence
+* Print
 
 ### Commands
-* associateIndicatorsToIncident
 * ds-search
-* createNewIndicator
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IoC_SHA256 | A SHA256 hash to assess and enrich | File.SHA256 | Optional |
+| IoC_SHA256 | A Digital Shadows ShadowSearch query containing SHA256 hashes | File.SHA256 | Optional |
 
 ## Playbook Outputs
 ---

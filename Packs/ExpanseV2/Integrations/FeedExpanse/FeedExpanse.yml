@@ -4,8 +4,7 @@ commonfields:
 display: Expanse Expander Feed
 name: FeedExpanse
 category: Data Enrichment & Threat Intelligence
-description: Use this feed to retrieve the discovered IPs/Domains/Certificates from
-  Expanse Expander asset database.
+description: Use this feed to retrieve the discovered IPs/Domains/Certificates from Expanse Expander asset database.
 configuration:
 - defaultvalue: https://expander.expanse.co
   display: Your server URL
@@ -42,7 +41,7 @@ configuration:
   type: 0
 - defaultvalue: suddenDeath
   name: feedExpirationPolicy
-  display: ""
+  display: ''
   options:
   - never
   - interval
@@ -51,7 +50,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ""
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -60,9 +59,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -80,8 +77,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -96,8 +92,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -119,28 +114,28 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: 'yes'
+      defaultValue: yes
       description: Retrieve discovered IPs
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      defaultValue: 'yes'
+      defaultValue: yes
       description: Retrieve discovered Domains
       isArray: false
       name: domain
       required: false
       secret: false
     - default: false
-      defaultValue: 'yes'
+      defaultValue: yes
       description: Retrieve discovered certificates
       isArray: false
       name: certificate
       required: false
       secret: false
     - default: false
-      defaultValue: 'yes'
+      defaultValue: yes
       description: Retrieve IP Ranges
       isArray: false
       name: iprange
@@ -157,7 +152,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.27636
+  dockerimage: demisto/python3:3.10.4.30607
 fromversion: 6.0.0
 tests:
 - Feed Expanse Test

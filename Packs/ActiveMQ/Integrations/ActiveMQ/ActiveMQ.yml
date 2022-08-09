@@ -21,8 +21,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- display: '--------------------- Certificate Authentication ---------------------                         Client
-    certificate (.pem)'
+- display: '--------------------- Certificate Authentication ---------------------                         Client certificate (.pem)'
   name: client_cert
   required: false
   type: 12
@@ -35,8 +34,7 @@ configuration:
   required: false
   type: 12
 - defaultvalue: '1'
-  display: '---------------------------- Fetch Incidents ----------------------------                         Subscription
-    ID'
+  display: '---------------------------- Fetch Incidents ----------------------------                         Subscription ID'
   name: subscription-id
   required: false
   type: 0
@@ -63,8 +61,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: ' The message destination. For example, a message queue in the
-        format: "/queue/test", or a message topic. '
+      description: ' The message destination. For example, a message queue in the format: "/queue/test", or a message topic. '
       isArray: false
       name: destination
       required: true
@@ -76,9 +73,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The customer headers for the message, in the format: {XCorrelationId:
-        uid, nosotros generamos XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest,
-        XVersion : "3.0", persistent : True}'
+      description: 'The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest, XVersion : "3.0", persistent : True}'
       isArray: false
       name: headers
       required: false
@@ -108,11 +103,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Subscribes to and reads messages from a topic or queue. Must provide
-      either queue-name or topic-name. You can't provide both.
+    description: Subscribes to and reads messages from a topic or queue. Must provide either queue-name or topic-name. You can't provide both.
     execution: false
     name: activemq-subscribe
-  dockerimage: demisto/py3-tools:0.0.1.26536
+  dockerimage: demisto/py3-tools:1.0.0.31193
   feed: false
   isfetch: true
   longRunning: false

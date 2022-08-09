@@ -1158,12 +1158,17 @@ class ExtFilter:
 
             lconds = conds.get("if")
             if lconds:
+                lhs = conds.get("lhs")
+                if lhs is None:
+                    lhs = copy.deepcopy(root)
+                else:
+                    lhs = self.parse_and_extract_conds_json(lhs, root)
+
                 lconds = self.parse_conds_json(lconds)
                 if not isinstance(lconds, (dict, list)):
                     exit_error(f"Invalid conditions: {lconds}")
 
-                elif self.filter_with_expressions(
-                        copy.deepcopy(root), lconds, path, inlist) is None:
+                elif self.filter_with_expressions(lhs, lconds, path, inlist) is None:
                     lconds = conds.get("else")
                 else:
                     lconds = conds.get("then")
@@ -1773,7 +1778,7 @@ def main():
         value = value if value is not None else []
         value = value if isinstance(value, list) else [value]
     except Exception as err:
-        return_error(err)
+        raise err
 
     demisto.results(value)
 

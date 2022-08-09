@@ -1,5 +1,5 @@
-The Palo Alto Networks Enterprise DLP integration discovers and protects company data across every data channel and repository.   Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.  
-This integration was integrated and tested with Palo Alto Networks Enterprise DLP version 2.0.
+Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
+This integration was integrated and tested with version 2.0 of Palo Alto Networks Enterprise DLP
 
 ## Configure Palo Alto Networks Enterprise DLP on Cortex XSOAR
 
@@ -9,15 +9,14 @@ This integration was integrated and tested with Palo Alto Networks Enterprise DL
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Access Token | The access token generated in the Enterprise DLP UI. | True |
-    | Refresh Token | The refresh token generated in the Enterprise DLP UI. | True |
+    | Access Token | Access token generated in the Enterprise DLP UI | True |
+    | Refresh Token | Refresh token generated in the Enterprise DLP UI | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Long running instance |  | False |
-    | Environment | The DLP environment to connect to. Staging environment is for testing only. | False |
     | DLP Regions |  | False |
-    | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. | False |
-    | Slack Bot Message | The Slack message to send to the user to ask for feedback. | False |
+    | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
+    | Bot Message | The message to send to the user to ask for feedback. | False |
     | Fetch incidents |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -37,7 +36,7 @@ Fetches DLP reports associated with a report ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | report_id | DLP report ID. | Required | 
-| fetch_snippets | If True, includes snippets with the reports. Default is False. | Optional | 
+| fetch_snippets | If True, includes snippets with the reports. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -64,11 +63,12 @@ Updates a DLP incident with user feedback.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The ID of the incident to update. | Required | 
-| feedback | The user feedback. Possible values are: PENDING_RESPONSE, CONFIRMED_SENSITIVE, CONFIRMED_FALSE_POSITIVE, EXCEPTION_REQUESTED, EXCEPTION_GRANTED, EXCEPTION_NOT_REQUESTED, OPERATIONAL_ERROR. | Required | 
+| feedback | The user feedback. Possible values are: PENDING_RESPONSE, CONFIRMED_SENSITIVE, CONFIRMED_FALSE_POSITIVE, EXCEPTION_REQUESTED, EXCEPTION_GRANTED, EXCEPTION_NOT_REQUESTED, OPERATIONAL_ERROR, SEND_NOTIFICATION_FAILURE. | Required | 
 | user_id | The ID of the user the feedback is collected from. | Required | 
 | region | The region where the incident originated. | Optional | 
 | report_id | The DLP report ID, needed only for granting exemptions. | Optional | 
 | dlp_channel | The DLP channel, needed only for granting exemptions. | Optional | 
+| error_details | Error details if status is SEND_NOTIFICATION_FAILURE. | Optional | 
 
 
 #### Context Output
@@ -134,7 +134,8 @@ Resets the fetch incidents last run value, which resets the fetch to its initial
 `pan-dlp-reset-last-run`
 #### Input
 
-There are no inputs for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 
 #### Context Output

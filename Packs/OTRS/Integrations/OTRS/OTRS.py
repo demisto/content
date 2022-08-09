@@ -14,6 +14,7 @@ params = demisto.params()
 SERVER = params.get('server', '').strip('/')
 USERNAME = params.get('credentials', {}).get('identifier')
 PASSWORD = params.get('credentials', {}).get('password')
+USE_LEGACY_SESSIONS = argToBoolean(params.get('use_legacy_sessions', False))
 USE_SSL = not params.get('unsecure', False)
 FETCH_QUEUE = params.get('fetch_queue', 'Any')
 FETCH_PRIORITY = params.get('fetch_priority')
@@ -587,7 +588,7 @@ def main():
     handle_proxy(demisto.params().get('proxy'))
 
     cache = demisto.getIntegrationContext()
-    otrs_client = Client(SERVER, USERNAME, PASSWORD, https_verify=USE_SSL)
+    otrs_client = Client(SERVER, USERNAME, PASSWORD, https_verify=USE_SSL, use_legacy_sessions=USE_LEGACY_SESSIONS)
 
     # OTRS creates new session for each request, to avoid that behavior -
     # save the sessionId in integration context to use it multiple times

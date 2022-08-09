@@ -7,7 +7,7 @@ comment: |-
 commonfields:
   id: GIBIncidentUpdate
   version: -1
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
 name: GIBIncidentUpdate
 runonce: false

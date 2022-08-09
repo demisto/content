@@ -4,6 +4,7 @@ name: Azure Hunting playbook
 description: "Deprecated. Use 'Office 365 and Azure Hunting' instead. This playbook enables you to collect and investigate suspicious security
   events from Azure AD environment."
 deprecated: true
+hidden: true
 starttaskid: "0"
 tasks:
   "0":

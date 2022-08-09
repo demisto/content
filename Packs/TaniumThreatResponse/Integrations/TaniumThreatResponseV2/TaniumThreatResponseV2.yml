@@ -1,4 +1,3 @@
-beta: false
 category: Endpoint
 commonfields:
   id: Tanium Threat Response v2
@@ -31,8 +30,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: unresolved
-  display: "Alert states to filter by in fetch incidents command.\
-    \ Empty list won't filter the incidents by state."
+  display: Alert states to filter by in fetch incidents command. Empty list won't filter the incidents by state.
   name: filter_alerts_by_state
   options:
   - unresolved
@@ -41,6 +39,12 @@ configuration:
   - suppressed
   required: false
   type: 16
+- display: Label names to filter by in fetch incidents command. Empty list won't filter the incidents by label name.
+  name: filter_by_label_name
+  required: false
+  type: 0
+  additionalinfo: A comma-separated list of label names
+  defaultvalue: ''
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -49,22 +53,21 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Tanium Threat Response integration to manage endpoint processes,
-  evidence, alerts, files, snapshots, and connections. This integration works with Tanium Threat Response version 3.0.159 and above.
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Use the Tanium Threat Response integration to manage endpoint processes, evidence, alerts, files, snapshots, and connections. This integration works with Tanium Threat Response version 3.0.159 and above.
 display: Tanium Threat Response v2
 name: Tanium Threat Response v2
 script:
   commands:
   - arguments:
-    - default: false
-      description: The intel document ID.
-      isArray: false
+    - description: The intel document ID.
       name: intel_doc_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns an intel document object based on ID.
-    execution: false
     name: tanium-tr-get-intel-doc-by-id
     outputs:
     - contextPath: Tanium.IntelDoc.AlertCount
@@ -74,8 +77,7 @@ script:
       description: The date this intel was first added to the system.
       type: Date
     - contextPath: Tanium.IntelDoc.Description
-      description: The description of the intel, as declared in the document or as
-        updated by a user.
+      description: The description of the intel, as declared in the document or as updated by a user.
       type: String
     - contextPath: Tanium.IntelDoc.ID
       description: The unique identifier for this intel in this instance of the system.
@@ -84,8 +86,7 @@ script:
       description: The IDs of all labels applied to this intel.
       type: Number
     - contextPath: Tanium.IntelDoc.Name
-      description: The name of the intel, as declared in the document or as updated
-        by a user.
+      description: The name of the intel, as declared in the document or as updated by a user.
       type: String
     - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
       description: The number of unresolved alerts that currently exist for this intel.
@@ -94,53 +95,23 @@ script:
       description: The date when this intel was last updated.
       type: Date
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of intel documents to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset number to begin listing intel documents.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: The name of the intel document to show.
-      isArray: false
+    - description: The name of the intel document to show.
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: The description of the intel document to show.
-      isArray: false
+    - description: The description of the intel document to show.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: The type of the intel document to show.
-      isArray: false
+    - description: The type of the intel document to show.
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: The label ID of the intel document to show.
-      isArray: false
+    - description: The label ID of the intel document to show.
       name: label_id
-      required: false
-      secret: false
-    - default: false
-      description: The mitre technique ID of the intel document to show.
-      isArray: false
+    - description: The mitre technique ID of the intel document to show.
       name: mitre_technique_id
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a comma-separated list of all intel documents.
-    execution: false
     name: tanium-tr-list-intel-docs
     outputs:
     - contextPath: Tanium.IntelDoc.AlertCount
@@ -150,8 +121,7 @@ script:
       description: The date this intel was first added to the system.
       type: Date
     - contextPath: Tanium.IntelDoc.Description
-      description: The description of the intel, as declared in the document or as
-        updated by a user.
+      description: The description of the intel, as declared in the document or as updated by a user.
       type: String
     - contextPath: Tanium.IntelDoc.ID
       description: The unique identifier for this intel in this instance of the system.
@@ -160,8 +130,7 @@ script:
       description: The IDs of all labels applied to this intel.
       type: Number
     - contextPath: Tanium.IntelDoc.Name
-      description: The name of the intel, as declared in the document or as updated
-        by a user.
+      description: The name of the intel, as declared in the document or as updated by a user.
       type: String
     - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
       description: The number of unresolved alerts that currently exist for this intel.
@@ -170,66 +139,27 @@ script:
       description: The date when this intel was last updated.
       type: Date
   - arguments:
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The maximum number of alerts to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The offset number to begin listing alerts.
-      isArray: false
+    - description: The offset number to begin listing alerts.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Filter alerts by the specified computer IP address.
-      isArray: false
+    - description: Filter alerts by the specified computer IP address.
       name: computer_ip_address
-      required: false
-      secret: false
-    - default: false
-      description: Filter alerts by the specified computer name.
-      isArray: false
+    - description: Filter alerts by the specified computer name.
       name: computer_name
-      required: false
-      secret: false
-    - default: false
-      description: Filter alerts by the specified scan config ID.
-      isArray: false
+    - description: Filter alerts by the specified scan config ID.
       name: scan_config_id
-      required: false
-      secret: false
-    - default: false
-      description: Filter alerts by the specified intel document ID.
-      isArray: false
+    - description: Filter alerts by the specified intel document ID.
       name: intel_doc_id
-      required: false
-      secret: false
-    - default: false
-      description: Filter alerts by the specified severity.
-      isArray: false
+    - description: Filter alerts by the specified severity.
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: Filter alerts by the specified priority.
-      isArray: false
+    - description: Filter alerts by the specified priority.
       name: priority
-      required: false
-      secret: false
-    - default: false
-      description: Filter alerts by the specified type.
-      isArray: false
+    - description: Filter alerts by the specified type.
       name: type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Filter alerts by the specified state. Can be "Unresolved", "In
-        Progress", "Dismissed", "Ignored", or "Resolved".
-      isArray: false
+      description: Filter alerts by the specified state. Can be "Unresolved", "In Progress", "Dismissed", "Ignored", or "Resolved".
       name: state
       predefined:
       - Unresolved
@@ -237,11 +167,7 @@ script:
       - Ignored
       - Resolved
       - Dismissed
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a comma-separated list of all alerts.
-    execution: false
     name: tanium-tr-list-alerts
     outputs:
     - contextPath: Tanium.Alert.Priority
@@ -281,15 +207,10 @@ script:
       description: The severity of the alert.
       type: String
   - arguments:
-    - default: false
-      description: The alert ID.
-      isArray: false
+    - description: The alert ID.
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns an alert object based on alert ID.
-    execution: false
     name: tanium-tr-get-alert-by-id
     outputs:
     - contextPath: Tanium.Alert.Priority
@@ -329,17 +250,12 @@ script:
       description: The severity of the alert.
       type: String
   - arguments:
-    - default: false
-      description: A comma-separated list of alert IDs to update.
+    - description: A comma-separated list of alert IDs to update.
       isArray: true
       name: alert_ids
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The new state for the alerts. Can be "Unresolved", "In Progress",
-        "Dismissed", "Ignored", or "Resolved".
-      isArray: false
+      description: The new state for the alerts. Can be "Unresolved", "In Progress", "Dismissed", "Ignored", or "Resolved".
       name: state
       predefined:
       - dismissed
@@ -348,21 +264,13 @@ script:
       - ignored
       - resolved
       required: true
-      secret: false
-    deprecated: false
     description: Updates the state of the specified alerts.
-    execution: false
     name: tanium-tr-alert-update-state
   - arguments:
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-      secret: false
-    deprecated: false
     description: Captures a new snapshot by connection ID.
-    execution: false
     name: tanium-tr-create-snapshot
     outputs:
     - contextPath: Tanium.SnapshotTask.connection
@@ -375,38 +283,23 @@ script:
       description: Snapshot creation task status.
       type: String
     - contextPath: Tanium.SnapshotTask.taskId
-      description: Snapshot creation task ID. You can get task status using the tanium-tr-get-task-by-id
-        command.
+      description: Snapshot creation task ID. You can get task status using the tanium-tr-get-task-by-id command.
       type: Number
   - arguments:
-    - default: false
-      description: A comma-separated list of snapshot IDs to delete.
+    - description: A comma-separated list of snapshot IDs to delete.
       isArray: true
       name: snapshot_ids
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a snapshot by connection name and snapshot ID.
-    execution: false
     name: tanium-tr-delete-snapshot
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of local snapshots to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset number to begin listing local snapshots.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all local snapshots of a single connection.
-    execution: false
     name: tanium-tr-list-snapshots
     outputs:
     - contextPath: Tanium.Snapshot.size
@@ -440,63 +333,37 @@ script:
       description: The snapshot UUID.
       type: String
   - arguments:
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a local snapshot by connection ID.
-    execution: false
     name: tanium-tr-delete-local-snapshot
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of connections to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset number to begin listing connections.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of connection statuses to filter connections by, for example status=connected,waiting.
+    - description: A comma-separated list of connection statuses to filter connections by, for example status=connected,waiting.
       isArray: true
       name: status
-      required: false
-      secret: false
       predefined:
       - disconnected
       - timeout
       - waiting
       - connected
-    - default: false
-      description: A comma-separated list of IPs to filter connections by, for example status=1.1.1.1,1.1.1.1.
+      auto: PREDEFINED
+    - description: A comma-separated list of IPs to filter connections by, for example status=1.1.1.1,1.1.1.1.
       isArray: true
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of platforms to filter connections by, for example platform=Linux,Windows.
+    - description: A comma-separated list of platforms to filter connections by, for example platform=Linux,Windows.
       isArray: true
       name: platform
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of hostnames to filter connections by, for example hostname=host1,host2.
+    - description: A comma-separated list of hostnames to filter connections by, for example hostname=host1,host2.
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of all connections.
-    execution: false
     name: tanium-tr-list-connections
     outputs:
     - contextPath: Tanium.Connection.id
@@ -539,78 +406,44 @@ script:
       description: Has connection tools.
       type: Boolean
   - arguments:
-    - default: false
-      description: Client ID. Use tanium-tr-get-system-status to get all possible
-        client_ids.
-      isArray: false
+    - description: Client ID. Use tanium-tr-get-system-status to get all possible client_ids.
       name: client_id
       required: true
-      secret: false
-    - default: false
-      description: IP address to connect. Use tanium-tr-get-system-status to get
-        all possible IPs.
-      isArray: false
+    - description: IP address to connect. Use tanium-tr-get-system-status to get all possible IPs.
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: Commputer platform, for example Windows or Linux.
-      isArray: false
+    - description: Commputer platform, for example Windows or Linux.
       name: platform
       required: true
-      secret: false
-    - default: false
-      description: Hostname of the computer to connect. Use tanium-tr-get-system-status
-        to get all possible hostnames.
-      isArray: false
+    - description: Hostname of the computer to connect. Use tanium-tr-get-system-status to get all possible hostnames.
       name: hostname
       required: true
-    deprecated: false
     description: Creates a local or remote connection.
-    execution: false
     name: tanium-tr-create-connection
     outputs:
     - contextPath: Tanium.Connection.id
       description: New connection ID.
       type: String
   - arguments:
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-    deprecated: false
     description: Deletes a connection by connection ID.
-    execution: false
     name: tanium-tr-delete-connection
   - arguments:
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-    deprecated: false
     description: Closes a connection by connection ID.
-    execution: false
     name: tanium-tr-close-connection
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of labels to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset number to begin listing labels.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all available labels in the system.
-    execution: false
     name: tanium-tr-list-labels
     outputs:
     - contextPath: Tanium.Label.createdAt
@@ -623,8 +456,7 @@ script:
       description: The unique identifier for this label.
       type: Number
     - contextPath: Tanium.Label.indicatorCount
-      description: The number of indicator-based intel documents associated with this
-        label, not including Tanium Signals.
+      description: The number of indicator-based intel documents associated with this label, not including Tanium Signals.
       type: Number
     - contextPath: Tanium.Label.name
       description: The label display name.
@@ -633,19 +465,13 @@ script:
       description: The number of Tanium Signal documents associated with this label.
       type: Number
     - contextPath: Tanium.Label.updatedAt
-      description: The date this label was last updated, not including the intel
-        and signal counts.
+      description: The date this label was last updated, not including the intel and signal counts.
       type: Date
   - arguments:
-    - default: false
-      description: The label ID. Use tanium-tr-intel-docs-labels-list command to get the available label IDs.
-      isArray: false
+    - description: The label ID. Use tanium-tr-intel-docs-labels-list command to get the available label IDs.
       name: label_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns a label object based on label ID.
-    execution: false
     name: tanium-tr-get-label-by-id
     outputs:
     - contextPath: Tanium.Label.createdAt
@@ -658,8 +484,7 @@ script:
       description: The unique identifier for this label.
       type: Number
     - contextPath: Tanium.Label.indicatorCount
-      description: The number of indicator-based intel documents associated with this
-        label, not including Tanium Signals.
+      description: The number of indicator-based intel documents associated with this label, not including Tanium Signals.
       type: Number
     - contextPath: Tanium.Label.name
       description: The label display name.
@@ -668,51 +493,26 @@ script:
       description: The number of Tanium Signal documents associated with this label.
       type: Number
     - contextPath: Tanium.Label.updatedAt
-      description: The date this label was last updated, not including the intel and
-        signal counts.
+      description: The date this label was last updated, not including the intel and signal counts.
       type: Date
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of files to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset to start getting file downloads.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: The column to sort by.
-      isArray: false
+    - description: The column to sort by.
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of hostnames to filter downloaded files by, for example hostname=host1,host2.
+    - description: A comma-separated list of hostnames to filter downloaded files by, for example hostname=host1,host2.
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of hashes to filter downloaded files by, for example hash=123,456.
+    - description: A comma-separated list of hashes to filter downloaded files by, for example hash=123,456.
       isArray: true
       name: hash
-      required: false
-      secret: false
-    - default: false
-      description: Get the downloaded files with a process start time that matches the specified date and time, for example process_time_start=2019-09-03T17:51:40.000Z.
-      isArray: false
+    - description: Get the downloaded files with a process start time that matches the specified date and time, for example process_time_start=2019-09-03T17:51:40.000Z.
       name: process_time_start
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all downloaded files in the system.
-    execution: false
     name: tanium-tr-list-file-downloads
     outputs:
     - contextPath: Tanium.FileDownload.size
@@ -755,15 +555,10 @@ script:
       description: The file evidence type.
       type: String
   - arguments:
-    - default: false
-      description: The file ID.
-      isArray: false
+    - description: The file ID.
       name: file_id
       required: true
-      secret: false
-    deprecated: false
-    description: "Gets the actual content of a downloaded file by file ID. Downloaded file password: `infected`."
-    execution: false
+    description: 'Gets the actual content of a downloaded file by file ID. Downloaded file password: `infected`.'
     name: tanium-tr-get-downloaded-file
     outputs:
     - contextPath: File.EntryID
@@ -800,18 +595,12 @@ script:
       description: The file type.
       type: String
   - arguments:
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: combined
-      description: The event type. Can be "File", "Network", "Registry", "Process",
-        "Driver", "Combined", "DNS", or "Image".
-      isArray: false
+      description: The event type. Can be "File", "Network", "Registry", "Process", "Driver", "Combined", "DNS", or "Image".
       name: type
       predefined:
       - File
@@ -823,64 +612,26 @@ script:
       - DNS
       - Image
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of events to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset to start getting the result set.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: "Advanced search that filters according to event fields. For example:\
-        \ [['process_id', 'gt', '30'], ['username', 'ne', 'administrator']]. Optional\
-        \ fields: process_id, process_name, process_hash, process_command_line, username,\
-        \ process_name, create_time (UTC). Optional operators: eq (equals), ne (does\
-        \ not equal); for integers/date: gt (greater than), gte (greater than or equals),\
-        \ ls (less than), lse (less than or equals); for strings: co (contains), nc\
-        \ (does not contain). "
-      isArray: false
+    - description: "Advanced search that filters according to event fields. For example: [['process_id', 'gt', '30'], ['username', 'ne', 'administrator']]. Optional fields: process_id, process_name, process_hash, process_command_line, username, process_name, create_time (UTC). Optional operators: eq (equals), ne (does not equal); for integers/date: gt (greater than), gte (greater than or equals), ls (less than), lse (less than or equals); for strings: co (contains), nc (does not contain). "
       name: filter
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: Whether the results should fit all filters or at least one filter.
-      isArray: false
       name: match
       predefined:
       - all
       - any
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of fields to sort on prefixed by +/- for
-        ascending or descending and ordered by priority left to right. Optional fields:
-        process_id, process_name, process_hash, process_command_line, username, process_name,
-        create_time (UTC).'
-      isArray: false
+    - description: 'A comma-separated list of fields to sort on prefixed by +/- for ascending or descending and ordered by priority left to right. Optional fields: process_id, process_name, process_hash, process_command_line, username, process_name, create_time (UTC).'
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of fields on which to search. Optional
-        fields: process_id, process_name, process_hash, process_command_line, username,
-        process_name, create_time.'
-      isArray: false
+    - description: 'A comma-separated list of fields on which to search. Optional fields: process_id, process_name, process_hash, process_command_line, username, process_name, create_time.'
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Queries events for a connection.
-    execution: false
     name: tanium-tr-list-events-by-connection
     outputs:
     - contextPath: TaniumEvent.id
@@ -989,15 +740,10 @@ script:
       description: The event process hash.
       type: String
   - arguments:
-    - default: false
-      description: File download ID.
-      isArray: false
+    - description: File download ID.
       name: file_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets the metadata of a file download.
-    execution: false
     name: tanium-tr-get-file-download-info
     outputs:
     - contextPath: Tanium.FileDownload.size
@@ -1040,21 +786,13 @@ script:
       description: The downloaded file evidence type.
       type: String
   - arguments:
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-      secret: false
-    - default: false
-      description: The process table ID.
-      isArray: false
+    - description: The process table ID.
       name: ptid
       required: true
-      secret: false
-    deprecated: false
     description: Get information for a process.
-    execution: false
     name: tanium-tr-get-process-info
     outputs:
     - contextPath: Tanium.ProcessInfo.childrenCount
@@ -1133,24 +871,15 @@ script:
       description: The username who created the process.
       type: String
   - arguments:
-    - default: false
-      description: The connection name.
-      isArray: false
+    - description: The connection name.
       name: connection_id
       required: true
-      secret: false
-    - default: false
-      description: The process instance ID.
-      isArray: false
+    - description: The process instance ID.
       name: ptid
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: combined
-      description: The event type. Can be "File", "Network", "Registry", "Process",
-        "Driver", "Combined", "DNS", or "Image".
-      isArray: false
+      description: The event type. Can be "File", "Network", "Registry", "Process", "Driver", "Combined", "DNS", or "Image".
       name: type
       predefined:
       - File
@@ -1162,24 +891,13 @@ script:
       - DNS
       - Image
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of events to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset number to begin listing events.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the events for a process.
-    execution: false
     name: tanium-tr-get-events-by-process
     outputs:
     - contextPath: Tanium.ProcessEvent.id
@@ -1198,35 +916,19 @@ script:
       description: The event type.
       type: String
   - arguments:
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-      secret: false
-    - default: false
-      description: The process table ID.
-      isArray: false
+    - description: The process table ID.
       name: ptid
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset number to begin listing entries.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the children of this process instance.
-    execution: false
     name: tanium-tr-get-process-children
     outputs:
     - contextPath: Tanium.ProcessChildren.childrenCount
@@ -1305,21 +1007,13 @@ script:
       description: The username who created the child process.
       type: String
   - arguments:
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-      secret: false
-    - default: false
-      description: The process table ID.
-      isArray: false
+    - description: The process table ID.
       name: ptid
       required: true
-      secret: false
-    deprecated: false
     description: Gets information for the parent process.
-    execution: false
     name: tanium-tr-get-parent-process
     outputs:
     - contextPath: Tanium.ProcessParent.childrenCount
@@ -1398,33 +1092,21 @@ script:
       description: The username who created the parent process.
       type: String
   - arguments:
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-      secret: false
-    - default: false
-      description: The process instance ID.
-      isArray: false
+    - description: The process instance ID.
       name: ptid
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The process context. Can be `parent`, `node`, `siblings`, `children`.
-      isArray: false
       name: context
       predefined:
       - parent
       - node
       - siblings
       - children
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the process tree for the process instance.
-    execution: false
     name: tanium-tr-get-process-tree
     outputs:
     - contextPath: Tanium.ProcessTree.childrenCount
@@ -1503,42 +1185,20 @@ script:
       description: The username who created the process tree.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of evidences to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset to start getting the events result set.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of fields by which to sort, using +/- prefixes
-        for ascending/descending, in order of priority (left to right).
-      isArray: false
+    - description: A comma-separated list of fields by which to sort, using +/- prefixes for ascending/descending, in order of priority (left to right).
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of hostnames to filter event evidences by, for example hostname=123,456.
+    - description: A comma-separated list of hostnames to filter event evidences by, for example hostname=123,456.
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: Get the event evidences that match a specific type, for example type=file.
-      isArray: false
+    - description: Get the event evidences that match a specific type, for example type=file.
       name: type
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of all available event evidences in the system.
-    execution: false
     name: tanium-tr-event-evidence-list
     outputs:
     - contextPath: Tanium.Evidence.name
@@ -1559,9 +1219,7 @@ script:
     - contextPath: Tanium.Evidence.size
       description: The event evidence size.
       type: Number
-  - deprecated: false
-    description: Returns event evidence properties for IOC generation.
-    execution: false
+  - description: Returns event evidence properties for IOC generation.
     name: tanium-tr-event-evidence-get-properties
     outputs:
     - contextPath: Tanium.EvidenceProperties.type
@@ -1570,16 +1228,12 @@ script:
     - contextPath: Tanium.EvidenceProperties.value
       description: The event evidence property value.
       type: String
+    arguments: []
   - arguments:
-    - default: false
-      description: The event evidence ID.
-      isArray: false
+    - description: The event evidence ID.
       name: evidence_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets event evidence by evidence ID.
-    execution: false
     name: tanium-tr-get-evidence-by-id
     outputs:
     - contextPath: Tanium.Evidence.commandline
@@ -1628,61 +1282,34 @@ script:
       description: The event evidence UUID.
       type: String
   - arguments:
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-      secret: false
-    - default: false
-      description: The process instance ID.
-      isArray: false
+    - description: The process instance ID.
       name: ptid
       required: true
-      secret: false
-    - default: false
-      description: The connection hostname.
-      isArray: false
+    - description: The connection hostname.
       name: hostname
       required: true
-      secret: false
-    - default: false
-      description: The summary of the event evidence.
-      isArray: false
+    - description: The summary of the event evidence.
       name: summary
-      required: false
-      secret: false
-    deprecated: false
     description: Creates event evidence from process.
-    execution: false
     name: tanium-tr-create-evidence
   - arguments:
-    - default: false
-      description: A comma separated list of the event evidence IDs to delete.
+    - description: A comma separated list of the event evidence IDs to delete.
       isArray: true
       name: evidence_ids
       required: true
-      secret: false
-    deprecated: false
     description: Deletes event evidences from Tanium.
-    execution: false
     name: tanium-tr-delete-evidence
   - arguments:
-    - default: false
-      description: The path to the file.
-      isArray: false
+    - description: The path to the file.
       name: path
       required: true
-      secret: false
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-      secret: false
-    deprecated: false
     description: Requests a new file download.
-    execution: false
     name: tanium-tr-request-file-download
     outputs:
     - contextPath: Tanium.FileDownloadTask.compress
@@ -1704,46 +1331,25 @@ script:
       description: The status of the file download request.
       type: String
   - arguments:
-    - default: false
-      description: The file download ID.
-      isArray: false
+    - description: The file download ID.
       name: file_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a file download.
-    execution: false
     name: tanium-tr-delete-file-download
   - arguments:
-    - default: false
-      description: The path to the directory.
-      isArray: false
+    - description: The path to the directory.
       name: path
       required: true
-      secret: false
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of files to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset to start getting files.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of files in the given directory.
-    execution: false
     name: tanium-tr-list-files-in-directory
     outputs:
     - contextPath: Tanium.File.connectionId
@@ -1771,23 +1377,15 @@ script:
       description: The file type.
       type: String
   - arguments:
-    - default: false
-      defaultValue: The connection ID.
+    - defaultValue: The connection ID.
       description: The ID of the connection.
-      isArray: false
       name: connection_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: Path to file.
+    - defaultValue: Path to file.
       description: The file path.
-      isArray: false
       name: path
       required: true
-      secret: false
-    deprecated: false
     description: Gets information about a file from a remote connection.
-    execution: false
     name: tanium-tr-get-file-info
     outputs:
     - contextPath: Tanium.File.canonicalPath
@@ -1824,33 +1422,19 @@ script:
       description: The file session ID.
       type: String
   - arguments:
-    - default: false
-      description: The connection ID.
-      isArray: false
+    - description: The connection ID.
       name: connection_id
       required: true
-      secret: false
-    - default: false
-      description: The path to the file.
-      isArray: false
+    - description: The path to the file.
       name: path
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a file from the given endpoint.
-    execution: false
     name: tanium-tr-delete-file-from-endpoint
   - arguments:
-    - default: false
-      description: List the label IDs for the intel document with this ID.
-      isArray: false
+    - description: List the label IDs for the intel document with this ID.
       name: intel_doc_id
       required: true
-      secret: false
-    deprecated: false
     description: List all labels for the identified intel document.
-    execution: false
-    hidden: false
     name: tanium-tr-intel-docs-labels-list
     outputs:
     - contextPath: Tanium.IntelDocLabel.IntelDocID
@@ -1866,8 +1450,7 @@ script:
       description: An extended description of the label.
       type: String
     - contextPath: Tanium.IntelDocLabel.LabelsList.IndicatorCount
-      description: The number of indicator-based intel documents associated with this
-        label, not including Tanium Signals.
+      description: The number of indicator-based intel documents associated with this label, not including Tanium Signals.
       type: Number
     - contextPath: Tanium.IntelDocLabel.LabelsList.SignalCount
       description: The number of Tanium Signal documents associated with this label.
@@ -1876,28 +1459,16 @@ script:
       description: The date this label was created.
       type: Date
     - contextPath: Tanium.IntelDocLabel.LabelsList.UpdatedAt
-      description: The date this label was last updated, not including the intel and
-        signal counts.
+      description: The date this label was last updated, not including the intel and signal counts.
       type: Date
   - arguments:
-    - default: false
-      description: Associate the new label with the intel document with this ID.
-      isArray: false
+    - description: Associate the new label with the intel document with this ID.
       name: intel_doc_id
       required: true
-      secret: false
-    - default: false
-      description: The ID of the new label to associate with the target intel document.
-        (Use tanium-tr-intel-docs-labels-list command in order to get the available
-        label IDs).
-      isArray: false
+    - description: The ID of the new label to associate with the target intel document. (Use tanium-tr-intel-docs-labels-list command in order to get the available label IDs).
       name: label_id
       required: true
-      secret: false
-    deprecated: false
     description: Create a new label association for the identified intel document.
-    execution: false
-    hidden: false
     name: tanium-tr-intel-docs-add-label
     outputs:
     - contextPath: Tanium.IntelDocLabel.IntelDocID
@@ -1913,8 +1484,7 @@ script:
       description: An extended description of the label.
       type: String
     - contextPath: Tanium.IntelDocLabel.LabelsList.IndicatorCount
-      description: The number of indicator-based intel documents associated with this
-        label, not including Tanium Signals.
+      description: The number of indicator-based intel documents associated with this label, not including Tanium Signals.
       type: Number
     - contextPath: Tanium.IntelDocLabel.LabelsList.SignalCount
       description: The number of Tanium Signal documents associated with this label.
@@ -1923,28 +1493,16 @@ script:
       description: The date this label was created.
       type: Date
     - contextPath: Tanium.IntelDocLabel.LabelsList.UpdatedAt
-      description: The date this label was last updated, not including the intel and
-        signal counts.
+      description: The date this label was last updated, not including the intel and signal counts.
       type: Date
   - arguments:
-    - default: false
-      description: Remove the label from the intel document with this ID.
-      isArray: false
+    - description: Remove the label from the intel document with this ID.
       name: intel_doc_id
       required: true
-      secret: false
-    - default: false
-      description: The ID of the label to disassociate from the target intel document.
-        (Use tanium-tr-intel-docs-labels-list command in order to get the available
-        label IDs).
-      isArray: false
+    - description: The ID of the label to disassociate from the target intel document. (Use tanium-tr-intel-docs-labels-list command in order to get the available label IDs).
       name: label_id
       required: true
-      secret: false
-    deprecated: false
     description: Delete a label association for the identified intel document.
-    execution: false
-    hidden: false
     name: tanium-tr-intel-docs-remove-label
     outputs:
     - contextPath: Tanium.IntelDocLabel.IntelDocID
@@ -1972,29 +1530,18 @@ script:
       description: Date when label was last updated.
       type: Date
   - arguments:
-    - default: false
-      description: The file entry ID.
-      isArray: false
+    - description: The file entry ID.
       name: entry_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The suffix at the end of a filename. (Available file types - yara,
-        stix, ioc)
-      isArray: false
+      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc)
       name: file_extension
       predefined:
       - ioc
       - yara
       - stix
       required: true
-      secret: false
-    deprecated: false
-    description: Add a new intel document to the system by providing its document
-      contents.
-    execution: false
-    hidden: false
+    description: Add a new intel document to the system by providing its document contents.
     name: tanium-tr-intel-doc-create
     outputs:
     - contextPath: Tanium.IntelDoc.AlertCount
@@ -2004,8 +1551,7 @@ script:
       description: The date at which this intel was first added to the system.
       type: Date
     - contextPath: Tanium.IntelDoc.Description
-      description: The description of the intel, as declared in the document or as
-        updated by a user.
+      description: The description of the intel, as declared in the document or as updated by a user.
       type: String
     - contextPath: Tanium.IntelDoc.ID
       description: The unique identifier for this intel in this instance of the system.
@@ -2014,8 +1560,7 @@ script:
       description: The IDs of all labels applied to this intel.
       type: Number
     - contextPath: Tanium.IntelDoc.Name
-      description: The name of the intel, as declared in the document or as updated
-        by a user.
+      description: The name of the intel, as declared in the document or as updated by a user.
       type: String
     - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
       description: The number of unresolved alerts that currently exist for this intel.
@@ -2043,35 +1588,20 @@ script:
       type: String
 
   - arguments:
-    - default: false
-      description: The ID of the intel document to update.
-      isArray: false
+    - description: The ID of the intel document to update.
       name: intel_doc_id
       required: true
-      secret: false
-    - default: false
-      description: The file entry ID.
-      isArray: false
+    - description: The file entry ID.
       name: entry_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The suffix at the end of a filename. (Available file types - yara,
-        stix, ioc)
-      isArray: false
+      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc)
       name: file_extension
       predefined:
       - ioc
       - yara
       - stix
-      required: false
-      secret: false
-    deprecated: false
-    description: Update the contents of an existing intel document by providing the
-      document contents.
-    execution: false
-    hidden: false
+    description: Update the contents of an existing intel document by providing the document contents.
     name: tanium-tr-intel-doc-update
     outputs:
     - contextPath: Tanium.IntelDoc.AlertCount
@@ -2081,8 +1611,7 @@ script:
       description: The date at which this intel was first added to the system.
       type: Date
     - contextPath: Tanium.IntelDoc.Description
-      description: The description of the intel, as declared in the document or as
-        updated by a user.
+      description: The description of the intel, as declared in the document or as updated by a user.
       type: String
     - contextPath: Tanium.IntelDoc.ID
       description: The unique identifier for this intel in this instance of the system.
@@ -2091,8 +1620,7 @@ script:
       description: The IDs of all labels applied to this intel.
       type: Number
     - contextPath: Tanium.IntelDoc.Name
-      description: The name of the intel, as declared in the document or as updated
-        by a user.
+      description: The name of the intel, as declared in the document or as updated by a user.
       type: String
     - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
       description: The number of unresolved alerts that currently exist for this intel.
@@ -2118,15 +1646,10 @@ script:
     - contextPath: Tanium.IntelDoc.Size
       description: The size of the intel document contents, in bytes.
       type: String
-  - deprecated: false
-    description: Deploys intel using the service account context.
-    execution: false
-    hidden: false
+  - description: Deploys intel using the service account context.
     name: tanium-tr-intel-deploy
-  - deprecated: false
-    description: Displays status of last intel deployment.
-    execution: false
-    hidden: false
+    arguments: []
+  - description: Displays status of last intel deployment.
     name: tanium-tr-intel-deploy-status
     outputs:
     - contextPath: Tanium.IntelDeployStatus.CreatedAt
@@ -2141,17 +1664,12 @@ script:
     - contextPath: Tanium.IntelDeployStatus.CurrentSize
       description: The size of the intel document contents, in bytes.
       type: Number
+    arguments: []
   - arguments:
-    - default: false
-      description: The task ID.
-      isArray: false
+    - description: The task ID.
       name: task_id
       required: true
-      secret: false
-    deprecated: false
     description: Get task by ID.
-    execution: false
-    hidden: false
     name: tanium-tr-get-task-by-id
     outputs:
     - contextPath: Tanium.Task.createdAt
@@ -2185,28 +1703,16 @@ script:
       description: Task results.
       type: Unknown
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The offset number to begin listing entries.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of statuses to filter system status by, for example status=Blocked,Leader.
+    - description: A comma-separated list of statuses to filter system status by, for example status=Blocked,Leader.
       isArray: true
       name: status
-      required: false
-      secret: false
-    - default: false
-      predefined:
+    - predefined:
       - Blocked
       - Leader
       - Normal
@@ -2214,31 +1720,16 @@ script:
       description: A comma-separated list of IP servers to filter system status by, for example ip_server=1.1.1.1,2.2.2.2.
       isArray: true
       name: ip_server
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of IP clients to filter system-status by, for example ip_client=1.1.1.1,2.2.2.2.
+      auto: PREDEFINED
+    - description: A comma-separated list of IP clients to filter system-status by, for example ip_client=1.1.1.1,2.2.2.2.
       isArray: true
       name: ip_client
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of hostnames to filter system-status by, for example hostname=host1,host2.
+    - description: A comma-separated list of hostnames to filter system-status by, for example hostname=host1,host2.
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: The port to use to get the system-status, for example port=80.
-      isArray: false
+    - description: The port to use to get the system-status, for example port=80.
       name: port
-      required: false
-      secret: false
-    deprecated: false
-    description: Gets system status, including connections, client IDs,
-      hostnames, and IPs.
-    execution: false
-    hidden: false
+    description: Gets system status, including connections, client IDs, hostnames, and IPs.
     name: tanium-tr-get-system-status
     outputs:
     - contextPath: Tanium.SystemStatus.clientId
@@ -2273,28 +1764,18 @@ script:
       type: String
   - name: tanium-tr-intel-doc-delete
     arguments:
-    - default: false
-      description: The intel document ID.
-      isArray: false
+    - description: The intel document ID.
       name: intel_doc_id
       required: true
-      secret: false
     description: Remove an intel document from the system by providing its ID
   - name: tanium-tr-start-quick-scan
     arguments:
-    - default: false
-      description: The intel document ID.
-      isArray: false
+    - description: The intel document ID.
       name: intel_doc_id
       required: true
-      secret: false
-    - default: false
-      description: The name of a Tanium computer group. See command description for
-        possible ways to retrieve this value.
-      isArray: false
+    - description: The name of a Tanium computer group. See command description for possible ways to retrieve this value.
       name: computer_group_name
       required: true
-      secret: false
     outputs:
     - contextPath: Tanium.QuickScan.IntelDocId
       description: The unique identifier for this intel in this instance of the system.
@@ -2317,20 +1798,13 @@ script:
     - contextPath: Tanium.QuickScan.QuestionId
       description: The ID of the quick scan question
       type: Number
-    description: Scan a computer group for hashes in intel document. Computer groups
-      can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response
-      product console. Computer group names and IDs can also be retrieved by using
-      the `tn-list-groups` command in the `Tanium` integration.
-  dockerimage: demisto/lxml:1.0.0.26912
-  feed: false
+    description: Scan a computer group for hashes in intel document. Computer groups can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response product console. Computer group names and IDs can also be retrieved by using the `tn-list-groups` command in the `Tanium` integration.
+  dockerimage: demisto/lxml:1.0.0.31639
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-defaultmapperin: Tanium Threat Response
 tests:
 - Tanium Threat Response V2 Test
 fromversion: 6.0.0

@@ -56,3 +56,6 @@ CommandResults
 YMLMetadataCollector
 siam
 XSIAM
+EntryType
+Enums
+CustomIndicator

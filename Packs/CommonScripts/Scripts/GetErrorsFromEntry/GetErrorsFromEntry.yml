@@ -1,0 +1,27 @@
+commonfields:
+  id: GetErrorsFromEntry
+  version: -1
+name: GetErrorsFromEntry
+script: ''
+type: python
+tags:
+- Utility
+comment: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries} to check the previous task entries. The automation will return an array of the error contents from those entries.
+enabled: true
+args:
+- name: entry_id
+  required: false
+  default: true
+  description: Entry to check
+  isArray: true
+outputs:
+- contextPath: ErrorEntries
+  description: Contents of the errors associated with the entry/entries
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.4.29342
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

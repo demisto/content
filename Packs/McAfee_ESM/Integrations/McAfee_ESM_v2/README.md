@@ -1392,3 +1392,30 @@ Get watchlist entries.
 >|data|
 >|---|
 >| 1.1.1.1,<br/>2.2.2.2,<br/> |
+
+
+### esm-get-watchlists
+***
+Returns a list of watchlists' names and IDs.
+
+
+#### Base Command
+
+`esm-get-watchlists`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hidden | Whether to include hidden watchlists. Can be true or false. Possible values are: true, false. Default is true. | Required | 
+| dynamic | Whether to include dynamic watchlists. Can be true or false. Possible values are: true, false. Default is true. | Required | 
+| write_only | Whether to include write only watchlists. Can be true or false. Possible values are: true, false. Default is false. | Required | 
+| indexed_only | Whether to include indexed only watchlists. Can be true or false. Possible values are: true, false. Default is false. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| McAfeeESM.Watchlist.name | string | The name of the watchlist. | 
+| McAfeeESM.Watchlist.id | number | The ID of the watchlist. | 
+| McAfeeESM.Watchlist.type | string | The type of the watchlist. | 

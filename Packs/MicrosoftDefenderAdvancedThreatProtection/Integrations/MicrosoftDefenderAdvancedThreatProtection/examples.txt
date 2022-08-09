@@ -68,3 +68,5 @@ microsoft-atp-advanced-hunting-cover-up query_purpose=compromised_information us
 microsoft-atp-advanced-hunting-cover-up query_purpose=connected_devices username=demisto
 microsoft-atp-advanced-hunting-cover-up query_purpose=action_types username=demisto
 microsoft-atp-advanced-hunting-cover-up query_purpose=common_files  username=demisto
+microsoft-atp-get-machine-users machine_id=0a3250e0693a109f1affc9217be9459028aa8424
+microsoft-atp-get-machine-alerts machine_id=0a3250e0693a109f1affc9217be9459028aa8424

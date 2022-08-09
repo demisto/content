@@ -730,18 +730,29 @@ def test_handle_general_result_missing_output_builder():
 
 
 class TestHostDetectionOutputBuilder:
-    DETECTION_INPUTS = [({'HOST_LIST': {'HOST_ITEM': []}}, '### Host Detection List\n\n**No entries.**\n', []),
+    DETECTION_INPUTS = [({'HOST_LIST': {'HOST_ITEM': []}}, '', []),
                         ({'HOST_LIST': {'HOST_ITEM': [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
                                                        'DETECTION_LIST': {
                                                            'DETECTION': [
                                                                {'QID': '123', 'RESULTS': 'FOUND DETECTION'}]}}]}},
-                         "### Host Detection List\n\n|DETECTIONS|DNS_DATA|ID|IP|\n|---|---|---|---|\n| {"
-                         "'QID': '123', 'RESULTS': 'FOUND DETECTION'} | data: dns data | ID123 | "
-                         "1.1.1.1 |\n", [{'DETECTION_LIST': {'DETECTION': [{'QID': '123',
-                                                                            'RESULTS': 'FOUND DETECTION'}]},
-                                          'DNS_DATA': {'data': 'dns data'},
-                                          'ID': 'ID123',
-                                          'IP': '1.1.1.1'}])
+                         '### Host Detection List - 1.1.1.1\n'
+                         '\n'
+                         '|ID|IP|DNS_DATA|QID: 123|\n'
+                         '|---|---|---|---|\n'
+                         '| ID123 | 1.1.1.1 | data: dns data | FOUND DETECTION |\n',
+                         [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
+                           'DETECTION_LIST': {'DETECTION': [{'QID': '123', 'RESULTS': 'FOUND DETECTION'}]}}]),
+                        ({'HOST_LIST': {'HOST_ITEM': [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
+                                                       'DETECTION_LIST': {
+                                                           'DETECTION':
+                                                               {'QID': '123', 'RESULTS': 'FOUND DETECTION'}}}]}},
+                         '### Host Detection List - 1.1.1.1\n'
+                         '\n'
+                         '|ID|IP|DNS_DATA|QID: 123|\n'
+                         '|---|---|---|---|\n'
+                         '| ID123 | 1.1.1.1 | data: dns data | FOUND DETECTION |\n',
+                         [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
+                           'DETECTION_LIST': {'DETECTION': {'QID': '123', 'RESULTS': 'FOUND DETECTION'}}}])
                         ]
 
     @pytest.mark.parametrize('result, readable, expected_outputs', DETECTION_INPUTS)
@@ -757,8 +768,9 @@ class TestHostDetectionOutputBuilder:
         - Ensure resultes are parsed as expected.
         """
         Qualysv2.inner_args_values['limit'] = 1
-        assert build_host_list_detection_outputs({'command_parse_and_output_data': COMMANDS_PARSE_AND_OUTPUT_DATA[
-            'qualys-host-list-detection'], 'handled_result': result}) == (expected_outputs, readable)
+        assert build_host_list_detection_outputs(handled_result=result,
+                                                 command_parse_and_output_data=COMMANDS_PARSE_AND_OUTPUT_DATA[
+                                                     'qualys-host-list-detection']) == (expected_outputs, readable)
 
 
 class MockResponse:

@@ -19,7 +19,7 @@ the [Amazon AWS Integrations Configuration Guide](https://xsoar.pan.dev/docs/ref
 
    | **Parameter** | **Required** |
           | --- | --- |
-   | AWS Default Region | False |
+   | AWS Default Region | True |
    | Role Arn | False |
    | Fetch incidents | False |
    | Incident type | False |

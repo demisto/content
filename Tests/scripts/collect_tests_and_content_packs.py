@@ -15,6 +15,8 @@ import os
 import sys
 
 import demisto_sdk.commands.common.tools as tools
+
+from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, should_install_content_pack, \
@@ -29,7 +31,7 @@ SANITY_TESTS = {
     'Sanity Test - Playbook with integration',
     'Sanity Test - Playbook with no integration',
     'Sanity Test - Playbook with mocked integration',
-    'Sanity Test - Playbook with Unmockable Integration',
+    'Sanity Test - Playbook with Unmockable Whois integration',
 }
 
 
@@ -497,7 +499,7 @@ def get_api_module_integrations(changed_api_modules, integration_set):
     integration_ids_to_test = set([])
     for integration in integration_set:
         integration_data = list(integration.values())[0]
-        if integration_data.get('api_modules', '') in changed_api_modules:
+        if changed_api_modules & set(integration_data.get('api_modules', [])):
             file_path = integration_data.get('file_path')
             integration_id = tools.get_script_or_integration_id(file_path)
             integration_ids_to_test.add(integration_id)
@@ -1301,9 +1303,9 @@ def get_test_list_and_content_packs_to_install(files_string,
             tests.update(SANITY_TESTS)
             logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
             logging.debug(
-                "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' uses it"
+                "Adding Whois to packs to install as 'Sanity Test - Playbook with Unmockable Whois Integration' uses it"
             )
-            packs_to_install.update(["HelloWorld", "Gmail"])
+            packs_to_install.update(["HelloWorld", "Whois"])
 
     # We add Base and DeveloperTools packs for every build
     if tests or packs_to_install:
@@ -1426,9 +1428,9 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
     """
     envs_to_test = {
         'Server Master': True,
-        'Server 6.0': is_runnable_in_server_version(from_version, '6.0', to_version),
-        'Server 6.1': is_runnable_in_server_version(from_version, '6.1', to_version),
-        'Server 6.2': is_runnable_in_server_version(from_version, '6.2', to_version),
+        'Server 6.8': is_runnable_in_server_version(from_version, '6.8', to_version),
+        'Server 6.6': is_runnable_in_server_version(from_version, '6.6', to_version),
+        'Server 6.5': is_runnable_in_server_version(from_version, '6.5', to_version),
 
     }
 
@@ -1436,9 +1438,9 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
         # No need to create the instances.
         envs_to_test = {
             'Server Master': False,
-            'Server 6.0': False,
-            'Server 6.1': False,
-            'Server 6.2': False,
+            'Server 6.8': False,
+            'Server 6.6': False,
+            'Server 6.5': False,
         }
 
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
@@ -1464,7 +1466,7 @@ def changed_files_to_string(changed_files):
     return '\n'.join(files_with_status)
 
 
-def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_version='xsoar'):
+def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_version='xsoar', service_account=None):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         if marketplace_version == 'marketplacev2':
@@ -1501,6 +1503,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
         if path_to_pack:
             changed_files = get_list_of_files_in_the_pack(path_to_pack)
             files_string = changed_files_to_string(changed_files)
+        elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+            last_upload_commit = get_last_commit_from_index(service_account)
+            current_commit = branch_name if branch_name != 'master' else 'origin/master'
+            files_string = tools.run_command(f'git diff --name-status {last_upload_commit}..{current_commit}')
+            logging.debug(f'Current commit: {current_commit}, Last upload commit: {last_upload_commit}')
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
@@ -1510,12 +1517,12 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             logging.debug(f'commit string: {commit_string}')
-
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
 
         logging.debug(f'Files string: {files_string}')
+        files_string = '\n'.join(filter(lambda line: 'scripts/collect_tests' not in line, files_string.split('\n')))
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              marketplace_version)
@@ -1560,10 +1567,12 @@ if __name__ == "__main__":
                         help='Skipping saving the test filter file (good for simply doing validation)')
     parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
     parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
+    parser.add_argument('--service_account', help="Path to gcloud service account")
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace)
+    create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace,
+                     options.service_account)
     if not _FAILED:
         logging.info("Finished test configuration")
         sys.exit(0)

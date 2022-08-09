@@ -1,0 +1,24 @@
+{
+    "result": [
+        {
+            "id": "filter_id_1",
+            "paused": false,
+            "expression": "(ip.src eq 120.2.2.8)"
+        },
+        {
+            "id": "filter_id_2",
+            "paused": false,
+            "expression": "(ip.src eq 120.2.2.8)"
+        }
+    ],
+    "success": true,
+    "errors": [],
+    "messages": [],
+    "result_info": {
+        "page": 1,
+        "per_page": 2,
+        "count": 2,
+        "total_count": 2,
+        "total_pages": 1
+    }
+}

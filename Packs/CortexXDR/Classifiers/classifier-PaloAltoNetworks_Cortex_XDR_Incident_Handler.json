@@ -1,0 +1,35 @@
+{
+    "description": "Classifies Cortex XDR incidents.",
+    "feed": false,
+    "id": "Cortex XDR Incident Handler - Classifier",
+    "keyTypeMap": {
+        "Malware": "Malware Investigation and Response",
+        "PortScan": "Cortex XDR Port Scan",
+        "XDR Incident": "Cortex XDR Incident"
+    },
+    "name": "Cortex XDR Incident Handler - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": ".",
+            "transformers": [
+                {
+                    "args": {
+                        "dt": {
+                            "value": {
+                                "simple": ".=val \u0026\u0026 val.description.toLowerCase().indexOf(\"port scan\") \u003e -1 ? \"PortScan\" :(val.file_artifacts.length\u003e0 ? \"Malware\" : \"XDR Incident\")"
+                            }
+                        }
+                    },
+                    "operator": "DT"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

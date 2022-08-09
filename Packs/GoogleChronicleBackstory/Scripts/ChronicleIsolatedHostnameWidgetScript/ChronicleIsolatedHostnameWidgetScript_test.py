@@ -3,7 +3,8 @@ import demistomock as demisto
 
 import ChronicleIsolatedHostnameWidgetScript
 
-INDICATOR_DATA = {'indicator': {'CustomFields': {'chronicleassethostname': 'dummyhost.com',
+DUMMY_HOSTNAME = 'dummyhost.com'
+INDICATOR_DATA = {'indicator': {'CustomFields': {'chronicleassethostname': DUMMY_HOSTNAME,
                                                  'chronicleisolatedhostname': 'No'}}}
 
 
@@ -39,8 +40,8 @@ def test_get_html_representation_when_no_hostname_is_attached():
         When no hostname is attached, get_html_representation should return html representation accordingly.
     """
 
-    html_representation = ChronicleIsolatedHostnameWidgetScript.get_html_representation(None, 'No')
-    assert "<div style='color:grey; text-align:center;'><h1>No Hostname associated with the ChronicleAsset</h1></div>"\
+    html_representation = ChronicleIsolatedHostnameWidgetScript.get_html_representation("", 'No')
+    assert "<div style='color:grey; text-align:center;'><h1>No Hostname associated with the ChronicleAsset</h1></div>" \
            == html_representation
 
 
@@ -49,7 +50,7 @@ def test_get_html_representation_when_hostname_is_not_isolated():
         When hostname is not isolated, get_html_representation should return html representation accordingly.
     """
 
-    html_representation = ChronicleIsolatedHostnameWidgetScript.get_html_representation('dummyhost.com', 'No')
+    html_representation = ChronicleIsolatedHostnameWidgetScript.get_html_representation(DUMMY_HOSTNAME, 'No')
     assert "<div style='color:green; text-align:center;'><h1>dummyhost.com<br/>Hostname Not Isolated</h1>" \
            "</div>" == html_representation
 
@@ -59,7 +60,7 @@ def test_get_html_representation_when_hostname_is_potentially_isolated():
         When hostname is potentially isolated, get_html_representation should return html representation accordingly.
     """
 
-    html_representation = ChronicleIsolatedHostnameWidgetScript\
-        .get_html_representation('dummyhost.com', 'Yes')
+    html_representation = ChronicleIsolatedHostnameWidgetScript \
+        .get_html_representation(DUMMY_HOSTNAME, 'Yes')
     assert "<div style='color:red; text-align:center;'><h1>dummyhost.com<br/>Hostname Isolated</h1>" \
            "</div>" == html_representation

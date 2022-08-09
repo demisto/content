@@ -979,7 +979,7 @@ script:
     description: Retrieves a request by request ID.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python:2.7.18.24398
+  dockerimage: demisto/python:2.7.18.27799
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

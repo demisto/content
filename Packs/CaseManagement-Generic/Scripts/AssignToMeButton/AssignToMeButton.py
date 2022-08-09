@@ -1,4 +1,6 @@
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 # get incident id
 incident_id = demisto.incidents()[0].get('id')

@@ -171,6 +171,7 @@ def get_private_packs(private_index_path: str, pack_names: set = None,
     private_metadata_paths = get_existing_private_packs_metadata_paths(private_index_path)
     # In the private build, there is always exactly one modified pack
     changed_pack_id = list(pack_names)[0] if pack_names and len(pack_names) > 0 else ''
+    logging.info(f'searching for {changed_pack_id} (extracted from {pack_names})')
     private_packs = add_existing_private_packs_from_index(private_metadata_paths, changed_pack_id)
     private_packs = add_changed_private_pack(private_packs, extract_destination_path, changed_pack_id)
 
@@ -241,7 +242,7 @@ def should_upload_core_packs(storage_bucket_name: str) -> bool:
 
 
 # pylint: disable=R0911
-def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bucket: Any, index_folder_path: str,
+def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_bucket: Any, index_folder_path: str,
                                        packs_dependencies_mapping: dict, private_bucket_name: str, storage_base_path,
                                        private_storage_bucket: bool = None,
                                        content_repo: bool = None, current_commit_hash: str = '',
@@ -499,6 +500,7 @@ def main():
                                                                                    is_bucket_upload_flow=False,
                                                                                    is_private_build=True)
     else:
+        logging.info('Ignoring git calculation in private build.')
         current_commit_hash, remote_previous_commit_hash = "", ""
         content_repo = None
 
@@ -511,6 +513,8 @@ def main():
     if not is_private_build:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
                                   storage_bucket)
+    else:
+        logging.info('Not checking marketplace index in private build.')
 
     if private_bucket_name:  # Add private packs to the index
         private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
