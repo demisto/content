@@ -95,7 +95,7 @@ def test_clusters_addon_update(client, requests_mock):
 @pytest.mark.parametrize('params, expected_results', [
     ({'auth_type': 'Device'}, "When using device code flow configuration"),
     ({'auth_type': 'User Auth'}, "When using user auth flow configuration")])
-def test_test_module_command(mocker, params, expected_results):
+def test_test_module_command(mocker, client, params, expected_results):
     """
         Given:
             - Case 1: Integration params with 'Device' as auth_type.
@@ -109,5 +109,5 @@ def test_test_module_command(mocker, params, expected_results):
     """
     mocker.patch.object(demisto, 'params', return_value=params)
     with pytest.raises(Exception) as e:
-        test_module(None)
+        test_module(client)
     assert expected_results in str(e.value)
