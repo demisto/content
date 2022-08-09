@@ -109,5 +109,5 @@ def test_test_module_command(mocker, client, params, expected_results):
     """
     mocker.patch.object(demisto, 'params', return_value=params)
     with pytest.raises(Exception) as e:
-        test_module(client)
+        test_module(client=client)
     assert expected_results in str(e.value)
