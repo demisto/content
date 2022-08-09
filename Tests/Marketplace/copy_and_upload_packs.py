@@ -350,6 +350,14 @@ def main():
     pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict, \
         pc_uploaded_images = get_upload_data(packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
 
+    logging.debug(f"packs_results_file_path: {packs_results_file_path}")
+    logging.debug(f"os.path.exists(packs_results_file_path): {os.path.exists(packs_results_file_path)}")
+
+    packs_results_file_path_2 = os.path.join(os.path.dirname(packs_artifacts_path), 'xsoar', BucketUploadFlow.PACKS_RESULTS_FILE)
+    logging.debug(f"packs_results_file_path_2: {packs_results_file_path_2}")
+    logging.debug(f"os.path.exists(packs_results_file_path_2): {os.path.exists(packs_results_file_path_2)}")
+
+
     logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
     logging.debug(f"Failed packs from Prepare Content: {pc_failed_packs_dict}")
     logging.debug(f"Successful private packs from Prepare Content: {pc_successful_private_packs_dict}")
