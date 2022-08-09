@@ -1109,11 +1109,22 @@ class MsClient:
                  certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id if tenant_id else 'organizations',
-            auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
-            scope='{graph_endpoint}/.default' if grant_type == DEVICE_CODE else Scopes.security_center_apt_service,
+            auth_id=auth_id,
+            enc_key=enc_key,
+            app_name=app_name,
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            self_deployed=self_deployed,
+            scope='https://securitycenter.onmicrosoft.com/windowsatpservice/.default offline_access' if grant_type == DEVICE_CODE else Scopes.security_center_apt_service,
+
+            # used for device code flow
+            resource='https://api.securitycenter.microsoft.com' if grant_type == DEVICE_CODE else None,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if grant_type == DEVICE_CODE else None,
+
             certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key, grant_type=grant_type)
+            private_key=private_key,
+            grant_type=grant_type)
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
