@@ -8,11 +8,13 @@ configuration:
   name: tc_api_path
   required: true
   type: 1
-- display: Access ID
+- additionalinfo: The API ID key
+  display: Access ID
   name: api_access_id
   required: true
   type: 0
-- displaypassword:  Secret key
+- additionalinfo: The secrete key for the API
+  displaypassword:  Secret key
   name: api_secret_key
   hiddenusername: true
   type: 9

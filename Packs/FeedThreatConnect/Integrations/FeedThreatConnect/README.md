@@ -10,14 +10,10 @@ This integration was integrated and tested with version 3 of ThreatConnect Feed
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Base URL |  | True |
-    | Access ID | API - Access ID | True |
-    | Secret key | API - Secret key | True |
-    | Tags | A comma-seperated list of tags to filter by | False |
-    | Group Type | The group type to filter by | False |
-    | Status | The status to filter the results by | False |
-    | Source | Comma-separated list of owners to fetch indicators from. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) |  | True |
-    | Incident Metadata | The metadat we want to collect. | False |
+    | Access ID | The API ID key | True |
+    | Secret key | The secrete key for the API | True |
+    | Tags to filter results by | A comma-seperated list of tags to filter by | False |
+    | Owners | Comma-separated list of owners to fetch indicators from. | False |
     | Fetch indicators |  | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
@@ -27,7 +23,7 @@ This integration was integrated and tested with version 3 of ThreatConnect Feed
     | Feed Fetch Interval |  | False |
     | Trust any certificate (not secure) |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Tags | Supports CSV values. | False |
+    | Feed indicators tags | The tags for the returned indicators. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
