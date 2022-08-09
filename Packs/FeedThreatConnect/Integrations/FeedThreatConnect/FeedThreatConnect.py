@@ -2,15 +2,15 @@
 # IMPORTS #
 ###########
 # STD packages
-import hashlib
-import hmac
-from contextlib import contextmanager
-from enum import Enum
+from typing import Dict, Tuple, Any, Optional, List, Union, Iterator
+from itertools import islice
 from math import ceil
-from typing import Tuple
+from contextlib import contextmanager
 
 # Local packages
+import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 #########
 # Notes #
@@ -24,7 +24,7 @@ Development info:
 """  # noqa W291
 
 ####################
-# GLOBAL CONSTANTS #
+# GLOBAL CONSTUNTS #
 ####################
 INTEGRATION_NAME = 'ThreatConnect Feed'
 INTEGRATION_COMMAND_NAME = 'tc'
@@ -102,43 +102,60 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 # Client #
 ##########
 
-class Method(str, Enum):
-    """
-    A list that represent the types of http request available
-    """
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    HEAD = 'HEAD'
-    PATCH = 'PATCH'
-    DELETE = 'DELETE'
-
 
 class Client:
-    def __init__(self, api_id: str, api_secret: str, base_url: str, verify: bool = False):
-        self.api_id = api_id
-        self.api_secret = api_secret
-        self.base_url = base_url
-        self.verify = verify
+    """Object represnt a client for ThreatConnect actions"""
 
-    def make_request(self, method: Method, url_suffix: str, payload: dict = {}, params: dict = {},
-                     parse_json=True):  # pragma: no cover  # noqa
-        headers = self.create_header(url_suffix, method)
+    def __init__(self, access_key: str, secret_key: str, api_path: str):
+        """ Initialize client configuration:
 
-        url = urljoin(self.base_url, url_suffix)
-        response = requests.request(method=method, url=url, headers=headers, data=payload, params=params,
-                                    verify=self.verify)
-        if parse_json:
-            return json.loads(response.text), response.status_code
-        return response
+        Args:
+            access_key: Generated access key.
+            secret_key: Generated secret key.
+            api_path: https://api.threatconnect.com
 
-    def create_header(self, url_suffix: str, method: Method) -> dict:
-        timestamp = round(time.time())
-        to_sign = f'{url_suffix}:{method}:{timestamp}'
-        hash = base64.b64encode(
-            hmac.new(self.api_secret.encode('utf8'), to_sign.encode('utf8'), hashlib.sha256).digest()).decode()
-        return {'Authorization': f'TC {self.api_id}:{hash}', 'Timestamp': str(timestamp),
-                'Content-Type': 'application/json'}
+        References:
+            1. HMAC: https://docs.threatconnect.com/en/latest/tcex/authorization.html
+            2. Creating user: https://training.threatconnect.com/learn/article/creating-user-accounts-kb-article#2
+
+        Notes:
+            1. When importing TcEx, Print occurred therefor an error raised in the server due to not valid stdout.
+        """
+        with suppress_stdout():
+            from tcex import TcEx
+        self._client = TcEx(config={
+            "api_access_id": access_key,
+            "api_secret_key": secret_key,
+            "tc_api_path": api_path,
+        })
+
+    def get_owners(self) -> Iterator[Any]:
+        """Get indicators owners - helping configuring the feed integration.
+
+        Yields:
+            Iterable: Owner information
+        """
+        return self._client.ti.owner().many()
+
+    def get_indicators(self, offset: int = 0, limit: Optional[int] = None, owners: Optional[str] = None) \
+            -> Iterator[Any]:
+        """ Get indicators from threatconnect.
+
+        Args:
+            offset: Index offset from begining.
+            limit: Indicator amout limit.
+            owners: Filter indicators belongs to specific owner.
+
+        Returns:
+            Iterator: indicator objects.
+        """
+        indicators = self._client.ti.indicator().many(params={"includes": ['additional', 'attributes'],
+                                                              'owner': owners})
+        offset = int(offset)
+        if limit:
+            limit = int(limit) + offset
+
+        return islice(indicators, offset, limit)
 
 
 ######################
@@ -146,7 +163,7 @@ class Client:
 ######################
 
 
-def module_test_command(client: Client):
+def module_test_command(client: Client) -> COMMAND_OUTPUT:
     """ Test module - Get 4 indicators from ThreatConnect.
 
     Args:
@@ -157,24 +174,15 @@ def module_test_command(client: Client):
         dict: Operation entry context - Empty.
         dict: Operation raw response - Empty.
     """
-    url = '/api/v3/groups?resultLimit=4'
-    response, status_code = client.make_request(Method.GET, url)
-    if status_code == 200:
-        return "ok", {}, {}
-    else:
-        return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your '
-                                                           'local help desk'))
+    try:
+        client.get_indicators(limit=4)
+    except RuntimeError:
+        raise DemistoException("Unable to communicate with ThreatConnect API!")
+
+    return "ok", {}, {}
 
 
-def set_fields_query(fields: list) -> str:
-    fields_str = ''
-    for field in fields:
-        fields_str += f'&fields={field}'
-    return fields_str
-
-
-def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no cover
+def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:
     """ Fetch indicators from ThreatConnect
 
     Args:
@@ -183,55 +191,12 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no 
     Returns:
         list: indicator to populate in demisto server.
     """
-    owners = f'AND ({create_or_query(demisto.getParam("owners"), "ownerName")}) '
-    tags = f'AND ({create_or_query(demisto.getParam("tags"), "tags")}) '
-    status = f'AND ({create_or_query(demisto.getParam("status"), "status")}) '
-    fields = set_fields_query(argToList(demisto.getParam("fields")))
-    group_type = f'AND ({create_or_query(demisto.params().get("group_type", "Incident"), "typeName")}) '
-    first_fetch_time = demisto.getParam("first_fetch_time")
-    if first_fetch_time:
-        first_fetch_time = dateparser.parse(demisto.getParam('first_fetch_time').strip()).strftime("%Y-%m-%d")  # type: ignore # noqa
-        from_date = f'AND (dateAdded > "{first_fetch_time}") '
-    page = 0
-    tql = f'{owners if owners != "AND () " else ""}{tags if tags != "AND () " else ""}' \
-          f'{group_type if group_type != "AND () " else ""}{status if status != "AND () " else ""}' \
-          f'{from_date if from_date != "AND () " else ""}'.replace('AND', '', 1)
-    if tql:
-        tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
-        tql = f'?tql={tql}'
-    else:
-        tql = ''
-        if fields:
-            fields = fields.replace('&', '?', 1)  # type: ignore
-    url = f'/api/v3/groups{tql}{fields}&resultStart={page}&resultLimit=500'
-    indicators = []
-    while True:
-        response, status_code = client.make_request(Method.GET, url)
-        if status_code == 200:
-            indicators.extend(response.get('data', {}))
-            if 'next' in response:
-                url = response.get('next').replace(demisto.getParam('tc_api_path'), '')
-            else:
-                break
-        else:
-            return_error('Error from the API: ' + response.get('message',
-                                                               'An error has occurred if it persist please contact '
-                                                               'your local help desk'))
+    raw_response = client.get_indicators(owners=argToList(demisto.getParam('owners')))
 
-    return [parse_indicator(indicator) for indicator in indicators]
+    return [parse_indicator(indicator) for indicator in raw_response]
 
 
-def create_or_query(delimiter_str: str, param_name: str) -> str:
-    if not delimiter_str:
-        return ''
-    arr = delimiter_str.split(',')
-    query = ''
-    for item in arr:
-        query += f'{param_name}="{item}" OR '
-    return query[:len(query) - 3]
-
-
-def get_indicators_command(client: Client):  # pragma: no cover
+def get_indicators_command(client: Client) -> COMMAND_OUTPUT:
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
 
     Args:
@@ -242,26 +207,17 @@ def get_indicators_command(client: Client):  # pragma: no cover
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    limit = demisto.args().get('limit', '50')
-    offset = demisto.args().get('offset', '0')
-    owners = demisto.getArg('owners') or demisto.getParam('owners')
-    owners = create_or_query(owners, "ownerName")
-    owners = urllib.parse.quote(owners.encode('utf8'))  # type: ignore
-    url = f'/api/v3/indicators?tql={owners}&resultStart={offset}&resultLimit={limit}'
+    raw_response: Iterator[Any] = client.get_indicators(
+        owners=argToList(demisto.getArg('owners') or demisto.getParam('owners')),
+        limit=demisto.getArg('limit'),
+        offset=demisto.getArg('offset'))
+    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
+                                           t=[parse_indicator(indicator) for indicator in raw_response])
 
-    response, status_code = client.make_request(Method.GET, url)
-    if status_code == 200:
-        readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
-                                               t=[parse_indicator(indicator) for indicator in response.get('data')])  # type: ignore # noqa
-
-        return readable_output, {}, list(response.get('data'))
-    else:
-        return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your '
-                                                           'local help desk'))
+    return readable_output, {}, list(raw_response)
 
 
-def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
+def get_owners_command(client: Client) -> COMMAND_OUTPUT:
     """ Get availble indicators owners from ThreatConnect - Help configure ThreatConnect Feed integraiton.
 
     Args:
@@ -272,24 +228,18 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    url = '/api/v3/security/owners?resultLimit=500'
-
-    response, status_code = client.make_request(Method.GET, url)
-    if status_code != 200:
-        return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your '
-                                                           'local help desk'))
-    raw_response = response.get('data')
+    raw_response: Iterator[Any] = client.get_owners()
     readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Owners",
                                            t=list(raw_response))
 
     return readable_output, {}, list(raw_response)
 
 
-def main():  # pragma: no cover
-    insecure = not demisto.getParam('insecure')
-    client = Client(demisto.getParam('api_access_id'), demisto.getParam('api_secret_key').get('password'),
-                    demisto.getParam('tc_api_path'), insecure)
+def main():
+    client = Client(demisto.getParam("api_access_id"),
+                    demisto.getParam("api_secret_key"),
+                    demisto.getParam("tc_api_path"),
+                    )
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     commands = {
@@ -299,7 +249,7 @@ def main():  # pragma: no cover
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_groups_command(client)
+            indicators = fetch_indicators_command(client)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
