@@ -485,9 +485,9 @@ def main() -> None:
         client = Client(
             tenant_id=params.get('tenant_id', ''),
             auth_type=params.get('auth_type', ''),
-            auth_code=params.get('auth_code').get('password', ''),
+            auth_code=params.get('auth_code', {}).get('password', ''),
             redirect_uri=params.get('redirect_uri', ''),
-            enc_key=params.get('credentials').get('password', ''),
+            enc_key=params.get('credentials', {}).get('password', ''),
             app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
             resource_group_name=params.get('resource_group_name', ''),
