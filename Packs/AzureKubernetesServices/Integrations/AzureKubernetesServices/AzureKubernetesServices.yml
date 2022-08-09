@@ -9,10 +9,6 @@ configuration:
   name: app_id
   required: true
   type: 0
-- display: Use a self-deployed Azure application
-  name: self_deployed
-  required: false
-  type: 8
 - additionalinfo: Type of authentication - could be User Authorization Flow (recommended) or Device Flow.
   display: Authentication Type
   name: auth_type
