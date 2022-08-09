@@ -34,7 +34,7 @@ In order to verify that the messaging endpoint is open as expected, you can surf
      ```bash
      curl <MESSAGING-ENDPOINT> -vI
      ```
-     Make sure the output does not contain the followin:
+     Make sure the output does not contain the following:
      ```
      curl: (60) SSL certificate problem: self signed certificate
      ```
