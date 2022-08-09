@@ -9,7 +9,7 @@ import copy
 import types
 import urllib3
 from taxii2client import v20, v21
-from taxii2client.common import TokenAuth, _HTTPConnection
+from taxii2client.common import TokenAuth, _HTTPConnection, _to_json, _filter_kwargs_to_query_params
 import tempfile
 
 # disable insecure warnings
@@ -200,6 +200,7 @@ class Taxii2FeedClient:
         Initializes a server in the requested version
         :param version: taxii version key (either 2.0 or 2.1)
         """
+        demisto.debug('In init_server')
         server_url = urljoin(self.base_url)
         self._conn = _HTTPConnection(
             verify=self.verify, proxies=self.proxies, version=version, auth=self.auth, cert=self.crt
@@ -271,12 +272,15 @@ class Taxii2FeedClient:
         """
         Collects available taxii collections
         """
+        demisto.debug('In init_collections')
         self.collections = [x for x in self.api_root.collections]  # type: ignore[union-attr, attr-defined, assignment]
+        demisto.debug(f'In init_collections end, {self.collections=}')
 
     def init_collection_to_fetch(self, collection_to_fetch=None):
         """
         Tries to initialize `collection_to_fetch` if possible
         """
+        demisto.debug('In init_collection_to_fetch')
         if collection_to_fetch is None and isinstance(self.collection_to_fetch, str):
             # self.collection_to_fetch will be changed from str -> Union[v20.Collection, v21.Collection]
             collection_to_fetch = self.collection_to_fetch
@@ -294,6 +298,7 @@ class Taxii2FeedClient:
                     "Could not find the provided Collection name in the available collections. "
                     "Please make sure you entered the name correctly."
                 )
+        demisto.debug(f'In init_collection_to_fetch end, {self.collection_to_fetch=}')
 
     def initialise(self):
         self.init_server()
@@ -898,6 +903,7 @@ class Taxii2FeedClient:
         Polls a taxii collection
         :param page_size: size of the request page
         """
+        demisto.debug('In poll_collection')
         types_envelopes = {}
         get_objects = self.collection_to_fetch.get_objects
         if len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
@@ -905,12 +911,45 @@ class Taxii2FeedClient:
         for obj_type in self.objects_to_fetch:
             kwargs['type'] = obj_type
             if isinstance(self.collection_to_fetch, v20.Collection):
+                demisto.debug('In v2.0, calling regular get_objects')
                 envelope = v20.as_pages(get_objects, per_request=page_size, **kwargs)
+                demisto.debug(f'{envelope=}')
             else:
-                envelope = get_objects(limit=page_size, **kwargs)
+                demisto.debug('In v2.1, calling v21_get_objects')
+                demisto.log(f'{obj_type=}')
+                envelope = self.v21_get_objects(limit=page_size, **kwargs)
+                demisto.debug(f'{envelope=}')
             if envelope:
                 types_envelopes[obj_type] = envelope
+        demisto.debug(f'{types_envelopes=}')
         return types_envelopes
+
+    def v21_get_objects(self, accept="application/taxii+json;version=2.1", **filter_kwargs):
+        collection = self.collection_to_fetch
+        demisto.debug(f'{collection=}')
+        collection._verify_can_read()
+        query_params = _filter_kwargs_to_query_params(filter_kwargs)
+        demisto.debug(f'{query_params=}')
+        merged_headers = collection._conn._merge_headers({"Accept": accept, "Content-Type": "application/taxii+json"})
+        demisto.debug(f'{merged_headers=}')
+
+        resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
+        demisto.log(f'{resp}')
+        demisto.debug(f'{resp=}, {resp.status_code=}, {resp.headers=}')
+
+        try:
+            resp_json = _to_json(resp)
+        except Exception as e:
+            demisto.debug(f'Got Exception: {e}')
+            merged_headers = collection._conn._merge_headers({"Accept": "application/taxii+json",
+                                                              "Content-Type": "application/taxii+json"})
+            demisto.debug(f'{merged_headers=}')
+            resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
+            demisto.log(f'{resp}')
+            demisto.debug(f'{resp=}, {resp.status_code=}, {resp.headers=}')
+            resp_json = _to_json(resp)
+
+        return resp_json
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """
