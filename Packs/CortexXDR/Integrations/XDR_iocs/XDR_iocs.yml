@@ -37,6 +37,7 @@ configuration:
   - low
   - medium
   - high
+  - critical
   required: true
   type: 15
 - additionalinfo: Supports CSV values.
