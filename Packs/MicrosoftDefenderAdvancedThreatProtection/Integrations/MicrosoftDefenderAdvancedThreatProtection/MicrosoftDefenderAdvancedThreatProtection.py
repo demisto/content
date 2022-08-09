@@ -1120,7 +1120,7 @@ class MsClient:
 
             # used for device code flow
             resource='https://api.securitycenter.microsoft.com' if grant_type == DEVICE_CODE else None,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if grant_type == DEVICE_CODE else None,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if grant_type == DEVICE_CODE else '',
 
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
