@@ -3317,6 +3317,8 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
         successful_private_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
         images_data_dict = stage_data.get(BucketUploadFlow.IMAGES, {})
         return successful_packs_dict, failed_packs_dict, successful_private_packs_dict, images_data_dict
+
+    logging.debug(f'{packs_results_file_path} does not exist in artifacts')
     return {}, {}, {}, {}
 
 
