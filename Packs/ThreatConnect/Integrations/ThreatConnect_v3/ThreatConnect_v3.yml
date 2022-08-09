@@ -21,6 +21,11 @@ configuration:
   name: defaultOrg
   required: false
   type: 0
+- additionalinfo: Free Text box to add comma separated tags to filter by
+  display: Tags
+  name: tags
+  required: false
+  type: 0
 - additionalinfo: The group type to filter by
   defaultValue: Incident
   display: Group Type
@@ -502,55 +507,6 @@ script:
       description: The id of the indicator by which to search.
       name: id
       required: true
-    - description: Only for custom. Leave empty for standard ones
-      name: indicator_type
-    - description: Indicator Owner(s)
-      name: owners
-      required: true
-    - description: A list of results filtered by indicators whose threat rating is
-        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
-        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
-      name: ratingThreshold
-    - description: A list of results filtered by indicators whose confidence rating
-        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
-        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
-        - "Probable," or "90-100%" - "Confirmed".
-      name: confidenceThreshold
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Retrieve Indicator Group Associations
-      name: group_associations
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Retrieve Indicator Associations
-      name: indicator_associations
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Retrieve Indicator Observations
-      name: indicator_observations
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Retrieve Indicator Tags
-      name: indicator_tags
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Retrieve Indicator Attributes
-      name: indicator_attributes
-      predefined:
-      - 'true'
-      - 'false'
     description: Retrieves information about an indicator.
     name: tc-get-indicator
     outputs:
@@ -1495,7 +1451,7 @@ script:
     - description: The description of the campaign.
       name: description
     - description: Comma-seperated list of the tags to apply to the campaign.
-      name: tags
+      name: tag
     - auto: PREDEFINED
       description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
         "TLP:AMBER", or "TLP:WHITE".

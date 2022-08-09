@@ -1,4 +1,4 @@
-from ThreatConnect_v3 import Client, Method, create_or_query, create_context
+from ThreatConnect_v3 import Client, Method, create_or_query, create_context, get_last_run_time
 from freezegun import freeze_time
 
 client = Client('test', 'test', 'test', False)
@@ -15,6 +15,13 @@ def test_create_header():
 def test_create_or_query():
     assert create_or_query('1,2,3,4,5', 'test') == 'test="1" OR test="2" OR test="3" OR test="4" OR test="5" '
     assert create_or_query('1,2,3,4,5', 'test', '') == 'test=1 OR test=2 OR test=3 OR test=4 OR test=5 '
+
+
+def test_get_last_run_time():
+    groups = [{'dateAdded': '2022-08-04T12:35:33Z'}, {'dateAdded': '2022-09-06T12:35:33Z'},
+              {'dateAdded': '2022-03-06T12:35:33Z'}, {'dateAdded': '2022-09-06T12:36:33Z'},
+              {'dateAdded': '2022-08-06T11:35:33Z'}, ]
+    assert get_last_run_time(groups) == ''
 
 
 def test_create_context():  # type: ignore # noqa

@@ -269,13 +269,25 @@ def get_file_indicators(client: Client):
 def tc_delete_group_command(client: Client) -> Any:  # pragma: no cover
     args = demisto.args()
     group_ids = args.get('groupID').split(',')
+    success = []
+    fail = []
     for id in group_ids:
         url = f'/api/v3/groups/{id}'
-        client.make_request(Method.DELETE, url)
+        response, status = client.make_request(Method.DELETE, url)
+        if status == 200:
+            success.append(id)
+        else:
+            fail.append(id)
+    success_text = ''
+    fail_text = ''
+    if success:
+        success_text = f'{", ".join(success)} was deleted successfully.'
+    if fail:
+        fail_text = f'{", ".join(fail)} could not be deleted.'
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': '{} was deleted Successfully'.format(group_ids)
+        'Contents': f'{success_text} {fail_text}'
     })
 
 
@@ -443,6 +455,38 @@ def test_integration(client: Client) -> None:  # pragma: no cover
                                                            'local help desk'))
 
 
+def get_last_run_time(groups: list) -> str:
+    latest_date = datetime(1, 1, 1, 0, 0)
+    for group in groups:
+        group_date = datetime.strptime(group.get('dateAdded'), '%Y-%m-%dT%H:%M:%SZ')
+        if group_date > latest_date:
+            latest_date = group_date
+    return latest_date.isoformat()
+
+
+def fetch_incidents(client: Client) -> None:  # pragma: no cover
+    params = demisto.params()
+    tags = params.get('tags', '')
+    owners = params.get('owners', '')
+    status = params.get('status', '')
+    group_type = params.get('group_type')
+    last_run = demisto.getLastRun()
+    last_run = last_run.get('last')
+    demisto.debug(f'[ThreatConnect] last run: {last_run}')
+    if not last_run:
+        last_run = f"{params.get('first_fetch_time') or '3 days'} ago"
+        last_run = dateparser.parse(last_run)
+
+    response, status_code = list_groups(client, group_type=group_type, include_tags='true', include_attributes='true',
+                                        return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run)
+    if status_code != 200:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your '
+                                                           'local help desk'))
+    demisto.incidents(response.get('data'))
+    demisto.setLastRun({'last': get_last_run_time(response.get('data'))})
+
+
 def tc_fetch_incidents_command(client: Client) -> None:  # pragma: no cover
     response, status_code = list_groups(client, group_type='Incident', include_tags='true', include_attributes='true',
                                         return_raw=True)
@@ -526,7 +570,7 @@ def tc_create_event_command(client: Client) -> None:  # pragma: no cover
     args = demisto.args()
     tags = args.get('tag')
     description = args.get('description', '')
-    status = args.get('status', 'New')
+    status = args.get('status', 'Needs Review')
     group_type = 'Event'
     event_date = args.get('eventDate', '')
     name = args.get('name')
@@ -591,7 +635,7 @@ def list_groups(client: Client, group_id: str = '', from_date: str = '', tag: st
                 group_type: str = '', tql_filter: str = '', include_security_labels: str = '',
                 include_attributes: str = '',
                 include_tags: str = '', include_associated_groups: str = '', include_associated_indicators: str = '',
-                include_all_metadata: str = '',
+                include_all_metadata: str = '', status: str = '', owner: str = '',
                 return_raw=False) -> Any:  # pragma: no cover
     args = demisto.args()
     # FIELDS PARAMS
@@ -615,17 +659,26 @@ def list_groups(client: Client, group_id: str = '', from_date: str = '', tag: st
     tql_prefix = ''
     tql = ''
     if from_date:
-        from_date = f' AND eventDate > "{from_date}" '
+        from_date = f' AND dateAdded > "{from_date}" '
         tql_prefix = '?tql='
     if group_type:
         group_type = f' AND typeName EQ "{group_type}"'
+        tql_prefix = '?tql='
+    if owner:
+        group_type = f' AND ownerName EQ "{owner}"'
+        tql_prefix = '?tql='
+    if status:
+        group_type = f' AND status EQ "{status}"'
         tql_prefix = '?tql='
     if security_label:
         security_label = f' AND securityLabel like "%{security_label}%"'
         tql_prefix = '?tql='
         include_security_labels = 'True'
     if tag:
-        tag = f' AND tag like "%{tag}%"'
+        tag = ''
+        tags = tag.split(',')
+        for tag_to_find in tags:
+            tag += f' AND tag like "%{tag_to_find}%"'
         tql_prefix = '?tql='
         include_tags = 'true'
     if tql_filter:
@@ -913,7 +966,9 @@ def tc_create_threat_command(client: Client) -> None:  # pragma: no cover
 
 
 def tc_create_campaign_command(client: Client) -> None:  # pragma: no cover
-    response, status_code = create_group(client, group_type='Campaign')
+    tags = demisto.args().get('tag', [])
+    print(tags)
+    response, status_code = create_group(client, group_type='Campaign', tags=tags)
 
     ec = {
         'ID': response.get('data', {}).get('id'),
@@ -928,8 +983,8 @@ def tc_create_campaign_command(client: Client) -> None:  # pragma: no cover
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Campaign {demisto.args().get("name")} Created Successfully with id: {response.get("data").get("id")}',
-        # type: ignore  # noqa
+        'HumanReadable': f'Campaign {demisto.args().get("name")} was created Successfully with id: {response.get("data").get("id")}',
+        # type: ignore # noqa
         'EntryContext': {
             'TC.Campaign(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
@@ -977,26 +1032,24 @@ def create_group(client: Client, name: str = '', event_date: str = '', group_typ
     event_date = args.get('eventDate', event_date)
     first_seen = args.get('firstSeen', first_seen)
     name = args.get('name', name)
-    if tags:
-        tmp = []
-        for tag in tags.split(','):  # type: ignore
-            tmp.append({'name': tag})
-        tags = tmp  # type: ignore
-    if security_labels:
-        security_labels = [{'name': security_labels}]  # type: ignore
-
     payload = {
         "type": group_type,
         "name": name,
         "status": status,
-        "tags": {
-            "data": tags
-        },
-        "securityLabels": {
-            "data": security_labels
-        },
         "body": description
     }
+    if tags:
+        tmp = []
+        for tag in tags.split(','):  # type: ignore
+            tmp.append({'name': tag})
+        payload['tags'] = {
+            "data": tmp
+        }
+    if security_labels:
+        payload['securityLabels'] = {
+            "data": [{'name': security_labels}]
+        }
+
     if event_date:
         payload['eventDate'] = event_date
     if first_seen:
@@ -1557,6 +1610,7 @@ COMMANDS = {
     'tc-update-group': tc_update_group,
     'tc-create-incident': tc_create_incident_command,
     'tc-fetch-incidents': tc_fetch_incidents_command,
+    'fetch-incidents': fetch_incidents,
     'tc-get-incident-associate-indicators': tc_get_incident_associate_indicators_command,
     'tc-incident-associate-indicator': tc_incident_associate_indicator_command,
     'tc-update-indicator': tc_update_indicator_command,
