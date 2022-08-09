@@ -217,7 +217,7 @@ def get_indicators(client: Client, args_type: str, type_name: str) -> None:  # p
         confidence_threshold = f'AND (confidence > {confidence_threshold}) '
     if owners_query:
         owners_query = f'AND ({owners_query}) '
-    tql = f'typeName LIKE "{type_name}" {owners_query}AND ({query}{confidence_threshold}{rating_threshold})'
+    tql = f'typeName EQ "{type_name}" {owners_query}AND ({query}{confidence_threshold}{rating_threshold})'
     tql = urllib.parse.quote(tql.encode('utf8'))
     url = f'/api/v3/indicators?tql={tql}&resultStart=0&resultLimit=1000'
 
@@ -251,19 +251,19 @@ def create_or_query(delimiter_str: str, param_name: str, wrapper: str = '"') -> 
 
 
 def get_ip_indicators(client: Client):  # pragma: no cover
-    return get_indicators(client, 'ips', 'Address')
+    return get_indicators(client, 'ip', 'Address')
 
 
 def get_url_indicators(client: Client):  # pragma: no cover
-    return get_indicators(client, 'urls', 'URL')
+    return get_indicators(client, 'url', 'URL')
 
 
 def get_domain_indicators(client: Client):  # pragma: no cover
-    return get_indicators(client, 'domains', 'Host')
+    return get_indicators(client, 'domain', 'Host')
 
 
 def get_file_indicators(client: Client):
-    return get_indicators(client, 'files', 'File')
+    return get_indicators(client, 'file', 'File')
 
 
 def tc_delete_group_command(client: Client) -> Any:  # pragma: no cover
