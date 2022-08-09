@@ -29,9 +29,9 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Username | Array of malicious usernames to block. | DEM359748,DEM531065,DEM185402,cpwquwbs@test.com,b1d4aqjp | Optional |
+| Username | Array of malicious usernames to block. |  | Optional |
 | Tag | PAN-OS Tag name to apply to the username that you want to block. | Bad Account | Optional |
-| NamingConvention | In case you are using naming convention in your IDP, please specify a prefix for special/service accounts \(use comma separated\) | DEM,106 | Optional |
+| NamingConvention | In case you are using naming convention in your IDP, please specify a prefix for special/service accounts \(use comma separated\) |  | Optional |
 | UserVerification | Possible values:True/False. Default:True.<br/>Specify if User Verification is Requrired | True | Optional |
 
 ## Playbook Outputs

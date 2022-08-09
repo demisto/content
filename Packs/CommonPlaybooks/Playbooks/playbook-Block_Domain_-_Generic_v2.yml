@@ -283,8 +283,9 @@ tasks:
       "#none#":
         - "5"
     scriptarguments:
-      Domain:
-        simple: ${inputs.Domain}
+      domain:
+        complex:
+          root: inputs.Domain
     separatecontext: true
     loop:
       iscommand: false

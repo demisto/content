@@ -18,10 +18,10 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       "#none#":
-      - "5"
+        - "5"
     separatecontext: false
     view: |-
       {
@@ -51,42 +51,42 @@ tasks:
       brand: ""
     nexttasks:
       "#default#":
-      - "4"
+        - "4"
       "yes":
-      - "3"
+        - "3"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Stealthwatch Cloud
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          right:
-            value: {}
-          ignorecase: true
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: modules
+                    filters:
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.brand
+                            iscontext: true
+                          right:
+                            value:
+                              simple: Stealthwatch Cloud
+                          ignorecase: true
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.state
+                            iscontext: true
+                          right:
+                            value:
+                              simple: Active
+                          ignorecase: true
+                    accessor: brand
+                iscontext: true
+              right:
+                value: {}
+              ignorecase: true
     view: |-
       {
         "position": {
@@ -116,11 +116,13 @@ tasks:
       brand: Stealthwatch Cloud
     nexttasks:
       "#none#":
-      - "4"
+        - "4"
     scriptarguments:
       domain:
-        simple: ${inputs.Domain}
+        complex:
+          root: inputs.Domain
     separatecontext: false
+
     view: |-
       {
         "position": {
@@ -146,7 +148,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -176,19 +178,19 @@ tasks:
       brand: ""
     nexttasks:
       "#default#":
-      - "4"
+        - "4"
       "yes":
-      - "2"
+        - "2"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.Domain
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  complex:
+                    root: inputs.Domain
+                iscontext: true
     view: |-
       {
         "position": {
@@ -221,12 +223,12 @@ view: |-
     }
   }
 inputs:
-- key: Domain
-  value: {}
-  required: false
-  description: The Domain to block.
-  playbookInputQuery:
+  - key: Domain
+    value: {}
+    required: false
+    description: The Domain to block.
+    playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.5.0

@@ -3,7 +3,13 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Block Email - Generic v2
-description: This playbook will block emails at your mail relay integration.
+description: |
+  This playbook will block emails at your mail relay integration.
+
+  Supported integrations for this playbook:
+  * Mimecast
+  * FireEye Email Security (EX)
+  * Cisco Email Security
 starttaskid: "0"
 tasks:
   "0":
@@ -261,7 +267,8 @@ tasks:
       list_type:
         simple: blocklist
       sender_addresses:
-        simple: ${inputs.EmailToBlock}
+        complex:
+          root: inputs.EmailToBlock
       view_by:
         simple: sender
     separatecontext: false
@@ -297,7 +304,8 @@ tasks:
         - "2"
     scriptarguments:
       entry_value:
-        simple: ${inputs.EmailToBlock}
+        complex:
+          root: inputs.EmailToBlock
       type:
         simple: sender_email_address
     separatecontext: false
@@ -337,7 +345,8 @@ tasks:
       fromType:
         simple: everyone
       fromValue:
-        simple: ${inputs.EmailToBlock}
+        complex:
+          root: inputs.EmailToBlock
       option:
         simple: block_sender
       toType:
@@ -371,8 +380,6 @@ view: |-
   }
 inputs:
   - key: EmailToBlock
-    value:
-      simple: test3@test.com
     required: false
     description: The email address that will be blocked.
     playbookInputQuery:

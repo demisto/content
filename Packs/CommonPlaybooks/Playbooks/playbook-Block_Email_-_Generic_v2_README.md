@@ -22,7 +22,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| EmailToBlock | The email address that will be blocked. | test3@test.com | Optional |
+| EmailToBlock | The email address that will be blocked. |  | Optional |
 
 ## Playbook Outputs
 ---
