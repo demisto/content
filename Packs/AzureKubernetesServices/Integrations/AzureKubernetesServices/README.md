@@ -4,13 +4,43 @@ This integration was integrated and tested with API version 2021-09-01 of AKS.
 ## Authorization
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
+
+### Authentication Using the Device Code Flow
+Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
+to link Azure SQL Management with Cortex XSOAR.
+
 In order to connect to the Azure Kubernetes Services using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
+
+To connect to the Azure SQL Management:
 1. Fill in the required parameters.
-2. Run the ***!azure-ks-auth-start*** command. 
-3. Follow the instructions that appear.
-4. Run the ***!azure-ks-auth-complete*** command.
+2. choose the user_auth_flow option in the ***Device*** parameter.
+3. Run the ***!azure-ks-auth-start*** command. 
+4. Follow the instructions that appear.
+5. Run the ***!azure-ks-auth-complete*** command.
 
 At end of the process you'll see a message that you've logged in successfully. 
+
+
+### Self-Deployed Application - User Authentication Flow
+
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Authorize on behalf of a user](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user).
+
+#### Required Permissions
+The required API permissions are for the ***Microsoft Threat Protection*** app.
+ * offline_access - Delegate
+ * Incident.ReadWrite.All - Application
+ * AdvancedHunting.Read.All - Application
+
+Follow these steps for a self-deployed configuration:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. choose the user_auth_flow option in the ***Authentication Type*** parameter.
+3. Enter your Client/Application ID in the ***Application ID*** parameter. 
+4. Enter your Client Secret in the ***Client Secret*** parameter.
+5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
+7. Enter your Authorization code in the ***Authorization code*** parameter.
+
 
 #### Cortex XSOAR Azure App
 

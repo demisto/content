@@ -13,7 +13,7 @@ class AKSClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com', tenant_id: str = None,
                  enc_key: str = None, auth_type: str = 'Device', redirect_uri: str = None, auth_code: str = None):
-        AUTH_TYPES_DICT: dict = {'User Auth': {
+        AUTH_TYPES_DICT: dict[str, Any] = {'User Auth': {
             'grant_type': AUTHORIZATION_CODE,
             'resource': None,
             'scope': 'https://management.azure.com/.default'},
@@ -160,13 +160,34 @@ def complete_auth(client: AKSClient) -> str:
 
 
 def test_connection(client: AKSClient) -> str:
-    client.ms_client.get_access_token()
-    return '✅ Success!'
+    if demisto.params().get('auth_type') == 'Device':
+        client.clusters_list_request()  # If fails, MicrosoftApiModule returns an error
+        return '✅ Success!'
+    else:
+        client.ms_client.get_access_token()
+        return '✅ Success!'
 
 
 def reset_auth() -> str:
     set_integration_context({})
     return 'Authorization was reset successfully. Run **!azure-ks-auth-start** to start the authentication process.'
+
+
+@logger
+def test_module(client):
+    """
+    Performs basic GET request to check if the API is reachable and authentication is successful.
+    Returns ok if successful.
+    """
+    if demisto.params().get('auth_type') == 'Device':
+        raise Exception("When using device code flow configuration, "
+                        "Please enable the integration and run `!azure-ks-auth-start` and `!azure-ks-auth-complete` to log in."
+                        " You can validate the connection by running `!azure-ks-auth-test`\n"
+                        "For more details press the (?) button.")
+
+    elif demisto.params().get('auth_type') == 'User Auth':
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !azure-ks-auth-test command in order to test it")
 
 
 def main() -> None:
@@ -191,7 +212,7 @@ def main() -> None:
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
         )
         if command == 'test-module':
-            return_results('The test module is not functional, run the azure-ks-auth-start command instead.')
+            return_results(test_module(client))
         elif command == 'azure-ks-auth-start':
             return_results(start_auth(client))
         elif command == 'azure-ks-auth-complete':
