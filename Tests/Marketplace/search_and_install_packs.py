@@ -633,8 +633,9 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     lock = Lock()
 
     # install first pack
-    logging.info(f'getting depedency for first pack for debug purposes ({pack_ids[0]})')
-    search_pack_and_its_dependencies(client, pack_ids[0], packs_to_install, installation_request_body, lock)
+    first_pack = tuple(pack_ids)[0]
+    logging.info(f'getting dependency for first pack for debug purposes ({first_pack})')
+    search_pack_and_its_dependencies(client, first_pack, packs_to_install, installation_request_body, lock)
 
     pprof = client.generic_request_func(host, '/monitoring/pprof', 'GET')
     logging.info(f'pprof after getting dependencies:\n{pprof}')
