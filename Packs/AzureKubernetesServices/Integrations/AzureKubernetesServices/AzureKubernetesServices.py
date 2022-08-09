@@ -28,7 +28,7 @@ class AKSClient:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        self.ms_client = MicrosoftClient(
+        client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
@@ -45,6 +45,7 @@ class AKSClient:
             redirect_uri=redirect_uri,
             auth_code=auth_code,
         )
+        self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
 
@@ -179,9 +180,9 @@ def main() -> None:
         client = AKSClient(
             tenant_id=params.get('tenant_id', ''),
             auth_type=params.get('auth_type', ''),
-            auth_code=params.get('auth_code').get('password', ''),
-            redirect_uri=params.get('redirect_uri', ''),
-            enc_key=params.get('credentials').get('password', ''),
+            auth_code=params.get('auth_code', {}).get('password'),
+            redirect_uri=params.get('redirect_uri'),
+            enc_key=params.get('credentials', {}).get('password'),
             app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
             resource_group_name=params.get('resource_group_name', ''),
