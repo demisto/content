@@ -136,3 +136,30 @@ Gets the domain from a destination list
 | Umbrella.Destinations.destination | Unknown | Domain within destination list | 
 | Umbrella.Destinations.id | Unknown | ID of domain within destination list | 
 | Umbrella.Destinations.comment | Unknown | Comment associated with domain within destination list | 
+
+### umbrella-search-destination-domains
+***
+Search for multiple domains in a destination list
+
+
+#### Base Command
+
+`umbrella-search-destination-domains`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| orgId | Optional orgId, by default uses the one set in the instance configuration. | Optional | 
+| destId | Destination list ID to get domains from. Use umbrella-get-destination-lists to get the list ID. | Required | 
+| domains | Domains to search for in a destination list. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.Destinations.createdAt | date | When the domain within destination list was created | 
+| Umbrella.Destinations.type | string | Type of destination within destination list | 
+| Umbrella.Destinations.destination | string | Domain within destination list | 
+| Umbrella.Destinations.id | number | ID of domain within destination list | 
+| Umbrella.Destinations.comment | string | Comment associated with domain within destination list | 
