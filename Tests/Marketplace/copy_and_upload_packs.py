@@ -347,15 +347,18 @@ def main():
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
-    pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict, \
-        pc_uploaded_images = get_upload_data(packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
-
     logging.debug(f"packs_results_file_path: {packs_results_file_path}")
     logging.debug(f"os.path.exists(packs_results_file_path): {os.path.exists(packs_results_file_path)}")
 
-    packs_results_file_path_2 = os.path.join(os.path.dirname(packs_artifacts_path), 'xsoar', BucketUploadFlow.PACKS_RESULTS_FILE)
+    packs_results_file_path_2 = os.path.join(os.path.dirname(packs_artifacts_path), 'xsoar',
+                                             BucketUploadFlow.PACKS_RESULTS_FILE)
     logging.debug(f"packs_results_file_path_2: {packs_results_file_path_2}")
     logging.debug(f"os.path.exists(packs_results_file_path_2): {os.path.exists(packs_results_file_path_2)}")
+
+    pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict, \
+        pc_uploaded_images = get_upload_data(packs_results_file_path_2, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+
+
 
 
     logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
