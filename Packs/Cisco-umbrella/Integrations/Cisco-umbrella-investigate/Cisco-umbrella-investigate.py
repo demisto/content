@@ -893,13 +893,11 @@ def get_domain_command():
                         raw_response=contents
                     ))
             else:
-                if execution_metrics.metrics is not None and execution_metrics.is_supported():
-                    results.append(execution_metrics.metrics)
+                results = append_metrics(execution_metrics, results)
                 return_results(results)
                 return_error(r.response.text)
 
-    if execution_metrics.metrics is not None and execution_metrics.is_supported():
-        results.append(execution_metrics.metrics)
+    results = append_metrics(execution_metrics, results)
     return results
 
 
@@ -1522,8 +1520,7 @@ def get_whois_for_domain_command():
             outputs=context,
             readable_output=readable_whois + readable_name_servers + readable_email
         ))
-    if execution_metrics.metrics is not None and execution_metrics.is_supported():
-        results.append(execution_metrics.metrics)
+    results = append_metrics(execution_metrics, results)
 
     return results
 
