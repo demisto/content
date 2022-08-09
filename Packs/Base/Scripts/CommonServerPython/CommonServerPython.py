@@ -8260,17 +8260,15 @@ if 'requests' in sys.modules:
             The request authorization, for example: (username, password).
             Can be None.
 
-        :type cert_text: ``dict`` or ``tuple`` or ``None``
-        :param auth:
+        :type cert_text: ``str`` or ``None``
+        :param cert_text:
             The request authorization Client Certificate (text from param).
-            Can be None.
             If you use certificate, add private key as well.
 
-        :type key_text: ``dict`` or ``tuple`` or ``None``
-        :param auth:
-            The request authorization private key (text from param).
-            Can be None.
-            If you use private key, add certificate as well.
+        :type key_text: ``str`` or ``None``
+        :param key_text:
+           The request authorization private key (text from param).
+            If you use certificate, add private key as well.
 
         :return: No data returned
         :rtype: ``None``
@@ -8627,6 +8625,22 @@ if 'requests' in sys.modules:
 
 
 def create_crt_files(cert_text, key_text):
+    """ Helper Function to write certificate and key text to file.
+
+    :type cert_text: ``str`` or ``None``
+    :param cert_text:
+        The request authorization Client Certificate (text from param).
+        If you use certificate, add private key as well.
+
+    :type key_text: ``str`` or ``None``
+    :param key_text:
+       The request authorization private key (text from param).
+        If you use certificate, add private key as well.
+
+    :return: paths to certificate and private key.
+    :rtype: ``tuple``
+
+    """
     if not cert_text and not key_text:
         return None
     elif not cert_text or not key_text:
