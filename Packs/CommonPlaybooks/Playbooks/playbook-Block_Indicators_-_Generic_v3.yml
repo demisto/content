@@ -170,35 +170,50 @@ tasks:
       - "2"
     scriptarguments:
       AkamaiNetworkListID:
-        simple: ${inputs.AkamaiNetworkListID}
+        - complex:
+              root: inputs.AkamaiNetworkListID}
       AutoCommit:
-        simple: $}inputs.AutoCommit{
+        - complex:
+            root: inputs.AutoCommit
       CiscoFWSource:
-        simple: ${inputs.CiscoFWSource}
+        - complex:
+            root: inputs.CiscoFWSource
       CustomBlockRule:
-        simple: ${inputs.CustomBlockRule}
+        - complex:
+            root: inputs.CustomBlockRule
       DAG:
-        simple: ${inputs.DAG}
+        - complex:
+            root: inputs.DAG
       IP:
-        simple: ${inputs.IP}
+        - complex:
+            root: inputs.IP
       InputEnrichment:
-        simple: ${inputs.InputEnrichment}
+        - complex:
+            root: inputs.InputEnrichment
       InternalRange:
-        simple: ${inputs.InternalRange}
+        - complex:
+            root: inputs.InternalRange
       LogForwarding:
-        simple: ${inputs.LogForwarding}
+        - complex:
+            root: inputs.LogForwarding
       RuleDirection:
-        simple: ${inputs.RuleDirection}
+        - complex:
+            root: inputs.RuleDirection
       RuleName:
-        simple: ${inputs.RuleName}
+        - complex:
+            root: inputs.RuleName
       SiteName:
-        simple: ${inputs.SiteName}
+        - complex:
+            root: inputs.SiteName
       StaticAddressGroup:
-        simple: ${inputs.StaticAddressGroup}
+        - complex:
+            root: inputs.StaticAddressGroup
       Tag:
-        simple: ${inputs.Tag}
+        - complex:
+            root: inputs.Tag
       UserVerification:
-        simple: ${inputs.UserVerification}
+        - complex:
+            root: inputs.UserVerification
     separatecontext: true
     loop:
       iscommand: false
@@ -264,7 +279,33 @@ tasks:
       - "14"
     scriptarguments:
       indicatorsValues:
-        simple: ${inputs.IP},${inputs.URL},${inputs.Username},${inputs.MD5} ,${inputs.SHA256}
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.URL
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.SHA256
+                iscontext: true
       tags:
         simple: Blocked Indicator In Systems
     separatecontext: false
@@ -300,6 +341,7 @@ tasks:
         * Forcepoint
         * Checkpoint
         * Netcraft
+        * EDL
       playbookName: Block URL - Generic v2
       type: playbook
       iscommand: false
@@ -312,6 +354,21 @@ tasks:
         simple: "No"
       CustomURLCategory:
         simple: Demisto Remediation - Malicious URLs
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      Tag:
+        complex:
+          root: inputs.device-group
+      URL:
+        complex:
+          root: inputs.URL
+      categories:
+        complex:
+          root: inputs.categories
+      type:
+        complex:
+          root: inputs.CustomURLCategory
     separatecontext: true
     loop:
       iscommand: false
@@ -448,9 +505,11 @@ tasks:
       - "2"
     scriptarguments:
       Domain:
-        simple: ${inputs.DomainToBlock}
+        - complex:
+            root: inputs.DomainToBlock
       DomainBlackListID:
-        simple: ${inputs.DomainBlackListID}
+        - complex:
+            root: inputs.DomainBlackListID
     separatecontext: true
     loop:
       iscommand: false
