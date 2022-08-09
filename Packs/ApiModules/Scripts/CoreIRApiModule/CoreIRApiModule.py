@@ -1378,6 +1378,52 @@ class CoreClient(BaseClient):
             timeout=self.timeout
         )
 
+    def remove_endpoint_tag(
+        self,
+        endpoint_ids,
+        tag,
+        endpoint_id_list=None,
+        dist_name=None,
+        ip_list=None,
+        group_name=None,
+        platform=None,
+        alias_name=None,
+        isolate=None,
+        hostname=None,
+        first_seen_gte=None,
+        first_seen_lte=None,
+        last_seen_gte=None,
+        last_seen_lte=None,
+        status=None,
+        no_filter=False
+    ):
+        if no_filter:
+            filters = self.create_request_filters(endpoint_id_list=endpoint_ids)
+        else:
+            filters = self.create_request_filters(
+                status=status, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
+                ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
+                hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+                last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
+            )
+
+        body_request = {
+            'context': {
+                'lcaas_id': endpoint_ids,
+            },
+            'request_data': {
+                'filters': filters,
+                'tag': tag
+            },
+        }
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/tags/agents/remove/',
+            json_data=body_request,
+            timeout=self.timeout
+        )
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
@@ -3466,4 +3512,60 @@ def add_tag_to_endpoints_command(client: CoreClient, args: Dict):
 
     return CommandResults(
         readable_output=f'Successfully added tag {tag} to endpoint(s) {endpoint_ids}', raw_response=raw_response
+    )
+
+
+def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
+    endpoint_ids = argToList(args.get('endpoint_ids', []))
+    tag = args.get('tag')
+
+    if any(  # check if any filter arguments provided
+            key in args for key in
+            (
+                'endpoint_id_list', 'dist_name', 'ip_list', 'group_name', 'platform', 'alias_name',
+                'isolate', 'hostname', 'status', 'first_seen_gte', 'first_seen_lte', 'last_seen_gte',
+                'last_seen_lte'
+            )
+    ):
+        endpoint_id_list = argToList(args.get('endpoint_id_list'))
+        dist_name = argToList(args.get('dist_name'))
+        ip_list = argToList(args.get('ip_list'))
+        group_name = argToList(args.get('group_name'))
+        platform = argToList(args.get('platform'))
+        alias_name = argToList(args.get('alias_name'))
+        isolate = args.get('isolate')
+        hostname = argToList(args.get('hostname'))
+        status = args.get('status')
+
+        first_seen_gte = arg_to_timestamp(
+            arg=args.get('first_seen_gte'),
+            arg_name='first_seen_gte'
+        )
+
+        first_seen_lte = arg_to_timestamp(
+            arg=args.get('first_seen_lte'),
+            arg_name='first_seen_lte'
+        )
+
+        last_seen_gte = arg_to_timestamp(
+            arg=args.get('last_seen_gte'),
+            arg_name='last_seen_gte'
+        )
+
+        last_seen_lte = arg_to_timestamp(
+            arg=args.get('last_seen_lte'),
+            arg_name='last_seen_lte'
+        )
+
+        raw_response = client.remove_endpoint_tag(
+            endpoint_ids=endpoint_ids, tag=tag, endpoint_id_list=endpoint_id_list, dist_name=dist_name, ip_list=ip_list,
+            group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate, hostname=hostname,
+            first_seen_lte=first_seen_lte, first_seen_gte=first_seen_gte,
+            last_seen_lte=last_seen_lte, last_seen_gte=last_seen_gte, status=status
+        )
+    else:
+        raw_response = client.remove_endpoint_tag(endpoint_ids=endpoint_ids, tag=tag, no_filter=True)
+
+    return CommandResults(
+        readable_output=f'Successfully removed tag {tag} from endpoint(s) {endpoint_ids}', raw_response=raw_response
     )

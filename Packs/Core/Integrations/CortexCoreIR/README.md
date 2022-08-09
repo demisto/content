@@ -2253,3 +2253,41 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Successfully added tag test to endpoint(s) ['1234']
+
+### core-remove-endpoint-tag
+***
+Remove tag from one or more endpoints.
+
+#### Base Command
+
+`core-remove-endpoint-tag`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | The tenant ID of the endpoint(s) for which you want to remove the tag. | Required | 
+| tag | The tag name to remove from the endpoint(s). | Required | 
+| endpoint_id_list | A comma-separated list of endpoint IDs to filter by them. | Optional | 
+| dist_name | A comma-separated list of distribution package names or installation package names. <br/>Example: dist_name1,dist_name2. | Optional | 
+| ip_list | A comma-separated list of IP addresses.<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
+| group_name | The group name to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
+| platform | The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". . Possible values are: windows, linux, macos, android. | Optional | 
+| alias_name | A comma-separated list of alias names.<br/>Examples: alias_name1,alias_name2. | Optional | 
+| isolate | Specifies whether the endpoint was isolated or unisolated. Possible values are: isolated, unisolated. | Optional | 
+| hostname | Hostname<br/>Example: hostname1,hostname2. | Optional | 
+| first_seen_gte | All the agents that were first seen after {first_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| first_seen_lte | All the agents that were first seen before {first_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| last_seen_gte | All the agents that were last seen before {last_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| last_seen_lte | All the agents that were last seen before {last_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| status | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Optional | 
+
+
+#### Context Output
+There is no context output for this command.
+
+#### Command example
+```!core-remove-endpoint-tag endpoint_ids=1234 tag=test```
+
+#### Human Readable Output
+
+>Successfully removed tag test from endpoint(s) ['1234']

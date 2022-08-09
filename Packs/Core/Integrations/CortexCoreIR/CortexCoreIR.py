@@ -443,6 +443,9 @@ def main():  # pragma: no cover
         elif command == 'core-add-endpoint-tag':
             return_results(add_endpoint_tag_command(client, args))
 
+        elif command == 'core-remove-endpoint-tag':
+            return_results(remove_tag_from_endpoints_command(client, args))
+
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
 

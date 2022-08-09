@@ -2981,7 +2981,7 @@ class TestPollingCommands:
         )
     ]
 )
-def test_add_tag_endpoint(requests_mock, args, expected_filters):
+def test_add_tag_to_endpoint_command(requests_mock, args, expected_filters):
     """
     Given:
       - command arguments
@@ -2994,6 +2994,7 @@ def test_add_tag_endpoint(requests_mock, args, expected_filters):
       - make sure the body request was sent as expected to the api request and that human readable is valid.
     """
     from CoreIRApiModule import add_tag_to_endpoints_command
+
     client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
     add_tag_mock = requests_mock.post(f'{Core_URL}/public_api/v1/tags/agents/assign/', json={})
 
@@ -3001,6 +3002,64 @@ def test_add_tag_endpoint(requests_mock, args, expected_filters):
 
     assert result.readable_output == "Successfully added tag test to endpoint(s) ['1', '2']"
     assert add_tag_mock.last_request.json() == {
+        'context': {
+            'lcaas_id': ['1', '2'],
+        },
+        'request_data': {
+            'filters': expected_filters,
+            'tag': 'test'
+        }
+    }
+
+
+@pytest.mark.parametrize(
+    'args, expected_filters',
+    [
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test'},
+            [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}]
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'platform': 'linux'},
+            [{'field': 'platform', 'operator': 'in', 'value': ['linux']}]
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'isolate': 'isolated', 'first_seen_gte': '3 days'},
+            [
+                {'field': 'isolate', 'operator': 'in', 'value': ['isolated']},
+                {'field': 'first_seen', 'operator': 'gte', 'value': 1658740157000}
+            ]
+        )
+    ]
+)
+def test_remove_tag_from_endpoint_command(requests_mock, args, expected_filters):
+    """
+    Given:
+      - command arguments
+      - expected filters as a body rquest
+
+    When:
+      - executing the core-add-tag-endpoint command
+
+    Then:
+      - make sure the body request was sent as expected to the api request and that human readable is valid.
+    """
+    from CoreIRApiModule import remove_tag_from_endpoints_command
+
+    def start_freeze_time():
+        from freezegun import freeze_time
+        _start_freeze_time = freeze_time('2022-07-28T12:09:17Z')
+        _start_freeze_time.start()
+
+    start_freeze_time()
+
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    remove_tag_mock = requests_mock.post(f'{Core_URL}/public_api/v1/tags/agents/remove/', json={})
+
+    result = remove_tag_from_endpoints_command(client=client, args=args)
+
+    assert result.readable_output == "Successfully removed tag test from endpoint(s) ['1', '2']"
+    assert remove_tag_mock.last_request.json() == {
         'context': {
             'lcaas_id': ['1', '2'],
         },
