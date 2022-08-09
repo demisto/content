@@ -186,7 +186,7 @@ def test_policy_upsert_request_body_fails(mocker, demisto_args, expected_error_m
 @pytest.mark.parametrize('params, expected_results', [
     ({'auth_type': 'Device'}, "When using device code flow configuration"),
     ({'auth_type': 'User Auth'}, "When using user auth flow configuration")])
-def test_test_module_command(mocker, capsys, params, expected_results):
+def test_test_module_command(mocker, params, expected_results):
     """
         Given:
             - Case 1: Integration params with 'Device' as auth_type.
@@ -199,5 +199,6 @@ def test_test_module_command(mocker, capsys, params, expected_results):
             - Case 2: Should throw an exception related to User-Auth-flow config and return True.
     """
     mocker.patch.object(demisto, 'params', return_value=params)
-    waf.test_module(None)
-    assert expected_results in capsys.readouterr().out
+    with pytest.raises(Exception) as e:
+        waf.test_module(None)
+    assert expected_results in str(e.value)
