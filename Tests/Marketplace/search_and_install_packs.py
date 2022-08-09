@@ -637,21 +637,21 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     logging.info(f'getting dependency for first pack for debug purposes ({first_pack})')
     search_pack_and_its_dependencies(client, first_pack, packs_to_install, installation_request_body, lock)
 
-    pprof = demisto_client.generic_request_func(client, host, '/monitoring/pprof', 'GET')
+    pprof = demisto_client.generic_request_func(client, '/monitoring/pprof', 'GET')
     logging.info(f'pprof after getting dependencies:\n{pprof}')
-    health = demisto_client.generic_request_func(client, host, '/monitoring/health', 'GET')
+    health = demisto_client.generic_request_func(client, '/monitoring/health', 'GET')
     logging.info(f'health after getting dependencies:\n{health}')
-    dbstats = demisto_client.generic_request_func(client, host, '/monitoring/dbstats', 'GET')
+    dbstats = demisto_client.generic_request_func(client, '/monitoring/dbstats', 'GET')
     logging.info(f'dbstats after getting dependencies:\n{dbstats}')
 
     logging.info('installing first pack')
     install_packs(client, host, installation_request_body)
 
-    pprof = demisto_client.generic_request_func(client, host, '/monitoring/pprof', 'GET')
+    pprof = demisto_client.generic_request_func(client, '/monitoring/pprof', 'GET')
     logging.info(f'pprof after installing:\n{pprof}')
-    health = demisto_client.generic_request_func(client, host, '/monitoring/health', 'GET')
+    health = demisto_client.generic_request_func(client, '/monitoring/health', 'GET')
     logging.info(f'health after installing:\n{health}')
-    dbstats = demisto_client.generic_request_func(client, host, '/monitoring/dbstats', 'GET')
+    dbstats = demisto_client.generic_request_func(client, '/monitoring/dbstats', 'GET')
     logging.info(f'dbstats after installing:\n{dbstats}')
 
     return packs_to_install, SUCCESS_FLAG
