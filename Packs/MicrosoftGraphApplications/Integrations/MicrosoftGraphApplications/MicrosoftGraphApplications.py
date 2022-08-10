@@ -210,7 +210,7 @@ def main():
             proxy=params.get('proxy', False),
             azure_ad_endpoint=params.get('azure_ad_endpoint',
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
-            enc_key=(params.get('credentials') or {}).get('password'),
+            enc_key=(params.get('credentials', {})).get('password'),
             tenant_id=params.get('tenant_id'),
             connection_type=params.get('authentication_type', 'Device')
         )
