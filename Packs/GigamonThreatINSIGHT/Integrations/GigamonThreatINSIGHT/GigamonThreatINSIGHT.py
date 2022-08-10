@@ -21,8 +21,11 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 class Client(BaseClient):
     @staticmethod
     def getUrl(api) -> str:
-        # set api url
-
+        """Provide the base url to access the specific API.
+        :param str api:  The specific API for which we need the base url.
+        return: The requested base url
+        rtype str
+        """
         url: str = ''
         if api == 'Events':
             url = 'https://events.icebrg.io/v2/query/'
@@ -37,6 +40,12 @@ class Client(BaseClient):
 
     @staticmethod
     def getClient(api, api_key):
+        """Provide the required Client instance to interact with the specific API.
+        :param str api:  The specific API we need to interact with.
+        :param str api_key: The API key to authenticate the request bwing made.
+        return: The requested Client instance.
+        rtype str
+        """
         headers = {
             'Authorization': 'IBToken ' + api_key,
             'User-Agent': 'Cortex_Insight.v3',
@@ -67,13 +76,13 @@ class Client(BaseClient):
 
 
 class EventClient(Client):
-    ''' Client that makes HTTP requests to the Events API '''
-
+    """Client that makes HTTP requests to the Events API
+    """
     def getSavedSearches(self) -> Dict[str, Any]:
-        ''' Calls the GET /saved endpoint to retrieve the events' saved searches
+        """ Calls the GET /saved endpoint to retrieve the events' saved searches
             :return JSON response from /saved endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('EventClient.getSavedSearches method has been called.')
 
         return self._http_request(
@@ -82,10 +91,10 @@ class EventClient(Client):
         )
 
     def getHistory(self) -> Dict[str, Any]:
-        ''' Calls the GET /history endpoint to retrieve the events' history
+        """ Calls the GET /history endpoint to retrieve the events' history
             :return JSON response from /history endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('EventClient.getHistory method has been called.')
 
         return self._http_request(
@@ -94,11 +103,11 @@ class EventClient(Client):
         )
 
     def getEvents(self, args: str = '') -> Dict[str, Any]:
-        ''' Calls the GET /events endpoint to retrieve the Events
+        """ Calls the GET /events endpoint to retrieve the Events
             :param str args: some filters to be passed in the request
             :return JSON response from /events endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('EventClient.getEvents method has been called.')
 
         result = self._http_request(
@@ -110,13 +119,13 @@ class EventClient(Client):
 
 
 class SensorClient(Client):
-    ''' Client that makes HTTP requests to the Sensor API '''
-
+    """Client that makes HTTP requests to the Sensor API
+    """
     def getSensors(self) -> Dict[str, Any]:
-        ''' Calls the GET /sensors endpoint to retrieve the sensors
+        """ Calls the GET /sensors endpoint to retrieve the sensors
             :return JSON response from /sensors endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('SensorClient.getSensors method has been called.')
 
         return self._http_request(
@@ -125,10 +134,10 @@ class SensorClient(Client):
         )
 
     def getDevices(self) -> Dict[str, Any]:
-        ''' Calls the GET /devices endpoint to retrieve the devices
+        """ Calls the GET /devices endpoint to retrieve the devices
             :return JSON response from /devices endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.info('SensorClient.getDevices method has been called.')
 
         result = self._http_request(
@@ -139,10 +148,10 @@ class SensorClient(Client):
         return result.get('devices')
 
     def getTasks(self, taskid: str = '') -> Dict[str, Any]:
-        ''' Calls the GET endpoint to retrieve either the list of tasks or the specific task with id <taskid>
+        """ Calls the GET endpoint to retrieve either the list of tasks or the specific task with id <taskid>
             :return JSON response from endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('SensorClient.getTasks method has been called.')
 
         suffix = 'pcaptasks'
@@ -155,11 +164,11 @@ class SensorClient(Client):
         )
 
     def createTasks(self, sensor_ids=None) -> Dict[str, Any]:
-        ''' Calls to the Sensors API to create a new PCAP task
+        """ Calls to the Sensors API to create a new PCAP task
             :params sensor_ids sensors' id to be added to the task
             :return JSON response from endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('SensorClient.createTasks method has been called.')
 
         return self._http_request(
@@ -169,13 +178,13 @@ class SensorClient(Client):
         )
 
     def getTelemetry(self, telemetry: str, args: str) -> Dict[str, Any]:
-        ''' Calls the GET /telemetry/{telemetry} endpoint to retrieve the
+        """ Calls the GET /telemetry/{telemetry} endpoint to retrieve the
             specific telemetry
             :param str telemetry: the telemetry to be retrieved
             :param str args: some filters
             :return JSON response from /telemetry/{telemetry} endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('SensorClient.getTelemetry method has been called.')
 
         return self._http_request(
@@ -185,15 +194,16 @@ class SensorClient(Client):
 
 
 class EntityClient(Client):
-    ''' Client that makes HTTP requests to the Entity API '''
+    """ Client that makes HTTP requests to the Entity API
+    """
 
     def getEntitySummary(self, entity: str) -> Dict[str, Any]:
-        ''' Calls the GET /{entity}/summary endpoint to retrieve the
+        """ Calls the GET /{entity}/summary endpoint to retrieve the
             entity's summary
             :param str entity: the entity to retrieve the summary from
             :return JSON response from /{entity}/summary endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('EntityClient.getEntitySummary method has been called.')
 
         return self._http_request(
@@ -202,12 +212,12 @@ class EntityClient(Client):
         )
 
     def getEntityPdns(self, entity: str) -> Dict[str, Any]:
-        ''' Calls the GET /{entity}/pdns endpoint to retrieve the
+        """ Calls the GET /{entity}/pdns endpoint to retrieve the
             entity's pdns
             :param str entity: the entity to retrieve the pdns from
             :return JSON response from /{entity}/pdns endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('EntityClient.getEntityPdns method has been called.')
 
         return self._http_request(
@@ -216,12 +226,12 @@ class EntityClient(Client):
         )
 
     def getEntityDhcp(self, entity: str) -> Dict[str, Any]:
-        ''' Calls the GET /{entity}/dhcp endpoint to retrieve the
+        """ Calls the GET /{entity}/dhcp endpoint to retrieve the
             entity's summary
             :param str entity: the entity to retrieve the dhcp from
             :return JSON response from /{entity}/dhcp endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('EntityClient.getEntityDhcp method has been called.')
 
         return self._http_request(
@@ -230,12 +240,12 @@ class EntityClient(Client):
         )
 
     def getEntityFile(self, entity: str) -> Dict[str, Any]:
-        ''' Calls the GET /{entity}/file endpoint to retrieve the
+        """ Calls the GET /{entity}/file endpoint to retrieve the
             entity's summary
             :param str entity: the entity to retrieve the file from
             :return JSON response from /{entity}/file endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('EntityClient.getEntityFile method has been called.')
 
         return self._http_request(
@@ -245,13 +255,14 @@ class EntityClient(Client):
 
 
 class DetectionClient(Client):
-    ''' Client that makes HTTP requests to the Detections API '''
+    """ Client that makes HTTP requests to the Detections API
+    """
 
     def getDetections(self, args: str = '') -> Dict[str, Any]:
-        ''' Calls the GET /detections endpoint to retrieve the detections
+        """ Calls the GET /detections endpoint to retrieve the detections
             :return JSON response from /detections endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('DetectionClient.getDetections method has been called.')
 
         return self._http_request(
@@ -260,11 +271,11 @@ class DetectionClient(Client):
         )
 
     def getDetectionRules(self, args: str = '') -> Dict[str, Any]:
-        ''' Calls the GET /rules endpoint to retrieve the Detection Rules
+        """ Calls the GET /rules endpoint to retrieve the Detection Rules
             :param str args: some filters to be passed in the request
             :return JSON response from /rules endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('SensorClient.getDetectionRules method has been called.')
         return self._http_request(
             method='GET',
@@ -272,12 +283,12 @@ class DetectionClient(Client):
         )
 
     def getDetectionRuleEvents(self, rule_uuid: str, args: str) -> Dict[str, Any]:
-        ''' Calls the GET /rules/<rule_id>/events endpoint to retrieve the detection rule's events
+        """ Calls the GET /rules/<rule_id>/events endpoint to retrieve the detection rule's events
             :param str rule_uuid: the id of the rulefor which the events need to be retrieved
             :param str args: some filters to be passed in the request
             :return JSON response from /rules/<rule_id>/events endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('SensorClient.getDetectionRuleEvents method has been called.')
 
         return self._http_request(
@@ -286,11 +297,11 @@ class DetectionClient(Client):
         )
 
     def createDetectionRule(self, data) -> Dict[str, Any]:
-        ''' Calls the POST endpoint to create a Detection rule
+        """ Calls the POST endpoint to create a Detection rule
             :param Any data: data to be passed in the request
             :return JSON response from endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('DetectionClient.createDetectationRule method has been called.')
 
         return self._http_request(
@@ -300,12 +311,12 @@ class DetectionClient(Client):
         )
 
     def resolveDetection(self, detection_id: str, data=None) -> Dict[str, Any]:
-        ''' Calls the Put /detections/{detection_id}/resolve endpoint to resolve the provided detection
+        """ Calls the Put /detections/{detection_id}/resolve endpoint to resolve the provided detection
             :param str detection_id: the detection to be resolved
             :param Any data: data to be passed in the request
             :return JSON response from /detections/{detection_id}/resolve endpoint
             :rtype Dict[str, Any]
-        '''
+        """
         demisto.debug('DetectionClient.resolveDetection method has been called.')
 
         return self._http_request(
@@ -315,10 +326,15 @@ class DetectionClient(Client):
         )
 
 
-''' HELPER FUNCTIONS '''
+# Helper Methods
 
 
 def encodeArgsToURL(args):
+    """ Create the query string with the provided arguments
+        :parm Dict[str, Any] args: Arguments to be included in the query string
+        :return The querystring
+        :rtype str
+    """
     url = ''
     first = True
     for arg in args:
@@ -331,7 +347,83 @@ def encodeArgsToURL(args):
     return url
 
 
+def flattenFieldDict(field, field_dict):
+    """ Recursively flatten a dictionary field.
+        :param str field: Field to be flatten
+        :parm Dict[str, Any] field_dict: Dictionary containing the field to be flatten
+        :return A new dictionary with the field flattened
+        :rtype Dict[str, Any]
+    """
+    new_dict = {}
+    for key in field_dict:
+        if isinstance(field_dict[key], dict):
+            new_dict.update(flattenFieldDict(field + "_" + key, field_dict[key]))
+        else:
+            new_dict[field + "_" + key] = field_dict[key]
+    return new_dict
+
+
+def flattenList(lt):
+    """ Recursively flatten a list.
+        :parm List lt: List to be flatten
+        :return A new flattened List
+        :rtype List
+    """
+    string = ''
+    for i in range(0, len(lt)):
+        if isinstance(lt[i], dict):
+            string = string + flattenDict(lt[i])
+            if i + 1 < len(lt):
+                string = string + "---" + "\n"
+        elif isinstance(lt[i], list):
+            string = string + flattenList(lt[i])
+        else:
+            string = string + str(lt[i])
+            if i + 1 < len(lt):
+                string = string + ", "
+    return string
+
+
+def flattenDict(dt):
+    """ Recursively flatten a dictionary.
+        :parm Dict[str, Any] dt: Dictionary to be flatten
+        :return A new flattened dictionary
+        :rtype Dict[str, Any]
+    """
+    string = ''
+    for key in dt:
+        if isinstance(dt[key], list):
+            string = string + str(key) + ": " + flattenList(dt[key]) + "\n"
+        elif isinstance(dt[key], dict):
+            string = string + str(key) + ": " + flattenDict(dt[key]) + "\n"
+        else:
+            string = string + str(key) + ": " + str(dt[key]) + "\n"
+    return string
+
+
+# Commands Methods
+
+
+def commandTestModule(sensorClient: SensorClient):
+    """ Test that the module is up and running.
+    """
+    try:
+        commandGetSensors(sensorClient)
+        return 'OK'
+    except Exception:
+        return 'FAILING'
+
+
+# Events API commands
+
+
 def formatEvents(r_json, response_type):
+    """ Format the event response according to the provided response type.
+        :parm Any r_json: Received response
+        :parm str response_type: Response type
+        :return The formated response
+        :rtype Any
+    """
     if response_type == "metadata":
         # If response type is 'metadata', only the metadata will be included
 
@@ -378,59 +470,9 @@ def formatEvents(r_json, response_type):
     return r_json
 
 
-def flattenFieldDict(field, field_dict):
-    new_dict = {}
-    for key in field_dict:
-        if isinstance(field_dict[key], dict):
-            new_dict.update(flattenFieldDict(field + "_" + key, field_dict[key]))
-        else:
-            new_dict[field + "_" + key] = field_dict[key]
-    return new_dict
-
-
-def flattenList(lt):
-    string = ''
-    for i in range(0, len(lt)):
-        if isinstance(lt[i], dict):
-            string = string + flattenDict(lt[i])
-            if i + 1 < len(lt):
-                string = string + "---" + "\n"
-        elif isinstance(lt[i], list):
-            string = string + flattenList(lt[i])
-        else:
-            string = string + str(lt[i])
-            if i + 1 < len(lt):
-                string = string + ", "
-    return string
-
-
-def flattenDict(dt):
-    string = ''
-    for key in dt:
-        if isinstance(dt[key], list):
-            string = string + str(key) + ": " + flattenList(dt[key]) + "\n"
-        elif isinstance(dt[key], dict):
-            string = string + str(key) + ": " + flattenDict(dt[key]) + "\n"
-        else:
-            string = string + str(key) + ": " + str(dt[key]) + "\n"
-    return string
-
-
-''' COMMANDS + REQUESTS FUNCTIONS '''
-
-
-def commandTestModule(sensorClient: SensorClient):
-    try:
-        commandGetSensors(sensorClient)
-        return 'OK'
-    except Exception:
-        return 'FAILING'
-
-
-'''Events API commands'''
-
-
 def commandGetEventsHistory(eventClient: EventClient):
+    """ Get user's query history.
+    """
     demisto.debug('CommandGetEventsHistory has been called.')
 
     result: Dict[str, Any] = eventClient.getHistory()
@@ -443,6 +485,8 @@ def commandGetEventsHistory(eventClient: EventClient):
 
 
 def commandGetEventsSavedSearches(eventClient: EventClient):
+    """ Get user's saved searches.
+    """
     demisto.debug('CommandGetEventsSavedSearches has been called.')
 
     result: Dict[str, Any] = eventClient.getSavedSearches()
@@ -455,6 +499,8 @@ def commandGetEventsSavedSearches(eventClient: EventClient):
 
 
 def commandGetEvents(eventClient: EventClient, args):
+    """ Perform a search for network events from Insight
+    """
     demisto.debug('commandGetEvents has been called.')
 
     pattern = r"^.*[Gg][Rr][Oo][Uu][Pp]\s+[Bb][Yy].*$"
@@ -483,10 +529,12 @@ def commandGetEvents(eventClient: EventClient, args):
     )
 
 
-'''Sensors API commands'''
+# Sensors API commands
 
 
 def commandGetSensors(sensorClient: SensorClient):
+    """ Get a list of all sensors.
+    """
     demisto.debug('CommandGetSensors has been called.')
 
     result: Dict[str, Any] = sensorClient.getSensors()
@@ -499,6 +547,8 @@ def commandGetSensors(sensorClient: SensorClient):
 
 
 def commandGetDevices(sensorClient: SensorClient):
+    """ Get the number of devices.
+    """
     demisto.debug('CommandGetDevices has been called.')
 
     result: Dict[str, Any] = sensorClient.getDevices()
@@ -511,6 +561,8 @@ def commandGetDevices(sensorClient: SensorClient):
 
 
 def commandGetTasks(sensorClient: SensorClient, args):
+    """ Get a list of all the PCAP tasks.
+    """
     demisto.debug('commandGetTasks has been called.')
 
     taskid: str = args['task_uuid'] if 'task_uuid' in args else ''
@@ -526,6 +578,8 @@ def commandGetTasks(sensorClient: SensorClient, args):
 
 
 def commandCreateTask(sensorClient: SensorClient, args):
+    """ Create a new PCAP task.
+    """
     demisto.debug('commandCreateTask has been called.')
 
     sensor_ids = [args['sensor_ids']]
@@ -540,6 +594,12 @@ def commandCreateTask(sensorClient: SensorClient, args):
 
 
 def commandGetTelemetry(sensorClient: SensorClient, telemetry: str, args):
+    """ Get the specific requested telemetry:
+            - 'events': Get event telemetry data grouped by time
+            - 'network': Get network telemetry data grouped by time
+            - 'packetstats':Get network metrics to a given sensor's interfaces
+        :parm str telemetry: The telemetry being requested
+    """
     demisto.debug(f'commandGetTelemetry ({telemetry}) has been called.')
 
     result: Dict[str, Any] = sensorClient.getTelemetry(telemetry, args)
@@ -551,10 +611,12 @@ def commandGetTelemetry(sensorClient: SensorClient, telemetry: str, args):
     )
 
 
-'''Entity API commands'''
+# Entity API commands
 
 
 def commandGetEntitySummary(entityClient: EntityClient, entity: str):
+    """ Get entity summary information about an IP or domain.
+    """
     demisto.debug('commandGetEntitySummary has been called.')
 
     result: Dict[str, Any] = entityClient.getEntitySummary(entity)
@@ -567,6 +629,8 @@ def commandGetEntitySummary(entityClient: EntityClient, entity: str):
 
 
 def commandGetEntityPdns(entityClient: EntityClient, entity: str):
+    """ Get passive DNS information about an IP or domain.
+    """
     demisto.debug('commandGetEntityPdns has been called.')
 
     result: Dict[str, Any] = entityClient.getEntityPdns(entity)
@@ -579,6 +643,8 @@ def commandGetEntityPdns(entityClient: EntityClient, entity: str):
 
 
 def commandGetEntityDhcp(entityClient: EntityClient, entity: str):
+    """ Get DHCP information about an IP address.
+    """
     demisto.debug('commandGetEntityDhcp has been called.')
 
     result: Dict[str, Any] = entityClient.getEntityDhcp(entity)
@@ -591,6 +657,8 @@ def commandGetEntityDhcp(entityClient: EntityClient, entity: str):
 
 
 def commandGetEntityFile(entityClient: EntityClient, hash: str):
+    """ Get entity information about a file
+    """
     demisto.debug('commandGetEntityFile has been called.')
 
     result: Dict[str, Any] = entityClient.getEntityFile(hash)
@@ -602,7 +670,7 @@ def commandGetEntityFile(entityClient: EntityClient, hash: str):
     )
 
 
-'''Detections API commands'''
+# Detections API commands
 
 
 def commandFetchIncidents(detectionClient: DetectionClient, account_uuid, max_results, last_run, first_fetch_time):
@@ -666,7 +734,8 @@ def commandFetchIncidents(detectionClient: DetectionClient, account_uuid, max_re
 
 
 def addDetectionRules(result):
-
+    """ Create a new detection rule.
+    """
     # Create a dictionary with the rules using its uuid as key
     rules = {}
     for rule in result.get('rules'):
@@ -687,6 +756,8 @@ def addDetectionRules(result):
 
 
 def getDetectionsInc(detectionClient: DetectionClient, result, args):
+    """ Get the remaining detections if there are more than the maximum allowed in a page.
+    """
     total_detections = result.get('total_count')
     offset = MAX_DETECTIONS
 
@@ -706,6 +777,8 @@ def getDetectionsInc(detectionClient: DetectionClient, result, args):
 
 
 def commandGetDetections(detectionClient: DetectionClient, args):
+    """ Get a list of detections.
+    """
     demisto.debug('commandGetDetections has been called.')
 
     result: Dict[str, Any] = detectionClient.getDetections(encodeArgsToURL(args))
@@ -730,6 +803,8 @@ def commandGetDetections(detectionClient: DetectionClient, args):
 
 
 def commandGetDetectionRules(detectionClient: DetectionClient, args):
+    """ Get a list of detection rules.
+    """
     demisto.debug('CommandGetDetectionRules has been called.')
 
     result: Dict[str, Any] = detectionClient.getDetectionRules(encodeArgsToURL(args))
@@ -742,6 +817,8 @@ def commandGetDetectionRules(detectionClient: DetectionClient, args):
 
 
 def commandGetDetectionRuleEvents(detectionClient: DetectionClient, args):
+    """ Get a list of the events that matched on a specific rule.
+    """
     demisto.debug('CommandGetDetectionRuleEvents has been called.')
 
     rule_uuid: str = args['rule_uuid']
@@ -757,6 +834,8 @@ def commandGetDetectionRuleEvents(detectionClient: DetectionClient, args):
 
 
 def commandCreateDetectionRule(detectionClient: DetectionClient, args):
+    """ Create a new detection rule.
+    """
     demisto.debug('commandCreateDetectionRule has been called.')
 
     run_accts = [args['run_account_uuids']]
@@ -776,6 +855,8 @@ def commandCreateDetectionRule(detectionClient: DetectionClient, args):
 
 
 def commandResolveDetection(detectionClient: DetectionClient, args):
+    """ Resolve a specific detection.
+    """
     demisto.debug('commandResolveDetection has been called.')
 
     detection_uuid = args['detection_uuid']
