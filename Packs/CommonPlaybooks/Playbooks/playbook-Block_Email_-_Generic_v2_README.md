@@ -1,5 +1,12 @@
 This playbook will block emails at your mail relay integration.
 
+Supported integrations for this playbook:
+* Mimecast
+* FireEye Email Security (EX)
+* Cisco Email Security
+* Symantec Email Security
+
+
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
@@ -13,9 +20,9 @@ This playbook does not use any integrations.
 * IsIntegrationAvailable
 
 ### Commands
+* cisco-email-security-list-entry-add
 * mimecast-create-policy
 * fireeye-ex-update-blockedlist
-* cisco-email-security-list-entry-add
 
 ## Playbook Inputs
 ---

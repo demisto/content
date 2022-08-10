@@ -35,7 +35,6 @@ tasks:
       - "7"
       - "9"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -67,7 +66,6 @@ tasks:
       '#none#':
       - "5"
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -108,7 +106,6 @@ tasks:
         complex:
           root: inputs.Domain
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -151,7 +148,6 @@ tasks:
         complex:
           root: inputs.Domain
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -182,8 +178,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -215,7 +211,6 @@ tasks:
       '#none#':
       - "5"
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -252,7 +247,6 @@ tasks:
       '#none#':
       - "5"
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -293,7 +287,6 @@ tasks:
         complex:
           root: inputs.Domain
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -330,12 +323,15 @@ inputs:
   value: {}
   required: false
   description: The Domain to block.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: DomainBlackListID
   value: {}
   required: false
   description: |-
     The Domain List ID to add the Domain to.
     product: Proofpoint Threat Response
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

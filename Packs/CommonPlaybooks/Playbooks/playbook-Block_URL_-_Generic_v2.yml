@@ -1016,8 +1016,8 @@ tasks:
       key:
         simple: Blocklist.URL
       value:
-        - complex:
-            root: inputs.URL
+      - complex:
+          root: inputs.URL
     separatecontext: false
     view: |-
       {
@@ -1119,8 +1119,8 @@ tasks:
       - "2"
     scriptarguments:
       attack:
-        - complex:
-            root: inputs.URL
+      - complex:
+          root: inputs.URL
       comment:
         simple: Malicious - Added by Netcraft Integration
     separatecontext: false
