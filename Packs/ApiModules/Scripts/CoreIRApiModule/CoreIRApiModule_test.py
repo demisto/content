@@ -3046,13 +3046,6 @@ def test_remove_tag_from_endpoint_command(requests_mock, args, expected_filters)
     """
     from CoreIRApiModule import remove_tag_from_endpoints_command
 
-    def start_freeze_time():
-        from freezegun import freeze_time
-        _start_freeze_time = freeze_time('2022-07-28T12:09:17Z')
-        _start_freeze_time.start()
-
-    start_freeze_time()
-
     client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
     remove_tag_mock = requests_mock.post(f'{Core_URL}/public_api/v1/tags/agents/remove/', json={})
 
