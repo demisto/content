@@ -6,9 +6,9 @@ To use a self-configured Azure application, you need to add a [new Azure App Reg
 
 In case you want to use Device code flow, you must allow public client flows (can be found under the **Authentication** section of the app).
 
-### Authentication Using the User - Authentication Flow
+### Authentication Using the User - Authentication Flow (recommended)
 
-Follow these steps for a self-deployed configuration:
+Follow these steps for User - Authentication configuration:
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
 2. choose the user_auth_flow option in the ***Authentication Type*** parameter.

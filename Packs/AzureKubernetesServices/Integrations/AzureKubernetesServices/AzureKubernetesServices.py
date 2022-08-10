@@ -13,14 +13,17 @@ class AKSClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com', tenant_id: str = None,
                  enc_key: str = None, auth_type: str = 'Device', redirect_uri: str = None, auth_code: str = None):
-        AUTH_TYPES_DICT: dict[str, Any] = {'User Auth': {
-            'grant_type': AUTHORIZATION_CODE,
-            'resource': None,
-            'scope': 'https://management.azure.com/.default'},
+        AUTH_TYPES_DICT: dict[str, Any] = {
+            'User Auth': {
+                'grant_type': AUTHORIZATION_CODE,
+                'resource': None,
+                'scope': 'https://management.azure.com/.default'
+            },
             'Device': {
-            'grant_type': DEVICE_CODE,
-            'resource': 'https://management.core.windows.net',
-            'scope': 'https://management.azure.com/user_impersonation offline_access user.read'}
+                'grant_type': DEVICE_CODE,
+                'resource': 'https://management.core.windows.net',
+                'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
+            }
         }
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
@@ -162,10 +165,9 @@ def complete_auth(client: AKSClient) -> str:
 def test_connection(client: AKSClient) -> str:
     if demisto.params().get('auth_type') == 'Device':
         client.clusters_list_request()  # If fails, MicrosoftApiModule returns an error
-        return '✅ Success!'
     else:
         client.ms_client.get_access_token()
-        return '✅ Success!'
+    return '✅ Success!'
 
 
 def reset_auth() -> str:
