@@ -937,19 +937,7 @@ class Taxii2FeedClient:
         demisto.info(f'{resp.content}')
         demisto.debug(f'{resp=}, {resp.status_code=}, {resp.headers=}')
 
-        try:
-            resp_json = _to_json(resp)
-        except Exception as e:
-            demisto.debug(f'Got Exception: {e}')
-            merged_headers = collection._conn._merge_headers({"Accept": "application/taxii+json",
-                                                              "Content-Type": "application/taxii+json"})
-            demisto.debug(f'{merged_headers=}')
-            resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
-            demisto.info(f'{resp.content}')
-            demisto.debug(f'{resp=}, {resp.status_code=}, {resp.headers=}')
-            resp_json = _to_json(resp)
-
-        return resp_json
+        return _to_json(resp)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """
