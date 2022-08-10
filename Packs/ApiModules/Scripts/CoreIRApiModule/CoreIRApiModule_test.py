@@ -3035,11 +3035,11 @@ def test_add_tag_to_endpoint_command(requests_mock, args, expected_filters):
 def test_remove_tag_from_endpoint_command(requests_mock, args, expected_filters):
     """
     Given:
-      - command arguments
+      - core-remove-tag-endpoint command arguments
       - expected filters as a body request
 
     When:
-      - executing the core-add-tag-endpoint command
+      - executing the core-remove-tag-endpoint command
 
     Then:
       - make sure the body request was sent as expected to the api request and that human readable is valid.
