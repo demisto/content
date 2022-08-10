@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, Iterable, Optional, Any
+from typing import Any, Callable, Iterable, Optional
 
 import collect_tests
 import pytest
@@ -79,6 +79,9 @@ class MockerCases:
     J = CollectTestsMocker(TEST_DATA / 'J')
 
 
+ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
+
+
 def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, collector_class: Callable,
           expected_tests: Iterable[str], expected_packs: Iterable[str], expected_machines: Optional[Iterable[Machine]],
           collector_class_args: tuple[Any, ...] = ()):
@@ -113,12 +116,13 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
         assert False, description
 
     if collected is None:
-        assert False, 'should have collected something'
+        assert False, f'should have collected something: {expected_tests=}, {expected_packs=}, {expected_machines=}'
 
     if expected_tests is not None:
         assert collected.tests == set(expected_tests)
-    if expected_packs is not None:
-        assert collected.packs == set(expected_packs)
+
+    assert collected.packs == set(expected_packs or ()) | set(ALWAYS_INSTALLED_PACKS)
+
     if expected_machines is not None:
         assert set(collected.machines) == set(expected_machines)
 
@@ -133,28 +137,8 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
         print(f'collected pack {pack}')
 
 
-NIGHTLY_EMPTY_TESTS = (
-    (MockerCases.empty, XSOARNightlyTestCollector, XSOAR_SANITY_TEST_NAMES, ()),
-    (MockerCases.empty, XSIAMNightlyTestCollector, (), ()),
-    (MockerCases.empty_xsiam, XSIAMNightlyTestCollector,
-     ('some_xsiam_test_only_mentioned_in_conf_json',), ())
-)
-
-
-@pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs', NIGHTLY_EMPTY_TESTS)
-def test_nightly_empty(monkeypatch, case_mocker, collector_class: Callable, expected_tests: tuple[str],
-                       expected_packs: tuple[str]):
-    """
-    given:  a content folder
-    when:   collecting tests with a NightlyTestCollector
-    then:   make sure sanity tests are collected for XSOAR, and that XSIAM tests are collected from conf.json
-            make sure master machine is used
-    """
-    _test(monkeypatch, case_mocker, run_nightly=True, collector_class=collector_class, expected_tests=expected_tests,
-          expected_packs=expected_packs, expected_machines=None)
-
-
 NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
+
 NIGHTLY_TESTS: tuple = (
     (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
     (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
@@ -202,14 +186,11 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
 @pytest.mark.parametrize(
     'case_mocker,expected_tests,expected_packs,expected_machines,collector_class_args,mocked_changed_files',
     # Empty content folder: expecting xsoar sanity tests to be collected
-    ((MockerCases.empty, XSOAR_SANITY_TEST_NAMES, (), None, XSOAR_BRANCH_ARGS, ()),
+    ((MockerCases.empty, XSOAR_SANITY_TEST_NAMES, ('Whois',), None, XSOAR_BRANCH_ARGS,
+      ('.gitlab/helper_functions.sh',)),
 
      # Empty content folder: expecting XSIAM collector to not collect anything
      (MockerCases.empty, (), (), None, XSIAM_BRANCH_ARGS, ()),
-
-     # Empty content folder: expecting XSIAM collector to collect tests from conf.json
-     (MockerCases.empty_xsiam, ('some_xsiam_test_only_mentioned_in_conf_json',), (), None, XSIAM_BRANCH_ARGS,
-      ()),
 
      # Case A, yml file changes, expect the test playbook testing the integration to be collected
      (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
@@ -247,13 +228,13 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Scripts/myScript/myScript.yml',)),
 
-     # Two test playbooks change, but myOtherTestPlaybook is ignored so it should not be collected
+     # Two test playbooks change, but myOtherTestPlaybook is ignored, so it should not be collected
      (MockerCases.I_xsoar, ('myTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
        'Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml')),
 
      # Skipped integration changes - should not be collected
-     (MockerCases.J, XSOAR_SANITY_TEST_NAMES, (), None, XSOAR_BRANCH_ARGS,
+     (MockerCases.J, (), (), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',)),
      ))
 def test_branch(
@@ -320,7 +301,7 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
     """
     # test mockers
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
-    mocker.patch('collect_tests.find_type_by_path', return_value=file_type)
+    mocker.patch('collect_tests.find_type', return_value=file_type)
 
     # noinspection PyTypeChecker
     _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,

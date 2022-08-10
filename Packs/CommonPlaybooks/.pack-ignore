@@ -1,3 +1,6 @@
+[known_words]
+xlsm
+
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101
 
@@ -39,6 +42,9 @@ ignore=BA101
 
 [file:playbook-Send_Investigation_Summary_Reports_Job.yml]
 ignore=PB105
+
+[file:playbook-Extract_Indicators_From_File_-_Generic_v2_4_5.yml]
+ignore=PB114
 
 [file:README.md]
 ignore=RM104
