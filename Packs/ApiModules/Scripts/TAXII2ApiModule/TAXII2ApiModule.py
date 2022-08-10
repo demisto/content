@@ -916,7 +916,7 @@ class Taxii2FeedClient:
                 demisto.debug(f'{envelope=}')
             else:
                 demisto.debug('In v2.1, calling v21_get_objects')
-                demisto.log(f'{obj_type=}')
+                demisto.info(f'{obj_type=}')
                 envelope = self.v21_get_objects(limit=page_size, **kwargs)
                 demisto.debug(f'{envelope=}')
             if envelope:
@@ -934,7 +934,7 @@ class Taxii2FeedClient:
         demisto.debug(f'{merged_headers=}')
 
         resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
-        demisto.log(f'{resp.content}')
+        demisto.info(f'{resp.content}')
         demisto.debug(f'{resp=}, {resp.status_code=}, {resp.headers=}')
 
         try:
@@ -945,7 +945,7 @@ class Taxii2FeedClient:
                                                               "Content-Type": "application/taxii+json"})
             demisto.debug(f'{merged_headers=}')
             resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
-            demisto.log(f'{resp.content}')
+            demisto.info(f'{resp.content}')
             demisto.debug(f'{resp=}, {resp.status_code=}, {resp.headers=}')
             resp_json = _to_json(resp)
 
