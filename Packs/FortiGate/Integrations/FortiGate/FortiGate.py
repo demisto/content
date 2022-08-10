@@ -1201,8 +1201,8 @@ def create_address_request(address_name, address, mask, fqdn):
     uri_suffix = 'cmdb/firewall/address/'
     if does_path_exist(uri_suffix + address_name):
         return_error('Address already exists.')
-    subnet = address + " " + mask
     if address:
+        subnet = address + " " + mask
         payload = {
             'name': address_name,
             'subnet': subnet
