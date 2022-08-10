@@ -1,8 +1,9 @@
 {
-    "name": "Accenture CTI",
-    "description": "Accenture Security",
+    "name": "Accenture CTI (Deprecated)",
+    "description": "Deprecated. Use Accenture CTI v2 & Accenture CTI Feed instead.",
     "support": "partner",
-    "currentVersion": "3.2.4",
+    "hidden": true,
+    "currentVersion": "3.2.5",
     "author": "Accenture",
     "url": "https://www.accenture.com/us-en/services/security/cyber-defense",
     "email": "CTI.AcctManagement@accenture.com",
