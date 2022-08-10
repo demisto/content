@@ -40,7 +40,8 @@ class Client(BaseClient):
 
     @staticmethod
     def getClient(api, api_key):
-        """Provide the required Client instance to interact with the specific API.
+        """Provide the required Client instance to interact with
+        the specific API.
         :param str api:  The specific API we need to interact with.
         :param str api_key: The API key to authenticate the request bwing made.
         return: The requested Client instance.
@@ -79,7 +80,8 @@ class EventClient(Client):
     """Client that makes HTTP requests to the Events API
     """
     def getSavedSearches(self) -> Dict[str, Any]:
-        """ Calls the GET /saved endpoint to retrieve the events' saved searches
+        """ Calls the GET /saved endpoint to retrieve the events' saved
+        searches
             :return JSON response from /saved endpoint
             :rtype Dict[str, Any]
         """
@@ -148,7 +150,8 @@ class SensorClient(Client):
         return result.get('devices')
 
     def getTasks(self, taskid: str = '') -> Dict[str, Any]:
-        """ Calls the GET endpoint to retrieve either the list of tasks or the specific task with id <taskid>
+        """ Calls the GET endpoint to retrieve either the list of tasks or
+        the specific task with id <taskid>
             :return JSON response from endpoint
             :rtype Dict[str, Any]
         """
@@ -282,14 +285,18 @@ class DetectionClient(Client):
             url_suffix='/rules' + args
         )
 
-    def getDetectionRuleEvents(self, rule_uuid: str, args: str) -> Dict[str, Any]:
-        """ Calls the GET /rules/<rule_id>/events endpoint to retrieve the detection rule's events
-            :param str rule_uuid: the id of the rulefor which the events need to be retrieved
+    def getDetectionRuleEvents(self, rule_uuid: str,
+                               args: str) -> Dict[str, Any]:
+        """ Calls the GET /rules/<rule_id>/events endpoint to retrieve
+        the detection rule's events
+            :param str rule_uuid: the id of the rulefor which the events
+            need to be retrieved
             :param str args: some filters to be passed in the request
             :return JSON response from /rules/<rule_id>/events endpoint
             :rtype Dict[str, Any]
         """
-        demisto.debug('SensorClient.getDetectionRuleEvents method has been called.')
+        demisto.debug(
+            'SensorClient.getDetectionRuleEvents method has been called.')
 
         return self._http_request(
             method='GET',
@@ -302,7 +309,8 @@ class DetectionClient(Client):
             :return JSON response from endpoint
             :rtype Dict[str, Any]
         """
-        demisto.debug('DetectionClient.createDetectationRule method has been called.')
+        demisto.debug(
+            'DetectionClient.createDetectationRule method has been called.')
 
         return self._http_request(
             method='POST',
@@ -311,13 +319,16 @@ class DetectionClient(Client):
         )
 
     def resolveDetection(self, detection_id: str, data=None) -> Dict[str, Any]:
-        """ Calls the Put /detections/{detection_id}/resolve endpoint to resolve the provided detection
+        """ Calls the Put /detections/{detection_id}/resolve endpoint to
+        resolve the provided detection
             :param str detection_id: the detection to be resolved
             :param Any data: data to be passed in the request
-            :return JSON response from /detections/{detection_id}/resolve endpoint
+            :return JSON response from /detections/{detection_id}/resolve
+            endpoint
             :rtype Dict[str, Any]
         """
-        demisto.debug('DetectionClient.resolveDetection method has been called.')
+        demisto.debug(
+            'DetectionClient.resolveDetection method has been called.')
 
         return self._http_request(
             method='Put',
@@ -350,14 +361,16 @@ def encodeArgsToURL(args):
 def flattenFieldDict(field, field_dict):
     """ Recursively flatten a dictionary field.
         :param str field: Field to be flatten
-        :parm Dict[str, Any] field_dict: Dictionary containing the field to be flatten
+        :parm Dict[str, Any] field_dict: Dictionary containing the
+        field to be flatten
         :return A new dictionary with the field flattened
         :rtype Dict[str, Any]
     """
     new_dict = {}
     for key in field_dict:
         if isinstance(field_dict[key], dict):
-            new_dict.update(flattenFieldDict(field + "_" + key, field_dict[key]))
+            new_dict.update(flattenFieldDict(field + "_"
+                                             + key, field_dict[key]))
         else:
             new_dict[field + "_" + key] = field_dict[key]
     return new_dict
@@ -431,13 +444,15 @@ def formatEvents(r_json, response_type):
         metadata: Dict[str, Any] = {}
 
         for field in r_json:
-            if field != "events" and field != "aggregations" and field != "data":
+            if((field != "events") and (field != "aggregations")
+               and (field != "data")):
                 metadata[field] = r_json[field]
 
         data.append(metadata)
         r_json['data'] = data
     elif response_type == "aggregations":
-        # If the response type is 'aggregations', only the group by fields from the aggregations will be included
+        # If the response type is 'aggregations', only the group by fields
+        # from the aggregations will be included
 
         for x in r_json['aggregations']:
             group_by = x
@@ -466,7 +481,9 @@ def formatEvents(r_json, response_type):
             event.update(new_fields)
         # remove fields
         for i in range(0, len(r_json['events'])):
-            r_json['events'][i] = {k: v for k, v in r_json['events'][i].items() if v != "REMOVE"}
+            r_json['events'][i] = {
+                k: v for k, v in r_json['events'][i].items() if v != "REMOVE"
+            }
     return r_json
 
 
@@ -508,15 +525,22 @@ def commandGetEvents(eventClient: EventClient, args):
     # Get the response_type from the args
     response_type = 'events'
     if 'response_type' in args:
-        if args['response_type'] == 'metadata' or args['response_type'] == 'aggregations':
+        if (args['response_type'] == 'metadata'
+           or args['response_type'] == 'aggregations'):
             response_type = args['response_type']
         args.pop('response_type')
 
-    keyField = 'data' if response_type in ("metadata", "aggregations") else 'events'
+    keyField = 'data' if (response_type in
+                          ("metadata", "aggregations")) else 'events'
 
-    # If the response_type is aggregation, check that a group by statement is included in the query
-    if response_type == "aggregations" and not re.search(pattern, args['query']):
-        raise Exception("No 'group by' statement in query. Aggregation requires a 'group by' statement.")
+    # If the response_type is aggregation, check that a group by
+    # statement is included in the query
+    if (response_type == "aggregations"
+       and not re.search(pattern, args['query'])):
+        raise Exception(
+            '''No 'group by' statement in query.
+            Aggregation requires a 'group by' statement.'''
+        )
 
     # Make the request and format the response
     result: Dict[str, Any] = eventClient.getEvents(encodeArgsToURL(args))
@@ -673,7 +697,8 @@ def commandGetEntityFile(entityClient: EntityClient, hash: str):
 # Detections API commands
 
 
-def commandFetchIncidents(detectionClient: DetectionClient, account_uuid, max_results, last_run, first_fetch_time):
+def commandFetchIncidents(detectionClient: DetectionClient, account_uuid,
+                          max_results, last_run, first_fetch_time):
     demisto.debug(f'last_run retrieved: {last_run}')
     last_fetch = last_run.get('last_fetch')
 
@@ -723,8 +748,12 @@ def commandFetchIncidents(detectionClient: DetectionClient, account_uuid, max_re
 
         if last_incident_time < incident_time:
             last_incident_time = incident_time
-    demisto.debug(f'Last incident time: {last_incident_time.strftime(DATE_FORMAT)}')
+
+    demisto.debug(
+        f'Last incident time: {last_incident_time.strftime(DATE_FORMAT)}')
+
     next_run = {'last_fetch': last_incident_time.strftime(DATE_FORMAT)}
+
     demisto.debug(f'fetched {len(detections)} incidents')
 
     demisto.setLastRun(next_run)
@@ -756,7 +785,8 @@ def addDetectionRules(result):
 
 
 def getDetectionsInc(detectionClient: DetectionClient, result, args):
-    """ Get the remaining detections if there are more than the maximum allowed in a page.
+    """ Get the remaining detections if there are more than
+    the maximum allowed in a page.
     """
     total_detections = result.get('total_count')
     offset = MAX_DETECTIONS
@@ -764,7 +794,8 @@ def getDetectionsInc(detectionClient: DetectionClient, result, args):
     while offset < total_detections:
         # Get the next piece of detections and add them to the result
         args['offset'] = offset
-        nextPiece: Dict[str, Any] = detectionClient.getDetections(encodeArgsToURL(args))
+        nextPiece: Dict[str, Any] = detectionClient.getDetections(
+            encodeArgsToURL(args))
         result.get('detections').extend(nextPiece.get('detections'))
 
         # Include rules if they need to be included
@@ -781,15 +812,21 @@ def commandGetDetections(detectionClient: DetectionClient, args):
     """
     demisto.debug('commandGetDetections has been called.')
 
-    result: Dict[str, Any] = detectionClient.getDetections(encodeArgsToURL(args))
+    result: Dict[str, Any] = detectionClient.getDetections(
+        encodeArgsToURL(args)
+    )
 
-    # if there are more detections to be retrieved, pull the remaining detections incrementally
+    # if there are more detections to be retrieved, pull the
+    # remaining detections incrementally
     if 'total_count' in result and int(result['total_count']) > MAX_DETECTIONS:
         if 'limit' not in args or int(args['limit']) > MAX_DETECTIONS:
             result = getDetectionsInc(detectionClient, result, args)
 
     # filter out training detections
-    result['detections'] = list(filter(lambda detection: (detection['account_uuid'] != TRAINING_ACC), result['detections']))
+    result['detections'] = list(
+        filter(lambda detection: (detection['account_uuid'] != TRAINING_ACC),
+               result['detections'])
+    )
 
     # Include the rules if they need to be included
     if 'include' in args and args['include'] == 'rules':
@@ -807,7 +844,9 @@ def commandGetDetectionRules(detectionClient: DetectionClient, args):
     """
     demisto.debug('CommandGetDetectionRules has been called.')
 
-    result: Dict[str, Any] = detectionClient.getDetectionRules(encodeArgsToURL(args))
+    result: Dict[str, Any] = detectionClient.getDetectionRules(
+        encodeArgsToURL(args)
+    )
 
     return CommandResults(
         outputs_prefix='Insight.Rules',
@@ -824,7 +863,9 @@ def commandGetDetectionRuleEvents(detectionClient: DetectionClient, args):
     rule_uuid: str = args['rule_uuid']
     args.pop('rule_uuid')
 
-    result: Dict[str, Any] = detectionClient.getDetectionRuleEvents(rule_uuid, encodeArgsToURL(args))
+    result: Dict[str, Any] = detectionClient.getDetectionRuleEvents(
+        rule_uuid, encodeArgsToURL(args)
+    )
 
     return CommandResults(
         outputs_prefix='Insight.Detections',
@@ -860,7 +901,10 @@ def commandResolveDetection(detectionClient: DetectionClient, args):
     demisto.debug('commandResolveDetection has been called.')
 
     detection_uuid = args['detection_uuid']
-    data = {"resolution": args['resolution'], "resolution_comment": args['resolution_comment']}
+    data = {
+        "resolution": args['resolution'],
+        "resolution_comment": args['resolution_comment']
+    }
 
     detectionClient.resolveDetection(detection_uuid, data)
 
@@ -891,7 +935,9 @@ def main():
 
         eventClient: EventClient = Client.getClient('Events', api_key)
 
-        detectionClient: DetectionClient = Client.getClient('Detections', api_key)
+        detectionClient: DetectionClient = Client.getClient(
+            'Detections', api_key
+        )
 
         if command == 'test-module':
             return_results(commandTestModule(sensorClient))
@@ -940,7 +986,9 @@ def main():
             return_results(commandGetDetectionRules(detectionClient, args))
 
         elif command == 'insight-get-detection-rule-events':
-            return_results(commandGetDetectionRuleEvents(detectionClient, args))
+            return_results(
+                commandGetDetectionRuleEvents(detectionClient, args)
+            )
 
         elif command == 'insight-resolve-detection':
             return_results(commandResolveDetection(detectionClient, args))
@@ -949,7 +997,9 @@ def main():
             return_results(commandCreateDetectionRule(detectionClient, args))
 
         elif command == 'insight-get-entity-summary':
-            return_results(commandGetEntitySummary(entityClient, args['entity']))
+            return_results(
+                commandGetEntitySummary(entityClient, args['entity'])
+            )
 
         elif command == 'insight-get-entity-pdns':
             return_results(commandGetEntityPdns(entityClient, args['entity']))
@@ -961,13 +1011,25 @@ def main():
             return_results(commandGetEntityFile(entityClient, args['hash']))
 
         elif command == 'insight-get-telemetry-events':
-            return_results(commandGetTelemetry(sensorClient, 'Events', encodeArgsToURL(args)))
+            return_results(
+                commandGetTelemetry(
+                    sensorClient, 'Events', encodeArgsToURL(args)
+                )
+            )
 
         elif command == 'insight-get-telemetry-network':
-            return_results(commandGetTelemetry(sensorClient, 'Network', encodeArgsToURL(args)))
+            return_results(
+                commandGetTelemetry(
+                    sensorClient, 'Network', encodeArgsToURL(args)
+                )
+            )
 
         elif command == 'insight-get-telemetry-packetstats':
-            return_results(commandGetTelemetry(sensorClient, 'Packetstats', encodeArgsToURL(args)))
+            return_results(
+                commandGetTelemetry(
+                    sensorClient, 'Packetstats', encodeArgsToURL(args)
+                )
+            )
 
     # catch exceptions
     except Exception as e:
