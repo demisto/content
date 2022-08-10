@@ -270,7 +270,6 @@ PACK_FOLDERS_TO_ID_SET_KEYS = {
     PackFolders.INDICATOR_TYPES.value: "IndicatorTypes",
     PackFolders.LISTS.value: "Lists",
     PackFolders.JOBS.value: "Jobs",
-    PackFolders.LAYOUTS.value: "Layouts",
     PackFolders.GENERIC_TYPES.value: "GenericTypes",
     PackFolders.GENERIC_FIELDS.value: "GenericFields",
     PackFolders.GENERIC_MODULES.value: "GenericModules",
@@ -315,7 +314,8 @@ class PackStatus(enum.Enum):
     FAILED_METADATA_REFORMATING = "Failed to reparse and create metadata.json when missing dependencies"
     NOT_RELEVANT_FOR_MARKETPLACE = "Pack is not relevant for current marketplace."
     CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE = "Pack changes are not relevant for current marketplace."
-    FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING = "Failed signing pack while creating dependencies zip"
+    FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING = "Failed creating dependencies zip since a depending pack or this " \
+                                               "pack failed signing or zipping"
     FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Failed uploading pack while creating dependencies zip"
 
 

@@ -1146,4 +1146,6 @@ view: |-
 tests:
 - Test XDR Playbook
 fromversion: 6.5.0
-description: This Playbook handles a true-positive incident closure for Cortex XDR - Malware Investigation.
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook handles a true-positive incident closure for Cortex XDR - Malware Investigation.

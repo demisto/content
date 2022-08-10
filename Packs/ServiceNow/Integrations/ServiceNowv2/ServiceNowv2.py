@@ -2022,7 +2022,8 @@ def get_mirroring():
         'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
         'mirror_tags': [
             params.get('comment_tag'),
-            params.get('file_tag'),
+            params.get('file_tag'),  # file tag to service now
+            params.get('file_tag_from_service_now'),
             params.get('work_notes_tag')
         ],
         'mirror_instance': demisto.integrationInstance()
@@ -2294,6 +2295,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     if file_entries:
         for file in file_entries:
             if '_mirrored_from_xsoar' not in file.get('File'):
+                file['Tags'] = [params.get('file_tag_from_service_now')]
                 entries.append(file)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
@@ -2361,17 +2363,20 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
+    closure_case = get_closure_case(params)
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
-        if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
-            # These ticket types are closed by changing their state.
-            if ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
+        if parsed_args.inc_status == IncidentStatus.DONE:
+            if closure_case and ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
                 parsed_args.data['state'] = '3'
-            elif ticket_type == INCIDENT:  # Closing incident ticket.
-                parsed_args.data['state'] = '7'
+            # These ticket types are closed by changing their state.
+            if closure_case == 'closed' and ticket_type == INCIDENT:
+                parsed_args.data['state'] = '7'  # Closing incident ticket.
+            elif closure_case == 'resolved' and ticket_type == INCIDENT:
+                parsed_args.data['state'] = '6'  # resolving incident ticket.
 
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
-        if not params.get('close_ticket'):
+        if closure_case:
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
@@ -2408,6 +2413,22 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 client.add_comment(ticket_id, ticket_type, key, text)
 
     return ticket_id
+
+
+def get_closure_case(params: Dict[str, Any]):
+    """
+    return the right incident closing states according to old and new close_ticket integration param.
+    Args:
+        params: the integration params dict.
+
+    Returns: None if no closure method is specified. otherwise returns (str) The right closure method.
+    """
+    if not params.get('close_ticket_multiple_options') == 'None':
+        return params.get('close_ticket_multiple_options')
+    elif params.get('close_ticket'):
+        return 'closed'
+    else:
+        return None
 
 
 def is_entry_type_mirror_supported(entry_type):
@@ -2743,6 +2764,16 @@ def main():
     mirror_limit = params.get('mirror_limit', '100') or '100'
     look_back = arg_to_number(params.get('look_back')) or 0
     add_custom_fields(params)
+
+    file_tag_from_service_now, file_tag_to_service_now = (
+        params.get('file_tag_from_service_now'), params.get('file_tag')
+    )
+
+    if file_tag_from_service_now == file_tag_to_service_now:
+        raise Exception(
+            f'File Entry Tag To ServiceNow and File Entry Tag '
+            f'From ServiceNow cannot be the same name [{file_tag_from_service_now}].'
+        )
 
     raise_exception = False
     try:

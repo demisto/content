@@ -3,7 +3,8 @@
     "Indicator": "0.0.0.0",
     "Type": "ip",
     "Vendor": "Google Chronicle Backstory",
-    "Score": 3
+    "Score": 3,
+    "Reliability": "B - Usually reliable"
   },
   "IP(val.Address && val.Address == obj.Address)": {
     "Address": "0.0.0.0",

@@ -197,7 +197,7 @@ def test_module(client: Client) -> str:
 
 @exception_handler
 @logger
-def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[CommandResults]:
     """Get information about a given IP address. Returns classification (benign, malicious or unknown),
         IP metadata (network owner, ASN, reverse DNS pointer, country), associated actors, activity tags,
         and raw port scan and web request information.
@@ -211,6 +211,9 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
     :return: A list of ``CommandResults`` object that is then passed to ``return_results``,
         that contains the IP information.
     :rtype: ``List[CommandResults]``
+
+    :type reliability: ``String``
+    :param reliability: string
     """
     ips = argToList(args.get("ip"), ",")
     command_results = []
@@ -255,6 +258,7 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
             score=dbot_score_int,
             integration_name="GreyNoise Community",
             malicious_description=malicious_description,
+            reliability=reliability
         )
 
         ip_standard_context = Common.IP(
@@ -294,13 +298,19 @@ def main() -> None:
     else:
         packs = []
 
-    pack_version = "1.1.2"
+    pack_version = "1.2.0"
     for pack in packs:
         if pack["name"] == "GreyNoise":
             pack_version = pack["currentVersion"]
 
     api_key = demisto.params().get("api_key")
     proxy = demisto.params().get("proxy", False)
+    reliability = demisto.params().get("integrationReliability", "B - Usually reliable")
+    reliability = reliability if reliability else DBotScoreReliability.B
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("Please provide a valid value for the Integration Reliability parameter.")
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
@@ -318,7 +328,7 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == "ip":
-            result = ip_reputation_command(client, demisto.args())
+            result = ip_reputation_command(client, demisto.args(), reliability)
             return_results(result)
 
     # Log exceptions and return errors

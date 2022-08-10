@@ -249,6 +249,32 @@ def test_taxii20_collection(mocker, taxii2_server_v20):
         assert response.json == collections.get('collections')[0]
 
 
+def test_taxii20_get_collections(mocker, taxii2_server_v20):
+    from TAXII2Server import get_server_collections_command
+
+    collections = taxii2_server_v20.get_collections()
+
+    integration_context = {
+        'collections': collections['collections']
+    }
+    result = get_server_collections_command(integration_context=integration_context)
+
+    assert result.outputs == integration_context['collections']
+
+
+def test_taxii20_get_server_info(mocker, taxii2_server_v20):
+    from TAXII2Server import get_server_info_command
+
+    integration_context = {}
+    integration_context['server_info'] = taxii2_server_v20.get_discovery_service(instance_execute=True)
+    default_url = integration_context['server_info']['default']
+    assert default_url == 'https://demisto/instance/execute/threatintel/'
+
+    result = get_server_info_command(integration_context=integration_context)
+
+    assert result.outputs == integration_context['server_info']
+
+
 def test_taxii21_collection(mocker, taxii2_server_v21):
     """
         Given

@@ -483,7 +483,7 @@ def attack_pattern_reputation_command(client, args):
             filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', name)]
             mitre_data = get_mitre_data_by_filter(client, filter_by_name)
             if not mitre_data:
-                break
+                continue
 
             value = mitre_data.get('name')
 
@@ -497,7 +497,7 @@ def attack_pattern_reputation_command(client, args):
             filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', parent)]
             mitre_data = get_mitre_data_by_filter(client, filter_by_name)
             if not mitre_data:
-                break
+                continue
             indicator_json = json.loads(str(mitre_data))
             parent_mitre_id = [external.get('external_id') for external in
                                indicator_json.get('external_references', [])
@@ -509,7 +509,7 @@ def attack_pattern_reputation_command(client, args):
             filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', sub)]
             mitre_data = get_mitre_data_by_filter(client, filter_by_name)
             if not mitre_data:
-                break
+                continue
             indicator_json = json.loads(str(mitre_data))
             sub_mitre_id = [external.get('external_id') for external in
                             indicator_json.get('external_references', [])
@@ -522,7 +522,7 @@ def attack_pattern_reputation_command(client, args):
                             Filter("type", "=", "attack-pattern")]
             mitre_data = get_mitre_data_by_filter(client, mitre_filter)
             if not mitre_data:
-                break
+                continue
 
             value = f'{parent_name}: {mitre_data.get("name")}'
 

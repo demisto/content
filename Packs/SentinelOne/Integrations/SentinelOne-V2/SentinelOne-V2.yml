@@ -1558,7 +1558,7 @@ script:
       type: String
     - contextPath: SentinelOne.Blocklist.ScopeName
       description: Name of the block list scope.
-      type: String    
+      type: String
   - arguments:
     - description: SHA1 hash to add to the Global blocklist.
       name: sha1
@@ -1625,7 +1625,7 @@ script:
       required: true
     description: Download a file fetched using th sentinelone-fetch-file command to submit the request and the sentinelone-get-activities command to get the download path.
     name: sentinelone-download-fetched-file
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.5.31797
   isfetch: true
   longRunning: false
   longRunningPort: false

@@ -2,7 +2,9 @@ id: CrowdStrike Falcon - True Positive Incident Handling
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - True Positive Incident Handling
-description: This playbook handles a CrowdStrike incident that was determined to be a true positive by the analyst. 
+description:
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook handles a CrowdStrike incident that was determined to be a true positive by the analyst.
   Actions include isolating the host, blocking the indicator by the EDR, and tagging it.
 starttaskid: '0'
 tasks:
@@ -284,7 +286,7 @@ tasks:
       indicatorsValues:
         simple: ${Indicators to block.Answers.0}
       tags:
-        simple: ${inputs.BlockTagName}
+        simple: ${inputs.BlockIOCTagName}
     separatecontext: false
     view: |-
       {
@@ -851,7 +853,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.IsolationAllowed
+              simple: inputs.AutoIsolation
             iscontext: true
           right:
             value:
@@ -920,10 +922,10 @@ tasks:
     scriptarguments:
       description:
         complex:
-          root: inputs.Description
+          root: inputs.TicketDescription
       projectKey:
         complex:
-          root: inputs.ProjectKey
+          root: inputs.TicketProjectName
       summary:
         simple: ${inputs.TicketDescription}
     separatecontext: false
