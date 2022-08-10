@@ -301,7 +301,7 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
     """
     # test mockers
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
-    mocker.patch('collect_tests.find_type_by_path', return_value=file_type)
+    mocker.patch('collect_tests.find_type', return_value=file_type)
 
     # noinspection PyTypeChecker
     _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,
