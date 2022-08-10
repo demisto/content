@@ -3024,10 +3024,10 @@ def test_add_tag_to_endpoint_command(requests_mock, args, expected_filters):
             [{'field': 'platform', 'operator': 'in', 'value': ['linux']}]
         ),
         (
-            {'endpoint_ids': '1,2', 'tag': 'test', 'isolate': 'isolated', 'first_seen_gte': '3 days'},
+            {'endpoint_ids': '1,2', 'tag': 'test', 'isolate': 'isolated', 'alias_name': 'alias_name'},
             [
-                {'field': 'isolate', 'operator': 'in', 'value': ['isolated']},
-                {'field': 'first_seen', 'operator': 'gte', 'value': 1658740157000}
+                {'field': 'alias', 'operator': 'in', 'value': ['alias_name']},
+                {'field': 'isolate', 'operator': 'in', 'value': ['isolated']}
             ]
         )
     ]
@@ -3036,7 +3036,7 @@ def test_remove_tag_from_endpoint_command(requests_mock, args, expected_filters)
     """
     Given:
       - command arguments
-      - expected filters as a body rquest
+      - expected filters as a body request
 
     When:
       - executing the core-add-tag-endpoint command
