@@ -1170,14 +1170,12 @@ def create_address_command():
     create_address_request(address_name, address, mask, fqdn)
 
     if address:
-        contents.append({
+        address_dict = {
             'Name': address_name,
             'IPAddress': address
-        })
-        address_context.append({
-            'Name': address_name,
-            'IPAddress': address
-        })
+        }
+        contents.append(address_dict)
+        address_context.append(address_dict)
     elif fqdn:
         contents.append({
             'Name': address_name,
