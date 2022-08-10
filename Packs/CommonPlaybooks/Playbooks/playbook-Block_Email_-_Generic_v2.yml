@@ -90,7 +90,8 @@ tasks:
       - "2"
     scriptarguments:
       EmailToBlock:
-        simple: ${inputs.EmailToBlock}
+        complex:
+          root: inputs.EmailToBlock
     separatecontext: true
     loop:
       iscommand: false
