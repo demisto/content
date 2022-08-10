@@ -3469,7 +3469,7 @@ def add_tag_to_endpoints_command(client: CoreClient, args: Dict):
         (
             'endpoint_id_list', 'dist_name', 'ip_list', 'group_name', 'platform', 'alias_name',
             'isolate', 'hostname', 'status', 'first_seen_gte', 'first_seen_lte', 'last_seen_gte', 'last_seen_lte'
-         )
+        )
     ):
         endpoint_id_list = argToList(args.get('endpoint_id_list'))
         dist_name = argToList(args.get('dist_name'))

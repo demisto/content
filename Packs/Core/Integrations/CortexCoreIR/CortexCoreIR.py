@@ -441,7 +441,7 @@ def main():  # pragma: no cover
             return_results(get_dynamic_analysis_command(client, args))
 
         elif command == 'core-add-endpoint-tag':
-            return_results(add_endpoint_tag_command(client, args))
+            return_results(add_tag_to_endpoints_command(client, args))
 
         elif command == 'core-remove-endpoint-tag':
             return_results(remove_tag_from_endpoints_command(client, args))
