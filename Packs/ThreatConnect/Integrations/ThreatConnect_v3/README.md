@@ -1139,39 +1139,9 @@ Updates a group.
 | TC.Group.SecurityLevel | string | The security label of the group. | 
 | TC.Group.ID | string | The ID of the group. | 
 
-## Breaking changes from the previous version of this integration - ThreatConnect v3
-%%FILL HERE%%
-The following sections list the changes in this version.
-
-### Commands
-#### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
-
-### Arguments
-#### The following arguments were removed in this version:
-
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
-* *argumentName* - this argument was replaced by XXX.
-
 #### The behavior of the following arguments was changed:
 
 In the *commandName* command:
 * *argumentName* - is now required.
 * *argumentName* - supports now comma separated values.
 
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
