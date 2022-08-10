@@ -1177,14 +1177,12 @@ def create_address_command():
         contents.append(address_dict)
         address_context.append(address_dict)
     elif fqdn:
-        contents.append({
+        fqdn_dict = {
             'Name': address_name,
             'FQDN': fqdn
-        })
-        address_context.append({
-            'Name': address_name,
-            'FQDN': fqdn
-        })
+        }
+        contents.append(fqdn_dict)
+        address_context.append(fqdn_dict)
 
     context['Fortigate.Address(val.Name && val.Name === obj.Name)'] = address_context
 
