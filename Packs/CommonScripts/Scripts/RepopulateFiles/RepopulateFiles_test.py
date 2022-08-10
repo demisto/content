@@ -1,3 +1,4 @@
+import demistomock as demisto
 from RepopulateFiles import parse_attachment_entries, find_attachment_entry, main
 from unittest import mock
 
@@ -64,3 +65,56 @@ class TestRepopulateFiles:
     def test_main_no_entries(self, mocker):
         mocker.patch('RepopulateFiles.demisto.executeCommand', return_value=None)
         main()
+
+    def test_main_incident_attachments(self, mocker):
+        mocker.patch(
+            'RepopulateFiles.demisto.executeCommand',
+            return_value=[
+                {
+                    'Type': 3,
+                    'Contents': '',
+                    'ContentsFormat': '',
+                    'ID': '3@202',
+                    'File': 'test.txt',
+                    'FileID': '461760d2-0962-40b4-84ac-667f6d662efa',
+                    'FileMetadata': {
+                        'type': 'txt',
+                        'size': 4,
+                        'md5': '74b87337454200d4d33f80c4663dc5e5',
+                        'sha1': '70c881d4a26984ddce795f6f71817c9cf4480e79',
+                        'sha256': '61be55a8e2f6b4e172338bddf184d6dbee29c98853e0a0485ecee7f27b9af0b4',
+                        'sha512': '1b86355f13a7f0b90c8b6053c0254399994dfbb3843e08d603e292ca13b8f672'
+                        'ed5e58791c10f3e36daec9699cc2fbdc88b4fe116efa7fce016938b787043818',
+                        'ssdeep': '3:tt:j',
+                        'isMediaFile': False,
+                        'info': 'ASCII text, with no line terminators'}}])
+
+        mocker.patch('RepopulateFiles.demisto.incident',
+                     return_value={'attachment': [{'description': '',
+                                                   'isTempPath': False,
+                                                   'name': 'test.txt',
+                                                   'path': '202_c046d6af-e9d2-4308-8c35-f487a520de5f_test.txt',
+                                                   'showMediaFile': False,
+                                                   'type': 'text/plain'}]})
+
+        mocker.patch.object(demisto, 'results')
+
+        main()
+        assert demisto.results.call_count == 1
+        results = demisto.results.call_args[0][0]
+
+        contents = [{
+            'Name': 'test.txt',
+            'MD5': '74b87337454200d4d33f80c4663dc5e5',
+            'SHA1': '70c881d4a26984ddce795f6f71817c9cf4480e79',
+            'SHA256': '61be55a8e2f6b4e172338bddf184d6dbee29c98853e0a0485ecee7f27b9af0b4',
+            'SHA512': '1b86355f13a7f0b90c8b6053c0254399994dfbb3843e08d603e292ca13b8f672'
+                      'ed5e58791c10f3e36daec9699cc2fbdc88b4fe116efa7fce016938b787043818',
+            'SSDeep': '3:tt:j',
+            'Size': 4,
+            'Info': 'ASCII text, with no line terminators',
+            'Type': 'txt',
+            'Extension': 'txt',
+            'EntryID': '3@202'
+        }]
+        assert results['Contents'] == contents
