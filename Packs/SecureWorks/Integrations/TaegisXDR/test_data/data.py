@@ -18,7 +18,8 @@ TAEGIS_INVESTIGATION = {
     "priority": 2,
     "service_desk_id": "",
     "service_desk_type": "",
-    "status": "Open"
+    "status": "Open",
+    "alerts2": []
 }
 
 TAEGIS_PLAYBOOK_EXECUTION = {

@@ -334,11 +334,26 @@ def fetch_incidents(client: Client, max_fetch: int = 15):
             tenant_id
             description
             key_findings
-            alerts {
                 id
                 alert_type
                 severity
                 message
+            alerts2 {
+                id
+                suppressed
+                status
+                priority {
+                    value
+                }
+                metadata {
+                    title
+                    description
+                    created_at {
+                        seconds
+                    }
+                    severity
+                    confidence
+                }
             }
             archived_at
             created_at
@@ -468,7 +483,23 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         tenant_id
         description
         key_findings
-        alerts {
+        alerts2 {
+            id
+            suppressed
+            status
+            priority {
+                value
+            }
+            metadata {
+                title
+                description
+                created_at {
+                    seconds
+                }
+                severity
+                confidence
+            }
+        }
             id
             alert_type
             severity
