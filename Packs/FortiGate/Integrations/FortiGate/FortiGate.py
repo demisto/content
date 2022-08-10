@@ -1226,14 +1226,12 @@ def delete_address_command():
 
     delete_address_request(name)
 
-    contents.append({
+    address_dict = {
         'Name': name,
         'Deleted': True
-    })
-    address_context.append({
-        'Name': name,
-        'Deleted': True
-    })
+    }
+    contents.append(address_dict)
+    address_context.append(address_dict)
 
     context['Fortigate.Address(val.Name && val.Name === obj.Name)'] = address_context
 
