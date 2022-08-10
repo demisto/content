@@ -305,6 +305,11 @@ def test_only_collect_pack_args():
     assert ONLY_COLLECT_PACK_TYPES == ONLY_INSTALL_PACK_FILE_TYPES
 
 
+def test_only_collect_and_ignore_lists_are_disjoint():
+    from constants import ONLY_INSTALL_PACK_FILE_TYPES, IGNORED_FILE_TYPES
+    assert ONLY_INSTALL_PACK_FILE_TYPES.isdisjoint(IGNORED_FILE_TYPES)
+
+
 @pytest.mark.parametrize('file_type', ONLY_COLLECT_PACK_TYPES)
 def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileType):
     """
