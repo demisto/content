@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, Iterable, Optional, Any
+from typing import Any, Callable, Iterable, Optional
 
 import collect_tests
 import pytest
@@ -79,6 +79,9 @@ class MockerCases:
     J = CollectTestsMocker(TEST_DATA / 'J')
 
 
+ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
+
+
 def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, collector_class: Callable,
           expected_tests: Iterable[str], expected_packs: Iterable[str], expected_machines: Optional[Iterable[Machine]],
           collector_class_args: tuple[Any, ...] = ()):
@@ -113,12 +116,13 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
         assert False, description
 
     if collected is None:
-        assert False, 'should have collected something'
+        assert False, f'should have collected something: {expected_tests=}, {expected_packs=}, {expected_machines=}'
 
     if expected_tests is not None:
         assert collected.tests == set(expected_tests)
-    if expected_packs is not None:
-        assert collected.packs == set(expected_packs)
+
+    assert collected.packs == set(expected_packs or ()) | set(ALWAYS_INSTALLED_PACKS)
+
     if expected_machines is not None:
         assert set(collected.machines) == set(expected_machines)
 
@@ -134,6 +138,7 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
 
 
 NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
+
 NIGHTLY_TESTS: tuple = (
     (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
     (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
@@ -181,7 +186,8 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
 @pytest.mark.parametrize(
     'case_mocker,expected_tests,expected_packs,expected_machines,collector_class_args,mocked_changed_files',
     # Empty content folder: expecting xsoar sanity tests to be collected
-    ((MockerCases.empty, XSOAR_SANITY_TEST_NAMES, (), None, XSOAR_BRANCH_ARGS, ('.gitlab/helper_functions.sh',)),
+    ((MockerCases.empty, XSOAR_SANITY_TEST_NAMES, ('Whois',), None, XSOAR_BRANCH_ARGS,
+      ('.gitlab/helper_functions.sh',)),
 
      # Empty content folder: expecting XSIAM collector to not collect anything
      (MockerCases.empty, (), (), None, XSIAM_BRANCH_ARGS, ()),
