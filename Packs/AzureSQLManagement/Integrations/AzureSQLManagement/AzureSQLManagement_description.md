@@ -5,9 +5,9 @@ To use a self-configured Azure application, you need to add a [new Azure App Reg
 
 The application must have *user_impersonation* permission and must allow public client flows (found under the **Authentication** section of the app).
 
-## Authentication Using the  User-Authentication Flow (recommended)
+## Authentication Using the User-Authentication Flow (recommended)
 
-Follow these steps for a self-deployed configuration:
+Follow these steps for a User-Authentication configuration:
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
 2. choose the 'User Auth' option in the ***Authentication Type*** parameter.

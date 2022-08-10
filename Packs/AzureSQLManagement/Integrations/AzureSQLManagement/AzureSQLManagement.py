@@ -427,10 +427,9 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[
 def test_connection(client: Client) -> CommandResults:
     if demisto.params().get('auth_type') == 'Device':
         client.azure_sql_servers_list()  # If fails, MicrosoftApiModule returns an error
-        return CommandResults(readable_output='✅ Success!')
     else:
         client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
-        return CommandResults(readable_output='✅ Success!')
+    return CommandResults(readable_output='✅ Success!')
 
 
 @logger
