@@ -139,9 +139,9 @@ def init_driver_and_display(width: int, height: int, offline_mode=False, include
     """
     demisto.debug(f'Creating chrome driver. Mode: {"OFFLINE" if offline_mode else "ONLINE"}')
     try:
+        os.environ['DISPLAY'] = ':0'
         display = None
         if include_url:
-            os.environ['DISPLAY'] = ':0'
             display = Display(visible=0, size=(width, height), backend='xvnc')
             display.start()
 
