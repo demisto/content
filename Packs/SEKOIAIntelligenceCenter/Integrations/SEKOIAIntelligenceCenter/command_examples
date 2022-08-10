@@ -1,0 +1,3 @@
+!GetObservable value="eicar@sekoia.io" type="email-addr"
+!GetIndicator value="eicar@sekoia.io" type="email-addr"
+!GetIndicatorContext value="eicar@sekoia.io" type="email-addr"

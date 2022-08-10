@@ -1,0 +1,90 @@
+id: Cyble Intel Alert
+version: -1
+name: Cyble Intel Alert
+description: This is a playbook which will handle the alerts coming from the Cyble Events service
+fromversion: 6.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 505982cf-c2dc-471b-86c5-5bc086375be5
+    type: start
+    task:
+      id: 505982cf-c2dc-471b-86c5-5bc086375be5
+      version: -1
+      name: ''
+      description: ''
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 6638e49c-db39-495d-851d-4a85133f87c5
+    type: regular
+    task:
+      id: 6638e49c-db39-495d-851d-4a85133f87c5
+      version: -1
+      name: cyble-vision-fetch-event-detail
+      description: Fetch Incident detail based on event type and event ID
+      script: '|||cyble-vision-fetch-event-detail'
+      type: regular
+      iscommand: true
+      brand: ''
+    scriptarguments:
+      event_id:
+        simple: ${incident.eventid}
+      event_type:
+        simple: ${incident.eventtype}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: details
+      output:
+        simple: ${CybleEvents.Events}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 345,
+        "width": 480,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

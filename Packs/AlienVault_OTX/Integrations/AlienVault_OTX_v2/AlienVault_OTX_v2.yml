@@ -23,7 +23,8 @@ configuration:
   name: max_indicator_relationships
   required: false
   type: 0
-  additionalinfo: If not provided, no relationships will be added. This field is relevant only for url, file hash and ip / domain indicators.
+  additionalinfo: If not provided, no relationships will be added. This field is relevant
+    only for url, file hash and ip / domain indicators.
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -618,7 +619,7 @@ script:
     - contextPath: URL.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: false
   longRunning: false
   longRunningPort: false

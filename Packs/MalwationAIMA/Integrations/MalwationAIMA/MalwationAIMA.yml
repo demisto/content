@@ -1,0 +1,299 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: MalwationAIMA
+  version: -1
+configuration:
+- defaultvalue: https://aima.malwation.com
+  display: Server URL (e.g. https://aima.malwation.com)
+  name: url
+  required: true
+  type: 0
+- display: AIMA API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: It is additional for MALWATION Content Analysis Platform.
+  display: CAP API Key
+  hidden: false
+  name: cap_apikey
+  required: false
+  type: 4
+description: Malwation AIMA malware analysis sandboxing.
+display: Malwation AIMA
+name: MalwationAIMA
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: win7x64
+      description: Choose what environment you want to run your submission.
+      isArray: false
+      name: environment
+      predefined:
+      - win7x64
+      - win10x64
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Privacy of the submission.
+      isArray: false
+      name: isPublic
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: Entry ID of the file to submit.
+      isArray: false
+      name: entry_id
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '1'
+      description: Duration of the submission analysis.
+      isArray: false
+      name: timeout
+      predefined:
+      - '1'
+      - '2'
+      - '5'
+      - '8'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Enable human simulation.
+      isArray: false
+      name: mouse_simulation
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Malware Config Extractor
+      isArray: false
+      name: config_extractor
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Https inspection to read encrypted traffic.
+      isArray: false
+      name: https_inspection
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If you want to access MemProcFS Module enable this metafield.
+      isArray: false
+      name: full_memory_dump
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Enable Internet Connection
+      isArray: false
+      name: enable_net
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: desktop
+      description: The working path of the submission.
+      isArray: false
+      name: work_path
+      predefined:
+      - desktop
+      - appdata
+      - windows
+      - temp
+      required: false
+      secret: false
+    - default: false
+      description: Password of the zip file. Do not use if archive has no password.
+      isArray: false
+      name: zip_pass
+      required: false
+      secret: false
+    - default: false
+      description: 'Name of the sample in the zip file. '
+      isArray: false
+      name: file_from_zip
+      required: false
+      secret: false
+    deprecated: false
+    description: Submits a sample to AIMA for analysis.
+    execution: false
+    name: aima-upload-sample
+    outputs:
+    - contextPath: AIMA.Analysis.UUID
+      description: UUID of sample.
+      type: String
+    - contextPath: AIMA.Analysis.URL
+      description: URL of analysis of sample.
+      type: String
+  - arguments:
+    - default: false
+      description: UUID of the submission.
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrive the analysis result from AIMA Sandbox.
+    execution: false
+    name: aima-get-result
+    outputs:
+    - contextPath: AIMA.Result.STATUS
+      description: The status of the submission scanning process.
+      type: String
+    - contextPath: AIMA.Result.LEVEL
+      description: Threat Level of the scanned file. (malicious, suspicious or informative)
+      type: String
+    - contextPath: AIMA.Result.URL
+      description: The result page url of the submission.
+      type: String
+    - contextPath: AIMA.Result.MD5
+      description: The md5 hash of the submission.
+      type: String
+    - contextPath: AIMA.Result.INFO
+      description: Contains the file name, scan process status and public status.
+      type: String
+    - contextPath: AIMA.Result.SHA1
+      description: The sha1 hash of the submission.
+      type: String
+    - contextPath: AIMA.Result.SHA256
+      description: The sha256 hash of the submission.
+      type: String
+    - contextPath: AIMA.Result.ID
+      description: The ID of the submission
+      type: String
+  - arguments:
+    - default: false
+      description: The entry id of the file.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Submits sample to Malwation CAP for static analysis.
+    execution: false
+    name: aima-cap-static-upload-sample
+    outputs:
+    - contextPath: CAP.Static.UUID
+      description: The uuid value of the submission.
+      type: String
+  - arguments:
+    - default: false
+      description: The Entry id of the file.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Submits sample to Malwation CAP for mav analysis.
+    execution: false
+    name: aima-cap-mav-upload-sample
+    outputs:
+    - contextPath: CAP.Mav.UUID
+      description: The uuid value of the submission.
+      type: String
+  - arguments:
+    - default: false
+      description: The uuid of the file.
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrive static analysis result from Malwation CAP.
+    execution: false
+    name: aima-cap-static-get-submission
+    outputs:
+    - contextPath: CAP.Static.SCORE
+      description: Thread level of the scanned file. (malicious, suspicious or informative)
+      type: String
+    - contextPath: CAP.Static.WEIGHT
+      description: The weight score of detection.
+      type: Number
+    - contextPath: CAP.Static.STATUS
+      description: The status of the submission scanning process.
+      type: String
+    - contextPath: CAP.Static.YARA
+      description: The matched yara rules with sample.
+      type: String
+    - contextPath: CAP.Static.ENTROPY
+      description: The entropy value of sample.
+      type: Number
+  - arguments:
+    - default: false
+      description: The uuid value of submission
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrive mav analysis result from Malwation CAP.
+    execution: false
+    name: aima-cap-mav-get-submission
+    outputs:
+    - contextPath: CAP.Mav.COUNT
+      description: The count of the detection by engines.
+      type: Number
+    - contextPath: CAP.Mav.SCORE
+      description: Threat Level of the scanned file (malicious, suspicious or informative)
+      type: String
+    - contextPath: CAP.Mav.DETECTIONS
+      description: The results of detections by engines.
+      type: Number
+    - contextPath: CAP.Mav.STATUS
+      description: The status of the submission scanning process.
+      type: String
+  dockerimage: demisto/python3:3.10.4.30607
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

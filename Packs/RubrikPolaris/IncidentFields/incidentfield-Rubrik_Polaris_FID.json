@@ -1,0 +1,31 @@
+{
+    "id": "incident_rubrikpolarisfid",
+    "version": -1,
+    "modified": "2021-12-02T17:08:52.54947744+05:30",
+    "name": "Rubrik Polaris FID",
+    "ownerOnly": false,
+    "description": "The FID of the event.",
+    "cliName": "rubrikpolarisfid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Rubrik Radar"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -3,17 +3,17 @@ commonfields:
   id: EDL
   version: -1
 configuration:
-- additionalinfo: Enabling this will prevent automatic list refresh.
+- additionalinfo: Enabling this prevents automatic list refresh.
   display: Update list on demand only
   name: on_demand
   required: false
   type: 8
-- additionalinfo: The query to run to update the indicators list. To view expected results, you can run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
+- additionalinfo: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
   display: Indicator Query
   name: indicators_query
   required: false
   type: 0
-- additionalinfo: The format in which the list will be exported in.
+- additionalinfo: The format of the exported list.
   defaultvalue: PAN-OS (text)
   display: Outbound Format
   name: format
@@ -25,7 +25,7 @@ configuration:
   - Symantec ProxySG
   required: false
   type: 15
-- additionalinfo: For use with JSON and CSV formats - select specific XSOAR fields to export (comma separated list). If given the value 'all' - all XSOAR fields will be exported (in large quantities this can cause a performance issue). If left empty - only value and type will be exported.
+- additionalinfo: For use with JSON and CSV formats - select specific XSOAR fields to export (comma separated list). If given the value 'all' - all XSOAR fields are exported (in large quantities this can cause a performance issue). If left empty - only value and type are exported.
   display: Exported Fields
   name: fields_filter
   required: false
@@ -37,13 +37,13 @@ configuration:
   name: edl_size
   required: true
   type: 0
-- additionalinfo: How often to refresh the list (e.g., 5 minutes, 12 hours, 7 days, to less than 1 minute. 3 months, 1 year). For performance reasons, we do not recommend setting this value less than 1 minute.
+- additionalinfo: How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.
   defaultvalue: 5 minutes
   display: Refresh Rate
   name: cache_refresh_rate
   required: false
   type: 0
-- additionalinfo: Will run the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
+- additionalinfo: Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
   required: true
@@ -63,28 +63,28 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: If selected, the comment "# Empty list" will be added to an empty list.
+- additionalinfo: If selected, the comment "# Empty list" is added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
   hidden: false
   name: add_comment_if_empty
   required: false
   type: 8
-- additionalinfo: If selected, ports in URLs will be removed. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
+- additionalinfo: If selected, ports in URLs are removed. For example, 'www.example.com:9999/path' becomes 'www.example.com/path'.
   defaultvalue: 'true'
   display: Strip ports from URLs
   hidden: false
   name: url_port_stripping
   required: false
   type: 8
-- additionalinfo: If selected, will strip the protocol from URLs (http/https).
+- additionalinfo: If selected, strips the protocol from URLs (http/https).
   defaultvalue: 'true'
   display: Strip protocols from URLs
   hidden: false
   name: url_protocol_stripping
   required: false
   type: 8
-- additionalinfo: If selected, URLs will be truncated to no more than 254 characters.
+- additionalinfo: If selected, URLs are truncated to no more than 254 characters.
   defaultvalue: 'false'
   display: Truncate URL length
   hidden: false
@@ -112,7 +112,21 @@ configuration:
   - To Ranges
   required: false
   type: 15
-- additionalinfo: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten.
+- additionalinfo: 'CIDRs with a lower network prefix bits number are not included. For example - if the number is 8, then 0.0.0.0/2 is excluded from the list.'
+  defaultvalue: 8
+  display: 'Maximum CIDR network prefix bits size'
+  hidden: false
+  name: maximum_cidr_size
+  required: false
+  type: 0
+- additionalinfo: 'Option to remove top level domainGlobs from the list. For example - *.com.'
+  defaultvalue: 'false'
+  display: 'Exclude top level domainGlobs'
+  hidden: false
+  name: no_wildcard_tld
+  required: false
+  type: 8
+- additionalinfo: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
   display: "PAN-OS: drop invalid URL entries"
   hidden: false
   name: drop_invalids
@@ -141,13 +155,13 @@ configuration:
   name: category_default
   required: false
   type: 0
-- additionalinfo: For use with Symantec ProxySG format - set the categories that should be listed in the output (comma separated list). If not set, will list all existing categories.
+- additionalinfo: For use with Symantec ProxySG format - set the categories that should be listed in the output (comma separated list). If not set, lists all existing categories.
   display: "Symantec ProxySG: Listed Categories"
   hidden: false
   name: category_attribute
   required: false
   type: 0
-- additionalinfo: If selected, CSV format will appear in a textual webpage instead of initiating a file download.
+- additionalinfo: If selected, CSV format appears in a textual webpage instead of initiating a file download.
   display: Show CSV format as Text
   hidden: false
   name: csv_text
@@ -166,13 +180,13 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- additionalinfo: 'NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by XSOAR Support.'
+- additionalinfo: 'NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by Cortex XSOAR Support.'
   display: NGINX Global Directives
   hidden: false
   name: nginx_global_directives
   required: false
   type: 0
-- additionalinfo: NGINX server configuration to be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by XSOAR Support.
+- additionalinfo: NGINX server configuration to be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support.
   display: NGINX Server Conf
   hidden: false
   name: nginx_server_conf
@@ -184,12 +198,14 @@ configuration:
   name: timeout
   required: false
   type: 0
-- additionalinfo: 'When enabled, the integration will query the server using full queries (will overwrite the "Exported Fields" parameter). Advanced configuration to be used only if instructed by XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code.'
+- additionalinfo: 'When enabled, the integration queries the server using full queries (overwrites the "Exported Fields" parameter). Advanced configuration to be used only if instructed by Cortex XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code.'
   display: 'Advanced: Use Legacy Queries'
   hidden: false
   name: use_legacy_query
   required: false
   type: 8
+
+
 description: Use the Generic Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
 display: Generic Export Indicators Service
@@ -199,7 +215,7 @@ script:
   - name: edl-update
     arguments:
     - default: false
-      description: The query to run to update the indicators list. To view expected results, you can run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
+      description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
       isArray: false
       name: query
       required: false
@@ -207,7 +223,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: PAN-OS (text)
-      description: The format in which the list will be exported in.
+      description: The format of the exported list.
       isArray: false
       name: format
       predefined:
@@ -251,7 +267,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: If selected, ports in URLs will be removed. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
+      description: If selected, ports in URLs are removed. For example, 'www.example.com:9999/path' becomes 'www.example.com/path'.
       isArray: false
       name: url_port_stripping
       predefined:
@@ -262,7 +278,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: If selected, will strip the protocol from URLs (http/https).
+      description: If selected, strips the protocol from URLs (http/https).
       isArray: false
       name: url_protocol_stripping
       predefined:
@@ -273,7 +289,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten.
+      description: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
       isArray: false
       name: drop_invalids
       predefined:
@@ -301,7 +317,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, will list all existing categories.
+      description: For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, lists all existing categories.
       isArray: false
       name: category_attribute
       required: false
@@ -309,7 +325,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: If selected, CSV format will appear in a textual webpage instead of initiating a file download.
+      description: If selected, CSV format appears in a textual webpage instead of initiating a file download.
       isArray: false
       name: csv_text
       predefined:
@@ -334,7 +350,7 @@ script:
   - name: export-indicators-list-update
     arguments:
     - default: false
-      description: The query to run to update the indicators list. To view expected results, you can run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
+      description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
       isArray: false
       name: query
       required: false
@@ -342,7 +358,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: PAN-OS (text)
-      description: The format in which the list will be exported in.
+      description: The format of the exported list.
       isArray: false
       name: format
       predefined:
@@ -386,7 +402,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: If selected, ports in URLs will be removed. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
+      description: If selected, ports in URLs are removed. For example, 'www.example.com:9999/path' becomes 'www.example.com/path'.
       isArray: false
       name: url_port_stripping
       predefined:
@@ -397,7 +413,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: If selected, will strip the protocol from URLs (http/https).
+      description: If selected, strips the protocol from URLs (http/https).
       isArray: false
       name: url_protocol_stripping
       predefined:
@@ -408,7 +424,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten.
+      description: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
       isArray: false
       name: drop_invalids
       predefined:
@@ -436,7 +452,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, will list all existing categories.
+      description: For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, lists all existing categories.
       isArray: false
       name: category_attribute
       required: false
@@ -444,7 +460,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: If selected, CSV format will appear in a textual webpage instead of initiating a file download.
+      description: If selected, CSV format appears in a textual webpage instead of initiating a file download.
       isArray: false
       name: csv_text
       predefined:
@@ -466,7 +482,7 @@ script:
     deprecated: false
     description: Updates values stored in the List (only available On-Demand).
     execution: false
-  dockerimage: demisto/flask-nginx:1.0.0.23674
+  dockerimage: demisto/flask-nginx:1.0.0.32599
   feed: false
   isfetch: false
   longRunning: true

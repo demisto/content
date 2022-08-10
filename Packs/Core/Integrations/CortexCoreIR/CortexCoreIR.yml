@@ -296,6 +296,9 @@ script:
       - uninstalled
       required: false
       secret: false
+    - name: username
+      description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
+      isArray: true
     deprecated: false
     description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
     execution: false
@@ -1983,6 +1986,12 @@ script:
     - contextPath: Core.ScriptResult.results.retention_date
       description: Timestamp in which the retrieved files will be deleted from the server.
       type: Date
+    - contextPath: Core.ScriptResult.results.command
+      description: The command that was executed by the script.
+      type: String
+    - contextPath: Core.ScriptResult.results.command_output
+      description: The output of the command executed by the script.
+      type: array
   - arguments:
     - default: false
       description: Action ID retrieved from the core-run-script command.
@@ -2424,13 +2433,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'ENABLED'
+      defaultValue: ENABLED
       description: Status of exclusion. default value = ENABLED
       isArray: false
       name: status
       predefined:
-      - 'ENABLED'
-      - 'DISABLED'
+      - ENABLED
+      - DISABLED
       required: false
       secret: false
     deprecated: false
@@ -3082,6 +3091,162 @@ script:
     - contextPath: Core.DynamicAnalysis.osSpawnerSigner
       description: ''
       type: String
+  - arguments:
+    - default: false
+      description: The sha256 of a file.
+      isArray: true
+      name: sha256
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a file, identified by sha256.
+    execution: false
+    hidden: false
+    name: core-get-hash-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Hash.value
+      description: Whether the hash is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.global_prevalence.value
+      description: The global prevalence of the hash.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.local_prevalence.value
+      description: The local prevalence of the hash.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.prevalence.value
+      description: The prevalence of the hash.
+      type: Number
+  - arguments:
+    - default: false
+      description: The IP address.
+      isArray: true
+      name: ip_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of an ip, identified by ip_address.
+    execution: false
+    hidden: false
+    name: core-get-IP-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Ip.value
+      description: Whether the IP address is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Ip.data.global_prevalence.value
+      description: The global prevalence of the IP.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Ip.data.local_prevalence.value
+      description: The local prevalence of the IP.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Ip.data.prevalence.value
+      description: The prevalence of the IP.
+      type: Number
+  - arguments:
+    - default: false
+      description: The domain name.
+      isArray: true
+      name: domain_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a domain, identified by domain_name.
+    execution: false
+    hidden: false
+    name: core-get-domain-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Domain.value
+      description: Whether the domain is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Domain.data.global_prevalence.value
+      description: The global prevalence of the domain.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Domain.data.local_prevalence.value
+      description: The local prevalence of the domain.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Domain.data.prevalence.value
+      description: The prevalence of the domain.
+      type: Number
+  - arguments:
+    - default: false
+      description: The process name.
+      isArray: true
+      name: process_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a process, identified by process_name.
+    execution: false
+    hidden: false
+    name: core-get-process-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Process.value
+      description: Whether the process is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Process.data.global_prevalence.value
+      description: The global prevalence of the process.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Process.data.local_prevalence.value
+      description: The local prevalence of the process.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Process.data.prevalence.value
+      description: The prevalence of the process.
+      type: Number
+  - arguments:
+    - default: false
+      description: The key name of a registry path.
+      isArray: true
+      name: key_name
+      required: true
+      secret: false
+    - default: false
+      description: The value name of a registry path.
+      isArray: true
+      name: value_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a registry_path, identified by key_name, value_name.
+    execution: false
+    hidden: false
+    name: core-get-registry-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Registry.value
+      description: Whether the registry is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Registry.data.global_prevalence.value
+      description: The global prevalence of the registry.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Registry.data.local_prevalence.value
+      description: The local prevalence of the registry.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Registry.data.prevalence.value
+      description: The prevalence of the registry.
+      type: Number
+  - arguments:
+    - default: false
+      description: The process command line.
+      isArray: true
+      name: process_command_line
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a process_command_line, identified by process_command_line.
+    execution: false
+    hidden: false
+    name: core-get-cmd-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Cmd.value
+      description: Whether the CMD is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Cmd.data.global_prevalence.value
+      description: The global prevalence of the CMD.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Cmd.data.local_prevalence.value
+      description: The local prevalence of the CDM.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Cmd.data.prevalence.value
+      description: The prevalence of the Cmd.
+      type: Number
   feed: false
   isfetch: false
   longRunning: false
@@ -3090,7 +3255,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.5.31797
 tests:
 - No tests
 fromversion: 6.2.0

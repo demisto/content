@@ -1,4 +1,7 @@
 {
+    "associatedTypes": [
+        "Domain"
+    ],
     "associatedToAll": false,
     "caseInsensitive": false,
     "cliName": "gibtargetbrand",

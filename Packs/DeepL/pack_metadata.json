@@ -2,7 +2,7 @@
     "name": "DeepL",
     "description": "Uses DeepL (https://www.deepl.com/) to translate text or files",
     "support": "community",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.2.0",
     "author": "Harri Ruuttila",
     "url": "",
     "email": "",
@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "Hruuttila"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

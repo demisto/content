@@ -77,12 +77,13 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Select if sample is a URL or a file
+      description: Select if sample is a URL, file, or a file that should be fetched from a URL
       isArray: false
       name: kind
       predefined:
       - url
       - file
+      - fetch
       required: true
       secret: false
     - auto: PREDEFINED

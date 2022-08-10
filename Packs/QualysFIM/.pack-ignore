@@ -15,3 +15,6 @@ ignore=IF100
 
 [file:incidentfield-Qualys_FIM_Event_Type.json]
 ignore=IF100
+
+[file:classifier-QualysFim_Classifier.json]
+ignore=BA101

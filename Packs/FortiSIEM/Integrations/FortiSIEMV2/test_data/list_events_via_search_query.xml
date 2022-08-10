@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<queryResult errorCode="0" queryId="47196" start="0" totalCount="1">
+    <events>
+        <event>
+            <custId>1</custId>
+            <dataStr/>
+            <attributes>
+                <attribute name="eventType">ASA-Built-Conn</attribute>
+                <attribute name="recvBytes64">0</attribute>
+                <attribute name="totBytes64">0</attribute>
+                <attribute name="srcSnmpIntfIndex">29034</attribute>
+                <attribute name="destSnmpIntfIndex">29054</attribute>
+                <attribute name="phRecvTime">Mon Dec 06 02:32:48 IST 2021</attribute>
+                <attribute name="relayDevIpAddr">192.168.1.1</attribute>
+                <attribute name="reptDevIpAddr">192.168.1.1</attribute>
+                <attribute name="reptDevName">Palo Alto</attribute>
+                <attribute name="customer">Super</attribute>
+                <attribute name="totFlows">0</attribute>
+                <attribute name="eventId">9071234812100595667</attribute>
+                <attribute name="phEventCategory">4 (Traffic)</attribute>
+                <attribute name="eventName">Built connection (via netflow)</attribute>
+                <attribute name="eventParsedOk">1</attribute>
+                <attribute name="ipConnId">0</attribute>
+                <attribute name="extEventRecvProto">NetFlow</attribute>
+                <attribute name="srcIpAddr">192.168.1.1</attribute>
+                <attribute name="destIpAddr">192.168.1.1</attribute>
+                <attribute name="recvPkts64">0</attribute>
+                <attribute name="totPkts64">0</attribute>
+                <attribute name="reptVendor">Cisco</attribute>
+                <attribute name="reptModel">ASA</attribute>
+                <attribute name="ipProto">17 (UDP)</attribute>
+                <attribute name="srcIpPort">53</attribute>
+                <attribute name="destIpPort">58629</attribute>
+            </attributes>
+            <eventType>ASA-Built-Conn</eventType>
+            <id>9071234812100595667</id>
+            <index>0</index>
+            <nid>9071234812100595667</nid>
+            <receiveTime>2021-12-06T02:32:48+02:00</receiveTime>
+        </event>
+    </events>
+</queryResult>

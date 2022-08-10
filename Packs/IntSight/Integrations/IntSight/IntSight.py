@@ -1073,7 +1073,7 @@ def get_mssp_sub_accounts():
 
     account_ids = [i["ID"] for i in accounts]
     if MSSP_ACCOUNT_ID not in account_ids:
-        demisto.log("[DEBUG] - MSSP sub accounts:" + str(accounts))
+        demisto.debug("[DEBUG] - MSSP sub accounts:" + str(accounts))
         return_error('Entered sub account id ({}) is not part of this mssp account'.format(MSSP_ACCOUNT_ID))
 
     for i, account in enumerate(account_ids):

@@ -31,7 +31,18 @@ MINUTES_60 = 60 * 60
 SECONDS_30 = 30
 FETCH_TABLE_HR_NAME = {
     "firewall.threat": "Cortex Firewall Threat",
-    "firewall.file_data": "Cortex Firewall File Data"
+    "firewall.file_data": "Cortex Firewall File Data",
+    "firewall.auth": "Cortex Firewall Authentication",
+    "firewall.decryption": "Cortex Firewall Decryption",
+    "firewall.extpcap": "Cortex Firewall Extpcap",
+    "firewall.globalprotect": "Cortex Firewall GlobalProtect",
+    "firewall.hipmatch": "Cortex Firewall HIP Match",
+    "firewall.iptag": "Cortex Firewall IPtag",
+    "firewall.traffic": "Cortex Firewall Traffic",
+    "firewall.url": "Cortex Firewall URL",
+    "firewall.userid": "Cortex Firewall UserID",
+    "log.system": "Cortex Common System",
+    "log.config": "Cortex Common Config"
 }
 BAD_REQUEST_REGEX = r'^Error in API call \[400\].*'
 
@@ -839,7 +850,8 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
                                   fetch_table: str,
                                   fetch_subtype: list,
                                   fetch_fields: str,
-                                  fetch_limit: str) -> str:
+                                  fetch_limit: str,
+                                  fetch_filter: str = '') -> str:
     """
     Prepares the SQL query for fetch incidents command
     Args:
@@ -848,26 +860,33 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
         fetch_severity: Severity associated with the incident.
         fetch_subtype: Identifies the log subtype.
         fetch_table: Identifies the fetch type.
-        fetch_fields: Fields to fetch fro the table.
+        fetch_fields: Fields to fetch from the table.
+        fetch_filter: Filter that should be used for the query.
 
     Returns:
         SQL query that matches the arguments
     """
+    if fetch_filter and (fetch_subtype or fetch_severity):
+        raise DemistoException('Fetch Filter parameter cannot be used with Subtype/Severity parameters.')
     query = f'SELECT {fetch_fields} FROM `{fetch_table}` '  # guardrails-disable-line
-    query += f'WHERE time_generated Between TIMESTAMP("{fetch_timestamp}") ' \
+    time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
+    query += f'WHERE {time_filter} Between TIMESTAMP("{fetch_timestamp}") ' \
              f'AND CURRENT_TIMESTAMP'
+    if fetch_filter:
+        query += f' AND {fetch_filter}'
     if fetch_subtype and 'all' not in fetch_subtype:
         sub_types = [f'sub_type.value = "{sub_type}"' for sub_type in fetch_subtype]
         query += f' AND ({" OR ".join(sub_types)})'
     if fetch_severity and 'all' not in fetch_severity:
         severities = [f'vendor_severity.value = "{severity}"' for severity in fetch_severity]
         query += f' AND ({" OR ".join(severities)})'
-    query += f' ORDER BY time_generated ASC LIMIT {fetch_limit}'
+    query += f' ORDER BY {time_filter} ASC LIMIT {fetch_limit}'
     return query
 
 
 def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
-    time_generated = log.get('time_generated', 0)
+    time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
+    time_generated = log.get(time_filter, 0)
     occurred = human_readable_time_from_epoch_time(time_generated, utc_time=True)
     incident = {
         'name': FETCH_TABLE_HR_NAME[fetch_table],
@@ -880,12 +899,17 @@ def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
 ''' COMMANDS FUNCTIONS '''
 
 
-def test_module(client: Client, fetch_table, fetch_fields, is_fetch):
-    if not is_fetch:
+def test_module(client: Client, fetch_table, fetch_fields, is_fetch, fetch_query, fetch_subtype, fetch_severity, first_fetch):
+    if is_fetch:
+        fetch_time, _ = parse_date_range(first_fetch)
+        fetch_time = fetch_time.replace(microsecond=0)
+        query = prepare_fetch_incidents_query(fetch_time, fetch_severity, fetch_table,
+                                              fetch_subtype, fetch_fields, "1", fetch_query)
+    else:
         # fetch params not to be tested (won't be used)
         fetch_fields = '*'
         fetch_table = 'firewall.traffic'
-    query = f'SELECT {fetch_fields} FROM `{fetch_table}` limit 1'
+        query = f'SELECT {fetch_fields} FROM `{fetch_table}` limit 1'
     client.query_loggings(query)
     return_outputs('ok')
 
@@ -1094,7 +1118,8 @@ def fetch_incidents(client: Client,
                     fetch_subtype: list,
                     fetch_fields: str,
                     fetch_limit: str,
-                    last_run: dict) -> Tuple[Dict[str, str], list]:
+                    last_run: dict,
+                    fetch_filter: str = '') -> Tuple[Dict[str, str], list]:
     last_fetched_event_timestamp = last_run.get('lastRun')
 
     if last_fetched_event_timestamp:
@@ -1103,15 +1128,15 @@ def fetch_incidents(client: Client,
         last_fetched_event_timestamp, _ = parse_date_range(first_fetch_timestamp)
         last_fetched_event_timestamp = last_fetched_event_timestamp.replace(microsecond=0)
     query = prepare_fetch_incidents_query(last_fetched_event_timestamp, fetch_severity, fetch_table,
-                                          fetch_subtype, fetch_fields, fetch_limit)
+                                          fetch_subtype, fetch_fields, fetch_limit, fetch_filter)
     demisto.debug('Query being fetched: {}'.format(query))
     records, _ = client.query_loggings(query)
     if not records:
         return {'lastRun': str(last_fetched_event_timestamp)}, []
 
     incidents = [convert_log_to_incident(record, fetch_table) for record in records]
-    max_fetched_event_timestamp = max(records, key=lambda record: record.get('time_generated', 0)).get('time_generated',
-                                                                                                       0)
+    time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
+    max_fetched_event_timestamp = max(records, key=lambda record: record.get(time_filter, 0)).get(time_filter, 0)
 
     next_run = {'lastRun': epoch_to_timestamp_and_add_milli(max_fetched_event_timestamp)}
     return next_run, incidents
@@ -1149,7 +1174,9 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client, fetch_table, fetch_fields, params.get('isFetch'))
+            test_module(client, fetch_table, fetch_fields, params.get('isFetch'), params.get('filter_query', ''),
+                        params.get('firewall_subtype'), params.get('firewall_severity'),
+                        params.get('first_fetch_timestamp', '24 hours').strip())
         elif command == 'cdl-query-logs':
             return_outputs(*query_logs_command(args, client))
         elif command == 'cdl-get-critical-threat-logs':
@@ -1174,6 +1201,7 @@ def main():
             fetch_subtype = params.get('firewall_subtype')
             fetch_limit = params.get('limit')
             last_run = demisto.getLastRun()
+            fetch_filter = params.get('filter_query', '')
             next_run, incidents = fetch_incidents(client,
                                                   first_fetch_timestamp,
                                                   fetch_severity,
@@ -1181,7 +1209,8 @@ def main():
                                                   fetch_subtype,
                                                   fetch_fields,
                                                   fetch_limit,
-                                                  last_run)
+                                                  last_run,
+                                                  fetch_filter)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
     except Exception as e:

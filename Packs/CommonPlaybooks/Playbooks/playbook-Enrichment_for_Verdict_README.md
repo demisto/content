@@ -4,24 +4,24 @@ This playbook checks prior alert closing reasons and performs enrichment on diff
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Account Enrichment - Generic v2.1
+* Domain Enrichment - Generic v2
 * File Reputation
 * URL Enrichment - Generic v2
-* Domain Enrichment - Generic v2
 * IP Enrichment - Generic v2
+* Account Enrichment - Generic v2.1
 * AWS IAM - User enrichment
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* SearchIncidentsV2
 * IsIntegrationAvailable
 * Set
+* SearchIncidentsV2
 
 ### Commands
-* wildfire-get-verdict
 * wildfire-report
+* wildfire-get-verdict
 
 ## Playbook Inputs
 ---

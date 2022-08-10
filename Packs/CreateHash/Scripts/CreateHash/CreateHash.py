@@ -12,10 +12,10 @@ if hashtype == "sha256":
     h = hashlib.sha256()
     h.update(text.encode('utf-8'))
 elif hashtype == 'sha1':
-    h = hashlib.sha1()
+    h = hashlib.sha1()  # nosec
     h.update(text.encode('utf-8'))
 elif hashtype == 'md5':
-    h = hashlib.md5()
+    h = hashlib.md5()   # nosec
     h.update(text.encode('utf-8'))
 else:
     h = blake2b()

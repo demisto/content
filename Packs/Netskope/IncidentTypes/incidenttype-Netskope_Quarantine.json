@@ -1,0 +1,29 @@
+{
+    "id": "Netskope Quarantine",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Netskope Quarantine",
+    "prevName": "Netskope Quarantine",
+    "color": "#2A4AA8",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Netskope - Quarantine Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.2.0"
+}

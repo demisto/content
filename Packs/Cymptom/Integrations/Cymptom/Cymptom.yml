@@ -15,19 +15,16 @@ configuration:
   name: api_key
   required: true
   type: 4
-- defaultvalue: ""
-  display: Fetch incidents
+- display: Fetch incidents
   name: is_fetch
   required: false
   type: 8
 - additionalinfo: Whether to use the system proxy.
-  defaultvalue: ""
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
 - additionalinfo: Whether to accept insecure certificates.
-  defaultvalue: ""
   display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -98,7 +95,7 @@ script:
     - contextPath: Cymptom.CrackedUsers.Username
       description: Username of users with cracked passwords
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.31492
   runonce: false
   script: ''
   subtype: python3

@@ -1,4 +1,3 @@
-import traceback
 from typing import Iterable, Set
 
 import demistomock as demisto  # noqa: F401
@@ -83,7 +82,6 @@ def main():
                               raw_response=readable)
 
     except Exception as ex:  # pylint: disable=broad-except  pragma: no cover
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute. Error: {str(ex)}', error=ex)
 
 

@@ -50,7 +50,7 @@ tasks:
       - "2"
     scriptarguments:
       saved_search_id:
-        simple: ${inputs.saved_search}
+        simple: ${inputs.saved_search_id}
     separatecontext: false
     view: |-
       {

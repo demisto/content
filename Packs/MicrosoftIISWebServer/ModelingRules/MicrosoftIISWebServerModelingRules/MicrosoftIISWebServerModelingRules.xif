@@ -1,0 +1,78 @@
+[MODEL: dataset="iis_iis_raw", model="Network"] 
+filter _raw_log contains "100" or  _raw_log contains "101" or  _raw_log contains "200" or  _raw_log contains "201" or  _raw_log contains "203" or _raw_log contains "204" or _raw_log contains "205" or _raw_log contains "206" or _raw_log contains "301" or _raw_log contains "302" or _raw_log contains "304" or _raw_log contains "307" or _raw_log contains "404" or _raw_log contains "500"
+| alter timestamp = arrayindex(regextract(_raw_log , "(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)"), 0)
+| alter c_sitename = arrayindex(regextract(_raw_log , "\d+\:\d+\:\d+\s([^\s]+)") ,0)
+| alter S_computername = arrayindex(regextract(_raw_log , "\d+\:\d+\:\d+\s[^\s]+\s([^\s]+)") ,0)
+| alter Cs_method= arrayindex(regextract(_raw_log ,"\d+\:\d+\:\d+\s[^\s]+\s[^\s]+\s[^\s]+\s(\w+)") ,0)
+| alter Cs_uri_stem = arrayindex(regextract(_raw_log ,"\s\w+\s\/([^\-]+)") ,0)
+| alter Cs_uri_query = arrayindex(regextract(_raw_log ,"\s\w+\s\/[^\-]+([^\d+]+)") ,0)
+| alter S_port = arrayindex(regextract(_raw_log ,"\s\w+\s\/[^\-]+[^\d+]+(\d+)") ,0)
+| alter Cs_username = arrayindex(regextract(_raw_log ," \s\w+\s\/[^\-]+[^\d+]+\d+\s([^\s]+)") ,0)
+| alter cs_version  = arrayindex(regextract(_raw_log ,"(HTTP\/\d+\.\d+)") ,0)
+| alter Cs_User_Agent = arrayindex(regextract(_raw_log ,"HTTP\/\d+\.\d+\s([^\s]+)") ,0)
+| alter Cs_Cookie = arrayindex(regextract(_raw_log ,"HTTP\/\d+\.\d+\s[^\s]+\s([^\s]+)") ,0)
+| alter CS_reffer = arrayindex(regextract(_raw_log ,"\s(http\w?\:\/\/\S+)") ,0)
+| alter Cs_host = arrayindex(regextract(_raw_log ," (\w+)\s\d+\s\d+\s\d+") ,0)
+| alter Sc_status = arrayindex(regextract(_raw_log ,"\w+\s(\d+)\s\d+\s\d+") ,0)
+| alter Sc_substatus= arrayindex(regextract(_raw_log ,"\w+\s\d+\s(\d+)\s\d+") ,0)
+| alter Sc_win32_status = arrayindex(regextract(_raw_log ,"\w+\s\d+\s\d+\s(\d+)") ,0)
+| alter sc_bytes = arrayindex(regextract(_raw_log ,"\w+\s\d+\s\d+\s\d+\s(\d+)") ,0)
+| alter cs_bytes = arrayindex(regextract(_raw_log ,"\w+\s\d+\s\d+\s\d+\s\d+\s(\d+)") ,0)
+| alter Time_taken = arrayindex(regextract(_raw_log ,"\w+\s\d+\s\d+\s\d+\s\d+\s(\d+)") ,0)
+| alter C_ip  = arrayindex(regextract(_raw_log ,"\s\w+\s\/[^\-]+[^\d+]+\d+\s[^\s]+\s([^\s]+)") ,0)
+| alter s_ip = arrayindex(regextract(_raw_log ,"\d+\:\d+\:\d+\s[^\s]+\s[^\s]+\s([^\s]+)") ,0)
+| alter XDM.Network.event_timestamp = parse_timestamp("%F %X", timestamp)
+| alter XDM.Network.Source.ipv4 =  c_ip  
+| alter XDM.Network.Source.user.username  = cs_username
+| alter XDM.Network.destination.process.name = c_sitename
+| alter XDM.Network.Destination.host.hostname = S_computername
+| alter XDM.Network.http.url = cs_uri_stem
+| alter XDM.Network.Destination.ipv4 =s_ip 
+| alter XDM.Network.Source.port= to_number(s_port)
+| alter XDM.Network.http.method = cs_method
+| alter XDM.Network.http.response_code= sc_status
+| alter XDM.Network.duration =to_number(time_taken)
+| alter XDM.Network.Observer.unique_identifier =cs_Cookie 
+| alter XDM.Network.http.referrer =CS_reffer
+| alter XDM.Network.Source.bytes= to_number(sc_bytes)
+| alter XDM.Network.Destination.bytes = to_number(cs_bytes)
+| alter XDM.Network.source.host.hostname= cs_host
+| alter XDM.Network.Observer.version= cs_version  
+| alter XDM.Network.http.url= Cs_uri_query
+| alter XDM.Network.Observer.unique_identifier = Sc_substatus
+| alter XDM.Network.Observer.unique_identifier = Sc_win32_status;
+
+
+
+[MODEL: dataset="iis_iis_raw", model="Audit"]
+alter event_type = arrayindex(regextract(_raw_log, "(\S+\s\d+\s\S+\s\d+)"),0)
+| filter event_type not contains "-"
+| alter timestamp = arrayindex(regextract(_raw_log , "(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)"), 0)
+| alter c_ip = arrayindex(regextract(_raw_log , "\d+\-\d+\-\d+\s\d+\:\d+\:\d+\s([^\s]+)"), 0)
+| alter c_port = arrayindex(regextract(_raw_log , "\d+\-\d+\-\d+\s\d+\:\d+\:\d+\s[^\s]+\s(\d+)"), 0)
+| alter s_ip = arrayindex(regextract(_raw_log , "\:\d+\s[^\s]+\s\d+\s([^\s]+)"), 0)
+| alter s_port  = arrayindex(regextract(_raw_log , "\:\d+\s[^\s]+\s\d+\s[^\s]+\s(\d+)"), 0)
+| alter cs_version = arrayindex(regextract(_raw_log , "\:\d+\s[^\s]+\s\d+\s[^\s]+\s\d+\s([^\s]+)"), 0)
+| alter cs_method = arrayindex(regextract(_raw_log , "\s\d+\s[^\s]+\s\d+\s[^\s]+\s([^\s]+) "), 0)
+| alter cs_uri = arrayindex(regextract(_raw_log , "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s([^\s]+)"), 0)
+| alter streamid = arrayindex(regextract(_raw_log , "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s([^\s]+)"), 0)
+| alter streamid_ex = arrayindex(regextract(_raw_log , "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([^\s]+)"), 0)
+| alter sc_status = arrayindex(regextract(_raw_log , "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([^\s]+)"), 0)
+| alter s_siteid = arrayindex(regextract(_raw_log , "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([^\s]+)"), 0)
+| alter s_queuename = arrayindex(regextract(_raw_log , "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([A-Z]\w+)"), 0)
+| alter s_reason = arrayindex(regextract(_raw_log , " \s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[A-Z]\w+\s([^\s]+)"), 0)
+| alter transport = arrayindex(regextract(_raw_log , "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[A-Z]\w+\s[^\s]+\s(\w+)"), 0)
+| alter XDM.Audit.event_timestamp = parse_timestamp("%F %X", timestamp)
+| alter XDM.Audit.TriggeredBy.ipv4 =  c_ip
+| alter XDM.Audit.threat.name =s_ip 
+| alter XDM.Audit.audited_resource.sub_type= s_port
+| alter XDM.Audit.TriggeredBy.agent.version= cs_version  
+| alter XDM.Audit.threat.description = cs_method
+| alter XDM.Audit.identity.name =Cs_uri
+| alter XDM.Audit.audited_resource.id = streamid 
+| alter XDM.Audit.identity.uuid= streamid_ex
+| alter XDM.Audit.identity.type = sc_status
+| alter XDM.Audit.threat.original_threat_id = s_siteid
+| alter XDM.Audit.identity.sub_type =s_queuename
+| alter XDM.Audit.reason = s_reason
+| alter XDM.Audit.audited_resource.type = transport;

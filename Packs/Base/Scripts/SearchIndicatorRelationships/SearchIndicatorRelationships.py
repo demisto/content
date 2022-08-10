@@ -3,8 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import re
 
-import traceback
-
 
 # --------------------------------------------------- Helper functions---------------------------------------------
 
@@ -51,36 +49,62 @@ def to_context(relationships: list, verbose: bool) -> List[dict]:
     return context_list
 
 
-def handle_stix_types(entities_types):
+def handle_stix_types(entities_types: str) -> str:
     entities_types = argToList(entities_types)
     for e_type in entities_types:
         FeedIndicatorType.indicator_type_by_server_version(e_type)
     return ','.join(str(x) for x in entities_types).replace(', ', ',')
 
 
+def search_relationships_fromversion_6_6_0(args: dict) -> List[dict]:
+    for list_arg in ['entities', 'entityTypes', 'relationshipNames']:
+        args[list_arg] = argToList(args[list_arg]) if args[list_arg] else None
+    res = demisto.searchRelationships(args)
+    return res.get('data', [])
+
+
+def search_relationships_toversion_6_5_0(args: dict) -> List[dict]:
+    res = demisto.executeCommand("searchRelationships", args)
+    if is_error(res[0]):
+        raise Exception("Error in searchRelationships command - {}".format(res[0]["Contents"]))
+    return res[0].get('Contents', {}).get('data', [])
+
+
+def search_relationships(
+    entities: Optional[str] = None,
+    entities_types: Optional[str] = None,
+    relationships: Optional[str] = None,
+    limit: Optional[int] = None,
+    query: Optional[str] = None
+) -> List[dict]:
+    args = {
+        'entities': entities,
+        'entityTypes': entities_types,
+        'relationshipNames': relationships,
+        'size': limit,
+        'query': query
+    }
+    if is_demisto_version_ge('6.6.0'):
+        return search_relationships_fromversion_6_6_0(args)
+    return search_relationships_toversion_6_5_0(args)
+
+
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no cover
     try:
         args = demisto.args()
         entities = args.get('entities', '')
         entities_types = args.get('entities_types', '')
         relationships = args.get('relationships', '')
-        limit = int(args.get('limit'))
+        limit = int(args.get('limit', '20'))
         verbose = argToBoolean(args.get('verbose', 'false'))
         revoked = argToBoolean(args.get('revoked', 'false'))
         query = 'revoked:T' if revoked else 'revoked:F'
-
         handle_stix_types(entities_types)
-        res = demisto.executeCommand("searchRelationships", {'entities': entities, 'entityTypes': entities_types,
-                                                             'relationshipNames': relationships,
-                                                             'size': limit, 'query': query})
-        if is_error(res[0]):
-            raise Exception("Error in searchRelationships command - {}".format(res[0]["Contents"]))
 
-        relationships = res[0].get('Contents', {}).get('data', [])
-        if relationships:
+        if relationships := search_relationships(entities, entities_types, relationships, limit, query):
             context = to_context(relationships, verbose)
         else:
             context = []
@@ -91,7 +115,6 @@ def main():
             CommandResults(readable_output=hr, outputs_prefix='Relationships', outputs=context, outputs_key_field='ID'))
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute SearchIndicatorRelationships automation. Error: {str(e)}')
 
 

@@ -1,0 +1,205 @@
+id: Hurukai - Add indicators to HarfangLab EDR
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Hurukai - Add indicators to HarfangLab EDR
+description: This playbook add indicators to a HarfangLab EDR IOC source list for detection and/or blocking.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: eb42f4ee-dd78-4c62-853d-6a45f75e21a7
+    type: start
+    task:
+      id: eb42f4ee-dd78-4c62-853d-6a45f75e21a7
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 00e7d9f8-86af-4053-830a-3cc848c887bc
+    type: title
+    task:
+      id: 00e7d9f8-86af-4053-830a-3cc848c887bc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 53c2a0a7-6de0-4bbf-85a3-af95d6cdd7ca
+    type: condition
+    task:
+      id: 53c2a0a7-6de0-4bbf-85a3-af95d6cdd7ca
+      version: -1
+      name: Are there bad Hash results?
+      description: "Check whether there are bad hash results"
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '2'
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: to_edr_blocklist
+                accessor: value
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: bfa9ac41-563e-432b-8aae-73a7b4924f05
+    type: regular
+    task:
+      id: bfa9ac41-563e-432b-8aae-73a7b4924f05
+      version: -1
+      name: harfanglab-add-ioc-to-source
+      description: Add an IOC to a Threat Intelligence source
+      script: Hurukai|||harfanglab-add-ioc-to-source
+      type: regular
+      iscommand: true
+      brand: Hurukai
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      ioc_status:
+        simple: stable
+      ioc_type:
+        simple: hash
+      ioc_value:
+        simple: ${playbookQuery.value}
+      source_name:
+        simple: blocklist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 855,
+        "width": 650,
+        "x": 180,
+        "y": -430
+      }
+    }
+  }
+inputs:
+- key: ''
+  value: {}
+  required: false
+  description: ''
+  playbookInputQuery:
+    query: type:file -tags:pending_review and (tags:to_edr_blocklist or tags:approved_white or tags:approved_watchlist) and expirationStatus:active
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ''
+        byto: ''
+        byfrom: ''
+        tovalue:
+        fromvalue:
+        field: ''
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

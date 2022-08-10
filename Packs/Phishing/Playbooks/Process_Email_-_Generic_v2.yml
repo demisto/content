@@ -17,22 +17,22 @@ description: |
     * Proofpoint Protection Server
     * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)
     * Mimecast
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: ab3d1010-52ba-4a55-8c9f-787d47714e04
     type: start
     task:
       id: ab3d1010-52ba-4a55-8c9f-787d47714e04
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     separatecontext: false
     view: |-
       {
@@ -48,8 +48,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: aa7ddce2-5a85-46fe-8e35-6c4ebbe62059
     type: condition
     task:
@@ -60,12 +60,12 @@ tasks:
       scriptName: IdentifyAttachedEmail
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "16"
-      "yes":
-      - "44"
+      no:
+      - '16'
+      yes:
+      - '44'
     scriptarguments:
       entryid:
         simple: ${inputs.File.EntryID}
@@ -87,44 +87,57 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: e3ec2c1b-89ab-44ba-8ad8-147373cce0ce
+  '2':
+    id: '2'
+    taskid: 1b16e2d5-3ef1-45ad-8e0d-d4aa1f2df746
     type: regular
     task:
-      id: e3ec2c1b-89ab-44ba-8ad8-147373cce0ce
+      id: 1b16e2d5-3ef1-45ad-8e0d-d4aa1f2df746
       version: -1
       name: Add original email details to context
-      description: Sets the details of the email that was forwarded under the email context key.
+      description: Sets the details of the email that was forwarded under the email context key. Also saves the HTML or email text to the email body section in the layout.
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       key:
         simple: Email
       value:
-        simple: '${inputs={To: val[''Email''], CC: val[''EmailCC''], From: val[''EmailFrom''], Subject: val[''EmailSubject''], Text: val[''EmailText''], HTML: val[''EmailHtml''], Headers: val[''EmailHeaders''], Format: val[''EmailFormat'']}}'
+        simple: "${inputs={To: val['Email'], CC: val['EmailCC'], From: val['EmailFrom'], Subject: val['EmailSubject'], Text: val['EmailText'], HTML: val['EmailHtml'], Headers: val['EmailHeaders'], Format: val['EmailFormat']}}"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 2950
+          "x": -470,
+          "y": 2960
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Rendered HTML
+      output:
+        complex:
+          root: inputs.EmailHtml
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.EmailText
+                iscontext: true
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 5802b254-fac3-4c94-8b2d-89038b4239e5
     type: regular
     task:
@@ -135,10 +148,10 @@ tasks:
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
     scriptarguments:
       entryid:
         simple: ${reportedemailentryid}
@@ -163,8 +176,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: d6c5b273-5d28-487a-8ccf-aefb1759d1f5
     type: condition
     task:
@@ -174,15 +187,15 @@ tasks:
       description: Checks whether the email is HTML-formatted, and whether the Rasterize integration is enabled.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "6"
-      "yes":
-      - "5"
+      - '6'
+      yes:
+      - '5'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -222,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 3440
+          "x": 290,
+          "y": 3500
         }
       }
     note: false
@@ -233,8 +246,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: b50d466b-3299-40c7-8ba4-e18f05bb0d3c
     type: regular
     task:
@@ -247,24 +260,24 @@ tasks:
       script: '|||rasterize-email'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       htmlBody:
         complex:
           root: Email
           accessor: HTML
       offline:
-        simple: "true"
+        simple: 'true'
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 3660
+          "x": 50,
+          "y": 3720
         }
       }
     note: false
@@ -274,8 +287,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 68d4779d-e845-4c51-8b7d-628f42bf4a96
     type: title
     task:
@@ -284,14 +297,14 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 3890
+          "x": 290,
+          "y": 3950
         }
       }
     note: false
@@ -301,8 +314,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 02bb525c-7801-4a05-8368-323b10f7bc4d
     type: title
     task:
@@ -311,17 +324,17 @@ tasks:
       name: Email Screenshot
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 3310
+          "x": 290,
+          "y": 3370
         }
       }
     note: false
@@ -331,8 +344,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 1e92b0fe-4a08-4667-856d-8393f0f18b58
     type: condition
     task:
@@ -342,14 +355,14 @@ tasks:
       description: Determines whether to retrieve the original email in the thread.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "50"
+      - '50'
       Yes-Alerts:
-      - "49"
+      - '49'
       Yes-Forwarded:
-      - "48"
+      - '48'
     separatecontext: false
     conditions:
     - label: Yes-Forwarded
@@ -362,7 +375,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
       - - operator: isNotEmpty
           left:
@@ -381,7 +394,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
     view: |-
       {
         "position": {
@@ -396,8 +409,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 5d4f7213-dbe7-4a40-8960-f177324ac530
     type: condition
     task:
@@ -407,12 +420,12 @@ tasks:
       description: Determines whether there is an email object in the context.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "45"
+      - '45'
       Email Exist:
-      - "47"
+      - '47'
     separatecontext: false
     conditions:
     - label: Email Exist
@@ -437,12 +450,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 1610c1bd-a25b-4596-8cf6-d1a8f81decad
+  '19':
+    id: '19'
+    taskid: f9acc75d-f15f-4e8f-8744-c3420b86bcc4
     type: regular
     task:
-      id: 1610c1bd-a25b-4596-8cf6-d1a8f81decad
+      id: f9acc75d-f15f-4e8f-8744-c3420b86bcc4
       version: -1
       name: Display email information in layout
       description: Updates Cortex XSOAR incident fields using data from the email object.
@@ -452,7 +465,8 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+      - '57'
     scriptarguments:
       attachmentcount:
         complex:
@@ -488,7 +502,7 @@ tasks:
           root: Email
           accessor: Attachment.Type
       deleteEmptyField:
-        simple: "True"
+        simple: 'True'
       emailbcc:
         complex:
           root: Email
@@ -628,6 +642,18 @@ tasks:
       emailurlclicked:
         complex:
           root: EmailUrlClicked
+      renderedhtml:
+        complex:
+          root: Email
+          accessor: HTML
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Email.Text
+                iscontext: true
       reportedemailcc:
         complex:
           root: Email
@@ -642,6 +668,12 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
+      reportedemailmessageid:
+        complex:
+          root: Email.HeadersMap
+          accessor: Message-ID
+          transformers:
+          - operator: uniq
       reportedemailorigin:
         complex:
           root: ReportedEmailOrigin
@@ -663,18 +695,12 @@ tasks:
               separator:
                 value:
                   simple: ','
-      reportedemailmessageid:
-        complex:
-          root: Email.HeadersMap
-          accessor: Message-ID
-          transformers:
-          - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1250,
-          "y": 3140
+          "x": 920,
+          "y": 3200
         }
       }
     note: false
@@ -684,8 +710,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 293d898d-dc20-44ff-81bd-81ebb1056023
     type: regular
     task:
@@ -696,10 +722,10 @@ tasks:
       scriptName: SetGridField
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       columns:
         simple: headername,headervalue
@@ -708,19 +734,19 @@ tasks:
       grid_id:
         simple: emailheaders
       overwrite:
-        simple: "true"
+        simple: 'true'
       sort_by:
         simple: headername
       unpack_nested_elements:
-        simple: "false"
+        simple: 'false'
     reputationcalc: 2
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 2950
+          "x": -20,
+          "y": 2960
         }
       }
     note: false
@@ -730,8 +756,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: 0388326d-fb71-4386-8a1f-b9e33eb70242
     type: condition
     task:
@@ -741,14 +767,14 @@ tasks:
       description: Checks whether the email headers were extracted from the original email that was either attached or retrieved using available email integrations.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
+      - '2'
       Headers:
-      - "20"
+      - '20'
       HeadersMap:
-      - "40"
+      - '40'
     separatecontext: false
     conditions:
     - label: HeadersMap
@@ -770,8 +796,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 630,
-          "y": 2590
+          "x": 300,
+          "y": 2600
         }
       }
     note: false
@@ -781,8 +807,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 6bb8388f-977a-4fd5-83c0-c62843fc8857
     type: title
     task:
@@ -791,12 +817,12 @@ tasks:
       name: Incident Layout Display
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "21"
-      - "25"
+      - '21'
+      - '25'
     separatecontext: false
     view: |-
       {
@@ -812,8 +838,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 24798019-cf27-4fbd-8f2d-e1443ede01e5
     type: condition
     task:
@@ -823,15 +849,15 @@ tasks:
       description: Checks whether the incident contains any kind of file.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "16"
-      "yes":
-      - "24"
+      - '16'
+      yes:
+      - '24'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -854,8 +880,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 73335578-482c-4f91-8d4c-dde807dbd8cf
     type: regular
     task:
@@ -866,10 +892,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     scriptarguments:
       key:
         simple: IncidentFiles
@@ -891,8 +917,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: 609256a1-714e-42d2-83f9-a245b903ddd4
     type: title
     task:
@@ -902,21 +928,21 @@ tasks:
       description: Set multiple keys/values to the context.
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "26"
-      - "27"
-      - "28"
-      - "29"
-      - "30"
-      - "31"
+      - '26'
+      - '27'
+      - '28'
+      - '29'
+      - '30'
+      - '31'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2340,
-          "y": 2590
+          "x": 2010,
+          "y": 2600
         }
       }
     note: false
@@ -926,8 +952,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: fc7c93bd-a76d-4329-804e-9e36a56e6d0f
     type: regular
     task:
@@ -938,10 +964,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       key:
         simple: Email.Attachment.Count
@@ -970,8 +996,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1730,
-          "y": 2790
+          "x": 1320,
+          "y": 2800
         }
       }
     note: false
@@ -981,8 +1007,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: cb1897a4-77db-478e-83de-5cfd82749846
     type: regular
     task:
@@ -993,10 +1019,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       key:
         simple: Email.Attachment.Extension
@@ -1030,8 +1056,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 2790
+          "x": 920,
+          "y": 2800
         }
       }
     note: false
@@ -1041,8 +1067,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     taskid: fd5a4fa8-7edb-4342-88fe-b842a41906f8
     type: regular
     task:
@@ -1053,10 +1079,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       key:
         simple: Email.Attachment.Hash
@@ -1090,8 +1116,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2137.5,
-          "y": 2790
+          "x": 1727.5,
+          "y": 2800
         }
       }
     note: false
@@ -1101,8 +1127,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     taskid: 48d7ce37-ace0-433c-86d9-5ec0e75982a5
     type: regular
     task:
@@ -1113,10 +1139,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       key:
         simple: Email.Attachment.Name
@@ -1150,8 +1176,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2950,
-          "y": 2790
+          "x": 2540,
+          "y": 2800
         }
       }
     note: false
@@ -1161,8 +1187,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: e3200e4e-7fbe-45cd-89c8-6f76b32cf65f
     type: regular
     task:
@@ -1173,10 +1199,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       key:
         simple: Email.Attachment.Size
@@ -1210,8 +1236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2550,
-          "y": 2790
+          "x": 2140,
+          "y": 2800
         }
       }
     note: false
@@ -1221,8 +1247,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: 5c020da7-dd25-41dd-8208-c24d0c28c941
     type: regular
     task:
@@ -1233,10 +1259,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       key:
         simple: Email.Attachment.Type
@@ -1270,8 +1296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3360,
-          "y": 2790
+          "x": 2950,
+          "y": 2800
         }
       }
     note: false
@@ -1281,8 +1307,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: b01edbd3-8f20-4abf-8344-7b28dddc35f9
     type: regular
     task:
@@ -1293,10 +1319,10 @@ tasks:
       scriptName: SetGridField
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
     scriptarguments:
       columns:
         simple: headername,headervalue
@@ -1305,13 +1331,13 @@ tasks:
       grid_id:
         simple: phishingreporteremailheaders
       overwrite:
-        simple: "true"
+        simple: 'true'
       sort_by:
         simple: headername
       unpack_nested_elements:
-        simple: "false"
-    continueonerror: true
+        simple: 'false'
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -1326,8 +1352,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: 06309202-bd36-411d-85fb-026d39e3767c
     type: regular
     task:
@@ -1338,10 +1364,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     scriptarguments:
       key:
         simple: headers
@@ -1364,8 +1390,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: 9e32420a-cbe7-44aa-892e-5112ba7364a2
     type: playbook
     task:
@@ -1388,10 +1414,10 @@ tasks:
       playbookName: Get Original Email - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
     scriptarguments:
       EmailBrand:
         complex:
@@ -1408,7 +1434,7 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
@@ -1425,8 +1451,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
+  '36':
+    id: '36'
     taskid: efef13c9-b8f6-49e4-8fd8-a51c5c664481
     type: condition
     task:
@@ -1437,12 +1463,12 @@ tasks:
       scriptName: IdentifyAttachedEmail
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "18"
-      "yes":
-      - "46"
+      no:
+      - '18'
+      yes:
+      - '46'
     scriptarguments:
       entryid:
         simple: ${File.EntryID}
@@ -1464,8 +1490,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     taskid: 5ce226b3-dafb-4503-867a-453e0326b7d4
     type: regular
     task:
@@ -1476,10 +1502,10 @@ tasks:
       scriptName: SetGridField
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       columns:
         simple: headername,headervalue
@@ -1488,19 +1514,19 @@ tasks:
       grid_id:
         simple: emailheaders
       overwrite:
-        simple: "true"
+        simple: 'true'
       sort_by:
         simple: headername
       unpack_nested_elements:
-        simple: "true"
+        simple: 'true'
     reputationcalc: 2
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 2950
+          "x": 430,
+          "y": 2960
         }
       }
     note: false
@@ -1510,8 +1536,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
+  '38':
+    id: '38'
     taskid: 92eff262-ab72-45d1-8ce0-b5a353ee0599
     type: playbook
     task:
@@ -1534,10 +1560,10 @@ tasks:
       playbookName: Get Original Email - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
     scriptarguments:
       EmailBrand:
         complex:
@@ -1575,7 +1601,7 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
@@ -1592,8 +1618,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
+  '39':
+    id: '39'
     taskid: 9f007781-ed52-47a4-8ee6-4714d5be06ca
     type: condition
     task:
@@ -1603,15 +1629,15 @@ tasks:
       description: Checks if attachments were found in an EML file to display their details in the layout.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "21"
-      "yes":
-      - "22"
+      - '21'
+      yes:
+      - '22'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1634,8 +1660,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
+  '40':
+    id: '40'
     taskid: fd58d739-4b2b-4b54-881d-403a91126651
     type: regular
     task:
@@ -1646,10 +1672,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
     scriptarguments:
       key:
         simple: ExtractedHeadersMap
@@ -1666,8 +1692,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 2790
+          "x": 430,
+          "y": 2800
         }
       }
     note: false
@@ -1677,8 +1703,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
+  '41':
+    id: '41'
     taskid: b0f67d11-6da9-4d36-8d1c-6ad107972fbe
     type: condition
     task:
@@ -1688,15 +1714,15 @@ tasks:
       description: Checks if the Get Original Email - Generic v2 playbook found more than one EML file.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "42"
+      - '3'
+      yes:
+      - '42'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: greaterThan
           left:
@@ -1729,7 +1755,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: '1'
     view: |-
       {
         "position": {
@@ -1744,8 +1770,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
+  '42':
+    id: '42'
     taskid: cf61d30f-5608-4e1f-884d-8b53c3a987d9
     type: collection
     task:
@@ -1755,10 +1781,10 @@ tasks:
       description: Asks the user to provide the EntryID of one of the EML files found.
       type: collection
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "43"
+      - '43'
     separatecontext: false
     view: |-
       {
@@ -1776,17 +1802,19 @@ tasks:
       body:
         simple: Several email files were found, please pick the relevant one
       methods: []
-      format: ""
+      format: ''
       bcc:
       cc:
       timings:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
+      - id: '0'
+        label: ''
         labelarg:
           simple: Which EntryID should the playbook process?
         required: false
@@ -1818,9 +1846,9 @@ tasks:
                 ignorecase: true
             accessor: Name
         - {}
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
       title: Handling multiple email files
       description: Please review the email files retrieved using the Get Original Email - Generic v2 playbook and insert the relevant entry ID to process.
@@ -1831,8 +1859,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
+  '43':
+    id: '43'
     taskid: 4696b16c-670b-44f6-8595-1d6e09016766
     type: regular
     task:
@@ -1843,19 +1871,19 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       append:
-        simple: "false"
+        simple: 'false'
       key:
         simple: reportedemailentryid
       value:
         complex:
           root: Handling multiple email files.Answers
-          accessor: "0"
+          accessor: '0'
     separatecontext: false
     view: |-
       {
@@ -1871,8 +1899,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
+  '44':
+    id: '44'
     taskid: be817d7a-f6d7-482f-84a1-b9d734af50cf
     type: regular
     task:
@@ -1883,10 +1911,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       key:
         simple: ReportedEmailOrigin
@@ -1907,8 +1935,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
+  '45':
+    id: '45'
     taskid: 4df560a8-e403-4170-84d5-e56a1a92b871
     type: regular
     task:
@@ -1922,7 +1950,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       reportedemailorigin:
         simple: None
@@ -1941,8 +1969,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
+  '46':
+    id: '46'
     taskid: fa6dfbef-a424-47eb-80a7-0b06238025e7
     type: regular
     task:
@@ -1953,10 +1981,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "41"
+      - '41'
     scriptarguments:
       key:
         simple: ReportedEmailOrigin
@@ -1977,8 +2005,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
+  '47':
+    id: '47'
     taskid: ce085c9a-03b6-4155-8755-ea1d3d9744b3
     type: regular
     task:
@@ -1989,10 +2017,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       key:
         simple: ReportedEmailOrigin
@@ -2013,8 +2041,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
+  '48':
+    id: '48'
     taskid: c455a74c-0b75-4448-8f83-9b26622f9da0
     type: title
     task:
@@ -2023,11 +2051,11 @@ tasks:
       name: Phishing - Forwarded Email
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "33"
+      - '33'
     separatecontext: false
     view: |-
       {
@@ -2043,8 +2071,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
+  '49':
+    id: '49'
     taskid: bb94119b-622f-4098-873c-9a52e65b8540
     type: title
     task:
@@ -2053,11 +2081,11 @@ tasks:
       name: Phishing Alerts
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     separatecontext: false
     view: |-
       {
@@ -2073,8 +2101,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
+  '50':
+    id: '50'
     taskid: 6a08d29d-324b-4451-85c6-d1711c01a651
     type: title
     task:
@@ -2083,17 +2111,165 @@ tasks:
       name: Do Not Retrieve Email
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "45"
+      - '45'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -470,
           "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '55':
+    id: '55'
+    taskid: d92b905f-b6f6-408c-896b-6910ed0f9251
+    type: regular
+    task:
+      id: d92b905f-b6f6-408c-896b-6910ed0f9251
+      version: -1
+      name: Set incident attachments
+      description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
+      scriptName: DemistoUploadFileV2
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: File.MD5
+                iscontext: true
+              right:
+                value:
+                  simple: IncidentFiles.MD5
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.MD5
+                iscontext: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+      incidentID:
+        complex:
+          root: incident
+          accessor: id
+      target:
+        simple: incident attachment
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 3700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '56':
+    id: '56'
+    taskid: 6ed6697b-5d7a-4700-8b04-41bf375be00f
+    type: condition
+    task:
+      id: 6ed6697b-5d7a-4700-8b04-41bf375be00f
+      version: -1
+      name: Check Whether to add attachments
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '55'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: File.MD5
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IncidentFiles.MD5
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: File.MD5
+                      iscontext: true
+                accessor: EntryID
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '57':
+    id: '57'
+    taskid: 6c2b45b8-9f84-49ed-81d4-75205b0d5aff
+    type: title
+    task:
+      id: 6c2b45b8-9f84-49ed-81d4-75205b0d5aff
+      version: -1
+      name: Add email files and attachments to the layout
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '56'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 3370
         }
       }
     note: false
@@ -2111,12 +2287,13 @@ view: |-
       "39_22_yes": 0.31,
       "41_3_#default#": 0.35,
       "41_42_yes": 0.5,
-      "4_5_yes": 0.57
+      "4_5_yes": 0.57,
+      "56_55_yes": 0.46
     },
     "paper": {
       "dimensions": {
-        "height": 4465,
-        "width": 4210,
+        "height": 4525,
+        "width": 3800,
         "x": -470,
         "y": -510
       }
@@ -2196,7 +2373,7 @@ inputs:
   playbookInputQuery:
 - key: GetOriginalEmail
   value:
-    simple: "False"
+    simple: 'False'
   required: false
   description: |-
     Retrieves the original email in the thread.
@@ -2304,5 +2481,6 @@ outputs:
   description: The file object.
   type: string
 tests:
-- Process Email - Generic - Test - Incident Starter
+- Phishing v3 - Get Original Email + Search & Delete - Test
+- Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 fromversion: 6.0.0

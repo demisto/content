@@ -14,7 +14,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 PRIVATE_BUILD_INFRA_SCRIPTS = ['Tests/scripts/validate_premium_packs.sh', 'Tests/scripts/validate_premium_packs.py',
-                               'Tests/scripts/validate_index.py']
+                               'Tests/scripts/validate_index.py', 'Tests/configure_and_test_integration_instances.py']
 PRIVATE_BUILD_INFRA_FOLDERS = ['Tests/private_build', 'Tests/Marketplace']
 
 NON_PRIVATE_BUILD_FILES = ['Tests/Marketplace/landingPage_sections.json',
@@ -30,7 +30,7 @@ PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
 
 GET_WORKFLOWS_MAX_RETRIES = 5
 
-GET_WORKFLOWS_TIMEOUT_THRESHOLD = 3600  # one hour
+GET_WORKFLOWS_TIMEOUT_THRESHOLD = int(60 * 60 * 1.5)  # 1h 30m
 
 
 def get_modified_files(branch_name: str = None) -> List[str]:

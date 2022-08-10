@@ -42,7 +42,6 @@ configuration:
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ''
   type: 8
   required: false
 - display: Use system proxy settings
@@ -456,7 +455,7 @@ script:
     description: Query the details for a specific Start Light event
   isfetch: true
   runonce: false
-  dockerimage: demisto/python:2.7.18.24398
+  dockerimage: demisto/python:2.7.18.27799
 tests:
 - No test
 fromversion: 5.0.0

@@ -22,7 +22,7 @@ configuration:
   type: 0
   required: false
 - display: Incremental Feed
-  defaultvalue: true
+  defaultvalue: 'true'
   hidden: true
   name: feedIncremental
   required: false
@@ -53,7 +53,7 @@ configuration:
   required: false
 - display: Fetch indicators
   name: feed
-  defaultvalue: "true"
+  defaultvalue: 'true'
   type: 8
   required: false
 - display: Incidents name

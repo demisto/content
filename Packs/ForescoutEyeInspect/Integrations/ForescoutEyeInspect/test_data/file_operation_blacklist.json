@@ -1,0 +1,65 @@
+{
+    "total_count": 47,
+    "results": [
+        {
+            "matching_type": "REGEX",
+            "file_or_folder": "\\.accdb$",
+            "operation": "WRITE",
+            "comment": "Access 2007 Database File."
+        },
+        {
+            "matching_type": "REGEX",
+            "file_or_folder": "\\.application$",
+            "operation": "WRITE",
+            "comment": "Microsoft application File. It provides a way to launch Windows applications from a webpage with just one click. (default blacklist entry)."
+        },
+        {
+            "matching_type": "REGEX",
+            "file_or_folder": "\\.asm$",
+            "operation": "WRITE",
+            "comment": "Assembly Language Source Code File, Program written in assembly language, a low level programming language that can be converted to machine language; may be edited with a text editor and run using an assembler program, such as HLA, MASM, FASM, NASM, or GAS (default blacklist entry)."
+        },
+        {
+            "matching_type": "REGEX",
+            "file_or_folder": "\\.backup$",
+            "operation": "WRITE",
+            "comment": "Android Backup File. Backup file created by some Android phones and other Android mobile devices (default blacklist entry)."
+        },
+        {
+            "matching_type": "REGEX",
+            "file_or_folder": "\\.bat$",
+            "operation": "WRITE",
+            "comment": "DOS Batch File. A DOS batch file used to execute commands with the Windows Command Prompt (default blacklist entry)."
+        },
+        {
+            "matching_type": "REGEX",
+            "file_or_folder": "\\.bz2$",
+            "operation": "WRITE",
+            "comment": "Bzip2 Compressed File. Compressed archive created by bzip2, a file compression program often found on Unix-based systems"
+        },
+        {
+            "matching_type": "REGEX",
+            "file_or_folder": "\\.cer$",
+            "operation": "WRITE",
+            "comment": "Internet Security Certificate. A CER file is a security file provided by a third party Certificate Authority, such as VeriSign or Thwate, that verifies the authenticity of a website. It is installed on a web server to establish the validity of a certain website hosted on the server (default blacklist entry)."
+        },
+        {
+            "matching_type": "REGEX",
+            "file_or_folder": "\\.cmd$",
+            "operation": "WRITE",
+            "comment": "Windows Command File. A Batch file that contains a series of commands executed in order with the Windows Command Prompt (default blacklist entry)."
+        },
+        {
+            "matching_type": "REGEX",
+            "file_or_folder": "\\.com$",
+            "operation": "WRITE",
+            "comment": "DOS Command File. An executable program capable of being run by MS-DOS and Windows. (default blacklist entry)."
+        },
+        {
+            "matching_type": "REGEX",
+            "file_or_folder": "\\.cpl$",
+            "operation": "WRITE",
+            "comment": "Windows control panel item, such as Displays, Mouse, Sound, or Networking, used by the Windows operating system. (default blacklist entry)."
+        }
+    ]
+}

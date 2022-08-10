@@ -1,0 +1,1727 @@
+id: playbook-AzureFirewall_Test
+version: -1
+name: playbook-AzureFirewall_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ca3fb7f3-dfb3-4a6b-8bd6-6b3489a92335
+    type: start
+    task:
+      id: ca3fb7f3-dfb3-4a6b-8bd6-6b3489a92335
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: eea66297-ec35-4f9f-8cfa-9a039a8512aa
+    type: regular
+    task:
+      id: eea66297-ec35-4f9f-8cfa-9a039a8512aa
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8c9e7813-1c0b-4ebc-8df8-4388637ec4e2
+    type: regular
+    task:
+      id: 8c9e7813-1c0b-4ebc-8df8-4388637ec4e2
+      version: -1
+      name: azure-firewall-list
+      script: Azure Firewall|||azure-firewall-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      resource:
+        simple: resource_group
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0be1fa02-ea73-4b32-8f4c-45b02bb3e716
+    type: condition
+    task:
+      id: 0be1fa02-ea73-4b32-8f4c-45b02bb3e716
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.location
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: be51b0da-4d36-423f-80d4-168b02b91d16
+    type: regular
+    task:
+      id: be51b0da-4d36-423f-80d4-168b02b91d16
+      version: -1
+      name: azure-firewall-get
+      script: Azure Firewall|||azure-firewall-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      firewall_names:
+        simple: ${AzureFirewall.Firewall.name}
+      interval:
+        simple: "10"
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8a7cd277-5278-4e49-8d39-7e0f496b11d9
+    type: condition
+    task:
+      id: 8a7cd277-5278-4e49-8d39-7e0f496b11d9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.location
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 4c0d4a78-7670-44be-82be-975d588af4ef
+    type: regular
+    task:
+      id: 4c0d4a78-7670-44be-82be-975d588af4ef
+      version: -1
+      name: azure-firewall-policy-create
+      script: Azure Firewall|||azure-firewall-policy-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      interval:
+        simple: "10"
+      location:
+        simple: eastus
+      policy_name:
+        simple: test-playbook-policy
+      threat_intelligence_mode:
+        simple: Alert
+      tier:
+        simple: Standard
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 631d4e18-c4aa-40ca-87a5-2163e59e54df
+    type: condition
+    task:
+      id: 631d4e18-c4aa-40ca-87a5-2163e59e54df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Policy.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6e02df23-9429-4d8a-8e7b-d216ebd56685
+    type: regular
+    task:
+      id: 6e02df23-9429-4d8a-8e7b-d216ebd56685
+      version: -1
+      name: azure-firewall-policy-list
+      script: Azure Firewall|||azure-firewall-policy-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      resource:
+        simple: resource_group
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 671c2e93-3def-4bbf-8b09-e9fc9e1059df
+    type: condition
+    task:
+      id: 671c2e93-3def-4bbf-8b09-e9fc9e1059df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Policy.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 57a6f07d-81d4-4a5d-8d70-409956251a86
+    type: regular
+    task:
+      id: 57a6f07d-81d4-4a5d-8d70-409956251a86
+      version: -1
+      name: azure-firewall-policy-get
+      script: Azure Firewall|||azure-firewall-policy-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      interval:
+        simple: "10"
+      policy_names:
+        simple: ${AzureFirewall.Policy.name}
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5cc34dee-972f-4888-88dc-72522ee5f464
+    type: condition
+    task:
+      id: 5cc34dee-972f-4888-88dc-72522ee5f464
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Policy.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 119347a3-8181-4dc3-8c62-3163e3465916
+    type: regular
+    task:
+      id: 119347a3-8181-4dc3-8c62-3163e3465916
+      version: -1
+      name: azure-firewall-policy-update
+      script: Azure Firewall|||azure-firewall-policy-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      interval:
+        simple: "10"
+      policy_name:
+        simple: ${AzureFirewall.Policy.name}
+      threat_intelligence_mode:
+        simple: Deny
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 07a10c0f-07da-49f3-89d3-a7a80efbe637
+    type: condition
+    task:
+      id: 07a10c0f-07da-49f3-89d3-a7a80efbe637
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Policy.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 52259589-b115-459e-8e26-aaa8890f954f
+    type: regular
+    task:
+      id: 52259589-b115-459e-8e26-aaa8890f954f
+      version: -1
+      name: azure-firewall-policy-attach
+      script: Azure Firewall|||azure-firewall-policy-attach
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      firewall_names:
+        simple: ${AzureFirewall.Firewall.name}
+      interval:
+        simple: "10"
+      policy_id:
+        simple: ${AzureFirewall.Policy.id}
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 28f92d8b-7467-46e6-82ed-f3ba3e82ffb8
+    type: condition
+    task:
+      id: 28f92d8b-7467-46e6-82ed-f3ba3e82ffb8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.location
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 0adc8205-fee6-4ac5-8071-621548dfb65b
+    type: regular
+    task:
+      id: 0adc8205-fee6-4ac5-8071-621548dfb65b
+      version: -1
+      name: azure-firewall-policy-detach
+      script: Azure Firewall|||azure-firewall-policy-detach
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      firewall_names:
+        simple: ${AzureFirewall.Firewall.name}
+      interval:
+        simple: "10"
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 9b4a17c6-ae2f-4176-808a-1b8e979801b6
+    type: condition
+    task:
+      id: 9b4a17c6-ae2f-4176-808a-1b8e979801b6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Firewall.location
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c2f5e358-ee6e-4d67-85cc-896e73911c48
+    type: regular
+    task:
+      id: c2f5e358-ee6e-4d67-85cc-896e73911c48
+      version: -1
+      name: azure-firewall-network-rule-collection-create
+      script: Azure Firewall|||azure-firewall-network-rule-collection-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      action:
+        simple: Allow
+      collection_name:
+        simple: playbook-collection
+      collection_priority:
+        simple: "105"
+      description:
+        simple: test-playbook-collection
+      destination_ports:
+        simple: "8080"
+      destination_type:
+        simple: ip_address
+      destinations:
+        simple: 192.168.30.82,192.154.20.12
+      interval:
+        simple: "10"
+      policy:
+        simple: ${AzureFirewall.Policy.name}
+      protocols:
+        simple: UDP,TCP
+      rule_name:
+        simple: playbook-rule
+      source_ips:
+        simple: 192.168.50.32,192.168.50.31
+      source_type:
+        simple: ip_address
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 0c66ce73-2942-48d7-8ced-dd5eeaae3fc7
+    type: regular
+    task:
+      id: 0c66ce73-2942-48d7-8ced-dd5eeaae3fc7
+      version: -1
+      name: azure-firewall-network-rule-collection-update
+      script: Azure Firewall|||azure-firewall-network-rule-collection-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      action:
+        simple: Deny
+      collection_name:
+        simple: playbook-collection
+      interval:
+        simple: "10"
+      policy:
+        simple: ${AzureFirewall.Policy.name}
+      priority:
+        simple: "201"
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 803dce41-a5c6-4bb9-87b8-21e0b82fe55a
+    type: regular
+    task:
+      id: 803dce41-a5c6-4bb9-87b8-21e0b82fe55a
+      version: -1
+      name: azure-firewall-rule-collection-list
+      script: Azure Firewall|||azure-firewall-rule-collection-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      policy:
+        simple: ${AzureFirewall.Policy.name}
+      rule_type:
+        simple: network_rule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 2465dc49-20fb-4cc3-8f0f-40ddbca5b6db
+    type: condition
+    task:
+      id: 2465dc49-20fb-4cc3-8f0f-40ddbca5b6db
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.RuleCollection.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 4a68835d-7a9b-4686-8a04-99f2a86eb597
+    type: regular
+    task:
+      id: 4a68835d-7a9b-4686-8a04-99f2a86eb597
+      version: -1
+      name: azure-firewall-network-rule-create
+      script: Azure Firewall|||azure-firewall-network-rule-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      collection_name:
+        simple: playbook-collection
+      description:
+        simple: test-playbook-collection
+      destination_ports:
+        simple: "8080"
+      destination_type:
+        simple: ip_address
+      destinations:
+        simple: 192.168.30.82,192.154.20.12
+      interval:
+        simple: "10"
+      policy:
+        simple: ${AzureFirewall.Policy.name}
+      protocols:
+        simple: UDP,TCP
+      rule_name:
+        simple: new-playbook-rule
+      source_ips:
+        simple: 192.168.50.32,192.168.50.31
+      source_type:
+        simple: ip_address
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c7e8cd73-b0ca-434c-80be-671430490d13
+    type: regular
+    task:
+      id: c7e8cd73-b0ca-434c-80be-671430490d13
+      version: -1
+      name: azure-firewall-network-rule-update
+      script: Azure Firewall|||azure-firewall-network-rule-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      collection_name:
+        simple: playbook-collection
+      interval:
+        simple: "10"
+      policy:
+        simple: ${AzureFirewall.Policy.name}
+      protocols:
+        simple: UDP
+      rule_name:
+        simple: new-playbook-rule
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 1e5ff478-d71c-4cae-809b-58dbf1601a69
+    type: regular
+    task:
+      id: 1e5ff478-d71c-4cae-809b-58dbf1601a69
+      version: -1
+      name: azure-firewall-rule-list
+      script: Azure Firewall|||azure-firewall-rule-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      collection_name:
+        simple: playbook-collection
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      policy:
+        simple: ${AzureFirewall.Policy.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 226c6c3e-6b34-4863-85e1-e2990fa60904
+    type: condition
+    task:
+      id: 226c6c3e-6b34-4863-85e1-e2990fa60904
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Rule.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 4b3dc954-1608-40e2-8cb4-5da55e6a438c
+    type: regular
+    task:
+      id: 4b3dc954-1608-40e2-8cb4-5da55e6a438c
+      version: -1
+      name: azure-firewall-rule-get
+      script: Azure Firewall|||azure-firewall-rule-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      collection_name:
+        simple: playbook-collection
+      policy:
+        simple: ${AzureFirewall.Policy.name}
+      rule_name:
+        simple: new-playbook-rule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 35852f66-49c8-4054-8fba-0736f6d05541
+    type: condition
+    task:
+      id: 35852f66-49c8-4054-8fba-0736f6d05541
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.Rule.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 4e0406a4-e1a4-4569-8bf3-13e9de859d6b
+    type: regular
+    task:
+      id: 4e0406a4-e1a4-4569-8bf3-13e9de859d6b
+      version: -1
+      name: azure-firewall-network-rule-delete
+      script: Azure Firewall|||azure-firewall-network-rule-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      collection_name:
+        simple: playbook-collection
+      interval:
+        simple: "10"
+      policy:
+        simple: ${AzureFirewall.Policy.name}
+      rule_names:
+        simple: new-playbook-rule
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 5cf58743-bdb6-4a2b-804a-2f9719f90a0e
+    type: regular
+    task:
+      id: 5cf58743-bdb6-4a2b-804a-2f9719f90a0e
+      version: -1
+      name: azure-firewall-network-rule-collection-delete
+      script: Azure Firewall|||azure-firewall-network-rule-collection-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      collection_name:
+        simple: playbook-collection
+      interval:
+        simple: "10"
+      policy:
+        simple: ${AzureFirewall.Policy.name}
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: f14c752b-61ea-4259-87b2-e01faee3b25a
+    type: regular
+    task:
+      id: f14c752b-61ea-4259-87b2-e01faee3b25a
+      version: -1
+      name: azure-firewall-policy-delete
+      script: Azure Firewall|||azure-firewall-policy-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      policy_names:
+        simple: ${AzureFirewall.Policy.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: aa5492be-b846-4390-85ff-02d468002fd2
+    type: regular
+    task:
+      id: aa5492be-b846-4390-85ff-02d468002fd2
+      version: -1
+      name: azure-firewall-ip-group-create
+      script: Azure Firewall|||azure-firewall-ip-group-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      interval:
+        simple: "10"
+      ip_group_name:
+        simple: xsoar-ip-group
+      ips:
+        simple: 192.168.30.12
+      location:
+        simple: eastus
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b524a3da-61d2-43d8-8ca1-c898371be134
+    type: condition
+    task:
+      id: b524a3da-61d2-43d8-8ca1-c898371be134
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.properties.ipAddresses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 42487d91-e38a-4ec5-8458-d09007e4539a
+    type: regular
+    task:
+      id: 42487d91-e38a-4ec5-8458-d09007e4539a
+      version: -1
+      name: azure-firewall-ip-group-list
+      script: Azure Firewall|||azure-firewall-ip-group-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      resource:
+        simple: resource_group
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 2d58232e-8aa1-4688-81dd-d6dfe45f48b9
+    type: condition
+    task:
+      id: 2d58232e-8aa1-4688-81dd-d6dfe45f48b9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.properties.ipAddresses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: ca1871dd-a676-479e-87b7-50146aebf724
+    type: regular
+    task:
+      id: ca1871dd-a676-479e-87b7-50146aebf724
+      version: -1
+      name: azure-firewall-ip-group-get
+      script: Azure Firewall|||azure-firewall-ip-group-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      interval:
+        simple: "10"
+      ip_group_names:
+        simple: ${AzureFirewall.IPGroup.name}
+      polling:
+        simple: "false"
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 60fbcb87-44b3-4104-87b4-768c11191325
+    type: condition
+    task:
+      id: 60fbcb87-44b3-4104-87b4-768c11191325
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.properties.ipAddresses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: bb615d5a-9f2f-4a6a-8612-8f20720a22d7
+    type: regular
+    task:
+      id: bb615d5a-9f2f-4a6a-8612-8f20720a22d7
+      version: -1
+      name: azure-firewall-ip-group-update
+      script: Azure Firewall|||azure-firewall-ip-group-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      interval:
+        simple: "10"
+      ip_group_name:
+        simple: ${AzureFirewall.IPGroup.name}
+      ips_to_add:
+        simple: 192.168.45.12,192.165.22.47
+      ips_to_remove:
+        simple: 192.168.30.12,1.1.1
+      timeout:
+        simple: "600"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: ffdf619e-b03a-415e-80b3-249844441700
+    type: condition
+    task:
+      id: ffdf619e-b03a-415e-80b3-249844441700
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureFirewall.IPGroup.properties.ipAddresses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 48f9d0ca-d304-4b0a-89cc-e79430f8b1c8
+    type: regular
+    task:
+      id: 48f9d0ca-d304-4b0a-89cc-e79430f8b1c8
+      version: -1
+      name: azure-firewall-ip-group-delete
+      script: Azure Firewall|||azure-firewall-ip-group-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      ip_group_names:
+        simple: ${AzureFirewall.IPGroup.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 0d1436d6-f423-4330-8455-87dc3b0bc978
+    type: regular
+    task:
+      id: 0d1436d6-f423-4330-8455-87dc3b0bc978
+      version: -1
+      name: azure-firewall-service-tag-list
+      script: Azure Firewall|||azure-firewall-service-tag-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      limit:
+        simple: "1"
+      location:
+        simple: eastus
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 9c83cb7a-9907-4039-8b11-fcf69f01fc77
+    type: title
+    task:
+      id: 9c83cb7a-9907-4039-8b11-fcf69f01fc77
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 200,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0
+description: ''

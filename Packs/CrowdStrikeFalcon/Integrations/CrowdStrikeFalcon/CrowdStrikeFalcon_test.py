@@ -110,7 +110,6 @@ def test_timestamp_length_equalization():
 
 def test_run_command_failure_sensor_offline(requests_mock, mocker):
     from CrowdStrikeFalcon import run_command
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     mocker.patch.object(
         demisto,
         'args',
@@ -163,11 +162,11 @@ def test_run_command_failure_sensor_offline(requests_mock, mocker):
         status_code=404,
         reason='Not found'
     )
-    run_command()
-    assert return_error_mock.call_count == 1
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error in API call to CrowdStrike Falcon: code: 404 - ' \
-                      'reason: Not found\nHost ID 284771ee197e422d5176d6634a62b934 - Sensor appears to be offline'
+    with pytest.raises(DemistoException) as error_info:
+        run_command()
+    assert str(error_info.value) == 'Error in API call to CrowdStrike Falcon: code: 404 - ' \
+                                    'reason: Not found\nHost ID 284771ee197e422d5176d6634a62b934 - ' \
+                                    'Sensor appears to be offline'
 
 
 def test_run_command_read_scope(requests_mock, mocker):
@@ -562,12 +561,10 @@ def test_upload_script_failure_already_exists(requests_mock, mocker):
             'content': "Write-Output 'Hello, World!'"
         }
     )
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    upload_script_command()
-    assert return_error_mock.call_count == 1
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error in API call to CrowdStrike Falcon: code: 409 - ' \
-                      'reason: Conflict\nfile with given name already exists'
+    with pytest.raises(DemistoException) as error_info:
+        upload_script_command()
+    assert str(error_info.value) == 'Error in API call to CrowdStrike Falcon: code: 409 - ' \
+                                    'reason: Conflict\nfile with given name already exists'
 
 
 def test_upload_script_failure_bad_inputs(requests_mock, mocker):
@@ -832,12 +829,11 @@ def test_delete_script_failure_insufficient_permissions(requests_mock, mocker):
         status_code=403,
         reason='Forbidden'
     )
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    delete_script_command()
-    assert return_error_mock.call_count == 1
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error in API call to CrowdStrike Falcon: code: 403 - ' \
-                      'reason: Forbidden\naccess denied, authorization failed'
+
+    with pytest.raises(DemistoException) as error_info:
+        delete_script_command()
+    assert str(error_info.value) == 'Error in API call to CrowdStrike Falcon: code: 403 - ' \
+                                    'reason: Forbidden\naccess denied, authorization failed'
 
 
 def test_delete_script_failure_not_found(requests_mock, mocker):
@@ -869,12 +865,10 @@ def test_delete_script_failure_not_found(requests_mock, mocker):
         status_code=404,
         reason='Not Found'
     )
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    delete_script_command()
-    assert return_error_mock.call_count == 1
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error in API call to CrowdStrike Falcon: code: 404 - ' \
-                      'reason: Not Found\nCould not find file for deletion'
+    with pytest.raises(DemistoException) as error_info:
+        delete_script_command()
+    assert str(error_info.value) == 'Error in API call to CrowdStrike Falcon: code: 404 - ' \
+                                    'reason: Not Found\nCould not find file for deletion'
 
 
 def test_list_scripts(requests_mock):
@@ -1012,12 +1006,10 @@ def test_upload_file_failure_already_exists(requests_mock, mocker):
             'name': 'HelloWorld.ps1'
         }
     )
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    upload_file_command()
-    assert return_error_mock.call_count == 1
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error in API call to CrowdStrike Falcon: code: 409 - ' \
-                      'reason: Conflict\nfile with given name already exists'
+    with pytest.raises(DemistoException) as error_info:
+        upload_file_command()
+    assert str(error_info.value) == 'Error in API call to CrowdStrike Falcon: code: 409 - ' \
+                                    'reason: Conflict\nfile with given name already exists'
 
 
 def test_get_file_without_content(requests_mock, mocker):
@@ -1257,12 +1249,10 @@ def test_delete_file_failure_insufficient_permissions(requests_mock, mocker):
         status_code=403,
         reason='Forbidden'
     )
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    delete_file_command()
-    assert return_error_mock.call_count == 1
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error in API call to CrowdStrike Falcon: code: 403 - ' \
-                      'reason: Forbidden\naccess denied, authorization failed'
+    with pytest.raises(DemistoException) as error_info:
+        delete_file_command()
+    assert str(error_info.value) == 'Error in API call to CrowdStrike Falcon: code: 403 - ' \
+                                    'reason: Forbidden\naccess denied, authorization failed'
 
 
 def test_delete_file_failure_not_found(requests_mock, mocker):
@@ -1294,12 +1284,10 @@ def test_delete_file_failure_not_found(requests_mock, mocker):
         status_code=404,
         reason='Not Found'
     )
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    delete_file_command()
-    assert return_error_mock.call_count == 1
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error in API call to CrowdStrike Falcon: code: 404 - ' \
-                      'reason: Not Found\nCould not find file for deletion'
+    with pytest.raises(DemistoException) as error_info:
+        delete_file_command()
+    assert str(error_info.value) == 'Error in API call to CrowdStrike Falcon: code: 404 - ' \
+                                    'reason: Not Found\nCould not find file for deletion'
 
 
 def test_list_files(requests_mock):
@@ -2450,25 +2438,23 @@ def test_search_iocs_command_exists(requests_mock):
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
-def test_search_iocs_command_error(requests_mock, mocker):
+def test_search_iocs_command__no_iocs(requests_mock, mocker):
     """
     Test cs-falcon-search-iocs when encountering an error
 
     Given:
-     - Call to API is bound to fail with 404
+     - No iocs exist
     When:
-     - Searching for iocs using cs-falcon-search-iocs command
+     - Searching for non existing iocs using cs-falcon-search-iocs command
     Then:
-     - Display an appropriate error via return_error
+     - Display an appropriate info in the HR
     """
     from CrowdStrikeFalcon import search_iocs_command
     requests_mock.get(
         f'{SERVER_URL}/indicators/queries/iocs/v1',
-        json={},
-        status_code=404
+        json={}
     )
     mocker.patch.object(demisto, 'results')
-    mocker.patch(RETURN_ERROR_TARGET)
     res = search_iocs_command()
     assert 'Could not find any Indicators of Compromise.' in res['HumanReadable']
 
@@ -2658,22 +2644,21 @@ def test_search_custom_iocs_command_exists(requests_mock):
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
-def test_search_custom_iocs_command_error(requests_mock, mocker):
+def test_search_custom_iocs_command__no_iocs(requests_mock, mocker):
     """
-    Test cs-falcon-search-custom-iocs when encountering an error
+    Test cs-falcon-search-custom-iocs when no iocs exist
 
     Given:
-     - Call to API is bound to fail with 404
+     - No iocs exist
     When:
-     - Searching for iocs using cs-falcon-search-custom-iocs command
+     - Searching for non existing iocs using cs-falcon-search-custom-iocs command
     Then:
-     - Display an appropriate error via return_error
+     - Display an appropriate info in HR
     """
     from CrowdStrikeFalcon import search_custom_iocs_command
     requests_mock.get(
         f'{SERVER_URL}/iocs/combined/indicator/v1',
-        json={},
-        status_code=404
+        json={}
     )
     mocker.patch.object(demisto, 'results')
     mocker.patch(RETURN_ERROR_TARGET)
@@ -2934,8 +2919,7 @@ def test_upload_custom_ioc_command_duplicate(requests_mock, mocker):
         status_code=400,
         reason='Bad Request',
     )
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    with pytest.raises(DemistoException):
+    with pytest.raises(DemistoException) as error_info:
         upload_custom_ioc_command(
             ioc_type=ioc_type,
             value=ioc_value,
@@ -2943,8 +2927,7 @@ def test_upload_custom_ioc_command_duplicate(requests_mock, mocker):
             severity='high',
             platforms='mac,linux',
         )
-    err_msg = return_error_mock.call_args[0][0]
-    assert response['resources'][0]['message'] in err_msg
+    assert response['resources'][0]['message'] in str(error_info.value)
 
 
 def test_update_custom_ioc_command(requests_mock):
@@ -3282,7 +3265,7 @@ def test_create_hostgroup_invalid(requests_mock, mocker):
         status_code=400,
         reason='Bad Request'
     )
-    with pytest.raises(SystemExit):
+    with pytest.raises(DemistoException):
         create_host_group_command(name="dem test",
                                   description="dem des",
                                   group_type='static',
@@ -3307,7 +3290,7 @@ def test_update_hostgroup_invalid(requests_mock):
         status_code=400,
         reason='Bad Request'
     )
-    with pytest.raises(SystemExit):
+    with pytest.raises(DemistoException):
         update_host_group_command(
             host_group_id='b1a0cd73ecab411581cbe467fc3319f5',
             name="dem test",
@@ -3694,20 +3677,19 @@ DETECTION_FOR_INCIDENT_CASES = [
              'some_field': 'some_example2'}
         ],
         'CrowdStrike.IncidentDetection',
-        'incident_id',
         '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
         '\n| example_behavior_1 | example_detection | example_incident_id |\n'
         '| example_behavior_2 | example_detection2 | example_incident_id |\n'),
-    ({'resources': []}, [], None, None, None, None, 'Could not find behaviors for incident zz')
+    ({'resources': []}, [], None, None, None, 'Could not find behaviors for incident zz')
 ]
 
 
 @pytest.mark.parametrize(
-    'detections, resources, expected_outputs, expected_raw, expected_prefix, expected_key, expected_md',
+    'detections, resources, expected_outputs, expected_raw, expected_prefix, expected_md',
     DETECTION_FOR_INCIDENT_CASES)
 def test_get_detection_for_incident_command(mocker, detections, resources, expected_outputs, expected_raw,
                                             expected_prefix,
-                                            expected_key, expected_md):
+                                            expected_md):
     """
     Given: An incident ID
     When: When running cs-falcon-get-detections-for-incident command
@@ -3725,7 +3707,6 @@ def test_get_detection_for_incident_command(mocker, detections, resources, expec
     res = get_detection_for_incident_command(incident_id='zz')
 
     assert res.outputs == expected_outputs
-    assert res.outputs_key_field == expected_key
     assert res.raw_response == expected_raw
     assert res.readable_output == expected_md
     assert res.outputs_prefix == expected_prefix
@@ -3733,7 +3714,8 @@ def test_get_detection_for_incident_command(mocker, detections, resources, expec
 
 @pytest.mark.parametrize('remote_id, close_incident, incident_status, detection_status, mirrored_object, entries',
                          input_data.get_remote_data_command_args)
-def test_get_remote_data_command(mocker, remote_id, close_incident, incident_status, detection_status, mirrored_object, entries):
+def test_get_remote_data_command(mocker, remote_id, close_incident, incident_status, detection_status, mirrored_object,
+                                 entries):
     """
     Given
         - arguments - id and lastUpdate time set to a lower than incident modification time
@@ -3809,7 +3791,8 @@ def test_get_remote_detection_data(mocker):
     detection_entity['severity'] = 2
     assert mirrored_data == detection_entity
     assert updated_object == {'status': 'new', 'severity': 2, 'behaviors.tactic': 'Malware',
-                              'behaviors.scenario': 'suspicious_activity', 'behaviors.objective': 'Falcon Detection Method',
+                              'behaviors.scenario': 'suspicious_activity',
+                              'behaviors.objective': 'Falcon Detection Method',
                               'behaviors.technique': 'Malicious File', 'device.hostname': 'FALCON-CROWDSTR',
                               'incident_type': 'detection'}
 
@@ -3894,7 +3877,8 @@ def test_get_modified_remote_data_command(mocker):
     assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id]
 
 
-@pytest.mark.parametrize('status', ['new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'])
+@pytest.mark.parametrize('status',
+                         ['new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'])
 def test_update_detection_request_good(mocker, status):
     """
     Given
@@ -3908,8 +3892,8 @@ def test_update_detection_request_good(mocker, status):
     from CrowdStrikeFalcon import update_detection_request
     mock_resolve_detection = mocker.patch('CrowdStrikeFalcon.resolve_detection')
     update_detection_request([input_data.remote_detection_id], status)
-    assert mock_resolve_detection.call_args.kwargs['ids'] == [input_data.remote_detection_id]
-    assert mock_resolve_detection.call_args.kwargs['status'] == status
+    assert mock_resolve_detection.call_args[1]['ids'] == [input_data.remote_detection_id]
+    assert mock_resolve_detection.call_args[1]['status'] == status
 
 
 @pytest.mark.parametrize('status', ['other', ''])
@@ -3948,7 +3932,7 @@ def test_update_remote_system_command(mocker, args, to_mock, call_args, remote_i
     command_result = update_remote_system_command(args)
     assert command_result == remote_id
     for i, call in enumerate(call_args):
-        assert mock_call.call_args_list[i].args == call
+        assert mock_call.call_args_list[i][0] == call
 
 
 @pytest.mark.parametrize('delta, close_in_cs_falcon_param, to_close', input_data.close_in_cs_falcon_args)
@@ -4043,10 +4027,10 @@ def test_update_remote_incident_tags(mocker):
     mocker.patch('CrowdStrikeFalcon.get_previous_tags', return_value={'tag_stays', 'old_tag'})
     mock_remote_incident_handle_tags = mocker.patch('CrowdStrikeFalcon.remote_incident_handle_tags')
     update_remote_incident_tags({'tag': ['new_tag', 'tag_stays']}, input_data.remote_incident_id)
-    assert mock_remote_incident_handle_tags.call_args_list[0].args[0] == {'old_tag'}
-    assert mock_remote_incident_handle_tags.call_args_list[0].args[1] == 'delete_tag'
-    assert mock_remote_incident_handle_tags.call_args_list[1].args[0] == {'new_tag'}
-    assert mock_remote_incident_handle_tags.call_args_list[1].args[1] == 'add_tag'
+    assert mock_remote_incident_handle_tags.call_args_list[0][0][0] == {'old_tag'}
+    assert mock_remote_incident_handle_tags.call_args_list[0][0][1] == 'delete_tag'
+    assert mock_remote_incident_handle_tags.call_args_list[1][0][0] == {'new_tag'}
+    assert mock_remote_incident_handle_tags.call_args_list[1][0][1] == 'add_tag'
 
 
 def test_get_previous_tags(mocker):
@@ -4063,7 +4047,8 @@ def test_get_previous_tags(mocker):
                                   'trace_id': '7fce39d4-d695-4aac-bdcf-2d9138bea57c'},
                          'resources': [input_data.response_incident],
                          'errors': []}
-    mock_get_incidents_entities = mocker.patch('CrowdStrikeFalcon.get_incidents_entities', return_value=incident_response)
+    mock_get_incidents_entities = mocker.patch('CrowdStrikeFalcon.get_incidents_entities',
+                                               return_value=incident_response)
     assert get_previous_tags(input_data.remote_incident_id) == set(input_data.response_incident["tags"])
     assert mock_get_incidents_entities.call_args[0][0] == [input_data.remote_incident_id]
 
@@ -4101,3 +4086,30 @@ def test_get_mapping_fields_command():
     assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
     assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection'
     assert result.scheme_types_mappings[1].fields.keys() == {'status'}
+
+
+def test_error_in_get_detections_by_behaviors(mocker):
+    """
+    Given
+        - Error occurred in call to get_detections_by_behaviors
+    When
+        - Run the cs-falcon-get-detections-for-incident command
+    Then
+        - Assert empty object returned and demisto.error was called
+    """
+
+    # prepare
+    from CrowdStrikeFalcon import get_detection_for_incident_command
+    mocker.patch.object
+    mocker.patch('CrowdStrikeFalcon.get_behaviors_by_incident',
+                 return_value={'resources': [{'dummy': 'test'}], 'meta': {'pagination': {'total': 1}}})
+
+    def excpetion_raiser(*args, **kwargs):
+        raise Exception
+
+    mocker.patch('CrowdStrikeFalcon.http_request', side_effect=excpetion_raiser)
+    mocker.patch.object(demisto, 'error')
+
+    res = get_detection_for_incident_command(incident_id='zz')
+    assert res.readable_output
+    demisto.error.assert_called_once_with('Error occurred when trying to get detections by behaviors: ')

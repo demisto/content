@@ -122,7 +122,7 @@ description: SaaS Security API is a cloud-based service that you can connect dir
   sharing and permission visibility, and threat detection. This Content Pack provides insights
   into risks posed by data exposure and policy violations and enables you to use Cortex XSOAR
   to effectively manage the incidents discovered by SaaS Security API.
-display: SaaS Security (Beta)
+display: SaaS Security
 name: SaasSecurity
 script:
   commands:
@@ -524,10 +524,9 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.4.30607
 defaultmapperin: Saas Security - Incoming Mapper
 defaultmapperout: Saas Security - Outgoing Mapper
 fromversion: 6.0.0
 tests:
 - SaasSecurity-Test
-beta: true

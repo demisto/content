@@ -1,0 +1,21 @@
+{
+    "result": [
+        {
+            "id": "firewall_rule_id",
+            "paused": true,
+            "action": "block",
+            "priority": 1,
+            "filter": {
+                "id": "f72dc275945a44038ba19be51a0b3438",
+                "expression": "(ip.src eq 120.2.2.8)",
+                "paused": false
+            },
+            "created_on": "2022-04-25T13:48:50Z",
+            "modified_on": "2022-04-25T13:48:50Z",
+            "index": 1
+        }
+    ],
+    "success": true,
+    "errors": [],
+    "messages": []
+}

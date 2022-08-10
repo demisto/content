@@ -82,10 +82,6 @@
             "mandatory": false,
             "display_name": "Palo Alto Networks WildFire"
         },
-        "XFE": {
-            "mandatory": false,
-            "display_name": "IBM X-Force Exchange"
-        },
         "ReversingLabs_Titanium_Cloud": {
             "mandatory": false,
             "display_name": "ReversingLabs Titanium Cloud"

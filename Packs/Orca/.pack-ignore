@@ -6,3 +6,6 @@ ignore=IN145
 
 [file:Orca_image.png]
 ignore=IM111
+
+[file:classifier-OrcaAlert.json]
+ignore=BA101

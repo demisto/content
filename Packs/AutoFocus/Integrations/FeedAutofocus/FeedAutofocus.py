@@ -128,6 +128,7 @@ class Client(BaseClient):
             'Content-Type': "application/json"
         }
 
+        # This option is deprecated. We only keep this for BC purpose.
         if feed_type == "Daily Threat Feed":
             urls = [DAILY_FEED_BASE_URL]
 

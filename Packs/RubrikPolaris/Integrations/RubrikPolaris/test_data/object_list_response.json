@@ -1,0 +1,86 @@
+{
+  "raw_response": {
+    "data": {
+      "inventoryRoot": {
+        "descendantConnection": {
+          "edges": [
+            {
+              "node": {
+                "id": "0014037c-70ae-4c53-b1cf-df6926b88968",
+                "effectiveSlaDomain": {
+                  "id": "UNPROTECTED",
+                  "name": "UNPROTECTED",
+                  "description": ""
+                },
+                "cluster": {
+                  "id": "x",
+                  "name": "x"
+                },
+                "logicalPath": [
+                  {
+                    "name": "AMER Users",
+                    "objectType": "O365Group"
+                  },
+                  {
+                    "name": "EMEA Users",
+                    "objectType": "O365Group"
+                  },
+                  {
+                    "name": "Rubrik Demo",
+                    "objectType": "O365Org"
+                  }
+                ],
+                "physicalPath": [],
+                "name": "Christian LeCorre",
+                "objectType": "O365User"
+              }
+            }
+          ],
+          "pageInfo": {
+            "endCursor": "Y3Vyc29yOmludDow",
+            "hasNextPage": true,
+            "hasPreviousPage": false
+          }
+        }
+      }
+    }
+  },
+  "empty_response": {
+    "data": {}
+  },
+  "outputs": [
+    {
+      "id": "0014037c-70ae-4c53-b1cf-df6926b88968",
+      "effectiveSlaDomain": {
+        "id": "UNPROTECTED",
+        "name": "UNPROTECTED",
+        "description": ""
+      },
+      "cluster": {
+        "id": "x",
+        "name": "x"
+      },
+      "logicalPath": [
+        {
+          "name": "AMER Users",
+          "objectType": "O365Group"
+        },
+        {
+          "name": "EMEA Users",
+          "objectType": "O365Group"
+        },
+        {
+          "name": "Rubrik Demo",
+          "objectType": "O365Org"
+        }
+      ],
+      "name": "Christian LeCorre",
+      "objectType": "O365User"
+    }
+  ],
+  "page_token": {
+    "has_next_page": true,
+    "name": "rubrik-polaris-object-list",
+    "next_page_token": "Y3Vyc29yOmludDow"
+  }
+}

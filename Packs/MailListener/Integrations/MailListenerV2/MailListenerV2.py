@@ -44,10 +44,11 @@ class Email(object):
         self.headers = email_object.headers
         self.raw_body = email_object.body if include_raw_body else None
         # According to the mailparser documentation the datetime object is in utc
-        self.date = email_object.date.replace(tzinfo=timezone.utc)
+        self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None
         self.raw_json = self.generate_raw_json()
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
+        self.message_id = email_object.message_id
 
     @staticmethod
     def handle_message_slashes(message_bytes: bytes) -> bytes:
@@ -231,6 +232,7 @@ def fetch_incidents(client: IMAPClient,
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
+    logger(fetch_incidents)
     uid_to_fetch_from = last_run.get('last_uid', 1)
     time_to_fetch_from = parse(last_run.get('last_fetch', f'{first_fetch_time} UTC'), settings={'TIMEZONE': 'UTC'})
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
@@ -294,7 +296,13 @@ def fetch_mails(client: IMAPClient,
                                                permitted_from_domains,
                                                uid_to_fetch_from)
         demisto.debug(f'Searching for email messages with criteria: {messages_query}')
-        messages_uids = client.search(messages_query)[:limit]
+        messages_uids = client.search(messages_query)
+        # first fetch takes last page only (workaround as first_fetch filter is date accurate)
+        if uid_to_fetch_from == 1:
+            messages_uids = messages_uids[limit * -1:]
+        else:
+            messages_uids = messages_uids[:limit]
+
     mails_fetched = []
     messages_fetched = []
     demisto.debug(f'Messages to fetch: {messages_uids}')
@@ -309,10 +317,13 @@ def fetch_mails(client: IMAPClient,
         if not message_bytes:
             continue
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-        if (not time_to_fetch_from or time_to_fetch_from < email_message_object.date) and \
+        if (not time_to_fetch_from or (email_message_object.date and time_to_fetch_from < email_message_object.date)) and \
                 int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)
+        elif email_message_object.date is None:
+            demisto.error(f"Skipping email with ID {email_message_object.message_id},"
+                          f" it doesn't include a date field that shows when was it received.")
         else:
             demisto.debug(f'Skipping {email_message_object.id} with date {email_message_object.date}. '
                           f'uid_to_fetch_from: {uid_to_fetch_from}, first_fetch_time: {time_to_fetch_from}')
@@ -369,6 +380,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     Returns:
         A list with arguments for the email search query
     """
+    logger(generate_search_query)
     permitted_from_addresses_list = argToList(permitted_from_addresses)
     permitted_from_domains_list = argToList(permitted_from_domains)
     messages_query = ''
@@ -397,7 +409,8 @@ def list_emails(client: IMAPClient,
                 first_fetch_time: str,
                 with_headers: bool,
                 permitted_from_addresses: str,
-                permitted_from_domains: str) -> CommandResults:
+                permitted_from_domains: str,
+                _limit: int,) -> CommandResults:
     """
     Lists all emails that can be fetched with the given configuration and return a preview version of them.
     Args:
@@ -406,6 +419,7 @@ def list_emails(client: IMAPClient,
         with_headers: Whether to add headers to the search query
         permitted_from_addresses: A string representation of list of mail addresses to fetch from
         permitted_from_domains: A string representation list of domains to fetch from
+        _limit: Upper limit as set in the integration params.
 
     Returns:
         The Subject, Date, To, From and ID of the fetched mails wrapped in command results object.
@@ -416,7 +430,8 @@ def list_emails(client: IMAPClient,
                                       time_to_fetch_from=fetch_time,
                                       with_headers=with_headers,
                                       permitted_from_addresses=permitted_from_addresses,
-                                      permitted_from_domains=permitted_from_domains)
+                                      permitted_from_domains=permitted_from_domains,
+                                      limit=_limit)
     results = [{'Subject': email.subject,
                 'Date': email.date.isoformat(),
                 'To': email.to,
@@ -485,7 +500,8 @@ def main():
                                            first_fetch_time=first_fetch_time,
                                            with_headers=with_headers,
                                            permitted_from_addresses=permitted_from_addresses,
-                                           permitted_from_domains=permitted_from_domains))
+                                           permitted_from_domains=permitted_from_domains,
+                                           _limit=limit))
             elif demisto.command() == 'mail-listener-get-email':
                 return_results(get_email(client=client,
                                          message_id=args.get('message-id')))

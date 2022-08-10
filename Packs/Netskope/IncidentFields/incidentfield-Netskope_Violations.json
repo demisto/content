@@ -1,0 +1,30 @@
+{
+    "id": "incident_netskopeviolations",
+    "version": -1,
+    "modified": "2022-03-23T14:27:03.809839182+02:00",
+    "name": "Netskope Violations",
+    "ownerOnly": false,
+    "cliName": "netskopeviolations",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Netskope DLP"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

@@ -1,0 +1,746 @@
+category: Endpoint
+commonfields:
+  id: Hurukai
+  version: -1
+configuration:
+- display: API URL
+  name: url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: Hurukai alert
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: API Key
+  name: apikey
+  required: false
+  type: 0
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- additionalinfo: Comma-separated list of types of alerts to fetch (sigma, yara, hlai, vt, ransom, ioc, glimps, orion...).
+  display: Fetch alerts with type
+  name: alert_type
+  required: false
+  type: 0
+- defaultvalue: Low
+  display: Minimum severity of alerts to fetch
+  name: min_severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: true
+  type: 15
+- display: Fetch alerts with status (ACTIVE, CLOSED)
+  name: alert_status
+  options:
+  - ACTIVE
+  - CLOSED
+  required: false
+  type: 15
+- additionalinfo: Start fetching alerts whose creation date is higher than now minus <first_fetch> days.
+  defaultvalue: '10'
+  display: First fetch time
+  name: first_fetch
+  required: true
+  type: 0
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+defaultmapperin: Hurukai alert mapper
+description: |-
+  HarfangLab EDR Connector,
+  Compatible version 2.13.7+
+display: HarfangLab EDR
+name: Hurukai
+script:
+  commands:
+  - name: test-module
+    arguments: []
+    description: Allows to test that the HarfangLab EDR API is reachable
+  - name: fetch-incidents
+    arguments: []
+    description: Allows to retrieve incidents from the HarfangLab EDR API
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+    description: Get endpoint information from agent_id
+    name: harfanglab-get-endpoint-info
+    outputs:
+    - contextPath: Harfanglab.Agent
+      description: Agent information
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname
+    description: Search for endpoint information from a hostname
+    name: harfanglab-endpoint-search
+    outputs:
+    - contextPath: Harfanglab.Agent.id
+      description: agent id
+      type: string
+    - contextPath: Harfanglab.status
+      description: Status
+      type: string
+  - arguments:
+    - name: hash
+      description: filehash to search (md5, sha1, sha256)
+    - name: hostname
+      description: Endpoint hostname
+      required: true
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: to_date
+    description: Search processes on a specific hostname
+    name: harfanglab-telemetry-processes
+    outputs:
+    - contextPath: agent.agentid
+      description: An agent's identifier
+      type: string
+    - contextPath: current_directory
+      description: ''
+      type: string
+    - contextPath: hashes.sha256
+      description: ''
+      type: string
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of pipes from a host (Windows)
+    name: harfanglab-job-pipelist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    - name: filename
+      description: Path of the file to download
+      required: true
+    description: Start a job to download a file from a host (Windows / Linux)
+    name: harfanglab-job-artifact-downloadfile
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of prefetches from a host (Windows)
+    name: harfanglab-job-prefetchlist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of run keys from a host (Windows)
+    name: harfanglab-job-runkeylist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of scheduled tasks from a host (Windows)
+    name: harfanglab-job-scheduledtasklist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of drivers from a host (Windows)
+    name: harfanglab-job-driverlist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of services from a host (Windows)
+    name: harfanglab-job-servicelist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of processes from a host (Windows / Linux)
+    name: harfanglab-job-processlist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of network connections from a host (Windows / Linux)
+    name: harfanglab-job-networkconnectionlist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of network shares from a host (Windows)
+    name: harfanglab-job-networksharelist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of sessions from a host (Windows)
+    name: harfanglab-job-sessionlist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of persistence items from a host (Linux)
+    name: harfanglab-job-persistencelist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    - description: exact filename to search
+      name: filename
+    - description: exact filepath to search
+      name: filepath
+    - description: filehash to search (md5, sha1, sha256)
+      name: hash
+    - description: restrict searchs for filename or filepath or filepath_regex to a given path
+      name: search_in_path
+    - description: size of the file associated to the 'hash' parameters. If known, it will speed up the search process.
+      name: hash_filesize
+    - description: regex to search in registry (key or value)
+      name: registry
+    - description: 'search a regex on a filepath '
+      name: filepath_regex
+    description: Start a job to search for IOCs on a host (Windows / Linux)
+    name: harfanglab-job-ioc
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of startup items from a host (Windows)
+    name: harfanglab-job-startuplist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the list of WMI items from a host (Windows)
+    name: harfanglab-job-wmilist
+    outputs:
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+    - contextPath: action
+      description: HarfangLab job action
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to download the MFT from a host (Windows)
+    name: harfanglab-job-artifact-mft
+    outputs:
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
+      type: string
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to download the hives from a host (Windows)
+    name: harfanglab-job-artifact-hives
+    outputs:
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
+      type: string
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to download the event logs from a host (Windows)
+    name: harfanglab-job-artifact-evtx
+    outputs:
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
+      type: string
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to download Linux log files from a host (Linux)
+    name: harfanglab-job-artifact-logs
+    outputs:
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
+      type: string
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to download Linux filesystem entries from a host (Linux)
+    name: harfanglab-job-artifact-filesystem
+    outputs:
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
+      type: string
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to download all artifacts from a host (Windows MFT, Hives, evt/evtx, Prefetch, USN, Linux logs and file list)
+    name: harfanglab-job-artifact-all
+    outputs:
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
+      type: string
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Start a job to get the entine RAM from a host (Windows / Linux)
+    name: harfanglab-job-artifact-ramdump
+    outputs:
+    - contextPath: Harfanglab.artifact.download_link
+      description: URL to download the artifact
+      type: string
+    - contextPath: Harfanglab.Job.ID
+      description: id
+      type: string
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname
+      required: true
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: to_date
+    - name: source_address
+      description: Source IP address
+    - name: source_port
+      description: Source port
+    - name: destination_address
+      description: Destination IP address
+    - name: destination_port
+      description: Destination port
+    description: Search network connections from a specific hostname
+    name: harfanglab-telemetry-network
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname
+      required: true
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: to_date
+    description: Search event logs from a specific hostname
+    name: harfanglab-telemetry-eventlog
+  - arguments:
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: to_date
+    - name: hash
+      description: filehash to search (md5, sha1, sha256)
+    description: Search for binaries
+    name: harfanglab-telemetry-binary
+  - arguments:
+    - isArray: true
+      name: ids
+      description: Coma-separated list of job ids
+      required: true
+    description: Get job status information
+    name: harfanglab-job-info
+    outputs:
+    - contextPath: Harfanglab.Job.Status
+      description: Job Status
+      type: string
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's list of pipes from job results
+    name: harfanglab-result-pipelist
+    outputs:
+    - contextPath: Harfanglab.Pipe.data
+      description: Provides a list of named pipes
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's list of prefetches from job results
+    name: harfanglab-result-prefetchlist
+    outputs:
+    - contextPath: Harfanglab.Prefetch.data
+      description: Provides a list of prefetch files
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's list of run keys from job results
+    name: harfanglab-result-runkeylist
+    outputs:
+    - contextPath: Harfanglab.RunKey.data
+      description: Provides a list of Run Keys
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+    description: Get a hostname's list of scheduled tasks from job results
+    name: harfanglab-result-scheduledtasklist
+    outputs:
+    - contextPath: Harfanglab.ScheduledTask.data
+      description: Provides a list of scheduled tasks
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+    description: Get a hostname's loaded drivers from job results
+    name: harfanglab-result-driverlist
+    outputs:
+    - contextPath: Harfanglab.Driver.data
+      description: Provides a list of loaded drivers
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+    description: Get a hostname's list of services from job results
+    name: harfanglab-result-servicelist
+    outputs:
+    - contextPath: Harfanglab.Service.data
+      description: Provides a list of services
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's list of processes from job results
+    name: harfanglab-result-processlist
+    outputs:
+    - contextPath: Harfanglab.Process.data
+      description: Provides a list of processes
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's network connections from job results
+    name: harfanglab-result-networkconnectionlist
+    outputs:
+    - contextPath: Harfanglab.NetworkConnection.data
+      description: Provides a list of active network connections
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's network shares from job results
+    name: harfanglab-result-networksharelist
+    outputs:
+    - contextPath: Harfanglab.NetworkShare.data
+      description: Provides a list of network shares
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's sessions from job results
+    name: harfanglab-result-sessionlist
+    outputs:
+    - contextPath: Harfanglab.Session.data
+      description: Provides a list of active sessions
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's persistence items from job results
+    name: harfanglab-result-persistencelist
+    outputs:
+    - contextPath: Harfanglab.PersistenceList.data
+      description: Provides a list of persistence means
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get the list of items matching IOCs searched in an IOC job
+    name: harfanglab-result-ioc
+    outputs:
+    - contextPath: Harfanglab.IOC.data
+      description: Provides a list of matching elements
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's startup items from job results
+    name: harfanglab-result-startuplist
+    outputs:
+    - contextPath: Harfanglab.Startup.data
+      description: Provides a list of startup files
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's WMI items from job results
+    name: harfanglab-result-wmilist
+    outputs:
+    - contextPath: Harfanglab.Wmi.data
+      description: Provides a list of WMI items
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's MFT from job results
+    name: harfanglab-result-artifact-mft
+    outputs:
+    - contextPath: Harfanglab.Artifact.data
+      description: Provides a link to download the raw MFT
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's hives from job results
+    name: harfanglab-result-artifact-hives
+    outputs:
+    - contextPath: Harfanglab.Artifact.data
+      description: Provides a link to download the raw hives
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+    description: Get a hostname's log files from job results
+    name: harfanglab-result-artifact-evtx
+    outputs:
+    - contextPath: Harfanglab.Artifact.data
+      description: Provides a link to download the evt/evtx files
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+    description: Get a hostname's log files from job results
+    name: harfanglab-result-artifact-logs
+    outputs:
+    - contextPath: Harfanglab.Artifact.data
+      description: Provides a link to download the log files
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+    description: Get a hostname's filesystem entries from job results
+    name: harfanglab-result-artifact-filesystem
+    outputs:
+    - contextPath: Harfanglab.Artifact.data
+      description: Provides a link to download the CSV file with filesystem entries
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+    description: Get all artifacts from a hostname from job results
+    name: harfanglab-result-artifact-all
+    outputs:
+    - contextPath: Harfanglab.Artifact.data
+      description: Provides a link to download an archive with all raw artifacts
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's file from job results
+    name: harfanglab-result-artifact-downloadfile
+    outputs:
+    - contextPath: Harfanglab.DownloadFile.data
+      description: Provides a link to download the file
+  - arguments:
+    - name: job_id
+      description: Job id as returned by the job submission commands
+      required: true
+    description: Get a hostname's RAM dump from job results
+    name: harfanglab-result-artifact-ramdump
+    outputs:
+    - contextPath: Harfanglab.Ramdump.data
+      description: Provides a link to download the raw RAM dump
+  - arguments:
+    - name: hash
+      description: filehash to search (md5, sha1, sha256)
+      required: true
+    outputs:
+    - contextPath: Harfanglab.Hash
+      description: Provides statistics associated to currently running processes and previously executed processes associated to hash
+    description: Command used to search a hash IOC in database
+    name: harfanglab-hunt-search-hash
+  - arguments:
+    - name: hash
+      description: filehash to search (sha256)
+      required: true
+    outputs:
+    - contextPath: Harfanglab.HuntRunningProcessSearch.data
+      description: List of all systems where processes associated to hash are running
+    description: Command used to search running process associated with Hash
+    name: harfanglab-hunt-search-running-process-hash
+  - arguments:
+    - name: hash
+      description: filehash to search (sha256)
+      required: true
+    outputs:
+    - contextPath: Harfanglab.HuntRunnedProcessSearch.data
+      description: List of all systems where processes associated to hash have been previously running
+    description: Command used to search runned process associated with Hash
+    name: harfanglab-hunt-search-runned-process-hash
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Command used to isolate an endpoint from the network while remaining connected to the EDR manager
+    name: harfanglab-isolate-endpoint
+  - arguments:
+    - name: agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      required: true
+    description: Command used to deisolate an endpoint and reconnect it to the network
+    name: harfanglab-deisolate-endpoint
+  - arguments:
+    - name: security_event_id
+      description: Security event id
+      required: true
+    - name: status
+      description: New status of the security event id (New, Investigating, False Positive, Closed)
+      required: true
+      type: '15'
+    description: Command used to change the status of a security event
+    name: harfanglab-change-security-event-status
+  - arguments:
+    - name: agentid
+      description: Agent identifier
+      required: true
+    - name: policy
+      description: Policy name
+      required: true
+    description: Assign a policy to an agent
+    name: harfanglab-assign-policy-to-agent
+  - arguments:
+    - name: ioc_value
+      description: IOC value
+      required: true
+    - name: ioc_type
+      description: IOC type (hash, filename, filepath)
+      required: true
+    - name: ioc_comment
+      description: Comment associated to IOC
+    - name: ioc_status
+      description: IOC status (stable, testing)
+      required: true
+    - name: source_name
+      description: IOC Source Name
+      required: true
+    description: Add an IOC to a Threat Intelligence source
+    name: harfanglab-add-ioc-to-source
+  - arguments:
+    - name: ioc_value
+      description: IOC value
+      required: true
+    - name: source_name
+      description: IOC Source Name
+      required: true
+    description: Delete an IOC from a Threat Intelligence source
+    name: harfanglab-delete-ioc-from-source
+  dockerimage: demisto/python3:3.10.4.30607
+  isfetch: true
+  longRunning: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

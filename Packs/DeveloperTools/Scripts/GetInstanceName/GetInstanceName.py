@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict, Any, Tuple
-import traceback
 
 
 def instance_check(instances, integration_name: str) -> Tuple[bool, Any]:
@@ -36,7 +35,6 @@ def main():
     try:
         return_results(get_instance_name_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute Script. Error: {str(ex)}')
 
 

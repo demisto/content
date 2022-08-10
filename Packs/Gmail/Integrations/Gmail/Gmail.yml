@@ -3,8 +3,8 @@ commonfields:
   id: Gmail
   version: -1
 configuration:
-- display: Email of user with admin privileges (the Password refers to the content
-    of the Service Account file)
+- display: Email of user with admin privileges
+  displaypassword: The content of the Service Account file
   name: adminEmail
   required: true
   type: 9
@@ -49,6 +49,37 @@ display: Gmail
 name: Gmail
 script:
   commands:
+  - arguments:
+    - default: true
+      description: The user's email address. The "me" special value can be used to
+        indicate the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Lists all labels in the user's mailbox.
+    execution: false
+    name: gmail-list-labels
+    outputs:
+    - contextPath: GmailLabel.UserID
+      description: The UserID the label belongs to.
+      type: String
+    - contextPath: GmailLabel.Name
+      description: The name of the label.
+      type: String
+    - contextPath: GmailLabel.ID
+      description: The label ID.
+      type: String
+    - contextPath: GmailLabel.Type
+      description: The label type.
+      type: String
+    - contextPath: GmailLabel.MessageListVisibility
+      description: The label message list visibility.
+      type: String
+    - contextPath: GmailLabel.LabelListVisibility
+      description: The label list visbility.
+      type: String
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to
@@ -610,6 +641,16 @@ script:
       predefined:
       - 'False'
       - 'True'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to return only mailboxes which contain the email. Default
+        is "False".
+      name: show-only-mailboxes
+      predefined:
+      - "false"
+      - "true"
       required: false
       secret: false
     deprecated: false

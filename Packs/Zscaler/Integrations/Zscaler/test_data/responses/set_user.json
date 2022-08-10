@@ -1,0 +1,18 @@
+{
+    "status_code": 200,
+    "adminUser": false,
+    "deleted": false,
+    "department": {
+        "id": 12,
+        "name": "\"user test\""
+    },
+    "email": "user@test.com",
+    "groups": [
+        {
+            "id": 13,
+            "name": "name_test"
+        }
+    ],
+    "id": 11,
+    "name": "name.test.com"
+}

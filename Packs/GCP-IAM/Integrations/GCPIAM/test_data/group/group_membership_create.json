@@ -1,0 +1,15 @@
+{
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.apps.cloudidentity.groups.v1.Membership",
+    "name": "groups/group-3-name/memberships/membership-1",
+    "preferredMemberKey": {
+      "id": "user-2@xsoar.com"
+    },
+    "roles": [
+      {
+        "name": "MEMBER"
+      }
+    ]
+  }
+}

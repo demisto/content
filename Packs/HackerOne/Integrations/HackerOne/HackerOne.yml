@@ -92,7 +92,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 'False'
+- defaultvalue: 'false'
   display: Fetch incidents
   name: isFetch
   required: false

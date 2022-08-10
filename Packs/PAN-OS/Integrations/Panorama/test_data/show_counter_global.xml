@@ -1,0 +1,20 @@
+<response status="success">
+    <result>
+        <global>
+            <t>645</t>
+            <counters>
+                <entry>
+                    <category>packet</category>
+                    <name>pkt_recv</name>
+                    <value>17719025</value>
+                    <rate>12</rate>
+                    <aspect>pktproc</aspect>
+                    <desc>Packets received</desc>
+                    <id>17</id>
+                    <severity>info</severity>
+                </entry>
+            </counters>
+        </global>
+        <dp>dp0</dp>
+    </result>
+</response>

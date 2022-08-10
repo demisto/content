@@ -1,7 +1,9 @@
 id: Microsoft Defender Advanced Threat Protection - Test
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Microsoft Defender Advanced Threat Protection - Test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
   "0":
     id: "0"
@@ -20,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1985,
           "y": 50
         }
       }
@@ -46,6 +48,7 @@ tasks:
     nexttasks:
       '#none#':
       - "25"
+      - "52"
     scriptarguments:
       retry-count:
         simple: "3"
@@ -55,7 +58,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 695,
           "y": 720
         }
       }
@@ -100,7 +103,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 480,
           "y": 1070
         }
       }
@@ -126,7 +129,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 2120
         }
       }
@@ -164,7 +167,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
+          "x": 480,
           "y": 545
         }
       }
@@ -239,7 +242,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 480,
           "y": 1595
         }
       }
@@ -278,7 +281,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 480,
           "y": 1945
         }
       }
@@ -313,7 +316,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 480,
           "y": 1245
         }
       }
@@ -352,7 +355,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 480,
           "y": 1420
         }
       }
@@ -394,7 +397,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1985,
           "y": 370
         }
       }
@@ -440,7 +443,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 480,
           "y": 895
         }
       }
@@ -476,7 +479,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1770,
           "y": 1595
         }
       }
@@ -510,7 +513,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1985,
           "y": 195
         }
       }
@@ -546,7 +549,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1340,
           "y": 1595
         }
       }
@@ -591,7 +594,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 2200,
           "y": 1595
         }
       }
@@ -627,7 +630,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1340,
           "y": 1770
         }
       }
@@ -663,7 +666,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1340,
           "y": 1945
         }
       }
@@ -699,7 +702,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1770,
           "y": 1770
         }
       }
@@ -735,7 +738,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1770,
           "y": 1945
         }
       }
@@ -783,7 +786,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 2200,
           "y": 1770
         }
       }
@@ -823,7 +826,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 2200,
           "y": 1945
         }
       }
@@ -871,7 +874,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 480,
           "y": 1770
         }
       }
@@ -907,7 +910,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 2630,
           "y": 1770
         }
       }
@@ -942,7 +945,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 2630,
           "y": 1945
         }
       }
@@ -980,7 +983,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 50,
           "y": 1420
         }
       }
@@ -1019,7 +1022,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 50,
           "y": 1595
         }
       }
@@ -1058,7 +1061,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 50,
           "y": 1770
         }
       }
@@ -1100,7 +1103,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 50,
           "y": 1945
         }
       }
@@ -1134,7 +1137,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 3060,
           "y": 1770
         }
       }
@@ -1168,7 +1171,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 3060,
           "y": 1945
         }
       }
@@ -1179,13 +1182,137 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: e32a8a3f-5d76-4f76-8f5a-f0a96cab096b
+    type: regular
+    task:
+      id: e32a8a3f-5d76-4f76-8f5a-f0a96cab096b
+      version: -1
+      name: Get machine related alerts
+      description: Retrieves all Alerts related to a specific device.
+      script: '|||microsoft-atp-get-machine-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      machine_id:
+        complex:
+          root: MicrosoftATP.Alert
+          accessor: MachineID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 73f9141b-e974-4bdf-8f77-b55f12d7ca76
+    type: condition
+    task:
+      id: 73f9141b-e974-4bdf-8f77-b55f12d7ca76
+      version: -1
+      name: Assert related alerts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MicrosoftATP.MachineAlerts.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: a9f67a69-f5e4-45de-85ff-e53b9dc06bd0
+    type: regular
+    task:
+      id: a9f67a69-f5e4-45de-85ff-e53b9dc06bd0
+      version: -1
+      name: Get machine logged on users
+      description: Retrieves a collection of logged on users on a specific device.
+      script: '|||microsoft-atp-get-machine-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      machine_id:
+        complex:
+          root: MicrosoftATP.Machine.ID
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: MicrosoftATP.Machine.ID
+                iscontext: true
+              right:
+                value:
+                  simple: "489903"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2135,
-        "width": 2960,
+        "width": 3390,
         "x": 50,
         "y": 50
       }
@@ -1193,4 +1320,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.2.0
+description: ''

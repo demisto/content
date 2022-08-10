@@ -1,0 +1,20 @@
+comment: |
+  populates the value of the GLPI Ticket State field and display it in a layout widget.
+commonfields:
+  id: GLPIIncidentStatus
+  version: -1
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
+name: GLPIIncidentStatus
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+- python
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

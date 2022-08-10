@@ -33,7 +33,7 @@ def test_module() -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
+    message, picus_accessToken = '', None
     try:
         picus_server = str(demisto.params().get("picus_server"))
         picus_server = picus_server[:-1] if picus_server.endswith("/") else picus_server

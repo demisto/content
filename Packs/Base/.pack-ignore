@@ -51,3 +51,11 @@ CreateIndicatorRelationship
 CommonServerPython
 CommonServer
 mergeVersionedIntegrationContext
+SearchIndicatorRelationships 
+CommandResults
+YMLMetadataCollector
+siam
+XSIAM
+EntryType
+Enums
+CustomIndicator

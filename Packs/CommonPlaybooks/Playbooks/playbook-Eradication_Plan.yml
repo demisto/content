@@ -24,14 +24,14 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
-      - "21"
       - "15"
+      - "42"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 190,
-          "y": 270
+          "y": 450
         }
       }
     note: false
@@ -124,7 +124,7 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 460
+          "y": 620
         }
       }
     note: false
@@ -161,7 +161,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.ProcessName
+                root: inputs.FilePath
             iscontext: true
           right:
             value: {}
@@ -197,7 +197,7 @@ tasks:
       {
         "position": {
           "x": 1100,
-          "y": 450
+          "y": 620
         }
       }
     note: false
@@ -231,8 +231,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -490,
-          "y": 635
+          "x": -510,
+          "y": 975
         }
       }
     note: false
@@ -304,8 +304,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -710,
-          "y": 450
+          "x": -730,
+          "y": 790
         }
       }
     note: false
@@ -331,8 +331,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -710,
-          "y": 1380
+          "x": -730,
+          "y": 1720
         }
       }
     note: false
@@ -362,7 +362,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 635
+          "y": 805
         }
       }
     note: false
@@ -443,7 +443,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 630
+          "y": 800
         }
       }
     note: false
@@ -481,7 +481,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 1195
+          "y": 1365
         }
       }
     note: false
@@ -531,7 +531,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": 630
+          "y": 800
         }
       }
     note: false
@@ -569,7 +569,7 @@ tasks:
       {
         "position": {
           "x": 880,
-          "y": 1195
+          "y": 1365
         }
       }
     note: false
@@ -599,7 +599,7 @@ tasks:
       {
         "position": {
           "x": 880,
-          "y": 630
+          "y": 800
         }
       }
     note: false
@@ -671,8 +671,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -930,
-          "y": 635
+          "x": -950,
+          "y": 975
         }
       }
     note: false
@@ -742,7 +742,7 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 1380
+          "y": 1550
         }
       }
     note: false
@@ -769,7 +769,7 @@ tasks:
       {
         "position": {
           "x": 1100,
-          "y": 1380
+          "y": 1550
         }
       }
     note: false
@@ -803,8 +803,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -930,
-          "y": 1195
+          "x": -950,
+          "y": 1535
         }
       }
     note: false
@@ -848,8 +848,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -930,
-          "y": 810
+          "x": -950,
+          "y": 1150
         }
       }
     note: false
@@ -894,7 +894,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 810
+          "y": 980
         }
       }
     note: false
@@ -939,7 +939,7 @@ tasks:
       {
         "position": {
           "x": 880,
-          "y": 810
+          "y": 980
         }
       }
     note: false
@@ -989,7 +989,7 @@ tasks:
       {
         "position": {
           "x": 880,
-          "y": 1010
+          "y": 1180
         }
       }
     note: false
@@ -1027,7 +1027,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 1010
+          "y": 1180
         }
       }
     note: false
@@ -1064,8 +1064,47 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -930,
-          "y": 1010
+          "x": -950,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 53b9f1ee-4114-4ca1-8d63-2f0f5e2d0255
+    type: condition
+    task:
+      id: 53b9f1ee-4114-4ca1-8d63-2f0f5e2d0255
+      version: -1
+      name: Is Active Directory Query v2 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "25"
+      "yes":
+      - "21"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": 610
         }
       }
     note: false
@@ -1078,24 +1117,30 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "14_33_#default#": 0.25,
-      "15_34_#default#": 0.26,
-      "21_20_YES": 0.45,
-      "21_25_#default#": 0.26,
-      "21_32_Manual": 0.71,
+      "14_26_Manual": 0.35,
+      "14_27_yes": 0.29,
+      "14_33_#default#": 0.14,
+      "15_29_yes": 0.28,
+      "15_31_Manual": 0.36,
+      "15_34_#default#": 0.15,
+      "21_20_YES": 0.3,
+      "21_25_#default#": 0.16,
+      "21_32_Manual": 0.36,
       "36_25_#default#": 0.33,
       "36_41_yes": 0.4,
       "37_33_#default#": 0.33,
       "37_40_yes": 0.43,
       "38_34_#default#": 0.32,
-      "38_39_yes": 0.43
+      "38_39_yes": 0.43,
+      "42_21_yes": 0.37,
+      "42_25_no": 0.23
     },
     "paper": {
       "dimensions": {
-        "height": 1175,
-        "width": 2630,
-        "x": -930,
-        "y": 270
+        "height": 1335,
+        "width": 2650,
+        "x": -950,
+        "y": 450
       }
     }
   }
