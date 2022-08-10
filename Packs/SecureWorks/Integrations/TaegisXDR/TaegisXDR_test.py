@@ -118,10 +118,17 @@ def test_fetch_incidents(requests_mock):
     with pytest.raises(ValueError, match="Max Fetch must be between 1 and 200"):
         assert fetch_incidents(client=client, max_fetch=201)
 
+    # Failure from Taegis API
     client = mock_client(requests_mock, FETCH_INCIDENTS_BAD_RESPONSE)
     error = f"Error when fetching investigations: {FETCH_INCIDENTS_BAD_RESPONSE['errors'][0]['message']}"
     with pytest.raises(DemistoException, match=error):
         assert fetch_incidents(client=client, max_fetch=200)
+
+    # Ignore incidents that have been archived
+    FETCH_INCIDENTS_RESPONSE["data"]["allInvestigations"][0]["archived_at"] = "2022-02-03T13:53:35Z"
+    client = mock_client(requests_mock, FETCH_INCIDENTS_RESPONSE)
+    response = fetch_incidents(client=client)
+    assert len(response) == 0
 
 
 def test_fetch_investigaton(requests_mock):
@@ -138,6 +145,11 @@ def test_fetch_investigaton(requests_mock):
 
     response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs[0] == TAEGIS_INVESTIGATION
+
+    # Investigation not found
+    client = mock_client(requests_mock, {})
+    response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert len(response.outputs) == 0
 
 
 def test_fetch_investigatons(requests_mock):
@@ -168,6 +180,12 @@ def test_fetch_investigation_alerts(requests_mock):
     assert response.outputs[0] == TAEGIS_ALERT
     assert len(response.outputs) == len([TAEGIS_ALERT])
 
+    # No alerts returned
+    client = mock_client(requests_mock, {})
+    response = fetch_investigation_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert len(response.outputs) == 0
+
+    # Investigation ID not provided
     with pytest.raises(ValueError, match="Cannot fetch investigation, missing investigation_id"):
         assert fetch_investigation_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
 
