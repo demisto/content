@@ -66,9 +66,17 @@ script:
   - name: taegis-fetch-alerts
     arguments:
     - name: ids
-      required: true
       description: A list of alert IDs to return
       isArray: true
+    - name: cql_query
+      description: The Taegis CQL query to for searching Alerts
+    - name: limit
+      default: true
+      description: Number of results to return per page
+      defaultValue: "10"
+    - name: offset
+      description: The results to start with
+      defaultValue: "0"
     outputs:
     - contextPath: TaegisXDR.Result
       description: List of Taegis alerts

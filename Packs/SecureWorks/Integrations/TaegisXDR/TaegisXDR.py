@@ -194,67 +194,111 @@ def execute_playbook_command(client: Client, env: str, args=None):
 
 def fetch_alerts_command(client: Client, env: str, args=None):
     """
-    The results from listing alerts is not always the most recent. It's recommended
-        that specific alert IDs are utilized rather than fetching all alerts.
-
-    Max number of results: 10
+    Fetch a specific alert or a list of alerts based on a CQL Taegis query
     """
-    if not args.get("ids"):
-        args["ids"] = []
+    variables: dict = {
+        "cql_query": args.get("cql_query", "from alert severity >= 0.6 and status='OPEN'"),
+        "limit": args.get("limit", 10),
+        "offset": args.get("offset", 0),
+    }
+    fields: str = """
+            status
+            reason
+            alerts {
+                total_results
+                list {
+                    id
+                    tenant_id
+                    status
+                    suppressed
+                    suppression_rules {
+                      id
+                      version
+                    }
+                    resolution_reason
+                    attack_technique_ids
+                    entities{
+                      entities
+                      relationships{
+                        from_entity
+                        relationship
+                        to_entity
+                      }
+                    }
+                    metadata {
+                      engine {
+                        name
+                      }
+                      creator {
+                        detector {
+                          version
+                          detector_id
+                        }
+                        rule {
+                          rule_id
+                          version
+                        }
+                      }
+                      title
+                      description
+                      confidence
+                      severity
+                      created_at {
+                        seconds
+                      }
+                    }
+                    investigation_ids {
+                      id
+                    }
+                    sensor_types
+                }
+            }
+        """
 
-    query = """
-    query alerts {
-        alerts(alertIDs: %s) {
-            id
-            alert_type
-            data {
-                username
-                message
-                source_ip
-                destination_ip
-                raw_event
-            }
-            group_key
-            confidence
-            severity
-            creator
-            creator_version
-            tenant_id
-            message
-            description
-            timestamp {
-                seconds
-            }
-            investigations
-            source {
-                uuid
-                origin
-                source_event
-                event_snippet
-            }
-            related_entities
-            references {
-                description
-                url
+    if args.get("ids"):
+        field = "alertsServiceRetrieveAlertsById"
+        query = """
+        query alertsServiceRetrieveAlertsById {
+            alertsServiceRetrieveAlertsById(
+                in: {
+                    iDs: %s
+                }
+            ) {
+                %s
             }
         }
-    }
-    """ % (str(args["ids"]))
+        """ % (str(args["ids"]), fields)
+    else:
+        field = "alertsServiceSearch"
+        query = """
+        query alertsServiceSearch($cql_query: String, $limit: Int, $offset: Int) {
+            alertsServiceSearch(
+                in: {
+                    cql_query:$cql_query,
+                    offset:$offset,
+                    limit:$limit
+                }
+            ) {
+                %s
+            }
+        }
+        """ % (fields)
 
-    result = client.graphql_run(query)
-    readable_output = f'## Results\nFound {len(result["data"]["alerts"])} alerts'
+    result = client.graphql_run(query=query, variables=variables)
+    alerts = result["data"][field]["alerts"]["list"]
 
-    if result["data"]["alerts"]:
+    readable_output = f'## Results\nFound {len(alerts)} alerts'
+
+    if alerts:
         readable_output += "\n\n### Alerts\n"
-        for alert in result["data"]["alerts"]:
-            readable_output += f"* [{alert['message']}]({ENV_URLS[env]['xdr']}/alerts/{alert['id']})\n"
-
-    outputs = result["data"]["alerts"]
+        for alert in alerts:
+            alert_id: str = alert['id'].replace('/', '%2F')
+            readable_output += f"* [{alert['metadata']['title']}]({ENV_URLS[env]['xdr']}/alerts/{alert_id})\n"
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Result",
         outputs_key_field="id",
-        outputs=outputs,
+        outputs=alerts,
         readable_output=readable_output,
         raw_response=result,
     )

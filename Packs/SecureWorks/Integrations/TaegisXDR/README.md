@@ -59,14 +59,18 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ids | A list of alerts by IDs | True |
+| **Argument Name** | **Description** | Default | **Required** |
+| --- | --- | --- | --- |
+| ids | A list of alerts by IDs | `936c1cc1-db8f-430c-837c-1c914fcca35a` | False |
+| limit | Number of results to when `ids` is not defined | `10` | False |
+| offset | The result to start from when `ids` is not defined | `0` | False |
+| cql_query | The query to utilize when searching for Alerts | `from alert severity >= 0.6 and status='OPEN'` | False |
 
 #### Command Examples
 
 ```
 !taegis-fetch-alerts ids=`["6594e97f-a898-5b28-82b2-ea03293cdaa1"]`
+!taegis-fetch-investigation-alerts id=936c1cc1-db8f-430c-837c-1c914fcca35a
 ```
 
 #### Context Example
@@ -76,9 +80,11 @@ After you successfully execute a command, a DBot message appears in the War Room
     "TaegisXDR": [
         {
             "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
-            "description": "Test Alert",
-            "message": "This is a test alert",
-            "severity": 0.5,
+            "metadata": {
+                "title": "Test Alert",
+                "description": "This is a test alert",
+                "severity": 0.5,
+            }
         }
     ]
 }

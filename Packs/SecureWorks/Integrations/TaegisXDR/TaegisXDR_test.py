@@ -24,6 +24,7 @@ from test_data.data import (
     EXECUTE_PLAYBOOK_RESPONSE,
     EXECUTE_PLAYBOOK_BAD_RESPONSE,
     FETCH_ALERTS_RESPONSE,
+    FETCH_ALERTS_BY_ID_RESPONSE,
     FETCH_INCIDENTS_RESPONSE,
     FETCH_INCIDENTS_BAD_RESPONSE,
     FETCH_INVESTIGATION_RESPONSE,
@@ -77,20 +78,29 @@ def test_execute_playbook(requests_mock):
 
 
 def test_fetch_alerts(requests_mock):
+    client = mock_client(requests_mock, FETCH_ALERTS_RESPONSE)
+    args = {
+        "limit": 1,
+        "offset": 0,
+        "cql_query": "from alert severity >= 0.6 and status='OPEN'",
+    }
+
+    # Test with no IDs set
+    response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs[0] == TAEGIS_ALERT
+    assert len(response.outputs) == len([TAEGIS_ALERT])
+
+
+def test_fetch_alerts_by_id(requests_mock):
     """Tests taegis-fetch-alert command function
     """
-    client = mock_client(requests_mock, FETCH_ALERTS_RESPONSE)
+    client = mock_client(requests_mock, FETCH_ALERTS_BY_ID_RESPONSE)
     args = {
         "ids": ["c4f33b53-eaba-47ac-8272-199af0f7935b"]
     }
 
     # Test with IDs set
     response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-    assert response.outputs[0] == TAEGIS_ALERT
-    assert len(response.outputs) == len([TAEGIS_ALERT])
-
-    # Test with no IDs set
-    response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
     assert response.outputs[0] == TAEGIS_ALERT
     assert len(response.outputs) == len([TAEGIS_ALERT])
 
