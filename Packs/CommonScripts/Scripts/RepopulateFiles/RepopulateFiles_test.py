@@ -40,7 +40,7 @@ class TestRepopulateFiles:
                 'SHA256': '0207199f975738fe798d36263998563bdc52bd59b226730c0d5e481646247c9a',
                 'Name': 'test.yml',
                 'SSDeep': '192:Ik4PaoJcQfmBLTh7qX0QLAhl8G5wmIxtH5hnTG:IkKamFOBLTh4UHiNo',
-                'EntryID':'18@200',
+                'EntryID': '18@200',
                 'Info': 'Python script, ASCII text executable',
                 'Type': 'yml',
                 'MD5': '3e8ba0bbe4cba711550deeeb48812861'
