@@ -511,7 +511,7 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
             connections = network_data.get('connections')
             for current_connection in connections:
                 reputation = current_connection.get('Reputation')
-                if score:= reputation_map.get(reputation):
+                if score := reputation_map.get(reputation):
                     current_dbot_score = Common.DBotScore(
                         indicator=current_connection.get('IP'),
                         indicator_type=DBotScoreType.IP,
@@ -667,7 +667,7 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
         mitre_data = data.get('mitre')
         for item in mitre_data:
             attack_indicator = Common.AttackPattern(
-                stix_id=None,
+                stix_id='',
                 value=item.get('name'),
                 mitre_id=item.get('id')
             )
@@ -682,14 +682,14 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
             )
             if create_relationships:
                 attack_relationships = [EntityRelationship(
-                    name=EntityRelationship.Relationships.RELATED_TO,
-                    entity_a=main_entity,
-                    entity_a_type=main_entity_type,
-                    entity_b=item.get('name'),
-                    entity_b_type='Attack Pattern',
+                    name=EntityRelationship.Relationships.USED_BY,
+                    entity_a=item.get('name'),
+                    entity_a_type='Attack Pattern',
+                    entity_b=main_entity,
+                    entity_b_type=main_entity_type,
                     source_reliability=source_reliability
                 )]
-                #attack_command_results.relationships=attack_relationships
+                attack_command_results.relationships=attack_relationships
             
             returned_data.append(attack_command_results)
 
@@ -1127,8 +1127,7 @@ def get_report_command(args: Dict, client: Client):
     formatted_contents['Reports'] = reports
 
     dbot_scores: List[CommandResults] = generate_dbotscore(response)
-    returned_results = []
-    returned_results.append(CommandResults(     # noqa: E9007
+    returned_results = [CommandResults(     # noqa: E9007
         outputs_prefix='ANYRUN.Task',
         outputs_key_field='ID',
         outputs=formatted_contents,
@@ -1138,7 +1137,7 @@ def get_report_command(args: Dict, client: Client):
             removeNull=True
         ),
         raw_response=response
-    ))
+    )]
     for indicator in dbot_scores:
         returned_results.append(indicator)
     for image in images:
@@ -1170,7 +1169,6 @@ def run_analysis_command(args: Dict, client: Client):
     if not task_id:
         response = client.run_analysis(command_args)
         task_id = response.get('data', {}).get('taskid')
-        status = response.get('data', {}).get('status') or 'in progress'
         outputs = {
             'ID': task_id
         }
@@ -1199,22 +1197,19 @@ def run_analysis_command(args: Dict, client: Client):
         formatted_contents = travel_object(contents)
         reports = response.get('data', {}).get('analysis', {}).get('reports')
 
-        submit_output = []
-        submit_output.append(
-            CommandResults(
-                outputs_prefix='ANYRUN.Task',
-                outputs_key_field='ID',
-                outputs={
-                    'ID': task_id,
-                    'Reports': reports,
-                    **formatted_contents
-                },
-                readable_output=tableToMarkdown(
-                    f"Report for Task {task_id}:",
-                    humanreadable_from_report_contents(formatted_contents)
-                )
+        submit_output = [CommandResults(
+            outputs_prefix='ANYRUN.Task',
+            outputs_key_field='ID',
+            outputs={
+                'ID': task_id,
+                'Reports': reports,
+                **formatted_contents
+            },
+            readable_output=tableToMarkdown(
+                f"Report for Task {task_id}:",
+                humanreadable_from_report_contents(formatted_contents)
             )
-        )
+        )]
         indicators = generate_dbotscore(response)
         for indicator in indicators:
             submit_output.append(indicator)
@@ -1224,7 +1219,7 @@ def run_analysis_command(args: Dict, client: Client):
 
         poll_result = PollResult(
             response=submit_output,
-            continue_to_poll=True if status != 'done' else False,
+            continue_to_poll=status != 'done',
             args_for_next_run={
                 'task_id': task_id,
                 'polling': True,
