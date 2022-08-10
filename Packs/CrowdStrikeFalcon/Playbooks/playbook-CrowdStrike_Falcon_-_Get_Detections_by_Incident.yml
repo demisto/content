@@ -2,7 +2,9 @@ id: CrowdStrike Falcon - Get Detections by Incident
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Get Detections by Incident
-description: This playbook enables getting CrowdStrike Falcon detection details based on the CrowdStrike incident ID.
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook enables getting CrowdStrike Falcon detection details based on the CrowdStrike incident ID.
 starttaskid: '0'
 tasks:
   '0':
@@ -49,7 +51,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '3'
+      - '5'
     scriptarguments:
       incident_id:
         simple: ${inputs.IncidentID}
@@ -93,8 +95,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 520
+          "x": 690,
+          "y": 680
         }
       }
     note: false
@@ -148,8 +150,84 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 460,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 70a6e889-bdcb-4118-85b6-bb1493df0ae2
+    type: condition
+    task:
+      id: 70a6e889-bdcb-4118-85b6-bb1493df0ae2
+      version: -1
+      name: Are there related detections?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.IncidentDetection.detection_ids
+            iscontext: true
+    view: |-
+      {
+        "position": {
           "x": 450,
-          "y": 700
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 1128f484-1855-4136-8c84-17ae1d9cbcdd
+    type: regular
+    task:
+      id: 1128f484-1855-4136-8c84-17ae1d9cbcdd
+      version: -1
+      name: Set no detections found
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      key:
+        simple: CrowdStrike.FoundDetections
+      value:
+        simple: 'False'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 680
         }
       }
     note: false
@@ -164,9 +242,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 555,
-        "width": 380,
-        "x": 450,
+        "height": 705,
+        "width": 850,
+        "x": 220,
         "y": 210
       }
     }
@@ -181,5 +259,11 @@ outputs:
 - contextPath: CrowdStrike.Detection.Behavior
   description: CrowdStrike Detection Details
   type: string
+- contextPath: CrowdStrike.FoundDetections
+  description: 'Indicates whether detections were found. '
+  type: string
 tests:
- -  No tests
+-  No tests
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

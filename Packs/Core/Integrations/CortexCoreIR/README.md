@@ -99,7 +99,7 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 | sort_by | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". Possible values are: first_seen, last_seen. | Optional | 
 | sort_order | The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc. Possible values are: asc, desc. Default is asc. | Optional | 
 | status | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Optional | 
-
+| username | The usernames to query for, accepts a single user, or comma-separated list of usernames. | Optional |
 
 #### Context Output
 
@@ -2068,3 +2068,148 @@ Returns dynamic analysis of each alert ID.
 | Core.DynamicAnalysis.osSpawnerImagePath | String |  | 
 | Core.DynamicAnalysis.osSpawnerCmdline | String |  | 
 | Core.DynamicAnalysis.osSpawnerSigner | String |  | 
+
+### core-get-hash-analytics-prevalence
+***
+Get the prevalence of a file, identified by sha256.
+
+
+#### Base Command
+
+`core-get-hash-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sha256 | The sha256 of a file. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Hash.value | Boolean | Whether the hash is prevalent or not. | 
+| Core.AnalyticsPrevalence.Hash.data.global_prevalence.value | Number | The global prevalence of the hash. | 
+| Core.AnalyticsPrevalence.Hash.data.local_prevalence.value | Number | The local prevalence of the hash. | 
+| Core.AnalyticsPrevalence.Hash.data.prevalence.value | Number | The prevalence of the hash. | 
+
+### core-get-IP-analytics-prevalence
+***
+Get the prevalence of an ip, identified by ip_address.
+
+
+#### Base Command
+
+`core-get-IP-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip_address | The IP address. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Ip.value | Boolean | Whether the IP address is prevalent or not. | 
+| Core.AnalyticsPrevalence.Ip.data.global_prevalence.value | Number | The global prevalence of the IP. | 
+| Core.AnalyticsPrevalence.Ip.data.local_prevalence.value | Number | The local prevalence of the IP. | 
+| Core.AnalyticsPrevalence.Ip.data.prevalence.value | Number | The prevalence of the IP. | 
+
+### core-get-domain-analytics-prevalence
+***
+Get the prevalence of a domain, identified by domain_name.
+
+
+#### Base Command
+
+`core-get-domain-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_name | The domain name. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Domain.value | Boolean | Whether the domain is prevalent or not. | 
+| Core.AnalyticsPrevalence.Domain.data.global_prevalence.value | Number | The global prevalence of the domain. | 
+| Core.AnalyticsPrevalence.Domain.data.local_prevalence.value | Number | The local prevalence of the domain. | 
+| Core.AnalyticsPrevalence.Domain.data.prevalence.value | Number | The prevalence of the domain. | 
+
+### core-get-process-analytics-prevalence
+***
+Get the prevalence of a process, identified by process_name.
+
+
+#### Base Command
+
+`core-get-process-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| process_name | The process name. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Process.value | Boolean | Whether the process is prevalent or not. | 
+| Core.AnalyticsPrevalence.Process.data.global_prevalence.value | Number | The global prevalence of the process. | 
+| Core.AnalyticsPrevalence.Process.data.local_prevalence.value | Number | The local prevalence of the process. | 
+| Core.AnalyticsPrevalence.Process.data.prevalence.value | Number | The prevalence of the process. | 
+
+### core-get-registry-analytics-prevalence
+***
+Get the prevalence of a registry_path, identified by key_name, value_name.
+
+
+#### Base Command
+
+`core-get-registry-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| key_name | The key name of a registry path. | Required | 
+| value_name | The value name of a registry path. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Registry.value | Boolean | Whether the registry is prevalent or not. | 
+| Core.AnalyticsPrevalence.Registry.data.global_prevalence.value | Number | The global prevalence of the registry. | 
+| Core.AnalyticsPrevalence.Registry.data.local_prevalence.value | Number | The local prevalence of the registry. | 
+| Core.AnalyticsPrevalence.Registry.data.prevalence.value | Number | The prevalence of the registry. | 
+
+### core-get-cmd-analytics-prevalence
+***
+Get the prevalence of a process_command_line, identified by process_command_line.
+
+
+#### Base Command
+
+`core-get-cmd-analytics-prevalence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| process_command_line | The process command line. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AnalyticsPrevalence.Cmd.value | Boolean | Whether the CMD is prevalent or not. | 
+| Core.AnalyticsPrevalence.Cmd.data.global_prevalence.value | Number | The global prevalence of the CMD. | 
+| Core.AnalyticsPrevalence.Cmd.data.local_prevalence.value | Number | The local prevalence of the CDM. | 
+| Core.AnalyticsPrevalence.Cmd.data.prevalence.value | Number | The prevalence of the Cmd. | 

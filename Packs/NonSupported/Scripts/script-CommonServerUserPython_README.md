@@ -2,6 +2,9 @@ Common user-defined code that is merged into each script and integration during 
 
 **Note:** The code is not merged into system integrations. It is only merged into scripts (custom/system) and custom integrations.  
 
+Since this code will get merged into system scripts, **it is important that the syntax be compatible both with python 2 and python 3.**
+
+
 **Server 6.5 and above**: To disable merging the code into system scripts, set the `content.oob.script.use_common_user` advanced Server parameter to `false`.
 ## Script Data
 ---

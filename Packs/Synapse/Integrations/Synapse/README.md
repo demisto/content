@@ -16,6 +16,7 @@ This integration was integrated and tested with version `2.7.0` of Synapse
 | timezone | Timezone \(optional\) | False |
 | bad_tag | Malicious Tag | False |
 | good_tag | Benign Tag | False |
+| use_optic | Synapse is running Optic | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

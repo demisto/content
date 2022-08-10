@@ -784,7 +784,21 @@ script:
       name: basedn
     description: Updates attributes of an existing Active Directory group.
     name: ad-update-group
-  dockerimage: demisto/py3-tools:0.0.1.30715
+  - name: ad-modify-password-never-expire
+    arguments:
+    - name: username
+      required: true
+      description: The sAMAccountName of the user to modify.
+    - name: value
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Value to set "Password Never Expire".
+    description: 'Modifies the AD account attribute "Password Never Expire".'
+    execution: true                                 
+  dockerimage: demisto/py3-tools:1.0.0.31193
   runonce: false
   ismappable: true
   isremotesyncout: true
