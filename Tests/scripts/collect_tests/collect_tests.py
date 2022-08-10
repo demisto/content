@@ -9,9 +9,9 @@ from typing import Iterable, Optional
 
 from constants import (ALWAYS_INSTALLED_PACKS,
                        DEFAULT_MARKETPLACE_WHEN_MISSING,
-                       DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK_FILE_TYPES,
-                       SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS,
-                       XSOAR_SANITY_TEST_NAMES, IGNORED_FILE_TYPES)
+                       DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES,
+                       ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
+                       SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import find_type, run_command, str2bool
 from exceptions import (DeprecatedPackException, InvalidTestException,
