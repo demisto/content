@@ -6,7 +6,7 @@ To use a self-configured Azure application, you need to add a [new Azure App Reg
 2. offline_access
 3. user.read 
 
-## Authentication Using the  User-Authentication Flow (recommended)
+## Authentication Using the User-Authentication Flow (recommended)
 
 Follow these steps for a self-deployed configuration:
 

@@ -30,14 +30,17 @@ class AzureWAFClient:
     def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, auth_type, tenant_id=None,
                  enc_key=None, auth_code=None, redirect_uri=None,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
-        AUTH_TYPES_DICT: dict = {'User Auth': {
-            'grant_type': AUTHORIZATION_CODE,
-            'resource': None,
-            'scope': 'https://management.azure.com/.default'},
+        AUTH_TYPES_DICT: dict = {
+            'User Auth': {
+                'grant_type': AUTHORIZATION_CODE,
+                'resource': None,
+                'scope': 'https://management.azure.com/.default'
+            },
             'Device': {
-            'grant_type': DEVICE_CODE,
-            'resource': 'https://management.core.windows.net',
-            'scope': 'https://management.azure.com/user_impersonation offline_access user.read'}
+                'grant_type': DEVICE_CODE,
+                'resource': 'https://management.core.windows.net',
+                'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
+            }
         }
         # for dev environment use:
         if '@' in app_id:
@@ -127,10 +130,9 @@ class AzureWAFClient:
 def test_connection(client: AzureWAFClient, params: Dict):
     if demisto.params().get('auth_type') == 'Device':
         client.get_policy_list_by_resource_group_name(client.resource_group_name)  # If fails, MicrosoftApiModule returns an error
-        return CommandResults(readable_output='✅ Success!')
     else:
-        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
-        return CommandResults(readable_output='✅ Success!')
+        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error   
+    return CommandResults(readable_output='✅ Success!')
 
 
 @logger
