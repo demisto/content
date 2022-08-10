@@ -546,9 +546,6 @@ def main():
     timeout = params.get('timeout') or 1
     retries = params.get('retries') or 5
 
-    if demisto.args().get('region') is not None:
-        aws_default_region = demisto.args().get('region')
-
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                         aws_secret_access_key)
@@ -557,7 +554,8 @@ def main():
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
                                timeout, retries)
 
-        client = aws_client.aws_session(service=SERVICE)
+        region = demisto.args().get('region')
+        client = aws_client.aws_session(service=SERVICE, region=region)
 
         # The command demisto.command() holds the command sent from the user.
         if demisto.command() == 'test-module':
