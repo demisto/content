@@ -1158,10 +1158,11 @@ def create_address_command():
     contents = []
     context = {}
     address_context = []
-    address_name = demisto.args().get('name', '')
-    address = demisto.args().get('address', '')
-    mask = demisto.args().get('mask', '')
-    fqdn = demisto.args().get('fqdn', '')
+    args = demisto.args()
+    address_name = args.get('name', '')
+    address = args.get('address', '')
+    mask = args.get('mask', '')
+    fqdn = args.get('fqdn', '')
 
     if fqdn and address:
         return_error("Please provide only one of the two arguments: fqdn or address")
