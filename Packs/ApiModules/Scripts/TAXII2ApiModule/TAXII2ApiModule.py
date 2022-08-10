@@ -934,7 +934,7 @@ class Taxii2FeedClient:
         demisto.debug(f'{merged_headers=}')
 
         resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
-        demisto.log(f'{resp}')
+        demisto.log(f'{resp.content}')
         demisto.debug(f'{resp=}, {resp.status_code=}, {resp.headers=}')
 
         try:
@@ -945,7 +945,7 @@ class Taxii2FeedClient:
                                                               "Content-Type": "application/taxii+json"})
             demisto.debug(f'{merged_headers=}')
             resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
-            demisto.log(f'{resp}')
+            demisto.log(f'{resp.content}')
             demisto.debug(f'{resp=}, {resp.status_code=}, {resp.headers=}')
             resp_json = _to_json(resp)
 
