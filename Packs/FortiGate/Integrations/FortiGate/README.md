@@ -41,6 +41,9 @@
 <li><a href="#h_97579068-1993-4df6-9b15-e0d83d9dc003" target="_self">Add an address to a banned list: fortigate-ban-ip</a></li>
 <li><a href="#h_dcbeef7c-2cfa-45b2-b677-cf1f4ea09895" target="_self">Clear a list of banned addresses: fortigate-unban-ip</a></li>
 <li><a href="#h_09f6b36f-9215-42e9-9e86-e075c485f534" target="_self">Get a list of banned addresses: fortigate-get-banned-ips</a></li>
+<li><a href="#h_09f6b36f-9215-42e9-9e86-e075c485f535" target="_self">Creates a new address object: fortigate-create-address</a></li>
+<li><a href="#h_09f6b36f-9215-42e9-9e86-e075c485f536" target="_self">Delete an address object: fortigate-delete-address</a></li>
+
 </ol>
 <h3 id="h_90934042941543315010414">1. Get all address objects from the firewall</h3>
 <hr>
@@ -1186,7 +1189,7 @@
 <p> </p>
 <h5>Command Example</h5>
 <pre>  !fortigate-get-banned-ips </pre>
-<h3 >19. Create an address object</h3>
+<h3 id="h_09f6b36f-9215-42e9-9e86-e075c485f535">19. Create an address object</h3>
 <hr>
 <p>Creates a new address object.</p>
 <h5>Base Command</h5>
@@ -1257,8 +1260,23 @@
 <h5>Context Example</h5>
 <pre>Fortigate:{} 1 item<br>Address:[] 1 item<br>0:{} 2 items<br>1:{} 2 items<br>IPAddress:1.1.1.1/255.255.255.255<br>Name:test</pre>
 <h5>Human Readable Output</h5>
-
-<h3 >20. Delete an address object</h3>
+<h3>FortiGate address test created successfully</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<tbody>
+<tr>
+<td>IPAddress</td>
+<td>1.1.1.1</td>
+</tr>
+<tr>
+<td>Name</td>
+<td>test</td>
+</tr>
+</tbody>
+</table>
+<h3  id="h_09f6b36f-9215-42e9-9e86-e075c485f536">20. Delete an address object</h3>
 <hr>
 <p>Deletes an existing address object.</p>
 <h5>Base Command</h5>
@@ -1309,3 +1327,19 @@
 <h5>Context Example</h5>
 <pre>Fortigate:{} 1 item<br>Address:[] 1 item<br>0:{} 2 items<br>1:{} 2 items<br>Deleted:True<br>Name:test</pre>
 <h5>Human Readable Output</h5>
+<h3>FortiGate address test-address deleted successfully</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<tbody>
+<tr>
+<td>Deleted</td>
+<td>true</td>
+</tr>
+<tr>
+<td>Name</td>
+<td>test</td>
+</tr>
+</tbody>
+</table>
