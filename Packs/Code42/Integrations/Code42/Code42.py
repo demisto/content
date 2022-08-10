@@ -1109,6 +1109,38 @@ def add_user_to_watchlist_command(client, args):
 
 
 @logger
+def update_user_risk_profile(client, args):
+    username = args.get("username")
+    start_date = args.get("start_date")
+    end_date = args.get("end_date")
+    notes = args.get("notes")
+
+    user = client.get_user(username)
+    user_id = user["userUid"]
+
+    resp = client.sdk.userriskprofile.update(
+        user_id,
+        start_date=start_date,
+        end_date=end_date,
+        notes=notes
+    )
+    outputs = {
+        "Username": username,
+        "Success": resp.status_code == 200,
+        "EndDate": resp.data.get("endDate"),
+        "StartDate": resp.data.get("startDate"),
+        "Notes": resp.data.get("notes"),
+    }
+    readable_outputs = tableToMarkdown("Code42 User Risk Profile Updated", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.UpdatedUserRiskProfiles",
+        outputs_key_field="Profile",
+        outputs=outputs,
+        readable_output=readable_outputs,
+    )
+
+
+@logger
 def remove_user_from_watchlist_command(client, args):
     username = args.get("username")
     watchlist = args.get("watchlist")
@@ -1350,6 +1382,7 @@ def main():
         "code42-user-unblock": user_unblock_command,
         "code42-user-deactivate": user_deactivate_command,
         "code42-user-reactivate": user_reactivate_command,
+        "code42-user-update-risk-profile": update_user_risk_profile,
         "code42-legalhold-add-user": legal_hold_add_user_command,
         "code42-legalhold-remove-user": legal_hold_remove_user_command,
         "code42-download-file": download_file_command,

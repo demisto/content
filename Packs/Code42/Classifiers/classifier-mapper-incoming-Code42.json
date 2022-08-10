@@ -82,45 +82,45 @@
                     }
                 },
                 "severity": {
-					"complex": {
-						"filters": [],
-						"root": "riskSeverity",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"value": {
-											"simple": "MODERATE"
-										}
-									},
-									"mapped_values": {
-										"value": {
-											"simple": "MEDIUM"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-              "Code42 Alert Risk Severity Summary": {
-                  "complex": {
-                      "filters": [],
-                      "root": "risksummary",
-                      "transformers": []
+                    "complex": {
+                        "filters": [],
+                        "root": "riskSeverity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "MODERATE"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "MEDIUM"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
                     }
-              },
-              "Code42 Alert URL": {
-                  "complex": {
-                      "filters": [],
-                      "root": "alertUrl",
-                      "transformers": []
-                  }
-              }
+                },
+                "Code42 Alert Risk Severity Summary": {
+                    "complex": {
+                        "filters": [],
+                        "root": "risksummary",
+                        "transformers": []
+                    }
+                },
+                "Code42 Alert URL": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertUrl",
+                        "transformers": []
+                    }
+                }
             }
         }
     },
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.5.0"
 }
