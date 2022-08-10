@@ -310,16 +310,13 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
 
 def test_invalid_content_item(mocker, monkeypatch):
     """
-    given:  a changed file that  _get_changed_files can not identify
+    given:  a changed file that _get_changed_files is not designed to collect
     when:   collecting tests
-    then:   make sure an appropriate error is raised
+    then:   make sure nothing is collected, and no exception is raised
     """
     # test mockers
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
 
-    with pytest.raises(ValueError) as e:
-        # noinspection PyTypeChecker
-        _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,
-              expected_tests=(), expected_packs=('myPack',), expected_machines=None,
-              collector_class_args=XSOAR_BRANCH_ARGS)
-    assert 'Unexpected file_type=None' in str(e.value)
+    _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,
+          expected_tests=(), expected_packs=(), expected_machines=None,
+          collector_class_args=XSOAR_BRANCH_ARGS)
