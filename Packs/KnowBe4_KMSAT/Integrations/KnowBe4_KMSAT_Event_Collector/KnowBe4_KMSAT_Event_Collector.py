@@ -25,6 +25,16 @@ class Client(BaseClient):
         self.fetch_limit = fetch_limit
         self.headers = headers
 
+    def http_request(self, method: str = 'GET', params: dict = None, body: dict = None, url_suffix: str = ''):
+        """
+        Overrides Base client request function.
+
+        :return: The http response
+        """
+        # token = self.get_access_token()
+        return super()._http_request(headers=self.headers, method=method, params=params, body=body,
+                                     url_suffix=url_suffix)  # type: ignore[misc]
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -33,7 +43,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, args) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -80,6 +90,10 @@ def main() -> None:
 
     headers = {'Authorization': f'Bearer {api_key}'}
 
+    commands = {
+        'test-module': test_module
+    }
+
     demisto.debug(f'Command being called is {command}')
 
     try:
@@ -91,12 +105,15 @@ def main() -> None:
             fetch_limit=fetch_limit,
             first_fetch_time=first_fetch_time)
 
-        commands = {
-            'test-module': test_module
-        }
-
-        if command in commands:
-            return_results(commands[command](client, **args))
+        if command == 'test-module':
+            return_results(test_module(client, args))
+        # elif command == 'fetch-incidents':
+        #     fetch_incidents(client, first_fetch_time, fetch_limit, fetch_state, fetch_severity, fetch_status,
+        #                     fetch_app_ids, mirror_direction, instance)
+        # elif command == 'get-mapping-fields':
+        #     return_results(get_mapping_fields_command())
+        elif command in commands:
+            return_results(commands[command](client, args))
         else:
             return_error(f'Command {command} is not available in this integration')
 
