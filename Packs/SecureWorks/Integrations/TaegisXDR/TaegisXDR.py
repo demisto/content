@@ -334,10 +334,11 @@ def fetch_incidents(client: Client, max_fetch: int = 15):
             tenant_id
             description
             key_findings
+            assignee {
+                name
                 id
-                alert_type
-                severity
-                message
+                email
+            }
             alerts2 {
                 id
                 suppressed
@@ -500,10 +501,10 @@ def fetch_investigation_command(client: Client, env: str, args=None):
                 confidence
             }
         }
+        assignee {
+            name
             id
-            alert_type
-            severity
-            message
+            email
         }
         archived_at
         created_at
