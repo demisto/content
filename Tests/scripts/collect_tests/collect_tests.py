@@ -70,6 +70,7 @@ class CollectionResult:
             conf: Optional[TestConf],
             id_set: Optional[IdSet],
             is_sanity: bool = False,
+            is_nightly: bool = False,
     ):
         """
         Collected test playbook, and/or pack to install.
@@ -86,6 +87,7 @@ class CollectionResult:
         :param conf: a ConfJson object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
         :param id_set: an IdSet object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
         :param is_sanity: whether the test is a sanity test. Sanity tests do not have to be in the id_set.
+        :param is_nightly: whether the run is a nightly run. When running on nightly, only specific packs need to run.
         """
         self.tests: set[str] = set()
         self.packs: set[str] = set()
@@ -93,7 +95,7 @@ class CollectionResult:
         self.machines: Optional[tuple[Machine, ...]] = None
 
         try:
-            self._validate_args(pack, test, reason, conf, id_set, is_sanity)  # raises if invalid
+            self._validate_args(pack, test, reason, conf, id_set, is_sanity, is_nightly)  # raises if invalid
 
         except (InvalidTestException, SkippedPackException, DeprecatedPackException, UnsupportedPackException) as e:
             logger.warning(str(e))
@@ -109,7 +111,7 @@ class CollectionResult:
 
     @staticmethod
     def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
-                       id_set: Optional[IdSet], is_sanity: bool):
+                       id_set: Optional[IdSet], is_sanity: bool, is_nightly: bool = False):
         """
         Validates the arguments of the constructor.
         """
@@ -374,7 +376,8 @@ class BranchTestCollector(TestCollector):
                     version_range=yml.version_range,
                     reason_description=f'{yml.id_=} ({relative_yml_path})',
                     conf=self.conf,
-                    id_set=self.id_set
+                    id_set=self.id_set,
+                    is_nightly=False,
                 ) for test in tests))
         if result:
             return result
@@ -452,6 +455,7 @@ class BranchTestCollector(TestCollector):
                 reason_description=reason_description,
                 conf=self.conf,
                 id_set=self.id_set,
+                is_nightly=False,
             )
             for test in tests)
         )
@@ -530,7 +534,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
                     reason_description=self.marketplace.value,
                     version_range=playbook.version_range,
-                    conf=self.conf, id_set=self.id_set)
+                    conf=self.conf, id_set=self.id_set, is_nightly=True)
                 )
 
         if not result:
@@ -565,7 +569,7 @@ class NightlyTestCollector(TestCollector, ABC):
         return CollectionResult.union(
             tuple(CollectionResult(test=None, pack=pack, reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
                                    version_range=None, reason_description=self.marketplace.value,
-                                   conf=self.conf, id_set=self.id_set)
+                                   conf=self.conf, id_set=self.id_set, is_nightly=True)
                   for pack in packs)
         )
 
@@ -604,6 +608,7 @@ class NightlyTestCollector(TestCollector, ABC):
                             reason_description=f'{str(relative_path)}, ({self.marketplace.value})',
                             conf=self.conf,
                             id_set=self.id_set,
+                            is_nightly=True,
                         )
                     )
 
