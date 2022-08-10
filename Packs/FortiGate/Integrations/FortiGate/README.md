@@ -1213,7 +1213,7 @@
 </tr>
 <tr>
 <td style="width: 193px;">mask</td>
-<td style="width: 402px;">The address mask,example: 255.255.255.0 , Default is 255.255.255.255</td>
+<td style="width: 402px;">The address mask, example: 255.255.255.0 , Default is 255.255.255.255</td>
 <td style="width: 113px;">Optional</td>
 </tr>
 <tr>
