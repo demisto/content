@@ -131,7 +131,7 @@ def test_connection(client: AzureWAFClient, params: Dict):
     if demisto.params().get('auth_type') == 'Device':
         client.get_policy_list_by_resource_group_name(client.resource_group_name)  # If fails, MicrosoftApiModule returns an error
     else:
-        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error   
+        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 
 
