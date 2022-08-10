@@ -1,63 +1,54 @@
 This playbook blocks malicious URLs using all integrations that are enabled.
 
 Supported integrations for this playbook:
-
-- Palo Alto Networks PAN-OS
-- Zscaler
-- Sophos
-- Forcepoint
-- Checkpoint
-- Netcraft
+* Palo Alto Networks PAN-OS
+* Zscaler
+* Sophos
+* Forcepoint
+* Checkpoint
+* Netcraft
+* EDL
 
 ## Dependencies
-
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-
-- PAN-OS - Block URL - Custom URL Category
-- Sophos Firewall - Block URL
-- Checkpoint - Block URL
+* Sophos Firewall - Block URL
+* Checkpoint - Block URL
+* PAN-OS - Block URL - Custom URL Category
 
 ### Integrations
-
-- Forcepoint
-- Netcraft
+* Netcraft
+* Forcepoint
 
 ### Scripts
-
-- SetAndHandleEmpty
-- IsIntegrationAvailable
+* IsIntegrationAvailable
+* SetAndHandleEmpty
 
 ### Commands
-
-- setIndicator
-- netcraft-report-attack
-- zscaler-blacklist-url
-- fp-add-address-to-category
+* netcraft-report-attack
+* fp-add-address-to-category
+* zscaler-blacklist-url
+* setIndicator
 
 ## Playbook Inputs
-
 ---
 
-| **Name**          | **Description**                                                                                                                     | **Default Value**                  | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | ------------ |
-| URL               | Array of malicious URLs to block.                                                                                                   |                                    | Optional     |
-| LogForwarding     | Log Forwarding object name.                                                                                                         |                                    | Optional     |
-| AutoCommit        | This input establishes whether to commit the configuration automatically.<br/>Yes - Commit automatically.<br/>No - Commit manually. | No                                 | Optional     |
-| CustomURLCategory | Custom URL Category name.                                                                                                           | XSOAR Remediation - Malicious URLs | Optional     |
-| type              | Custom URL category type. Insert "URL List"/ "Category Match".                                                                      |                                    | Optional     |
-| Tag               | Device group for the Custom URL Category \(Panorama instances\).                                                                    |                                    | Optional     |
-| categories        | The list of categories. Relevant from PAN-OS v9.x.                                                                                  |                                    | Optional     |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| URL | Array of malicious URLs to block. |  | Optional |
+| LogForwarding | Log Forwarding object name. |  | Optional |
+| AutoCommit | This input establishes whether to commit the configuration automatically.<br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
+| CustomURLCategory | Custom URL Category name. | Demisto Remediation - Malicious URLs | Optional |
+| type | Custom URL category type. Insert "URL List"/ "Category Match". |  | Optional |
+| Tag | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
+| categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
+| UserVerification | Possible values:True/False. Default:True.<br/>Specify if User Verification is Requrired | True | Optional |
 
 ## Playbook Outputs
-
 ---
-
 There are no outputs for this playbook.
 
 ## Playbook Image
-
 ---
-
 ![Block URL - Generic v2](../doc_files/Block_URL_-_Generic_v2.png)
