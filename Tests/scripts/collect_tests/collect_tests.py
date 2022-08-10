@@ -437,7 +437,7 @@ class BranchTestCollector(TestCollector):
             return self._collect_yml(path)  # checks for containing folder (content item type)
 
         else:
-            raise ValueError(f'Unexpected {file_type=} for {relative_path}')
+            raise NothingToCollectException(path, f'file type {file_type}' if file_type else 'unknown file type')
 
         if not content_item:
             raise RuntimeError(f'failed collecting {path} for an unknown reason')
@@ -658,7 +658,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v2022-08-10')
+    logger.info('TestCollector v20220810.2')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
