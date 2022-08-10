@@ -8,21 +8,23 @@ requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, server_url: str, client_id: str, client_secret: str, proxy: bool, verify: bool):
+    def __init__(self, server_url: str, client_id: str, client_secret: str, proxy: bool, verify: bool, provider: str):
         super().__init__(base_url=server_url, proxy=proxy, verify=verify)
         self._client_id = client_id
         self._client_secret = client_secret
+        self.provider = provider
         self._token = self._generate_token()
         self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
 
     def _generate_token(self) -> str:
-        body = {
-            "client_id": self._client_id,
-            "client_secret": self._client_secret,
-            "grant_type": "client_credentials",
-            "provider": "thy-one"
-        }
-
+        if self.provider == "Local Login":
+            body = {
+                  "username": self._client_id,
+                  "password": self._client_secret,
+                  "grant_type": "password",
+            }
+        else:
+            raise Exception('Logon Type not supported')
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -60,11 +62,12 @@ def main():
     url = demisto.params().get('url')
     proxy = demisto.params().get('proxy', False)
     verify = not demisto.params().get('insecure', False)
+    provider = demisto.params().get('provider', 'Local Login')
 #    credential_objects = demisto.params().get('credentialobjects')
 
     LOG(f'Command being called is {demisto.command()}')
 
-    thycotic_commands = {
+    delinea_commands = {
         'dsv-secret-get': dsv_secret_get_command
     }
 
@@ -73,11 +76,12 @@ def main():
                         client_id=client_id,
                         client_secret=client_secret,
                         proxy=proxy,
-                        verify=verify)
+                        verify=verify,
+                        provider=provider)
 
-        if demisto.command() in thycotic_commands:
+        if demisto.command() in delinea_commands:
             return_results(
-                thycotic_commands[demisto.command()](client, **demisto.args())  # type: ignore[operator]
+                delinea_commands[demisto.command()](client, **demisto.args())  # type: ignore[operator]
             )
 
         elif demisto.command() == 'test-module':
@@ -85,9 +89,10 @@ def main():
             result = test_module(client)
             demisto.results(result)
 
+
     except Exception as e:
+
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
-
-if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()

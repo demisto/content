@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: ThycoticDSV
+  id: DelineaDSV
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.com)
@@ -15,20 +15,21 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Client ID
+- display: Username(Local Login)
   hidden: false
   name: client_id
   required: true
   type: 0
-- display: Client Secret
+- display: Password(Local Login)
   hidden: false
   name: client_secret
   required: true
   type: 0
+  
 description: Manage credentials for applications, databases, CI/CD tools, and services
   without causing friction in the development process.
-display: ThycoticDSV
-name: ThycoticDSV
+display: DelineaDSV
+name: DelineaDSV
 script:
   commands:
   - arguments:
@@ -46,7 +47,7 @@ script:
     - contextPath: secret
       description: Received JSON object secret
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.27798
   feed: false
   isfetch: false
   longRunning: false
