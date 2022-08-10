@@ -53,7 +53,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any]) -> List[CommandR
 
     ip_data = []
     for ip in ips:
-        # docs - https://ip-api.com/docs/api:json
+        # documentation - https://ip-api.com/docs/api:json
         result = client.get_ip_reputation(ip)
 
         dbot_score = Common.DBotScore(
