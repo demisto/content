@@ -21,7 +21,7 @@ def test_get_last_run_time():
     groups = [{'dateAdded': '2022-08-04T12:35:33Z'}, {'dateAdded': '2022-09-06T12:35:33Z'},
               {'dateAdded': '2022-03-06T12:35:33Z'}, {'dateAdded': '2022-09-06T12:36:33Z'},
               {'dateAdded': '2022-08-06T11:35:33Z'}, ]
-    assert get_last_run_time(groups) == ''
+    assert get_last_run_time(groups) == '2022-09-06T12:36:33'
 
 
 def test_create_context():  # type: ignore # noqa
@@ -46,7 +46,11 @@ def test_create_context():  # type: ignore # noqa
                                                                     'Reports',
                                                            'Rating': 3,
                                                            'Type': 'URL',
-                                                           'WebLink': 'https://partnerstage.threatconnect.com/auth/indicators/details/url.xhtml?orgid=40435508'}]},
+                                                           'WebLink': 'https://partnerstage.threatconnect.com/auth'
+                                                                      '/indicators/details/url.xhtml?orgid=40435508'}],
+            'URL(val.Data && val.Data == obj.Data)': [{'Data': 'http://yourwebsite.com/opcache.php',
+                                                       'Malicious': {'Description': '',
+                                                                     'Vendor': 'ThreatConnect'}}]},
            [{'Confidence': 32,
              'CreateDate': '2021-12-09T12:57:18Z',
              'ID': 40435508,

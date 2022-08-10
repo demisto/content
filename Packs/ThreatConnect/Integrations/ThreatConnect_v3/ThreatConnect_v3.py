@@ -625,7 +625,7 @@ def set_fields(fields) -> str:  # pragma: no cover
         return '&fields=tags&fields=associatedIndicators&fields=associatedGroups&fields=securityLabels'
     try:
         del fields['include_all_metadata']
-    except:
+    except KeyError:
         pass
     for arg in fields:
         if fields[arg] and fields[arg] != 'false':
@@ -924,8 +924,8 @@ def create_document_group(client: Client) -> None:  # pragma: no cover
     f = open(res['path'], 'rb')
     contents = f.read()
     url = f'/api/v3/groups/{response.get("data").get("id")}/upload'
-    payload = f"{contents}"
-    client.make_request(Method.POST, url, payload=payload, content_type='application/octet-stream')
+    payload = f"{contents}"  # type: ignore
+    client.make_request(Method.POST, url, payload=payload, content_type='application/octet-stream')  # type: ignore
 
     content = {
         'ID': response.get('data').get('id'),
@@ -969,7 +969,6 @@ def tc_create_threat_command(client: Client) -> None:  # pragma: no cover
 
 def tc_create_campaign_command(client: Client) -> None:  # pragma: no cover
     tags = demisto.args().get('tag', [])
-    print(tags)
     response, status_code = create_group(client, group_type='Campaign', tags=tags)
 
     ec = {
@@ -985,8 +984,7 @@ def tc_create_campaign_command(client: Client) -> None:  # pragma: no cover
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Campaign {demisto.args().get("name")} was created Successfully with id: {response.get("data").get("id")}',
-        # type: ignore # noqa
+        'HumanReadable': f'Campaign {demisto.args().get("name")} was created Successfully with id: {response.get("data").get("id")}',  # type: ignore # noqa
         'EntryContext': {
             'TC.Campaign(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
@@ -1155,7 +1153,6 @@ def tc_update_indicator_command(client: Client, rating: str = None, indicator: s
         payload['whoisActive'] = args.get('whoisActive', whois_active)
     if args.get('incidentId', incident_id):
         payload['associatedGroups'] = {'data': [{'id': args.get('incidentId', incident_id)}], 'mode': mode}
-    print(payload)
     url = f'/api/v3/indicators/{indicator}'
     response, status_code = client.make_request(Method.PUT, url, payload=json.dumps(payload))  # type: ignore
     if status_code != 200:
@@ -1219,7 +1216,7 @@ def tc_delete_indicator_tag_command(client: Client) -> None:  # pragma: no cover
 def tc_incident_associate_indicator_command(client: Client) -> None:  # pragma: no cover
     group_id = demisto.args().get('incidentId')
     indicator = demisto.args().get('indicator')
-    response, status_code = tc_update_group(client, mode='append', return_raw=True, group_id=group_id,
+    response, status_code = tc_update_group(client, mode='append', raw_data=True, group_id=group_id,
                                             associated_indicator_id=indicator)
     ec, indicators = create_context([response.get('data')])
 
@@ -1581,7 +1578,6 @@ def add_group_tag(client: Client):  # pragma: no cover
     group_id = demisto.args().get('group_id')
     tags: str = demisto.args().get('tag_name')
     tc_update_group(client, raw_data=True, tags=tags, group_id=group_id)  # type: ignore
-    args = demisto.args()
     demisto.results(f'The tag {tags.split(",")} was added successfully to group {group_id}')
 
 

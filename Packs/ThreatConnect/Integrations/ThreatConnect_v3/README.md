@@ -1,5 +1,5 @@
 ThreatConnect's intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
-This integration was integrated and tested with version xx of ThreatConnect v3
+This integration was integrated and tested with API version 3 of ThreatConnect v3
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-threatconnect-v3).
