@@ -355,7 +355,7 @@ tasks:
     task:
       id: 5af0265d-f69a-47ef-8fdd-8be726ab8812
       version: -1
-      name: "ClarizenIAM "
+      name: Clarizen IAM
       type: title
       iscommand: false
       brand: ""
