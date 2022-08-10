@@ -254,18 +254,20 @@ def test_branch(
 
 
 ONLY_COLLECT_PACK_TYPES = {
-    # see following test docstring
+    # see docstring of the test using this set
     FileType.RELEASE_NOTES_CONFIG,
     FileType.RELEASE_NOTES,
     FileType.IMAGE,
     FileType.DESCRIPTION,
     FileType.METADATA,
+    FileType.RELEASE_NOTES_CONFIG,
     FileType.INCIDENT_TYPE,
     FileType.INCIDENT_FIELD,
     FileType.INDICATOR_FIELD,
     FileType.LAYOUT,
     FileType.WIDGET,
     FileType.DASHBOARD,
+    FileType.REPORT,
     FileType.PARSING_RULE,
     FileType.MODELING_RULE,
     FileType.CORRELATION_RULE,
@@ -279,13 +281,25 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.PRE_PROCESS_RULES,
     FileType.JOB,
     FileType.CONNECTION,
+    FileType.RELEASE_NOTES_CONFIG,
     FileType.XSOAR_CONFIG,
+    FileType.AUTHOR_IMAGE,
+    FileType.CHANGELOG,
+    FileType.DOC_IMAGE,
+    FileType.BUILD_CONFIG_FILE,
+    FileType.WIZARD,
+    FileType.TRIGGER,
+    FileType.LISTS,
+    FileType.README,
+    FileType.CONF_JSON,
+    FileType.MODELING_RULE_SCHEMA,
+    FileType.LAYOUTS_CONTAINER,
 }
 
 
 def test_only_collect_pack_args():
     """
-    comparing the test_only_collect_packs arguments (ONLY_COLLECT_PACK_TYPES) match constants.ONLY_COLLECT_PACK_TYPES
+    comparing the test_only_collect_packs arguments (ONLY_INSTALL_PACK_FILE_TYPES) match constants.ONLY_COLLECT_PACK_TYPES
     Any change there will require a change here.
     """
     from constants import ONLY_INSTALL_PACK_FILE_TYPES
