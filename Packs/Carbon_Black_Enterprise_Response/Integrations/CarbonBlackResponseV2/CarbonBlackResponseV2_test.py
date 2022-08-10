@@ -490,3 +490,20 @@ def test_endpoint_command(mocker):
         assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
     assert len(outputs) == 1
+
+
+def test_watchlist_update_action_command(mocker, requests_mock):
+
+    from CarbonBlackResponseV2 import watchlist_update_action_command, Client
+
+    mock_response = {"result": "success"}
+
+    id = '1021'
+    action_type = 'alert'
+    enabled = 'True'
+
+    client = Client(base_url='https://test.com', apitoken='api_key', use_ssl=True, use_proxy=False)
+    requests_mock.put(f'{client._base_url}/v1/watchlist/{id}/action_type/{action_type}', json=mock_response)
+
+    result = watchlist_update_action_command(client, id=id, action_type=action_type, enabled=enabled)
+    assert result.readable_output == 'success'
