@@ -6,11 +6,22 @@ XSOAR_SANITY_TEST_NAMES: tuple[str, ...] = (
     'Sanity Test - Playbook with mocked integration',
     'Sanity Test - Playbook with Unmockable Whois Integration',
 )
+SANITY_TEST_TO_PACK: dict[str, str] = {
+    # Some sanity tests (rarely) require a pack
+    'Sanity Test - Playbook with Unmockable Whois Integration': 'Whois',
+}
+
 DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
     'FormattingPerformance - Test',
     'reputations.json Test',
     'Indicators reputation-.json Test',
 )
+
+ALWAYS_INSTALLED_PACKS = (
+    'Base',
+    'DeveloperTools',
+)
+
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
 
 SKIPPED_CONTENT_ITEMS: set[str] = {
