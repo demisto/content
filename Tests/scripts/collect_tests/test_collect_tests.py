@@ -290,7 +290,6 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.WIZARD,
     FileType.TRIGGER,
     FileType.LISTS,
-    FileType.README,
     FileType.CONF_JSON,
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,

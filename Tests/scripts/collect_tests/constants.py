@@ -68,13 +68,13 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.WIZARD,
     FileType.TRIGGER,
     FileType.LISTS,
-    FileType.README,
     FileType.CONF_JSON,
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
+    FileType.README,
     FileType.PACK_IGNORE,
     FileType.XIF_FILE,
     FileType.SECRET_IGNORE,
