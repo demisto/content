@@ -433,11 +433,15 @@ class BranchTestCollector(TestCollector):
             if not (tests := source.get(content_item)):  # type: ignore[call-overload]
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
                 reason_description = f'no specific tests for {relative_path} were found'
-        elif path.suffix == '.yml':
+
+        elif path.suffix == '.yml':  # file_type is often None in these cases
             return self._collect_yml(path)  # checks for containing folder (content item type)
 
+        elif file_type is None:
+            raise NothingToCollectException(path, 'unknown file type')
+
         else:
-            raise NothingToCollectException(path, f'file type {file_type}' if file_type else 'unknown file type')
+            raise ValueError(path, f'unexpected content type {file_type} - please update collect_tests.py')
 
         if not content_item:
             raise RuntimeError(f'failed collecting {path} for an unknown reason')
