@@ -1,9 +1,6 @@
-import hashlib
 import os
-from typing import Any, Dict, List, Optional
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import hashlib
+from typing import List, Dict, Optional, Any
 
 
 def parse_attachment_entries(entries):
@@ -47,12 +44,12 @@ def find_attachment_entry(file_ents: List[Dict[str, Any]], attachment_ent: Dict[
     # Extract the File ID
     path = attachment_ent.get('path')
     if not path:
-        demisto.log('Key not found: path')
+        demisto.debug('Key not found: path')
         return None
 
     m = re.search(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', path)
     if not m:
-        demisto.log(f'Failed to get file ID for {path}')
+        demisto.debug(f'Failed to get file ID for {path}')
         return None
 
     # Read the file contents
@@ -61,7 +58,7 @@ def find_attachment_entry(file_ents: List[Dict[str, Any]], attachment_ent: Dict[
         with open(file['path'], 'rb') as f:
             data = f.read()
     except Exception as e:
-        demisto.log(str(e))
+        demisto.debug(str(e))
         return None
 
     # Find the attachment entry
