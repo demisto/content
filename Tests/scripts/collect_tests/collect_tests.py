@@ -9,9 +9,9 @@ from typing import Iterable, Optional
 
 from constants import (ALWAYS_INSTALLED_PACKS,
                        DEFAULT_MARKETPLACE_WHEN_MISSING,
-                       DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
+                       DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK_FILE_TYPES,
                        SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS,
-                       XSOAR_SANITY_TEST_NAMES)
+                       XSOAR_SANITY_TEST_NAMES, IGNORED_FILE_TYPES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import find_type, run_command, str2bool
 from exceptions import (DeprecatedPackException, InvalidTestException,
@@ -405,10 +405,7 @@ class BranchTestCollector(TestCollector):
             # Suitable logic follows, see collect_yml
             content_item = None
 
-        if file_type in {FileType.PACK_IGNORE, FileType.SECRET_IGNORE, FileType.DOC_FILE, FileType.README}:
-            raise NothingToCollectException(path, f'ignored type {file_type}')
-
-        elif file_type in ONLY_INSTALL_PACK:
+        if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             # install pack without collecting tests.
             return self._collect_pack(
                 pack_name=find_pack_folder(path).name,
@@ -436,6 +433,9 @@ class BranchTestCollector(TestCollector):
 
         elif path.suffix == '.yml':  # file_type is often None in these cases
             return self._collect_yml(path)  # checks for containing folder (content item type)
+
+        elif file_type in IGNORED_FILE_TYPES:
+            raise NothingToCollectException(path, f'ignored type {file_type}')
 
         elif file_type is None:
             raise NothingToCollectException(path, 'unknown file type')

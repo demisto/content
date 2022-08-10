@@ -288,8 +288,8 @@ def test_only_collect_pack_args():
     comparing the test_only_collect_packs arguments (ONLY_COLLECT_PACK_TYPES) match constants.ONLY_COLLECT_PACK_TYPES
     Any change there will require a change here.
     """
-    from constants import ONLY_INSTALL_PACK
-    assert ONLY_COLLECT_PACK_TYPES == ONLY_INSTALL_PACK
+    from constants import ONLY_INSTALL_PACK_FILE_TYPES
+    assert ONLY_COLLECT_PACK_TYPES == ONLY_INSTALL_PACK_FILE_TYPES
 
 
 @pytest.mark.parametrize('file_type', ONLY_COLLECT_PACK_TYPES)
