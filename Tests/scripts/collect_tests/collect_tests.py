@@ -13,8 +13,7 @@ from constants import (ALWAYS_INSTALLED_PACKS,
                        SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS,
                        XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
-from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
-                                               str2bool)
+from demisto_sdk.commands.common.tools import find_type, run_command, str2bool
 from exceptions import (DeprecatedPackException, InvalidTestException,
                         NonDictException, NoTestsConfiguredException,
                         NothingToCollectException, NotUnderPackException,
@@ -385,7 +384,7 @@ class BranchTestCollector(TestCollector):
         if not path.exists():
             raise FileNotFoundError(path)
 
-        file_type = find_type_by_path(path)
+        file_type = find_type(str(path))
         try:
             reason_description = relative_path = PackManager.relative_to_packs(path)
         except NotUnderPackException:
@@ -659,7 +658,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v2022-08-08')
+    logger.info('TestCollector v2022-08-10')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
