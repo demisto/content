@@ -50,6 +50,11 @@ GRAPH_BASE_ENDPOINTS = {
     'https://microsoftgraph.chinacloudapi.cn': 'cn'
 }
 
+# possible errors
+AUTH_CODE_REFRESH_FAIL = "Unable to create refresh_token with the provided authorization code. Please make " \
+                         "sure your authorization code is created via " \
+                         "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize"
+
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
@@ -335,10 +340,7 @@ class MicrosoftClient(BaseClient):
                 access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
                                                                                                   scope=scope)
                 if not refresh_token:
-                    err = "Unable to create refresh_token with the provided authorization code. Please make sure " \
-                          "your authorization code is created via " \
-                          "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize"
-                    raise DemistoException(err)
+                    raise DemistoException(AUTH_CODE_REFRESH_FAIL)
                 return access_token, expires_in, refresh_token
             else:
                 expires_in = -1  # init variable as an int
@@ -347,6 +349,8 @@ class MicrosoftClient(BaseClient):
                                                                                                       resource)
                     self.resource_to_access_token[resource] = access_token
 
+                if not refresh_token:
+                    raise DemistoException(AUTH_CODE_REFRESH_FAIL)
                 return '', expires_in, refresh_token
         elif self.grant_type == DEVICE_CODE:
             return self._get_token_device_code(refresh_token, scope, integration_context)

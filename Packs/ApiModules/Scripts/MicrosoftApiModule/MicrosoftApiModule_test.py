@@ -355,6 +355,26 @@ def test_self_deployed_multi_resource(requests_mock, resource):
     assert client.resource_to_access_token[resource] == TOKEN
 
 
+@pytest.mark.parametrize('resource', ['https://resource1.com', 'https://resource2.com'])
+def test_self_deployed_multi_resource__no_refresh_token_in_resp(requests_mock, resource):
+    """
+    Given:
+        multi_resource client.
+    When
+        When configuration is client credentials authentication type and multi resource.
+    Then
+        Verify access token for each resource.
+    """
+    client = self_deployed_client_multi_resource()
+    client.grant_type = 'authorization_code'
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    with pytest.raises(DemistoException):
+        client._get_self_deployed_token()
+
+
 @pytest.mark.parametrize('endpoint', ['com', 'gcc-high', 'dod', 'de', 'cn'])
 def test_national_endpoints(mocker, endpoint):
     """
