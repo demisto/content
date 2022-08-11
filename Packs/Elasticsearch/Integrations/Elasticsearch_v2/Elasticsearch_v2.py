@@ -161,7 +161,7 @@ def get_hit_table(hit):
     return table_context, headers
 
 
-def results_to_context(index, query, base_page, size, total_dict, response):
+def results_to_context(index, query, base_page, size, total_dict, response,event=False):
     """Creates context for the full results of a search.
 
     Args:
@@ -193,7 +193,12 @@ def results_to_context(index, query, base_page, size, total_dict, response):
     hit_headers = []  # type: List
     hit_tables = []
     if total_dict.get('value') > 0:
-        for hit in response.get('hits').get('hits'):
+        if not event:
+            results = response.get('hits').get('hits', [])
+        else:
+            results = response.get('hits').get('events',[])
+            
+        for hit in results:
             single_hit_table, single_header = get_hit_table(hit)
             hit_tables.append(single_hit_table)
             hit_headers = list(set(single_header + hit_headers) - {'_id', '_type', '_index', '_score'})
@@ -242,30 +247,36 @@ def search_command(proxies):
     timestamp_range_start = demisto.args().get('timestamp_range_start')
     timestamp_range_end = demisto.args().get('timestamp_range_end')
 
-    search_query = query_dsl or query
     es = elasticsearch_builder(proxies)
-
-    que = QueryString(query=search_query)
-    search = Search(using=es, index=index).query(que)[base_page:base_page + size]
-    if explain:
-        # if 'explain parameter is set to 'true' - adds explanation section to search results
-        search = search.extra(explain=True)
-
+    time_range_dict = None
     if timestamp_range_end or timestamp_range_start:
         time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end)
-        search.filter(time_range_dict)
 
-    if fields is not None:
-        fields = fields.split(',')
-        search = search.source(fields)
+    if query_dsl:
+        
+        response = execute_raw_query(es, query_dsl)
 
-    if sort_field is not None:
-        search = search.sort({sort_field: {'order': sort_order}})
+    else:
+        que = QueryString(query=query)
+        search = Search(using=es, index=index).query(que)[base_page:base_page + size]
+        if explain:
+            # if 'explain parameter is set to 'true' - adds explanation section to search results
+            search = search.extra(explain=True)
 
-    response = search.execute().to_dict()
+        if time_range_dict:
+            search.filter(time_range_dict)
+
+        if fields is not None:
+            fields = fields.split(',')
+            search = search.source(fields)
+
+        if sort_field is not None:
+            search = search.sort({sort_field: {'order': sort_order}})
+
+        response = search.execute().to_dict()
 
     total_dict, total_results = get_total_results(response)
-    search_context, meta_headers, hit_tables, hit_headers = results_to_context(index, query, base_page,
+    search_context, meta_headers, hit_tables, hit_headers = results_to_context(index, query_dsl or query, base_page,
                                                                                size, total_dict, response)
     search_human_readable = tableToMarkdown('Search Metadata:', search_context, meta_headers, removeNull=True)
     hits_human_readable = tableToMarkdown('Hits:', hit_tables, hit_headers, removeNull=True)
@@ -281,13 +292,13 @@ def search_command(proxies):
 def fetch_params_check():
     """If is_fetch is ticked, this function checks that all the necessary parameters for the fetch are entered."""
     str_error = []  # type:List
-    if TIME_FIELD == '' or TIME_FIELD is None:
+    if (TIME_FIELD == '' or TIME_FIELD is None) and not RAW_QUERY:
         str_error.append("Index time field is not configured.")
 
     if FETCH_INDEX == '' or FETCH_INDEX is None:
         str_error.append("Index is not configured.")
 
-    if FETCH_QUERY == '' or FETCH_QUERY is None:
+    if (FETCH_QUERY == '' or FETCH_QUERY is None) and not RAW_QUERY:
         str_error.append("Query by which to fetch incidents is not configured.")
 
     if len(str_error) > 0:
@@ -454,7 +465,17 @@ def test_func(proxies):
             response = test_time_field_query(es)
 
             # try to get response from FETCH_QUERY - if exists check the time field from that query
-            temp = test_fetch_query(es)
+            if RAW_QUERY:
+                raw_query = RAW_QUERY
+                try:
+                    raw_query = json.loads(raw_query)
+                except Exception as e:
+                    demisto.info("unable to convert raw query to dictionary, use it as a string")
+
+                temp = es.search(index=FETCH_INDEX, body={"query": raw_query})
+            else:
+                temp = test_fetch_query(es)
+
             if temp:
                 response = temp
 
@@ -548,6 +569,7 @@ def results_to_incidents_datetime(response, last_fetch):
         (list).The incidents.
         (datetime).The date of the last incident brought by this fetch.
     """
+    last_fetch = dateparser.parse(last_fetch)
     last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
     current_fetch = last_fetch_timestamp
     incidents = []
@@ -644,18 +666,31 @@ def get_time_range(last_fetch: Union[str, None] = None, fetch_time=FETCH_TIME, t
     return {'range': {time_field: range_dict}}
 
 
+def execute_raw_query(es, raw_query):
+    try:
+        raw_query = json.loads(raw_query)
+    except Exception as e:
+        demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
+    
+    body = {"query": raw_query}
+    response = es.search(index=FETCH_INDEX, body=body)
+    return response
+
+
 def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
-    time_range_dict = get_time_range(last_fetch)
+    time_range_dict = get_time_range(last_fetch=last_fetch)
     es = elasticsearch_builder(proxies)
-
-    query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
-    # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
-    search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
-    search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
-    response = search.execute().to_dict()
+    if RAW_QUERY:
+        response = execute_raw_query(es, RAW_QUERY)
+    else:
+        query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
+        # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
+        search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
+        search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
+        response = search.execute().to_dict()
     _, total_results = get_total_results(response)
 
     incidents = []  # type: List
@@ -666,7 +701,7 @@ def fetch_incidents(proxies):
             demisto.setLastRun({'time': last_fetch})
 
         else:
-            incidents, last_fetch = results_to_incidents_datetime(response, last_fetch)
+            incidents, last_fetch = results_to_incidents_datetime(response, last_fetch or FETCH_TIME)
             demisto.setLastRun({'time': str(last_fetch)})
 
         demisto.info('extract {} incidents'.format(len(incidents)))
@@ -703,26 +738,45 @@ def get_mapping_fields_command():
     demisto.results(elastic_mapping)
 
 
+def build_eql_body(query, fields, size, tiebreaker_field, timestamp_field, event_category_field, filter):
+    body = {}
+    if query is not None:
+        body["query"] = query
+    if event_category_field is not None:
+        body["event_category_field"] = event_category_field
+    if fields is not None:
+        body["fields"] = fields
+    if filter is not None:
+        body["filter"] = filter
+    if size is not None:
+        body["size"] = size
+    if tiebreaker_field is not None:
+        body["tiebreaker_field"] = tiebreaker_field
+    if timestamp_field is not None:
+        body["timestamp_field"] = timestamp_field
+    return body
+
+
 def search_eql_command(args, proxies):
     index = args.get('index')
     query = args.get('query')
     fields = args.get('fields')  # fields to display
-    size = int(args.get('size'))
+    size = int(args.get('size', '10'))
     timestamp_field = args.get('timestamp_field')
     event_category_field = args.get('event_category_field')
     sort_tiebreaker = args.get('sort_tiebreaker')
     query_filter = args.get('filter')
 
     es = elasticsearch_builder(proxies)
-    search = es.eql.search(index=index, query=query, fields=fields, size=size, tiebreaker_field=sort_tiebreaker,
-                           timestamp_field=timestamp_field, event_category_field=event_category_field,
-                           filter=query_filter)
-    response = search.to_dict()
+    body = build_eql_body(query=query, fields=fields, size=size, tiebreaker_field=sort_tiebreaker,
+                          timestamp_field=timestamp_field, event_category_field=event_category_field,
+                          filter=query_filter)
+
+    response = es.eql.search(index=index, body=body)
 
     total_dict, total_results = get_total_results(response)
-    CommandResults()
     search_context, meta_headers, hit_tables, hit_headers = results_to_context(index, query, 0,
-                                                                               size, total_dict, response)
+                                                                               size, total_dict, response, event=True)
     search_human_readable = tableToMarkdown('Search Metadata:', search_context, meta_headers, removeNull=True)
     hits_human_readable = tableToMarkdown('Hits:', hit_tables, hit_headers, removeNull=True)
     total_human_readable = search_human_readable + '\n' + hits_human_readable

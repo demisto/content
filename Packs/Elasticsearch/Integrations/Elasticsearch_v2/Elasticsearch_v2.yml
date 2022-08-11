@@ -1,4 +1,4 @@
-category: Database
+category: Database & SIEM
 commonfields:
   id: Elasticsearch v2
   version: -1
@@ -41,16 +41,16 @@ configuration:
   name: fetch_query
   required: false
   type: 0
+- display: Index time field (for sorting sort and limiting data)
+  name: fetch_time_field
+  required: false
+  type: 0
 - additionalinfo: Will override the 'Query String' Lucene syntax string.
   display: Raw Query
   hidden: false
   name: raw_query
   required: false
-  type: 0
-- display: Index time field (for sorting sort and limiting data)
-  name: fetch_time_field
-  required: false
-  type: 0
+  type: 12
 - defaultvalue: Simple-Date
   display: Time field type
   name: time_method
@@ -107,7 +107,7 @@ script:
       name: query
       predefined:
       - ''
-      required: true
+      required: false
       secret: false
     - default: false
       description: A comma-separated list of document fields to fetch. If empty, the
@@ -166,7 +166,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Will overwrite the ‘query' argument.
+      description: Will overwrite the ‘query' arguments. 
       isArray: false
       name: query_dsl
       required: false
@@ -240,7 +240,7 @@ script:
       name: query
       predefined:
       - ''
-      required: true
+      required: false
       secret: false
     - default: false
       description: A comma-separated list of document fields to fetch. If empty, fetches
@@ -356,7 +356,7 @@ script:
         description: The index in which to perform a search.
         isArray: false
         name: index
-        required: false
+        required: true
         secret: false
       - default: false
         description: The string to query (in Lucene syntax).
@@ -369,7 +369,7 @@ script:
           the entire document.
         isArray: true
         name: fields
-        required: true
+        required: false
         secret: false
       - default: false
         description: If two or more events share the same timestamp, Elasticsearch uses
