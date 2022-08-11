@@ -155,7 +155,7 @@ class MsGraphClient:
             method='POST',
             url_suffix=f'users/{quote(user)}/authentication/passwordMethods/{password_id}/resetPassword',
             ok_codes=(202,), json_data={"newPassword": password},
-            return_empty_response=True
+            return_empty_response=True,
         )
 
     def get_delta(self, properties):
