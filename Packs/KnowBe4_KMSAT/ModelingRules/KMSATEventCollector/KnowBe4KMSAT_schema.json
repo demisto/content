@@ -1,0 +1,48 @@
+{
+    "knowbe4_kmsat_raw": {
+        "id": {
+          "type": "string",
+          "is_array": false
+        },
+        "riskLevel": {
+          "type": "int",
+          "is_array": false
+        },
+        "occurredDate": {
+            "type": "datetime",
+            "is_array": false
+          },
+        "userID": {
+            "type": "string",
+            "is_array": false
+          },
+        "externalID": {
+          "type": "string",
+          "is_array": false
+        },
+        "eventTypeID": {
+          "type": "string",
+          "is_array": false
+        },
+        "eventTypeName": {
+          "type": "string",
+          "is_array": false
+        },
+        "eventTypeDescription": {
+          "type": "string",
+          "is_array": false
+        },
+        "accountID": {
+          "type": "string",
+          "is_array": false
+        },
+        "description": {
+          "type": "string",
+          "is_array": false
+        },
+        "source": {
+          "type": "string",
+          "is_array": false
+        }
+    }
+  }
