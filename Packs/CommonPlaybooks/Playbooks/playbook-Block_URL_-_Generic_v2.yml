@@ -13,7 +13,6 @@ description: |-
   * Forcepoint
   * Checkpoint
   * Netcraft
-  * EDL
 starttaskid: "0"
 tasks:
   "0":
@@ -26,9 +25,9 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "36"
     separatecontext: false
     view: |-
@@ -56,7 +55,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -83,9 +82,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "16"
       - "17"
       - "18"
@@ -110,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3c98fe18-18f7-4908-830c-2dfa0f707144
+    taskid: 0e2e9b54-cbaa-4f8c-85b2-b5927f30f52a
     type: condition
     task:
-      id: 3c98fe18-18f7-4908-830c-2dfa0f707144
+      id: 0e2e9b54-cbaa-4f8c-85b2-b5927f30f52a
       version: -1
       name: Is there a URL to block?
       description: Verify that the playbook input includes at least one URL to block.
@@ -121,7 +120,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
+      '#default#':
       - "25"
       "yes":
       - "5"
@@ -129,11 +128,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: Blocklist.URL
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -161,7 +162,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
+      '#default#':
       - "2"
       "yes":
       - "13"
@@ -212,19 +213,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: d78d4b61-7749-4ec3-8b42-b956ad2c5292
+    taskid: ea188096-e085-4155-884d-a6c9d23ddb1f
     type: regular
     task:
-      id: d78d4b61-7749-4ec3-8b42-b956ad2c5292
+      id: ea188096-e085-4155-884d-a6c9d23ddb1f
       version: -1
       name: Block URL with Zscaler
-      description: Block the URLS using Zscaler.
-      script: "|||zscaler-blacklist-url"
+      description: Adds the specified URLs to the block list.
+      script: Zscaler|||zscaler-blacklist-url
       type: regular
       iscommand: true
-      brand: ""
+      brand: Zscaler
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
     scriptarguments:
       url:
@@ -261,7 +262,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
     scriptarguments:
       AutoCommit:
@@ -307,9 +308,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "21"
     separatecontext: false
     view: |-
@@ -337,9 +338,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "20"
     separatecontext: false
     view: |-
@@ -367,9 +368,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "12"
     separatecontext: false
     view: |-
@@ -388,18 +389,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 543180a9-1ea4-4aed-83f6-4e89cf9613be
+    taskid: b9e7db2b-6985-4410-8e01-ccb9950cd8b7
     type: condition
     task:
-      id: 543180a9-1ea4-4aed-83f6-4e89cf9613be
+      id: b9e7db2b-6985-4410-8e01-ccb9950cd8b7
       version: -1
       name: Use EDL?
-      description: Checks if we should we block using EDL
+      description: Check if should use EDL or not
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
+      '#default#':
       - "2"
       "yes":
       - "29"
@@ -410,8 +411,11 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.EDLServerIP
+              complex:
+                root: inputs.EDLServerIP
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -428,18 +432,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 0abc0c58-5486-416b-80aa-7277253f2b1d
+    taskid: 47aff5b6-5919-46bb-8979-c342b18f9197
     type: condition
     task:
-      id: 0abc0c58-5486-416b-80aa-7277253f2b1d
+      id: 47aff5b6-5919-46bb-8979-c342b18f9197
       version: -1
       name: Use Custom URL Category?
-      description: Checks a custom URL category should be used
+      description: Check if should use Custom URL Category or not
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
+      '#default#':
       - "2"
       "yes":
       - "14"
@@ -452,6 +456,8 @@ tasks:
             value:
               simple: inputs.type
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -480,7 +486,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
+      '#default#':
       - "2"
       "yes":
       - "23"
@@ -520,7 +526,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
     separatecontext: true
     loop:
@@ -556,7 +562,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
     separatecontext: true
     loop:
@@ -585,13 +591,13 @@ tasks:
     task:
       id: 21af0a6a-234a-4061-884a-86f3209ae79e
       version: -1
-      name: No URL was defined
+      name: No URL was definded
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
     separatecontext: false
     view: |-
@@ -619,9 +625,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "27"
     separatecontext: false
     view: |-
@@ -652,7 +658,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
+      '#default#':
       - "2"
       "yes":
       - "24"
@@ -687,9 +693,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "19"
     separatecontext: false
     view: |-
@@ -720,7 +726,7 @@ tasks:
       iscommand: true
       brand: Builtin
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
     scriptarguments:
       value:
@@ -742,18 +748,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: c0fce5a4-6077-40f7-891b-6d2b868571da
+    taskid: 7948896f-f14b-4e0b-865e-47a3a0c1da3f
     type: collection
     task:
-      id: c0fce5a4-6077-40f7-891b-6d2b868571da
+      id: 7948896f-f14b-4e0b-865e-47a3a0c1da3f
       version: -1
       name: User Verification
-      description: asking the analyst which URL's should be blocked
+      description: Ask the analyst for verification of which URL to block
       type: collection
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "31"
     separatecontext: false
     view: |-
@@ -770,7 +776,7 @@ tasks:
       to:
         simple: Administrator,Analyst
       subject:
-        simple: "User Verification - Block URLs (Inc #${incident.id})"
+        simple: 'User Verification - Block URLs (Inc #${incident.id})'
       body:
         simple: Dear XSOAR user, Please approve those URLs that you would like to block in your internal systems
       methods:
@@ -782,14 +788,14 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
+        completeafterv2: true
         completeaftersla: false
     form:
       questions:
       - id: "0"
         label: ""
         labelarg:
-          simple: "Please select those URLs that you would like to block:"
+          simple: 'Please select those URLs that you would like to block:'
         required: false
         gridcolumns: []
         defaultrows: []
@@ -814,10 +820,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 18f017fa-2abf-4f7e-800f-1374a242dc9d
+    taskid: 6a38d62a-b597-4165-87e8-7b5b92953ca5
     type: regular
     task:
-      id: 18f017fa-2abf-4f7e-800f-1374a242dc9d
+      id: 6a38d62a-b597-4165-87e8-7b5b92953ca5
       version: -1
       name: Append the URLs' blocking list
       description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
@@ -826,7 +832,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "8"
     scriptarguments:
       append:
@@ -861,9 +867,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "34"
     separatecontext: false
     view: |-
@@ -894,7 +900,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
+      '#default#':
       - "2"
       "yes":
       - "35"
@@ -932,7 +938,7 @@ tasks:
       iscommand: true
       brand: Forcepoint
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
     scriptarguments:
       urls:
@@ -954,18 +960,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 05ed149d-f3c8-46ab-818f-4327e57b1f59
+    taskid: 33d5bf90-736a-4228-8307-53b1d58d4550
     type: condition
     task:
-      id: 05ed149d-f3c8-46ab-818f-4327e57b1f59
+      id: 33d5bf90-736a-4228-8307-53b1d58d4550
       version: -1
       name: Is User Verification Is Required?
-      description: Checks if a manual user verification is needed before block
+      description: Check if should ask for user verification
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
+      '#default#':
       - "37"
       "yes":
       - "30"
@@ -976,7 +982,8 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${input.UserVerification}
+              complex:
+                root: inputs.UserVerification
             iscontext: true
           right:
             value:
@@ -998,10 +1005,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: f647d8c3-407f-41e7-8af3-0583f6e8d767
+    taskid: 76856aa5-7ff2-415b-8f6f-e4bd1e6798a9
     type: regular
     task:
-      id: f647d8c3-407f-41e7-8af3-0583f6e8d767
+      id: 76856aa5-7ff2-415b-8f6f-e4bd1e6798a9
       version: -1
       name: Set Input URLs as Blocklist.
       description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
@@ -1010,13 +1017,13 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "8"
     scriptarguments:
       key:
         simple: Blocklist.URL
       value:
-      - complex:
+        complex:
           root: inputs.URL
     separatecontext: false
     view: |-
@@ -1044,9 +1051,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "40"
     separatecontext: false
     view: |-
@@ -1077,8 +1084,6 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-      - "2"
       "yes":
       - "41"
     scriptarguments:
@@ -1103,10 +1108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 7bc9240f-ea25-4054-8c9c-6d247c123e74
+    taskid: 0e06c863-2829-4749-8d1a-6daeb34d89c6
     type: regular
     task:
-      id: 7bc9240f-ea25-4054-8c9c-6d247c123e74
+      id: 0e06c863-2829-4749-8d1a-6daeb34d89c6
       version: -1
       name: Block URL with Netcraft
       description: Reports an attack to Netcraft.
@@ -1115,12 +1120,13 @@ tasks:
       iscommand: true
       brand: Netcraft
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
     scriptarguments:
       attack:
-      - complex:
-          root: inputs.URL
+        complex:
+          root: Blocklist
+          accessor: URL
       comment:
         simple: Malicious - Added by Netcraft Integration
     separatecontext: false
@@ -1179,7 +1185,7 @@ inputs:
   playbookInputQuery:
 - key: CustomURLCategory
   value:
-    simple: Demisto Remediation - Malicious URLs
+    simple: XSOAR Remediation - Malicious URLs
   required: false
   description: Custom URL Category name.
   playbookInputQuery:
@@ -1205,6 +1211,11 @@ inputs:
   description: |-
     Possible values:True/False. Default:True.
     Specify if User Verification is Requrired
+  playbookInputQuery:
+- key: EDLServerIP
+  value: {}
+  required: false
+  description: EDL Server IP Address
   playbookInputQuery:
 outputs: []
 tests:
