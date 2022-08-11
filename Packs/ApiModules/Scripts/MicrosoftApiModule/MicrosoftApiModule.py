@@ -179,7 +179,7 @@ class MicrosoftClient(BaseClient):
         if response.status_code == 206:
             demisto.debug(f'Response status code 206 (partial content) with headers {str(response.headers)}')
 
-        allowed_empty_response_codes = kwargs.get('empty_valid_codes', (204,))  # 204 CommonServerPython's default
+        allowed_empty_response_codes = kwargs.get('empty_valid_codes', (204,))  # 204 is CommonServerPython's default
         if return_empty_response and (response.status_code in allowed_empty_response_codes):
             return response
 
