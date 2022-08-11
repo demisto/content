@@ -787,6 +787,7 @@ class Taxii2FeedClient:
         if page_size <= 0:
             return []
         envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
+        demisto.debug(f'before load_stix_objects_from_envelope')
         indicators = self.load_stix_objects_from_envelope(envelopes, limit)
 
         return indicators
@@ -937,7 +938,27 @@ class Taxii2FeedClient:
         demisto.info(f'{resp.content}')
         demisto.debug(f'{resp=}, {resp.status_code=}, {resp.headers=}')
 
-        return _to_json(resp)
+        try:
+            demisto.debug('Setting resp_json to _to_json(resp)')
+            resp_json = _to_json(resp)
+        except Exception as e:
+            demisto.debug(f'When trying _to_json got Exception: {e}')
+            try:
+                demisto.debug('Setting resp_json to resp.json()')
+                resp_json = resp.json()
+            except Exception as e:
+                demisto.debug(f'When trying resp.json() got Exception: {e}')
+                try:
+                    resp_text = resp.text
+                    demisto.debug(f'{resp_text=}, setting resp_json to json.loads(resp_text)')
+                    resp_json = json.loads(resp_text)
+                except Exception as e:
+                    demisto.debug(f'When trying json.loads(resp.text) got Exception: {e}')
+                    demisto.debug('Setting resp_json to json.loads(resp.content)')
+                    resp_json = json.loads(resp.content)
+
+        demisto.debug(f'SUCCESS! {resp_json=}')
+        return resp_json
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """
