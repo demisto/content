@@ -7,17 +7,17 @@ Supported integrations for this playbook:
 * Forcepoint
 * Checkpoint
 * Netcraft
-* EDL
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* PAN-OS - Block URL - Custom URL Category
 * Sophos Firewall - Block URL
 * Checkpoint - Block URL
-* PAN-OS - Block URL - Custom URL Category
 
 ### Integrations
+* Zscaler
 * Netcraft
 * Forcepoint
 
@@ -26,8 +26,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * SetAndHandleEmpty
 
 ### Commands
-* netcraft-report-attack
 * fp-add-address-to-category
+* netcraft-report-attack
 * zscaler-blacklist-url
 * setIndicator
 
@@ -39,11 +39,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | URL | Array of malicious URLs to block. |  | Optional |
 | LogForwarding | Log Forwarding object name. |  | Optional |
 | AutoCommit | This input establishes whether to commit the configuration automatically.<br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
-| CustomURLCategory | Custom URL Category name. | Demisto Remediation - Malicious URLs | Optional |
+| CustomURLCategory | Custom URL Category name. | XSOAR Remediation - Malicious URLs | Optional |
 | type | Custom URL category type. Insert "URL List"/ "Category Match". |  | Optional |
 | Tag | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
 | categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
 | UserVerification | Possible values:True/False. Default:True.<br/>Specify if User Verification is Requrired | True | Optional |
+| EDLServerIP | EDL Server IP Address |  | Optional |
 
 ## Playbook Outputs
 ---
