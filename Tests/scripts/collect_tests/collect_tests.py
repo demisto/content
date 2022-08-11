@@ -133,10 +133,10 @@ class CollectionResult:
                 if not (playbook_path := test_playbook.path):
                     raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
-                    raise SkippedTestException(test, 'skipped in .pack_ignore')
+                    raise SkippedTestException(test, skip_place='.pack_ignore')
 
             if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
-                raise SkippedTestException(test, skip_reason)
+                raise SkippedTestException(test, skip_place='conf.json', skip_reason=skip_reason)
 
             if test in conf.private_tests:  # type:ignore[union-attr]
                 raise PrivateTestException(test)
