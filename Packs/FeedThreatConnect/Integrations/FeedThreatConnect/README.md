@@ -10,14 +10,14 @@ This integration was integrated and tested with version 3 of ThreatConnect Feed
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Base URL |  | True |
-    | Access ID | The API ID key | True |
-    | Secret key | The secrete key for the API | True |
-    | Tags to filter results by | A comma-seperated list of tags to filter by | False |
+    | Access ID | The API ID key. | True |
+    | Secret key | The secrete key for the API. | True |
+    | Tags to filter results by | A comma-separated list of tags to filter by. | False |
     | Owners | Comma-separated list of owners to fetch indicators from. | False |
     | Fetch indicators |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     |  |  | False |
     |  |  | False |
     | Feed Fetch Interval |  | False |
@@ -41,8 +41,8 @@ Gets indicators from ThreatConnect.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| owners | Comma-separated list of owners to fetch indicators from. (If<br/>not specified will retrieve only indicators owned by account. If you supply this argument, it overwrites the "Owners" parameter).<br/>. | Optional | 
-| limit | The maximum number of indicators to retreive. Default is 50. Default is 50. | Optional | 
+| owners | Comma-separated list of owners to fetch indicators from. (If not specified, will retrieve only indicators owned by account. If you supply this argument, it overwrites the "Owners" parameter.) | Optional | 
+| limit | The maximum number of indicators to retrieve. Default is 50. | Optional | 
 | offset | The index of the first indicator to fetch. Default is 0. Possible values are: . Default is 0. | Optional | 
 
 
@@ -51,7 +51,7 @@ Gets indicators from ThreatConnect.
 There is no context output for this command.
 ### tc-get-owners
 ***
-Get availble indicators owners.
+Get available indicators owners.
 
 
 #### Base Command
