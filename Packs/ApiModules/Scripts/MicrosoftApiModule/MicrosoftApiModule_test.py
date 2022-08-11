@@ -292,6 +292,29 @@ def test_self_deployed_request(requests_mock):
     assert req_res == (TOKEN, 3600, '')
 
 
+def test_self_deployed_request__no_refresh_token_in_resp(requests_mock):
+    """
+    Given:
+        single_resource client
+        authorization_code flow
+    When
+        authorization_code lacks permissions to create refresh_token
+    Then
+        error is raised
+    """
+    # Set
+    client = self_deployed_client()
+    client.grant_type = 'authorization_code'
+
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    # Arrange
+    with pytest.raises(DemistoException):
+        client._get_self_deployed_token()
+
+
 def test_oproxy_use_resource(mocker):
     """
     Given:

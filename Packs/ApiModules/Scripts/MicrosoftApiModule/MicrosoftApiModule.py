@@ -332,7 +332,14 @@ class MicrosoftClient(BaseClient):
                                  ) -> Tuple[str, int, str]:
         if self.grant_type == AUTHORIZATION_CODE:
             if not self.multi_resource:
-                return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
+                access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
+                                                                                                  scope=scope)
+                if not refresh_token:
+                    err = "Unable to create refresh_token with the provided authorization code. Please make sure " \
+                          "your authorization code is created via " \
+                          "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize"
+                    raise DemistoException(err)
+                return access_token, expires_in, refresh_token
             else:
                 expires_in = -1  # init variable as an int
                 for resource in self.resources:
