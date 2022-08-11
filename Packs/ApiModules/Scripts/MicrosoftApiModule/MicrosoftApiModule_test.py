@@ -292,6 +292,29 @@ def test_self_deployed_request(requests_mock):
     assert req_res == (TOKEN, 3600, '')
 
 
+def test_self_deployed_request__no_refresh_token_in_resp(requests_mock):
+    """
+    Given:
+        single_resource client
+        authorization_code flow
+    When
+        authorization_code lacks permissions to create refresh_token
+    Then
+        error is raised
+    """
+    # Set
+    client = self_deployed_client()
+    client.grant_type = 'authorization_code'
+
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    # Arrange
+    with pytest.raises(DemistoException):
+        client._get_self_deployed_token()
+
+
 def test_oproxy_use_resource(mocker):
     """
     Given:
@@ -330,6 +353,26 @@ def test_self_deployed_multi_resource(requests_mock, resource):
     req_res = client._get_self_deployed_token()
     assert req_res == ('', 3600, '')
     assert client.resource_to_access_token[resource] == TOKEN
+
+
+@pytest.mark.parametrize('resource', ['https://resource1.com', 'https://resource2.com'])
+def test_self_deployed_multi_resource__no_refresh_token_in_resp(requests_mock, resource):
+    """
+    Given:
+        multi_resource client.
+    When
+        When configuration is client credentials authentication type and multi resource.
+    Then
+        Verify access token for each resource.
+    """
+    client = self_deployed_client_multi_resource()
+    client.grant_type = 'authorization_code'
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    with pytest.raises(DemistoException):
+        client._get_self_deployed_token()
 
 
 @pytest.mark.parametrize('endpoint', ['com', 'gcc-high', 'dod', 'de', 'cn'])
