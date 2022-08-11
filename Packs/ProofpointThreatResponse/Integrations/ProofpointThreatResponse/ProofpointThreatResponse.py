@@ -799,7 +799,15 @@ def search_quarantine():
     mid = demisto.args().get('message_id')
     recipient = demisto.args().get('recipient')
 
-    incidents_list = get_incidents_request({})
+    integration_params = demisto.params()
+    request_params = {
+        'created_after': datetime.strftime(arg_time - get_time_delta('1 hour'), TIME_FORMAT),  # for safety
+        'fetch_delta': integration_params.get('fetch_delta', '6 hours'),
+        'fetch_limit': integration_params.get('fetch_limit', '50')
+    }
+
+    incidents_list = get_incidents_batch_by_time_request(request_params)
+
     found = {'email': False, 'mid': False, 'quarantine': False}
     resQ = []
 
