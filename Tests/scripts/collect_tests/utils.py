@@ -191,7 +191,7 @@ class ContentItem(DictFileBased):
         super().__init__(path)
         self.pack_path = find_pack_folder(self.path)
         self.deprecated = self.get('deprecated', warn_if_missing=False)
-        self._tests = self.get('tests', warn_if_missing=False)
+        self._tests = self.get('tests', default=(), warn_if_missing=False)
 
     @property
     def id_(self) -> Optional[str]:  # Optional as pack_metadata (for example) doesn't have this field
