@@ -177,9 +177,10 @@ class MicrosoftClient(BaseClient):
         # 206 indicates Partial Content, reason will be in the warning header.
         # In that case, logs with the warning header will be written.
         if response.status_code == 206:
-            demisto.debug(str(response.headers))
-        is_response_empty_and_successful = (response.status_code == 204)
-        if is_response_empty_and_successful and return_empty_response:
+            demisto.debug(f'Response status code 206 (partial content) with headers {str(response.headers)}')
+
+        allowed_empty_response_codes = kwargs.get('empty_valid_codes', (204,))  # 204 CommonServerPython's default
+        if return_empty_response and (response.status_code in allowed_empty_response_codes):
             return response
 
         # Handle 404 errors instead of raising them as exceptions:
