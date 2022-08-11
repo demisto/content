@@ -64,15 +64,15 @@ outputs:
 - contextPath: AttachmentFile.SSDeep
   description: SSDeep hash of the file of incident attachments
 - contextPath: AttachmentFile.Attachment.description
-  description: File description of incident attachments
+  description: File description
 - contextPath: AttachmentFile.Attachment.name
-  description: File name of incident attachments
+  description: File name
 - contextPath: AttachmentFile.Attachment.path
-  description: File path of incident attachments
+  description: File path
 - contextPath: AttachmentFile.Attachment.showMediaFile
-  description: showMediaFile of incident attachments
+  description: showMediaFile
 - contextPath: AttachmentFile.Attachment.type
-  description: File content type of incident attachments
+  description: File content type
 scripttarget: 0
 subtype: python3
 runonce: false

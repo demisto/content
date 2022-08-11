@@ -55,22 +55,27 @@ def find_attachment_entry(file_ents: List[Dict[str, Any]], attachment_ent: Dict[
         demisto.debug(f'Failed to get file ID for {path}')
         return None
 
-    # Read the file contents
+    # Compute hash values
     try:
+        hash_table = {}
         file = demisto.getFilePath(m.group())
-        with open(file['path'], 'rb') as f:
-            data = f.read()
+        for alg in ['SHA512', 'SHA256', 'SHA1', 'MD5']:
+            with open(file['path'], 'rb') as f:
+                hobj = hashlib.new(alg)
+                for chunk in iter(lambda: f.read(hobj.block_size * 4096), b''):
+                    hobj.update(chunk)
+                hash_table[alg] = hobj.hexdigest().lower()
     except Exception as e:
         demisto.debug(str(e))
         return None
 
     # Find the attachment entry
     for file_ent in file_ents:
-        for alg, func in {'SHA512': hashlib.sha512, 'SHA256': hashlib.sha256, 'SHA1': hashlib.sha1, 'MD5': hashlib.md5}.items():
-            if alg in file_ent:
-                if file_ent[alg].lower() == func(data).hexdigest().lower():
-                    return file_ent
-                break
+        for alg, hval in hash_table.items():
+            if file_ent.get(alg, '').lower() == hval:
+                # Update hash entries
+                file_ent.update(hash_table)
+                return file_ent
     return None
 
 

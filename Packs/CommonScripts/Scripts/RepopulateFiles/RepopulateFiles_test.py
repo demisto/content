@@ -84,7 +84,7 @@ class TestRepopulateFiles:
                         'sha1': '70c881d4a26984ddce795f6f71817c9cf4480e79',
                         'sha256': '61be55a8e2f6b4e172338bddf184d6dbee29c98853e0a0485ecee7f27b9af0b4',
                         'sha512': '1b86355f13a7f0b90c8b6053c0254399994dfbb3843e08d603e292ca13b8f672'
-                        'ed5e58791c10f3e36daec9699cc2fbdc88b4fe116efa7fce016938b787043818',
+                                  'ed5e58791c10f3e36daec9699cc2fbdc88b4fe116efa7fce016938b787043818',
                         'ssdeep': '3:tt:j',
                         'isMediaFile': False,
                         'info': 'ASCII text, with no line terminators'}}])
@@ -135,8 +135,6 @@ class TestRepopulateFiles:
                         'md5': '74b87337454200d4d33f80c4663dc5e5',
                         'sha1': '70c881d4a26984ddce795f6f71817c9cf4480e79',
                         'sha256': '61be55a8e2f6b4e172338bddf184d6dbee29c98853e0a0485ecee7f27b9af0b4',
-                        'sha512': '1b86355f13a7f0b90c8b6053c0254399994dfbb3843e08d603e292ca13b8f672'
-                        'ed5e58791c10f3e36daec9699cc2fbdc88b4fe116efa7fce016938b787043818',
                         'ssdeep': '3:tt:j',
                         'isMediaFile': False,
                         'info': 'ASCII text, with no line terminators'}}])
