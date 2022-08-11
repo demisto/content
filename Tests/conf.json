@@ -5151,6 +5151,11 @@
             "fromversion": "6.8.0"
         },
         {
+            "playbookID": "playbook-BmcITSM-Test",
+            "fromversion": "6.2.0",
+            "integrations": "BmcITSM"
+        },
+        {
             "integrations": [
                 "Github Event Collector"
             ],
@@ -5172,6 +5177,7 @@
         }
     ],
     "skipped_tests": {
+        "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
@@ -5430,7 +5436,7 @@
         "LogRhythm": "The integration is deprecated",
         "Alibaba Action Trail Event Collector": "XSIAM integration",
         "Salesforce Event Collector": "XSIAM integration",
-        "Github Event Collector" : "XSIAM integration",
+        "Github Event Collector": "XSIAM integration",
         "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration"
     },
     "nightly_integrations": [
