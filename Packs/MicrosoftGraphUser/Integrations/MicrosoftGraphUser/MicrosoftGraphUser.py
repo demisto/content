@@ -139,7 +139,7 @@ class MsGraphClient:
             json_data=body,
             resp_type="text")
 
-    def password_change_user_on_premise(self, user: str, password: str):
+    def password_change_user_on_premise(self, user: str, password: str) -> None:
         password_id_response = None
         try:
             # fetches the password ID, to be used later. See API docs for reference.
@@ -151,7 +151,7 @@ class MsGraphClient:
         except (IndexError, KeyError) as e:
             raise DemistoException("Failed getting passwordMethod id", exception=e, res=password_id_response)
 
-        return self.ms_client.http_request(
+        self.ms_client.http_request(
             method='POST',
             url_suffix=f'users/{quote(user)}/authentication/passwordMethods/{password_id}/resetPassword',
             ok_codes=(202,), json_data={"newPassword": password},
