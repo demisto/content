@@ -1,4 +1,3 @@
-import pytest
 
 users_list_mock = [
     {
@@ -65,7 +64,7 @@ def test_get_user_command_404_response(mocker):
     from requests.models import Response
 
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code', handle_error=True)
+                           'self_deployed', 'redirect_uri', 'auth_code', True)
     error_404 = Response()
     error_404._content = b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource ' \
                          b'"NotExistingUser does not exist."}}'
@@ -114,8 +113,9 @@ def test_get_unsupported_chars_in_user():
 
 
 def test_suppress_errors(mocker):
+
     from MicrosoftGraphUser import unblock_user_command, disable_user_account_command, \
-        update_user_command, change_password_user_saas_command, delete_user_command, \
+        update_user_command, change_password_user_command, delete_user_command, \
         get_direct_reports_command, get_manager_command, assign_manager_command, \
         revoke_user_session_command, MsGraphClient
     from MicrosoftApiModule import NotFoundError
@@ -130,7 +130,7 @@ def test_suppress_errors(mocker):
         {'fun': update_user_command, 'mock_fun': 'update_user',
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
          'expected_result': '#### User -> 123456789 does not exist'},
-        {'fun': change_password_user_saas_command, 'mock_fun': 'password_change_user_saas',
+        {'fun': change_password_user_command, 'mock_fun': 'password_change_user',
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
          'expected_result': '#### User -> 123456789 does not exist'},
         {'fun': delete_user_command, 'mock_fun': 'delete_user',
@@ -161,50 +161,3 @@ def test_suppress_errors(mocker):
         mocker.patch.object(client, test['mock_fun'], side_effect=test['mock_value'])
         results, _, _ = test['fun'](client, test['args'])
         assert results == test['expected_result']
-
-
-def test_change_on_premise_password_success(requests_mock):
-    from MicrosoftGraphUser import (change_password_user_on_premise_command, MsGraphClient)
-    password = 'new_password'
-    expected_output = 'The password of user user has been changed successfully.'
-    id_ = 'id'
-
-    # authenticate
-    requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
-
-    base_url = 'https://example.com'
-    requests_mock.get(f'{base_url}/users/user/authentication/passwordMethods', json={'value': [{'id': id_}]})
-    mocked_password_change_request = requests_mock.post(
-        f'{base_url}/users/user/authentication/passwordMethods/{id_}/resetPassword',
-        json={},
-        status_code=202
-    )
-
-    client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', base_url, 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code', True)
-    output, _, _ = change_password_user_on_premise_command(client=client, args={'user': 'user', 'password': password})
-    assert mocked_password_change_request.call_count == 1
-    assert output == expected_output
-
-
-@pytest.mark.parametrize('user,password', [('', ''),
-                                           ('user', ''),
-                                           ('', 'password'),
-                                           ])
-def test_change_on_premise_password_missing_arg(requests_mock, user: str, password: str):
-    """
-    Given
-            a MSGraphClient
-    When
-            calling change_password_user_on_premise
-    Then
-            make sure the user and password are not empty
-    """
-    from MicrosoftGraphUser import (change_password_user_on_premise_command, MsGraphClient, DemistoException)
-    requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
-
-    client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'https://1.1.1.1', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code', True)
-
-    with pytest.raises(DemistoException):
-        change_password_user_on_premise_command(client=client, args={'user': user, 'password': password})
