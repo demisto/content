@@ -21,21 +21,21 @@ configuration:
   name: defaultOrg
   required: false
   type: 0
-- additionalinfo: Free Text box to add comma separated tags to filter by
+- additionalinfo: Free text box to add comma-separated tags to filter by.
   display: Tags
   name: tags
   required: false
   type: 0
-- additionalinfo: The group type to filter by
+- additionalinfo: The group type to filter by.
+  defaultValue: Incident
   display: Group Type
   name: group_type
   options:
   - Incident
   - Event
-  defaultValue: Incident
   required: false
   type: 16
-- additionalinfo: The status to filter the results by
+- additionalinfo: The status to filter the results by.
   display: Status
   name: status
   options:
@@ -60,7 +60,7 @@ configuration:
   type: 0
   required: true
   defaultvalue: 3 days
-- additionalinfo: The metadata we want to collect.
+- additionalinfo: The metadata to collect.
   display: Incident Metadata
   name: fields
   options:
@@ -86,12 +86,12 @@ configuration:
   required: true
   type: 15
 - defaultvalue: '3'
-  display: Rating threshold for Malicious Indicators
+  display: Rating Threshold for Malicious Indicators
   name: rating
   required: false
   type: 0
 - defaultvalue: '50'
-  display: Confidence threshold for Malicious Indicators
+  display: Confidence Threshold for Malicious Indicators
   name: confidence
   required: false
   type: 0
@@ -124,11 +124,11 @@ script:
         communities to which a user has permissions. For example, users with admin
         permissions can search for indicators belonging to all owners.
       name: owners
-    - description: A list of results filtered by indicators whose threat rating is
+    - description: A comma-separated list of results filtered by indicators whose threat rating is
         greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
         "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A list of results filtered by indicators whose confidence rating
+    - description: A comma-separated list of results filtered by indicators whose confidence rating
         is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
         "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
         - "Probable," or "90-100%" - "Confirmed".
@@ -155,7 +155,7 @@ script:
       description: The date on which the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the indicator was modified.
+      description: The date on which the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -200,11 +200,11 @@ script:
         communities to which a client’s API user has been granted permission. For
         example, "owner1", "owner2", or "owner3".
       name: owners
-    - description: A list of results filtered by indicators whose threat rating is
+    - description: A comma-separated list of results filtered by indicators whose threat rating is
         greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
         "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A list of results filtered by indicators whose confidence rating
+    - description: A comma-separated list of results filtered by indicators whose confidence rating
         is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
         "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
         - "Probable," or "90-100%" - "Confirmed".
@@ -276,11 +276,11 @@ script:
         communities to which a user has permissions. For example, users with admin
         permissions can search for indicators belonging to all owners.
       name: owners
-    - description: A list of results filtered by indicators whose threat rating is
+    - description: A comma-separated list of results filtered by indicators whose threat rating is
         greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
         "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A list of results filtered by indicators whose confidence rating
+    - description: A comma-separated list of results filtered by indicators whose confidence rating
         is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
         "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
         - "Probable," or "90-100%" - "Confirmed".
@@ -307,7 +307,7 @@ script:
       description: The date on which the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The last date on which the indicator was modified.
+      description: The date on which the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -371,7 +371,7 @@ script:
       description: The type of the owner.
       type: string
   - arguments:
-    - description: A list of results filtered by the owner of the indicator.
+    - description: A comma-separated list of results filtered by the owner of the indicator.
       name: owner
     - description: The page to take the results from.
       name: page
@@ -400,7 +400,7 @@ script:
       description: The date on which the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The last date on which the indicator was modified.
+      description: The date on which the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -504,7 +504,7 @@ script:
     name: tc-tag-indicator
   - arguments:
     - default: true
-      description: The id of the indicator by which to search.
+      description: The ID of the indicator by which to search.
       name: id
       required: true
     description: Retrieves information about an indicator.
@@ -529,7 +529,7 @@ script:
       description: The date on which the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The last date on which the indicator was modified.
+      description: The date on which the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -553,7 +553,7 @@ script:
       description: The SHA256 hash of the indicator of the file.
       type: date
     - contextPath: TC.Indicator.IndicatorAttributes.displayed
-      description: A boolean flag to show on ThreatConnect.
+      description: Whether to display the indicator attributes on ThreatConnect.
       type: boolean
     - contextPath: TC.Indicator.IndicatorAttributes.id
       description: The ID of the attribute.
@@ -629,10 +629,10 @@ script:
       type: string
   - arguments:
     - default: true
-      description: The name of the tag by which to filter.
+      description: The name of the tag by which to filter the results.
       name: tag
       required: true
-    - description: A list of indicators filtered by the owner.
+    - description: A comma-separated list of indicators filtered by the owner.
       name: owner
     - description: The page to take the results from.
       name: page
@@ -660,7 +660,7 @@ script:
       description: The date on which the tagged indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The last date on which the tagged indicator was modified.
+      description: The date on which the tagged indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the tagged indicator.
@@ -745,8 +745,7 @@ script:
       name: indicator
       required: true
     - auto: PREDEFINED
-      description: The type of the indicator. Can be "ADDRESSES", "EMAIL_ADDRESSES",
-        "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
+      description: The type of the indicator. 
       name: indicatorType
       predefined:
       - Address
@@ -766,7 +765,7 @@ script:
       - EmailAddress
       required: true
     - auto: PREDEFINED
-      description: The type of hash for file indicator.
+      description: The type of hash for the file indicator.
       name: hashType
       predefined:
       - md5
@@ -781,13 +780,13 @@ script:
       name: confidence
     - description: The description of the indicator.
       name: description
-    - description: Comma-seperated list of the tags to apply to the campaign.
+    - description: A comma-separated list of the tags to apply to the campaign.
       name: tags
     description: Adds a new indicator to ThreatConnect.
     name: tc-add-indicator
     outputs:
     - contextPath: TC.Indicator.Name
-      description: The name the indicator.
+      description: The name of the indicator.
       type: string
     - contextPath: TC.Indicator.Type
       description: The type of indicator.
@@ -805,7 +804,7 @@ script:
       description: The date on which the added indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The last date on which the added indicator was modified.
+      description: The date on which the added indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -878,11 +877,10 @@ script:
     - description: The creation time of an incident in the "2017-03-21T00:00:00Z"
         format.
       name: eventDate
-    - description: A comma-separated list of The tags applied to the incident.
+    - description: A comma-separated list of the tags applied to the incident.
       name: tag
     - auto: PREDEFINED
-      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
-        "TLP:AMBER", or "TLP:WHITE".
+      description: The security label applied to the incident. 
       name: securityLabel
       predefined:
       - TLP:RED
@@ -923,7 +921,7 @@ script:
     - description: The maximum number of results that can be returned. The default is 500.
       name: limit
     deprecated: true
-    description: Deprecated. Use tc-list-groups instead.
+    description: Deprecated. Use the tc-list-groups command.
     name: tc-fetch-incidents
     outputs:
     - contextPath: TC.Incident
@@ -940,7 +938,7 @@ script:
       name: incidentId
       required: true
     - default: true
-      description: The id of the indicator.
+      description: The ID of the indicator.
       name: indicator
       required: true
     description: Associates an indicator with an existing incident. The indicator
@@ -964,10 +962,10 @@ script:
       description: The owner of the indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the indicator associated was created.
+      description: The date on which the associated indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The last date on which the indicator associated was modified.
+      description: The date on which the associated indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -1042,11 +1040,11 @@ script:
         communities to which a user has permissions. For example, users with admin
         permissions can search for indicators belonging to all owners.
       name: owners
-    - description: A list of results filtered by indicators whose threat rating is
+    - description: A comma-separated list of results filtered by indicators whose threat rating is
         greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
         "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: ratingThreshold
-    - description: A list of results filtered by indicators whose confidence rating
+    - description: A comma-separated list of results filtered by indicators whose confidence rating
         is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
         "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
         - "Probable," or "90-100%" - "Confirmed".
@@ -1055,7 +1053,7 @@ script:
     name: domain
     outputs:
     - contextPath: TC.Indicator.Name
-      description: The name of the of the indicator.
+      description: The name of the indicator.
       type: string
     - contextPath: TC.Indicator.Type
       description: The type of the domain.
@@ -1073,7 +1071,7 @@ script:
       description: The date on which the indicator of the domain was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The last date on which the indicator of the domain was modified.
+      description: The date on which the indicator of the domain was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the domain.
@@ -1138,7 +1136,7 @@ script:
       description: The date on which the returned indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The last date on which the returned indicator was modified.
+      description: The date on which the returned indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the returned indicator.
@@ -1226,34 +1224,32 @@ script:
     - description: The size of the file of the updated indicator.
       name: size
     - auto: PREDEFINED
-      description: The active DNS indicator (only for hosts).
+      description: Whether the DNS indicator is active (only for hosts).
       name: dnsActive
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: The active indicator (only for hosts).
+      description: Whether the indicator is active (only for hosts).
       name: whoisActive
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: The updated indicator set as a false positive. Can be "True" or
-        "False".
+      description: Whether the updated indicator is a false positive.
       name: falsePositive
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
-        "TLP:AMBER", or "TLP:WHITE".
+      description: The security label applied to the incident. 
       name: securityLabel
       predefined:
       - TLP:RED
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
-    - description: A comma-seperated list of tags.
+    - description: A comma-separated list of tags.
       name: tags
     description: Updates the indicator in ThreatConnect.
     name: tc-update-indicator
@@ -1277,7 +1273,7 @@ script:
       description: The date on which the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The last date on which the indicator was modified.
+      description: The date on which the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -1343,7 +1339,7 @@ script:
       description: The web link of the indicator.
       type: string
   - arguments:
-    - description: The id of the indicator from which to remove a tag.
+    - description: The ID of the indicator from which to remove a tag.
       name: indicator
       required: true
     - description: The name of the tag to remove from the indicator.
@@ -1371,7 +1367,7 @@ script:
       description: The date on which the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The last date on which the indicator was modified.
+      description: The date on which the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -1437,7 +1433,7 @@ script:
       description: The web link of the indicator.
       type: string
   - arguments:
-    - description: The id of the indicator to delete.
+    - description: The ID of the indicator to delete.
       name: indicator
       required: true
     description: Deletes an indicator from ThreatConnect.
@@ -1446,22 +1442,21 @@ script:
     - description: The name of the campaign group.
       name: name
       required: true
-    - description: The earliest date on which the campaign was seen.
+    - description: The date on which the campaign was first seen.
       name: firstSeen
     - description: The description of the campaign.
       name: description
-    - description: Comma-seperated list of the tags to apply to the campaign.
+    - description: Comma-separated list of the tags to apply to the campaign.
       name: tag
     - auto: PREDEFINED
-      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
-        "TLP:AMBER", or "TLP:WHITE".
+      description: The security label applied to the incident. 
       name: securityLabel
       predefined:
       - TLP:RED
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
-    description: Creates a group based on the "Campaign" type.
+    description: Creates a group based on the Campaign type.
     name: tc-create-campaign
     outputs:
     - contextPath: TC.Campaign.Name
@@ -1471,7 +1466,7 @@ script:
       description: The owner of the campaign.
       type: string
     - contextPath: TC.Campaign.FirstSeen
-      description: The earliest date on which the campaign was seen.
+      description: The date on which the campaign was first seen.
       type: date
     - contextPath: TC.Campaign.Tag
       description: The tag of the campaign.
@@ -1481,7 +1476,7 @@ script:
       type: string
     - contextPath: TC.Campaign.ID
       description: The ID of the campaign.
-      type: strin
+      type: string
   - arguments:
     - description: The name of the event group.
       name: name
@@ -1490,8 +1485,7 @@ script:
         the current date is used.
       name: eventDate
     - auto: PREDEFINED
-      description: The status of the event. Can be "Needs Review", "False Positive",
-        "No Further Action", or "Escalated".
+      description: The status of the event. 
       name: status
       predefined:
       - Needs Review
@@ -1502,7 +1496,7 @@ script:
       name: description
     - description: A comma-separated list of a The tags of the event.
       name: tag
-    description: Creates a group based on the "Event" type.
+    description: Creates a group based on the Event type.
     name: tc-create-event
     outputs:
     - contextPath: TC.Event.Name
@@ -1537,8 +1531,7 @@ script:
     - description: A comma-separated list of The tags applied to the threat.
       name: tags
     - auto: PREDEFINED
-      description: The security label applied to the threat. Can be "TLP:RED", "TLP:GREEN",
-        "TLP:AMBER", or "TLP:WHITE".
+      description: The security label applied to the threat. 
       name: securityLabel
       predefined:
       - TLP:RED
@@ -1557,7 +1550,7 @@ script:
       description: The ID of the threat.
       type: string
   - arguments:
-    - description: A comma seprated list of the IDs of the groups we want to to delete.
+    - description: A comma-separated list of the IDs of the groups to delete.
       name: groupID
       required: true
     description: Deletes a group.
@@ -1575,7 +1568,7 @@ script:
       name: attribute_value
       required: true
     deprecated: true
-    description: Deprecated, replaced by tc-update-group.
+    description: Deprecated. Use the tc-update-group command.
     name: tc-add-group-attribute
     outputs:
     - contextPath: TC.Group.DateAdded
@@ -1594,10 +1587,10 @@ script:
       description: The group ID to which the attribute was added.
       type: Number
   - arguments:
-    - description: The Date to fetrieve groups from, should be in format yyyy-mm-dd, e.g. 1111-11-11.
+    - description: The date to retrieve groups from in the yyyy-mm-dd, e.g. 1111-11-11 format.
       name: fromDate
       type: string
-    - description: The tag to fetrieve groups by.
+    - description: The tag to retrieve groups by.
       name: tag
       type: string
     - description: The page to take the results from.
@@ -1609,7 +1602,7 @@ script:
     - description: A comma-separated list of IDs to filter the groups by.
       name: id
       type: string
-    - description: A free text tql filter(reffer to the readme for a basic tql guide).
+    - description: A free text TQL filter (refer to the readme for a basic TQL guide).
       name: filter
       type: string
     description: Returns a list of events.
@@ -1641,9 +1634,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      description: The type of the group.
       name: group_type
       predefined:
       - Adversary
@@ -1664,7 +1655,7 @@ script:
       - Tool
       - Vulnerability
     deprecated: true
-    description: Deprecated, replaced by tc-list-groups.
+    description: Deprecated. Use the tc-list-groups command.
     name: tc-get-groups
     outputs:
     - contextPath: TC.Group.DateAdded
@@ -1707,10 +1698,10 @@ script:
       - Threat
       - Tool
       - Vulnerability
-    - description: The Date to fetrieve groups from, should be in format yyyy-mm-dd, e.g. 1111-11-11.
+    - description: The date to retrieve groups from in the yyyy-mm-dd format, e.g. 1111-11-11 format
       name: fromDate
       type: string
-    - description: The tag to fetrieve groups by.
+    - description: The tag to retrieve groups by.
       name: tag
       type: string
     - description: The page to take the results from.
@@ -1722,7 +1713,7 @@ script:
     - description: A comma-separated list of IDs to filter the groups by.
       name: id
       type: string
-    - description: A free text tql filter(reffer to the readme for a basic tql guide).
+    - description: A free text TQL filter (refer to the readme for a basic TQL guide).
       name: filter
       type: string
     - description: Add group tags metadata to the results.
@@ -1770,8 +1761,7 @@ script:
       name: group_id
       required: true
     - auto: PREDEFINED
-      description: The security label applied to the document. Can be "TLP:RED", "TLP:GREEN",
-        "TLP:AMBER", or "TLP:WHITE".
+      description: The security label applied to the document. 
       name: security_label
       predefined:
       - TLP:RED
@@ -1780,7 +1770,7 @@ script:
       - TLP:WHITE
       required: true
     deprecated: true
-    description: Deprecated, replaced by tc-update-group.
+    description: Deprecated. Use the tc-update-group command.
     name: tc-add-group-security-label
   - arguments:
     - description: The ID of the group to which to add the tag. To get the ID, run
@@ -1803,8 +1793,8 @@ script:
       description: The entity of the API.
       type: String
     - contextPath: TC.IndicatorType.CasePreference
-      description: The case preference of the indicator. For example, "sensitive",
-        "upper", or "lower".
+      description: 'The case preference of the indicator. For example, "sensitive",
+        "upper", or "lower".'
       type: String
     - contextPath: TC.IndicatorType.Custom
       description: Whether the indicator is a custom indicator.
@@ -1819,7 +1809,7 @@ script:
       description: The value label of the indicator.
       type: String
   - arguments:
-    - description: The name/id of the indicator
+    - description: The name/ID of the indicator.
       name: indicator
       required: true
     - description: The ID of the group. To get the ID of the group, run the tc-list-groups
@@ -1827,7 +1817,7 @@ script:
       name: group_id
       required: true
     deprecated: true
-    description: Deprecated, replaced by tc-update-group.
+    description: Deprecated. Use the tc-update-group command.
     name: tc-group-associate-indicator
     outputs:
     - contextPath: TC.Group.GroupID
@@ -1854,8 +1844,7 @@ script:
     - description: The password of the ZIP file.
       name: password
     - auto: PREDEFINED
-      description: The security label applied to the document. Can be "TLP:RED", "TLP:GREEN",
-        "TLP:AMBER", or "TLP:WHITE".
+      description: The security label applied to the document. 
       name: security_label
       predefined:
       - TLP:RED
@@ -1894,7 +1883,7 @@ script:
       name: group_id
       required: true
     deprecated: true
-    description: Deprecated, replaced by tc-list-groups.
+    description: Deprecated. Use the tc-list-groups command.
     name: tc-get-group
     outputs:
     - contextPath: TC.Group.DateAdded
@@ -1924,7 +1913,7 @@ script:
       name: group_id
       required: true
     deprecated: true
-    description: Deprecated, replaced by tc-list-groups.
+    description: Deprecated. Use the tc-list-groups command.
     name: tc-get-group-attributes
     outputs:
     - contextPath: TC.Group.Attribute.DateAdded
@@ -1951,7 +1940,7 @@ script:
       name: group_id
       required: true
     deprecated: true
-    description: Deprecated, replaced by tc-list-groups.
+    description: Deprecated. Use the tc-list-groups command.
     name: tc-get-group-security-labels
     outputs:
     - contextPath: TC.Group.SecurityLabel.Name
@@ -1969,7 +1958,7 @@ script:
       name: group_id
       required: true
     deprecated: true
-    description: Deprecated, replaced by tc-list-groups.
+    description: Deprecated. Use the tc-list-groups command.
     name: tc-get-group-tags
     outputs:
     - contextPath: TC.Group.Tag.Name
@@ -2018,7 +2007,7 @@ script:
       name: group_id
       required: true
     deprecated: true
-    description: Deprecated. Use tc-list-groups instead.
+    description: Deprecated. Use the tc-list-groups command.
     name: tc-get-group-indicators
     outputs:
     - contextPath: TC.Group.Indicator.Summary
@@ -2046,7 +2035,7 @@ script:
       description: The name of the owner of the indicator.
       type: string
     - contextPath: TC.Group.Indicator.LastModified
-      description: The date that the indicator was last modified.
+      description: The date the indicator was last modified.
       type: Date
   - arguments:
     - description: The ID of the group. To get the ID, run the tc-list-groups command.
@@ -2079,7 +2068,7 @@ script:
       name: associated_group_id
       required: true
     deprecated: true
-    description: Deprecated. Use tc-update-group instead.
+    description: Deprecated. Use the tc-update-group command.
     name: tc-associate-group-to-group
     outputs:
     - contextPath: TC.Group.AssociatedGroup.AssociatedGroupID
@@ -2114,7 +2103,7 @@ script:
       description: The name of the file.
       type: String
     - contextPath: File.SSDeep
-      description: The SSDeep hash of the file.
+      description: The ssdeep hash of the file.
       type: String
     - contextPath: File.EntryID
       description: The entry ID of the file.
@@ -2133,7 +2122,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The id of the group.
+      description: The ID of the group.
       name: id
       required: true
     - description: Custom fields for the group.
@@ -2141,17 +2130,16 @@ script:
     - description: A comma-separated list of The tags applied to the threat.
       name: tags
     - auto: PREDEFINED
-      description: The security label applied to the threat. Can be "TLP:RED", "TLP:GREEN",
-        "TLP:AMBER", or "TLP:WHITE".
+      description: The security label applied to the threat. 
       name: security_label
       predefined:
       - TLP:RED
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
-    - description: An ID to accosiate a group by.
+    - description: An ID to associate a group by.
       name: associated_group_id
-    - description: An ID to accosiate an indicator by.
+    - description: An ID to associate an indicator by.
       name: associated_indicator_id
     - auto: PREDEFINED
       description: The type of update to the group metadata(associated indicators, attributes,tags etc...).
