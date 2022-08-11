@@ -39,6 +39,15 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: The vendor corresponding to the integration that produced the events.
+  name: vendor
+  type: 0
+  defaultvalue: knowbe4
+- display: The product corresponding to the integration that produced the events.
+  name: product
+  type: 0
+  defaultvalue: kmsat
+  required: false
 description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
 display: 'Starter Base Integration - Name the integration as it will appear in the XSOAR UI'
 name: BaseIntegration
