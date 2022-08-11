@@ -662,7 +662,7 @@ class Pack(object):
                 Metadata.PARTNER_NAME: self._partner_name,
                 Metadata.CONTENT_COMMIT_HASH: self._content_commit_hash,
                 Metadata.PREVIEW_ONLY: self._preview_only,
-                Metadata.DISABLE_MONTHLY: self._disable_monthly
+                Metadata.DISABLE_MONTHLY: self._disable_monthly,
             })
 
         return pack_metadata
