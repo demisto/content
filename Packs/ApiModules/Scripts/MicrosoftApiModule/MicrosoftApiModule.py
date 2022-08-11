@@ -51,7 +51,7 @@ GRAPH_BASE_ENDPOINTS = {
 }
 
 # possible errors
-AUTH_CODE_REFRESH_FAIL = "Unable to create refresh_token with the provided authorization code. Please make " \
+ERR_AUTH_CODE_REFRESH = "Unable to create refresh_token with the provided authorization code. Please make " \
                          "sure your authorization code is created via " \
                          "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize"
 
@@ -341,7 +341,7 @@ class MicrosoftClient(BaseClient):
                 access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
                                                                                                   scope=scope)
                 if not refresh_token:
-                    raise DemistoException(AUTH_CODE_REFRESH_FAIL)
+                    raise DemistoException(ERR_AUTH_CODE_REFRESH)
                 return access_token, expires_in, refresh_token
             else:
                 expires_in = -1  # init variable as an int
@@ -351,7 +351,7 @@ class MicrosoftClient(BaseClient):
                     self.resource_to_access_token[resource] = access_token
 
                 if not refresh_token:
-                    raise DemistoException(AUTH_CODE_REFRESH_FAIL)
+                    raise DemistoException(ERR_AUTH_CODE_REFRESH)
                 return '', expires_in, refresh_token
         elif self.grant_type == DEVICE_CODE:
             return self._get_token_device_code(refresh_token, scope, integration_context)
