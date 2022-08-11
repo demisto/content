@@ -1516,7 +1516,7 @@ script:
       description: Number of Affected Agents.
       type: String
   - arguments:
-    - name: action
+    - name: verdict
       required: true
       auto: PREDEFINED
       predefined:
@@ -1544,7 +1544,7 @@ script:
       description: Name of the analyst verdict action performed on the threats.
       type: String
   - arguments:
-    - name: action
+    - name: verdict
       required: true
       auto: PREDEFINED
       predefined:
@@ -2123,14 +2123,12 @@ script:
       required: true
       description: List of Account IDs to filter by.
       isArray: true
-    - name: upload_time_gte
-      required: true
-      description: 'The time at which the Threat Intelligence indicator was uploaded to SentinelOne DB greater or equal than. Example: "2022-07-13T20:33:29.007906Z".'
-    - name: upload_time_lte
-      required: true
-      description: 'The time at which the Threat Intelligence indicator was uploaded to SentinelOne DB lessthan or equal than. Example: "2022-07-13T20:33:29.007906Z".'
     - name: limit
       description: 'Limit number of returned items (1-1000). Example: "10". But limit is defaulted to 1000'
+    - name: upload_time_gte
+      description: 'The time at which the Threat Intelligence indicator was uploaded to SentinelOne DB greater or equal than. Example: "2022-07-13T20:33:29.007906Z".'
+    - name: upload_time_lte
+      description: 'The time at which the Threat Intelligence indicator was uploaded to SentinelOne DB lessthan or equal than. Example: "2022-07-13T20:33:29.007906Z".'
     - name: cursor
       description: 'Cursor position returned by the last request. Should be used for iterating over more than 1000 items. Example: "YWdlbnRfaWQ6NTgwMjkzODE=".'
     - name: uuids

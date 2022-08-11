@@ -1056,7 +1056,7 @@ def update_threat_analyst_verdict(client: Client, args: dict) -> CommandResults:
 
     # Get arguments
     threat_ids = argToList(args.get('threat_ids'))
-    action = args.get('action')
+    action = args.get('verdict')
 
     # Make request and get raw response
     updated_threats = client.update_threat_analyst_verdict_request(threat_ids, action)
@@ -1100,7 +1100,7 @@ def update_alert_analyst_verdict(client: Client, args: dict) -> CommandResults:
 
     # Get arguments
     alert_ids = argToList(args.get('alert_ids'))
-    action = args.get('action')
+    action = args.get('verdict')
 
     # Make request and get raw response
     updated_alerts = client.update_alert_analyst_verdict_request(alert_ids, action)
@@ -1750,6 +1750,7 @@ def fetch_threat_file(client: Client, args: dict) -> List[CommandResults]:
     files = []
     for threat_id in threat_ids:
         threat_file_download_endpoint = client.download_url_request(threat_id)
+        zip_file_data = "Zip file is not available"
         if threat_file_download_endpoint != "-1":
             zip_file_data = client.download_threat_file_request(threat_file_download_endpoint)
             files.append(fileResult(filename=f"{threat_id}.zip", data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
