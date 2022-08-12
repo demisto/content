@@ -272,7 +272,7 @@ def test_update_threat_analyst_verdict(mocker, requests_mock):
     mocker.patch.object(demisto, 'command', return_value='sentinelone-update-threats-verdict')
     mocker.patch.object(demisto, 'args', return_value={
         'threat_ids': '1234567890',
-        'action': 'true_positive'
+        'verdict': 'true_positive'
     })
     mocker.patch.object(sentinelone_v2, "return_results")
     main()
@@ -292,7 +292,7 @@ def test_update_alert_analyst_verdict(mocker, requests_mock):
     mocker.patch.object(demisto, 'command', return_value='sentinelone-update-alerts-verdict')
     mocker.patch.object(demisto, 'args', return_value={
         'alert_ids': '1234567890',
-        'action': 'true_positive'
+        'verdict': 'true_positive'
     })
     mocker.patch.object(sentinelone_v2, "return_results")
     main()
