@@ -2440,7 +2440,7 @@ Fetch a file associated with the threat that matches the filter.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | threat_id | Please provide the Valid Threat ID. Example: 14629133470822878. | Required | 
-| password | File encryption password (Aleast 10 characters, three of these uppercase,lowercase,digits and symbols. Maximum length is 256 characters) | Required |
+| password | File encryption password (Aleast 10 characters, three out of this list "uppercase", "lowercase", "digits" and "symbols" are mandatory. Maximum length is 256 characters) | Required |
 
 
 #### Context Output
