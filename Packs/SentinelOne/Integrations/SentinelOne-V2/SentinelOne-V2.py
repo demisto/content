@@ -1749,13 +1749,12 @@ def fetch_threat_file(client: Client, args: dict) -> List[CommandResults]:
         meta = 'No threats were downloaded'
     files = []
     for threat_id in threat_ids:
+        zipped_file = "Session timeout, unable to download the Zip file."
         threat_file_download_endpoint = client.download_url_request(threat_id)
         if threat_file_download_endpoint != "-1":
             zip_file_data = client.download_threat_file_request(threat_file_download_endpoint)
             files.append(fileResult(filename=f"{threat_id}.zip", data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
             zipped_file = fileResult(filename=f"{threat_id}.zip", data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
-        else:
-            zipped_file = "Session timeout, unable to download the Zip file."
         context_entries.append({
             'Downloadable': downloadable,
             'ID': threat_id,
