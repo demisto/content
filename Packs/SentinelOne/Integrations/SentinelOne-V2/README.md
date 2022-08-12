@@ -466,7 +466,7 @@ Returns threats according to the specified filters.
 
 ### sentinelone-threat-summary
 ***
-Returns a dashboard threat summary.  Can only be used with API V1
+Returns a dashboard threat summary.  Can only be used with API V2.1
 
 
 #### Base Command
@@ -1947,7 +1947,7 @@ Updates the analyst verdict to a group of threats that match the specified input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Analyst verdict action. Can be "undefined", "true_positive", "false_positive","suspicious" | Required | 
+| verdict | Analyst verdict action. Can be "undefined", "true_positive", "false_positive","suspicious" | Required | 
 | threat_ids | A comma-separated list of threat IDs. | Required | 
 
 
@@ -1975,7 +1975,7 @@ Updates the analyst verdict to a group of alerts that match the specified input 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Analyst verdict action. Can be "undefined", "true_positive", "false_positive", "suspicious" | Required | 
+| verdict | Analyst verdict action. Can be "undefined", "true_positive", "false_positive", "suspicious" | Required | 
 | alert_ids | A comma-separated list of alert IDs. | Required | 
 
 #### Context Output
@@ -2440,7 +2440,7 @@ Fetch a file associated with the threat that matches the filter.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | threat_id | Please provide the Valid Threat ID. Example: 14629133470822878. | Required | 
-| password | File encryption password (Aleast 10 characters, three of these uppercase,lowercase,digits and symbols. Maximum length is 256 characters) | Required |
+| password | File encryption password (Aleast 10 characters, three out of this list "uppercase", "lowercase", "digits" and "symbols" are mandatory. Maximum length is 256 characters) | Required |
 
 
 #### Context Output
@@ -2457,7 +2457,7 @@ Fetch a file associated with the threat that matches the filter.
 
 ### sentinelone-update-threats-status
 ***
-Updates the incident status to a group of threats that match the specified input filter.
+Updates the incident status to a group of threats that match the specified input filter. If you want to update the status of threats to 'Resolved' then the analyst verdict value should not be 'undefined'
 
 #### Base Command
 
