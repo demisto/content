@@ -67,10 +67,10 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
       required: true
-  dockerimage: demisto/fastapi:1.0.0.29740
+  dockerimage: demisto/fastapi:1.0.0.32142
   runonce: false
   isfetchevents: true
   subtype: python3

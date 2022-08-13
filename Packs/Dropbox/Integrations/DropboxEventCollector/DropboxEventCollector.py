@@ -12,6 +12,7 @@ DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "dropbox"
 PRODUCT = "dropbox"
 
+
 class DropboxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://api.dropbox.com/2/team_log/get_events
     url = parse_obj_as(AnyUrl, 'https://api.dropbox.com')

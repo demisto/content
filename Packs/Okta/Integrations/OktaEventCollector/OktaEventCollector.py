@@ -5,6 +5,7 @@ from CommonServerPython import *
 VENDOR = "okta"
 PRODUCT = "okta"
 
+
 class Method(str, Enum):
     """
     A list that represent the types of http request available

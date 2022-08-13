@@ -100,6 +100,7 @@ EVENT_FIELDS = [
 PRODUCT = 'identity'
 VENDOR = 'cyberark'
 
+
 class CyberArkIdentityEventsOptions(IntegrationOptions):
     app_id: str
 
