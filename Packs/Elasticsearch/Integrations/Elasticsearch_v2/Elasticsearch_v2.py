@@ -247,6 +247,9 @@ def search_command(proxies):
     timestamp_range_start = demisto.args().get('timestamp_range_start')
     timestamp_range_end = demisto.args().get('timestamp_range_end')
 
+    if query and query_dsl:
+        return_error("Both query and query_dsl are configured. Please choose between query or query_dsl.")
+
     es = elasticsearch_builder(proxies)
     time_range_dict = None
     if timestamp_range_end or timestamp_range_start:
@@ -298,8 +301,11 @@ def fetch_params_check():
     if FETCH_INDEX == '' or FETCH_INDEX is None:
         str_error.append("Index is not configured.")
 
-    if (FETCH_QUERY == '' or FETCH_QUERY is None) and not RAW_QUERY:
+    if not FETCH_QUERY:
         str_error.append("Query by which to fetch incidents is not configured.")
+    
+    if RAW_QUERY and FETCH_QUERY_PARM:
+        str_error.append("Both Query and Raw Query are configured. Please choose between Query or Raw Query.")
 
     if len(str_error) > 0:
         return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + '\n'.join(str_error))
@@ -683,6 +689,7 @@ def fetch_incidents(proxies):
 
     time_range_dict = get_time_range(last_fetch=last_fetch)
     es = elasticsearch_builder(proxies)
+
     if RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
     else:
@@ -774,7 +781,7 @@ def search_eql_command(args, proxies):
 
     response = es.eql.search(index=index, body=body)
 
-    total_dict, total_results = get_total_results(response)
+    total_dict, _ = get_total_results(response)
     search_context, meta_headers, hit_tables, hit_headers = results_to_context(index, query, 0,
                                                                                size, total_dict, response, event=True)
     search_human_readable = tableToMarkdown('Search Metadata:', search_context, meta_headers, removeNull=True)
