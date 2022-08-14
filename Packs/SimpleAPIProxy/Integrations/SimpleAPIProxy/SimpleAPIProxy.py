@@ -1,8 +1,4 @@
-import asyncio
-#register_module_line('Simple API Proxy', 'start', __line__())
-import json
-import re
-import time
+
 from copy import copy
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
@@ -10,13 +6,11 @@ from traceback import format_exc
 from typing import Dict, Optional
 
 import demistomock as demisto  # noqa: F401
-import requests
 import uvicorn
 from CommonServerPython import *  # noqa: F401
-from fastapi import Depends, FastAPI, Query, Request, Response
+from fastapi import Depends, FastAPI, Request, Response
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
-from pydantic import BaseModel
 from uvicorn.logging import AccessFormatter
 
 ''' Globals '''
@@ -71,7 +65,8 @@ def make_api_request(url: str, method: str, data: Optional[dict] = None, paramet
         parameters (Optional[Dict]): Query parameters to be sent to service
 
     Returns:
-        requests.Response object (For returning raw API response object) or Response object (For handling errors in integration configuration)
+        requests.Response object (For returning raw API response object) or Response object
+        (For handling errors in integration configuration)
     '''
 
     http_basic_creds_to_pass = None
@@ -88,10 +83,12 @@ def make_api_request(url: str, method: str, data: Optional[dict] = None, paramet
 
         elif API_CRED_TYPE == 'Custom Header':
             if not API_CUSTOM_HEADER:
-                return Response(status_code=200, content="Custom Header is not set in integration configuration and Credential Type is selected as 'Custom Header'")
+                return Response(status_code=200, content="Custom Header is not set in integration configuration "
+                                                         "and Credential Type is selected as 'Custom Header'")
 
             elif not API_CUSTOM_HEADER_VALUE:
-                return Response(status_code=200, content="Custom Header value is not set in integration configuration and Credential Type is selected as 'Custom Header'")
+                return Response(status_code=200, content="Custom Header value is not set in integration configuration "
+                                                         "and Credential Type is selected as 'Custom Header'")
 
             headers_to_pass = {
                 API_CUSTOM_HEADER: API_CUSTOM_HEADER_VALUE
@@ -103,15 +100,18 @@ def make_api_request(url: str, method: str, data: Optional[dict] = None, paramet
         isjson = True
 
     if isjson:
-        response = requests.request(method.upper(), url, json=data, params=parameters, auth=http_basic_creds_to_pass, headers=headers_to_pass, verify=False)
+        response = requests.request(method.upper(), url, json=data, params=parameters, auth=http_basic_creds_to_pass,
+                                    headers=headers_to_pass, verify=False)
     else:
-        response = requests.request(method.upper(), url, data=data, params=parameters, auth=http_basic_creds_to_pass, headers=headers_to_pass, verify=False)
+        response = requests.request(method.upper(), url, data=data, params=parameters, auth=http_basic_creds_to_pass,
+                                    headers=headers_to_pass, verify=False)
 
     demisto.debug(f'Requests Request Headers: {response.request.headers}')
     demisto.debug(f'Requests Response: {response.text}')
     return response
 
-# Set to / as we will take ALL authenticated POST against the instance and evaluated if the request is allowed via the api_permissions definition
+# Set to / as we will take ALL authenticated POST against the instance and evaluated
+# if the request is allowed via the api_permissions definition
 
 
 @app.post('/')
@@ -186,7 +186,8 @@ async def handle_post(
 
             elif isinstance(result, requests.Response):
                 if is_json(result.text):
-                    return Response(status_code=result.status_code, content=json.dumps(result.json()), media_type="application/json")
+                    return Response(status_code=result.status_code, content=json.dumps(result.json()),
+                                    media_type="application/json")
                 else:
                     return Response(status_code=result.status_code, content=result.text)
         else:
@@ -263,5 +264,3 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-#register_module_line('Simple API Proxy', 'end', __line__())
