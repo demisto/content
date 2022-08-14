@@ -1,7 +1,5 @@
 id: Detonate URL - Hatching Triage
 version: -1
-fromversion: 6.2.0
-vcShouldKeepItemLegacyProdMachine: false
 name: Detonate URL - Hatching Triage
 description: Detonating URL with Hatching Triage.
 starttaskid: "0"
@@ -18,7 +16,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "#none#":
       - "1"
     separatecontext: false
     view: |-
@@ -48,13 +46,13 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "#default#":
       - "6"
-      "yes":
+      yes:
       - "2"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -109,13 +107,13 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "#default#":
       - "6"
-      "yes":
+      yes:
       - "3"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -152,7 +150,7 @@ tasks:
       iscommand: true
       brand: Hatching Triage
     nexttasks:
-      '#none#':
+      "#none#":
       - "8"
     scriptarguments:
       data:
@@ -195,7 +193,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "#none#":
       - "7"
     scriptarguments:
       Ids:
@@ -238,7 +236,7 @@ tasks:
       id: 229f4061-9b02-4089-84e4-734e00a35d1a
       version: -1
       name: Done
-      description: '-'
+      description: "-"
       type: title
       iscommand: false
       brand: ""
@@ -271,7 +269,7 @@ tasks:
       iscommand: true
       brand: Hatching Triage
     nexttasks:
-      '#none#':
+      "#none#":
       - "6"
     scriptarguments:
       sample_id:
@@ -305,7 +303,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "#none#":
       - "9"
     scriptarguments:
       seconds:
@@ -339,7 +337,7 @@ tasks:
       iscommand: true
       brand: Hatching Triage
     nexttasks:
-      '#none#':
+      "#none#":
       - "4"
     scriptarguments:
       sample_id:
@@ -379,19 +377,19 @@ inputs:
       accessor: Data
   required: false
   description: URL to detonate.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: interval
   value:
     simple: "1"
   required: false
   description: How often to poll for results.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: timeout
   value:
     simple: "10"
   required: false
   description: How long to wait before giving up waiting for results.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Triage.sample-summaries.completed
   description: Date the sample analysis was completed.
@@ -420,3 +418,6 @@ outputs:
 - contextPath: Triage.sample-summaries.tasks
   description: Tasks performed in the analysis.
   type: unknown
+tests:
+- Hatching Triage - Detonate File
+fromversion: 6.2.0

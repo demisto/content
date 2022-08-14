@@ -1,5 +1,5 @@
 Submit a high volume of samples to run in a sandbox and view reports
-This integration was integrated and tested with version xx of Hatching Triage
+This integration was integrated and tested with version 0 of Hatching Triage
 
 ## Configure Hatching Triage on Cortex XSOAR
 
