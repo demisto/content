@@ -31,7 +31,7 @@ SKIPPED_CONTENT_ITEMS: set[str] = {
     'playbook-TestCommonPython_4_1.yml',
 }
 
-ONLY_INSTALL_PACK: set[FileType] = {
+ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     # upon collection, no tests are collected, but the pack is installed.
     FileType.RELEASE_NOTES_CONFIG,
     FileType.RELEASE_NOTES,
@@ -61,4 +61,28 @@ ONLY_INSTALL_PACK: set[FileType] = {
     FileType.CONNECTION,
     FileType.RELEASE_NOTES_CONFIG,
     FileType.XSOAR_CONFIG,
+    FileType.AUTHOR_IMAGE,
+    FileType.CHANGELOG,
+    FileType.DOC_IMAGE,
+    FileType.BUILD_CONFIG_FILE,
+    FileType.WIZARD,
+    FileType.TRIGGER,
+    FileType.LISTS,
+    FileType.CONF_JSON,
+    FileType.MODELING_RULE_SCHEMA,
+    FileType.LAYOUTS_CONTAINER,
+}
+
+IGNORED_FILE_TYPES: set[FileType] = {
+    FileType.README,
+    FileType.PACK_IGNORE,
+    FileType.XIF_FILE,
+    FileType.SECRET_IGNORE,
+    FileType.PACK,
+    FileType.CONTRIBUTORS,
+    FileType.DOC_FILE,
+    FileType.OLD_CLASSIFIER,
+    FileType.WHITE_LIST,
+    FileType.TEST_SCRIPT,
+    FileType.LANDING_PAGE_SECTIONS_JSON,
 }

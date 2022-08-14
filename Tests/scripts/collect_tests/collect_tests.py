@@ -9,9 +9,9 @@ from typing import Iterable, Optional
 
 from constants import (ALWAYS_INSTALLED_PACKS,
                        DEFAULT_MARKETPLACE_WHEN_MISSING,
-                       DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
-                       SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS,
-                       XSOAR_SANITY_TEST_NAMES)
+                       DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES,
+                       ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
+                       SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import find_type, run_command, str2bool
 from exceptions import (DeprecatedPackException, InvalidTestException,
@@ -133,10 +133,10 @@ class CollectionResult:
                 if not (playbook_path := test_playbook.path):
                     raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
-                    raise SkippedTestException(test, 'skipped in .pack_ignore')
+                    raise SkippedTestException(test, skip_place='.pack_ignore')
 
             if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
-                raise SkippedTestException(test, skip_reason)
+                raise SkippedTestException(test, skip_place='conf.json', skip_reason=skip_reason)
 
             if test in conf.private_tests:  # type:ignore[union-attr]
                 raise PrivateTestException(test)
@@ -405,10 +405,7 @@ class BranchTestCollector(TestCollector):
             # Suitable logic follows, see collect_yml
             content_item = None
 
-        if file_type in {FileType.PACK_IGNORE, FileType.SECRET_IGNORE, FileType.DOC_FILE, FileType.README}:
-            raise NothingToCollectException(path, f'ignored type {file_type}')
-
-        elif file_type in ONLY_INSTALL_PACK:
+        if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             # install pack without collecting tests.
             return self._collect_pack(
                 pack_name=find_pack_folder(path).name,
@@ -430,14 +427,21 @@ class BranchTestCollector(TestCollector):
                 FileType.MAPPER: (self.conf.incoming_mapper_to_test, CollectionReason.MAPPER_CHANGED),
                 FileType.CLASSIFIER: (self.conf.classifier_to_test, CollectionReason.CLASSIFIER_CHANGED),
             }[file_type]
-            if not (tests := source.get(content_item)):  # type: ignore[call-overload]
+            if not (tests := source.get(content_item, ())):  # type: ignore[call-overload]
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
                 reason_description = f'no specific tests for {relative_path} were found'
-        elif path.suffix == '.yml':
+
+        elif path.suffix == '.yml':  # file_type is often None in these cases
             return self._collect_yml(path)  # checks for containing folder (content item type)
 
+        elif file_type in IGNORED_FILE_TYPES:
+            raise NothingToCollectException(path, f'ignored type {file_type}')
+
+        elif file_type is None:
+            raise NothingToCollectException(path, 'unknown file type')
+
         else:
-            raise ValueError(f'Unexpected {file_type=} for {relative_path}')
+            raise ValueError(path, f'unexpected content type {file_type} - please update collect_tests.py')
 
         if not content_item:
             raise RuntimeError(f'failed collecting {path} for an unknown reason')
@@ -658,7 +662,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v2022-08-10')
+    logger.info('TestCollector v20220811.3')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
