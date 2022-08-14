@@ -507,6 +507,8 @@ class FeedIndicatorType(object):
     Registry = "Registry Key"
     SSDeep = "ssdeep"
     URL = "URL"
+    AS = "ASN"
+    MUTEX = "Mutex"
 
     @staticmethod
     def is_valid_type(_type):
@@ -524,7 +526,9 @@ class FeedIndicatorType(object):
             FeedIndicatorType.IPv6CIDR,
             FeedIndicatorType.Registry,
             FeedIndicatorType.SSDeep,
-            FeedIndicatorType.URL
+            FeedIndicatorType.URL,
+            FeedIndicatorType.AS,
+            FeedIndicatorType.MUTEX
         )
 
     @staticmethod
