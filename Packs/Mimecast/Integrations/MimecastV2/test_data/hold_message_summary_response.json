@@ -1,0 +1,20 @@
+{
+    "meta": {
+        "status": 200
+    },
+    "data": [
+        {
+            "policyInfo": "Default Outbound URL Protect Definition",
+            "numberOfItems": 8
+        },
+        {
+            "policyInfo": "Relaxed Spam Detection",
+            "numberOfItems": 1473
+        },
+        {
+            "policyInfo": "Default Attachment Management Definition - Block Dangerous File Types",
+            "numberOfItems": 79
+        }
+    ],
+    "fail": []
+}

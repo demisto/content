@@ -1,0 +1,38 @@
+{
+    "meta": {
+        "status": 200
+    },
+    "data": [
+        {
+            "trackedEmails": [
+                {
+                    "info": "Indexed and archived",
+                    "id": "eNpNj9tugkAQht9lryXuLgTEpBcoWompRsA0EBPCYQKbuqB7oNWm715om7Y3k0nm-2b-eUcSSi2AVWiOuuf0HvTN4lWy0_Rm-zu5M-9m_BgV9OoWblEf8_jyBM4-3TZbvBf2i0oiM2GztPbWK8wTBRsmDgvihsve58Kz3YjnhVjd5VoHOnkLr25X--HGOk3rBzRBHKTMa4hUrrSMbxcYQuSibFgP1d_4oEFDMARs9fk8QYq3v32ppeo4iLKrRnd5jDyCqUdNe9B7EJJ1LZqTQWpH4Fv6ufD1cp2VBmRaYpIRy8n6aqgGIdm_TRnFlGJnJJyBVCA4MQ2MiUGwiym2nJmNPj4BLsdpYw",
+                    "status": "archived",
+                    "fromEnv": {
+                        "emailAddress": "markrobertsny@pilot-meadow.b41.one"
+                    },
+                    "fromHdr": {
+                        "displayableName": "markrobertsny@pilot-meadow.b41.one",
+                        "emailAddress": "markrobertsny@pilot-meadow.b41.one"
+                    },
+                    "to": [
+                        {
+                            "displayableName": "",
+                            "emailAddress": "klay@paloaltonetworks.mime.integration.com"
+                        }
+                    ],
+                    "received": "2022-07-18T13:25:00+0000",
+                    "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
+                    "senderIP": "54.236.186.184",
+                    "attachments": false,
+                    "route": "inbound",
+                    "sent": "2022-07-18T13:25:00+0000",
+                    "spamScore": 2,
+                    "detectionLevel": "relaxed"
+                }
+            ]
+        }
+    ],
+    "fail": []
+}

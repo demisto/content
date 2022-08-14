@@ -1,4 +1,6 @@
+import io
 
+import pytest
 
 import MimecastV2
 
@@ -52,6 +54,21 @@ update_policy_req_response = {
 set_empty_value_args_res_list = [update_two_args, 'no_action', 'IDFROMMIMECAST']
 set_empty_value_args_res_list_all = [update_all_args, 'no_action', 'IDFROMMIMECAST']
 demisto_args = {'policy_id': 'IDFROMMIMECAST'}
+
+BASE_URL = 'https://test.com'
+
+
+def util_load_json(path):
+    """
+
+    Args:
+        path: path to load json from.
+
+    Returns:
+        json object read from the path given
+    """
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def test_get_arguments_for_policy_command():
@@ -318,3 +335,179 @@ def test_add_users_under_group_in_context_dict__list(mocker):
     mocker.patch.object(demisto, 'context', return_value=context)
     result = MimecastV2.add_users_under_group_in_context_dict(users_list, 'groupID')
     assert result == expected
+
+
+def test_search_message_command(mocker):
+    """
+
+        Given:
+            - Message id to search.
+
+        When:
+            - Running a search message command to retrieve information on given message.
+
+        Then:
+            - Make sure search data is returned.
+    """
+
+    mock_response = util_load_json('test_data/search_message_response.json')
+    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+
+    args = {'message_id': '12345'}
+    response = MimecastV2.search_message_command(args)
+
+    assert response.outputs == mock_response.get('data')
+    assert response.outputs_prefix == 'Mimecast.SearchMessage'
+    assert response.outputs_key_field == 'id'
+
+
+def test_hold_message_summary_command(mocker):
+    """
+        When:
+            - Running a hold message summary command to retrieve hold information messages.
+
+        Then:
+            - Make sure hold data is returned.
+    """
+
+    mock_response = util_load_json('test_data/hold_message_summary_response.json')
+    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+
+    response = MimecastV2.hold_message_summary_command()
+
+    assert response.outputs == mock_response.get('data')
+    assert response.outputs_prefix == 'Mimecast.HoldMessageSummary'
+    assert response.outputs_key_field == 'policyInfo'
+
+
+MESSAGE_INFO_ARGS = [
+    (
+    {'ids': '12345, 1345',
+     'show_delivered_message': 'true'}, True),
+    ({'ids': '12345, 1345',
+     'show_delivered_message': 'false'}, False)
+]
+
+
+@pytest.mark.parametrize('args, delivered', MESSAGE_INFO_ARGS)
+def test_get_message_info_command(args, delivered, mocker):
+    """
+
+        Given:
+            - Message ids to get info for.
+
+        When:
+            - Running a get message info to retrieve information for.
+
+        Then:
+            - Make sure correct data is returned.
+    """
+
+    mock_response = util_load_json('test_data/get_message_info_response.json')
+    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+
+    response = MimecastV2.get_message_info_command(args)
+
+    assert len(response) == 2
+    assert ('test@test.com' in response[0].readable_output) == delivered
+    assert response[0].outputs == mock_response.get('data')
+    assert response[0].outputs_prefix == 'Mimecast.MessageInfo'
+
+
+def test_list_hold_messages_command(mocker):
+    """
+
+        When:
+            - Running a list hold messages command.
+
+        Then:
+            - Make sure correct data is returned.
+    """
+
+    mock_response = util_load_json('test_data/list_hold_messages_response.json')
+    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+    args = {'admin': 'true', 'limit': '10'}
+    response = MimecastV2.list_hold_messages_command(args)
+
+    assert len(response.outputs) == 10
+    assert response.outputs == mock_response.get('data')
+    assert response.outputs_prefix == 'Mimecast.HoldMessage'
+    assert response.outputs_key_field == 'id'
+
+
+def test_reject_hold_message_command(mocker):
+    """
+
+        When:
+            - Running a reject hold messages command.
+
+        Then:
+            - Make sure correct data is returned.
+    """
+
+    mock_response = util_load_json('test_data/reject_hold_message_response.json')
+    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+    args = {'ids': '1234,1223', 'message': 'test', 'reason_type': 'MESSAGE CONTAINS UNDESIRABLE CONTENT', 'notify': 'true'}
+    response = MimecastV2.reject_hold_message_command(args)
+
+    assert response.readable_output == 'Hold message was rejected successfully'
+
+
+def test_release_hold_message_command(mocker):
+    """
+
+        When:
+            - Running a release hold messages command.
+
+        Then:
+            - Make sure correct data is returned.
+    """
+
+    mock_response = util_load_json('test_data/release_hold_message_response.json')
+    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+    args = {'ids': '1234,1223'}
+    response = MimecastV2.release_hold_message_command(args)
+    expected = 'Hold message with id 1234 was released successfully\n' \
+               'Hold message with id 1223 was released successfully\n'
+    assert response.readable_output == expected
+
+
+def test_search_processing_message_command(mocker):
+    """
+        When:
+            - Running a search processing message command to retrieve information regarding messages being proccessed.
+
+        Then:
+            - Make sure hold data is returned.
+    """
+
+    mock_response = util_load_json('test_data/search_processing_message_response.json')
+    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+    args = {'sort_order': 'ascending', 'from_date': '2015-11-16T14:49:18+0000', 'to_date': '2021-11-16T14:49:18+0000'}
+    response = MimecastV2.search_processing_message_command(args)
+
+    assert response.outputs == mock_response.get('data')[0].get('messages')
+    assert response.outputs_prefix == 'Mimecast.ProcessingMessage'
+    assert response.outputs_key_field == 'id'
+
+
+def test_list_email_queues_command(mocker):
+    """
+        When:
+            - Running a search processing message command to retrieve information regarding messages being proccessed.
+
+        Then:
+            - Make sure hold data is returned.
+    """
+
+    mock_response = util_load_json('test_data/search_processing_message_response.json')
+    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+    args = {'sort_order': 'ascending', 'from_date': '2015-11-16T14:49:18+0000', 'to_date': '2021-11-16T14:49:18+0000'}
+    response = MimecastV2.search_processing_message_command(args)
+
+    assert response.outputs == mock_response.get('data')[0].get('messages')
+    assert response.outputs_prefix == 'Mimecast.ProcessingMessage'
+    assert response.outputs_key_field == 'id'
+
+
+
