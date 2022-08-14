@@ -1,7 +1,3 @@
-### Community Contributed Integration
- #### Integration Author: landonc
- No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
-***
 #### Configuration
 - ***Lists to Publish*** - This is the comma separated list of list names you with to publish under the configured instance. Example: mylist1,mylist2,mylist3
 - ***List Items on Individual Lines*** - For XSOAR Lists that are comma separated text, this will take all the list items and return them on a separate line, one list item per line.
