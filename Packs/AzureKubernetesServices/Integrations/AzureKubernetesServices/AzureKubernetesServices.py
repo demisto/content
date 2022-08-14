@@ -1,4 +1,3 @@
-from http.client import OK
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
