@@ -3282,10 +3282,10 @@ def create_request_filters(
     alias_name: Optional[List] = None,
     isolate: Optional[str] = None,
     hostname: Optional[List] = None,
-    first_seen_gte: Optional[datetime] = None,
-    first_seen_lte: Optional[datetime] = None,
-    last_seen_gte: Optional[datetime] = None,
-    last_seen_lte: Optional[datetime] = None,
+    first_seen_gte=None,
+    first_seen_lte=None,
+    last_seen_gte=None,
+    last_seen_lte=None,
 ):
     filters = []
 
