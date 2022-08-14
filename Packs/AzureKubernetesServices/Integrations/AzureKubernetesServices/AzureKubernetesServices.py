@@ -1,3 +1,4 @@
+from http.client import OK
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -181,15 +182,19 @@ def test_module(client):
     Performs basic GET request to check if the API is reachable and authentication is successful.
     Returns ok if successful.
     """
-    if demisto.params().get('auth_type') == 'Device':
-        raise Exception("When using device code flow configuration, "
-                        "Please enable the integration and run `!azure-ks-auth-start` and `!azure-ks-auth-complete` to log in."
-                        " You can validate the connection by running `!azure-ks-auth-test`\n"
-                        "For more details press the (?) button.")
+    try:
+        test_module(client)
+        return 'ok'
+    except Exception:
+        if demisto.params().get('auth_type') == 'Device':
+            raise Exception("When using device code flow configuration, "
+                            "Please enable the integration and run `!azure-ks-auth-start` and `!azure-ks-auth-complete` to "
+                            "log in. You can validate the connection by running `!azure-ks-auth-test`\n"
+                            "For more details press the (?) button.")
 
-    elif demisto.params().get('auth_type') == 'User Auth':
-        raise Exception("When using user auth flow configuration, "
-                        "Please enable the integration and run the !azure-ks-auth-test command in order to test it")
+        elif demisto.params().get('auth_type') == 'User Auth':
+            raise Exception("When using user auth flow configuration, "
+                            "Please enable the integration and run the !azure-ks-auth-test command in order to test it")
 
 
 def main() -> None:
