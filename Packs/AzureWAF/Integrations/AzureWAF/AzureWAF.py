@@ -348,20 +348,24 @@ def reset_auth(client: AzureWAFClient):
 
 
 @logger
-def test_module(client):
+def test_module(client, params):
     """
     Performs basic GET request to check if the API is reachable and authentication is successful.
     Returns ok if successful.
     """
-    if demisto.params().get('auth_type') == 'Device':
-        raise Exception("When using device code flow configuration, "
-                        "Please enable the integration and run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to log in."
-                        " You can validate the connection by running `!azure-waf-auth-test`\n"
-                        "For more details press the (?) button.")
+    try:
+        test_connection(client, params)
+        return "ok"
+    except Exception:
+        if demisto.params().get('auth_type') == 'Device':
+            raise Exception("When using device code flow configuration, "
+                            "Please enable the integration and run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to log in."
+                            " You can validate the connection by running `!azure-waf-auth-test`\n"
+                            "For more details press the (?) button.")
 
-    elif demisto.params().get('auth_type') == 'User Auth':
-        raise Exception("When using user auth flow configuration, "
-                        "Please enable the integration and run the !azure-waf-auth-test command in order to test it")
+        elif demisto.params().get('auth_type') == 'User Auth':
+            raise Exception("When using user auth flow configuration, "
+                            "Please enable the integration and run the !azure-waf-auth-test command in order to test it")
 
 
 ''' MAIN FUNCTION '''
@@ -402,7 +406,7 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client, params))
         if command == 'azure-waf-auth-test':
             return_results(test_connection(client, params))
         else:
