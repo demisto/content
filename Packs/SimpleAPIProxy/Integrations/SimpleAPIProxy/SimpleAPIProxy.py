@@ -53,7 +53,9 @@ class SimpleAPIProxyAccessFormatter(AccessFormatter):
         return super().formatMessage(recordcopy)
 
 
-def make_api_request(url: str, method: str, data: Optional[dict] = None, parameters: Optional[dict] = None) -> Union[requests.Response, Response]:
+def make_api_request(
+        url: str, method: str, data: Optional[dict] = None, parameters: Optional[dict] = None
+) -> Union[requests.Response, Response]:
     '''
         Make request to api endpoint
 
