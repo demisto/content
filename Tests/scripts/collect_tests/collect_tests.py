@@ -133,10 +133,10 @@ class CollectionResult:
                 if not (playbook_path := test_playbook.path):
                     raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
-                    raise SkippedTestException(test, 'skipped in .pack_ignore')
+                    raise SkippedTestException(test, skip_place='.pack_ignore')
 
             if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
-                raise SkippedTestException(test, skip_reason)
+                raise SkippedTestException(test, skip_place='conf.json', skip_reason=skip_reason)
 
             if test in conf.private_tests:  # type:ignore[union-attr]
                 raise PrivateTestException(test)
@@ -427,7 +427,7 @@ class BranchTestCollector(TestCollector):
                 FileType.MAPPER: (self.conf.incoming_mapper_to_test, CollectionReason.MAPPER_CHANGED),
                 FileType.CLASSIFIER: (self.conf.classifier_to_test, CollectionReason.CLASSIFIER_CHANGED),
             }[file_type]
-            if not (tests := source.get(content_item)):  # type: ignore[call-overload]
+            if not (tests := source.get(content_item, ())):  # type: ignore[call-overload]
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
                 reason_description = f'no specific tests for {relative_path} were found'
 
@@ -662,7 +662,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20220811')
+    logger.info('TestCollector v20220811.3')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
