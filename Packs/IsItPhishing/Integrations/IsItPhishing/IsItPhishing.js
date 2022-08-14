@@ -48,7 +48,8 @@ var isPhishing = function(url, force, smart, area, timeout) {
             Indicator: url,
             Score: 0,
             Type: 'url',
-            Vendor: 'IsItPhishing'
+            Vendor: 'IsItPhishing',
+            Reliability: params.integrationReliability
         }
     };
     var resBody = res.Body.trim();
