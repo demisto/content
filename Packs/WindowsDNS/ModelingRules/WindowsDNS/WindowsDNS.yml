@@ -1,6 +1,0 @@
-name: WindowsDNS
-id: Windows_DNS
-fromversion: 6.8.0
-tags: WindowsDNS
-rules: ''
-schema: ''
