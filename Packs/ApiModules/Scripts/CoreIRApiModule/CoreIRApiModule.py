@@ -1212,11 +1212,23 @@ class CoreClient(BaseClient):
         reply = res.get("reply")
         return reply[:limit]
 
-    def add_or_remove_tag_endpoint(self, endpoint_ids, tag, filters, add_tag=True):
+    def add_tag_endpoint(self, endpoint_ids, tag, args):
+        """
+        Add tag to an endpoint
+        """
+        return self.call_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args, url_suffix='/tags/agents/assign/')
+
+    def remove_tag_endpoint(self, endpoint_ids, tag, args):
+        """
+        Remove tag from an endpoint.
+        """
+        return self.call_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args, url_suffix='/tags/agents/remove/')
+
+    def call_tag_endpoint(self, endpoint_ids, tag, args, url_suffix):
         """
         Add or remove a tag from an endpoint.
         """
-        url_suffix = '/tags/agents/assign/' if add_tag else '/tags/agents/remove/'
+        filters = args_to_request_filters(args)
 
         body_request = {
             'context': {
@@ -3440,8 +3452,7 @@ def add_tag_to_endpoints_command(client: CoreClient, args: Dict):
     endpoint_ids = argToList(args.get('endpoint_ids', []))
     tag = args.get('tag')
 
-    filters = args_to_request_filters(args)
-    raw_response = client.add_or_remove_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, filters=filters)
+    raw_response = client.add_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args)
 
     return CommandResults(
         readable_output=f'Successfully added tag {tag} to endpoint(s) {endpoint_ids}', raw_response=raw_response
@@ -3452,8 +3463,7 @@ def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
     endpoint_ids = argToList(args.get('endpoint_ids', []))
     tag = args.get('tag')
 
-    filters = args_to_request_filters(args)
-    raw_response = client.add_or_remove_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, filters=filters, add_tag=False)
+    raw_response = client.remove_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args)
 
     return CommandResults(
         readable_output=f'Successfully removed tag {tag} from endpoint(s) {endpoint_ids}', raw_response=raw_response
