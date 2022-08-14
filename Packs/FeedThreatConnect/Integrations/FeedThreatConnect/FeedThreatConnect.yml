@@ -18,8 +18,7 @@ configuration:
   name: api_secret_key
   required: true
   type: 4
-- additionalinfo: Comma-separated list of owners to fetch indicators from. (If
-    not specified will retrieve only indicators owned by account)
+- additionalinfo: Comma-separated list of owners to fetch indicators from. (If not specified will retrieve only indicators owned by account)
   display: Owners
   name: owners
   required: false
@@ -29,8 +28,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: None
   display: Indicator Reputation
   name: feedReputation
@@ -82,9 +80,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -132,7 +128,7 @@ script:
     description: Get availble indicators owners.
     execution: false
     name: tc-get-owners
-  dockerimage: demisto/threatconnect-tcex:1.0.0.11353
+  dockerimage: demisto/threatconnect-tcex:1.0.0.26622
   feed: true
   isfetch: false
   longRunning: false
