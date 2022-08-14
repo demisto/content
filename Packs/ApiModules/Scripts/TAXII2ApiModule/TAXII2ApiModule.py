@@ -709,7 +709,7 @@ class Taxii2FeedClient:
             'value': sco_object.get(value_mapping),
             'score': 3,
             'rawJSON': sco_object,
-            'type': STIX_2_TYPES_TO_CORTEX_TYPES.get(sco_object.get('type'))
+            'type': STIX_2_TYPES_TO_CORTEX_TYPES.get(sco_object.get('type'))  # type: ignore[arg-type]
         }
 
         fields = {

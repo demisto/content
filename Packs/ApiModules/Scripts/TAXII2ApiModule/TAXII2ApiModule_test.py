@@ -650,17 +650,17 @@ class TestParsingSCOIndicators:
                     'modified_time': None,
                     'number_of_subkeys': None,
                     'registryvalue': [
-                       {
+                        {
                            'data': 'qwerty',
                            'data_type': 'REG_SZ',
                            'name': 'Foo'
-                       },
-                       {
-                           'data': '42',
+                        },
+                        {
+                            'data': '42',
                            'data_type': 'REG_DWORD',
                            'name': 'Bar'
-                       }
-                   ],
+                        }
+                    ],
                     'stixid': 'windows-registry-key--2ba37ae7-2745-5082-9dfd-9486dad41016',
                     'tags': [],
                     'trafficlightprotocol': 'GREEN'
