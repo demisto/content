@@ -17,14 +17,12 @@ vendor=replace(json_extract(_raw_log,"$.fields.vendor"),"\"","")
 | alter query2 = replex(query1,"\(\d+\)$","")
 | alter query = replex(query2,"\(\d+\)",".")
 |alter timestamp=parse_timestamp("%m/%d/%Y %I:%M:%S %p", format_string("%s %s", date, time))
-
 | alter flag_1 = to_number( arrayindex( regextract(qflags, "^(\d+)") ,0) )
 // create field to flag 2
 | alter flag_2 = arrayindex( regextract(qflags, "^\d+\s(.*)\s[A-Z]+"),0)
 | alter flags_2_list = split(flag_2 ," ")
 // create field to flag 3
 | alter responseCode = arrayindex( regextract(qflags, "([A-Za-z]+)$") ,0)
-
 |alter XDM.Network.dns.opcode = opcode,
 XDM.Network.dns.dns_question.type=questiontype,
 XDM.Network.Source.host.hostname=hostname,
