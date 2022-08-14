@@ -1,6 +1,6 @@
-category: Utilities
+category: Analytics & SIEM
 commonfields:
-  id: BaseIntegration
+  id: KnowBe4 KMSAT Event Collector
   version: -1
 configuration:
 - defaultvalue: https://api.events.knowbe4.com
@@ -49,8 +49,8 @@ configuration:
   defaultvalue: kmsat
   required: false
 description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: 'Starter Base Integration - Name the integration as it will appear in the XSOAR UI'
-name: BaseIntegration
+display: 'KnowBe4 KMSAT Event Collector'
+name: KnowBe4 KMSAT Event Collector
 script:
   commands:
   - arguments:
@@ -74,6 +74,8 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.5.31797
-fromversion: 5.0.0
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- marketplacev2
