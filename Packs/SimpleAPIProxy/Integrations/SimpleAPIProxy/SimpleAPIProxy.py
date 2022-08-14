@@ -2,6 +2,7 @@ import asyncio
 #register_module_line('Simple API Proxy', 'start', __line__())
 import json
 import re
+import time
 from copy import copy
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
@@ -194,6 +195,57 @@ async def handle_post(
     return Response(status_code=400, content="Target not found.")
 
 
+def run_log_running(port: int, is_test: bool = False):
+    while True:
+        certificate = demisto.params().get('certificate', '')
+        private_key = demisto.params().get('key', '')
+
+        certificate_path = ''
+        private_key_path = ''
+        try:
+            ssl_args = dict()
+
+            if certificate and private_key:
+                certificate_file = NamedTemporaryFile(delete=False)
+                certificate_path = certificate_file.name
+                certificate_file.write(bytes(certificate, 'utf-8'))
+                certificate_file.close()
+                ssl_args['ssl_certfile'] = certificate_path
+
+                private_key_file = NamedTemporaryFile(delete=False)
+                private_key_path = private_key_file.name
+                private_key_file.write(bytes(private_key, 'utf-8'))
+                private_key_file.close()
+                ssl_args['ssl_keyfile'] = private_key_path
+
+                demisto.debug('Starting HTTPS Server')
+            else:
+                demisto.debug('Starting HTTP Server')
+
+            integration_logger = IntegrationLogger()
+            integration_logger.buffering = False
+            log_config = dict(uvicorn.config.LOGGING_CONFIG)
+            log_config['handlers']['default']['stream'] = integration_logger
+            log_config['handlers']['access']['stream'] = integration_logger
+            log_config['formatters']['access'] = {
+                '()': SimpleAPIProxyAccessFormatter,
+                'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
+            }
+            uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
+            if is_test:
+                time.sleep(5)
+                return 'ok'
+        except Exception as e:
+            demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
+            demisto.updateModuleHealth(f'An error occurred: {str(e)}')
+        finally:
+            if certificate_path:
+                os.unlink(certificate_path)
+            if private_key_path:
+                os.unlink(private_key_path)
+            time.sleep(5)
+
+
 def main() -> None:
     try:
         try:
@@ -201,53 +253,9 @@ def main() -> None:
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if demisto.command() == 'test-module':
-            return_results('ok')
+            return_results(run_log_running(port=port, is_test=True))
         elif demisto.command() == 'long-running-execution':
-            while True:
-                certificate = demisto.params().get('certificate', '')
-                private_key = demisto.params().get('key', '')
-
-                certificate_path = ''
-                private_key_path = ''
-                try:
-                    ssl_args = dict()
-
-                    if certificate and private_key:
-                        certificate_file = NamedTemporaryFile(delete=False)
-                        certificate_path = certificate_file.name
-                        certificate_file.write(bytes(certificate, 'utf-8'))
-                        certificate_file.close()
-                        ssl_args['ssl_certfile'] = certificate_path
-
-                        private_key_file = NamedTemporaryFile(delete=False)
-                        private_key_path = private_key_file.name
-                        private_key_file.write(bytes(private_key, 'utf-8'))
-                        private_key_file.close()
-                        ssl_args['ssl_keyfile'] = private_key_path
-
-                        demisto.debug('Starting HTTPS Server')
-                    else:
-                        demisto.debug('Starting HTTP Server')
-
-                    integration_logger = IntegrationLogger()
-                    integration_logger.buffering = False
-                    log_config = dict(uvicorn.config.LOGGING_CONFIG)
-                    log_config['handlers']['default']['stream'] = integration_logger
-                    log_config['handlers']['access']['stream'] = integration_logger
-                    log_config['formatters']['access'] = {
-                        '()': SimpleAPIProxyAccessFormatter,
-                        'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
-                    }
-                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
-                except Exception as e:
-                    demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
-                    demisto.updateModuleHealth(f'An error occurred: {str(e)}')
-                finally:
-                    if certificate_path:
-                        os.unlink(certificate_path)
-                    if private_key_path:
-                        os.unlink(private_key_path)
-                    time.sleep(5)
+            run_log_running(port=port)
     except Exception as e:
         demisto.error(format_exc())
         return_error(f'Failed to execute {demisto.command()} command. Error: {e}')
