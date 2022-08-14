@@ -852,6 +852,7 @@ class Taxii2FeedClient:
 
     def parse_dict_envelope(self, envelopes: Dict[str, Any],
                             parse_objects_func, limit: int = -1):
+        demisto.debug('In parse_dict_envelope')
         indicators = []
         relationships_list: List[Dict[str, Any]] = []
         for obj_type, envelope in envelopes.items():
@@ -871,11 +872,14 @@ class Taxii2FeedClient:
             else:
                 relationships_list.extend(stix_objects)
 
+            i = 1
             while envelope.get("more", False):
                 page_size = self.get_page_size(limit, cur_limit)
                 envelope = self.collection_to_fetch.get_objects(
                     limit=page_size, next=envelope.get("next", ""), type=obj_type
                 )
+                demisto.debug(f'After calling self.collection_to_fetch.get_objects the {i} time')
+                i += 1
                 if isinstance(envelope, Dict):
                     stix_objects = envelope.get("objects")
                     if obj_type != "relationship":
@@ -895,6 +899,7 @@ class Taxii2FeedClient:
                     )
         if relationships_list:
             indicators.extend(self.parse_relationships(relationships_list))
+        demisto.debug('In parse_dict_envelope end')
         return indicators
 
     def poll_collection(
@@ -919,10 +924,8 @@ class Taxii2FeedClient:
             else:
                 demisto.debug('In v2.1, calling v21_get_objects')
                 envelope = self.v21_get_objects(limit=page_size, **kwargs)
-                demisto.debug(f'{envelope=}')
             if envelope:
                 types_envelopes[obj_type] = envelope
-        demisto.debug(f'{types_envelopes=}')
         return types_envelopes
 
     def v21_get_objects(self, accept="application/taxii+json;version=2.1", **filter_kwargs):
@@ -935,7 +938,7 @@ class Taxii2FeedClient:
         demisto.debug(f'{merged_headers=}')
 
         resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
-        demisto.debug(f'GOT RESPONSE {resp.content=}\n{resp.text=}\n{resp.status_code=}\n{resp.headers=}')
+        demisto.debug(f'GOT RESPONSE {resp.content=}\n{resp.text=}\n{resp.status_code=}\n{resp.headers=}\n')
         if len(resp.text) <= 2:  # in case it is not a json that has to have {}
             return {}
 
@@ -947,7 +950,7 @@ class Taxii2FeedClient:
             demisto.debug('Setting resp_json to json.loads(resp.content)')
             resp_json = json.loads(resp.content)
 
-        demisto.debug(f'SUCCESS! {resp_json=}')
+        demisto.debug(f'SUCCESS! {resp_json=}\n\n')
         return resp_json
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
