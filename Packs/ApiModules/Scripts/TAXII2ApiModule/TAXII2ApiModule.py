@@ -19,7 +19,7 @@ urllib3.disable_warnings()
 TAXII_VER_2_0 = "2.0"
 TAXII_VER_2_1 = "2.1"
 
-DFLT_LIMIT_PER_REQUEST = 100
+DFLT_LIMIT_PER_REQUEST = 3000
 API_USERNAME = "_api_token_key"
 HEADER_USERNAME = "_header:"
 
@@ -874,7 +874,7 @@ class Taxii2FeedClient:
             while envelope.get("more", False):
                 page_size = self.get_page_size(limit, cur_limit)
                 envelope = self.collection_to_fetch.get_objects(
-                    limit=page_size, next=envelope.get("next", "")
+                    limit=page_size, next=envelope.get("next", ""), type=obj_type
                 )
                 if isinstance(envelope, Dict):
                     stix_objects = envelope.get("objects")
