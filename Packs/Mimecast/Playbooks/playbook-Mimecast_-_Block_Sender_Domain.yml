@@ -14,11 +14,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -41,8 +41,7 @@ tasks:
       id: 67619d62-7fef-40ad-8d55-f796c38ec187
       version: -1
       name: Mimecast integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -58,7 +57,6 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -97,7 +95,6 @@ tasks:
         complex:
           root: inputs.BlockGroup
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -123,8 +120,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -147,8 +144,7 @@ tasks:
       id: d2f135a2-08fd-4e23-80c7-00ebdc91b494
       version: -1
       name: Add senders to the block group
-      description: Adds a user to a group. The email_address and domain_adddress arguments
-        are optional, but one of them must be supplied.
+      description: Adds a user to a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
       script: '|||mimecast-add-group-member'
       type: regular
       iscommand: true
@@ -165,7 +161,6 @@ tasks:
           root: Mimecast.Group
           accessor: ID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -218,7 +213,6 @@ tasks:
               complex:
                 root: inputs.QuerySource
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -250,19 +244,19 @@ inputs:
   value: {}
   required: true
   description: The sender domain block group.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SenderDomain
   value: {}
   required: true
   description: The sender domain to block.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: QuerySource
   value: {}
   required: true
   description: The query source, please use "cloud" or "ldap" for this input.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 quiet: false
 tests:
 - No tests (auto formatted)
-fromversion: 6.2.0
+fromversion: 6.5.0

@@ -13,12 +13,12 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
       - "4"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -44,8 +44,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -72,11 +72,11 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -103,11 +103,12 @@ tasks:
     task:
       id: bae7d267-da68-49d4-8e25-be3f454c8608
       version: -1
-      name: Mimecast - Block Email
+      name: Mimecast - Block Sender Email
       playbookName: Mimecast - Block Sender Email
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -122,7 +123,6 @@ tasks:
         complex:
           root: inputs.EmailToBlock
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -159,17 +159,17 @@ inputs:
   value: {}
   required: false
   description: The email address that will be blocked.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MimecastBlockGroup
   value: {}
   required: false
   description: The name of the Mimecast block group to add emails to.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MimecastQuerySource
   value: {}
   required: false
   description: The query source of Mimecast, please input "cloud" or "ldap".
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - no tests
