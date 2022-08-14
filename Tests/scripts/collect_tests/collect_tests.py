@@ -465,7 +465,7 @@ class BranchTestCollector(TestCollector):
         current_commit = self.branch_name
         previous_commit = 'origin/master'
 
-        logger.info(f'Getting changed files for {self.branch_name=}')
+        logger.debug(f'Getting changed files for {self.branch_name=}')
 
         if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
             logger.info('bucket upload: getting last commit from index')
@@ -477,14 +477,18 @@ class BranchTestCollector(TestCollector):
 
         elif os.getenv('CONTRIB_BRANCH'):
             contrib_diff = run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
-            logger.info(f'contribution branch, {contrib_diff=}')
+            logger.info(f'contribution branch, contribution diff:\n{contrib_diff}')
 
-        diff: str = run_command(f'git diff --name-status {current_commit}...{previous_commit}')
+        diff_command = f'git diff --name-status {current_commit}...{previous_commit}'
+        logger.debug(f'running {diff_command}')
+
+        diff: str = run_command(diff_command)
         logger.debug(f'Changed files:\n{diff}')
 
         if contrib_diff:
             logger.debug('adding contrib_diff to diff')
             diff = f'{diff}\n{contrib_diff}'
+            logger.debug(f'diff is now\n{diff}')
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
         files = []
