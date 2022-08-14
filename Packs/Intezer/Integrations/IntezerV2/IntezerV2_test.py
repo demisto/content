@@ -181,7 +181,7 @@ def test_analyze_by_uploaded_file_command_success(requests_mock, mocker):
     # Act
     with tempfile.NamedTemporaryFile() as file:
         file_path_patch = mocker.patch('demistomock.getFilePath')
-        file_path_patch.return_value = dict(path=file.name)
+        file_path_patch.return_value = dict(path=file.name, name=file.name)
         command_results = analyze_by_uploaded_file_command(intezer_api, args)
 
     # Assert
@@ -202,7 +202,7 @@ def test_analyze_by_uploaded_file_command_analysis_already_running(requests_mock
     # Act
     with tempfile.NamedTemporaryFile() as file:
         file_path_patch = mocker.patch('demistomock.getFilePath')
-        file_path_patch.return_value = dict(path=file.name)
+        file_path_patch.return_value = dict(path=file.name, name=file.name)
         command_results = analyze_by_uploaded_file_command(intezer_api, args)
 
     # Assert

@@ -200,7 +200,7 @@ def analyze_by_uploaded_file_command(intezer_api: IntezerApi, args: dict) -> Com
     file_data = demisto.getFilePath(file_id)
 
     try:
-        analysis = FileAnalysis(file_path=file_data['path'], api=intezer_api)
+        analysis = FileAnalysis(file_path=file_data['path'], file_name=file_data['name'], api=intezer_api)
         analysis.send(requester=REQUESTER)
 
         context_json = {
@@ -304,12 +304,7 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
     sub_analysis_id = args.get('sub_analysis_id', 'root')
 
     try:
-        sub_analysis: SubAnalysis = SubAnalysis(analysis_id=sub_analysis_id,
-                                                composed_analysis_id=analysis_id,
-                                                sha256='',
-                                                source='',
-                                                extraction_info=None,
-                                                api=intezer_api)
+        sub_analysis: SubAnalysis = SubAnalysis.from_analysis_id(sub_analysis_id, analysis_id, api=intezer_api)
 
         sub_analysis_code_reuse = sub_analysis.code_reuse
     except HTTPError as error:
@@ -564,8 +559,7 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         'Type': 'Url',
         'Indicator': submitted_url,
         'Score': dbot_score_by_verdict.get(verdict, 0)
-    }
-    ]
+    }]
 
     if scanned_url != submitted_url:
         dbot.append({
