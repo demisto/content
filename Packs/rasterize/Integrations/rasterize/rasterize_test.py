@@ -10,6 +10,8 @@ import http.server
 import time
 import threading
 import pytest
+from PIL import Image
+import pytesseract
 
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)
@@ -235,3 +237,26 @@ def test_check_width_and_height(width, height, expected_width, expected_height):
     w, h = check_width_and_height(width, height)
     assert w == expected_width
     assert h == expected_height
+
+
+@pytest.mark.parametrize('include_url', [False])
+def test_rasterize_include_url(caplog, include_url):
+    """
+        Given:
+            - A parameter that mention whether to include the URL bar in the screenshot.
+        When:
+            - Running the 'rasterize' function.
+        Then:
+            - Verify that the URL bar is included or not according to the given parameter.
+    """
+
+    image = rasterize('http://google.com', width=300, height=300, r_type=RasterizeType.PNG, max_page_load_time=5,
+                      r_mode=RasterizeMode.WEBDRIVER_ONLY, include_url=include_url)
+
+    with NamedTemporaryFile('wb+') as f:
+        f.write(image)
+        f.flush()
+
+        res = pytesseract.image_to_string(Image.open(f.name))
+        caplog.clear()
+        assert ('google.com' in res) == include_url

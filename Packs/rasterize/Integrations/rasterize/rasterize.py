@@ -386,6 +386,7 @@ def get_image(driver, width: int, height: int, full_screen: bool, include_url=Fa
         os.system('import -window root screenshot.png')
         with open('screenshot.png', 'rb') as f:
             image = f.read()
+        os.remove('screenshot.png')
     else:
         image = driver.get_screenshot_as_png()
 
