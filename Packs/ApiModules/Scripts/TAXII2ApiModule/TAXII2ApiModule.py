@@ -908,8 +908,9 @@ class Taxii2FeedClient:
         types_envelopes = {}
         get_objects = self.collection_to_fetch.get_objects
         if len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
-            self.objects_to_fetch.append('relationship')
+            self.objects_to_fetch.append('relationship')  # todo holds ALL the values of the other objects with no errors
         for obj_type in self.objects_to_fetch:
+            demisto.info(f'{obj_type=}')
             kwargs['type'] = obj_type
             if isinstance(self.collection_to_fetch, v20.Collection):
                 demisto.debug('In v2.0, calling regular get_objects')
@@ -917,7 +918,6 @@ class Taxii2FeedClient:
                 demisto.debug(f'{envelope=}')
             else:
                 demisto.debug('In v2.1, calling v21_get_objects')
-                demisto.info(f'{obj_type=}')
                 envelope = self.v21_get_objects(limit=page_size, **kwargs)
                 demisto.debug(f'{envelope=}')
             if envelope:
