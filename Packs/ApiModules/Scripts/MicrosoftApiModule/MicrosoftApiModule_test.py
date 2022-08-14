@@ -117,6 +117,58 @@ def test_page_not_found_error(mocker):
         assert type(e).__name__ == 'NotFoundError'
 
 
+def test_empty_response__passing_code(mocker):
+    """
+    Given:
+        - The http_request command for making MS API calls.
+    When:
+        - Passing empty_valid_codes to the http_request function.
+    Then:
+        - Validate the response is returned.
+    """
+    empty_response = Response()
+    empty_response.status_code = 418
+    empty_response._content = b''
+
+    mocker.patch.object(BaseClient, '_http_request', return_value=empty_response)
+    client = self_deployed_client()
+    mocker.patch.object(client, 'get_access_token')
+
+    assert client.http_request(return_empty_response=True, empty_valid_codes=(418,)) == empty_response
+
+    # calling without return_empty_response should raise an exception
+    for args in ({}, {'return_empty_response': False}):
+        with pytest.raises(DemistoException) as e:
+            client.http_request(**args)
+        assert 'Failed to parse json object from response' in str(e.value)
+
+
+def test_empty_response__default_204(mocker):
+    """
+    Given:
+        - The http_request command for making MS API calls.
+    When:
+        - Passing empty_valid_codes to the http_request function.
+    Then:
+        - Validate the response is returned.
+    """
+    empty_response = Response()
+    empty_response.status_code = 204
+    empty_response._content = b''
+
+    mocker.patch.object(BaseClient, '_http_request', return_value=empty_response)
+    client = self_deployed_client()
+    mocker.patch.object(client, 'get_access_token')
+
+    assert client.http_request(return_empty_response=True) == empty_response
+
+    # calling without return_empty_response should raise an exception
+    for args in ({}, {'return_empty_response': False}):
+        with pytest.raises(DemistoException) as e:
+            client.http_request(**args)
+        assert 'Failed to parse json object from response' in str(e.value)
+
+
 def test_epoch_seconds(mocker):
     mocker.patch.object(MicrosoftClient, '_get_utcnow', return_value=datetime.datetime(2019, 12, 24, 14, 12, 0, 586636))
     mocker.patch.object(MicrosoftClient, '_get_utcfromtimestamp', return_value=datetime.datetime(1970, 1, 1, 0, 0))
