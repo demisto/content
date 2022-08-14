@@ -452,20 +452,24 @@ def reset_auth(client: Client) -> CommandResults:
 
 
 @logger
-def test_module(client, _):
+def test_module(client):
     """
     Performs basic GET request to check if the API is reachable and authentication is successful.
     Returns ok if successful.
     """
-    if demisto.params().get('auth_type') == 'Device':
-        raise Exception("When using device code flow configuration, "
-                        "Please enable the integration and run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to log in."
-                        " You can validate the connection by running `!azure-sql-auth-test`\n"
-                        "For more details press the (?) button.")
+    try:
+        test_connection(client)
+        return "ok"
+    except Exception:
+        if demisto.params().get('auth_type') == 'Device':
+            raise Exception("When using device code flow configuration, "
+                            "Please enable the integration and run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to "
+                            "log in. You can validate the connection by running `!azure-sql-auth-test`\n"
+                            "For more details press the (?) button.")
 
-    elif demisto.params().get('auth_type') == 'User Auth':
-        raise Exception("When using user auth flow configuration, "
-                        "Please enable the integration and run the !msgraph-user-test command in order to test it")
+        elif demisto.params().get('auth_type') == 'User Auth':
+            raise Exception("When using user auth flow configuration, "
+                            "Please enable the integration and run the !msgraph-user-test command in order to test it")
 
 
 ''' MAIN FUNCTION '''
@@ -495,7 +499,7 @@ def main() -> None:
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
         )
         if command == 'test-module':
-            return_results(test_module(client, args))
+            return_results(test_module(client))
 
         elif command == 'azure-sql-servers-list':
             return_results(azure_sql_servers_list_command(client, args))

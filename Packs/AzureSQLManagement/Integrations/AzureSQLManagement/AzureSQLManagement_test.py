@@ -160,7 +160,9 @@ def test_test_module_command(mocker, params, expected_results):
             - Case 2: Should throw an exception related to User-Auth-flow config and return True.
     """
     from AzureSQLManagement import test_module
+    import AzureSQLManagement as sql_management
+    mocker.patch.object(sql_management, "test_connection", side_effect=Exception('mocked error'))
     mocker.patch.object(demisto, 'params', return_value=params)
     with pytest.raises(Exception) as e:
-        test_module(None, {})
+        test_module(None)
     assert expected_results in str(e.value)
