@@ -198,7 +198,8 @@ def test_test_module_command(mocker, params, expected_results):
             - Case 1: Should throw an exception related to Device-code-flow config and return True.
             - Case 2: Should throw an exception related to User-Auth-flow config and return True.
     """
+    mocker.patch.object(waf, "test_connection", side_effect=Exception('mocked error'))
     mocker.patch.object(demisto, 'params', return_value=params)
     with pytest.raises(Exception) as e:
-        waf.test_module(None)
+        waf.test_module(None, {})
     assert expected_results in str(e.value)
