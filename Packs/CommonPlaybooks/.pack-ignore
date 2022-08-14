@@ -1,5 +1,7 @@
 [known_words]
 xlsm
+Mimecast
+subplaybook
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101
@@ -72,7 +74,3 @@ ignore=PB110
 
 [file:pack_metadata.json]
 ignore=PA129
-
-[known_words]
-Mimecast
-subplaybook
