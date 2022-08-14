@@ -1155,7 +1155,9 @@ def run_enrichment_mechanism(service, integration_context, mapper):
     except Exception as e:
         err = 'Caught an exception while executing the enriching fetch mechanism. Additional Info: {}'.format(str(e))
         demisto.error(err)
-        raise e
+        # we throw excpetion only if there is no incident to create 
+        if not incidents:
+            raise e
 
     finally:
         store_incidents_for_mapping(incidents, integration_context)
