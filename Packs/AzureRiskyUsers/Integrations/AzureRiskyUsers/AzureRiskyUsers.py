@@ -433,7 +433,7 @@ def main():
 
     # Params for Client Credentials flow only:
     tenant_id = params.get('tenant_id')
-    client_secret = params.get('client_secret').get('password', '')
+    client_secret = params.get('client_secret', {}).get('password', '')
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
