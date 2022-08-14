@@ -1,0 +1,56 @@
+{
+    "msft_dns_raw": {
+        "qflags": {
+          "type": "string",
+          "is_array": false
+        },
+        "time": {
+          "type": "string",
+          "is_array": false
+        },
+        "date": {
+            "type": "string",
+            "is_array": false
+          },
+        "hostname": {
+          "type": "string",
+          "is_array": false
+        },
+        "questionnamenondetailed": {
+          "type": "string",
+          "is_array": false
+        },
+        "host": {
+          "type": "string",
+          "is_array": false
+        },
+        "opcode": {
+          "type": "string",
+          "is_array": false
+        },
+        "protocol": {
+          "type": "string",
+          "is_array": false
+        },
+        "questiontype": {
+          "type": "string",
+          "is_array": false
+        },
+        "RemoteIP": {
+          "type": "string",
+          "is_array": false
+        },
+        "fields": {
+          "type": "string",
+          "is_array": false
+        },
+        "SendReceiveIndicator": {
+          "type": "string",
+          "is_array": false
+        },
+        "QueryType": {
+            "type": "string",
+            "is_array": false
+          }
+    }
+  }
