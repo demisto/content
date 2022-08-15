@@ -712,12 +712,12 @@ def attach_comment_to_ip(ip_list: List[str],
     Returns:
         List: Items List.
     """
+    items = []
+
     if ip_list:
         while len(ip_list) > len(comment_list):
             comment_list.append('')
 
-    items = []
-    if ip_list:
         for ip, comment in zip(ip_list, comment_list):
             items.append({'ip': ip, 'comment': comment})
     else:
@@ -777,7 +777,7 @@ def pagination(response: dict, args: Dict[str, Any]) -> Tuple:
             output = response[first_item:first_item + page_size]
         else:
             output = response[:page_size]
-        pagination_message = f'Showing page {page} out of others that may exist. \n Current page size: {page_size}'
+        pagination_message = f'Showing page {page}. \n Current page size: {page_size}'
     else:
         output = response[:limit]
         pagination_message = f'Showing {len(output)} rows out of {len(response)}.'
@@ -1290,7 +1290,7 @@ def compliance_remediation_create_command(client: Client, args: Dict[str, Any]) 
     readable_output = tableToMarkdown(
         name='Remediation created successfully',
         t=response,
-        headers=['cloudBots', 'id', 'ruleLogicHash', 'rulesetId', 'platform', 'comment'],
+        headers=['id', 'ruleLogicHash', 'rulesetId', 'platform', 'comment', 'cloudBots'],
         headerTransform=string_to_table_header)
     command_results = CommandResults(readable_output=readable_output,
                                      outputs_prefix='CheckPointDome9.ComplianceRemediation',
@@ -1323,7 +1323,7 @@ def compliance_remediation_update_command(client: Client, args: Dict[str, Any]) 
     readable_output = tableToMarkdown(
         name='Remediation updated successfully',
         t=response,
-        headers=['cloudBots', 'id', 'ruleLogicHash', 'rulesetId', 'platform', 'comment'],
+        headers=['id', 'ruleLogicHash', 'rulesetId', 'platform', 'comment', 'cloudBots'],
         headerTransform=string_to_table_header)
     command_results = CommandResults(readable_output=readable_output,
                                      outputs_prefix='CheckPointDome9.ComplianceRemediation',
@@ -1532,9 +1532,7 @@ def security_group_service_create_command(client: Client, args: Dict[str, Any]) 
         'protocol Type': response['protocolType'],
         'port': response['port'],
         'description': response['description'],
-        'security Group ID': sg_id,
-        #    'scopeType': response['scope'][0]['type'],
-        #    'scopeData': f"{response['scope'][0]['data']['id']} - {response['scope'][0]['data']['name']}",
+        'security Group ID': sg_id
     }]
 
     readable_output = tableToMarkdown(name='Security group service created successfully',
@@ -2046,10 +2044,12 @@ def parse_incident(alert: dict) -> dict:
     alert_date = datetime.strptime(alert.get("createdTime"),
                                    '%Y-%m-%dT%H:%M:%S.%fZ')  # type: ignore
     iso_time = FormatIso8601(alert_date) + 'Z'
-    incident = {}
-    incident['name'] = "Dome9 Alert ID: " + alert.get('id')
-    incident['occurred'] = iso_time
-    incident['rawJSON'] = json.dumps(alert)
+
+    incident = {
+        'name': "Dome9 Alert ID: " + alert.get('id'),
+        'occurred': iso_time,
+        'rawJSON': json.dumps(alert)
+    }
 
     return incident
 
