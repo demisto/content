@@ -1,13 +1,16 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 """Recorded Future Integration for Demisto."""
-from typing import Dict, Any, List, Tuple
-from urllib import parse
-import requests
 import json
 import re
+from typing import Any, Dict, List, Tuple
+from urllib import parse
+
+import requests
 
 # flake8: noqa: F402,F405 lgtm
-import demistomock as demisto
-from CommonServerPython import *
+
 
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 
@@ -1362,7 +1365,7 @@ class Actions():
             outputs_key_field=""
         )
 
-    def fetch_incidents(self, rule_names_arg: Optional[str], first_fetch: str, max_fetch: Optional[int] = None) -> None:
+    def fetch_incidents(self, rule_names_arg: Optional[str], fetch_statuses: str, update_status: bool, first_fetch: str, max_fetch: Optional[int] = None) -> None:
         if rule_names_arg:
             rule_names = rule_names_arg.split(';')
         else:
@@ -1371,10 +1374,10 @@ class Actions():
         last_run = demisto.getLastRun()
         if not last_run:
             last_run = {}
-        if 'time' not in last_run:
+        if 'start_time' not in last_run:
             time, _ = parse_date_range(first_fetch, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
         else:
-            time = last_run['time']
+            time = last_run['start_time']
 
         current_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
         triggered_time = '[{},)'.format(datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S'))
@@ -1392,7 +1395,7 @@ class Actions():
             "triggered": triggered_time,
             "orderby": "triggered",
             "direction": "asc",
-            "status": "no-action",
+            "status": fetch_statuses,
         }
         if max_fetch:
             rules_get_params["limit"] = max_fetch
@@ -1413,8 +1416,9 @@ class Actions():
             alert_time = datetime.strptime(alert['triggered'], '%Y-%m-%dT%H:%M:%S.%fZ')
             # The API returns also alerts that are triggered in the same time
             if alert_time > current_time:
-                # Set alerts status to pending
-                update_data.append({"id": alert['id'], "status": "pending"})
+                # Set alerts status to pending if current status is 'no-action'
+                if alert['review']['status'] == 'no-action':
+                    update_data.append({"id": alert['id'], "status": "pending"})
                 alert_data = self.client.get_single_alert(alert['id'])
                 if alert_data and 'data' in alert_data:
                     alert = alert_data['data']
@@ -1426,7 +1430,7 @@ class Actions():
 
                 if alert_time > max_time:
                     max_time = alert_time
-        if update_data:
+        if update_data and update_status:
             self.client.update_alerts(update_data)
         # Reverse the list so that they are created in the right order
         incidents.reverse()
@@ -1529,7 +1533,9 @@ def main() -> None:
             rule_names = demisto_params.get('rule_names', '').strip()
             first_fetch = demisto_params.get('first_fetch', '24 hours').strip()
             max_fetch = demisto_params.get('max_fetch', 50)
-            actions.fetch_incidents(rule_names, first_fetch, max_fetch)
+            fetch_statuses = demisto_params.get("fetchStatuses", "no_action").strip()
+            update_status = demisto_params.get("updateStatus", False)
+            actions.fetch_incidents(rule_names, fetch_statuses, update_status, first_fetch, max_fetch)
         elif command == "recordedfuture-threat-assessment":
             context = demisto_args.get("context")
             entities = {
