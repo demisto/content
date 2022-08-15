@@ -2217,7 +2217,7 @@ Get the prevalence of a process_command_line, identified by process_command_line
 
 ### core-add-endpoint-tag
 ***
-Add tag to one or more endpoints.
+Add a tag to one or more endpoints.
 
 
 #### Base Command
@@ -2227,16 +2227,16 @@ Add tag to one or more endpoints.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | The tenant ID of the endpoint(s) for which you want to assign the tag. | Required | 
+| endpoint_ids | A comma-separated list of tenant IDs of the endpoint(s) for which you want to assign the tag. | Required | 
 | tag | The tag name to assign to the endpoint(s). | Required | 
 | endpoint_id_list | A comma-separated list of endpoint IDs to filter by them. | Optional | 
 | dist_name | A comma-separated list of distribution package names or installation package names. <br/>Example: dist_name1,dist_name2. | Optional | 
 | ip_list | A comma-separated list of IP addresses.<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
-| group_name | The group name to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
-| platform | The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". . Possible values are: windows, linux, macos, android. | Optional | 
+| group_name | A comma-separated list of group names to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
+| platform | The endpoint platform. Possible values are: windows, linux, macos, android. | Optional | 
 | alias_name | A comma-separated list of alias names.<br/>Examples: alias_name1,alias_name2. | Optional | 
 | isolate | Specifies whether the endpoint was isolated or unisolated. Possible values are: isolated, unisolated. | Optional | 
-| hostname | Hostname<br/>Example: hostname1,hostname2. | Optional | 
+| hostname | A comma-separated list of hostnames.<br/>Example: hostname1,hostname2. | Optional | 
 | first_seen_gte | All the agents that were first seen after {first_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
 | first_seen_lte | All the agents that were first seen before {first_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
 | last_seen_gte | All the agents that were last seen before {last_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
@@ -2256,7 +2256,7 @@ There is no context output for this command.
 
 ### core-remove-endpoint-tag
 ***
-Remove tag from one or more endpoints.
+Remove a tag from one or more endpoints.
 
 #### Base Command
 
@@ -2265,16 +2265,16 @@ Remove tag from one or more endpoints.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | The tenant ID of the endpoint(s) for which you want to remove the tag. | Required | 
+| endpoint_ids | A comma-separated list of tenant IDs of the endpoint(s) for which you want to remove the tag. | Required | 
 | tag | The tag name to remove from the endpoint(s). | Required | 
 | endpoint_id_list | A comma-separated list of endpoint IDs to filter by them. | Optional | 
 | dist_name | A comma-separated list of distribution package names or installation package names. <br/>Example: dist_name1,dist_name2. | Optional | 
 | ip_list | A comma-separated list of IP addresses.<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
-| group_name | The group name to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
-| platform | The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". . Possible values are: windows, linux, macos, android. | Optional | 
+| group_name | A comma-separated list of group names to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
+| platform | The endpoint platform. Possible values are: windows, linux, macos, android. | Optional | 
 | alias_name | A comma-separated list of alias names.<br/>Examples: alias_name1,alias_name2. | Optional | 
 | isolate | Specifies whether the endpoint was isolated or unisolated. Possible values are: isolated, unisolated. | Optional | 
-| hostname | Hostname<br/>Example: hostname1,hostname2. | Optional | 
+| hostname | A comma-separated list of hostnames.<br/>Example: hostname1,hostname2. | Optional | 
 | first_seen_gte | All the agents that were first seen after {first_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
 | first_seen_lte | All the agents that were first seen before {first_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
 | last_seen_gte | All the agents that were last seen before {last_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
