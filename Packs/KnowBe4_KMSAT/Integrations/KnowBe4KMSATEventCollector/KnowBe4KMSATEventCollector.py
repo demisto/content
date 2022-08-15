@@ -98,8 +98,8 @@ def test_module(client: Client, args) -> str:
     Testing we have a valid connection to Saas-Security.
     """
     # if 401 will be raised, that means that the credentials are invalid an exception will be raised.
-    client.get_token_request()
-    return 'ok'
+    # client.get_token_request()
+    # return 'ok'
 
 
 ''' MAIN FUNCTION '''
@@ -138,8 +138,6 @@ def main() -> None:
                 vendor=vendor,
                 product=product
             )
-        # elif command == 'get-mapping-fields':
-        #     return_results(get_mapping_fields_command())
         else:
             raise ValueError(f'Command {command} is not implemented in this integration')
     except Exception as e:
