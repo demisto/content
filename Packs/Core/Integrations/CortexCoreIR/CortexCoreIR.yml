@@ -3249,7 +3249,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The tenant ID of the endpoint(s) for which you want to assign the tag.
+      description: A comma-separated list of tenant IDs of the endpoint(s) for which you want to assign the tag.
       isArray: true
       name: endpoint_ids
       required: true
@@ -3261,7 +3261,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of endpoint IDs to filter by them.
+      description: A comma-separated list of endpoint IDs by which to filter the results.
       isArray: true
       name: endpoint_id_list
       required: false
@@ -3290,7 +3290,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
+      description: The endpoint platform.
       isArray: true
       name: platform
       predefined:
@@ -3320,7 +3320,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Hostname
+        A comma-separated list of hostnames.
         Example: hostname1,hostname2
       isArray: true
       name: hostname
@@ -3383,12 +3383,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add tag to one or more endpoints.
+    description: Add a tag to one or more endpoints.
     execution: false
     name: core-add-endpoint-tag
   - arguments:
     - default: false
-      description: The tenant ID of the endpoint(s) for which you want to remove the tag.
+      description: A comma-separated list of tenant IDs of the endpoint(s) for which you want to remove the tag.
       isArray: true
       name: endpoint_ids
       required: true
@@ -3421,7 +3421,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The group name to which the agent belongs.
+        A comma-separated list of group names to which the agent belongs.
         Example: group_name1,group_name2
       isArray: true
       name: group_name
@@ -3429,7 +3429,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
+      description: The endpoint platform.       
       isArray: true
       name: platform
       predefined:
@@ -3459,7 +3459,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Hostname
+        A comma-separated list of hostnames.
         Example: hostname1,hostname2
       isArray: true
       name: hostname
@@ -3522,7 +3522,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Remove tag from one or more endpoints.
+    description: Remove a tag from one or more endpoints.
     execution: false
     name: core-remove-endpoint-tag
   feed: false
