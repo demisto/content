@@ -114,7 +114,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Calculates an explanation of a score for a query. Default is "false". For example, "value:1.6943597".
+      description: Calculates an explanation of a score for a query. For example, "value:1.6943597".
       isArray: false
       name: explain
       predefined:
@@ -124,14 +124,14 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to start a search. The default is "0".
+      description: The page number from which to start a search.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of documents displayed per page. Can be an integer between "1" and "10,000". The default is "100".
+      description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
       isArray: false
       name: size
       required: false
@@ -206,7 +206,7 @@ script:
       description: The server on which the search was performed.
       type: String
     - contextPath: Elasticsearch.Search.timed_out
-      description: Whether the search stopped due to a time out.
+      description: Whether the search stopped due to a timeout.
       type: Boolean
     - contextPath: Elasticsearch.Search.took
       description: The time in milliseconds taken for the search to complete.
@@ -241,7 +241,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Calculates an explanation of a score for a query. Default is "false". For example, "value:1.6943597".
+      description: Calculates an explanation of a score for a query. For example, "value:1.6943597".
       isArray: false
       name: explain
       predefined:
@@ -251,14 +251,14 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to start a search. The default is "0".
+      description: The page number from which to start a search.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of documents displayed per page. Can be an integer between "1" and "10,000". The default is "100".
+      description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
       isArray: false
       name: size
       required: false
@@ -367,14 +367,14 @@ script:
       secret: false
     - default: false
       defaultValue: event.category
-      description: The event catagory field.
+      description: The event category field.
       isArray: false
       name: event_category_field
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of documents displayed per page. Can be an integer between "1" and "10,000". The default is "100".
+      description: The number of documents displayed per page. Can be an integer between "1" and "10,000". 
       isArray: false
       name: size
       required: false
