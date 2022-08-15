@@ -25,7 +25,7 @@ INVESTIGATION_STATUSES = set((
     "Closed: Inconclusive",
     "Closed: Informational",
     "Closed: Not Vulnerable",
-    "Closed: Threat Mitifated",
+    "Closed: Threat Mitigated",
 ))
 INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type"))
 
