@@ -619,9 +619,8 @@ def search_users(default_base_dn, page_size):
     if args.get('attributes'):
         custom_attributes = args['attributes'].split(",")
 
-    attributes = list(set(custom_attributes + DEFAULT_PERSON_ATTRIBUTES))
-    if args.get('attributes-to-exclude'):
-        attributes = list(set(attributes) - set(argToList(args['attributes-to-exclude'])))
+    attributes = list(set(custom_attributes + DEFAULT_PERSON_ATTRIBUTES) -
+                      set(argToList(args.get('attributes-to-exclude'))))
 
     entries = search_with_paging(
         query,
