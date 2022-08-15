@@ -10,12 +10,12 @@ def load_json_file(path):
 
 
 @pytest.mark.parametrize(argnames="threatconnect_score, dbot_score",
-                         argvalues=[(500, 3),
-                                    (450, 3),
-                                    (330, 2),
-                                    (220, 2),
-                                    (120, 1),
-                                    (10, 1),
+                         argvalues=[(1000, 3),
+                                    (830, 3),
+                                    (664, 2),
+                                    (498, 2),
+                                    (332, 1),
+                                    (166, 1),
                                     (0, 0)])
 def test_calculate_dbot_score(threatconnect_score, dbot_score):
     from FeedThreatConnect import calculate_dbot_score
