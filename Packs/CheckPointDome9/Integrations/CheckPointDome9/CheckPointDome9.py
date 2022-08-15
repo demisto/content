@@ -1,3 +1,4 @@
+# type: ignore
 from typing import Any, Dict, Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
