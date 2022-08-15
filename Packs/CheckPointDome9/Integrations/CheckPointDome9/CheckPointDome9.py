@@ -463,11 +463,9 @@ class Client(BaseClient):
                 "type": scope_type
             }]
         })
-        print(data)
         response = self._http_request('POST',
                                       f'cloudsecuritygroup/{sg_id}/services/{policy_type}',
                                       json_data=data)
-        print(response)
         return response
 
     def security_group_service_update_request(
@@ -1576,14 +1574,12 @@ def security_group_service_update_command(client: Client, args: Dict[str, Any]) 
     inbound = args.get('inbound')
     icmptype = args.get('icmptype')
     icmpv6type = args.get('icmpv6type')
-    print('port - %d', port)
 
     response = client.security_group_service_update_request(sg_id, service_name, protocol_type,
                                                             port, policy_type, open_for_all,
                                                             description, data_id, data_name,
                                                             scope_type, is_valid, inbound, icmptype,
                                                             icmpv6type)
-    print('response - %d', response)
 
     sg_service = [{
         'id': response['id'],
@@ -1595,7 +1591,6 @@ def security_group_service_update_command(client: Client, args: Dict[str, Any]) 
         # 'scopeType': response['scope'][0]['type'],
         #    'scopeData': f"{response['scope'][0]['data']['id']} - {response['scope'][0]['data']['name']}",
     }]
-    print('sg_service - %d', sg_service)
     readable_output = tableToMarkdown(name='Security group service updated successfully',
                                       t=sg_service,
                                       headerTransform=string_to_table_header)
