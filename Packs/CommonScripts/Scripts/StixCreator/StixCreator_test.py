@@ -21,13 +21,13 @@ DOMAIN_INDICATORS = \
         'indicators':
             {
                 '0': {'expirationStatus': 'active', 'firstSeen': '2022-07-31T13:24:44Z',
-                      'indicator_type': 'Domain',
+                      'indicator_type': 'cve',
                       'lastSeen': '2022-07-31T13:24:44Z', 'score': 'Unknown',
                       'timestamp': '2022-07-31T13:24:44Z',
                       'value': 'test.com'
                       },
                 '1': {'expirationStatus': 'active', 'firstSeen': '2022-07-31T13:24:40Z',
-                      'indicator_type': 'Domain',
+                      'indicator_type': 'attack pattern',
                       'lastSeen': '2022-07-31T13:24:40Z', 'score': 'suspicious',
                       'timestamp': '2022-07-31T13:24:40Z',
                       'value': 'bad.com'
