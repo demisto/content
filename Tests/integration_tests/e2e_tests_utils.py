@@ -22,15 +22,12 @@ class e2e_tests_utils:
         print(f' Cloning demisto-sdk with: {git_clone_command}')
         e2e_tests_utils.cli(git_clone_command)
         sys.path.insert(1, f'{destination_folder}/demisto-sdk')
+        return 0
 
     @staticmethod
-    def cli(command) -> subprocess.CompletedProcess:
+    def cli(command: str) -> subprocess.CompletedProcess:
         if command:
-            run_req = None
-            if isinstance(command, str):
-                run_req = str(command).split(' ')
-            if isinstance(command, list):
-                run_req = command
+            run_req = str(command).split(' ')
             ret_value: subprocess.CompletedProcess = subprocess.run(run_req)
             ret_value.check_returncode()
             return ret_value
