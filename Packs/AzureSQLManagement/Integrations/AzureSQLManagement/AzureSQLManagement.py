@@ -486,7 +486,7 @@ def main() -> None:
     try:
         client = Client(
             tenant_id=params.get('tenant_id', ''),
-            auth_type=params.get('auth_type', ''),
+            auth_type=params.get('auth_type', 'Device'),
             auth_code=params.get('auth_code', {}).get('password', ''),
             redirect_uri=params.get('redirect_uri', ''),
             enc_key=params.get('credentials', {}).get('password', ''),
