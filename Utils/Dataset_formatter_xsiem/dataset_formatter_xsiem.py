@@ -178,7 +178,7 @@ def open_input_file(path: Path, f):
 
 
 def main():
-    print('Started')
+    print('Script started')
     parser = argparse.ArgumentParser(description="A Script to format csv/tsv files in order to upload to XSIEM. "
                                                  "This script is a work in progress and does not "
                                                  "give a complete solution. if found a dataset that"
@@ -191,6 +191,10 @@ def main():
                         help="In order to vies the columns modified by the script")
 
     args = parser.parse_args()
+    if not args.input:
+        print('Error running the script - Please specify an input file path')
+        return
+
     input_path = Path(args.input)
     last_path_component = input_path.stem
     last_path_component += f'_formatted.csv'
