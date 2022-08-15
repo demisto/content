@@ -4,19 +4,21 @@ import sys
 
 import demisto_client
 from demisto_sdk.commands.common.tools import (get_demisto_version,
-                                              )
+                                               )
 
 class e2e_tests_utils:
+
 
     @staticmethod
     def git_clone_demisto_sdk(destination_folder: str, sdk_git_branch: str = 'master'):
         '''Clone demisto-sdk from GitHub and add it to sys.path
         '''
         git_clone_command = ('git'
-            f' -C {destination_folder}'
-            ' clone'
-            f' -b {sdk_git_branch}'
-            ' --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git')
+                             f' -C {destination_folder}'
+                             ' clone'
+                             f' -b {sdk_git_branch}'
+                             ' --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git'
+                             )
         print(f' Cloning demisto-sdk with: {git_clone_command}')
         e2e_tests_utils.cli(git_clone_command)
         sys.path.insert(1, f'{destination_folder}/demisto-sdk')
