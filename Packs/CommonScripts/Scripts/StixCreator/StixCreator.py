@@ -12,7 +12,7 @@ from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet
 from stix2 import Tool, CourseOfAction
 from typing import Any, Callable
 
-SCOs = {
+SCOs: dict[str, str] = {  # pragma: no cover
     "md5": "file:hashes.md5",
     "sha1": "file:hashes.sha1",
     "sha256": "file:hashes.sha256",
@@ -29,7 +29,7 @@ SCOs = {
     "registry key": "windows-registry-key:key"
 }
 
-SDOs = {
+SDOs: dict[str, Callable] = {  # pragma: no cover
     "malware": Malware,
     "attack pattern": AttackPattern,
     "campaign": Campaign,
