@@ -9,9 +9,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- additionalinfo: Runs the web server on this port from within Cortex XSOAR. Requires
-    a unique port for each long-running integration instance. Do not use the same
-    port for multiple instances.
+- additionalinfo: Runs the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
   required: true
@@ -48,7 +46,7 @@ configuration:
   - Bearer Token
   required: false
   type: 15
-- display: "<api credetials>"
+- display: API credentials
   name: api_credentials
   required: false
   type: 9
@@ -67,12 +65,11 @@ configuration:
   name: custom_auth_header_value
   required: false
   type: 0
-description: Provide a simple API proxy to restrict privileges or minimize the amount
-  of credentials issued at the API.
+description: Provide a simple API proxy to restrict privileges or minimize the amount of credentials issued at the API.
 display: Simple API Proxy
 name: Simple API Proxy
 script:
-  dockerimage: demisto/fastapi:1.0.0.27446
+  dockerimage: demisto/fastapi:1.0.0.32142
   longRunning: true
   longRunningPort: true
   runonce: true
