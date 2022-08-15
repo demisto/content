@@ -409,6 +409,15 @@ def watchlist_update_command(client: Client, id: str, search_query: str, descrip
     return CommandResults(readable_output=res.get('result'))
 
 
+def watchlist_update_action_command(client: Client, id: str, action_type: str,
+                                    enabled: str) -> CommandResults:
+    enabled_bool = argToBoolean(enabled)
+    params = assign_params(enabled=enabled_bool)
+    res = client.http_request(url=f'/v1/watchlist/{id}/action_type/{action_type}', method='PUT', json_data=params)
+    # res contains whether the task successful.
+    return CommandResults(readable_output=res.get('result'))
+
+
 def watchlist_create_command(client: Client, name: str, search_query: str, index_type: str = 'events',
                              description: str = '') -> CommandResults:
     params = assign_params(name=name, search_query=search_query, description=description, index_type=index_type)
@@ -918,6 +927,7 @@ def main() -> None:
                                          'cb-edr-watchlists-list': get_watchlist_list_command,
                                          'cb-edr-watchlist-create': watchlist_create_command,
                                          'cb-edr-watchlist-update': watchlist_update_command,
+                                         'cb-edr-watchlist-update-action': watchlist_update_action_command,
                                          'cb-edr-watchlist-delete': watchlist_delete_command,
                                          'cb-edr-sensors-list': sensors_list_command,
                                          'cb-edr-quarantine-device': quarantine_device_command,
