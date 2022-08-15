@@ -17,12 +17,15 @@ ENV_URLS = {
 
 INVESTIGATION_STATUSES = set((
     "Open",
-    "Active",
     "Suspended",
+    "Active",
+    "Awaiting Action",
     "Closed: Authorized Activity",
     "Closed: False Positive Alert",
+    "Closed: Inconclusive",
     "Closed: Informational",
     "Closed: Not Vulnerable",
+    "Closed: Threat Mitifated",
 ))
 INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type"))
 
@@ -383,7 +386,7 @@ def fetch_incidents(client: Client, max_fetch: int = 15):
         "orderDirection": "asc",
         "page": 0,
         "perPage": max_fetch,
-        "status": ["Open", "Active"]
+        "status": ["Open", "Active", "Awaiting Action"]
     }
 
     last_run = demisto.getLastRun()
