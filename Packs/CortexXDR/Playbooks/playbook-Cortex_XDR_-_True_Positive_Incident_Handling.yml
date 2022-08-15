@@ -1167,7 +1167,7 @@ view: |-
     }
   }
 tests:
-- Test XDR Playbook
+- No tests (auto formatted)
 fromversion: 6.5.0
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
