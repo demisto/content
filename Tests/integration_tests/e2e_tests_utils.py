@@ -31,7 +31,7 @@ class e2e_tests_utils:
             ret_value: subprocess.CompletedProcess = subprocess.run(run_req)
             ret_value.check_returncode()
             return ret_value
-        return None
+        raise Exception('cli cannot be empty.')
 
     @staticmethod
     def connect_to_server(insecure: bool = False):
