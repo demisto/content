@@ -5023,7 +5023,14 @@
         {
             "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
-            "integrations": "AzureRiskyUsers"
+            "integrations": "AzureRiskyUsers",
+            "instance_names": "AzureRiskyUsers - Device Code Flow"
+        },
+        {
+            "playbookID": "AzureRiskyUsers",
+            "fromversion": "6.0.0",
+            "integrations": "AzureRiskyUsers",
+            "instance_names": "AzureRiskyUsers - Client Credentials Flow"
         },
         {
             "playbookID": "playbook-AzureKeyVault-Test",
