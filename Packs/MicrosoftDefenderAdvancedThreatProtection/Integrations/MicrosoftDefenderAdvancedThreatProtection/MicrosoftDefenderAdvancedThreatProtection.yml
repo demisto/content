@@ -268,6 +268,7 @@ script:
       name: page_size
       required: false
       secret: false
+      defaultValue: '50'
     - default: false
       description: The page number to retrieve.
       defaultValue: '1'
