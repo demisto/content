@@ -5,6 +5,7 @@ import math
 import re
 from pathlib import Path
 import argparse
+from typing import Union
 import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -177,6 +178,23 @@ def open_input_file(path: Path, f):
     return pd.read_csv(f, low_memory=False)
 
 
+def handle_output_path(output_path: Union[None, str], input_path: Path) -> Path:
+    """
+        Args:
+            - output_path: The output path if specified by user None otherwise
+            - input_path: The input file path
+
+        Returns:
+            Path object representing the output path
+    """
+    if not output_path:
+        last_path_component = input_path.stem
+        last_path_component += f'_formatted.csv'
+        return Path(input_path.parent, last_path_component)
+    else:
+        return Path(output_path)
+
+
 def main():
     print('Script started')
     parser = argparse.ArgumentParser(description="A Script to format csv/tsv files in order to upload to XSIEM. "
@@ -196,9 +214,7 @@ def main():
         return
 
     input_path = Path(args.input)
-    last_path_component = input_path.stem
-    last_path_component += f'_formatted.csv'
-    output_path = Path(input_path.parent, last_path_component)
+    output_path = handle_output_path(args.output, input_path)
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
