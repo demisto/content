@@ -3282,7 +3282,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The group name to which the agent belongs.
+        A comma-separated list of group name to which the agent belongs.
         Example: group_name1,group_name2
       isArray: true
       name: group_name
