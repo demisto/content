@@ -2,9 +2,9 @@ commonfields:
   id: CrowdStrike Falcon Sandbox V2
   version: -1
 name: CrowdStrike Falcon Sandbox V2
-display: CrowdStrike Falcon Sandbox v2
+display: CrowdStrike Falcon Sandbox v2 (Hybrid-Analysis)
 category: Forensics & Malware Analysis
-description: Fully automated malware analysis (Hybrid Analysis).
+description: Fully automated malware analysis using Hybrid Analysis API.
 configuration:
   - name: serverUrl
     required: true
