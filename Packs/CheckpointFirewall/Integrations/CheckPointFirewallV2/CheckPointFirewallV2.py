@@ -1763,7 +1763,7 @@ def checkpoint_show_threat_protections_command(client: Client, args):
 
     if result:
         context_data = result.get('protections', [])
-        readable_output = tableToMarkdown('CheckPoint data for show threate protections command:',
+        readable_output = tableToMarkdown('CheckPoint data for show threat protections command:',
                                           result.get('protections', []))
     command_results = CommandResults(
         outputs_prefix='CheckPoint.ShowThreatProtections',
@@ -1843,7 +1843,7 @@ def checkpoint_delete_threat_protections_command(client: Client, args):
     return command_results
 
 
-def create_ovverides_data(args):
+def create_override_data(args):
     profiles = args.get('profiles').split(',')
     profiles = [x.rstrip() for x in profiles]
 
@@ -1870,7 +1870,7 @@ def checkpoint_set_threat_protections_command(client: Client, args):
     readable_output = ''
 
     if args.get('profiles'):
-        args = create_ovverides_data(args)
+        args = create_override_data(args)
 
     body = {f'{k.replace("_", "-")}': v for k, v in args.items()}
     result = client.set_threat_protection(body)
