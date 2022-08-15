@@ -700,8 +700,8 @@ tasks:
     task:
       id: 9163e901-49f2-46c7-8795-fb6643817120
       version: -1
-      name: 'Account Enrichment - IAM '
-      playbookName: 'Account Enrichment - IAM '
+      name: 'Account Enrichment - IAM'
+      playbookName: 'Account Enrichment - IAM'
       type: playbook
       iscommand: false
       brand: ""
@@ -792,8 +792,8 @@ tasks:
     task:
       id: e896b846-4603-456c-847f-d8f75bcc3b43
       version: -1
-      name: 'Account Enrichment - IAM '
-      playbookName: 'Account Enrichment - IAM '
+      name: 'Account Enrichment - IAM'
+      playbookName: 'Account Enrichment - IAM'
       type: playbook
       iscommand: false
       brand: ""
