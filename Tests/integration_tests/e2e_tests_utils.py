@@ -21,7 +21,7 @@ class e2e_tests_utils:
     def cli(command) -> subprocess.CompletedProcess:
         if command:
             run_req = None
-            if type(command) == type(''):
+            if isinstance(command, str):
                 run_req = str(command).split(' ')
             if type(command) == type([]):
                 run_req = command
