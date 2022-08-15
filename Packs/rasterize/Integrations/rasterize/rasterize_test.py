@@ -239,7 +239,7 @@ def test_check_width_and_height(width, height, expected_width, expected_height):
     assert h == expected_height
 
 
-@pytest.mark.parametrize('include_url', [False])
+@pytest.mark.parametrize('include_url', [False, True])
 def test_rasterize_include_url(caplog, include_url):
     """
         Given:
@@ -250,7 +250,7 @@ def test_rasterize_include_url(caplog, include_url):
             - Verify that the URL bar is included or not according to the given parameter.
     """
 
-    image = rasterize('http://google.com', width=300, height=300, r_type=RasterizeType.PNG, max_page_load_time=5,
+    image = rasterize('http://google.com', width=800, height=800, r_type=RasterizeType.PNG, max_page_load_time=5,
                       r_mode=RasterizeMode.WEBDRIVER_ONLY, include_url=include_url)
 
     with NamedTemporaryFile('wb+') as f:
