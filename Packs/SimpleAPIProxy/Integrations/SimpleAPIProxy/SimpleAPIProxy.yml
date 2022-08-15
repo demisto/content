@@ -67,16 +67,6 @@ configuration:
   name: custom_auth_header_value
   required: false
   type: 0
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: d4addd52-1d7d-4840-8e79-f31eaed0c52c
-    packName: Simple API Proxy Contribution Pack
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Provide a simple API proxy to restrict privileges or minimize the amount
   of credentials issued at the API.
 display: Simple API Proxy
@@ -86,7 +76,10 @@ script:
   longRunning: true
   longRunningPort: true
   runonce: true
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-sourcemoduleid: Publish List
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+
