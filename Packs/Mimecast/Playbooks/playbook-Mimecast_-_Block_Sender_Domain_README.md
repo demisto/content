@@ -28,7 +28,3 @@ This playbook does not use any sub-playbooks.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Mimecast - Block Sender Domain](../doc_files/Mimecast_-_Block_Sender_Domain.png)
