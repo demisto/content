@@ -43,7 +43,7 @@ SDOs: dict[str, Callable] = {
 }
 
 
-def hash_type(value: str) -> str:  # pragma: no coverage
+def hash_type(value: str) -> str:  # pragma: no cover
     length = len(value)
     if length == 32:
         return 'md5'
