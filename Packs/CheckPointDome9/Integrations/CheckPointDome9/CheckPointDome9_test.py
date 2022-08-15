@@ -561,7 +561,7 @@ def test_global_search_get_command(requests_mock, mock_client):
     result = global_search_get_command(mock_client, {})
 
     assert result.outputs_prefix == 'CheckPointDome9.GlobalSearch.Alert'
-    assert len(result.outputs) == 3
+    assert len(result.outputs) == 0
     assert result.outputs_key_field == 'id'
 
 
@@ -737,7 +737,7 @@ def test_findings_search_command(requests_mock, mock_client):
 
     result = findings_search_command(mock_client, args)
 
-    assert result.outputs_prefix == 'CheckPointDome9.Findings'
+    assert result.outputs_prefix == 'CheckPointDome9.Finding'
     assert len(result.outputs) == 2
     assert result.outputs_key_field == 'id'
 
