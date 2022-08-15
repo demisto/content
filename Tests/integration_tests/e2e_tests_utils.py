@@ -6,8 +6,8 @@ import demisto_client
 from demisto_sdk.commands.common.tools import (get_demisto_version,
                                                )
 
-class e2e_tests_utils:
 
+class e2e_tests_utils:
 
     @staticmethod
     def git_clone_demisto_sdk(destination_folder: str, sdk_git_branch: str = 'master'):

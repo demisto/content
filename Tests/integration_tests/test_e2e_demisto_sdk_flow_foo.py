@@ -34,8 +34,8 @@ def test_e2e_demisto_sdk_flow_foo(tmpdir, insecure: bool = False):
     e2e_tests_utils.cli(f'demisto-sdk download -i {playbook_name} -o {tmpdir}/Packs/{pack_name}_updated')
 
     print('Generating docs (creating a readme file)'
-                            f' for the playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml'
-                            )
+          f' for the playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml'
+          )
     e2e_tests_utils.cli(f'demisto-sdk generate-docs -i {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
 
     print(f'Formating playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
