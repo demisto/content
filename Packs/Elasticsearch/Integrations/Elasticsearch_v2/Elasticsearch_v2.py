@@ -629,7 +629,7 @@ def format_to_iso(date_string):
     return date_string
 
 
-def get_time_range(last_fetch: Union[str, None] = None, fetch_time=FETCH_TIME, time_range_start=None,
+def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME,
                    time_range_end=None, time_field=TIME_FIELD) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
@@ -650,13 +650,7 @@ def get_time_range(last_fetch: Union[str, None] = None, fetch_time=FETCH_TIME, t
     """
     range_dict = {}
     if not last_fetch:  # this is the first fetch
-        # if time range start provided we will use it instead of fetch time.
-        if time_range_start:
-            start_date = dateparser.parse(time_range_start)
-        elif fetch_time:
-            start_date = dateparser.parse(fetch_time)
-        else:
-            raise DemistoException("Missing First fetch timestamp or Time Range Start, please provide one of them.")
+        start_date = dateparser.parse(time_range_start)
 
         start_time = convert_date_to_timestamp(start_date)
     else:
@@ -687,7 +681,7 @@ def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
-    time_range_dict = get_time_range(last_fetch=last_fetch)
+    time_range_dict = get_time_range(time_range_start=last_fetch)
     es = elasticsearch_builder(proxies)
 
     if RAW_QUERY:
