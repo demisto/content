@@ -19,6 +19,9 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 *Make sure to provide the following permissions for the app to work with Azure Risky Users:*
  - ***IdentityRiskyUser.Read.All*** - https://docs.microsoft.com/en-us/graph/api/riskyuser-list?view=graph-rest-1.0
  - ***IdentityRiskEvent.Read.All*** - https://docs.microsoft.com/en-us/graph/api/riskdetection-get?view=graph-rest-1.0
+ - ***IdentityRiskEvent.ReadWrite.All***
+ - ***IdentityRiskyUser.ReadWrite.All***
+ - ***User.Read***
 
 ### Authentication Using the Client Credentials Flow (recommended)
 
