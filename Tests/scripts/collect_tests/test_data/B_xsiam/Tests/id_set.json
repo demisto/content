@@ -1,0 +1,25 @@
+{
+  "scripts": [],
+  "integrations": [],
+  "TestPlaybooks": [
+    {
+      "myTestPlaybook": {
+        "name": "myTestPlaybook",
+        "file_path": "Packs/myXSIAMOnlyPack/TestPlaybooks/myTestPlaybook.yml",
+        "pack": "myXSIAMOnlyPack",
+        "marketplaces": [
+          "marketplacev2"
+        ]
+      },
+      "myOtherTestPlaybook": {
+        "name": "myOtherTestPlaybook",
+        "file_path": "Packs/myXSIAMOnlyPack/TestPlaybooks/myOtherTestPlaybook.yml",
+        "pack": "myXSIAMOnlyPack",
+        "marketplaces": [
+          "marketplacev2"
+        ]
+      }
+    }
+  ],
+  "Packs": {}
+}
