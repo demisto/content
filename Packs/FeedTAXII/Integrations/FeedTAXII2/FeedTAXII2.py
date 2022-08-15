@@ -228,6 +228,8 @@ def main():
     key = params.get('key', None)
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
 
+    demisto.info(f'{objects_to_fetch=}')
+
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
     try:
