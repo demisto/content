@@ -427,7 +427,7 @@ script:
       description: The server on which the search was performed.
       type: String
     - contextPath: Elasticsearch.Search.timed_out
-      description: Whether the search stopped due to a time out.
+      description: Whether the search stopped due to a timeout.
       type: Boolean
     - contextPath: Elasticsearch.Search.took
       description: The time in milliseconds taken for the search to complete.
