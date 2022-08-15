@@ -301,6 +301,22 @@ xsoar_server_master:
     INSTANCE_ROLE: "Server Master"
 
 
+demisto-sdk-nightly:run-end-to-end-tests:
+  tags:
+    - gke # Better when not needing docker-in-docker
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule-always
+  variables:
+    INSTANCE_ROLE: "Server Master"
+  needs: ["create-instances"]
+  stage: run-instances
+  script:
+    # TODO Uncomment, so it runs all tests in the Tests/integration_tests directory
+    # - python3 -m pytest Tests/integration_tests/
+    - python3 -m pytest Tests/integration_tests/test_e2e_demisto_sdk_flow_foo.py
+
+
 fan-in-nightly:
   tags:
     - gke
