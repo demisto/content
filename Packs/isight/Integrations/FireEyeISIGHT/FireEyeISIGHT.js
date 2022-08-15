@@ -138,7 +138,8 @@ var basicSearchIP = function(ip) {
                     Indicator: ip,
                     Type: 'IP',
                     Vendor: VENDOR_NAME,
-                    Score: 0
+                    Score: 0,
+                    Reliability: params.integrationReliability
                 }
             }
         };
@@ -174,7 +175,8 @@ var basicSearchDomain = function(domain) {
                     Indicator: domain,
                     Type: 'domain',
                     Vendor: VENDOR_NAME,
-                    Score: 0
+                    Score: 0,
+                    Reliability: params.integrationReliability
                 }
             }
         };
@@ -210,7 +212,8 @@ var basicSearchfile = function(key, value) {
                     Indicator: value,
                     Type: 'file',
                     Vendor: VENDOR_NAME,
-                    Score: 0
+                    Score: 0,
+                    Reliability: params.integrationReliability
                 }
             }
         };
