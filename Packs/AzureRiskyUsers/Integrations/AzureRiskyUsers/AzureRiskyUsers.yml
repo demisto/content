@@ -11,13 +11,13 @@ configuration:
   hiddenusername: true
   displaypassword: Client ID
 - additionalinfo: Type of authentication - could be Client Credentials Authorization
-    Flow (recommended) or Device Flow.
-  defaultvalue: Device
+    Flow (recommended) or Device Code Flow.
+  defaultvalue: Device Code
   display: Authentication Type
   name: authentication_type
   options:
   - Client Credentials
-  - Device
+  - Device Code
   required: true
   type: 15
 - display: Tenant ID (for Client Credentials mode)

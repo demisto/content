@@ -9,7 +9,7 @@ from urllib.parse import parse_qs
 from typing import Dict, Optional, Any, Union
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
-DEVICE_FLOW = 'Device'
+DEVICE_FLOW = 'Device Code'
 
 
 class Client:
@@ -48,14 +48,14 @@ class Client:
         """
         Gets the grant type by the given authentication type.
         Args:
-            authentication_type: desirable authentication type, could be Client credentials or Device.
+            authentication_type: desirable authentication type, could be Client credentials or Device Code.
 
         Returns: the grant type.
         """
         if authentication_type == CLIENT_CREDENTIALS_FLOW:  # Client credentials flow
             return CLIENT_CREDENTIALS
 
-        else:  # Device Flow
+        else:  # Device Code Flow
             return DEVICE_CODE
 
     @staticmethod
@@ -63,14 +63,14 @@ class Client:
         """
         Gets the scope by the given authentication type.
         Args:
-            authentication_type: desirable authentication type, could be Client credentials or Device.
+            authentication_type: desirable authentication type, could be Client credentials or Device Code.
 
         Returns: the scope.
         """
         if authentication_type == CLIENT_CREDENTIALS_FLOW:  # Client credentials flow
             return Scopes.graph
 
-        else:  # Device Flow
+        else:  # Device Code Flow
             return ('https://graph.microsoft.com/IdentityRiskyUser.Read.All'
                     ' IdentityRiskEvent.ReadWrite.All IdentityRiskyUser.Read.All'
                     ' IdentityRiskyUser.ReadWrite.All offline_access')
@@ -80,14 +80,14 @@ class Client:
         """
         Gets the token retrieval url by the given authentication type.
         Args:
-            authentication_type: desirable authentication type, could be Client credentials or Device.
+            authentication_type: desirable authentication type, could be Client credentials or Device Code.
 
         Returns: the token retrieval url.
         """
         if authentication_type == CLIENT_CREDENTIALS_FLOW:  # Client credentials flow
             return None
 
-        else:  # Device Flow
+        else:  # Device Code Flow
             return 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
     def risky_users_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
@@ -391,7 +391,7 @@ def test_module(client: Client):
         raise DemistoException('The test module is not functional, When using a self-deployed configuration, '
                                'run the !azure-risky-users-auth-test command in order to test the connection.')
 
-    else:  # Device flow
+    else:  # Device Code flow
         raise DemistoException('The test module is not functional, '
                                'run the azure-risky-users-auth-start command instead.')
 
@@ -427,7 +427,7 @@ def main():
     params = demisto.params()
     args = demisto.args()
     client_id = params.get('client_id').get('password', '')
-    auth_type = params.get('authentication_type', 'Device')
+    auth_type = params.get('authentication_type', 'Device Code')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
