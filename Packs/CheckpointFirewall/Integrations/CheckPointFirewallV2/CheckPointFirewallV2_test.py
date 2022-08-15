@@ -564,16 +564,6 @@ def test_checkpoint_show_threat_protection(mocker):
     assert 'CheckPoint data for show threat protection' in results.readable_output
 
 
-# def test_checkpoint_show_threat_protections(mocker):
-#     response = get_treat_protection_response()
-#     mocked_client = mocker.Mock()
-#     mocked_client.show_threat_protections.return_value = response
-#     results = CheckPointFirewallV2.checkpoint_show_threat_protections_command(mocked_client, {})
-#     assert '41e821a0-3720-11e3-aa6e-0800200c9fde' in results.readable_output
-#     assert 'CheckPoint data for show threat protections' in results.readable_output
-#     # TODO: check why missing protections entry
-
-
 def test_ip_settings():
     keys = ['exclude-protection-with-performance-impact',
             'exclude-protection-with-performance-impact-mode',
