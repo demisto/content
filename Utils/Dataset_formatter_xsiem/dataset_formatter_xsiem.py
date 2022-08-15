@@ -30,7 +30,7 @@ class Formatter(ABC):
         return None
 
     @abstractmethod
-    def convert_to_xsiem_format(self, col):
+    def convert_to_xsiam_format(self, col):
         pass
 
 
@@ -44,7 +44,7 @@ class TimeFormat1(Formatter):
     def regex(self):
         return r"\w{3} \d{1,2}(st|nd|rd|th) \d{4} (\d{2}:){2}\d{2}"
 
-    def convert_to_xsiem_format(self, col):
+    def convert_to_xsiam_format(self, col):
         res_list = []
         for time_element in col:
             if isinstance(time_element, float):
@@ -79,7 +79,7 @@ class TimeFormat2(Formatter):
     def regex(self):
         return r"\d{4}(-\d{2}){2}T(\d{2}:){2}\d{2}.\d{3}Z"
 
-    def convert_to_xsiem_format(self, col):
+    def convert_to_xsiam_format(self, col):
         res_list = []
         for time_element in col:
             if isinstance(time_element, float):
@@ -100,7 +100,7 @@ class JsonFormat(Formatter):
     def regex(self):
         return r"^{.*}$"
 
-    def convert_to_xsiem_format(self, col):
+    def convert_to_xsiam_format(self, col):
         res_list = []
         for cell in col:
             if isinstance(cell, float) and math.isnan(cell):
@@ -122,7 +122,7 @@ class JsonArrayFormat(Formatter):
     def regex(self):
         return r"^\[.*\]$"
 
-    def convert_to_xsiem_format(self, col):
+    def convert_to_xsiam_format(self, col):
         res_list = []
         for cell in col:
             if isinstance(cell, float) and math.isnan(cell):
@@ -158,7 +158,7 @@ class FormatManager:
         
         self.format_type = None
 
-    def convert_to_xsiem_format(self, col):
+    def convert_to_xsiam_format(self, col):
         """
         Args:
             - One of the dataFrame cols
@@ -166,7 +166,7 @@ class FormatManager:
         Return:
             - A list of the formatted col
         """
-        return self.format_type.convert_to_xsiem_format(col)
+        return self.format_type.convert_to_xsiam_format(col)
 
     def formatter_name(self):
         return self.format_type.name
@@ -197,7 +197,7 @@ def handle_output_path(output_path: Union[None, str], input_path: Path) -> Path:
 
 def main():
     print('Script started')
-    parser = argparse.ArgumentParser(description="A Script to format csv/tsv files in order to upload to XSIEM. "
+    parser = argparse.ArgumentParser(description="A Script to format csv/tsv files in order to upload to xsiam. "
                                                  "This script is a work in progress and does not "
                                                  "give a complete solution. if found a dataset that"
                                                  " does not upload after running the script plz DM",
@@ -227,7 +227,7 @@ def main():
         format_manager.find_col_format(col_values_list)
         if format_manager.format_type:
             logging.debug(f'{col} --- was found to be of format: {format_manager.formatter_name()}')
-            formatted_col = format_manager.convert_to_xsiem_format(col_values_list)
+            formatted_col = format_manager.convert_to_xsiam_format(col_values_list)
             data_table[col] = formatted_col
 
     print(f'saving the formatted csv file to - {output_path}')

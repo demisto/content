@@ -1,5 +1,5 @@
 ## README
-The purpose of this script is to process exported datasets from XSIEM as lookup tables.
+The purpose of this script is to process exported datasets from XSIAM as lookup tables.
 
 ### pre requisite
 In order to run this script you need to install the pandas module. 
