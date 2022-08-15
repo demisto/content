@@ -23,7 +23,7 @@ class e2e_tests_utils:
             run_req = None
             if isinstance(command, str):
                 run_req = str(command).split(' ')
-            if type(command) == type([]):
+            if isinstance(command, list):
                 run_req = command
             ret_value: subprocess.CompletedProcess = subprocess.run(run_req)
             ret_value.check_returncode()
