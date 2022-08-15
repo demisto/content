@@ -94,31 +94,12 @@ def fetch_events(client: Client, max_fetch: Optional[int] = None, first_fetch_ti
 
 
 def test_module(client: Client, args) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
     """
-
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    Testing we have a valid connection to Saas-Security.
+    """
+    # if 401 will be raised, that means that the credentials are invalid an exception will be raised.
+    client.get_token_request()
+    return 'ok'
 
 
 ''' MAIN FUNCTION '''
