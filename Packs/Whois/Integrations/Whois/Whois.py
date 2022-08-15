@@ -8057,7 +8057,7 @@ def parse_dates(dates):
                     hour = 0
                     minute = 0
                     second = 0
-                    demisto.debug(e.message)
+                    demisto.debug(e)
         try:
             if year > 0:
                 try:
@@ -8540,6 +8540,7 @@ def main():
     reliability = demisto.params().get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
 
+    org_socket = None
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
