@@ -23,13 +23,11 @@
           },
           "endTime": {
             "totalValues": 1,
-            "values": [
-            ]
+            "values": []
           },
           "imageFile.md5String": {
             "totalValues": 1,
-            "values": [
-            ]
+            "values": []
           },
           "imageFile.isSigned": {
             "totalValues": 1,
@@ -45,8 +43,7 @@
           },
           "commandLine": {
             "totalValues": 1,
-            "values": [
-            ]
+            "values": []
           },
           "isLiveProcess": {
             "totalValues": 1,
@@ -56,8 +53,7 @@
           },
           "creationTime": {
             "totalValues": 1,
-            "values": [
-            ]
+            "values": []
           },
           "pid": {
             "totalValues": 1,
@@ -85,8 +81,7 @@
           },
           "imageFile.correctedPath": {
             "totalValues": 1,
-            "values": [
-            ]
+            "values": []
           },
           "imageFile.productType": {
             "totalValues": 1,
@@ -174,7 +169,6 @@
             "totalMalicious": 0,
             "guessedTotal": 0
           },
-
           "imageFileUnsignedHasSignedVersionEvidence": {
             "totalValues": 1,
             "elementValues": [
@@ -210,8 +204,8 @@
             "elementValues": [
               {
                 "elementType": "Machine",
-                "guid": "",
-                "name": "",
+                "guid": "123456",
+                "name": "desktop",
                 "hasSuspicions": false,
                 "hasMalops": false
               }
@@ -336,9 +330,7 @@
         "count": 1
       }
     ],
-    "guids": [
-
-    ]
+    "guids": []
   },
   "status": "SUCCESS",
   "hidePartialSuccess": false,
