@@ -12,6 +12,7 @@ This integration was integrated and tested with version 0 of Hatching Triage
     | API URL | Private url is https://private.tria.ge/api/v0/ | True |
     | API Key | The API Key to use for the connection. | True |
     | Verify SSL |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
