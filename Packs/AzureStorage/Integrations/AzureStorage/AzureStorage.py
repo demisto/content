@@ -671,11 +671,8 @@ def storage_blob_containers_delete(client, args):
 
 
 def start_auth(client: ASClient) -> CommandResults:
-    user_code = client.ms_client.device_auth_request()
-    return CommandResults(readable_output=f"""### Authorization instructions
-1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
- and enter the code **{user_code}** to authenticate.
-2. Run the **!azure-storage-auth-complete** command in the War Room.""")
+    result = client.ms_client.start_auth('!azure-storage-auth-complete')
+    return CommandResults(readable_output=result)
 
 
 def complete_auth(client: ASClient) -> str:

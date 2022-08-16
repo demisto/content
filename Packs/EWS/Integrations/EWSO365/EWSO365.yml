@@ -1235,6 +1235,7 @@ script:
       isArray: true
     description: Replies to an email using EWS.
   dockerimage: demisto/py3ews:1.0.0.29461
+  dockerimage: demisto/py3ews:1.0.0.32273
   feed: false
   isfetch: true
   longRunning: false

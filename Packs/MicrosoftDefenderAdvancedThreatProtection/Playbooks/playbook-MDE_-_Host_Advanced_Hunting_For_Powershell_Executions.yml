@@ -1,20 +1,10 @@
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host PowerShell executions.
+  contentitemfields: {}
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host PowerShell executions.
 id: MDE - Host Advanced Hunting For Powershell Executions
 inputs:
-- description: A comma-separated list of IPs to hunt.
-  key: IP
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: detectedips
-      root: incident
-      transformers:
-      - operator: uniq
 - description: A comma-separated list of host names to hunt.
   key: DeviceName
   playbookInputQuery:
@@ -76,7 +66,90 @@ inputs:
       transformers:
       - operator: uniq
 name: MDE - Host Advanced Hunting For Powershell Executions
-outputs: []
+outputs:
+- contextPath: MicrosoftATP.HuntProcessDetails.Result
+  description: The query results for Process Details.
+  type: unknown
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.parent_process
+  description: The query results for parent_process query_purposeThe query results.
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.grandparent_process
+  description: The query results for grandparent_process query_purpose.
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.process_details
+  description: The query results for process_details query_purpose.
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.beaconing_evidence
+  description: The query results for beaconing_evidence query_purpose.
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.powershell_execution_unsigned_files
+  description: The query results for powershell_execution_unsigned_files query_purpose.
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
+  description: The query results for process_excecution_powershell query_purpose.
+- contextPath: MicrosoftATP.FileMachine.Machines
+  description: The Query results for getting a collection of machines with a given file SHA1 hash.
+  type: unknown
+- contextPath: MicrosoftATP.FileMachine.Machines.ID
+  description: The machine ID.
+- contextPath: MicrosoftATP.FileMachine.Machines.ComputerDNSName
+  description: The machine DNS name.
+- contextPath: MicrosoftATP.FileMachine.Machines.FirstSeen
+  description: The first date and time the machine was observed by Microsoft Defender ATP.
+- contextPath: MicrosoftATP.FileMachine.Machines.LastSeen
+  description: The last date and time the machine was observed by Microsoft Defender ATP.
+- contextPath: MicrosoftATP.FileMachine.Machines.OSPlatform
+  description: The operating system platform.
+- contextPath: MicrosoftATP.FileMachine.Machines.OSVersion
+  description: The operating system version.
+- contextPath: MicrosoftATP.FileMachine.Machines.OSBuild
+  description: Operating system build number.
+- contextPath: MicrosoftATP.FileMachine.Machines.LastIPAddress
+  description: The last IP on the machine.
+- contextPath: MicrosoftATP.FileMachine.Machines.LastExternalIPAddress
+  description: The last machine IP to access the internet.
+- contextPath: MicrosoftATP.FileMachine.Machines.HelathStatus
+  description: The machine health status.
+- contextPath: MicrosoftATP.FileMachine.Machines.RBACGroupID
+  description: The machine RBAC group ID.
+- contextPath: MicrosoftATP.FileMachine.Machines.RBACGroupName
+  description: The machine RBAC group name.
+- contextPath: MicrosoftATP.FileMachine.Machines.RiskScore
+  description: The machine risk score.
+- contextPath: MicrosoftATP.FileMachine.Machines.ExposureLevel
+  description: The machine exposure score.
+- contextPath: MicrosoftATP.FileMachine.Machines.IsAADJoined
+  description: True if machine is AAD joined, False otherwise.
+- contextPath: MicrosoftATP.FileMachine.Machines.AADDeviceID
+  description: The AAD Device ID.
+- contextPath: MicrosoftATP.FileMachine.Machines.MachineTags
+  description: Set of machine tags.
+- contextPath: MicrosoftATP.Machine
+  description: Results for device information.
+  type: unknown
+- contextPath: MicrosoftATP.Machine.OSProcessor
+  description: The operating system processor.
+- contextPath: MicrosoftATP.FileMachine
+  description: Results for File information on a device.
+  type: unknown
+- contextPath: MicrosoftATP.FileMachine.File
+  description: The machine related file hash.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result
+  description: The query results for Hunt Network Connections.
+  type: unknown
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
+  description: The query results for external_addresses query_purpose.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.dns_query
+  description: The query results for dns_query query_purpose.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.encoded_commands
+  description: The query results for encoded_commands query_purpose.
+- contextPath: MatchRegex
+  description: The regex found in the command line
+  type: unknown
+- contextPath: Indicators
+  description: Indicators extracted from the command line
+  type: unknown
+- contextPath: commandline
+  description: The command line
+  type: unknown
+- contextPath: CommandlineVerdict
+  description: The command line verdict
+  type: unknown
 starttaskid: '0'
 tasks:
   '0':
@@ -234,7 +307,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple:  Results on searching additional devices associated with this File Sha1 - Microsoft Defender For Endpoint
+        simple: Results on searching additional devices associated with this File Sha1 - Microsoft Defender For Endpoint
       tags:
         simple: Multi Affected Devices
     id: '6'
@@ -274,7 +347,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple:  Results on Unsigned Powershell query in Advanced Hunting feature - Microsoft Defender For Endpoint
+        simple: Results on Unsigned Powershell query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: cmd###powershell
     id: '7'
@@ -721,22 +794,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "This playbook takes the command line from the alert and performs the following actions:\n
-      - Checks for a base64 string and decodes if it exists.\n
-      - Extracts and enriches indicators from the command line.\n
-      - Checks specific arguments for malicious usage. \n\n
-      At the end of the playbook, it sets a possible verdict for the command line based on the finding:\n
-      1. Indicators found in the command line\n
-      2. Found AMSI techniques\n
-      3. Found suspicious parameters\n
-      4. Usage of malicious tools\n
-      5. Indication of network activity"
+      description: "This playbook takes the command line from the alert and performs the following actions:\n - Checks for a base64 string and decodes if it exists.\n - Extracts and enriches indicators from the command line.\n - Checks specific arguments for malicious usage. \n\n At the end of the playbook, it sets a possible verdict for the command line based on the finding:\n 1. Indicators found in the command line\n 2. Found AMSI techniques\n 3. Found suspicious parameters\n 4. Usage of malicious tools\n 5. Indication of network activity"
       id: 72f197cb-9a5a-4ed5-8b11-4e9885a3d3c2
       iscommand: false
       name: Command-Line Analysis
-      playbookId: Command-Line Analysis
       type: playbook
       version: -1
+      playbookName: Command-Line Analysis
     taskid: 72f197cb-9a5a-4ed5-8b11-4e9885a3d3c2
     timertriggers: []
     type: playbook
@@ -771,3 +835,4 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+system: true

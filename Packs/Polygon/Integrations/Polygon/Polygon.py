@@ -288,7 +288,8 @@ def get_main_indicator(report, analysis_type):
                 indicator_type=DBotScoreType.FILE,
                 integration_name=INTEGRATION_NAME,
                 score=score,
-                malicious_description=malicious
+                malicious_description=malicious,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
     else:
@@ -300,7 +301,8 @@ def get_main_indicator(report, analysis_type):
                 indicator_type=DBotScoreType.URL,
                 integration_name=INTEGRATION_NAME,
                 score=score,
-                malicious_description=malicious
+                malicious_description=malicious,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
 
@@ -320,7 +322,8 @@ def get_packages_indicators(res):
                 indicator=info.get('sha1'),
                 indicator_type=DBotScoreType.FILE,
                 integration_name=INTEGRATION_NAME,
-                score=0
+                score=0,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
         command_results.append(CommandResults(
@@ -344,7 +347,8 @@ def get_network_indicators(res):
                 indicator=dns.get('request'),
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name=INTEGRATION_NAME,
-                score=0
+                score=0,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
         command_results.append(CommandResults(
@@ -360,7 +364,8 @@ def get_network_indicators(res):
                 indicator=host,
                 indicator_type=DBotScoreType.IP,
                 integration_name=INTEGRATION_NAME,
-                score=0
+                score=0,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
         command_results.append(CommandResults(
@@ -376,7 +381,8 @@ def get_network_indicators(res):
                 indicator=http.get('uri'),
                 indicator_type=DBotScoreType.URL,
                 integration_name=INTEGRATION_NAME,
-                score=0
+                score=0,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
         command_results.append(CommandResults(
@@ -571,7 +577,8 @@ def file_command(client, args):
                 indicator_type=DBotScoreType.FILE,
                 integration_name=INTEGRATION_NAME,
                 score=score,
-                malicious_description=malicious
+                malicious_description=malicious,
+                reliability=demisto.params().get('integrationReliability')
             )
             indicator = Common.File(**{hash_type: file, "dbot_score": dbot_score})
             result = CommandResults(

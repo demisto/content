@@ -619,6 +619,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Whois",
+            "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0",
@@ -704,7 +709,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0",
-            "timeout": 1500
+            "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -1397,6 +1402,9 @@
             "playbookID": "PagerDuty Test"
         },
         {
+            "scripts": [
+                "DeleteContext"
+            ],
             "playbookID": "test_delete_context"
         },
         {
@@ -2140,11 +2148,6 @@
             "integrations": "LogRhythm",
             "playbookID": "LogRhythm-Test-Playbook",
             "timeout": 200
-        },
-        {
-            "integrations": "FireEye HX",
-            "playbookID": "FireEye HX Test",
-            "timeout": 800
         },
         {
             "integrations": "FireEyeFeed",
@@ -2900,19 +2903,6 @@
             "timeout": 1500,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
-        },
-        {
-            "integrations": "Hybrid Analysis",
-            "playbookID": "HybridAnalysis-Test",
-            "timeout": 500,
-            "fromversion": "4.1.0",
-            "is_mockable": false
-        },
-        {
-            "integrations": "Hybrid Analysis",
-            "playbookID": "Detonate File - HybridAnalysis - Test",
-            "fromversion": "5.5.0",
-            "is_mockable": false
         },
         {
             "integrations": "Elasticsearch v2",
@@ -4037,6 +4027,10 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Microsoft Defender Advanced Threat Protection"
+            ],
+            "instance_names": [
+                "microsoft_defender_atp_dev",
+                "microsoft_defender_atp_dev_self_deployed"
             ]
         },
         {
@@ -4389,7 +4383,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 95,
+            "memory_threshold": 100,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4398,7 +4392,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 91,
+            "memory_threshold": 100,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5157,11 +5151,21 @@
             "fromversion": "6.8.0"
         },
         {
+            "playbookID": "playbook-BmcITSM-Test",
+            "fromversion": "6.2.0",
+            "integrations": "BmcITSM"
+        },
+        {
             "integrations": [
                 "Github Event Collector"
             ],
             "playbookID": "Github Event Collector-test",
             "fromversion": "6.8.0"
+        },
+        {
+            "integrations": "CheckPointSandBlast",
+            "playbookID": "playbook-CheckPointSandBlast_Test",
+            "fromversion": "6.2.0"
         },
         {
             "integrations": [
@@ -5173,10 +5177,13 @@
         {
             "integrations": "Arkime",
             "playbookID": "Arkime Test playbook",
-            "fromversion": "6.2.0"
+            "fromversion": "6.2.0",
+            "memory_threshold": 95
         }
     ],
     "skipped_tests": {
+        "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
+        "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
@@ -5258,7 +5265,6 @@
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
         "TestIPQualityScorePlaybook": "Issue 40915",
         "VerifyOOBV2Predictions-Test": "Issue 37947",
-        "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
         "AutoFocusTagsFeed-test": "shares API quota with the other test",
         "Carbon Black Edr - Test": "Jira ticket XDR-43185",
@@ -5430,13 +5436,12 @@
         "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
-        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated",
         "Alibaba Action Trail Event Collector": "XSIAM integration",
         "Salesforce Event Collector": "XSIAM integration",
-        "Github Event Collector" : "XSIAM integration",
+        "Github Event Collector": "XSIAM integration",
         "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration"
     },
     "nightly_integrations": [
@@ -5549,7 +5554,8 @@
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
         "RSA Archer v2": "cannot connect to proxy",
         "Anomali ThreatStream v3": "recording is not working",
-        "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked."
+        "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
+        "Cortex XDR - IR": "internal product, no need to mock"
     },
     "parallel_integrations": [
         "AWS - ACM",
@@ -5674,6 +5680,6 @@
         "Sanity Test - Playbook with integration",
         "Sanity Test - Playbook with no integration",
         "Sanity Test - Playbook with mocked integration",
-        "Sanity Test - Playbook with Unmockable Integration"
+        "Sanity Test - Playbook with Unmockable Whois Integration"
     ]
 }

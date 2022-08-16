@@ -1,0 +1,18 @@
+comment: "Restricts the Incident Types a user can create manually based on an XSOAR list, and prevents changing the Incident Type manually once it is created.\n\nRequirements - Create an XSOAR List called IncidentTypesFromList a list of comma separated Incident Types\n\nIncident Type 1,Incident Type 2, Incident Type 3 "
+commonfields:
+  id: CaseMgmtIncidentTypesDisplay
+  version: -1
+dockerimage: demisto/python3:3.10.5.31928
+enabled: true
+name: CaseMgmtIncidentTypesDisplay
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
