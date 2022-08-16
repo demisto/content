@@ -272,14 +272,14 @@ def test_update_threat_analyst_verdict(mocker, requests_mock):
     mocker.patch.object(demisto, 'command', return_value='sentinelone-update-threats-verdict')
     mocker.patch.object(demisto, 'args', return_value={
         'threat_ids': '1234567890',
-        'action': 'true_positive'
+        'verdict': 'true_positive'
     })
     mocker.patch.object(sentinelone_v2, "return_results")
     main()
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Updation': {'Action': 'true_positive'}}]
+    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Update': {'Action': 'true_positive'}}]
 
 
 def test_update_alert_analyst_verdict(mocker, requests_mock):
@@ -292,14 +292,14 @@ def test_update_alert_analyst_verdict(mocker, requests_mock):
     mocker.patch.object(demisto, 'command', return_value='sentinelone-update-alerts-verdict')
     mocker.patch.object(demisto, 'args', return_value={
         'alert_ids': '1234567890',
-        'action': 'true_positive'
+        'verdict': 'true_positive'
     })
     mocker.patch.object(sentinelone_v2, "return_results")
     main()
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Updation': {'Action': 'true_positive'}}]
+    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Update': {'Action': 'true_positive'}}]
 
 
 def test_update_threat_status(mocker, requests_mock):

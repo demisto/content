@@ -466,7 +466,7 @@ Returns threats according to the specified filters.
 
 ### sentinelone-threat-summary
 ***
-Returns a dashboard threat summary. And Existent only at API V1
+Returns a dashboard threat summary.  Can only be used with API V2.1
 
 
 #### Base Command
@@ -526,7 +526,7 @@ Returns a dashboard threat summary. And Existent only at API V1
 
 ### sentinelone-mark-as-threat
 ***
-Marks suspicious threats as threats. And Existent only at API V2.0
+Marks suspicious threats as threats. Can only be used with API V2.0
 
 
 #### Base Command
@@ -590,7 +590,7 @@ Applies a mitigation action to a group of threats that match the specified input
 
 ### sentinelone-resolve-threat
 ***
-Resolves threats using the threat ID. And Existent only at API V2.0
+Resolves threats using the threat ID. Can only be used with API V2.0
 
 
 #### Base Command
@@ -1947,7 +1947,7 @@ Updates the analyst verdict to a group of threats that match the specified input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Analyst verdict action. Can be "undefined", "true_positive", "false_positive","suspicious" | Required | 
+| verdict | Analyst verdict action. Can be "undefined", "true_positive", "false_positive","suspicious" | Required | 
 | threat_ids | A comma-separated list of threat IDs. | Required | 
 
 
@@ -1957,7 +1957,7 @@ Updates the analyst verdict to a group of threats that match the specified input
 | --- | --- | --- |
 | SentinelOne.Threat.ID | String | The threat ID. |
 | SentinelOne.Threat.Updated | Boolean | Whether the threat was successfully updated the analyst verdict. |
-| SentinelOne.Threat.Updation.Action | String | Name of the analyst verdict action performed on the threats. |
+| SentinelOne.Threat.Update.Action | String | Name of the analyst verdict action performed on the threats. |
 
 #### Command Example
 ```!sentinelone-update-threats-verdict threat_ids="14417837215288624" action=false_positive```
@@ -1975,7 +1975,7 @@ Updates the analyst verdict to a group of alerts that match the specified input 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Analyst verdict action. Can be "undefined", "true_positive", "false_positive", "suspicious" | Required | 
+| verdict | Analyst verdict action. Can be "undefined", "true_positive", "false_positive", "suspicious" | Required | 
 | alert_ids | A comma-separated list of alert IDs. | Required | 
 
 #### Context Output
@@ -1984,7 +1984,7 @@ Updates the analyst verdict to a group of alerts that match the specified input 
 | --- | --- | --- |
 | SentinelOne.Alert.ID | String | The alert ID. | 
 | SentinelOne.Alert.Updated | Boolean | Whether the alert was successfully updated the analyst verdict. | 
-| SentinelOne.Alert.Updation.Action | String | Name of the analyst verdict action performed on the alerts. | 
+| SentinelOne.Alert.Update.Action | String | Name of the analyst verdict action performed on the alerts. | 
 
 #### Command Example
 ```!sentinelone-update-alerts-verdict threat_ids="14417837215288624" action=false_positive```
@@ -2440,7 +2440,7 @@ Fetch a file associated with the threat that matches the filter.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | threat_id | Please provide the Valid Threat ID. Example: 14629133470822878. | Required | 
-| password | File encryption password (Aleast 10 characters, three of these uppercase,lowercase,digits and symbols. Maximum length is 256 characters) | Required |
+| password | File encryption password (Aleast 10 characters, three out of this list "uppercase", "lowercase", "digits" and "symbols" are mandatory. Maximum length is 256 characters) | Required |
 
 
 #### Context Output
@@ -2449,7 +2449,7 @@ Fetch a file associated with the threat that matches the filter.
 | --- | --- | --- |
 | SentinelOne.Threat.ID | String | The threat ID. | 
 | SentinelOne.Threat.Downloadable | Boolean | The file is downlable or not | 
-| SentinelOne.Threat.Download URL | String | Download URL for the fetched threat file. |
+| SentinelOne.Threat.ZippedFile | String | Details of the zipped folder. |
 
 #### Command Example
 ```!sentinelone-fetch-threat-file threat_ids=106802961889425793 password=Mypassword1!```
@@ -2457,7 +2457,7 @@ Fetch a file associated with the threat that matches the filter.
 
 ### sentinelone-update-threats-status
 ***
-Updates the incident status to a group of threats that match the specified input filter.
+Updates the incident status to a group of threats that match the specified input filter. If you want to update the status of threats to 'Resolved' then the analyst verdict value should not be 'undefined'
 
 #### Base Command
 
@@ -2527,6 +2527,7 @@ Get a list of alerts for a given scope
 | alert_ids | A comma-separated list of alert IDs. | Optional |
 | limit | Limit number of returned items (1-1000). Example: "10". But defaulted to 1000 | Optional |
 | site_ids | List of Site IDs to filter by. Example: "225494730938493804,225494730938493915". | Optional | 
+| cursor | Cursor position returned by the last request. Should be used for iterating over more than 1000 items. Example: "YWdlbnRfaWQ6NTgwMjkzODE=". | Optional |
 
 
 #### Context Output
@@ -2565,4 +2566,56 @@ Get a list of alerts for a given scope
 
 #### Command Example
 ```!sentinelone-get-alerts created_from=2012-02-27T04:49:26.257525Z created_until=2012-05-27T04:49:26.257525Z```
+
+
+### sentinelone-get-installed-applications
+***
+Get the installed applications for a specific Agent.
+
+#### Base Command
+
+`sentinelone-get-installed-applications`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_ids | A comma separated value of Agent IDs. Example: 14629133470822878,14627455454652878 | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Application.Name | String | The Application Name | 
+| SentinelOne.Application.Publisher | String | The Publisher | 
+| SentinelOne.Application.Size | String | The size of the application in bytes | 
+| SentinelOne.Application.Version | String | The Version of the application | 
+| SentinelOne.Application.InstalledOn | String | Installed Date | 
+ 
+
+#### Command Example
+```!sentinelone-get-installed-applications agent_ids="1463801667584541849,1463801667584545236"```
+
+
+### sentinelone-initiate-endpoint-scan
+***
+Initiate the endpoint virus scan on provided agent IDs
+
+#### Base Command
+
+`sentinelone-initiate-endpoint-scan`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_ids | A comma separated value of Agent IDs. Example: 14629133470822878,14627455454652878 | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Agent.Agent ID | String | The Agent ID | 
+| SentinelOne.Agent.Initiated | String | Whether the scan was initiated or not | 
+
+#### Command Example
+```!sentinelone-initiate-endpoint-scan agent_ids="1463801667584541849,1463801667584545236"```
 
