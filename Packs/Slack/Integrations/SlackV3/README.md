@@ -1,7 +1,6 @@
 Send messages and notifications to your Slack team.
 This integration was integrated and tested with Slack.
 ## Configure SlackV3 on Cortex XSOAR
-F15D694D93EBEBB300DFEDCB4F8D6CD1
 Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket) to enable the integration to communicate directly with Slack for mirroring. This requires a dedicated Slack app to be created for the XSOAR integration. See [Creating a Custom App](#creating-a-custom-app) on how to create your App in Slack.
 
 Please refer to the video tutorial [found here](https://live.paloaltonetworks.com/t5/cortex-xsoar-how-to-videos/cortex-xsoar-how-to-video-slack-v3-configuration/ta-p/445226) to learn about configuring SlackV3 using the app manifest.
