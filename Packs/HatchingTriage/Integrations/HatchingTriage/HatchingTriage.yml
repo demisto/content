@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 8
 - display: Use system proxy settings
-  name: system_proxy
+  name: proxy
   defaultvalue: 'false'
   required: false
   type: 8

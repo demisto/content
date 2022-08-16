@@ -443,7 +443,7 @@ def main():
         params.get("base_url"),
         verify=params.get("Verify SSL"),
         headers={"Authorization": f'Bearer {params.get("API Key")}'},
-        proxy=params.get("system_proxy", False)
+        proxy=params.get("proxy", False)
     )
 
     commands = {
