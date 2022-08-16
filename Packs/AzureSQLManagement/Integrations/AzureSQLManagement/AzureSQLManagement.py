@@ -426,9 +426,9 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[
 @logger
 def test_connection(client: Client) -> CommandResults:
     if demisto.params().get('auth_type') == 'Device Code':
-        client.azure_sql_servers_list()  # If fails, MicrosoftApiModule returns an error
-    else:
         client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    else:
+        client.azure_sql_servers_list()  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 
 
@@ -457,19 +457,15 @@ def test_module(client):
     Performs basic GET request to check if the API is reachable and authentication is successful.
     Returns ok if successful.
     """
-    try:
-        test_connection(client)
-        return "ok"
-    except Exception:
-        if demisto.params().get('auth_type') == 'Device Code':
-            raise Exception("When using device code flow configuration, "
-                            "Please enable the integration and run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to "
-                            "log in. You can validate the connection by running `!azure-sql-auth-test`\n"
-                            "For more details press the (?) button.")
+    if demisto.params().get('auth_type') == 'Device Code':
+        raise Exception("When using device code flow configuration, "
+                        "Please enable the integration and run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to "
+                        "log in. You can validate the connection by running `!azure-sql-auth-test`\n"
+                        "For more details press the (?) button.")
 
-        elif demisto.params().get('auth_type') == 'Authorization Code':
-            raise Exception("When using user auth flow configuration, "
-                            "Please enable the integration and run the !msgraph-user-test command in order to test it")
+    elif demisto.params().get('auth_type') == 'Authorization Code':
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !msgraph-user-test command in order to test it")
 
 
 ''' MAIN FUNCTION '''
