@@ -88,6 +88,8 @@ MIRRORING_ENABLED: bool
 LONG_RUNNING_ENABLED: bool
 DEMISTO_API_KEY: str
 DEMISTO_URL: str
+IGNORE_RETRIES: bool
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1420,9 +1422,12 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         response = SocketModeResponse(envelope_id=req.envelope_id)
         await client.send_socket_mode_response(response)
     if req.retry_attempt:
-        if req.retry_attempt > 0:
+        if req.retry_attempt > 0 and IGNORE_RETRIES:
             demisto.debug("Slack is resending the message. To prevent double posts, the retry is ignored.")
             return
+        else:
+            demisto.debug(f"Slack is resending the message. Ignore retries is - {IGNORE_RETRIES} and the "
+                          f"retry attempt is - {req.retry_attempt}. Continuing to process the event.")
     data_type: str = req.type
     payload: dict = req.payload
     if data_type == 'error':
@@ -2545,6 +2550,7 @@ def init_globals(command_name: str = ''):
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
     global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED, DEMISTO_API_KEY, DEMISTO_URL
+    global IGNORE_RETRIES
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2578,6 +2584,7 @@ def init_globals(command_name: str = ''):
     DEMISTO_API_KEY = demisto.params().get('demisto_api_key', '')
     demisto_urls = demisto.demistoUrls()
     DEMISTO_URL = demisto_urls.get('server')
+    IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     common_channels = demisto.params().get('common_channels', None)
     if common_channels:
         COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
