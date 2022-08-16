@@ -9,6 +9,7 @@ ALWAYS_EXCLUDED = ['Base', 'ContentManagement', 'CleanUpContent', 'CommonDashboa
 
 
 class EntityAPI(ABC):
+    """Abstract class for APIs of different content entities."""
     name = ''
 
     @abstractmethod
@@ -163,8 +164,15 @@ def search_and_delete_existing_entity(name: str, entity_api: EntityAPI, dry_run:
     return True
 
 
-def search_for_all_entities(entity_api: EntityAPI):
+def search_for_all_entities(entity_api: EntityAPI) -> list:
+    """Search for all existing entities in xsoar.
 
+    Args:
+        entity_api (EntityAPI): The entity api to preform api calls on.
+
+    Returns:
+        list of entity ids.
+    """
     status, res = entity_api.search_all()
 
     if not status:
@@ -178,7 +186,18 @@ def search_for_all_entities(entity_api: EntityAPI):
 
 
 def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: List = [], included_ids: List = [],
-                            dry_run: bool = True):
+                            dry_run: bool = True) -> (list, list):
+    """Search and delete entities with provided EntityAPI.
+
+    Args:
+        entity_api (EntityAPI): The api object to use for the get and delete api calls.
+        excluded_ids (list): List of ids to exclude from deletion.
+        included_ids (list): List of ids to include in deletion.
+        dry_run (bool): If true, will not really delete anything.
+
+    Returns:
+        (list) successfully deleted ids, (list) not deleted ids
+    """
     succesfully_deleted = []
     not_deleted = []
 
@@ -210,6 +229,22 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: List = [], incl
 
 
 def get_and_delete_needed_ids(args: dict) -> CommandResults:
+    """Search and delete provided ids to delete.
+
+    Args:
+        args[exclude_ids] (str(list)): List of ids to exclude. Will delete all the rest of the found ids.
+        args[include_ids] (str(list)): List of ids to include. Will only delete these ids if not empty.
+        args[dry_run] (str(bool)): If True, will only collect items for deletion and will not delete them.
+
+    Raise:
+        ValueError if both exclude_ids and include_ids are specified.
+
+    Returns:
+        CommandResults with the following outputs:
+            successfully_deleted: list of content ids gathered for deletion.
+            not_deleted: list of content ids gathered not to delete.
+            status: Deletion status (Failed/Completed/Dry run, nothing really deleted.)
+    """
     excluded_ids = argToList(args.get('exclude_ids', '[]'))
     included_ids = argToList(args.get('include_ids', '[]'))
     dry_run = True if args.get('dry_run', 'true') == 'true' else False

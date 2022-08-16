@@ -11,6 +11,16 @@ XSOAR_IDS_FULL_STATE = {
 
 
 def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
+    """Mock function for demisto responses to api calls according to xsoar ids state.
+
+    Args:
+        command_name (str): The command name sent to the executeCommand demisto function.
+        command_args (dict): The command args sent to the executeCommand demisto function.
+        xsoar_ids_state (dict): A representation for the content ids in an xsoar instance.
+
+    Returns:
+        status, demisto response
+    """
     command_uri = command_args.get('uri')
     if command_uri == '/jobs/search':
         if command_args.get('body', {}).get('size') == 1:
@@ -77,7 +87,17 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
             'status': 'Failed'}, id='try deleting always excluded ids')
 ])
 def test_get_and_delete_needed_ids(mocker, args, xsoar_ids_state, expected_outputs):
+    """
+    Given:
+        Xsoar ids state.
+        Include_ids and exclude_ids lists.
 
+    When:
+        Running get_and_delete_needed_ids with dry_run set to false.
+
+    Then:
+         Assert deleted id lists are correct.
+    """
     def execute_command_mock(command_name, command_args, fail_on_error=False):
         status, response = mock_demisto_responses(command_name, command_args, xsoar_ids_state)
         return status, {'response': response}
@@ -103,7 +123,18 @@ def test_get_and_delete_needed_ids(mocker, args, xsoar_ids_state, expected_outpu
             'status': 'Completed'}, 15, id='dry run, delete everything.')
 ])
 def test_dry_run_delete(mocker, args, xsoar_ids_state, expected_outputs, call_count):
+    """
+    Given:
+        Xsoar ids state.
+        dry_run flag.
 
+    When:
+        Running get_and_delete_needed_ids with dry_run toggled.
+
+    Then:
+         Assert deleted id lists are correct.
+         Assert call count to executeCommand API does not include calls for actual deletion.
+    """
     def execute_command_mock(command_name, command_args, fail_on_error=False):
         status, response = mock_demisto_responses(command_name, command_args, xsoar_ids_state)
         return status, {'response': response}
