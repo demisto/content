@@ -2,7 +2,7 @@
     "name": "Azure Active Directory Identity and Access (Deprecated) (Deprecated)",
     "description": "Deprecated. No available replacement.",
     "support": "xsoar",
-    "currentVersion": "1.2.10",
+    "currentVersion": "1.2.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

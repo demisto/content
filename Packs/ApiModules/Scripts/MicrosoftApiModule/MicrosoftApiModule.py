@@ -50,6 +50,11 @@ GRAPH_BASE_ENDPOINTS = {
     'https://microsoftgraph.chinacloudapi.cn': 'cn'
 }
 
+# possible errors
+ERR_AUTH_CODE_REFRESH = "Unable to create refresh_token with the provided authorization code. Please make " \
+                        "sure your authorization code is created via " \
+                        "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize"
+
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
@@ -177,9 +182,10 @@ class MicrosoftClient(BaseClient):
         # 206 indicates Partial Content, reason will be in the warning header.
         # In that case, logs with the warning header will be written.
         if response.status_code == 206:
-            demisto.debug(str(response.headers))
-        is_response_empty_and_successful = (response.status_code == 204)
-        if is_response_empty_and_successful and return_empty_response:
+            demisto.debug(f'Response status code 206 (partial content) with headers {str(response.headers)}')
+
+        allowed_empty_response_codes = kwargs.get('empty_valid_codes', (204,))  # 204 is CommonServerPython's default
+        if return_empty_response and (response.status_code in allowed_empty_response_codes):
             return response
 
         # Handle 404 errors instead of raising them as exceptions:
@@ -332,7 +338,11 @@ class MicrosoftClient(BaseClient):
                                  ) -> Tuple[str, int, str]:
         if self.grant_type == AUTHORIZATION_CODE:
             if not self.multi_resource:
-                return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
+                access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
+                                                                                                  scope=scope)
+                if not refresh_token:
+                    raise DemistoException(ERR_AUTH_CODE_REFRESH)
+                return access_token, expires_in, refresh_token
             else:
                 expires_in = -1  # init variable as an int
                 for resource in self.resources:
@@ -340,6 +350,8 @@ class MicrosoftClient(BaseClient):
                                                                                                       resource)
                     self.resource_to_access_token[resource] = access_token
 
+                if not refresh_token:
+                    raise DemistoException(ERR_AUTH_CODE_REFRESH)
                 return '', expires_in, refresh_token
         elif self.grant_type == DEVICE_CODE:
             return self._get_token_device_code(refresh_token, scope, integration_context)
