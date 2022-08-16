@@ -129,9 +129,9 @@ class AzureWAFClient:
 
 def test_connection(client: AzureWAFClient, params: Dict):
     if demisto.params().get('auth_type') == 'Device Code':
-        client.get_policy_list_by_resource_group_name(client.resource_group_name)  # If fails, MicrosoftApiModule returns an error
-    else:
         client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    else:
+        client.get_policy_list_by_resource_group_name(client.resource_group_name)  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 
 
@@ -353,19 +353,15 @@ def test_module(client, params):
     Performs basic GET request to check if the API is reachable and authentication is successful.
     Returns ok if successful.
     """
-    try:
-        test_connection(client, params)
-        return "ok"
-    except Exception:
-        if demisto.params().get('auth_type') == 'Device Code':
-            raise Exception("When using device code flow configuration, "
-                            "Please enable the integration and run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to "
-                            "log in. You can validate the connection by running `!azure-waf-auth-test`\n"
-                            "For more details press the (?) button.")
+    if demisto.params().get('auth_type') == 'Device Code':
+        raise Exception("When using device code flow configuration, "
+                        "Please enable the integration and run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to "
+                        "log in. You can validate the connection by running `!azure-waf-auth-test`\n"
+                        "For more details press the (?) button.")
 
-        elif demisto.params().get('auth_type') == 'Authorization Code':
-            raise Exception("When using user auth flow configuration, "
-                            "Please enable the integration and run the !azure-waf-auth-test command in order to test it")
+    elif demisto.params().get('auth_type') == 'Authorization Code':
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !azure-waf-auth-test command in order to test it")
 
 
 ''' MAIN FUNCTION '''
