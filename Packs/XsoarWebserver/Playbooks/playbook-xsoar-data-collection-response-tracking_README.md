@@ -1,4 +1,4 @@
-This is a subplaybook that runs the email task a configurable number of times and polls the response status by the user
+This playbook tracks the user responses and  resends the emails to recipients who have not responded
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,30 +10,26 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* xsoar-ws-poll-status
-* Set
+* xsoar-ws-parse-context
+* xsoar-ws-poll-status_v2
 
 ### Commands
 * setIncident
-* send-mail
+* xsoar-ws-get-action-status
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RecipientAddress | The email address of the recipient |  | Optional |
+| Jobuuid | Data collection Job uuid  |  | Optional |
 | FileAttachments | The file id of the attachment to send to the recipient |  | Optional |
-| EmailHTML | The HTML email |  | Optional |
-| ActionUUID | The action to monitor on XSOARWebserver, You will find it in the output of action-setup |  | Optional |
+| EmailSubject | Mail Subject |  | Optional |
+| PollingTimebetweenRuns | The amount of time between two scheduled commands that poll the response |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| UserResponse | The User's response | string |
-
-## Playbook Image
----
-![xsoar-ws-email-loop](Insert the link to your image here)
+| WSActionStatus(val.job_uuid==obj.job_uuid) | Merges the output to the main playbook | unknown |

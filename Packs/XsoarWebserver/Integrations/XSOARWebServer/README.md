@@ -1,5 +1,5 @@
-This is a simple web-server that as of now, supports handling configurable user responses (like Yes/No/Maybe). What makes it different from Data collection tasks is that, the URL to perform a certain action is predictable and written to the incident context when an action is setup. This URL can be inserted to for eg: an HTML email. User clicks are recorded in the integration context and can be polled by Scheduled Commands / Generic Polling.
-This integration was integrated and tested with version 6.6 of XSOAR, but is expected to work from XSOAR version 6.2 and on 6.1 with Generic polling (instead of using the automation).
+This is a simple web-server that as of now, supports handling configurable user responses (like Yes/No/Maybe) and data collection tasks that can be used to fetch key value pairs. What makes it different from Data collection tasks is that, the URL to perform a certain action is predictable and written to the incident context when an action is setup.This URL can be inserted to for eg: an HTML email.  User clicks are  are recorded in the integration context and can be polled by Scheduled Commands/ Generic Polling
+This integration was integrated and tested with version 1.0 of XSOAR-Web-Server
 
 ## Configure XSOAR-Web-Server on Cortex XSOAR
 
@@ -9,17 +9,18 @@ This integration was integrated and tested with version 6.6 of XSOAR, but is exp
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | xsoar-external-url | The URL on which the user should send the response to. | True |
+    | Incident type |  | False |
+    | Long running instance |  | False |
     | Server Listening Port | The port on which the integration instance will listen | True |
-    | Long running instance | To enable the long running instance feature of XSOAR | True |
-4. Optionally enable the XSOAR proxy feature mentioned [here](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke)
+    |  | The URL on which the user should send the response to. | True |
 
+4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### xsoar-ws-setup-simple-action
 ***
-setup the web server to handle URL clicks for each action specified
+setup the web server to handle URL clicks for each action specified from single or multiple recipients
 
 
 #### Base Command
@@ -29,15 +30,19 @@ setup the web server to handle URL clicks for each action specified
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| actions | comma separated possible values for each action. | Required | 
+| actions | Comma separated possible values for each action. Mandatory for get requests. | Required | 
+| emailaddresses | Comma separated email addresses of the recipients. | Required | 
+| userstring | User defined string that has to be set from the playbook. This is  used to differentiate between multiple jobs running on the same incident. | Required | 
+| htmltemplate | template to construct the html mail. | Required | 
+| xsoarproxy | Used to specify what endpoint to submit the responses. If set to false, the  html template will have the endpoint containing the custom port. Possible values are: true, false. Default is true. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| WS-ActionDetails | unknown | The details of the URLs that are generated, along with the uuid | 
-| WS-ActionDetails.uuid | unknown | uuid of the setup actoin | 
+| WS-ActionDetails | unknown | The current status of the action's  configuration details | 
+| WS-ActionDetails.job_uuid | unknown | Subset of action details, added for ease of configuration in playbooks | 
 
 ### xsoar-ws-clear-cache
 ***
@@ -75,7 +80,7 @@ Show the details of all the setup actions from the backend
 There is no context output for this command.
 ### xsoar-ws-remove-action
 ***
-Remove a certain action from the backend
+Remove a certain job from the backend
 
 
 #### Base Command
@@ -85,7 +90,7 @@ Remove a certain action from the backend
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | uuid of the action to remove from the backend. | Required | 
+| uuid | Job's uuid. | Required | 
 
 
 #### Context Output
@@ -103,11 +108,52 @@ Gets the current status of an action that was setup; Used to track if the user r
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | uuid of the action to fetch from the backend. | Required | 
+| uuid | Job's uuid. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| WS-ActionStatus | unknown | The data structure holding the details of the fetched action | 
+| WS-ActionStatus | unknown | The current status of the action with some configuration data. Is used for polling the status | 
+| WS-ActionStatus.link_tracker | unknown | Subset of action status; tracked here to make it easier for configuring playbooks | 
+
+### xsoar-ws-set-job-complete
+***
+Set a job to complete. Usually called from the automation that is polling the result
+
+
+#### Base Command
+
+`xsoar-ws-set-job-complete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | Job's uuid. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### xsoar-ws-setup-form-submission
+***
+setup a form submission job that can take multiple values from multiple users
+
+
+#### Base Command
+
+`xsoar-ws-setup-form-submission`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| emailaddresses | Comma separated email addresses of the recipients. | Required | 
+| userstring | Optional user string that can be set from the playbook. Can be used to differentiate between multiple jobs running on the same incident. | Optional | 
+| htmltemplate | The template to build the email content. | Required | 
+| xsoarproxy | Used to specify what endpoint to submit the responses. If set to false, the  html template will have the endpoint containing the custom port. Default is true. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
