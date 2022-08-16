@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-
 ''' IMPORTS '''
 import re
 import json
@@ -46,6 +45,7 @@ TOKEN_FORM_HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",
     'Accept': 'application/json',
 }
+
 
 ''' HELPER FUNCTIONS '''
 
