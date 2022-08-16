@@ -12,14 +12,14 @@ API_VERSION = '2021-09-01'
 class AKSClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com', tenant_id: str = None,
-                 enc_key: str = None, auth_type: str = 'Device', redirect_uri: str = None, auth_code: str = None):
+                 enc_key: str = None, auth_type: str = 'Device Code', redirect_uri: str = None, auth_code: str = None):
         AUTH_TYPES_DICT: dict[str, Any] = {
-            'User Auth': {
+            'Authorization Code': {
                 'grant_type': AUTHORIZATION_CODE,
                 'resource': None,
                 'scope': 'https://management.azure.com/.default'
             },
-            'Device': {
+            'Device Code': {
                 'grant_type': DEVICE_CODE,
                 'resource': 'https://management.core.windows.net',
                 'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
@@ -163,7 +163,7 @@ def complete_auth(client: AKSClient) -> str:
 
 
 def test_connection(client: AKSClient) -> str:
-    if demisto.params().get('auth_type') == 'Device':
+    if demisto.params().get('auth_type') == 'Device Code':
         client.clusters_list_request()  # If fails, MicrosoftApiModule returns an error
     else:
         client.ms_client.get_access_token()
@@ -185,13 +185,13 @@ def test_module(client):
         test_module(client)
         return 'ok'
     except Exception:
-        if demisto.params().get('auth_type') == 'Device':
+        if demisto.params().get('auth_type') == 'Device Code':
             raise Exception("When using device code flow configuration, "
                             "Please enable the integration and run `!azure-ks-auth-start` and `!azure-ks-auth-complete` to "
                             "log in. You can validate the connection by running `!azure-ks-auth-test`\n"
                             "For more details press the (?) button.")
 
-        elif demisto.params().get('auth_type') == 'User Auth':
+        elif demisto.params().get('auth_type') == 'Authorization Code':
             raise Exception("When using user auth flow configuration, "
                             "Please enable the integration and run the !azure-ks-auth-test command in order to test it")
 
@@ -205,7 +205,7 @@ def main() -> None:
     try:
         client = AKSClient(
             tenant_id=params.get('tenant_id'),
-            auth_type=params.get('auth_type'),
+            auth_type=params.get('auth_type', 'Device Code'),
             auth_code=params.get('auth_code', {}).get('password'),
             redirect_uri=params.get('redirect_uri'),
             enc_key=params.get('credentials', {}).get('password'),

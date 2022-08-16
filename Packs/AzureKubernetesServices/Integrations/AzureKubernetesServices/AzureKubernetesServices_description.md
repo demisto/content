@@ -3,6 +3,7 @@ To use a self-configured Azure application, you need to add a [new Azure App Reg
 
 * The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
 * The application must allow **public client flows** (can be found under the *Authentication* section of the Azure Kubernetes Services app registrations).
+* The application must allow public client flows (found under the **Authentication** section of the app) for Device-code based authentications.
 
 In case you want to use Device code flow, you must allow public client flows (can be found under the **Authentication** section of the app).
 
