@@ -2,6 +2,7 @@
 from CommonServerPython import *
 
 from abc import ABC, abstractmethod
+from typing import Tuple
 
 SCRIPT_NAME = 'DeleteContent'
 ALWAYS_EXCLUDED = ['Base', 'ContentManagement', 'CleanUpContent', 'CommonDashboards', 'CommonScripts', 'CommonReports',
@@ -186,7 +187,7 @@ def search_for_all_entities(entity_api: EntityAPI) -> list:
 
 
 def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: List = [], included_ids: List = [],
-                            dry_run: bool = True) -> (list, list):
+                            dry_run: bool = True) -> Tuple[list, list]:
     """Search and delete entities with provided EntityAPI.
 
     Args:
