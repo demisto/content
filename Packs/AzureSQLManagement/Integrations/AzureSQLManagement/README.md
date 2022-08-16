@@ -5,7 +5,7 @@ Microsoft Azure SQL Management Integration manages the Auditing and Threat Polic
 # Self-Deployed Application
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
-The application must have *user_impersonation* permission and must allow public client flows (found under the **Authentication** section of the app).
+The application must have *user_impersonation* permission and must allow public client flows (found under the **Authentication** section of the app). And must allow public client flows (found under the **Authentication** section of the app) for Device-code based authentications.
 
 ## Authentication Using the  User-Authentication Flow (recommended)
 
