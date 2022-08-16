@@ -85,6 +85,11 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
+- defaultvalue: false
+  display: Using Microsoft GCC?
+  name: is_gcc
+  required: false
+  type: 8
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false

@@ -61,9 +61,8 @@ HEALTH_STATUS_TO_ENDPOINT_STATUS = {
     "Unknown": None,
 }
 
-SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
-SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
-SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH = 'https://api.securitycenter.microsoft.com/api/indicators/import'
+SECURITY_CENTER_RESOURCE_BASE_COMMERCIAL = 'https://api.securitycenter.microsoft.com'
+SECURITY_CENTER_RESOURCE_BASE_GCC = 'https://api-gcc-securitycenter.microsoft.us'
 GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
 INTEGRATION_NAME = 'Microsoft Defender ATP'
@@ -1106,7 +1105,7 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
+                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
@@ -1116,17 +1115,20 @@ class MsClient:
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
         self.max_alerts_to_fetch = max_fetch
+        self.security_center_resource_base = {True: SECURITY_CENTER_RESOURCE_BASE_COMMERCIAL,
+                                              False: SECURITY_CENTER_RESOURCE_BASE_GCC}[is_gcc]
+        self.security_center_indicator_endpoint = f'{self.security_center_resource_base}/api/indicators'
+        self.security_center_indicator_endpoint_batch = f'{self.security_center_indicator_endpoint}/import'
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
             should_use_security_center (bool): whether to use the security center's scope and resource
         """
-        if kwargs['should_use_security_center']:
+        if kwargs.pop('should_use_security_center', None):
             kwargs['scope'] = Scopes.security_center_apt_service
-            kwargs['resource'] = SECURITY_CENTER_RESOURCE
+            kwargs['resource'] = self.security_center_resource_base
         else:
             kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
-        kwargs.pop('should_use_security_center')
         return self.ms_client.http_request(*args, **kwargs)
 
     def offboard_machine(self, machine_id, comment):
@@ -1711,8 +1713,8 @@ class MsClient:
                 Returns:
                     List of responses.
                 """
-        cmd_url = urljoin(SECURITY_CENTER_INDICATOR_ENDPOINT,
-                          indicator_id) if indicator_id else SECURITY_CENTER_INDICATOR_ENDPOINT
+        cmd_url = urljoin(self.security_center_indicator_endpoint, indicator_id) if indicator_id \
+            else self.security_center_indicator_endpoint_batch
         params = {'$top': limit}
         resp = self.indicators_http_request(
             'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
@@ -1832,7 +1834,7 @@ class MsClient:
             recommendedActions=recommended_actions,
             rbacGroupNames=rbac_group_names
         ))
-        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
+        resp = self.indicators_http_request('POST', full_url=self.security_center_indicator_endpoint, json_data=body,
                                             url_suffix=None, should_use_security_center=True)
         return assign_params(values_to_ignore=[None], **resp)
 
@@ -1840,8 +1842,8 @@ class MsClient:
         """
         https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide
         """
-        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH, json_data=body,
-                                            url_suffix=None, should_use_security_center=True)
+        resp = self.indicators_http_request('POST', full_url=self.security_center_indicator_endpoint_batch,
+                                            json_data=body, url_suffix=None, should_use_security_center=True)
         return resp
 
     def update_indicator(
@@ -3836,7 +3838,7 @@ def sc_delete_indicator_command(client: MsClient, args: Dict[str, str]) -> Comma
           An indication of whether the indicator was deleted successfully.
     """
     indicator_id = args['indicator_id']
-    client.delete_indicator(indicator_id, SECURITY_CENTER_INDICATOR_ENDPOINT, use_security_center=True)
+    client.delete_indicator(indicator_id, client.security_center_indicator_endpoint, use_security_center=True)
     return CommandResults(readable_output=f'Indicator ID: {indicator_id} was successfully deleted')
 
 
@@ -4517,9 +4519,8 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     Args:
         args: the arguments required to the command being called, under cmd
         cmd: the command to schedule by after the current command
-        upload_function: the function that initiates the uploading to the API
         results_function: the function that retrieves the status of the previously initiated upload process
-        uploaded_item: the type of item being uploaded
+        client: a Microsoft Client object
 
     Returns:
 
@@ -4830,6 +4831,7 @@ def main():  # pragma: no cover
     max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
+    is_gcc = params.get('is_gcc', False)
 
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
@@ -4849,7 +4851,8 @@ def main():  # pragma: no cover
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
-            max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key
+            max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+            is_gcc=is_gcc,
         )
         if command == 'test-module':
             test_module(client)
