@@ -43,12 +43,13 @@ class Client(BaseClient):
         return super()._http_request(headers=self.headers, method=method, params=params,
                                      url_suffix=url_suffix, resp_type=resp_type, ok_codes=ok_codes)  # type: ignore[misc]
 
-    def get_events_request(self):
+    def get_events_request(self, params):
         return self.http_request(
             method='GET',
             url_suffix='/events',
             resp_type='response',
             ok_codes=[200, 204],
+            params=params
         )
 
 
@@ -72,30 +73,33 @@ def validate_limit(limit: Optional[int]):
 
 
 def fetch_events(client: Client, max_fetch: Optional[int] = None, first_fetch_time: str = '3 days',
-                 last_run: dict = None) -> List[Dict]:
+                 last_run: dict = None) -> tuple[List[Dict], dict]:
     """
     Fetches events from the KnowBe4_KMSAT queue.
     """
     events: List[Dict] = []
     under_max_fetch = True
-    marker = last_run.get('marker') if last_run else {}
-    if not marker and first_fetch_time:
-        since = first_fetch_time.strftime(DATE_FORMAT)[:-4] + 'Z'
+    page = 0
+    query_params = last_run.get('page') if last_run else {'page': 0}
+    # if not marker and first_fetch_time:
+    #     since = first_fetch_time.strftime(DATE_FORMAT)[:-4] + 'Z'
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
     while under_max_fetch:
-        response = client.get_events_request()
+        response = client.get_events_request(params=query_params)
         if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
             break
         fetched_events = response.json().get('data') or []
         demisto.info(f'fetched events length: ({len(fetched_events)})')
         demisto.debug(f'fetched events: ({fetched_events})')
         events.extend(fetched_events)
+        page = events[-1].get('page', 0)
+        query_params = {'page': page + 1}
         if max_fetch:
             under_max_fetch = len(events) < max_fetch
-        marker = events[-1].get('page', 0)
-        query_params = {'marker': marker}
 
-    return events
+    new_last_run = {'page': page + 1} if page
+    demisto.info(f'Done fetching {len(events)} events, Setting new_last_run = {new_last_run}.')
+    return events, new_last_run
 
 
 def test_module(client: Client, args) -> str:
