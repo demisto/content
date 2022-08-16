@@ -1,5 +1,4 @@
 Collects Auth and Audit events for Duo using the API.
-This integration was integrated and tested with version xx of Duo Event Collector
 
 ## Configure Duo Event Collector on Cortex XSOAR
 
