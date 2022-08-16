@@ -1,5 +1,7 @@
 import pytest
 
+from MicrosoftGraphUser import get_password
+
 users_list_mock = [
     {
         'id': '08779ba7-f3ed-4344-b9d7-98b9911ea8a8',
@@ -163,7 +165,8 @@ def test_suppress_errors(mocker):
         assert results == test['expected_result']
 
 
-def test_change_on_premise_password_success(requests_mock):
+@pytest.mark.parametrize('password_field', ('password', 'nonsensitive_password'))
+def test_change_on_premise_password_success(requests_mock, password_field: str):
     from MicrosoftGraphUser import (change_password_user_on_premise_command, MsGraphClient)
     password = 'new_password'
     expected_output = 'The password of user user has been changed successfully.'
@@ -182,16 +185,21 @@ def test_change_on_premise_password_success(requests_mock):
 
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', base_url, 'verify', 'proxy',
                            'self_deployed', 'redirect_uri', 'auth_code', True)
-    output, _, _ = change_password_user_on_premise_command(client=client, args={'user': 'user', 'password': password})
+    other_password_field = {'password': 'nonsensitive_password', 'nonsensitive_password': 'password'}[password_field]
+    output, _, _ = change_password_user_on_premise_command(client=client, args={'user': 'user',
+                                                                                password_field: password,
+                                                                                other_password_field: ''})
     assert mocked_password_change_request.call_count == 1
     assert output == expected_output
 
 
-@pytest.mark.parametrize('user,password', [('', ''),
-                                           ('user', ''),
-                                           ('', 'password'),
-                                           ])
-def test_change_on_premise_password_missing_arg(requests_mock, user: str, password: str):
+@pytest.mark.parametrize('user,password,nonsensitive_password', (
+        ('', '', ''),
+        ('user', '', ''),
+        ('', 'password', ''),
+        ('', '', 'nonsensitive_password'),
+))
+def test_change_on_premise_password_missing_arg(requests_mock, user: str, password: str, nonsensitive_password: str):
     """
     Given
             a MSGraphClient
@@ -207,4 +215,33 @@ def test_change_on_premise_password_missing_arg(requests_mock, user: str, passwo
                            'self_deployed', 'redirect_uri', 'auth_code', True)
 
     with pytest.raises(DemistoException):
-        change_password_user_on_premise_command(client=client, args={'user': user, 'password': password})
+        change_password_user_on_premise_command(client=client, args={'user': user, 'password': password,
+                                                                     'nonsensitive_password': nonsensitive_password})
+
+
+@pytest.mark.parametrize('args', [{'password': 'aa', 'nonsensitive_password': 'aa'},
+                                  {'password': 'aa'},
+                                  {'nonsensitive_password': 'aa'}])
+def test_get_password_valid(args):
+    """
+    Given
+    - arguments for the script
+    When
+    - running the script on a password locked file
+    Then
+    - ensure that only one of the arguments 'password' or 'nonsensitive_password' is given or if they are identical.
+    """
+    assert get_password(args) == 'aa'
+
+
+def test_get_password_invalid():
+    """
+    Given
+    - arguments for the script
+    When
+    - running the script on a password locked file
+    Then
+    - ensure that only one of the arguments 'password' or 'nonsensitive_password' is given or if they are identical.
+    """
+    with pytest.raises(ValueError):
+        get_password({'password': 'aa', 'nonsensitive_password': 'bb'})

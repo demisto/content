@@ -341,13 +341,32 @@ def change_password_user_saas_command(client: MsGraphClient, args: Dict):
     return human_readable, {}, {}
 
 
-def change_password_user_on_premise_command(client: MsGraphClient, args: Dict):
+def get_password(args: dict[str, Any]):
+    """
+    Get the file's password argument inserted by the user. The password can be inserted either in the sensitive
+    argument (named 'password') or nonsensitive argument (named 'nonsensitive_password). This function asserts these
+    arguments are used properly and raises an error if both are inserted and have a different value.
+    so this
+    Args:
+        args: script's arguments
+    Returns:
+        the password given for the file.
+    """
+    sensitive_password = args.get('password')
+    nonsensitive_password = args.get('nonsensitive_password')
+    if sensitive_password and nonsensitive_password and sensitive_password != nonsensitive_password:
+        raise ValueError('Please use either the password argument or the non_sensitive_password argument, '
+                         'but not both.')
+    return sensitive_password or nonsensitive_password
+
+
+def change_password_user_on_premise_command(client: MsGraphClient, args: dict[str, Any]):
     # changes password for on-premise accounts. See change_password_user_saas_command for the SAAS equivalent.
     user = str(args.get('user', ''))
-    password = str(args.get('password', ''))
+    password = get_password(args) or '' # either password or nonsensitive_password may be used
 
     if not all((user, password)):
-        raise DemistoException('Username and password cannot be empty.')
+        raise DemistoException('Username and (one of [password, nonsensitive_password]) cannot be empty.')
 
     client.password_change_user_on_premise(user, password)
 
