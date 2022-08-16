@@ -1,17 +1,7 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
+import datetime
 import json
 import io
+from KnowBe4KMSATEventCollector import Client
 
 
 def util_load_json(path):
@@ -19,24 +9,50 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+MOCK_ENTRY = util_load_json('test_data/mock_event.json')
+BASE_URL = 'https://api.events.knowbe4.com'
 
-    Checks the output of the command function with the expected output.
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_test_module(requests_mock):
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    Given:
+        - test-module call
+    When:
+        - A response with an OK status_code is retrieved from the API call.
+    Then:
+        - Make sure 'ok' is returned.
+    """
+    from KnowBe4KMSATEventCollector import test_module
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
+    requests_mock.get(
+        f'{BASE_URL}/events',
+        json=MOCK_ENTRY
+    )
+    assert test_module(Client(base_url=BASE_URL)) == 'ok'
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+def test_fetch_events(requests_mock):
+    """
+    Given:
+        - fetch-events call
+    When:
+        - Calling fetch events:
+                1. without marking, but with first_fetch
+                2. only marking from last_run
+    Then:
+        - Make sure 3 events returned.
+        - Verify the new lastRun is calculated correctly.
+    """
+    from KnowBe4KMSATEventCollector import fetch_events
+
+    last_run = {'page': '0'}
+    requests_mock.get(
+        f'{BASE_URL}/logs',
+        json=MOCK_ENTRY
+    )
+
+    events, new_last_run = fetch_events(Client(base_url=BASE_URL), last_run=last_run,
+                                        first_fetch_time=datetime.strptime("2020-01-01", "%Y-%m-%d"), max_fetch=2000)
+    assert len(events) == 3
+    assert events[0].get('id') == "786a515c-1cbd-4a8c-a94a-61ad877c893c"
+    assert new_last_run['page'] == 2

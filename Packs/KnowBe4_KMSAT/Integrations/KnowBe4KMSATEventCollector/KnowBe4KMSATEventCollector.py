@@ -43,7 +43,7 @@ class Client(BaseClient):
         return super()._http_request(headers=self.headers, method=method, params=params,
                                      url_suffix=url_suffix, resp_type=resp_type, ok_codes=ok_codes)  # type: ignore[misc]
 
-    def get_events_request(self, params):
+    def get_events_request(self, params: dict = None):
         return self.http_request(
             method='GET',
             url_suffix='/events',
@@ -72,17 +72,16 @@ def validate_limit(limit: Optional[int]):
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_events(client: Client, max_fetch: Optional[int] = None, first_fetch_time: str = '3 days',
-                 last_run: dict = None) -> tuple[List[Dict], dict]:
+def fetch_events(client: Client, first_fetch_time: Optional[datetime], max_fetch: Optional[int] = None,
+                 last_run: dict[str, int] = None) -> tuple[List[Dict], dict[str, int]]:
     """
     Fetches events from the KnowBe4_KMSAT queue.
     """
+    query_params = last_run if last_run else {'page': 0}
+    query_params['per_page'] = 100
     events: List[Dict] = []
     under_max_fetch = True
     page = 0
-    query_params = last_run.get('page') if last_run else {'page': 0}
-    # if not marker and first_fetch_time:
-    #     since = first_fetch_time.strftime(DATE_FORMAT)[:-4] + 'Z'
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
     while under_max_fetch:
         response = client.get_events_request(params=query_params)
@@ -92,23 +91,22 @@ def fetch_events(client: Client, max_fetch: Optional[int] = None, first_fetch_ti
         demisto.info(f'fetched events length: ({len(fetched_events)})')
         demisto.debug(f'fetched events: ({fetched_events})')
         events.extend(fetched_events)
-        page = events[-1].get('page', 0)
-        query_params = {'page': page + 1}
+        page = response.get('meta').get('current_page')
+        query_params['page'] = page + 1
         if max_fetch:
             under_max_fetch = len(events) < max_fetch
 
-    new_last_run = {'page': page + 1} if page
+    new_last_run: dict[str, int] = {'page': page + 1} if page else {'page': 0}
     demisto.info(f'Done fetching {len(events)} events, Setting new_last_run = {new_last_run}.')
     return events, new_last_run
 
 
-def test_module(client: Client, args) -> str:
+def test_module(client: Client) -> str:
     """
     Testing we have a valid connection to Saas-Security.
     """
-    # if 401 will be raised, that means that the credentials are invalid an exception will be raised.
-    # client.get_token_request()
-    # return 'ok'
+    client.get_events_request()
+    return 'ok'
 
 
 ''' MAIN FUNCTION '''
@@ -124,7 +122,7 @@ def main() -> None:
     base_url: str = params['url'].rstrip('/')
     api_key = params.get('credentials', {}).get('password')
     verify_certificate = not params.get('insecure', False)
-    first_fetch_time = params.get('first_fetch', '3 days').strip()
+    first_fetch_time = arg_to_datetime(params.get('first_fetch', '3 days'))
     fetch_limit = arg_to_number(args.get('limit') or params.get('fetch_limit', '1000'))
     validate_limit(fetch_limit)
     proxy = demisto.params().get('proxy', False)
@@ -140,7 +138,7 @@ def main() -> None:
             proxy=proxy)
 
         if command == 'test-module':
-            return_results(test_module(client, args))
+            return_results(test_module(client))
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
             events, last_run = fetch_events(client=client, first_fetch_time=first_fetch_time,
