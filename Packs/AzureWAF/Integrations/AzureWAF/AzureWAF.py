@@ -31,12 +31,12 @@ class AzureWAFClient:
                  enc_key=None, auth_code=None, redirect_uri=None,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
         AUTH_TYPES_DICT: dict = {
-            'User Auth': {
+            'Authorization Code': {
                 'grant_type': AUTHORIZATION_CODE,
                 'resource': None,
                 'scope': 'https://management.azure.com/.default'
             },
-            'Device': {
+            'Device Code': {
                 'grant_type': DEVICE_CODE,
                 'resource': 'https://management.core.windows.net',
                 'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
@@ -128,7 +128,7 @@ class AzureWAFClient:
 
 
 def test_connection(client: AzureWAFClient, params: Dict):
-    if demisto.params().get('auth_type') == 'Device':
+    if demisto.params().get('auth_type') == 'Device Code':
         client.get_policy_list_by_resource_group_name(client.resource_group_name)  # If fails, MicrosoftApiModule returns an error
     else:
         client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
@@ -357,13 +357,13 @@ def test_module(client, params):
         test_connection(client, params)
         return "ok"
     except Exception:
-        if demisto.params().get('auth_type') == 'Device':
+        if demisto.params().get('auth_type') == 'Device Code':
             raise Exception("When using device code flow configuration, "
                             "Please enable the integration and run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to "
                             "log in. You can validate the connection by running `!azure-waf-auth-test`\n"
                             "For more details press the (?) button.")
 
-        elif demisto.params().get('auth_type') == 'User Auth':
+        elif demisto.params().get('auth_type') == 'Authorization Code':
             raise Exception("When using user auth flow configuration, "
                             "Please enable the integration and run the !azure-waf-auth-test command in order to test it")
 
@@ -389,7 +389,7 @@ def main() -> None:
 
     client = AzureWAFClient(
         tenant_id=params.get('tenant_id', ''),
-        auth_type=params.get('auth_type', ''),
+        auth_type=params.get('auth_type', 'Device Code'),
         auth_code=params.get('auth_code', {}).get('password', ''),
         redirect_uri=params.get('redirect_uri', ''),
         enc_key=params.get('credentials', {}).get('password', ''),
