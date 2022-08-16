@@ -169,6 +169,7 @@ class Metadata(object):
     DISPLAYED_IMAGES = 'displayedImages'
     EMAIL = 'email'
     URL = 'url'
+    DISABLE_MONTHLY = 'disableMonthly'
 
 
 class PackFolders(enum.Enum):

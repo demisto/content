@@ -1,9 +1,13 @@
 from pathlib import Path
+from typing import Optional
 
 
 class InvalidPackException(Exception):
     def __init__(self, pack_name: str, reason: str):
         self.message = f'invalid pack {pack_name}: {reason}'
+
+    def __str__(self):
+        return self.message
 
 
 class BlankPackNameException(InvalidPackException):
@@ -36,6 +40,9 @@ class NonDictException(Exception):
         self.message = path
         super().__init__(self.message)
 
+    def __str__(self):
+        return self.message
+
 
 class NoTestsConfiguredException(Exception):
     """ raised when an integration has no tests configured """
@@ -45,11 +52,17 @@ class NoTestsConfiguredException(Exception):
                        f'This is not an error! Tests for this integration are to be taken from the conf.json instead.'
         super().__init__(self.message)
 
+    def __str__(self):
+        return self.message
+
 
 class NotUnderPackException(Exception):
     def __init__(self, path: Path):
         self.message = f'Could not find a pack for {str(path)}'
         super().__init__(self.message)
+
+    def __str__(self):
+        return self.message
 
 
 class NothingToCollectException(Exception):
@@ -57,23 +70,34 @@ class NothingToCollectException(Exception):
         self.message = f'Nothing to collect for file {str(path)}: {reason}'
         super().__init__(self.message)
 
+    def __str__(self):
+        return self.message
+
 
 class InvalidTestException(Exception):
     def __init__(self, test_name: str, reason: str):
         self.message = f'invalid test {test_name}: {reason}'
 
+    def __str__(self):
+        return self.message
 
-class TestMissingFromIdSetException(Exception):
+
+class TestMissingFromIdSetException(InvalidTestException):
     def __init__(self, test_name: str):
-        self.message = f'Test {test_name} is missing from the id-set'
-        super().__init__(self.message)
+        super().__init__(test_name, 'missing from the id-set')
 
 
 class SkippedTestException(InvalidTestException):
-    def __init__(self, test_name: str, skip_reason: str):
-        super().__init__(test_name, f'Test {test_name} is skipped: {skip_reason}')
+    def __init__(self, test_name: str, skip_place: str, skip_reason: Optional[str] = None):
+        """
+        :param test_name: the name of the test that was skipped
+        :param skip_place: where the test was skipped (conf.json or pack_ignore)
+        :param skip_reason: the reason the test was skipped (if available, mostly when skipped in conf.json)
+        """
+        skip_reason_str = f': {skip_reason}' if skip_reason else ''
+        super().__init__(test_name, f'test is skipped in {skip_place}{skip_reason_str}')
 
 
 class PrivateTestException(InvalidTestException):
     def __init__(self, test_name: str):
-        super().__init__(test_name, f'Test {test_name} is private')
+        super().__init__(test_name, 'test is private')
