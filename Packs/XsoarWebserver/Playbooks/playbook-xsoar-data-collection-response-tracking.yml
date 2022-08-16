@@ -225,7 +225,7 @@ tasks:
       id: 84e2bf73-3b56-483a-88c3-0fc2a777ad5d
       iscommand: false
       name: Schedule Polling
-      scriptName: xsoar-ws-poll-status_v2
+      scriptName: xsoar-ws-poll-status
       tags:
       - EmailTimeout
       type: regular
