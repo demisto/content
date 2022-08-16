@@ -1155,7 +1155,9 @@ def run_enrichment_mechanism(service, integration_context, mapper):
     except Exception as e:
         err = 'Caught an exception while executing the enriching fetch mechanism. Additional Info: {}'.format(str(e))
         demisto.error(err)
-        raise e
+        # we throw excpetion only if there is no incident to create
+        if not incidents:
+            raise e
 
     finally:
         store_incidents_for_mapping(incidents, integration_context)
@@ -2577,7 +2579,7 @@ def get_store_data(service):
     for store in stores:
         store = service.kvstore[store]
         query = build_kv_store_query(store, args)
-        if 'limit' not in query:
+        if isinstance(query, (str, unicode)):
             query = {'query': query}
         yield store.data.query(**query)
 
@@ -2624,6 +2626,7 @@ def main():
         connection_args['username'] = username
         connection_args['password'] = password
         connection_args['autologin'] = True
+        connection_args['basic'] = True
 
     if use_requests_handler:
         handle_proxy()

@@ -6,3 +6,9 @@ ignore=PB106
 
 [file:playbook-ServiceNow_Change_Management.yml]
 ignore=PB106
+
+[known_words]
+Jira
+afetch
+CSV
+FW

@@ -11,6 +11,9 @@ from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detai
                              set_library_log_hide_sensitive_data, EXTENDED)
 from ldap3.utils.conv import escape_filter_chars
 
+CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:ECDH+AES:DH+AES:' \
+                 'RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
+
 # global connection
 conn: Optional[Connection] = None
 
@@ -22,7 +25,7 @@ conn: Optional[Connection] = None
 DEFAULT_OUTGOING_MAPPER = "User Profile - Active Directory (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - Active Directory (Incoming)"
 
-COOMON_ACCOUNT_CONTROL_FLAGS = {
+COMMON_ACCOUNT_CONTROL_FLAGS = {
     512: "Enabled Account",
     514: "Disabled account",
     544: "Password Not Required",
@@ -81,7 +84,11 @@ def initialize_server(host, port, secure_connection, unsecure):
 
     if secure_connection == "TLS":
         demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
-        tls = Tls(validate=ssl.CERT_NONE)
+        if unsecure:
+            # Add support for all CIPHERS_STRING
+            tls = Tls(validate=ssl.CERT_NONE, ciphers=CIPHERS_STRING)
+        else:
+            tls = Tls(validate=ssl.CERT_NONE)
         if port:
             return Server(host, port=port, use_ssl=unsecure, tls=tls)
         return Server(host, use_ssl=unsecure, tls=tls)
@@ -90,15 +97,19 @@ def initialize_server(host, port, secure_connection, unsecure):
         # intialize server with ssl
         # port is configured by default as 389 or as 636 for LDAPS if not specified in configuration
         demisto.debug(f"initializing sever with SSL (unsecure: {unsecure}). port: {port or 'default(636)'}")
+        # If Trust any certificate is false
         if not unsecure:
             demisto.debug("will require server certificate.")
             tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'))
             if port:
                 return Server(host, port=port, use_ssl=True, tls=tls)
             return Server(host, use_ssl=True, tls=tls)
-        if port:
-            return Server(host, port=port, use_ssl=True)
-        return Server(host, use_ssl=True)
+        else:
+            # Add support for all CIPHERS_STRING
+            tls = Tls(ciphers=CIPHERS_STRING)
+            if port:
+                return Server(host, port=port, use_ssl=True, tls=tls)
+            return Server(host, use_ssl=True, tls=tls)
     demisto.debug(f"initializing server without secure connection. port: {port or 'default(389)'}")
     if port:
         return Server(host, port=port)
@@ -398,7 +409,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
     Args:
         search_base: the location in the DIT where the search will start
         search_filter: LDAP query string
-        attributes: the attributes to specify for each entrxy found in the DIT
+        attributes: the attributes to specify for each entry found in the DIT
 
     """
     assert conn is not None
@@ -616,7 +627,7 @@ def search_users(default_base_dn, page_size):
 
         # display a literal translation of the numeric account control flag
         if args.get('user-account-control-out', '') == 'true':
-            user['userAccountControl'] = COOMON_ACCOUNT_CONTROL_FLAGS.get(user_account_control) or user_account_control
+            user['userAccountControl'] = COMMON_ACCOUNT_CONTROL_FLAGS.get(user_account_control) or user_account_control
 
     demisto_entry = {
         'ContentsFormat': formats['json'],
@@ -1626,6 +1637,57 @@ def get_mapping_fields_command(search_base):
 '''
 
 
+def set_password_not_expire(default_base_dn):
+    args = demisto.args()
+    sam_account_name = args.get('username')
+    pwd_n_exp = argToBoolean(args.get('value'))
+
+    if not sam_account_name:
+        raise Exception("Missing argument - You must specify a username (sAMAccountName).")
+
+    # Query by sAMAccountName
+    sam_account_name = escape_filter_chars(sam_account_name)
+    query = "(&(objectClass=User)(objectCategory=person)(sAMAccountName={}))".format(sam_account_name)
+    entries = search_with_paging(query, default_base_dn, attributes='userAccountControl')
+
+    if not check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name):
+        return_error(f"sAMAccountName {sam_account_name} was not found.")
+
+    if user := entries.get('flat'):
+        user = user[0]
+        if user_account_control := user.get('userAccountControl'):
+            user_account_control = user_account_control[0]
+
+        # Check if UAC flag for "Password Never Expire" (0x10000) is set to True or False:
+        if pwd_n_exp:
+            # Sets the bit 16 to 1
+            user_account_control |= 1 << 16
+            content_output = (f"AD account {sam_account_name} has set \"password never expire\" attribute. "
+                              f"Value is set to True")
+        else:
+            # Clears the bit 16 to 0
+            user_account_control &= ~(1 << 16)
+            content_output = (f"AD account {sam_account_name} has cleared \"password never expire\" attribute. "
+                              f"Value is set to False")
+
+        attribute_name = 'userAccountControl'
+        attribute_value = user_account_control
+        dn = user_dn(sam_account_name, default_base_dn)
+        modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]}
+
+        # Modify user
+        modify_object(dn, modification)
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': content_output
+        }
+        demisto.results(demisto_entry)
+
+    else:
+        raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
+
+
 def main():
     """ INSTANCE CONFIGURATION """
     params = demisto.params()
@@ -1718,6 +1780,9 @@ def main():
 
         if command == 'ad-search':
             free_search(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
+
+        if command == 'ad-modify-password-never-expire':
+            set_password_not_expire(DEFAULT_BASE_DN)
 
         if command == 'ad-expire-password':
             expire_user_password(DEFAULT_BASE_DN)

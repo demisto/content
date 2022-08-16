@@ -2,17 +2,9 @@ id: Detonate File - SNDBOX
 version: -1
 name: Detonate File - SNDBOX
 fromversion: 5.0.0
-description: |-
-  Detonates a File using the SNDBOX.
-  Advanced Threat Defense supports the following File Types:
-  Microsoft (2003 and earlier)
-  doc, dot, xls, csv, xlt, xlm, ppt, pot, pps
-
-  Microsoft (2007 and later):
-  docx, docm, dotx, dotm, dotm, xlsx, xlsm, xltx, xltm, xlsb, xla, xlam, iqy, pptx, pptm, potx, ppsx, xml
-
-  Other:
-  pe32, rtf, pdf, vbs, vbe, ps1, js, lnk, html, bat
+description: Deprecated. No available replacement.
+deprecated: true
+hidden: true
 starttaskid: "0"
 tasks:
   "0":

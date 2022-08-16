@@ -1,23 +1,37 @@
+import time
+import jwt
 from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
-API_KEY = demisto.params().get('apikey')
 UPDATE_REQ_RESPONSE = {'result': 'updated successfully!'}
 
 
+def get_jwt_token(app_user_id: str, app_user_secret: str, current_time: float = time.time(), expire_time_sec: int = 60):
+    payload = {
+        "issuer": app_user_id,  # REQUIRED - Generated in the UI
+        "iat": current_time,  # REQUIRED - Issued time - current epoch timestamp
+        "exp": current_time + expire_time_sec  # OPTIONAL - Expire time - token expiry (default 30 seconds from iat)
+    }
+    return jwt.encode(payload, app_user_secret, algorithm="HS256")
+
+
 class Client(BaseClient):
+    def __init__(self, app_user_id, app_user_secret, *args, **kwargs):
+        self.app_user_id = app_user_id
+        self.app_user_secret = app_user_secret
+        super().__init__(*args, **kwargs)
+
     def get_status_http_request(self):
         """
         initiates an http request to get the service status
         """
-        params = {'apikey': API_KEY}
         response = self._http_request(
             method='GET',
             url_suffix='getBootStatus',
-            params=params
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)}
         )
         return response
 
@@ -25,15 +39,17 @@ class Client(BaseClient):
         """
         initiates an http request to get the upn by email or sam account
         """
-        params = {'apikey': API_KEY, 'domain': domain}
+        params = {'domain': domain}
         if email:
             params['email'] = email
         else:
             params['sam_account'] = sam_account
+
         response = self._http_request(
             method='GET',
             url_suffix='getUPN',
-            params=params
+            params=params,
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)}
         )
         return response['user_principal_name']
 
@@ -41,11 +57,11 @@ class Client(BaseClient):
         """
         initiates an http request to get the user entity's risk from Silverfort DB
         """
-        params = {'apikey': API_KEY, 'user_principal_name': upn}
         response = self._http_request(
             method='GET',
             url_suffix='getEntityRisk',
-            params=params
+            params={'user_principal_name': upn},
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)}
         )
         return response
 
@@ -53,11 +69,11 @@ class Client(BaseClient):
         """
         initiates an http request to get the resource entity's risk from Silverfort DB
         """
-        params = {'apikey': API_KEY, 'resource_name': resource_name, 'domain_name': domain_name}
         response = self._http_request(
             method='GET',
             url_suffix='getEntityRisk',
-            params=params
+            params={'resource_name': resource_name, 'domain_name': domain_name},
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)}
         )
         return response
 
@@ -65,13 +81,11 @@ class Client(BaseClient):
         """
         initiates an http request to update the user entity's risk in Silverfort DB
         """
-        params = {'apikey': API_KEY}
-        data = {'user_principal_name': upn, 'risks': risks}
         response = self._http_request(
             method='POST',
             url_suffix='updateEntityRisk',
-            params=params,
-            json_data=data
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)},
+            json_data={'user_principal_name': upn, 'risks': risks}
         )
         return response
 
@@ -79,13 +93,11 @@ class Client(BaseClient):
         """
         initiates an http request to update resource entity's risk in Silverfort DB
         """
-        params = {'apikey': API_KEY}
-        data = {'resource_name': resource_name, 'domain_name': domain_name, 'risks': risks}
         response = self._http_request(
             method='POST',
             url_suffix='updateEntityRisk',
-            params=params,
-            json_data=data
+            json_data={'resource_name': resource_name, 'domain_name': domain_name, 'risks': risks},
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)}
         )
         return response
 
@@ -117,7 +129,7 @@ def test_module(client):
         'ok' if test passed, anything else will fail the test.
     """
     result = client.get_status_http_request()
-    if result == "True":
+    if result["status"] == "Active" or result["status"] == "Standby":
         return 'ok'
     else:
         return 'Something went wrong with the risk api checking'
@@ -191,18 +203,23 @@ def update_resource_entity_risk_command(client, args):
         return "Couldn't update the resource entity's risk"
 
 
-def main():
+def main():  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     # get the service API url
-    base_url = urljoin(demisto.params().get('url'), '/riskapi')
+    base_url = urljoin(demisto.params().get('url'), '/v1/public')
+    verify_certificate = not demisto.params().get('insecure', False)
+    api_key = demisto.params().get('apikey')
+    app_user_id, app_user_secret = api_key.split(":")
+    if not app_user_id or not app_user_secret:
+        return_error('Verify the API KEY parameter is correct')
 
-    verify_certificate = demisto.params().get('insecure', True)
-
-    LOG(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(
+            app_user_id=app_user_id,
+            app_user_secret=app_user_secret,
             base_url=base_url,
             verify=verify_certificate)
 
@@ -232,7 +249,7 @@ def main():
         elif 'riskapi' not in e.args[0]:
             return_error(message=error_message + str(e.args[0]))
         else:
-            return_error(message=error_message + 'Something went wrong')
+            return_error(error_message + 'Something went wrong')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

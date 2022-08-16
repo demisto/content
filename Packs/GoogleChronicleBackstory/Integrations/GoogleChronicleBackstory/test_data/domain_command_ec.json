@@ -3,7 +3,8 @@
     "Indicator": "test.com",
     "Type": "domain",
     "Vendor": "Google Chronicle Backstory",
-    "Score": 3
+    "Score": 3,
+    "Reliability": "B - Usually reliable"
   },
   "Domain(val.Name && val.Name == obj.Name)": {
     "Name": "test.com",

@@ -2,6 +2,7 @@ category: IT Services
 commonfields:
   id: Azure Active Directory Identity Protection
   version: -1
+deprecated: true
 configuration:
 - display: Application ID (Client ID for Client credentials mode)
   hidden: false
@@ -84,8 +85,8 @@ configuration:
   name: fetch_user_principal_name
   required: false
   type: 0
-description: Returns information from the Azure Active Directory Identity Protection service.
-display: Azure Active Directory Identity Protection (Beta)
+description: Deprecated. Use Microsoft Graph Identity and Access instead.
+display: Azure Active Directory Identity Protection  (Deprecated)
 name: Azure Active Directory Identity Protection
 script:
   commands:
@@ -476,7 +477,7 @@ script:
       the targeted user's risk level to none.
     execution: false
     name: azure-ad-identity-protection-risky-user-dismiss
-  dockerimage: demisto/crypto:1.0.0.28507
+  dockerimage: demisto/crypto:1.0.0.31577
   feed: false
   isfetch: true
   longRunning: false

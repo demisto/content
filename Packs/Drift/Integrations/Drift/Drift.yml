@@ -1,0 +1,94 @@
+commonfields:
+  id: Drift
+  version: -1
+name: Drift
+display: Drift
+category: Utilities
+description: Drift integration to fetch, modify, create and delete contacts within the Drift Plattform's Contact API.
+configuration:
+- display: Access Token
+  displaypassword: Access Token
+  hiddenusername: true
+  name: access_token
+  type: 9
+  required: true
+  additionalinfo: API Access Token
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: drift-get-contact
+    arguments:
+    - name: id
+      description: ID of the contact (overrides the email input).
+      type: textArea
+    - name: email
+      description: Email of the contact.
+      type: textArea
+    outputs:
+    - contextPath: Drift.Contacts.id
+      description: ID of the contact
+      type: number
+    - contextPath: Drift.Contacts.createdAt
+      description: Created at timestamp (Epoch Unix Timestamp)
+      type: number
+    - contextPath: Drift.Contacts.Attributes
+      description: Attributes of the contact (JSON dict).
+    description: Retrieve a contact using their email address (for multiple) or ID (for single).
+  - name: drift-update-contact
+    arguments:
+    - name: id
+      required: true
+      description: Contact ID
+      type: textArea
+    - name: attributes
+      required: true
+      description: Attributes to be updates
+      type: keyValue
+    outputs:
+    - contextPath: Drift.Contacts.id
+      description: ID of the created contact
+      type: number
+    - contextPath: Drift.Contacts.createdAt
+      description: Created at timestamp (Epoch Unix Timestamp)
+      type: number
+    - contextPath: Drift.Contacts.attributes
+      description: Attributes of the contact (JSON dict).
+    description: Patch Contact Updates using contact ID
+  - name: drift-delete-contact
+    arguments:
+    - name: id
+      required: true
+      description: Contact ID
+      type: textArea
+    description: Delete Contact using contact ID
+  - name: drift-post-contact
+    arguments:
+    - name: email
+      required: true
+      description: New Contact Email
+      type: textArea
+    outputs:
+    - contextPath: Drift.Contacts.id
+      description: ID of the created contact
+      type: number
+    - contextPath: Drift.Contacts.createdAt
+      description: Created at timestamp (Epoch Unix Timestamp)
+      type: number
+    - contextPath: Drift.Contacts.Attributes
+      description: Attributes of the contact (JSON dict).
+    description: 'Post New Contact using a new contact Email '
+  dockerimage: demisto/python3:3.10.5.31928
+  runonce: false
+  subtype: python3
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

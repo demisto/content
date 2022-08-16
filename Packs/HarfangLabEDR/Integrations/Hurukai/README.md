@@ -10,18 +10,18 @@ This integration was integrated and tested with version 2.13.7+ of Hurukai
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | API URL |  | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | API Key |  | False |
+    | API URL | URL of the EDR Manager | True |
+    | Fetch incidents | Indicates whether to fetch incidents or not | False |
+    | Incident type | Incident type that must be associated to the retrieved incidents | False |
+    | API Key | API key provided by the EDR Manager | False |
     | Long running instance |  | False |
-    | Incidents Fetch Interval |  | False |
+    | Incidents Fetch Interval | Time interval for polling the EDR Manager to retrieve incidents | False |
     | Fetch alerts with type | Comma-separated list of types of alerts to fetch \(sigma, yara, hlai, vt, ransom, ioc, glimps, orion...\). | False |
-    | Minimum severity of alerts to fetch |  | True |
-    | Fetch alerts with status (ACTIVE, CLOSED) |  | False |
+    | Minimum severity of alerts to fetch | Minimum severity level associated to the incidents that are retrieved. | True |
+    | Fetch alerts with status (ACTIVE, CLOSED) | **ACTIVE** means New, Investigating or Probable False Positive, **CLOSED** means Closed or False Positive. | False |
     | First fetch time | Start fetching alerts whose creation date is higher than now minus &amp;lt;first_fetch&amp;gt; days. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) | Do not check that the EDR Manager certificate is valid. | False |
+    | Use system proxy settings | Use proxy settings configured for the whole XSOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

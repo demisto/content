@@ -633,7 +633,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 8290
+          "y": 8650
         }
       }
   '15':
@@ -2023,7 +2023,7 @@ tasks:
     isoversize: false
     nexttasks:
       yes:
-      - '14'
+      - '53'
     note: false
     quietmode: 0
     separatecontext: false
@@ -2045,13 +2045,99 @@ tasks:
           "y": 8080
         }
       }
+  '53':
+    id: '53'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '54'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      object_type:
+        simple: SecurityProfileGroup
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Searches and returns a reference for the given object type and name. If no name is provided, all objects of the given type will be returned. Note this ONLY returns the object name and it's location in the configuration hierachy, not the entire object.
+      id: c7869770-3ddf-4d5c-8927-c5f0732f2711
+      iscommand: true
+      name: pan-os-config-get-object
+      script: '|||pan-os-config-get-object'
+      type: regular
+      version: -1
+    taskid: c7869770-3ddf-4d5c-8927-c5f0732f2711
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8260
+        }
+      }
+  '54':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.hostid
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.container_name
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.name
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.object_type
+          operator: isExists
+      label: yes
+    id: '54'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 2cb5c004-5348-4702-8738-880011d433a2
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 2cb5c004-5348-4702-8738-880011d433a2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8440
+        }
+      }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8305,
+        "height": 8665,
         "width": 380,
         "x": 450,
         "y": 50

@@ -312,7 +312,7 @@ class Client(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix=f"/orgs/{org_id}/tasks/{type}/batches/upload",
-            data=payload,
+            params=payload,
             files=files,
         )
 
@@ -831,7 +831,7 @@ def update_group(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def upload_vulnerability_sync_file(client: Client, args: Dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER, None) or DEFAULT_ORG_ID
-    report_source = args.get('report_source', None)
+    report_source = args.get('reports_source', None)
     entry_id = args.get('entry_id', None)
     csv_file_name = args.get('csv_file_name', None)
     task_type = args.get('type', None) or "patch"
@@ -841,11 +841,11 @@ def upload_vulnerability_sync_file(client: Client, args: Dict[str, Any]) -> Comm
     if not res:
         demisto.error(f"File entry: {entry_id} not found")
 
-    with open(res['path'], 'rb') as csv_file:
-        payload = {
-            "report_source": report_source,
-        }
+    payload = {
+        "source": report_source,
+    }
 
+    with open(res['path'], 'rb') as csv_file:
         files = [
             ('file', (csv_file_name, csv_file, 'text/csv'))
         ]

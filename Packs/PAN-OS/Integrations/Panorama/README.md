@@ -48,6 +48,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    * [pan-os-query-logs](#pan-os-query-logs)
    * [pan-os-check-logs-status](#pan-os-check-logs-status)
    * [pan-os-get-logs](#pan-os-get-logs)
+* The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
 
 ## Configure Panorama on Cortex XSOAR
 
@@ -70,13 +71,107 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-   
+
+
+## Debugging in Panorama
+In order to ease the process of understanding what parameters are required to be used in the `!pan-os` command, it is highly recommended to use the debugging mode in Panorama to get the correct structure of a request.
+
+Debugging Methods:
+* [How to run a PAN-OS Web UI Debug](https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000CmA9CAK)
+* [Configuration (API)](https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api)
+* [Use the API browser](https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/explore-the-api/use-the-api-browser#id676e85fa-1823-466a-9e31-269dc6eb433a)
+
+Several Examples of `!pan-os` for a configuration type commands:
+
+1) Create a new address object named test123 for the test device-group.
+
+Given the following debug-log from PAN-OS Web UI Debug after creating an address through the Panorama UI:
+
+`
+<request cmd="set" obj="/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address/entry[@name='test123']" cookie="12345" newonly="yes">
+  <ip-netmask>1.1.1.1</ip-netmask>
+</request>
+`
+
+   The equivalent `!pan-os` command is:
+
+`
+!pan-os action=set xpath=/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address/entry[@name='test123'] type=config element=<ip-netmask>1.1.1.1</ip-netmask>
+`
+| Argument | Description |
+| --- | --- |
+| action | Create/add an object. In this case we want to create a new address object, so we will use set - the Panorama debug log shows us its a 'set' action. |
+| xpath | /config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address/entry[@name='test123'] - simply the location of the new object. |
+| type | This is a configuration type command, therefore use config. |
+| element | The object properties (similar to an API body request). |
+
+2) Modify an existing address group object named test12345 under the test device group to use a different address object.
+
+Given the following debug-log from PAN-OS Web UI Debug after editing an address group through the Panorama UI to use a different address object:
+
+`
+<request cmd="edit" obj="/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address-group/entry[@name='test12345']" cookie="1234">
+  <entry name="test12345">
+    <static>
+      <member>test123</member>
+    </static>
+  </entry>
+</request>
+`
+
+The equivalent `!pan-os` command is:
+
+`
+!pan-os action=edit xpath=/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address-group/entry[@name='test12345'] type=config element=<static><member>test123</member></static>
+`
+| Argument | Description |
+| --- | --- |
+| action | Edit an object, in this case we want to edit an entry in an existing address group object, so we will use edit - the panorama debug log shows us its an 'edit' action. |
+| xpath | /config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address-group/entry[@name='test12345' - simply the location of the object. |
+| type | This is a configuration type command, therefore use config.
+| element | The object properties (similar to an API body request).
+
+3) Get a specific security pre-rule called test1.
+
+Using the API browser, we can easily find the xpath for the security pre-rule object, therefore the pan-os command will be:
+
+`
+!pan-os xpath=/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/pre-rulebase/security/rules/entry[@name='test1'], action=get type=config
+`
+
+| Argument | Description |
+| --- | --- |
+| action | Get an object, in this case we want to get an object, so we will use 'get' as an action. |
+| xpath | By using the API browser, we can find every object's xpath easily.
+| type | This is a configuration type command, therefore use config.
+
+Several examples of `!pan-os` for an operational type command:
+
+1) Show system information  - Can be viewed by using the API browser to get the structure of the request.
+
+![Show System Info Operational command](../../doc_files/show-system-info-api-example.png)
+
+The equivalent `!pan-os` command is:
+
+`
+!pan-os type=op cmd=<show><system><info></info></system></show>
+`
+
+2) Show information about all the jobs - Can be viewed by using the API browser to get the structure of the request.
+
+![Show all jobs information](../../doc_files/get-all-jobs-api-example.png)
+
+The equivalent `!pan-os` command is:
+
+`
+!pan-os type=op cmd=<show><jobs><all></all></jobs></show>
+`
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. [Run any command supported in the Panorama API: panorama](#pan-os)
+1. [Run any command supported in the Panorama API: panorama](#panorama)
 2. [Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context: panorama-get-predefined-threats-list](#pan-os-get-predefined-threats-list)
 3. [Commit a configuration: panorama-commit](#pan-os-commit)
 4. [Pushes rules from PAN-OS to the configured device group: panorama-push-to-device-group](#pan-os-push-to-device-group)
@@ -183,6 +278,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 105. [Get the HA state and associated details from the given device and any other details.](#pan-os-platform-get-ha-state)
 106. [Get all the jobs from the devices in the environment, or a single job when ID is specified.](#pan-os-platform-get-jobs)
 107. [Download The provided software version onto the device.](#pan-os-platform-download-software)
+108. [Download the running configuration](#pan-os-get-running-config)
+109. [Download the merged configuration](#pan-os-get-merged-config)
 
 
 
@@ -198,26 +295,26 @@ Run any command supported in the API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. | Optional | 
+| action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api | Optional | 
 | category | Category parameter. For example, when exporting a configuration file, use "category=configuration". | Optional | 
-| cmd | Specifies the xml structure that defines the command. Used for operation commands. | Optional | 
+| cmd | Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`. | Optional | 
 | command | Run a command. For example, command =&lt;show&gt;&lt;arp&gt;&lt;entry name='all'/&gt;&lt;/arp&gt;&lt;/show&gt; | Optional | 
 | dst | Specifies a destination. | Optional | 
-| element | Used to define a new value for an object. | Optional | 
-| to | End time (used when cloning an object). | Optional | 
-| from | Start time (used when cloning an object). | Optional | 
+| element | Used to define a new value for an object. Should be an XML object, for example, <static><member>test</member></static>. | Optional | 
+| to | End time (used only when cloning an object). | Optional | 
+| from | Start time (used only when cloning an object). | Optional | 
 | key | Sets a key value. | Optional | 
 | log-type | Retrieves log types. For example, log-type=threat for threat logs. | Optional | 
 | where | Specifies the type of a move operation (for example, where=after, where=before, where=top, where=bottom). | Optional | 
 | period | Time period. For example, period=last-24-hrs | Optional | 
-| xpath | xpath location. For example, xpath=/config/predefined/application/entry[@name='hotmail'] | Optional | 
+| xpath | xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath. | Optional | 
 | pcap-id | PCAP ID included in the threat log. | Optional | 
 | serialno | Specifies the device serial number. | Optional | 
 | reporttype | Chooses the report type, such as dynamic, predefined or custom. | Optional | 
 | reportname | Report name. | Optional | 
 | type | Request type (e.g. export, import, log, config). | Optional | 
 | search-time | The time that the PCAP was received on the firewall. Used for threat PCAPs. | Optional | 
-| target | Target number of the firewall. Use only on a Panorama instance. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job-id | Job ID. | Optional | 
 | query | Query string. | Optional | 
 | vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional | 
@@ -226,6 +323,13 @@ Run any command supported in the API.
 #### Context Output
 
 There is no context output for this command.
+
+
+#### Command Example
+```!pan-os xpath=“/config/devices/entry[@name=‘localhost.localdomain’]/template/entry[@name=‘test’]/config/devices/entry[@name=‘localhost.localdomain’]/network/profiles/zone-protection-profile/entry[@name=‘test’]/scan-white-list/entry[@name=‘test’]/ipv4" type=config action=edit element=“<ipv4>1.1.1.1</ipv4>” ```
+
+#### Human Readable Output
+>Command was executed successfully.
 
 
 ### pan-os-get-predefined-threats-list
@@ -266,7 +370,7 @@ Gets the pre-defined threats list from a Firewall or Panorama and stores as a JS
 
 ### pan-os-commit
 ***
-Commits a configuration to Palo Alto Firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push the configuration to the Firewalls. To push the configuration, run the panorama-push-to-device-group command.
+Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true", otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
 
 #### Base Command
@@ -276,41 +380,70 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | Commit description. | Optional |
-| admin_name | To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
-| force_commit | Force Commit. | Optional |
-| exclude_device_network_configuration | Partial commit while excluding device and network configuration. | Optional | 
-| exclude_shared_objects | Partial commit while excluding shared objects.| Optional |
+| description | The commit description. | Optional | 
+| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional | 
+| force_commit | Forces a commit. Possible values are: true, false. | Optional | 
+| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional | 
+| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional |
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
+
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Commit.JobID | number | Job ID to commit. | 
-| Panorama.Commit.Status | string | Commit status | 
+| Panorama.Commit.JobID | Number | The job ID to commit. | 
+| Panorama.Commit.Status | String | The commit status. | 
+| Panorama.Commit.Description | String | The commit description from the the command input. | 
 
+#### Command example with polling
+```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
+#### Human Readable Output
 
-#### Command Example
-```!pan-os-commit```
+>Waiting for commit "test" with job ID 12345 to finish...
+>### Commit Status:
+>|JobID|Status| Description
+>|---|---|---|
+>| 12345 | Success | test
 
 #### Context Example
 ```json
 {
     "Panorama": {
         "Commit": {
-            "JobID": "113198",
-            "Status": "Pending"
+            "JobID": "12345",
+            "Status": "Success",
+            "Description": "test"
         }
     }
 }
 ```
 
+#### Command example without polling
+```!pan-os-commit description=test```
+
 #### Human Readable Output
 
->### Commit:
->|JobID|Status|
->|---|---|
->| 113198 | Pending |
+>### Commit Status:
+>|JobID|Status| Description
+>|---|---|---|
+>| 12345 | Pending | test
+
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Commit": {
+            "JobID": "12345",
+            "Status": "Pending",
+            "Description": "test"
+        }
+    }
+}
+```
 
 
 ### pan-os-push-to-device-group
@@ -337,7 +470,7 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.Push.DeviceGroup | String | Device group in which the policies were pushed. | 
-| Panorama.Push.JobID | Number | Job ID of the polices that were pushed. | 
+| Panorama.Push.JobID | Number | Job ID of the policies that were pushed. | 
 | Panorama.Push.Status | String | Push status. | 
 
 
@@ -1421,6 +1554,7 @@ Gets a URL category from URL Filtering. This command is only available on Firewa
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | URL to check. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional |
 
 
 #### Context Output
@@ -2074,8 +2208,8 @@ Creates a policy rule.
 | tags | Rule tags to create. | Optional | 
 | category | A comma-separated list of URL categories. | Optional |
 | profile_setting | A profile setting group. | Optional | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2142,8 +2276,8 @@ Creates a custom block policy rule.
 | log_forwarding | Log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 | tags | Tags for which to use for the custom block policy rule. | Optional | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2194,8 +2328,8 @@ Changes the location of a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to move. | Required | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Required | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional | 
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Required | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional | 
 | pre_post | Rule location. Mandatory for Panorama instances. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 
@@ -2360,40 +2494,42 @@ Returns a list of applications.
 >|  | demisto_fw_app3 | 1 |  | ip-protocol | peer-to-peer | lala |
 
 
-### pan-os-commit-status
+### pan-os-commit
 ***
-Returns commit status for a configuration.
+Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwiese does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
 
 #### Base Command
 
-`pan-os-commit-status`
+`pan-os-commit`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Job ID to check. | Required | 
+| description | The commit description. | Optional | 
+| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional | 
+| force_commit | Forces a commit. Possible values are: true, false. | Optional | 
+| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional | 
+| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| commit_job_id | commit job ID to use in polling commands. (automatically filled by polling). | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Commit.JobID | number | Job ID of the configuration to be committed. | 
-| Panorama.Commit.Status | string | Commit status. | 
-| Panorama.Commit.Details | string | Job ID details. | 
-| Panorama.Commit.Warnings | String | Job ID warnings | 
+| Panorama.Commit.JobID | Number | The job ID to commit. | 
+| Panorama.Commit.Status | String | The commit status. | 
+| Panorama.Commit.Description | String | The commit description from the the command input. | 
 
-
-#### Command Example
-```!pan-os-commit-status job_id=948 ```
-
+#### Command example
+```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
 #### Human Readable Output
 
->### Commit Status:
->|JobID|Status|
->|---|---|
->| 948 | Pending |
+>Waiting for commit "test" with job ID 7304 to finish...
 
 ### pan-os-push-status
 ***
@@ -2751,6 +2887,7 @@ Returns a list of predefined Security Rules.
 | pre_post | Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
 | device-group | The device group for which to return addresses (Panorama instances). | Optional | 
 | tag | Tag for which to filter the rules. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional |
 
 
 #### Context Output
@@ -3343,7 +3480,7 @@ Show firewall device software version.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the target device. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 
 #### Context Output
@@ -3395,7 +3532,7 @@ Downloads the latest content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device to which to download the content update. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional | 
 
 
 #### Context Output
@@ -3428,8 +3565,8 @@ Checks the download status of a content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device to which the content update is downloading. | Optional | 
-| job_id | Job ID to check. | Required | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+| job_id | Job ID to check.                                                                             | Required | 
 
 
 #### Context Output
@@ -3464,7 +3601,7 @@ Installs the latest content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device on which to install the content update. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional | 
 
 
 #### Context Output
@@ -3498,7 +3635,7 @@ Gets the installation status of the content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device on which to check the installation status of the content update. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job_id | Job ID of the content installation. | Required | 
 
 
@@ -3534,7 +3671,7 @@ Checks the PAN-OS software version from the repository.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to get the PAN-OS software version. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 
 #### Context Output
@@ -3557,7 +3694,7 @@ Downloads the target PAN-OS software version to install on the target device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to download the PAN-OS software version. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | target_version | The target version number to install. | Required | 
 
 
@@ -3591,7 +3728,7 @@ Gets the download status of the target PAN-OS software.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to get the download status. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job_id | Job ID to check. | Required | 
 
 
@@ -3624,9 +3761,9 @@ Installs the target PAN-OS version on the specified target device.
 `pan-os-install-panos-version`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| target | The target device on which to install the target PAN-OS software version. | Optional | 
+| **Argument Name** | **Description**  | **Required** |
+| --- |---| --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | target_version | Target PAN-OS version to install. | Required | 
 
 
@@ -3660,7 +3797,7 @@ Gets the installation status of the PAN-OS software.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to get the installation status. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job_id | Job ID to check. | Required | 
 
 
@@ -3695,7 +3832,7 @@ Reboots the Firewall device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device for which to reboot the firewall. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 
 #### Context Output
@@ -6934,3 +7071,275 @@ Fixed security rules that have incorrect log settings by adding a log forwarding
   }    
 }
 ```
+
+### pan-os-config-get-object
+***
+Searches and returns a reference for the given object type and name. If no name is provided, all objects of the given type will be returned.
+
+
+#### Base Command
+
+`pan-os-config-get-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html. Possible values are: AddressObject, AddressGroup, ServiceGroup, ServiceObject, ApplicationObject, ApplicationGroup, LogForwardingProfile, SecurityProfileGroup. | Required | 
+| device_filter_string | If provided, only objects from the given device are returned. | Optional | 
+| object_name | The name of the object reference to return if looking for a specific object. Supports regex if "use_regex" is set. | Optional | 
+| parent | The parent vsys or device group to search. If not provided, all will be returned. | Optional | 
+| use_regex | Enables regex matching on object name. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name. | 
+| PANOS.PanosObject.object_type | String | The PAN-OS python object type. | 
+
+#### Command example
+```!pan-os-config-get-object object_type="AddressObject"```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Sinkhole-IPv4",
+                "object_type": "AddressObject"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Sinkhole-IPv6",
+                "object_type": "AddressObject"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "test-shared",
+                "object_type": "AddressObject"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Sinkhole-IPv4 | AddressObject |
+>| shared | 192.168.1.145 | Sinkhole-IPv6 | AddressObject |
+>| shared | 192.168.1.145 | test-shared | AddressObject |
+
+
+### pan-os-platform-get-device-state
+***
+Get the device state from the provided device. Note: This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in 'show system info' is unreachable, this command will fail.
+
+
+#### Base Command
+
+`pan-os-platform-get-device-state`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | String by which to filter to only show specific hostnames or serial numbers. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | String | Filename | 
+| InfoFile.EntryID | String | Entry ID | 
+| InfoFile.Size | String | Size of file | 
+| InfoFile.Type | String | Type of file | 
+| InfoFile.Info | String | Basic information of file | 
+### pan-os-push-to-template
+***
+Pushes the given PAN-OS template to the given devices or all devices that belong to the template.
+
+
+#### Base Command
+
+`pan-os-push-to-template`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The template to push. | Optional | 
+| validate-only | Whether to validate the policy. Possible values are: true, false. Default is false. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Push.Template | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+
+#### Command example
+```!pan-os-push-to-template template=LAB```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "JobID": "564",
+            "Status": "Pending",
+            "Template": "LAB"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Push to Template:
+>|JobID|Status|
+>|---|---|
+>| 564 | Pending |
+
+
+### pan-os-push-to-template-stack
+***
+Pushes the given PAN-OS template-stack to the given devices or all devices that belong to the template stack.
+
+
+#### Base Command
+
+`pan-os-push-to-template-stack`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template-stack | The template-stack to push. | Required | 
+| validate-only | Whether to validate the policy. Possible values are: true, false. Default is false. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Push.TemplateStack | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+
+#### Command example
+```!pan-os-push-to-template-stack template-stack=LAB-STACK```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "JobID": "565",
+            "Status": "Pending",
+            "TemplateStack": "LAB-STACK"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Push to Template:
+>|JobID|Status|
+>|---|---|
+>| 565 | Pending |
+
+
+### pan-os-get-running-config
+***
+Pull the running config file
+
+
+#### Base Command
+
+`pan-os-get-running-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The target device. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-get-running-config target=00000000000```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "3678@268ee30b-69fa-4496-8ab8-51cdeb19c452",
+        "Info": "text/plain",
+        "MD5": "da7faf4c6440d87a3e50ef93536ed81a",
+        "Name": "running_config",
+        "SHA1": "7910271adc8b3e9de28b804442a11a5160d4adda",
+        "SHA256": "a4da4cbee7f3e411fbf76f2595d7dfcffce85bd6b3c000dac7a17e58747d1a2b",
+        "SHA512": "e90d995061b5771f068c07e727ece3b57eeabdac424dabe8f420848e482e2ad18411c030bd4b455f589d8cdae9a1dae942bfef1ebd038104dd975e168cfb7d19",
+        "SSDeep": "3072:KGH5vDQ4MEa4fM0EYRCmgQKQZyVlxgW0ITUj4MO2jCKH2:ZLMGyQKQZaw2",
+        "Size": 1284823,
+        "Type": "ASCII text, with very long lines"
+    }    
+}
+```
+
+
+### pan-os-get-merged-config
+***
+Pull the merged config file
+
+
+#### Base Command
+
+`pan-os-get-merged-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The serial number of the device. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-get-merged-config target=0000000000```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "3682@268ee30b-69fa-4496-8ab8-51cdeb19c452",
+        "Info": "text/plain",
+        "MD5": "3204cc188e4b4a6616b449441d4d1ad4",
+        "Name": "merged_config",
+        "SHA1": "0b058a2ae4b595f80599ef0aeffda640ff386e95",
+        "SHA256": "7178b16cb30880c93345ff80810af4e1428573a28d1ee354d5c79b03372cc027",
+        "SHA512": "edf5b851eab40588e4e338071de3c18cc8d198d811ea0759670c0aa4c8028fa3b7870b9554c4b7d85f8429641d7cd6f6217a6b37500e24ad9c60b6cf39b39f3b",
+        "SSDeep": "3072:OGH5vDQ4MEa4fM0EYRCmgQKQZyVlxDW0ITUj4MO2jCKH2:tLMGyQKQZtw2",
+        "Size": 1322335,
+        "Type": "ASCII text, with very long lines"
+    }
+}
+```
+

@@ -1,0 +1,1147 @@
+commonfields:
+  id: CTIX v3
+  version: -1
+fromversion: 5.0.0
+name: CTIX v3
+display: CTIX v3
+category: Data Enrichment & Threat Intelligence
+description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
+configuration:
+- display: Endpoint URL
+  name: base_url
+  type: 0
+  required: true
+  additionalinfo: Enter the endpoint URL of your CTIX Instance.
+- display: Access Key
+  name: access_id
+  type: 4
+  required: true
+  additionalinfo: Enter the Access Key from the CTIX application.
+- display: Secret Key
+  name: secret_key
+  type: 4
+  required: true
+  additionalinfo: Enter the Secret Key from the CTIX application.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: ctix-create-tag
+    arguments:
+    - name: tag_name
+      required: true
+      description: New tag's name
+    - name: color
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - blue
+      - purple
+      - orange
+      - red
+      - green
+      - yellow
+      - turquoise
+      - pink
+      - light-red
+      - grey
+      description: New tag's name for the defined colour. If no colour selected, colour
+        grey will be given
+    outputs:
+    - contextPath: CTIX.Tag.name
+      description: Name of the tag
+      type: string
+    - contextPath: CTIX.Tag.tag_type
+      description: Type of the tag (manual)
+      type: string
+    - contextPath: CTIX.Tag.colour_code
+      description: Colour Code of the tag
+      type: string
+    - contextPath: CTIX.Tag.id
+      description: Id of the Created Tag
+      type: string
+    - contextPath: CTIX.Tag.created
+      description: Created at timestamp
+      type: number
+    - contextPath: CTIX.Tag.modified
+      description: Modified at timestamp
+      type: number
+    description: Create new tag in the ctix platform
+  - name: ctix-get-tags
+    arguments:
+    - name: page
+      description: Page number for pagination
+      defaultValue: '1'
+    - name: page_size
+      description: Page size for pagination
+      defaultValue: '10'
+    - name: q
+      description: search query parameter
+    outputs:
+    - contextPath: CTIX.Tag.name
+      description: Name of the tag
+      type: string
+    - contextPath: CTIX.Tag.id
+      description: ID of the tag
+      type: string
+    - contextPath: CTIX.Tag.colour_code
+      description: Hex colour code associated with tag
+      type: string
+    - contextPath: CTIX.Tag.tag_type
+      description: Type of the tag
+      type: string
+    - contextPath: CTIX.Tag.created
+      description: Created at timestamp
+      type: number
+    - contextPath: CTIX.Tag.modified
+      description: Modified at timestamp
+      type: number
+    description: Get paginated list of tags
+  - name: ctix-delete-tag
+    arguments:
+    - name: tag_name
+      required: true
+      description: Name of the tag
+    outputs:
+    - contextPath: CTIX.DeleteTag.result
+      description: Status
+      type: string
+    description: Delete a tag with given tag_name
+    execution: true
+  - name: ctix-allowed-iocs
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ipv4-addr
+      - ipv6-addr
+      - autonomous-system
+      - email-addr
+      - MD5
+      - SHA-1
+      - SHA-224
+      - SHA-256
+      - SHA-384
+      - SHA-512
+      - SSDEEP
+      - url
+      - cidr
+      - domain-name
+      - mutex
+      - windows-registry-key
+      - user-agent
+      description: Type of ioc
+    - name: values
+      required: true
+      description: Values of the given type
+      isArray: true
+    - name: reason
+      required: true
+      description: Descriptive reason
+    outputs:
+    - contextPath: CTIX.Details.invalid
+      description: Invalid iocs sent in request
+      type: unknown
+    - contextPath: CTIX.Details.new_created
+      description: List of iocs added to allowed
+    - contextPath: CTIX.Details.already_exists
+      description: List of iocs already existing
+    description: Adds list of same type of iocs to allowed
+    execution: true
+  - name: ctix-get-allowed-iocs
+    arguments:
+    - name: page
+      description: 'Page number '
+      defaultValue: '1'
+    - name: page_size
+      description: Page size
+      defaultValue: '10'
+    - name: q
+      description: query param for searching
+    outputs:
+    - contextPath: CTIX.IOC.id
+      description: ID of the object
+      type: string
+    - contextPath: CTIX.IOC.include_emails
+      description: If enabled then the emails to the corresponding emails will be allowed
+      type: boolean
+    - contextPath: CTIX.IOC.include_sub_domains
+      description: If enabled then the emails to the corresponding sub domains will be allowed
+      type: boolean
+    - contextPath: CTIX.IOC.include_urls
+      description: If enabled then the emails to the corresponding urls will be allowed
+      type: boolean
+    - contextPath: CTIX.IOC.type
+      description: Type of the ioc
+      type: string
+    - contextPath: CTIX.IOC.value
+      description: Value of the ioc
+      type: string
+    - contextPath: CTIX.IOC.created
+      description: Created at timestamp
+      type: number
+    - contextPath: CTIX.IOC.modified
+      description: Modified at timestamp
+      type: number
+    description: get paginated list of allowed iocs
+  - name: ctix-remove-allowed-ioc
+    arguments:
+    - name: ids
+      required: true
+      description: allowed IOC ids
+    outputs:
+    - contextPath: details
+      description: Operation result
+      type: string
+    description: Removes a allowed ioc with given id
+  - name: ctix-get-threat-data
+    arguments:
+    - name: query
+      required: true
+      description: Query statement for the thread data, please refer to the documentation
+    - name: page
+      description: page
+      defaultValue: '1'
+    - name: page_size
+      description: size of page
+      defaultValue: '1'
+    outputs:
+    - contextPath: CTIX.ThreatData.confidence_score
+      description: Confidence Score of the IOC
+      type: number
+    - contextPath: CTIX.ThreatData.confidence_type
+      description: Confidence Type of the IOC
+      type: string
+    - contextPath: CTIX.ThreatData.created
+      description: When the IOC was created in source
+      type: number
+    - contextPath: CTIX.ThreatData.ctix_created
+      description: When the IOC was created in CTIX
+      type: number
+    - contextPath: CTIX.ThreatData.ctix_modified
+      description: When the IOC was modified in CTIX
+      type: number
+    - contextPath: CTIX.ThreatData.id
+      description: ID of the IOC in CTIX
+      type: string
+    - contextPath: CTIX.ThreatData.indicator_type
+      description: Type of the Indicator
+      type: string
+    - contextPath: CTIX.ThreatData.ioc_type
+      description: Type of IOC
+      type: string
+    - contextPath: CTIX.ThreatData.is_actioned
+      description: Is Actioned
+      type: boolean
+    - contextPath: CTIX.ThreatData.is_deprecated
+      description: Is Deprecated
+      type: boolean
+    - contextPath: CTIX.ThreatData.is_false_positive
+      description: Is False Positive
+      type: boolean
+    - contextPath: CTIX.ThreatData.is_reviewed
+      description: Is reviewed
+      type: boolean
+    - contextPath: CTIX.ThreatData.is_revoked
+      description: Is revoked
+      type: boolean
+    - contextPath: CTIX.ThreatData.is_watchlist
+      description: Is Watchlist
+      type: boolean
+    - contextPath: CTIX.ThreatData.is_whitelisted
+      description: Is allowed
+      type: boolean
+    - contextPath: CTIX.ThreatData.modified
+      description: When the indicator modified
+      type: boolean
+    - contextPath: CTIX.ThreatData.name
+      description: Name of the indicator
+      type: boolean
+    - contextPath: CTIX.ThreatData.risk_severity
+      description: risk severity of the indicator
+      type: boolean
+    - contextPath: CTIX.ThreatData.source_collections
+      description: Source Collections of the Indicator
+    - contextPath: CTIX.ThreatData.source_confidence
+      description: Source Confidence of the indicator
+      type: string
+    - contextPath: CTIX.ThreatData.sources
+      description: sources of the indicator
+    - contextPath: CTIX.ThreatData.sub_type
+      description: Sub Type of the IOC
+      type: string
+    - contextPath: CTIX.ThreatData.tlp
+      description: TLP of the indicator
+      type: string
+    - contextPath: CTIX.ThreatData.type
+      description: Type of the IOC
+      type: string
+    - contextPath: CTIX.ThreatData.valid_from
+      description: Date from which IOC is valid
+      type: number
+    description: Command for querying and listing threat data
+  - name: ctix-get-saved-searches
+    arguments:
+    - name: page
+      description: page from where to start
+    - name: page_size
+      description: page size of the result
+    outputs:
+    - contextPath: CTIX.SavedSearch.id
+      description: ID of the object
+      type: string
+    - contextPath: CTIX.SavedSearch.editable
+      description: editable object details
+      type: boolean
+    - contextPath: CTIX.SavedSearch.is_threat_data_search
+      description: is threat data search
+      type: boolean
+    - contextPath: CTIX.SavedSearch.name
+      description: name of the IOC
+      type: string
+    - contextPath: CTIX.SavedSearch.order
+      description: order details
+      type: number
+    - contextPath: CTIX.SavedSearch.pinned
+      description: Pinned details
+      type: boolean
+    - contextPath: CTIX.SavedSearch.query
+      description: CQL used
+      type: string
+    - contextPath: CTIX.SavedSearch.shared_type
+      description: shared type
+      type: string
+    - contextPath: CTIX.SavedSearch.type
+      description: type of the object
+      type: string
+    - contextPath: CTIX.SavedSearch.meta_data
+      description: meta data of the object
+    description: Saved Search listing api with pagination
+  - name: ctix-get-server-collections
+    arguments:
+    - name: page
+      description: page of the result
+    - name: page_size
+      description: page size of the result
+    outputs:
+    - contextPath: CTIX.ServerCollection.name
+      description: Name of the server
+      type: string
+    - contextPath: CTIX.ServerCollection.id
+      description: ID of the object
+      type: string
+    - contextPath: CTIX.ServerCollection.inbox
+      description: Inbox is enabled or not
+      type: boolean
+    - contextPath: CTIX.ServerCollection.is_active
+      description: Object if active or not
+      type: boolean
+    - contextPath: CTIX.ServerCollection.is_editable
+      description: Object if editable or not
+      type: boolean
+    - contextPath: CTIX.ServerCollection.polling
+      description: Object polling is enabled or not
+      type: boolean
+    - contextPath: CTIX.ServerCollection.type
+      description: Object type
+      type: string
+    - contextPath: CTIX.ServerCollection.description
+      description: description of the object
+      type: string
+    - contextPath: CTIX.ServerCollection.created
+      description: Created timestamp
+      type: number
+    description: Source Collection listing api with pagination
+  - name: ctix-get-actions
+    arguments:
+    - name: page
+      description: page of the result
+    - name: page_size
+      description: page size of the result
+    - name: object_type
+      description: object type of the indicator
+    - name: action_type
+      description: action type of the indicator
+    outputs:
+    - contextPath: CTIX.Action.action_name
+      description: Name of the Action
+      type: string
+    - contextPath: CTIX.Action.action_type
+      description: Description of the action
+    - contextPath: CTIX.Action.actioned_on
+      description: 'Timestamp of when the action was taken '
+      type: number
+    - contextPath: CTIX.Action.app_name
+      description: Name of the app for the action in CTIX
+      type: string
+    - contextPath: CTIX.app_type
+      description: Type of the app
+      type: string
+    - contextPath: CTIX.Action.id
+      description: ID of the action
+      type: string
+    - contextPath: CTIX.Action.object_type
+      description: Type of the action
+      type: string
+    description: Enrichment tools listing API
+  - name: ctix-add-indicator-as-false-positive
+    description: Add indicators as false positive in CTIX
+    arguments:
+    - name: object_ids
+      required: true
+      description: ', seperated list of indicator ids'
+      isArray: true
+    - name: object_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - attack-pattern
+      - campaign
+      - course-of-action
+      - custom-object
+      - grouping
+      - identity
+      - indicator
+      - infrastructure
+      - intrusion-set
+      - location
+      - malware
+      - malware-analysis
+      - observed-data
+      - opinion
+      - report
+      - threat-actor
+      - tool
+      - note
+      - vulnerability
+      - artifact
+      - directory
+      - email-addr
+      - user-account
+      - email-message
+      - file
+      - ipv4-addr
+      - ipv6-addr
+      - mac-addr
+      - autonomous-system
+      - network-traffic
+      - domain-name
+      - process
+      - software
+      - windows-registry-key
+      - mutex
+      - url
+      - observable
+      - x509-certificate
+      description: Type of object
+    outputs:
+    - contextPath: CTIX.IndicatorFalsePositive.message
+      description: Indicator change result
+      type: unknown
+  - name: ctix-ioc-manual-review
+    arguments:
+    - name: object_ids
+      required: true
+      description: Object ids of the items to be added for manual review
+      isArray: true
+    - name: object_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - attack-pattern
+      - campaign
+      - course-of-action
+      - custom-object
+      - grouping
+      - identity
+      - indicator
+      - infrastructure
+      - intrusion-set
+      - location
+      - malware
+      - malware-analysis
+      - observed-data
+      - opinion
+      - report
+      - threat-actor
+      - tool
+      - note
+      - vulnerability
+      - artifact
+      - directory
+      - email-addr
+      - user-account
+      - email-message
+      - file
+      - ipv4-addr
+      - ipv6-addr
+      - mac-addr
+      - autonomous-system
+      - network-traffic
+      - domain-name
+      - process
+      - software
+      - windows-registry-key
+      - mutex
+      - url
+      - observable
+      - x509-certificate
+      description: object type
+    outputs:
+    - contextPath: CTIX.IOCManualReview.message
+      description: IOC Manual Review result
+      type: unknown
+    description: Adds ioc to manual review bulk api
+  - name: ctix-deprecate-ioc
+    arguments:
+    - name: object_ids
+      required: true
+      description: 'Object ids '
+      isArray: true
+    - name: object_type
+      required: true
+      description: object type
+    outputs:
+    - contextPath: CTIX.DeprecateIOC
+      description: Result of the IOC deprecation request
+    description: Deprecate ioc bulk api
+  - name: ctix-add-analyst-tlp
+    arguments:
+    - name: object_id
+      required: true
+      default: true
+      description: object id
+    - name: object_type
+      required: true
+      description: object type
+    - name: data
+      required: true
+      description: data
+    outputs:
+    - contextPath: CTIX.AddAnalystTLP
+      description: Result of the addition of analyst TLP
+    description: Add Analyst TLP
+  - name: ctix-add-analyst-score
+    arguments:
+    - name: object_id
+      required: true
+      description: object id
+    - name: object_type
+      required: true
+      description: object type
+    - name: data
+      required: true
+      description: data
+    outputs:
+    - contextPath: CTIX.AddAnalystScore
+      description: Result of adding analyst score to threat data
+    description: Add Analyst Score for a Threat data
+  - name: ctix-saved-result-set
+    arguments:
+    - name: page
+      description: page
+      defaultValue: '1'
+    - name: page_size
+      default: true
+      description: page size
+      defaultValue: '10'
+    - name: label_name
+      description: label name
+    - name: query
+      description: CQL
+    outputs:
+    - contextPath: CTIX.SavedResultSet.analyst_score
+      description: Analyst score of the IOC
+      type: number
+    - contextPath: CTIX.SavedResultSet.analyst_tlp
+      description: Analyst TLP of the IOC
+      type: string
+    - contextPath: CTIX.SavedResultSet.confidence_score
+      description: Confidence score of the IOC
+      type: number
+    - contextPath: CTIX.SavedResultSet.confidence_type
+      description: Confidence type of the IOC
+      type: string
+    - contextPath: CTIX.SavedResultSet.country
+      description: Country of origin for the IOC
+      type: string
+    - contextPath: CTIX.SavedResultSet.created
+      description: IOC creation date
+      type: number
+    - contextPath: CTIX.SavedResultSet.ctix_created
+      description: IOC date of creation in CTIX
+      type: number
+    - contextPath: CTIX.SavedResultSet.ctix_modified
+      description: IOC date of modification in CTIX
+      type: number
+    - contextPath: CTIX.SavedResultSet.first_seen
+      description: IOC timestamp when it was first seen
+      type: date
+    - contextPath: CTIX.SavedResultSet.id
+      description: IOC ID
+      type: number
+    - contextPath: CTIX.SavedResultSet.indicator_type
+      description: 'Type of the indicator '
+      type: string
+    - contextPath: CTIX.SavedResultSet.ioc_type
+      description: 'Type of the IOC '
+      type: string
+    - contextPath: CTIX.SavedResultSet.is_actioned
+      description: If there is any action taken on the indicator
+      type: boolean
+    - contextPath: CTIX.SavedResultSet.is_deprecated
+      description: If the indicator is deprecated or not
+      type: boolean
+    - contextPath: CTIX.SavedResultSet.is_false_positive
+      description: Value of the indicator is false positive or not
+      type: boolean
+    - contextPath: CTIX.SavedResultSet.is_reviewed
+      description: 'Whether the indicator reviewed or not '
+      type: boolean
+    - contextPath: CTIX.SavedResultSet.is_revoked
+      description: Whether the indicator is revoked or not
+      type: boolean
+    - contextPath: CTIX.SavedResultSet.is_watchlist
+      description: Whether the indicator is under watchlist or not
+      type: boolean
+    - contextPath: CTIX.SavedResultSet.is_whitelisted
+      description: Whether the indicator is allowed or not
+      type: boolean
+    - contextPath: CTIX.SavedResultSet.last_seen
+      description: Timestamp of the when the IOC was last seen
+      type: date
+    - contextPath: CTIX.SavedResultSet.modified
+      description: Timestamp of the when the IOC was modified
+      type: date
+    - contextPath: CTIX.SavedResultSet.name
+      description: Name of the indicator
+      type: string
+    - contextPath: CTIX.SavedResultSet.null
+      description: 'null'
+    - contextPath: CTIX.SavedResultSet.primary_attribute
+      description: Primary attribute of the IOC
+      type: string
+    - contextPath: CTIX.SavedResultSet.published_collections
+      description: Published collections of the IOC
+      type: unknown
+    - contextPath: CTIX.SavedResultSet.risk_severity
+      description: Risk severity of the IOC
+    - contextPath: CTIX.SavedResultSet.source_collections
+      description: Source collections of the IOC
+    - contextPath: CTIX.SavedResultSet.name
+      description: Name of the IOC
+      type: string
+    - contextPath: CTIX.SavedResultSet.sources
+      description: Sources of the IOC
+    - contextPath: CTIX.SavedResultSet.sub_type
+      description: Sub type of the IOC
+    - contextPath: CTIX.SavedResultSet.subscriber_collections
+      description: Subscription collections of the IOC
+    - contextPath: CTIX.SavedResultSet.subscribers
+      description: Subscribers of the IOC
+    - contextPath: CTIX.SavedResultSet.tags
+      description: Tags on the IOC
+    - contextPath: CTIX.SavedResultSet.tlp
+      description: TLP of the IOC
+    - contextPath: CTIX.SavedResultSet.type
+      description: Type of the IOC
+    - contextPath: CTIX.SavedResultSet.valid_from
+      description: Timestamp from when the IOC is valid
+    - contextPath: CTIX.SavedResultSet.valid_until
+      description: Timestamp till then the IOC is valid
+    description: Saved Result Set
+  - name: ctix-add-tag-indicator
+    arguments:
+    - name: page
+      description: page from where data will be taken
+      defaultValue: '1'
+    - name: page_size
+      default: true
+      description: total number of results to be fetched
+      defaultValue: '10'
+    - name: q
+      description: query
+    - name: object_id
+      description: object id
+    - name: object_type
+      description: object type
+    - name: tag_id
+      description: tag id
+      isArray: true
+    outputs:
+    - contextPath: CTIX.TagUpdation.meesage
+      description: Result of the add indicator tag request
+    description: Adding Tag to Indicator
+  - name: ctix-remove-tag-from-indicator
+    arguments:
+    - name: page
+      description: which page to bring the data from
+      defaultValue: '1'
+    - name: page_size
+      default: true
+      description: number of pages to bring data from
+      defaultValue: '10'
+    - name: q
+      description: query
+    - name: object_id
+      description: object_id
+    - name: object_type
+      description: object_type
+    - name: tag_id
+      description: tag_id
+      isArray: true
+    outputs:
+    - contextPath: CTIX.TagUpdation.message
+      description: Result of the remove indicator tag request
+    description: Remove Tag From Indicator
+  - name: ctix-search-for-tag
+    arguments:
+    - name: page
+      description: number of page from where data needs to brought
+      defaultValue: '1'
+    - name: page_size
+      default: true
+      description: size of the result
+      defaultValue: '10'
+    - name: q
+      description: query
+    outputs:
+    - contextPath: CTIX.SearchTag.colour_code
+      description: Colour code of the tag
+      type: unknown
+    - contextPath: CTIX.SearchTag.created
+      description: Timestamp of when the tag was created
+      type: number
+    - contextPath: CTIX.SearchTag.created_by
+      description: details of the person who created the tag
+      type: unknown
+    - contextPath: CTIX.SearchTag.id
+      description: ID of the tag
+      type: string
+    - contextPath: CTIX.SearchTag.modified
+      description: Timestamp of when the tag was modified
+      type: number
+    - contextPath: CTIX.SearchTag.modified_by
+      description: Details of the person who modified the tag
+    - contextPath: CTIX.SearchTag.name
+      description: Name of the tag
+    - contextPath: CTIX.SearchTag.type
+      description: type of the tag
+    description: Search for tag
+  - name: ctix-get-indicator-details
+    arguments:
+    - name: page
+      description: from where data has to be brought
+      defaultValue: '1'
+    - name: page_size
+      default: true
+      description: total number of results
+      defaultValue: '10'
+    - name: object_id
+      description: object id
+    - name: object_type
+      description: object type
+    outputs:
+    - contextPath: CTIX.IndicatorDetails.aliases
+      description: Aliases of the tag if any
+      type: string
+    - contextPath: CTIX.IndicatorDetails.analyst_description
+      description: Analyst description provided if any
+      type: string
+    - contextPath: CTIX.IndicatorDetails.analyst_score
+      description: Analyst score of the indicator
+      type: number
+    - contextPath: CTIX.IndicatorDetails.analyst_tlp
+      description: Analyst provided TLP on the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.asn
+      description: ASN of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.attribute_field
+      description: Attribute field of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.attribute_value
+      description: Attribute value of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.base_type
+      description: Base type of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.confidence_score
+      description: Confidence score of the IOC
+      type: number
+    - contextPath: CTIX.IndicatorDetails.confidence_type
+      description: Confidence type of the IOC
+      type: string
+    - contextPath: CTIX.IndicatorDetails.country
+      description: Country of origin of the IOC
+      type: string
+    - contextPath: CTIX.IndicatorDetails.created
+      description: Timestamp of when the indicator was created
+      type: number
+    - contextPath: CTIX.IndicatorDetails.ctix_created
+      description: Timestamp of when the indicator was created in CTIX
+      type: number
+    - contextPath: CTIX.IndicatorDetails.ctix_modified
+      description: Timestamp of when the indicator was modified in CTIX
+      type: number
+    - contextPath: CTIX.IndicatorDetails.ctix_score
+      description: CTIX score of the indicator
+      type: number
+    - contextPath: CTIX.IndicatorDetails.ctix_tlp
+      description: CTIX assigned TLP of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.defang_analyst_description
+      description: Defanged analyst description of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.description
+      description: Description of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.fang_analyst_description
+      description: Fang analyst description of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.first_seen
+      description: Timestamp of then the indicator was first seen
+      type: number
+    - contextPath: CTIX.IndicatorDetails.last_seen
+      description: Timestamp of then the indicator was last seen
+      type: number
+    - contextPath: CTIX.IndicatorDetails.modified
+      description: Timestamp of then the indicator was modified
+      type: number
+    - contextPath: CTIX.IndicatorDetails.name
+      description: Name of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.pattern
+      description: STIX pattern of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.pattern_type
+      description: pattern type of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.pattern_version
+      description: STIX pattern version
+      type: string
+    - contextPath: CTIX.IndicatorDetails.sources
+      description: Sources of the indicator
+    - contextPath: CTIX.IndicatorDetails.sub_type
+      description: Sub type of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.tld
+      description: TLD of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.tlp
+      description: TLP of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.type
+      description: Type of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.types
+      description: Types of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorDetails.valid_from
+      description: Timestamp of the indicator from then it was valid
+      type: number
+    - contextPath: CTIX.IndicatorDetails.valid_until
+      description: 'Timestamp of the indicator till '
+    description: Get Indicator Details
+  - name: ctix-get-indicator-tags
+    arguments:
+    - name: object_id
+      description: object id
+    - name: object_type
+      description: object type
+    - name: page
+      default: true
+      description: page
+      defaultValue: '1'
+    - name: page_size
+      description: page size
+      defaultValue: '10'
+    outputs:
+    - contextPath: CTIX.IndicatorTags.notes
+      description: Notes on the indicator's tag
+      type: unknown
+    - contextPath: CTIX.IndicatorTags.is_deprecated
+      description: If the indicator's tag deprecated or not
+      type: boolean
+    - contextPath: CTIX.IndicatorTags.is_revoked
+      description: If the indicator's tag revoked or not
+      type: boolean
+    - contextPath: CTIX.IndicatorTags.ctix_created
+      description: Timestamp of when the Indicator tag was created in CTIX
+      type: number
+    - contextPath: CTIX.IndicatorTags.is_false_positive
+      description: If the indicator's tag is false positive or not
+      type: boolean
+    - contextPath: CTIX.IndicatorTags.name
+      description: Name of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorTags.is_reviewed
+      description: If the indicator reviewed or not
+      type: boolean
+    - contextPath: CTIX.IndicatorTags.is_whitelisted
+      description: If the indicator allowed or not
+      type: boolean
+    - contextPath: CTIX.IndicatorTags.is_under_review
+      description: If the indicator is under review or not
+      type: boolean
+    - contextPath: CTIX.IndicatorTags.is_watchlist
+      description: If the indicator is under watchlist or not
+      type: boolean
+    - contextPath: CTIX.IndicatorTags.tags
+      description: Tags of the indicator
+    - contextPath: CTIX.IndicatorTags.sub_type
+      description: Sub type of the indicator
+    - contextPath: CTIX.IndicatorTags.type
+      description: Type of Indicator
+    description: Get Indicator Tags
+  - name: ctix-get-indicator-relations
+    arguments:
+    - name: page
+      description: page
+      defaultValue: '1'
+    - name: page_size
+      description: page size
+      defaultValue: '10'
+    - name: object_id
+      description: object id
+    - name: object_type
+      description: object type
+    outputs:
+    - contextPath: CTIX.IndicatorRelations.relationship_type
+      description: Indicator relation types
+    - contextPath: CTIX.IndicatorRelations.sources
+      description: Indicator sources
+    - contextPath: CTIX.IndicatorRelations.target_ref
+      description: 'Indicator target reference '
+    description: Get Indicator Relations
+  - name: ctix-get-indicator-observations
+    arguments:
+    - name: page
+      description: page
+    - name: page_size
+      description: page size
+    - name: object_id
+      description: object id
+    - name: object_type
+      description: object type
+    outputs:
+    - contextPath: CTIX.IndicatorObservations.custom_attributes
+      description: Custom attributes if any
+    - contextPath: CTIX.IndicatorObservations.ctix_modified
+      description: Timestamp when indicator was modified in CTIX
+      type: number
+    - contextPath: CTIX.IndicatorObservations.created
+      description: Timestamp when indicator was created
+      type: number
+    - contextPath: CTIX.IndicatorObservations.pattern_type
+      description: Pattern type of Indicator
+      type: string
+    - contextPath: CTIX.IndicatorObservations.modified
+      description: 'Timestamp when indicator was modified '
+      type: number
+    - contextPath: CTIX.IndicatorObservations.ctix_created
+      description: Timestamp when indicator was created in CTIX
+      type: number
+    - contextPath: CTIX.IndicatorObservations.pattern_version
+      description: STIX Pattern version of indicator
+      type: string
+    - contextPath: CTIX.IndicatorObservations.confidence
+      description: Confidence level of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorObservations.valid_from
+      description: Timestamp when indicator was valid from
+      type: number
+    - contextPath: CTIX.IndicatorObservations.pattern
+      description: STIX pattern
+      type: string
+    - contextPath: CTIX.IndicatorObservations.fang_description
+      description: 'FANG description '
+      type: string
+    - contextPath: CTIX.IndicatorObservations.defang_description
+      description: DEFANG description
+      type: string
+    - contextPath: CTIX.IndicatorObservations.spec_version
+      description: STIX Spec version
+      type: string
+    - contextPath: CTIX.IndicatorObservations.tags
+      description: Tags attached to the indicator
+    - contextPath: CTIX.IndicatorObservations.received_id
+      description: STIX ID when indicator was received
+      type: string
+    - contextPath: CTIX.IndicatorObservations.types
+      description: STIX Types attached to the indicator
+    - contextPath: CTIX.IndicatorObservations.source
+      description: STIX source of the indicator
+    - contextPath: CTIX.IndicatorObservations.id
+      description: id of the indicator
+      type: string
+    - contextPath: CTIX.IndicatorObservations.valid_until
+      description: Timestamp till when the indicator is valid
+      type: number
+    - contextPath: CTIX.IndicatorObservations.sco_object_id
+      description: SCO object ID
+    - contextPath: CTIX.IndicatorObservations.unique_hash
+      description: unique hash of the indicator
+    - contextPath: CTIX.IndicatorObservations.description
+      description: description of the indicator
+    - contextPath: CTIX.IndicatorObservations.granular_markings
+      description: Granular Markings if any
+    - contextPath: CTIX.IndicatorObservations.collection
+      description: Collection details of the indicator
+    description: Get Indicator Observations
+  - name: ctix-get-conversion-feed-source
+    description: Get Conversion feed source
+    arguments:
+    - name: page
+      description: page
+      defaultValue: '1'
+    - name: page_size
+      description: page size
+      defaultValue: '10'
+    - name: object_id
+      description: object id
+    - name: object_type
+      description: object type
+    outputs:
+    - contextPath: CTIX.ConversionFeedSource.created
+      description: Indicator creation timestamp
+      type: number
+    - contextPath: CTIX.ConversionFeedSource.id
+      description: ID of the indicator
+      type: string
+    - contextPath: CTIX.ConversionFeedSource.name
+      description: name of the indicator
+      type: string
+    - contextPath: CTIX.ConversionFeedSource.taxii_option
+      description: TAXII option
+      type: string
+  - name: ctix-get-lookup-threat-data
+    arguments:
+    - name: object_type
+      description: object type
+    - name: object_names
+      description: 'Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1'
+      isArray: true
+    - name: page_size
+      description: size of the page
+      defaultValue: '10'
+    outputs:
+    - contextPath: CTIX.ThreatDataLookup.analyst_score
+      description: Analyst score of the indicator
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.analyst_tlp
+      description: Analyst TLP of the indicator
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.confidence_score
+      description: Confidence score of the indicator
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.confidence_type
+      description: Confidence type of the indicator
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.country
+      description: Indicator origin country
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.created
+      description: Timestamp of when the indicator was created
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.ctix_created
+      description: Timestamp of when the indicator was created in CTIX
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.ctix_modified
+      description: Timestamp of when the indicator was modified in CTIX
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.first_seen
+      description: Timestamp of when the indicator was first seen
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.id
+      description: Indicator ID
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.indicator_type
+      description: Indicator type
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.ioc_type
+      description: IOC type
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.is_actioned
+      description: Is actioned
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_deprecated
+      description: is deprecated
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_false_positive
+      description: is false positive
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_reviewed
+      description: 'is reviewed '
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_revoked
+      description: is revoked
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_watchlist
+      description: is watchlisted
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.is_whitelisted
+      description: is allowed
+      type: boolean
+    - contextPath: CTIX.ThreatDataLookup.last_seen
+      description: Timestamp of when the indicator was last seen
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.modified
+      description: Timestamp of when the indicator was modified
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.name
+      description: name of the indicator
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.null
+      description: 'null'
+    - contextPath: CTIX.ThreatDataLookup.primary_attribute
+      description: Primary Attribute
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.published_collections
+      description: published collections
+    - contextPath: CTIX.ThreatDataLookup.risk_severity
+      description: Risk severity
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.source_collections
+      description: sources collections
+      type: unknown
+    - contextPath: CTIX.ThreatDataLookup.source_confidence
+      description: 'Source confidence '
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.sources
+      description: sources
+    - contextPath: CTIX.ThreatDataLookup.sub_type
+      description: Sub type
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.subscriber_collections
+      description: subscriber collections
+    - contextPath: CTIX.ThreatDataLookup.subscribers
+      description: subscribers
+    - contextPath: CTIX.ThreatDataLookup.tags
+      description: Tags
+    - contextPath: CTIX.ThreatDataLookup.tlp
+      description: TLP
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.type
+      description: Type
+      type: string
+    - contextPath: CTIX.ThreatDataLookup.valid_from
+      description: Timestamp from when the indicator was valid
+      type: number
+    - contextPath: CTIX.ThreatDataLookup.valid_until
+      description: Timestamp till when the indicator was valid
+      type: number
+    description: Lookup to get threat data
+  dockerimage: demisto/python3:3.10.4.29342
+  runonce: false
+  subtype: python3
+

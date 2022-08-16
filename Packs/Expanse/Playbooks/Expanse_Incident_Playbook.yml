@@ -1,9 +1,11 @@
 id: ExpanseParseRawIncident
 version: -1
 name: Expanse Incident Playbook
-description: Parses incident from Expanse in raw json to readable output
+description: Deprecated. Use Xpanse Incident Handling - Generic instead.
 starttaskid: "0"
 fromversion: 5.0.0
+deprecated: true
+hidden: true
 tasks:
   "0":
     id: "0"

@@ -19,4 +19,4 @@ _____
 - Reputation Commands to query for network-level indicators (_IP, Domain, and URL_).
 - Command to query for ACTI intelligence reports.
 - Command to query ACTI Vulnerability database.
-- The pack also includes 6 additional playbooks that enable users to conduct ad hoc queries and sub-playbooks that enable users to pull ACTI data into either XSOAR's generic playbooks or playbooks from other vendors.
+- The pack also includes a playbook which helps to enrich indicators present in incident with related ACTI Intelligence Alert, ACTI Intelligence Report, ACTI Malware Family, ACTI Threat Actor, ACTI Threat Campaign, ACTI Threat Group if present in Accenture IntelGraph.

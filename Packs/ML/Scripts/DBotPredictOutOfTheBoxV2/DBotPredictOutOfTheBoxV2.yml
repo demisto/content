@@ -41,7 +41,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '0'
+  defaultValue: '0.9'
   description: The label probability threshold. Default is 0.
   isArray: false
   name: labelProbabilityThreshold
@@ -106,7 +106,7 @@ subtype: python3
 system: false
 timeout: 60µs
 type: python
-dockerimage:  demisto/ml:1.0.0.20606
+dockerimage: demisto/ml:1.0.0.32340
 runonce: true
 tests:
 - DbotPredictOufOfTheBoxTestV2

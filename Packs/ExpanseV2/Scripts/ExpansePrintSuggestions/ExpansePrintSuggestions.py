@@ -7,7 +7,6 @@ from CommonServerUserPython import *  # noqa
 """
 
 from typing import Dict, Any
-import traceback
 
 
 EXPANSE_LOGO = (
@@ -307,7 +306,6 @@ def main():
     try:
         return_results(expanse_print_suggestions(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute ExpansePrintSuggestions. Error: {str(ex)}")
 
 

@@ -27,6 +27,7 @@ import string
 from apiclient import discovery
 from oauth2client import service_account
 import itertools as it
+import concurrent.futures
 
 ''' GLOBAL VARS '''
 ADMIN_EMAIL = None
@@ -145,8 +146,8 @@ def get_service(serviceName, version, additional_scopes=None, delegated_user=Non
     proxies = handle_proxy()
     if PROXY or DISABLE_SSL:
         http_client = credentials.authorize(get_http_client_with_proxy(proxies))
-        return discovery.build(serviceName, version, http=http_client)
-    return discovery.build(serviceName, version, credentials=credentials)
+        return discovery.build(serviceName, version, cache_discovery=False, http=http_client)
+    return discovery.build(serviceName, version, cache_discovery=False, credentials=credentials)
 
 
 def parse_mail_parts(parts):
@@ -340,6 +341,23 @@ def create_incident_labels(parsed_msg, headers):
         labels.append({'type': 'Email/Header/' + key, 'value': val})
 
     return labels
+
+
+def mailboxes_to_entry(mailboxes):
+    query = "Query: {}".format(mailboxes[0].get('q') if mailboxes else '')
+    result = [{"Mailbox": user['Mailbox']} for user in mailboxes if user.get('Mailbox')]
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': mailboxes,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(query, result, headers=['Mailbox'], removeNull=True),
+        'EntryContext': {
+            'Gmail(val.ID && val.ID == obj.ID)': result,
+            'Email(val.ID && val.ID == obj.ID)': result
+        }
+    }
 
 
 def emails_to_entry(title, raw_emails, format_data, mailbox):
@@ -1079,23 +1097,43 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
-def search_all_mailboxes():
-    next_page_token = None
+def search_all_mailboxes(receive_only_accounts):
+    users_next_page_token = None
     service = get_service('admin', 'directory_v1')
     while True:
         command_args = {
             'maxResults': 100,
             'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
-            'pageToken': next_page_token
+            'pageToken': users_next_page_token
         }
 
         result = service.users().list(**command_args).execute()
-        next_page_token = result.get('nextPageToken')
+        users_count = len(result['users'])
+        users_next_page_token = result.get('nextPageToken')
 
-        entries = [search_command(user['primaryEmail']) for user in result['users']]
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            accounts_counter = 0
+            futures = []
+            entries = []
+            for user in result['users']:
+                futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
+            for future in concurrent.futures.as_completed(futures):
+                accounts_counter += 1
+                entries.append(future.result())
+                if accounts_counter % 100 == 0:
+                    demisto.info(
+                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
+                            int((accounts_counter / users_count) * 100),
+                            accounts_counter,
+                            users_count,
+                            len(entries)),
+                    )
+
+        if receive_only_accounts:
+            entries = [mailboxes_to_entry(entries)]
 
         # if these are the final result push - return them
-        if next_page_token is None:
+        if users_next_page_token is None:
             entries.append("Search completed")
             return entries
 
@@ -1104,6 +1142,9 @@ def search_all_mailboxes():
 
 
 def search_command(mailbox=None):
+    """
+    Searches for Gmail records of a specified Google user.
+    """
     args = demisto.args()
 
     user_id = args.get('user-id') if mailbox is None else mailbox
@@ -1125,13 +1166,23 @@ def search_command(mailbox=None):
     has_attachments = args.get('has-attachments')
     has_attachments = None if has_attachments is None else bool(
         strtobool(has_attachments))
+    receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'false'))
 
     if max_results > 500:
         raise ValueError(
             'maxResults must be lower than 500, got %s' % (max_results,))
 
-    mails, q = search(user_id, subject, _from, to, before, after, filename, _in, query,
-                      fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
+    mails, q = search(user_id, subject, _from, to,
+                      before, after, filename, _in, query,
+                      fields, label_ids, max_results, page_token,
+                      include_spam_trash, has_attachments, receive_only_accounts,
+                      )
+
+    # In case the user wants only account list without content.
+    if receive_only_accounts:
+        if mails:
+            return {'Mailbox': mailbox, 'q': q}
+        return {'Mailbox': None, 'q': q}
 
     res = emails_to_entry('Search in {}:\nquery: "{}"'.format(mailbox, q), mails, 'full', mailbox)
     return res
@@ -1139,7 +1190,7 @@ def search_command(mailbox=None):
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
            fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False,
-           has_attachments=None):
+           has_attachments=None, receive_only_accounts=None):
     query_values = {
         'subject': subject,
         'from': _from,
@@ -1168,6 +1219,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'v1',
         ['https://www.googleapis.com/auth/gmail.readonly'],
         command_args['userId'])
+
     try:
         result = service.users().messages().list(**command_args).execute()
     except Exception as e:
@@ -1176,7 +1228,16 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         else:
             raise
 
-    return [get_mail(user_id, mail['id'], 'full') for mail in result.get('messages', [])], q
+    # In case the user wants only account list without content.
+    if receive_only_accounts and result.get('sizeEstimate') > 0:
+        return True, q
+
+    entries = [get_mail(user_id=user_id,
+                        _id=mail['id'],
+                        _format='full',
+                        service=service) for mail in result.get('messages', [])]
+
+    return entries, q
 
 
 def get_mail_command():
@@ -1189,18 +1250,18 @@ def get_mail_command():
     return emails_to_entry('Email:', [mail], _format, user_id)
 
 
-def get_mail(user_id, _id, _format):
+def get_mail(user_id, _id, _format, service=None):
     command_args = {
         'userId': user_id,
         'id': _id,
         'format': _format,
     }
-
-    service = get_service(
-        'gmail',
-        'v1',
-        ['https://www.googleapis.com/auth/gmail.readonly'],
-        delegated_user=command_args['userId'])
+    if not service:
+        service = get_service(
+            'gmail',
+            'v1',
+            ['https://www.googleapis.com/auth/gmail.readonly'],
+            delegated_user=command_args['userId'])
     result = service.users().messages().get(**command_args).execute()
 
     return result
@@ -2130,7 +2191,11 @@ def main():
                 'Command "{}" is not implemented.'.format(command))
 
         else:
-            demisto.results(cmd_func())  # type: ignore
+            if command == 'gmail-search-all-mailboxes':
+                receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
+                demisto.results(cmd_func(receive_only_accounts))  # type: ignore
+            else:
+                demisto.results(cmd_func())  # type: ignore
 
     except Exception as e:
         import traceback

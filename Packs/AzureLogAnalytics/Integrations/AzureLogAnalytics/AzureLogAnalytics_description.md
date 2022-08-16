@@ -8,27 +8,48 @@ Full documentation for this integration is available in the [reference docs](htt
 You need to grant Cortex XSOAR authorization to access Azure Log Analytics.
 
 1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-azure-log-analytics). 
-2. Click the **Start Authorization Process** button, and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. 
-3. Click the **Accept** button, and you will receive your ID, token, and key. You will need to enter these when you configure the Azure Log Analytics integration instance in Cortex XSOAR.
+2. Click the **Start Authorization Process** button. 
+   You will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. 
+3. Click the **Accept** button. 
+   You will receive your ID, token, and key. You need to enter this information, when you configure the Azure Log Analytics integration instance in Cortex XSOAR.
 
-## Authorize Cortex XSOAR for Azure Log Analytics (self-deployed configuration)
+## Authorize Cortex XSOAR for Azure Log Analytics (Self-Deployed Configuration)
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, go to the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 
-Follow these steps for a self-deployed configuration.
+### Required permissions
+- Azure Service Management - permission `user_impersonation` of type `Delegated`
+- Log Analytics API - permission `Data.Read` of type `Delegated`
 
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
-2. Make sure the following permissions are granted for the app registration:
-   - Azure Service Management - permission `user_impersonation` of type `Delegated`
-   - Log Analytics API - permission `Data.Read` of type `Delegated`
-3. Copy the following URL and replace the ***CLIENT_ID*** and ***REDIRECT_URI*** with your own client ID and redirect URI, accordingly.
-```https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&resource=https://management.core.windows.net&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
-4. Enter the link and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You will be automatically redirected to a link with the following structure:
-```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-5. Copy the ***AUTH_CODE*** (without the “code=” prefix, and the session_state parameter) and paste it in your instance configuration under the **Authorization code** parameter. 
-6. Enter your client ID in the ***ID*** parameter. 
-7. Enter your client secret in the ***Key*** parameter.
-8. Enter your tenant ID in the ***Token*** parameter.
-9. Enter your redirect URI in the ***Redirect URI*** parameter.
+In the self-deployed mode, you can authenticate by using one of the following flows:
+- Authentication code flow
+- Client Credentials flow
+
+### Authentication Code flow
+
+---
+1. Copy the following URL and replace `CLIENT_ID` and `REDIRECT_URI` with your own client ID and redirect URI:
+   ```https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&resource=https://management.core.windows.net&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
+2. Enter the link.
+   You will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You are automatically redirected to a link with the following structure:
+   ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+1. Copy the `AUTH_CODE` (without the `“code=”` prefix, and the `session_state` parameter) and paste it in your instance configuration under the **Authorization code** parameter. 
+2. Enter your client ID in the **ID** parameter. 
+3. Enter your client secret in the **password** parameter.
+4. Enter your tenant ID in the **Token** parameter.
+5. Enter your redirect URI in the **Redirect URI** parameter.
+
+
+### Authorize Cortex XSOAR for Azure Log Analytics (Client-Credentials Configuration)
+
+---
+Follow these steps for client-credentials configuration.
+
+1. In the instance configuration, select the **client-credentials** checkbox.
+2. Enter your Client ID in the **ID/Client ID** parameter. 
+3. Enter your Client Secret in the **password** parameter.
+4. Enter your Tenant ID in the **Tenant ID** parameter.
+5. Run the ***azure-log-analytics-test*** command to test the connection and the authorization process.
 
 ## Get the additional instance parameters
 
-To get the ***Subscription ID***, ***Workspace Name***, ***Workspace ID*** and ***Resource Group*** parameters, navigate in the Azure Portal to ***Log Analytics workspaces > YOUR-WORKSPACE > Settings*** and click on ***Workspace Settings*** tab.
+To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resource Group** parameters, in the Azure Portal, go to **Log Analytics workspaces > YOUR-WORKSPACE > Settings** and click the **Workspace Settings** tab.

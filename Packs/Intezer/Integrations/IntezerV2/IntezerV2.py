@@ -1,13 +1,10 @@
+from collections import defaultdict
 from http import HTTPStatus
 from typing import Callable
 from typing import Dict
 from typing import List
-from typing import Union
+from typing import Tuple
 
-import demistomock as demisto
-import requests
-from CommonServerPython import *
-from CommonServerUserPython import *
 from intezer_sdk import consts
 from intezer_sdk.analysis import FileAnalysis
 from intezer_sdk.analysis import UrlAnalysis
@@ -21,6 +18,8 @@ from intezer_sdk.errors import ServerError
 from intezer_sdk.family import Family
 from intezer_sdk.sub_analysis import SubAnalysis
 from requests import HTTPError
+
+from CommonServerPython import *
 
 ''' CONSTS '''
 # Disable insecure warnings
@@ -192,7 +191,8 @@ def get_latest_result_command(intezer_api: IntezerApi, args: Dict[str, str]) -> 
     if not latest_analysis:
         return _get_missing_file_result(file_hash)
 
-    return enrich_dbot_and_display_file_analysis_results(latest_analysis.result())
+    file_metadata = latest_analysis.get_root_analysis().metadata
+    return enrich_dbot_and_display_file_analysis_results(latest_analysis.result(), file_metadata)
 
 
 def analyze_by_uploaded_file_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
@@ -225,6 +225,7 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
     indicator_name = args.get('indicator_name')
 
     command_results = []
+    file_metadata = {}
 
     for analysis_id in analysis_ids:
         try:
@@ -245,6 +246,7 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
                     continue
                 else:
                     analysis_result = analysis.result()
+                    file_metadata = analysis.get_root_analysis().metadata
 
             if analysis_result and analysis_type == 'Endpoint':
                 command_results.append(
@@ -253,7 +255,7 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
                 command_results.append(
                     enrich_dbot_and_display_url_analysis_results(analysis_result, intezer_api))
             elif analysis_result:
-                command_results.append(enrich_dbot_and_display_file_analysis_results(analysis_result))
+                command_results.append(enrich_dbot_and_display_file_analysis_results(analysis_result, file_metadata))
 
         except HTTPError as http_error:
             if http_error.response.status_code == HTTPStatus.CONFLICT:
@@ -306,6 +308,7 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
                                                 composed_analysis_id=analysis_id,
                                                 sha256='',
                                                 source='',
+                                                extraction_info=None,
                                                 api=intezer_api)
 
         sub_analysis_code_reuse = sub_analysis.code_reuse
@@ -314,6 +317,7 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
             return _get_analysis_running_result(analysis_id=str(analysis_id))
+        raise
 
     if not sub_analysis_code_reuse:
         return CommandResults(
@@ -364,6 +368,7 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
                                                 composed_analysis_id=analysis_id,
                                                 sha256='',
                                                 source='',
+                                                extraction_info=None,
                                                 api=intezer_api)
 
         sub_analysis_metadata = sub_analysis.metadata
@@ -372,7 +377,7 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
             return _get_analysis_running_result(analysis_id=str(analysis_id))
-
+        raise
     metadata_table = tableToMarkdown('Analysis Metadata', sub_analysis_metadata)
 
     is_root = sub_analysis_id == 'root'
@@ -397,6 +402,43 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
         readable_output=metadata_table,
         outputs=context_json,
         raw_response=sub_analysis_metadata
+    )
+
+
+def get_analysis_iocs_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
+    analysis_id = args.get('analysis_id')
+
+    try:
+        analysis = FileAnalysis.from_analysis_id(analysis_id, api=intezer_api)
+    except HTTPError as error:
+        if error.response.status_code == HTTPStatus.CONFLICT:
+            return _get_analysis_running_result(analysis_id=str(analysis_id))
+        raise
+
+    if not analysis:
+        return _get_missing_analysis_result(analysis_id=str(analysis_id))
+
+    iocs = analysis.iocs
+    readable_output = ''
+    if iocs:
+        if network_iocs := iocs.get('network'):
+            readable_output += tableToMarkdown('Network IOCs', network_iocs)
+        if files_iocs := iocs.get('files'):
+            readable_output += tableToMarkdown('Files IOCs', files_iocs)
+    else:
+        readable_output = 'No IOCs found'
+
+    context_json = {
+        'Intezer.Analysis(obj.ID == val.ID)': {
+            'ID': analysis_id,
+            'IOCs': iocs
+        }
+    }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=context_json,
+        raw_response=iocs
     )
 
 
@@ -426,22 +468,20 @@ def get_family_info_command(intezer_api: IntezerApi, args: dict) -> CommandResul
 
 # region Enrich DBot
 
-def enrich_dbot_and_display_file_analysis_results(intezer_result):
+def enrich_dbot_and_display_file_analysis_results(intezer_result: dict, file_metadata: dict) -> CommandResults:
     verdict = intezer_result.get('verdict')
     sha256 = intezer_result.get('sha256')
     analysis_id = intezer_result.get('analysis_id')
+    md5 = file_metadata.get('md5')
+    sha1 = file_metadata.get('sha1')
 
-    dbot = {
-        'Vendor': 'Intezer',
-        'Type': 'hash',
-        'Indicator': sha256,
-        'Score': dbot_score_by_verdict.get(verdict, 0)
-    }
-
-    file = {'SHA256': sha256, 'Metadata': intezer_result, 'ExistsInIntezer': True}
+    dbot_entry, file = _get_dbot_score_and_file_entries(intezer_result, file_metadata)
 
     if verdict == 'malicious':
         file['Malicious'] = {'Vendor': 'Intezer'}
+
+    intezer_result['sha1'] = sha1
+    intezer_result['md5'] = md5
 
     presentable_result = _file_analysis_presentable_code(intezer_result, sha256, verdict)
 
@@ -449,11 +489,41 @@ def enrich_dbot_and_display_file_analysis_results(intezer_result):
         readable_output=presentable_result,
         raw_response=intezer_result,
         outputs={
-            outputPaths['dbotscore']: dbot,
+            outputPaths['dbotscore']: dbot_entry,
             outputPaths['file']: file,
             'Intezer.Analysis(val.ID && val.ID == obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
         }
     )
+
+
+def _get_dbot_score_and_file_entries(file_analysis_result: dict, file_metadata: dict) -> Tuple[List[dict], dict]:
+    verdict: str = file_analysis_result.get('verdict', '')
+    sha256 = file_metadata.get('sha256')
+    md5 = file_metadata.get('md5')
+    sha1 = file_metadata.get('sha1')
+
+    dbot = [
+        {
+            'Vendor': 'Intezer',
+            'Type': 'file',
+            'Indicator': sha256,
+            'Score': dbot_score_by_verdict.get(verdict, 0)
+        },
+        {
+            'Vendor': 'Intezer',
+            'Type': 'file',
+            'Indicator': sha1,
+            'Score': dbot_score_by_verdict.get(verdict, 0)
+        },
+        {
+            'Vendor': 'Intezer',
+            'Type': 'file',
+            'Indicator': md5,
+            'Score': dbot_score_by_verdict.get(verdict, 0)
+        }]
+    file = {'SHA256': sha256, 'MD5': md5, 'SHA1': sha1, 'Metadata': file_analysis_result, 'ExistsInIntezer': True}
+
+    return dbot, file
 
 
 def _file_analysis_presentable_code(intezer_result: dict, sha256: str = None, verdict: str = None):
@@ -484,16 +554,26 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
     _refine_gene_counts(summary)
 
     intezer_result.update(summary)
-    verdict = summary['title']
+    verdict = summary['verdict_type']
     submitted_url = intezer_result['submitted_url']
+    scanned_url = intezer_result['scanned_url']
     analysis_id = intezer_result['analysis_id']
 
-    dbot = {
+    dbot = [{
         'Vendor': 'Intezer',
         'Type': 'Url',
         'Indicator': submitted_url,
         'Score': dbot_score_by_verdict.get(verdict, 0)
     }
+    ]
+
+    if scanned_url != submitted_url:
+        dbot.append({
+            'Vendor': 'Intezer',
+            'Type': 'Url',
+            'Indicator': scanned_url,
+            'Score': dbot_score_by_verdict.get(verdict, 0)
+        })
 
     url = {'URL': submitted_url, 'Metadata': intezer_result, 'ExistsInIntezer': True}
 
@@ -506,10 +586,8 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         intezer_result['redirect_chain'] = redirect_chain
 
     if 'indicators' in intezer_result:
-        indicators: Dict[str, List[str]] = {}
+        indicators: Dict[str, List[str]] = defaultdict(list)
         for indicator in intezer_result['indicators']:
-            if indicator['classification'] not in indicators:
-                indicators['classification'] = []
             indicators[indicator['classification']].append(indicator['text'])
         indicators_text = [
             get_indicator_text('malicious', indicators),
@@ -525,12 +603,26 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
     presentable_result += f'[Analysis Link]({intezer_result["analysis_url"]})\n'
 
     downloaded_file_presentable_result = ''
+    file_entry: dict = {}
     if 'downloaded_file' in intezer_result:
         downloaded_file = intezer_result.pop('downloaded_file')
         presentable_result += f'Downloaded file SHA256: {downloaded_file["sha256"]}\n'
         presentable_result += f'Downloaded file Verdict: **{downloaded_file["analysis_summary"]["verdict_type"]}**\n'
         downloaded_file_analysis = FileAnalysis.from_analysis_id(downloaded_file['analysis_id'], intezer_api)
-        downloaded_file_presentable_result = _file_analysis_presentable_code(downloaded_file_analysis.result())
+        download_file_result = downloaded_file_analysis.result()
+        intezer_result['downloaded_file'] = download_file_result
+        metadata = downloaded_file_analysis.get_root_analysis().metadata
+
+        file_dbot_entry, file_entry = _get_dbot_score_and_file_entries(download_file_result, metadata)
+
+        sha1 = metadata.get('sha1')
+        md5 = metadata.get('md5')
+        download_file_result['sha1'] = sha1
+        download_file_result['md5'] = md5
+        downloaded_file_presentable_result = _file_analysis_presentable_code(download_file_result)
+
+        dbot.extend(file_dbot_entry)
+        file_entry = {outputPaths['file']: file_entry}
 
     md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
     presentable_result += md + downloaded_file_presentable_result
@@ -541,6 +633,7 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         outputs={
             outputPaths['dbotscore']: dbot,
             outputPaths['url']: url,
+            **file_entry,
             'Intezer.Analysis(val.ID && val.ID == obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
         }
     )
@@ -616,6 +709,7 @@ def main():
             'intezer-get-sub-analyses': get_analysis_sub_analyses_command,
             'intezer-get-analysis-code-reuse': get_analysis_code_reuse_command,
             'intezer-get-analysis-metadata': get_analysis_metadata_command,
+            'intezer-get-analysis-iocs': get_analysis_iocs_command,
             'intezer-get-family-info': get_family_info_command
         }
 

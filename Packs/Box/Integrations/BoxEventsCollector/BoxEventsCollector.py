@@ -74,17 +74,42 @@ class BoxEventsParams(BaseModel):
         validate_assignment = True
 
 
+def not_gate(v):
+    """Due to a bug in the validator object (collision with CommonServerPython)
+    we can pass this a a simple lambda. So here we are.
+
+    Just doing not if v is bool, else it is true.
+
+    Used when getting insecure and should change the insecure to verify.
+    insecure == True, verify is False.
+    """
+    v_ = parse_obj_as(bool, False if v is None else v)
+    return not v_
+
+
 class BoxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://developer.box.com/reference/get-events/
     url = parse_obj_as(AnyUrl, 'https://api.box.com/2.0/events')
     method = Method.GET
     params: BoxEventsParams
+    verify: Optional[bool] = Field(True, alias='insecure')  # type: ignore[assignment]
+
+    # validators
+    _oppsite_verify = validator('verify', allow_reuse=True)(not_gate)
+
+
+class BoxIntegrationOptions(IntegrationOptions):
+    product_name = 'box'
+    vendor_name = 'box'
+    should_push_events: bool = False
 
 
 class BoxEventsClient(IntegrationEventsClient):
     request: BoxEventsRequestConfig
     options: IntegrationOptions
-    authorization_url = parse_obj_as(AnyUrl, 'https://api.box.com/oauth2/token')
+    authorization_url = parse_obj_as(
+        AnyUrl, 'https://api.box.com/oauth2/token'
+    )
 
     def __init__(
         self,
@@ -117,7 +142,7 @@ class BoxEventsClient(IntegrationEventsClient):
         claims = Claims(
             client_id=self.box_credentials.boxAppSettings.clientID,
             id=self.box_credentials.enterpriseID,
-            aud=self.authorization_url
+            aud=self.authorization_url,
         )
 
         decrypted_private_key = _decrypt_private_key(
@@ -200,7 +225,7 @@ def main(command: str, demisto_params: dict):
         params=BoxEventsParams.parse_obj(demisto_params),
         **demisto_params,
     )
-    options = IntegrationOptions.parse_obj(demisto_params)
+    options = BoxIntegrationOptions.parse_obj(demisto_params)
     client = BoxEventsClient(request, options, box_credentials)
     get_events = BoxEventsGetter(client, options)
     if command == 'test-module':
@@ -214,14 +239,16 @@ def main(command: str, demisto_params: dict):
     if command == 'box-get-events':
         demisto.debug('box-get-events, publishing events to incident')
         return_results(CommandResults('BoxEvents', 'event_id', events))
-    else:
-        demisto.debug('in event collection')
-        if events:
-            demisto.debug('publishing events')
-            demisto.setLastRun(get_events.get_last_run())
-            send_events_to_xsiam(events, 'box', 'box')
-        else:
-            demisto.debug('no events found, finishing script.')
+    if command == 'fetch-events':
+        last_run = get_events.get_last_run()
+        demisto.debug(
+            f'in fetch-events. settings should push events to true, setting {last_run=}'
+        )
+        options.should_push_events = True
+        demisto.setLastRun(last_run)
+    demisto.debug(f'finished fetching events. {options.should_push_events=}')
+    if options.should_push_events:
+        send_events_to_xsiam(events, options.vendor_name, options.product_name)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -498,7 +498,7 @@ def test_upload_vulnerability_sync_file(requests_mock, mocker):
 
     args = {
         'org_id': org_id,
-        'report_source': report_source,
+        'reports_source': report_source,
         'entry_id': entry_id,
         'csv_file_name': csv_file_name,
         'task_type': task_type,

@@ -1,0 +1,78 @@
+commonfields:
+  id: Duo Event Collector
+  version: -1
+name: Duo Event Collector
+display: Duo Event Collector
+category: Analytics & SIEM
+description: Collects Auth and Audit events for Duo using the API.
+configuration:
+- display: Server Host
+  name: host
+  type: 0
+  required: true
+- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
+    3 months, 1 year)
+  name: after
+  type: 0
+  required: true
+  defaultvalue: 1 day
+- display: Integration key
+  name: integration_key
+  type: 0
+  required: true
+- displaypassword:  Secret key
+  name: secret_key
+  hiddenusername: true
+  type: 9
+  required: true
+- display: XSIAM request limit
+  name: limit
+  type: 0
+  defaultvalue: 1000
+  required: true
+- display: Request retries
+  name: retries
+  type: 0
+  defaultvalue: 5
+  required: false
+- display: The vendor corresponding to the integration that originated the events
+  name: vendor
+  type: 0
+  defaultvalue: duo
+  required: false
+- display: The product corresponding to the integration that originated the events
+  name: product
+  type: 0
+  defaultvalue: duo
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ""
+  type: python
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+        - 'True'
+        - 'False'
+      required: true
+    deprecated: false
+    description: Manual command to fetch events and display them.
+    execution: false
+    name: duo-get-events
+  dockerimage: demisto/duoadmin3:1.0.0.29891
+  runonce: false
+  isfetchevents: true
+  subtype: python3
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
+tests:
+- No tests
