@@ -393,13 +393,8 @@ def test_module(client: Client):
                                ' as the output of the command.')
 
     else:  # Client credentials flow
-        try:
-            test_connection(client)
-            return "ok"
-        except Exception:
-            raise DemistoException('When using a self-deployed configuration with client credentials auth flow, please '
-                                   'enable the integration and run the !azure-risky-users-auth-test command in order to'
-                                   ' test the connection.')
+        test_connection(client)
+        return "ok"
 
 
 # Authentication Functions
