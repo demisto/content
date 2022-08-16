@@ -1,41 +1,32 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 4387d5ea-4116-4623-8912-57ab19d6c4ad
-    propagationLabels:
-    - all
-    toServerVersion: ""
-description: This playbook tracks the user responses and  resends the emails to recipients
-  who have not responded
-id: c9b6d627-6101-4c20-8ebb-d6754d24a025
+description: This playbook tracks the user responses and  resends the emails to recipients who have not responded
+id: xsoar-data-collection-response-tracking
 inputs:
 - description: 'Data collection Job uuid '
   key: Jobuuid
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The file id of the attachment to send to the recipient
   key: FileAttachments
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: Mail Subject
   key: EmailSubject
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The amount of time between two scheduled commands that poll the response
   key: PollingTimebetweenRuns
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: xsoar-data-collection-response-tracking
 outputs:
 - contextPath: WSActionStatus(val.job_uuid==obj.job_uuid)
   description: "Merges the output to the main playbook"
-sourceplaybookid: xsoar-ws-email-loop
 starttaskid: "0"
 tasks:
   "0":
@@ -56,6 +47,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 78f010aa-291b-4af4-8db9-46ba1c20e744
     timertriggers: []
     type: start
@@ -82,6 +74,7 @@ tasks:
       name: End
       type: title
       version: -1
+      description: ''
     taskid: 2b7d1e64-264a-4e0b-8338-7544f6d22b1f
     timertriggers: []
     type: title
@@ -151,8 +144,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Gets the current status of an action that was setup; Used to track
-        if the user responded to the action.
+      description: Gets the current status of an action that was setup; Used to track if the user responded to the action.
       id: 26053a5f-0441-4305-822a-4b1237a5293c
       iscommand: true
       name: Get the status of the job
@@ -190,8 +182,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: To parse the context data after running  xsoar-ws-get-action-status
-        and resend emails to recipients who have not responded
+      description: To parse the context data after running  xsoar-ws-get-action-status and resend emails to recipients who have not responded
       id: a50d5167-5931-446a-8e24-8417a967d278
       iscommand: false
       name: Response Status parsing
@@ -266,3 +257,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
