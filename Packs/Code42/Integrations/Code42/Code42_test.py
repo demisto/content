@@ -30,6 +30,7 @@ from Code42 import (
     user_unblock_command,
     user_deactivate_command,
     user_reactivate_command,
+    update_user_risk_profile,
     legal_hold_add_user_command,
     legal_hold_remove_user_command,
     list_watchlists_command,
@@ -1028,6 +1029,42 @@ MOCK_CREATE_USER_RESPONSE = """
 }
 """
 
+MOCK_USER_RISK_PROFILE_RESPONSE = """
+{
+  "userId": "942564422882759874",
+  "tenantId": "abc-123",
+  "username": "profile@example.com",
+  "displayName": "Test User",
+  "notes": "test update",
+  "managerId": "",
+  "managerUsername": "",
+  "managerDisplayName": "",
+  "title": "",
+  "division": "",
+  "department": "",
+  "employmentType": "",
+  "country": "",
+  "region": "",
+  "locality": "",
+  "active": true,
+  "deleted": false,
+  "supportUser": false,
+  "startDate": {
+    "year": 2020,
+    "month": 10,
+    "day": 10
+  },
+  "endDate": {
+    "year": 2023,
+    "month": 10,
+    "day": 10
+  },
+  "cloudAliases": [
+    "profile@example.com"
+  ]
+}
+"""
+
 MOCK_GET_DETECTIONLIST_RESPONSE = """
 {
     "type$": "DEPARTING_EMPLOYEE_V2",
@@ -1147,6 +1184,15 @@ def code42_users_mock(code42_sdk_mock, mocker):
         mocker, MOCK_CREATE_USER_RESPONSE
     )
     code42_sdk_mock.users.create_user.return_value = create_user_response
+    return code42_sdk_mock
+
+
+@pytest.fixture
+def code42_user_risk_profile_mock(code42_sdk_mock, mocker):
+    update_risk_profile_response = create_mock_code42_sdk_response(
+        mocker, MOCK_USER_RISK_PROFILE_RESPONSE
+    )
+    code42_sdk_mock.userriskprofile.update.return_value = update_risk_profile_response
     return code42_sdk_mock
 
 
@@ -1947,6 +1993,34 @@ def test_user_reactivate_command(code42_users_mock):
     assert cmd_res.outputs["UserID"] == 123456
     assert cmd_res.outputs_prefix == "Code42.User"
     code42_users_mock.users.reactivate.assert_called_once_with(123456)
+
+
+def test_user_update_risk_profile_command(code42_user_risk_profile_mock):
+    client = _create_client(code42_user_risk_profile_mock)
+    cmd_res = update_user_risk_profile(
+        client,
+        args={
+            "username": "profile@example.com",
+            "notes": "new note",
+            "start_date": "2020-10-10",
+            "end_date": "2023-10-10"
+        }
+    )
+    assert cmd_res.raw_response == {
+        'EndDate': {'day': 10, 'month': 10, 'year': 2023},
+        'Notes': 'test update',
+        'StartDate': {'day': 10, 'month': 10, 'year': 2020},
+        'Success': True,
+        'Username': 'profile@example.com'
+    }
+    assert cmd_res.outputs["EndDate"] == {'day': 10, 'month': 10, 'year': 2023}
+    assert cmd_res.outputs_prefix == "Code42.UpdatedUserRiskProfiles"
+    code42_user_risk_profile_mock.userriskprofile.update.assert_called_once_with(
+        "123412341234123412",
+        notes="new note",
+        start_date="2020-10-10",
+        end_date="2023-10-10"
+    )
 
 
 def test_security_data_search_command(code42_file_events_mock):

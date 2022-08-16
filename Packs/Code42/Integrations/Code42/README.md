@@ -507,6 +507,55 @@ Reactivates the user with the given username.
 >|---|
 >| 210019 |
 
+### code42-user-update-risk-profile
+***
+Updates a User's risk profile.
+
+
+#### Base Command
+
+`code42-user-update-risk-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username to give to the user. | Required | 
+| start_date | The user's start date (used in the New Hire watchlist). | Optional |
+| end_date | The user's end date (used in the Departing Employee watchlist). | Optional |
+| notes | Notes about the user. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.UpdatedUserRiskProfiles.Username | String | A username for a Code42 user. | 
+| Code42.UpdatedUserRiskProfiles.StartDate | Object | The updated start_date for the user. | 
+| Code42.UpdatedUserRiskProfiles.EndDate | Object | The updated end_date for the user. | 
+| Code42.UpdatedUserRiskProfiles.Notes | String | The updated notes for the user. | 
+
+#### Command example
+```!code42-user-update-risk-profile username="user@example.com" start_date="2022-10-10", end_date="2023-10-10", notes="test note."```
+#### Context Example
+```json
+{
+    "Code42": {
+        "UpdatedUserRiskProfile": {
+            "Username": "user@example.com",
+            "StartDate": {"year": 2022, "month": 10, "day": 10},
+            "EndDate": {"year": 2023, "month": 10, "day": 10},
+            "Notes": "test note."
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Code42 User Risk Profile Updated
+>|Username|StartDate|EndDate|Notes|
+>|---|---|---|---|
+>| user@example.com | year: 2022\nmonth: 10\nday10 | year: 2023\nmonth: 10\nday10 | "test note."
 
 ### code42-legalhold-add-user
 ***
