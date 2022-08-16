@@ -2,7 +2,7 @@
     "associatedToAll": true,
     "breachScript": "ae12c0dc-2ee1-48b3-8575-84a195781747",
     "caseInsensitive": true,
-    "cliName": "emailusersla",
+    "cliName": "incidentemailusersla",
     "closeForm": false,
     "content": true,
     "editForm": false,
