@@ -1,5 +1,3 @@
-contentitemexportablefields:
-  contentitemfields:
 description: This playbook tracks the user responses and  resends the emails to recipients who have not responded
 id: xsoar-data-collection-response-tracking
 inputs:
