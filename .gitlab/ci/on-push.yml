@@ -307,7 +307,7 @@ run-end-to-end-tests:
     - gke # Better when not needing docker-in-docker
   extends:
     - .default-job-settings
-    - .sdk-nightly-schedule-rule-always
+    # - .sdk-nightly-schedule-rule-always
   variables:
     INSTANCE_ROLE: "Server Master"
   needs: ["create-instances"]
