@@ -392,13 +392,6 @@ script:
       name: message-id
       required: true
       secret: false
-    - default: false
-      description: The user's email address. The "me" special value can be used to
-        indicate the authenticated user.
-      isArray: false
-      name: user-id
-      required: true
-      secret: false
     deprecated: false
     description: Retrieves attachments from a sent Gmail message.
     execution: false

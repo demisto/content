@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *
 ''' IMPORTS '''
 import re
@@ -1021,10 +1020,9 @@ def reply_mail_command(client):
 
 def get_attachments_command(client):
     args = demisto.args()
-    user_id = args.get('user-id')
     _id = args.get('message-id')
 
-    attachments = client.get_attachments(user_id, _id)
+    attachments = client.get_attachments('me', _id)
 
     return [fileResult(name, data) for name, data in attachments]
 
