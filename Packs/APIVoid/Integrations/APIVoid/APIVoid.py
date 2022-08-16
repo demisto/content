@@ -153,7 +153,8 @@ def indicator_context(client, indicator, indicator_context_path, indicator_value
             'Score': dbot_score,
             'Vendor': 'APIVoid',
             'Indicator': indicator[indicator_value_field],
-            'Type': 'ip'
+            'Type': 'ip',
+            'Reliability': demisto.params().get('integrationReliability')
         }
     }
 

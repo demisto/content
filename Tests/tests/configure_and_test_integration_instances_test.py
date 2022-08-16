@@ -168,7 +168,7 @@ def test_update_integration_lists(mocker, new_integrations_names, turned_non_hid
     """
     mocker.patch('Tests.configure_and_test_integration_instances.packs_names_to_integrations_names',
                  return_value=turned_non_hidden_packs_id)
-    returned_results = update_integration_lists(new_integrations_names, set(), modified_integrations_names)
+    returned_results = update_integration_lists(new_integrations_names, turned_non_hidden_packs_id, modified_integrations_names)
     assert the_expected_result(returned_results[0], returned_results[1])
 
 

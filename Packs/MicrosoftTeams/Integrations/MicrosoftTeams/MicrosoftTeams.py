@@ -1178,6 +1178,8 @@ def send_message():
             return
 
     team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
+    if re.match(r'\b[^@]+@[^@]+\.[^@]+\b', team_member):  # team member is an email
+        team_member = team_member.lower()
 
     if not (team_member or channel_name):
         raise ValueError('No channel or team member to send message were provided.')

@@ -949,7 +949,7 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
         CommandResults: command-results object.
     """
     # the api overrides the blacklisted IPs, therefore it is necessary to add those who exist to the 'PUT' request.
-    current_ip_feeds = client.get_custom_ip_feeds().get("feed", [])
+    current_ip_feeds = (client.get_custom_ip_feeds() or {}).get("feed") or []
     new_ip_feeds = argToList(arg=args.pop("ip"))
 
     # remove duplicates, the api doesn't give error on duplicate IPs
@@ -973,7 +973,7 @@ def get_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
         CommandResults: command-results object.
     """
     limit, _ = parse_limit_and_offset_values(limit=args.get("limit", "50"))
-    feeds_info = client.get_custom_md5_malware()
+    feeds_info = client.get_custom_md5_malware() or {}
 
     if "_id" in feeds_info:
         feeds_info.pop("_id")  # not needed, it will be removed from the api in the future.
@@ -1020,7 +1020,8 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
         CommandResults: command-results object.
     """
     # the api overrides the md5 malware hashes, therefore it is necessary to add those who exist to the 'PUT' request.
-    feeds = client.get_custom_md5_malware().get("feed", [])
+    feeds = (client.get_custom_md5_malware() or {}).get('feed') or []
+
     name = args.get("name")
     md5s = argToList(arg=args.get("md5", []))
 
