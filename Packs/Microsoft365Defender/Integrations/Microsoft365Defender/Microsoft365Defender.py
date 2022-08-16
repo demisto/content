@@ -129,6 +129,8 @@ class Client:
         """
         body = assign_params(status=status, assignedTo=assigned_to, classification=classification,
                              determination=determination, tags=tags, comment=comment)
+        if assigned_to == "":
+            body['assignedTo'] = ""
         updated_incident = self.ms_client.http_request(method='PATCH', url_suffix=f'api/incidents/{incident_id}',
                                                        json_data=body, timeout=timeout)
         return updated_incident

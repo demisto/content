@@ -1,14 +1,4 @@
-from SEKOIAIntelligenceCenter import (
-    Client,
-    get_observable_command,
-    get_indicator_command,
-    get_indicator_context_command,
-    get_reliability_score,
-    get_tlp,
-    get_reputation_score,
-    test_module,
-    extract_indicator_from_pattern,
-)
+import SEKOIAIntelligenceCenter
 from CommonServerPython import *
 import pytest
 import os
@@ -27,7 +17,7 @@ def util_load_json(path):
 def client():
     api_key = os.environ.get("SEKOIAIO_APIKEY", "aa")
     headers = {"Authorization": f"Bearer {api_key}"}
-    client = Client(
+    client = SEKOIAIntelligenceCenter.Client(
         base_url=MOCK_URL,
         headers=headers,
     )
@@ -53,7 +43,7 @@ def client():
     ],
 )
 def test_extract_indicator_from_pattern(input, output):
-    extract_indicator_from_pattern(input) == output
+    SEKOIAIntelligenceCenter.extract_indicator_from_pattern(input) == output
 
 
 @pytest.mark.parametrize(
@@ -74,7 +64,7 @@ def test_get_observables(
     )
 
     args = {"value": indicator_value, "type": indicator_type}
-    result = get_observable_command(client=client, args=args)
+    result = SEKOIAIntelligenceCenter.get_observable_command(client=client, args=args)
 
     assert result.outputs["items"] == mock_response["items"]
     assert result.outputs["indicator"] == args
@@ -93,7 +83,7 @@ def test_test_module_ok(client, requests_mock):
     }
 
     requests_mock.get(MOCK_URL + "/v1/apiauth/auth/validate", json=response)
-    assert test_module(client) == "ok"
+    assert SEKOIAIntelligenceCenter.test_module(client) == "ok"
 
 
 def test_test_module_nok(client, requests_mock):
@@ -101,7 +91,7 @@ def test_test_module_nok(client, requests_mock):
 
     requests_mock.get(MOCK_URL + "/v1/apiauth/auth/validate", json=response)
 
-    assert "Authorization Error" in test_module(client)
+    assert "Authorization Error" in SEKOIAIntelligenceCenter.test_module(client)
 
 
 # This test only runs if SEKOIA.IO API_KEY is provided
@@ -118,7 +108,7 @@ def test_get_validate_resource_with_credentials(client):
 def test_get_observables_with_credentials(client):
 
     args = {"value": "eicar@sekoia.io", "type": "email-addr"}
-    result = get_observable_command(client=client, args=args)
+    result = SEKOIAIntelligenceCenter.get_observable_command(client=client, args=args)
 
     assert result.outputs["items"] != []
     assert result.outputs["indicator"] == args
@@ -142,7 +132,7 @@ def test_get_indicator(
     )
     args = {"value": {indicator_value}, "type": {indicator_type}}
 
-    result = get_indicator_command(client=client, args=args)
+    result = SEKOIAIntelligenceCenter.get_indicator_command(client=client, args=args)
 
     assert result.outputs["items"] == mock_response["items"]
     assert result.outputs["indicator"] == args
@@ -153,7 +143,7 @@ def test_get_indicator(
 def test_get_indicator_with_credentials(client):
     args = {"value": "eicar@sekoia.io", "type": "email-addr"}
 
-    result = get_indicator_command(client=client, args=args)
+    result = SEKOIAIntelligenceCenter.get_indicator_command(client=client, args=args)
 
     assert result.outputs["items"] != []
     assert result.outputs["indicator"] == args
@@ -162,12 +152,12 @@ def test_get_indicator_with_credentials(client):
 @pytest.mark.parametrize(
     "command, indicator_type, indicator_value",
     [
-        (get_observable_command, "", "ipv4-addr"),
-        (get_observable_command, "1.1.1.1", ""),
-        (get_indicator_command, "1.1.1.1", ""),
-        (get_indicator_command, "", "ipv4-addr"),
-        (get_indicator_context_command, "1.1.1.1", ""),
-        (get_indicator_context_command, "", "ipv4-addr"),
+        (SEKOIAIntelligenceCenter.get_observable_command, "", "ipv4-addr"),
+        (SEKOIAIntelligenceCenter.get_observable_command, "1.1.1.1", ""),
+        (SEKOIAIntelligenceCenter.get_indicator_command, "1.1.1.1", ""),
+        (SEKOIAIntelligenceCenter.get_indicator_command, "", "ipv4-addr"),
+        (SEKOIAIntelligenceCenter.get_indicator_context_command, "1.1.1.1", ""),
+        (SEKOIAIntelligenceCenter.get_indicator_context_command, "", "ipv4-addr"),
     ],
 )
 def test_get_indicator_context_incomplete(
@@ -214,7 +204,7 @@ def test_get_indicator_context(
     )
 
     args = {"value": indicator_value, "type": indicator_type}
-    command_results = get_indicator_context_command(client=client, args=args)
+    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(client=client, args=args)
     for result in command_results:
         assert result.outputs != []
         assert result.to_context != []
@@ -238,7 +228,7 @@ def test_get_indicator_context_with_credentials(
     client, indicator_value, indicator_type
 ):
     args = {"value": indicator_value, "type": indicator_type}
-    command_results = get_indicator_context_command(client=client, args=args)
+    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(client=client, args=args)
 
     for result in command_results:
         assert result.outputs != []
@@ -258,7 +248,7 @@ def test_get_indicator_context_with_credentials(
     ],
 )
 def test_get_reliability_score(input: int, output: str):
-    assert get_reliability_score(input) == output
+    assert SEKOIAIntelligenceCenter.get_reliability_score(input) == output
 
 
 @pytest.mark.parametrize(
@@ -285,7 +275,7 @@ def test_get_tlp(input):
             },
         ]
     }
-    assert get_tlp([marking_definition], stix_bundle) == input
+    assert SEKOIAIntelligenceCenter.get_tlp([marking_definition], stix_bundle) == input
 
 
 def test_get_tlp_not_found():
@@ -302,7 +292,7 @@ def test_get_tlp_not_found():
             },
         ]
     }
-    assert get_tlp([marking_definition], stix_bundle) == "red"
+    assert SEKOIAIntelligenceCenter.get_tlp([marking_definition], stix_bundle) == "red"
 
 
 @pytest.mark.parametrize(
@@ -313,4 +303,4 @@ def test_get_tlp_not_found():
     ],
 )
 def test_get_reputation_score(input: list, output: int):
-    assert get_reputation_score([input]) == output
+    assert SEKOIAIntelligenceCenter.get_reputation_score([input]) == output

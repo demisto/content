@@ -1,8 +1,8 @@
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host persistence evidence.
+  contentitemfields: {}
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host persistence evidence.
 id: MDE - Host Advanced Hunting For Persistence
 inputs:
 - description: A comma-separated list of file SHA256 hashes to hunt.
@@ -12,36 +12,6 @@ inputs:
   value:
     complex:
       accessor: filesha256
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of file SHA1 hashes to hunt.
-  key: FileSha1
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filesha1
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of file MD5 hashes to hunt.
-  key: FileMd5
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filemd5
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of IPs to hunt.
-  key: IP
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: detectedips
       root: incident
       transformers:
       - operator: uniq
@@ -76,7 +46,32 @@ inputs:
       transformers:
       - operator: uniq
 name: MDE - Host Advanced Hunting For Persistence
-outputs: []
+outputs:
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
+  description: The query results for Hunt Persistence Evidence.
+  type: unknown
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
+  description: The query results for scheduled_job query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry
+  description: The query results for registry_entry query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes
+  description: The query results for startup_folder_changes query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created
+  description: The query results for new_service_created query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.service_updated
+  description: The query results for service_updated query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced
+  description: The query results for file_replaced query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_user
+  description: The query results for new_user query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_group
+  description: The query results for new_group query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change
+  description: The query results for group_user_change query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
+  description: The query results for local_firewall_change query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
+  description: The query results for host_file_change query_purpose.
 starttaskid: '0'
 tasks:
   '0':
@@ -86,10 +81,9 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '9'
-      - '1'
-      - '2'
       - '7'
+      - '35'
+      - '38'
     note: false
     quietmode: 0
     separatecontext: false
@@ -138,7 +132,7 @@ tasks:
       {
         "position": {
           "x": -1250,
-          "y": 560
+          "y": 760
         }
       }
   '2':
@@ -167,8 +161,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 560
+          "x": -390,
+          "y": 760
         }
       }
   '3':
@@ -214,7 +208,7 @@ tasks:
       {
         "position": {
           "x": -1250,
-          "y": 705
+          "y": 895
         }
       }
   '4':
@@ -258,7 +252,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 705
+          "y": 895
         }
       }
   '5':
@@ -302,7 +296,7 @@ tasks:
       {
         "position": {
           "x": 80,
-          "y": 705
+          "y": 895
         }
       }
   '6':
@@ -346,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 940,
-          "y": 705
+          "y": 895
         }
       }
   '7':
@@ -356,9 +350,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '5'
-      - '6'
-      - '4'
+      - '36'
     note: false
     quietmode: 0
     separatecontext: false
@@ -408,7 +400,7 @@ tasks:
       {
         "position": {
           "x": -810,
-          "y": 560
+          "y": 760
         }
       }
   '10':
@@ -454,7 +446,7 @@ tasks:
       {
         "position": {
           "x": -810,
-          "y": 705
+          "y": 895
         }
       }
   '11':
@@ -501,8 +493,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 705
+          "x": -390,
+          "y": 895
         }
       }
   '12':
@@ -544,7 +536,7 @@ tasks:
       {
         "position": {
           "x": 80,
-          "y": 870
+          "y": 1060
         }
       }
   '13':
@@ -582,7 +574,7 @@ tasks:
       {
         "position": {
           "x": 290,
-          "y": 1050
+          "y": 1240
         }
       }
   '18':
@@ -609,7 +601,7 @@ tasks:
       {
         "position": {
           "x": 80,
-          "y": 1240
+          "y": 1430
         }
       }
   '20':
@@ -651,7 +643,7 @@ tasks:
       {
         "position": {
           "x": 940,
-          "y": 870
+          "y": 1060
         }
       }
   '21':
@@ -689,7 +681,7 @@ tasks:
       {
         "position": {
           "x": 1150,
-          "y": 1050
+          "y": 1240
         }
       }
   '22':
@@ -716,7 +708,7 @@ tasks:
       {
         "position": {
           "x": 940,
-          "y": 1240
+          "y": 1430
         }
       }
   '23':
@@ -758,7 +750,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 870
+          "y": 1060
         }
       }
   '24':
@@ -796,7 +788,7 @@ tasks:
       {
         "position": {
           "x": 720,
-          "y": 1050
+          "y": 1240
         }
       }
   '25':
@@ -823,7 +815,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 1240
+          "y": 1430
         }
       }
   '26':
@@ -864,8 +856,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 870
+          "x": -390,
+          "y": 1060
         }
       }
   '27':
@@ -902,8 +894,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -590,
-          "y": 1050
+          "x": -600,
+          "y": 1240
         }
       }
   '28':
@@ -929,8 +921,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 1240
+          "x": -400,
+          "y": 1430
         }
       }
   '29':
@@ -972,7 +964,7 @@ tasks:
       {
         "position": {
           "x": -810,
-          "y": 870
+          "y": 1060
         }
       }
   '30':
@@ -1010,7 +1002,7 @@ tasks:
       {
         "position": {
           "x": -1030,
-          "y": 1050
+          "y": 1240
         }
       }
   '31':
@@ -1037,7 +1029,7 @@ tasks:
       {
         "position": {
           "x": -810,
-          "y": 1240
+          "y": 1430
         }
       }
   '32':
@@ -1079,7 +1071,7 @@ tasks:
       {
         "position": {
           "x": -1250,
-          "y": 870
+          "y": 1060
         }
       }
   '33':
@@ -1117,7 +1109,7 @@ tasks:
       {
         "position": {
           "x": -1470,
-          "y": 1050
+          "y": 1240
         }
       }
   '34':
@@ -1144,16 +1136,188 @@ tasks:
       {
         "position": {
           "x": -1250,
-          "y": 1240
+          "y": 1430
         }
       }
+  '35':
+    id: '35'
+    taskid: 8f574f0b-2536-4e7f-8774-d47638a31a18
+    type: condition
+    task:
+      id: 8f574f0b-2536-4e7f-8774-d47638a31a18
+      version: -1
+      name: Are DeviceID and FileSha256 provided?
+      description: Are DeviceID and FileName provided?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '37'
+      yes:
+      - '1'
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FileSha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1030,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '36':
+    id: '36'
+    taskid: bbb0d25f-0066-44d1-8681-750b44b27537
+    type: condition
+    task:
+      id: bbb0d25f-0066-44d1-8681-750b44b27537
+      version: -1
+      name: Check if device information was provided
+      description: Check if device information was provided
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '37'
+      yes:
+      - '5'
+      - '4'
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceName
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '37':
+    id: '37'
+    taskid: 39ba3590-03ff-438b-8c0c-89fedafcea4e
+    type: title
+    task:
+      id: 39ba3590-03ff-438b-8c0c-89fedafcea4e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '38':
+    id: '38'
+    taskid: a961402d-d334-4d17-8051-01b0d961b593
+    type: condition
+    task:
+      id: a961402d-d334-4d17-8051-01b0d961b593
+      version: -1
+      name: Are DeviceID,FileName and FileSha256 provided?
+      description: Are DeviceID and FileName provided?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '37'
+      yes:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FileSha256
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FileName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 895,
+        "height": 1205,
         "width": 3000,
         "x": -1470,
         "y": 410
@@ -1163,3 +1327,4 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+system: true
