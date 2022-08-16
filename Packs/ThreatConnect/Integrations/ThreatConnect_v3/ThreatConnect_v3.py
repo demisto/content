@@ -471,7 +471,7 @@ def fetch_incidents(client: Client) -> None:  # pragma: no cover
     tags = params.get('tags', '')
     owners = params.get('owners', '')
     status = params.get('status', '')
-    group_type = params.get('group_type')
+    group_type = params.get('group_type', ['Incident'])
     last_run = demisto.getLastRun()
     last_run = last_run.get('last')
     demisto.debug(f'[ThreatConnect] last run: {last_run}')
@@ -479,7 +479,7 @@ def fetch_incidents(client: Client) -> None:  # pragma: no cover
         last_run = f"{params.get('first_fetch_time') or '3 days'} ago"
         last_run = dateparser.parse(last_run)
 
-    response, status_code = list_groups(client, group_type=group_type, include_tags='true', include_attributes='true',
+    response, status_code = list_groups(client, group_type=group_type[0], include_tags='true', include_attributes='true',
                                         return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run)
     if status_code != 200:
         return_error('Error from the API: ' + response.get('message',
@@ -655,7 +655,7 @@ def list_groups(client: Client, group_id: str = '', from_date: str = '', tag: st
     group_type = args.get('group_type', group_type)
     tql_filter = args.get('filter', tql_filter)
     # PAGINATION PARAMS
-    limit = args.get('limit', '1000')
+    limit = args.get('limit', '100')
     page = args.get('page', '0')
 
     tql_prefix = ''

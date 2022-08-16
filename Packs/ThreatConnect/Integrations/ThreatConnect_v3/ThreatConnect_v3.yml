@@ -27,12 +27,12 @@ configuration:
   required: false
   type: 0
 - additionalinfo: The group type to filter by.
-  defaultValue: Incident
   display: Group Type
   name: group_type
   options:
   - Incident
   - Event
+  defaultValue: Incident
   required: false
   type: 16
 - additionalinfo: The status to filter the results by.
