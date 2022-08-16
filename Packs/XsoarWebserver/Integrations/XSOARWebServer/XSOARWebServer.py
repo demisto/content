@@ -128,7 +128,6 @@ def run_setup_post_action():
         else:
             action_url = partial_link_port
         html_dict["action1"] = action_url
-        demisto.log(json.dumps(html_dict))
         temp_link_tracker = {"response": "", "response_received": False, "emailaddress": email, "action_url": action_url,
                              "htmlemail": Template(htmltemplate).substitute(**html_dict)}
         link_tracker[link_uuid] = temp_link_tracker
