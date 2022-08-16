@@ -1115,8 +1115,8 @@ class MsClient:
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
         self.max_alerts_to_fetch = max_fetch
-        self.security_center_resource_base = {True: SECURITY_CENTER_RESOURCE_BASE_COMMERCIAL,
-                                              False: SECURITY_CENTER_RESOURCE_BASE_GCC}[is_gcc]
+        self.security_center_resource_base = {True: SECURITY_CENTER_RESOURCE_BASE_GCC,
+                                              False: SECURITY_CENTER_RESOURCE_BASE_COMMERCIAL}[is_gcc]
         self.security_center_indicator_endpoint = f'{self.security_center_resource_base}/api/indicators'
         self.security_center_indicator_endpoint_batch = f'{self.security_center_indicator_endpoint}/import'
 
