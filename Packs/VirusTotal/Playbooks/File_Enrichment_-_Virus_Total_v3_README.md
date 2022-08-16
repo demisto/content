@@ -108,4 +108,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![File Enrichment - Virus Total (API v3)](../doc_files/File_Enrichment_-_Virus_Total_(API_v3).png)
+![File Enrichment - Virus Total (API v3)](../doc_files/File_Enrichment_-_Virus_Total_API_v3.png)

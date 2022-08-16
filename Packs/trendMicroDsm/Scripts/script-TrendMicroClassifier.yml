@@ -148,7 +148,8 @@ subtype: python2
 tags:
 - Classifier
 - Trend Micro
-comment: Classifying TrendMicro incidents
+deprecated: true
+comment: Deprecated. No available replacement.
 system: true
 scripttarget: 0
 dependson:
