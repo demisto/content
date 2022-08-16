@@ -108,7 +108,8 @@ var callDomain = function(url, domain, threshold){
             'Indicator' : domain,
             'Score' : scoreConv(repRes.response.risk_score, threshold),
             'Type': 'domain',
-            'Vendor': 'domaintools'
+            'Vendor': 'domaintools',
+            'Reliability': params.integrationReliability
         }
     };
     if(context.DBotScore.Score === 3){

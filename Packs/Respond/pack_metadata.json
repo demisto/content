@@ -1,11 +1,11 @@
 {
-    "name": "Respond Analyst",
-    "description": "Respond Analyst Integration",
+    "name": "Mandiant Automated Defense",
+    "description": "Mandiant Automated Defense Pack",
     "support": "partner",
     "currentVersion": "1.0.3",
-    "author": "Respond Software",
-    "url": "https://www.fireeye.com/support.html",
-    "email": "d.mayer@mandiant.com",
+    "author": "Mandiant",
+    "url": "https://www.mandiant.com/support",
+    "email": "customersupport@mandiant.com",
     "created": "2020-08-11T18:55:01Z",
     "categories": [
         "Analytics & SIEM"
