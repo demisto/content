@@ -35,11 +35,11 @@ configuration:
 - name: authentication_type
   display: Authentication Type
   required: false
-  defaultvalue: Device
+  defaultvalue: Device Code
   type: 15
   additionalinfo: Type of authentication - could be Client Credentials Authorization Flow (recommended) or Device Flow
   options:
-  - Device
+  - Device Code
   - Client Credentials
 - name: tenant_id
   display: Tenant ID (for Client Credentials mode)

@@ -1,7 +1,20 @@
 ## Authorization
 ##### There are two ways to authenticate to the Microsoft Graph Services:
-1. *Device Code Flow*.
-2. *Client Credentials Flow*.
+1. *Client Credentials Flow* (Recommended).
+2. *Device Code Flow*.
+
+
+### Client Credentials Flow (Recommended)
+___
+Follow these steps for a self-deployed configuration:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. In the instance configuration, under the ***Authentication Type*** field select the ***Client Credentials*** option.
+3. Enter your Client/Application ID in the ***Application ID*** parameter. 
+4. Enter your Client Secret in the ***Password*** parameter.
+5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+6. Run the ***!msgraph-apps-auth-test*** command to test the connection and the authorization process.
+
 
 ### Device Code Flow
 ___
@@ -25,17 +38,6 @@ In order to use the Cortex XSOAR Azure application, use the default application 
 #### Self-Deployed Azure App
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with mobile and desktop flows enabled.
-
-### Client Credentials Flow
-___
-Follow these steps for a self-deployed configuration:
-
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
-2. In the instance configuration, under the ***Authentication Type*** field select the ***Client Credentials*** option.
-3. Enter your Client/Application ID in the ***Application ID*** parameter. 
-4. Enter your Client Secret in the ***Password*** parameter.
-5. Enter your Tenant ID in the ***Tenant ID*** parameter.
-6. Run the ***!msgraph-apps-auth-test*** command to test the connection and the authorization process.
 
 ----
 

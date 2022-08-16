@@ -6,12 +6,12 @@ https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph
 import urllib3
 from MicrosoftApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-GRANT_BY_CONNECTION = {'Device': DEVICE_CODE, 'Client Credentials': CLIENT_CREDENTIALS}
-SCOPE_BY_CONNECTION = {'Device': 'offline_access Application.ReadWrite.All',
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Client Credentials': CLIENT_CREDENTIALS}
+SCOPE_BY_CONNECTION = {'Device Code': 'offline_access Application.ReadWrite.All',
                        'Client Credentials': 'https://graph.microsoft.com/.default'}
 
 
@@ -212,7 +212,7 @@ def main():
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
             enc_key=(params.get('credentials', {})).get('password'),
             tenant_id=params.get('tenant_id'),
-            connection_type=params.get('authentication_type', 'Device')
+            connection_type=params.get('authentication_type', 'Device Code')
         )
 
         if command == 'test-module':
