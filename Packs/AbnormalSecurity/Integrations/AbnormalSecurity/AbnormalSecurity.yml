@@ -582,8 +582,21 @@ script:
       isArray: false
       name: mock-data
       required: false
-    description: Get the latest threat intel feed.
-    name: abnormal-security-get-latest-threat-intel-feed
+    - description: Email of the reporter
+      isArray: false
+      name: reporter
+      required: true
+    - description: Type of misjudgement reported
+      isArray: false
+      name: report_type
+      required: true
+    description: Submit an Inquiry to request a report on misjudgement by Abnormal
+      Security
+    name: abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement
+    outputs:
+      - contextPath: AbnormalSecurity.SubmitInquiry.detail
+        description: Confirmation of inquiry sent
+        type: String
   dockerimage: demisto/python3:3.10.5.31928
   isfetch: false
   script: ''

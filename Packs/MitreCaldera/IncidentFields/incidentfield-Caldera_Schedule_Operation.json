@@ -1,0 +1,29 @@
+{
+    "id": "incident_calderascheduleoperation",
+    "version": -1,
+    "name": "MITRE Caldera Schedule Operation",
+    "ownerOnly": false,
+    "cliName": "calderascheduleoperation",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Caldera Operation"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

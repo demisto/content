@@ -1,5 +1,6 @@
 import pytest
 import json
+import demistomock as demisto
 import GreyNoise_Community
 from test_data.input_data import (  # type: ignore
     get_ip_reputation_score_data,
@@ -73,14 +74,15 @@ def test_ip_reputation_command(
     dummy_response = DummyResponse(
         {"Content-Type": "application/json"}, json.dumps(api_response), status_code
     )
+    reliability = "B - Usually reliable"
     if test_scenario == "positive":
         mocker.patch("requests.Session.get", return_value=dummy_response)
-        response = GreyNoise_Community.ip_reputation_command(client, args)
+        response = GreyNoise_Community.ip_reputation_command(client, args, reliability)
         assert response[0].outputs == expected_output
     else:
         mocker.patch("requests.Session.get", return_value=dummy_response)
         with pytest.raises(Exception) as err:
-            _ = GreyNoise_Community.ip_reputation_command(client, args)
+            _ = GreyNoise_Community.ip_reputation_command(client, args, reliability)
         assert str(err.value) == expected_output
 
 
@@ -91,3 +93,16 @@ def test_get_ip_context_data(input_data, expected_output):
     """
     response = GreyNoise_Community.get_ip_context_data(input_data)
     assert response == expected_output
+
+
+def test_main_success(mocker):
+    """
+    When main function called test function should call.
+    """
+    import GreyNoise_Community
+
+    mocker.patch.object(demisto, 'params', return_value={'api_key': 'abc123'})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(GreyNoise_Community, 'test_module', return_value='ok')
+    GreyNoise_Community.main()
+    assert GreyNoise_Community.test_module.called
