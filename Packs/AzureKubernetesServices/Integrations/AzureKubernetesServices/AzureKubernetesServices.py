@@ -164,9 +164,9 @@ def complete_auth(client: AKSClient) -> str:
 
 def test_connection(client: AKSClient) -> str:
     if demisto.params().get('auth_type') == 'Device Code':
-        client.clusters_list_request()  # If fails, MicrosoftApiModule returns an error
+        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     else:
-        client.ms_client.get_access_token()
+        client.clusters_list_request()  # If fails, MicrosoftApiModule returns an error
     return '✅ Success!'
 
 
@@ -181,19 +181,14 @@ def test_module(client):
     Performs basic GET request to check if the API is reachable and authentication is successful.
     Returns ok if successful.
     """
-    try:
-        test_module(client)
-        return 'ok'
-    except Exception:
-        if demisto.params().get('auth_type') == 'Device Code':
-            raise Exception("When using device code flow configuration, "
-                            "Please enable the integration and run `!azure-ks-auth-start` and `!azure-ks-auth-complete` to "
-                            "log in. You can validate the connection by running `!azure-ks-auth-test`\n"
-                            "For more details press the (?) button.")
-
-        elif demisto.params().get('auth_type') == 'Authorization Code':
-            raise Exception("When using user auth flow configuration, "
-                            "Please enable the integration and run the !azure-ks-auth-test command in order to test it")
+    if demisto.params().get('auth_type') == 'Device Code':
+        raise Exception("When using device code flow configuration, "
+                        "Please enable the integration and run `!azure-ks-auth-start` and `!azure-ks-auth-complete` to "
+                        "log in. You can validate the connection by running `!azure-ks-auth-test`\n"
+                        "For more details press the (?) button.")
+    elif demisto.params().get('auth_type') == 'Authorization Code':
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !azure-ks-auth-test command in order to test it")
 
 
 def main() -> None:

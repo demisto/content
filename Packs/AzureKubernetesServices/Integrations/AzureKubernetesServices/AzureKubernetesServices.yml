@@ -12,7 +12,7 @@ configuration:
 - additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
   display: Authentication Type
   name: auth_type
-  required: false
+  required: true
   defaultvalue: Device
   options:
   - Authorization Code
