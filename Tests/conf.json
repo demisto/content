@@ -5163,6 +5163,11 @@
             "fromversion": "6.8.0"
         },
         {
+            "integrations": "CheckPointSandBlast",
+            "playbookID": "playbook-CheckPointSandBlast_Test",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": [
                 "Microsoft Defender for Cloud Apps Event Collector"
             ],
@@ -5177,6 +5182,7 @@
         }
     ],
     "skipped_tests": {
+        "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
         "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
@@ -5430,7 +5436,6 @@
         "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
-        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated",
