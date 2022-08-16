@@ -1171,7 +1171,7 @@ def main():  # pragma: no cover
         # Log exceptions
     except Exception as e:
         import traceback
-        return_error(f'An error occured: {e}', error=e)
+        return_error(f'An error occurred: {e}', error=e)
 
 
 # python2 uses __builtin__ python3 uses builtins
