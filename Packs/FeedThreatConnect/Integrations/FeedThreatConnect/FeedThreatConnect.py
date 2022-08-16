@@ -189,6 +189,7 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no 
     fields = set_fields_query(argToList(demisto.getParam("fields")))
     group_type = f'AND ({create_or_query(demisto.params().get("group_type", "Incident"), "typeName")}) '
     first_fetch_time = demisto.getParam("first_fetch_time")
+    from_date = ''
     if first_fetch_time:
         first_fetch_time = dateparser.parse(demisto.getParam('first_fetch_time').strip()).strftime("%Y-%m-%d")  # type: ignore # noqa
         from_date = f'AND (dateAdded > "{first_fetch_time}") '
