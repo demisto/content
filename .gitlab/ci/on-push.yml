@@ -301,7 +301,8 @@ xsoar_server_master:
     INSTANCE_ROLE: "Server Master"
 
 
-demisto-sdk-nightly:run-end-to-end-tests:
+# demisto-sdk-nightly:run-end-to-end-tests:
+run-end-to-end-tests:
   tags:
     - gke # Better when not needing docker-in-docker
   extends:
