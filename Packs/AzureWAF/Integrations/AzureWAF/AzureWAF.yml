@@ -28,7 +28,7 @@ configuration:
   - Authorization Code
   - Device Code
   type: 15
-- display: - display: Tenant ID (for authorization code mode)
+- display: Tenant ID (for authorization code mode)
   name: tenant_id
   required: false
   type: 0
