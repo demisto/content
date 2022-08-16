@@ -275,7 +275,7 @@ class Client(BaseClient):
         """Gets the IP reputation using the '/ip' API endpoint
 
         Args:
-            ip (str): ID of the scan to retrieve results for.
+            ip (str): IP address to get the reputation for.
 
         Returns:
             dict: dict containing the IP reputation as returned from the API
