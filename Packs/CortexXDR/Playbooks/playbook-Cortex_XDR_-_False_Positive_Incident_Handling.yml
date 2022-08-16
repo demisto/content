@@ -1,7 +1,5 @@
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+  contentitemfields: {}
 id: Cortex XDR - False Positive Incident Handling
 inputs:
 - description: Add comment to close this incident.
@@ -178,7 +176,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
+          "x": -370,
           "y": 130
         }
       }
@@ -245,7 +243,7 @@ tasks:
       brand: ''
       id: 3bfba053-05d1-4bb9-8a41-c1815043ab44
       iscommand: false
-      name: False positive Incident closing
+      name: Done - Unisolating Device
       type: title
       version: -1
       description: ''
@@ -303,7 +301,7 @@ tasks:
           simple: Mark IOCs to be approved
         options: []
         optionsarg:
-        - simple: ${incident.filesha256}
+        - simple: ${inputs.FileSha256}
         placeholder: ''
         readonly: false
         required: false
@@ -332,8 +330,7 @@ tasks:
       to:
     nexttasks:
       '#none#':
-      - '71'
-      - '15'
+      - "72"
     note: false
     quietmode: 0
     separatecontext: false
@@ -388,7 +385,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
+          "x": 590,
           "y": 300
         }
       }
@@ -429,7 +426,7 @@ tasks:
           left:
             iscontext: true
             value:
-              simple: inputs.AutoUnisolate
+              simple: inputs.AutoUnisolation
           operator: isEqualString
           right:
             value:
@@ -483,7 +480,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       Endpoint_ID:
-        simple: ${Endpoint.ID}
+        simple: ${inputs.HostID}
     separatecontext: true
     skipunavailable: false
     task:
@@ -491,10 +488,10 @@ tasks:
       id: e9dfb706-0a59-4e5a-8cd0-99f3b55d5cac
       iscommand: false
       name: Cortex XDR - Unisolate Endpoint
-      playbookId: Cortex XDR - Unisolate Endpoint
       type: playbook
       version: -1
       description: ''
+      playbookName: Cortex XDR - Unisolate Endpoint
     taskid: e9dfb706-0a59-4e5a-8cd0-99f3b55d5cac
     timertriggers: []
     type: playbook
@@ -537,10 +534,51 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
+          "x": 1000,
+          "y": 300
+        }
+      }
+  "72":
+    id: "72"
+    taskid: d707ce3c-fa16-4fae-834d-b4b0a16a1c82
+    type: condition
+    task:
+      id: d707ce3c-fa16-4fae-834d-b4b0a16a1c82
+      version: -1
+      name: Any Hashes Specified?
+      description: Any Hashes Specified?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicators to Allow.Answers.0
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
           "y": 130
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
@@ -548,8 +586,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1170,
-        "width": 1050,
-        "x": -110,
+        "width": 1750,
+        "x": -370,
         "y": -340
       }
     }
@@ -560,3 +598,4 @@ fromversion: 6.5.0
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook handles false-positive incident closures for Cortex XDR - Malware investigation.
+system: true

@@ -939,7 +939,8 @@ def get_context_for_ioc_details(sources, artifact_indicator, artifact_type, is_r
             'Indicator': artifact_indicator,
             'Type': artifact_type,
             'Vendor': VENDOR,
-            'Score': dbot_score_max
+            'Score': dbot_score_max,
+            'Reliability': demisto.params().get('integrationReliability')
         }
         if dbot_score_max == 3:
             standard_context['Malicious'] = {
@@ -1240,7 +1241,7 @@ def validate_and_parse_detection_start_end_time(args: Dict[str, Any]) -> Tuple[O
     :param args: contains all arguments for command
 
     :return : detection_start_time, detection_end_time: Detection start and end time in the format API accepts
-    :rtype : Tuple[Optional[datetime], Optional[datetime]]
+    :rtype : Tuple[Optional[str], Optional[str]]
     """
     detection_start_time = arg_to_datetime(args.get('start_time'), 'start_time') if args.get('start_time') \
         else arg_to_datetime(args.get('detection_start_time'), 'detection_start_time')
@@ -3218,7 +3219,8 @@ def ip_command(client_obj, ip_address: str):
             'Indicator': ip_address,
             'Type': 'ip',
             'Vendor': VENDOR,
-            'Score': 0
+            'Score': 0,
+            'Reliability': demisto.params().get('integrationReliability')
         }
 
         hr += '### IP: {} found with Reputation: Unknown\n'.format(ip_address)
@@ -3277,7 +3279,8 @@ def domain_command(client_obj, domain_name: str):
             'Indicator': domain_name,
             'Type': 'domain',
             'Vendor': VENDOR,
-            'Score': 0
+            'Score': 0,
+            'Reliability': demisto.params().get('integrationReliability')
         }
 
         hr += '### Domain: {} found with Reputation: Unknown\n'.format(domain_name)

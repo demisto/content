@@ -22,7 +22,8 @@ PARAMS = {
     'override_severity_malicious': ['high'],
     'override_severity_suspicious': ['medium'],
     'override_confidence_score_malicious_threshold': '80',
-    'override_confidence_score_suspicious_threshold': '40'
+    'override_confidence_score_suspicious_threshold': '40',
+    'integrationReliability': 'B - Usually reliable'
 }
 
 PARAMS_FOR_STR_CONFIDENCE_SCORE = {
