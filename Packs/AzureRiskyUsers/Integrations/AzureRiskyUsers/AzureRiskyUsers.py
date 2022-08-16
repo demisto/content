@@ -380,20 +380,26 @@ def risk_detection_get_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def test_module(client: Client):
     """Tests API connectivity and authentication'
-    The test module is not functional, it raises the suitable exceptions according to the selected authentication type.
+    The test module is not functional for Device Code flow authentication, it raises the suitable exception instead.
 
     Args:
         client (Client): Azure Risky Users API client.
 
     Returns: None
     """
-    if client.authentication_type == CLIENT_CREDENTIALS_FLOW:  # Client credentials flow
-        raise DemistoException('The test module is not functional, When using a self-deployed configuration, '
-                               'run the !azure-risky-users-auth-test command in order to test the connection.')
+    if client.authentication_type == DEVICE_FLOW:  # Device Code flow
+        raise DemistoException('When using device code flow configuration, please enable the integration and run '
+                               'the azure-risky-users-auth-start command. Follow the instructions that will be printed'
+                               ' as the output of the command.')
 
-    else:  # Device Code flow
-        raise DemistoException('The test module is not functional, '
-                               'run the azure-risky-users-auth-start command instead.')
+    else:  # Client credentials flow
+        try:
+            test_connection(client)
+            return "ok"
+        except Exception:
+            raise DemistoException('When using a self-deployed configuration with client credentials auth flow, please '
+                                   'enable the integration and run the !azure-risky-users-auth-test command in order to'
+                                   ' test the connection.')
 
 
 # Authentication Functions
