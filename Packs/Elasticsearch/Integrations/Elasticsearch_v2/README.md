@@ -5,6 +5,12 @@
 <li>Query and search indexes.</li>
 <li>Calculate query and search scores based on accuracy of results.</li>
 </ul>
+<h2>Permissions</h2>
+<p>The permissions required to use this integration depend on which operations you need to perform. The API user should have the same permissions a regular user would have in order to access the data via the UI. Following are the permissions needed for certain commands: </p>
+<ul>
+    <li><strong>!es-eql-search/search/es-search/fetch-incidents</strong> - If the Elasticsearch security features are enabled, you must have the <em>read</em> <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices">index privilege</a> for the target data stream, index, or alias.</li>
+    <li><strong>!get-mapping-fields</strong> - If the Elasticsearch security features are enabled, you must have the <em>view_index_metadata</em> or <em>manage</em> <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices">index privilege</a> for the target data stream, index, or alias.</li>
+</ul>
 <h2>Additional Information</h2>
 <p>The Elasticsearch v2 integration supports Elasticsearch 6.0.0 and later.</p>
 <p>Strings are queried using the Lucene syntax. For more information about the Lucene syntax, see: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax">https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax</a></p>
