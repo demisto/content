@@ -1144,7 +1144,7 @@ def auth_test_command(client):
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def main():
+def main():  # pragma: no cover
     global EMAIL
     global SEND_AS
 
