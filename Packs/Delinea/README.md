@@ -1,8 +1,8 @@
-This package contains the integration of XSOAR and Thycotic Secret Server.
+This package contains the integration of XSOAR and Delinea Secret Server.
 
 Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
 
-This Thycotic Secret Server content pack contains examples playbooks for usage in own flows, using REST API methods.
+This Delinea Secret Server content pack contains examples playbooks for usage in own flows, using REST API methods.
 
 What does this pack do?
 - obtaining a secret with the required fields for subsequent authentication

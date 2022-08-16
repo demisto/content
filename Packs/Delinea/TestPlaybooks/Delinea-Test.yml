@@ -1,5 +1,5 @@
-id: Thycotic-Test
-name: Thycotic-Test
+id: Delinea-Test
+name: Delinea-Test
 version: -1
 starttaskid: '0'
 fromversion: 5.0.0
@@ -55,9 +55,9 @@ tasks:
     task:
       id: 'a667a6ef-8072-49c7-8d7b-01368fd88dfc'
       version: -1
-      name: thycotic-authenticate-token
+      name: delinea-authenticate-token
       description: ''
-      script: '|||thycotic-authenticate-token'
+      script: '|||delinea-authenticate-token'
       type: regular
       iscommand: true
       brand: ''
@@ -107,9 +107,9 @@ tasks:
     task:
       id: 'd7b1c42f-8cb6-4f94-bb64-ef7290ce6940'
       version: -1
-      name: thycotic-secret-password-get
+      name: delinea-secret-password-get
       description: ''
-      script: '|||thycotic-secret-password-get'
+      script: '|||delinea-secret-password-get'
       type: regular
       iscommand: true
       brand: ''
@@ -159,9 +159,9 @@ tasks:
     task:
       id: '489eba09-5939-4320-bcf7-b55b7607b5be'
       version: -1
-      name: thycotic-secret-username-get
+      name: delinea-secret-username-get
       description: ''
-      script: '|||thycotic-secret-username-get'
+      script: '|||delinea-secret-username-get'
       type: regular
       iscommand: true
       brand: ''

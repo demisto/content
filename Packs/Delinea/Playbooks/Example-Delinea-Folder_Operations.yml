@@ -1,7 +1,7 @@
-id: Example-Thycotic-Folder Operations
+id: Example-Delinea-Folder Operations
 version: -1
-name: Example-Thycotic-Folder Operations
-description: Example for usage integration REST API Folder object  for Thycotic Secret
+name: Example-Delinea-Folder Operations
+description: Example for usage integration REST API Folder object  for Delinea Secret
   Server.
 starttaskid: "0"
 fromversion: 6.0.0
@@ -42,10 +42,10 @@ tasks:
       version: -1
       name: Create new folder
       description: Create a new secret folder
-      script: Thycotic|||thycotic-folder-create
+      script: Delinea|||delinea-folder-create
       type: regular
       iscommand: true
-      brand: Thycotic
+      brand: Delinea
     nexttasks:
       '#none#':
       - "2"
@@ -78,17 +78,17 @@ tasks:
       version: -1
       name: Search folder
       description: Search folder by name folder
-      script: Thycotic|||thycotic-folder-search
+      script: Delinea|||delinea-folder-search
       type: regular
       iscommand: true
-      brand: Thycotic
+      brand: Delinea
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       foldername:
         complex:
-          root: Thycotic.Folder.Create
+          root: Delinea.Folder.Create
           transformers:
           - operator: getField
             args:
@@ -117,10 +117,10 @@ tasks:
       version: -1
       name: Update folder
       description: Update a single secret folder by ID
-      script: Thycotic|||thycotic-folder-update
+      script: Delinea|||delinea-folder-update
       type: regular
       iscommand: true
-      brand: Thycotic
+      brand: Delinea
     nexttasks:
       '#none#':
       - "4"
@@ -130,7 +130,7 @@ tasks:
       folderTypeId: {}
       id:
         complex:
-          root: Thycotic.Folder
+          root: Delinea.Folder
           accessor: Id
           transformers:
           - operator: FirstArrayElement
@@ -160,17 +160,17 @@ tasks:
       version: -1
       name: Search folder updated
       description: Search folder by name folder
-      script: Thycotic|||thycotic-folder-search
+      script: Delinea|||delinea-folder-search
       type: regular
       iscommand: true
-      brand: Thycotic
+      brand: Delinea
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
       foldername:
         complex:
-          root: Thycotic.Folder
+          root: Delinea.Folder
           accessor: Update
           transformers:
           - operator: getField
@@ -200,17 +200,17 @@ tasks:
       version: -1
       name: Delete modify folder
       description: Delete a folder by ID
-      script: Thycotic|||thycotic-folder-delete
+      script: Delinea|||delinea-folder-delete
       type: regular
       iscommand: true
-      brand: Thycotic
+      brand: Delinea
     nexttasks:
       '#none#':
       - "11"
     scriptarguments:
       folder_id:
         complex:
-          root: Thycotic.Folder
+          root: Delinea.Folder
           accessor: Id
           transformers:
           - operator: FirstArrayElement
@@ -267,4 +267,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Thycotic-Test
+- Delinea-Test

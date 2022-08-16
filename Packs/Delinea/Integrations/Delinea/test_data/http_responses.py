@@ -1,5 +1,5 @@
 GET_PASSWORD_BY_ID_RAW_RESPONSE = {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "Password": "test00111"
         }
@@ -7,7 +7,7 @@ GET_PASSWORD_BY_ID_RAW_RESPONSE = {
 }
 
 GET_USERNAME_BY_ID_RAW_RESPONSE = {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "Username": "andy"
         }
@@ -135,7 +135,7 @@ SECRET_GET_RAW_RESPONSE = {
 }
 
 SECRET_PASSWORD_UPDATE_RAW_RESPONSE = {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "Newpassword": "NEWPASSWORD1"
         }

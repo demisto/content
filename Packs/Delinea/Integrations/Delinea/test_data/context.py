@@ -1,6 +1,6 @@
 GET_PASSWORD_BY_ID_CONTEXT = {
-    'Thycotic.Secret.Password(val.secret_password && val.secret_password == obj.secret_password)': {
-        "Thycotic": {
+    'Delinea.Secret.Password(val.secret_password && val.secret_password == obj.secret_password)': {
+        "Delinea": {
             "Secret": {
                 "Password": "test00111"
             }
@@ -9,8 +9,8 @@ GET_PASSWORD_BY_ID_CONTEXT = {
 }
 
 GET_USERNAME_BY_ID_CONTENT = {
-    'Thycotic.Secret.Username(val.secret_username && val.secret_username == obj.secret_username)': {
-        "Thycotic": {
+    'Delinea.Secret.Username(val.secret_username && val.secret_username == obj.secret_username)': {
+        "Delinea": {
             "Secret": {
                 "Username": "andy"
             }
@@ -19,7 +19,7 @@ GET_USERNAME_BY_ID_CONTENT = {
 }
 
 SECRET_GET_CONTENT = {
-    'Thycotic.Secret(val.secret && val.secret == obj.secret)': {
+    'Delinea.Secret(val.secret && val.secret == obj.secret)': {
         'id': 4,
         'name': 'g1-machine',
         'secretTemplateId': 6007,
@@ -141,8 +141,8 @@ SECRET_GET_CONTENT = {
     }
 
 SECRET_PASSWORD_UPDATE_CONTEXT = {
-    'Thycotic.Secret.Newpassword(val.secret_newpassword && val.secret_newpassword == obj.secret_newpassword)': {
-        "Thycotic": {
+    'Delinea.Secret.Newpassword(val.secret_newpassword && val.secret_newpassword == obj.secret_newpassword)': {
+        "Delinea": {
             "Secret": {
                 "Newpassword": "NEWPASSWORD1"
             }
@@ -151,13 +151,13 @@ SECRET_PASSWORD_UPDATE_CONTEXT = {
 }
 
 SECRET_CHECKOUT_CONTEXT = {
-    'Thycotic.Secret.Checkout(val.secret_checkout && val.secret_checkout == obj.secret_checkout)': {
+    'Delinea.Secret.Checkout(val.secret_checkout && val.secret_checkout == obj.secret_checkout)': {
         "ResponseCode": "null"
     }
 }
 
 SECRET_CHECKIN_CONTEXT = {
-  "Thycotic.Secret.Checkin(val.secret_checkin && val.secret_checkin == obj.secret_checkin)": {
+  "Delinea.Secret.Checkin(val.secret_checkin && val.secret_checkin == obj.secret_checkin)": {
     "active": "true",
     "autoChangeEnabled": "false",
     "checkOutEnabled": "true",
@@ -187,7 +187,7 @@ SECRET_CHECKIN_CONTEXT = {
 }
 
 SECRET_DELETE_CONTEXT = {
-    "Thycotic.Secret.Deleted(val.delete && val.delete == obj.delete)": {
+    "Delinea.Secret.Deleted(val.delete && val.delete == obj.delete)": {
         "id": 9,
         "objectType": "Secret",
         "responseCodes": []
@@ -195,7 +195,7 @@ SECRET_DELETE_CONTEXT = {
 }
 
 FOLDER_CREATE_CONTEXT = {
-  "Thycotic.Folder.Create(val.folder && val.folder == obj.folder)": {
+  "Delinea.Folder.Create(val.folder && val.folder == obj.folder)": {
     "childFolders": "null",
     "folderName": "xsoarFolderTest3",
     "folderPath": "\\Personal Folders\\XSOAR integration\\xsoarFolderTest3",
@@ -210,7 +210,7 @@ FOLDER_CREATE_CONTEXT = {
 }
 
 FOLDER_DELETE_CONTEXT = {
-    "Thycotic.Folder.Delete(val.folder && val.folder == obj.folder)": {
+    "Delinea.Folder.Delete(val.folder && val.folder == obj.folder)": {
         "id": 11,
         "objectType": "Folder",
         "responseCodes": []
@@ -218,7 +218,7 @@ FOLDER_DELETE_CONTEXT = {
 }
 
 FOLDER_UPDATE_CONTEXT = {
-    "Thycotic.Folder.Update(val.folder && val.folder == obj.folder)": {
+    "Delinea.Folder.Update(val.folder && val.folder == obj.folder)": {
         "childFolders": "null",
         "folderName": "xsoarTF3New",
         "folderPath": "\\Personal Folders\\XSOAR integration\\xsoarTF3New",

@@ -1,9 +1,9 @@
 Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
-This integration was integrated and tested with version 5.0 of Thycotic
-## Configure Thycotic on Cortex XSOAR
+This integration was integrated and tested with version 5.0 of Delinea
+## Configure Delinea on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Thycotic.
+2. Search for Delinea.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -19,14 +19,14 @@ This integration was integrated and tested with version 5.0 of Thycotic
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### thycotic-secret-password-get
+### delinea-secret-password-get
 ***
 Retrieved password from secret
 
 
 #### Base Command
 
-`thycotic-secret-password-get`
+`delinea-secret-password-get`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -38,16 +38,16 @@ Retrieved password from secret
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret.Password | String | Retrieved password from secret  | 
+| Delinea.Secret.Password | String | Retrieved password from secret  | 
 
 
 #### Command Example
-```!thycotic-secret-password-get secret_id=2```
+```!delinea-secret-password-get secret_id=2```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "Password": "1234567890"
         }
@@ -55,18 +55,15 @@ Retrieved password from secret
 }
 ```
 
-#### Human Readable Output
 
->Retrieved password by ID 2 1234567890
-
-### thycotic-secret-username-get
+### delinea-secret-username-get
 ***
 Retrieved username from secret
 
 
 #### Base Command
 
-`thycotic-secret-username-get`
+`delinea-secret-username-get`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -78,16 +75,16 @@ Retrieved username from secret
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret.Username | String | Retrieved username from secret. | 
+| Delinea.Secret.Username | String | Retrieved username from secret. | 
 
 
 #### Command Example
-```!thycotic-secret-username-get secret_id=2```
+```!delinea-secret-username-get secret_id=2```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "Username": "w2\\w2"
         }
@@ -95,18 +92,15 @@ Retrieved username from secret
 }
 ```
 
-#### Human Readable Output
 
->Retrieved username by ID 2 w2\w2
-
-### thycotic-secret-search-name
+### delinea-secret-search-name
 ***
 Search ID secret by field name
 
 
 #### Base Command
 
-`thycotic-secret-search-name`
+`delinea-secret-search-name`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -118,16 +112,16 @@ Search ID secret by field name
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret.Id | String | Retrieved list ID for find secret by field secret name | 
+| Delinea.Secret.Id | String | Retrieved list ID for find secret by field secret name | 
 
 
 #### Command Example
-```!thycotic-secret-search-name search_name=xsoarSecret```
+```!delinea-secret-search-name search_name=xsoarSecret```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "Id": [
                 5
@@ -137,20 +131,15 @@ Search ID secret by field name
 }
 ```
 
-#### Human Readable Output
 
->Retrieved list ID for search by secret name = xsoarSecret
->List ID:
->5
-
-### thycotic-secret-password-update
+### delinea-secret-password-update
 ***
 Update password for secret
 
 
 #### Base Command
 
-`thycotic-secret-password-update`
+`delinea-secret-password-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -163,16 +152,16 @@ Update password for secret
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret.Newpassword | String | New password changed for secret | 
+| Delinea.Secret.Newpassword | String | New password changed for secret | 
 
 
 #### Command Example
-```!thycotic-secret-password-update secret_id=2 newpassword=12345```
+```!delinea-secret-password-update secret_id=2 newpassword=12345```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "Newpassword": "12345"
         }
@@ -180,18 +169,15 @@ Update password for secret
 }
 ```
 
-#### Human Readable Output
 
->Set new password for secret ID 2, set 12345
-
-### thycotic-secret-checkout
+### delinea-secret-checkout
 ***
 Check Out a secret
 
 
 #### Base Command
 
-`thycotic-secret-checkout`
+`delinea-secret-checkout`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -203,29 +189,34 @@ Check Out a secret
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret.Checkout | String | Return call command Check Out | 
+| Delinea.Secret.Checkout | String | Return call command Check Out | 
 
 
 #### Command Example
-```!thycotic-secret-checkout secret_id=2```
+```!delinea-secret-checkout secret_id=2```
 
 #### Context Example
 ```json
-{}
+{
+    "Delinea": {
+        "Secret": {
+            "Checkout": {
+            		"responseCodes":null
+            }
+        }
+    }
+}
 ```
 
-#### Human Readable Output
 
->Check Out for secret ID 2, ResponseCode - None
-
-### thycotic-secret-checkin
+### delinea-secret-checkin
 ***
 Check In a secret
 
 
 #### Base Command
 
-`thycotic-secret-checkin`
+`delinea-secret-checkin`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -237,16 +228,16 @@ Check In a secret
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret.Checkin | String | Secret object | 
+| Delinea.Secret.Checkin | String | Secret object | 
 
 
 #### Command Example
-```!thycotic-secret-checkin secret_id=13```
+```!delinea-secret-checkin secret_id=13```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "Checkin": {
                 "active": true,
@@ -280,19 +271,16 @@ Check In a secret
 }
 ```
 
-#### Human Readable Output
-
->Check In for secret ID=13. CheckOut = False
 
 
-### thycotic-folder-create
+### delinea-folder-create
 ***
 Create a new secret folder
 
 
 #### Base Command
 
-`thycotic-folder-create`
+`delinea-folder-create`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -309,16 +297,16 @@ Create a new secret folder
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Folder.Create | Unknown | New object folder | 
+| Delinea.Folder.Create | Unknown | New object folder | 
 
 
 #### Command Example
-```!thycotic-folder-create foldername="xsoarFolderTest" foldertypeid="1" parentfolderid="3"```
+```!delinea-folder-create foldername="xsoarFolderTest" foldertypeid="1" parentfolderid="3"```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Folder": {
             "Create": {
                 "childFolders": null,
@@ -337,18 +325,15 @@ Create a new secret folder
 }
 ```
 
-#### Human Readable Output
 
->Create new folder - xsoarFolderTest
-
-### thycotic-folder-search
+### delinea-folder-search
 ***
 Search folder by name folder
 
 
 #### Base Command
 
-`thycotic-folder-search`
+`delinea-folder-search`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -360,16 +345,16 @@ Search folder by name folder
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Folder.Id | String | Retrieved folder ID from search query | 
+| Delinea.Folder.Id | String | Retrieved folder ID from search query | 
 
 
 #### Command Example
-```!thycotic-folder-search foldername="xsoarFolderTest"```
+```!delinea-folder-search foldername="xsoarFolderTest"```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Folder": {
             "Id": [
                 5
@@ -379,19 +364,14 @@ Search folder by name folder
 }
 ```
 
-#### Human Readable Output
-
->Retrieved list ID for folder by folder name = xsoarFolderTest
->List ID:
->5
 
 #### Command Example
-```!thycotic-folder-delete folder_id="18"```
+```!delinea-folder-delete folder_id="18"```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Folder": {
             "Delete": {
                 "id": 18,
@@ -403,18 +383,15 @@ Search folder by name folder
 }
 ```
 
-#### Human Readable Output
 
->Deleted folder ID: 18
-
-### thycotic-secret-get
+### delinea-secret-get
 ***
 Get secret object by ID secret
 
 
 #### Base Command
 
-`thycotic-secret-get`
+`delinea-secret-get`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -426,16 +403,16 @@ Get secret object by ID secret
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret | String | Secret object | 
+| Delinea.Secret | String | Secret object | 
 
 
 #### Command Example
-```!thycotic-secret-get secret_id=2```
+```!delinea-secret-get secret_id=2```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "accessRequestWorkflowMapId": -1,
             "active": true,
@@ -534,19 +511,15 @@ Get secret object by ID secret
 }
 ```
 
-#### Human Readable Output
 
->Secret object by ID 2
->{'id': 2, 'name': 'test-w2', 'secretTemplateId': 6003, 'folderId': 3, 'active': True, 'items': [{'itemId': 5, 'fileAttachmentId': None, 'filename': None, 'itemValue': '192.168.100.1', 'fieldId': 83, 'fieldName': 'Machine', 'slug': 'machine', 'fieldDescription': 'The Server or Location of the Windows Machine.', 'isFile': False, 'isNotes': False, 'isPassword': False}, {'itemId': 6, 'fileAttachmentId': None, 'filename': None, 'itemValue': 'w2\\w2', 'fieldId': 86, 'fieldName': 'Username', 'slug': 'username', 'fieldDescription': 'The Username of the Windows User.', 'isFile': False, 'isNotes': False, 'isPassword': False}, {'itemId': 7, 'fileAttachmentId': None, 'filename': None, 'itemValue': '1234567890', 'fieldId': 85, 'fieldName': 'Password', 'slug': 'password', 'fieldDescription': 'The password of the Windows User.', 'isFile': False, 'isNotes': False, 'isPassword': True}, {'itemId': 8, 'fileAttachmentId': None, 'filename': None, 'itemValue': '', 'fieldId': 84, 'fieldName': 'Notes', 'slug': 'notes', 'fieldDescription': 'Any additional notes.', 'isFile': False, 'isNotes': True, 'isPassword': False}], 'launcherConnectAsSecretId': -1, 'checkOutMinutesRemaining': 30, 'checkedOut': True, 'checkOutUserDisplayName': 'XSOAR integration', 'checkOutUserId': 3, 'isRestricted': True, 'isOutOfSync': False, 'outOfSyncReason': '', 'autoChangeEnabled': False, 'autoChangeNextPassword': '2$C$7vl8*SN@', 'requiresApprovalForAccess': False, 'requiresComment': False, 'checkOutEnabled': True, 'checkOutIntervalMinutes': -1, 'checkOutChangePasswordEnabled': False, 'accessRequestWorkflowMapId': -1, 'proxyEnabled': False, 'sessionRecordingEnabled': False, 'restrictSshCommands': False, 'allowOwnersUnrestrictedSshCommands': False, 'isDoubleLock': False, 'doubleLockId': -1, 'enableInheritPermissions': True, 'passwordTypeWebScriptId': -1, 'siteId': 1, 'enableInheritSecretPolicy': True, 'secretPolicyId': -1, 'lastHeartBeatStatus': 'Pending', 'lastHeartBeatCheck': '0001-01-01T00:00:00', 'failedPasswordChangeAttempts': 0, 'lastPasswordChangeAttempt': '0001-01-01T00:00:00', 'secretTemplateName': 'Windows Account', 'responseCodes': []}
-
-### thycotic-secret-search
+### delinea-secret-search
 ***
 Search secret ID by multiply params
 
 
 #### Base Command
 
-`thycotic-secret-search`
+`delinea-secret-search`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -584,16 +557,16 @@ Search secret ID by multiply params
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret.Secret | String | Search secret object | 
+| Delinea.Secret.Secret | String | Search secret object | 
 
 
 #### Command Example
-```!thycotic-secret-search filter.folderId=3 filter.includeSubFolders=true filter.searchField=name filter.searchText=xsoar```
+```!delinea-user-search filter_searchfields="username" filter_searchtext="xsoar"```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "Secret": [
                 5
@@ -603,18 +576,16 @@ Search secret ID by multiply params
 }
 ```
 
-#### Human Readable Output
 
->Search secret [5]
 
-### thycotic-folder-update
+### delinea-folder-update
 ***
 Update a single secret folder by ID
 
 
 #### Base Command
 
-`thycotic-folder-update`
+`delinea-folder-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -632,16 +603,16 @@ Update a single secret folder by ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Folder.Update | String | Retrieved return operation update folder | 
+| Delinea.Folder.Update | String | Retrieved return operation update folder | 
 
 
 #### Command Example
-```!thycotic-folder-update id=4 folderName="SafexsoarTest"```
+```!delinea-folder-update id=4 foldername="SafexsoarTest"```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Folder": {
             "Update": {
                 "childFolders": null,
@@ -660,18 +631,15 @@ Update a single secret folder by ID
 }
 ```
 
-#### Human Readable Output
 
->{'id': 4, 'folderName': 'SafexsoarTest', 'folderPath': '\\Personal Folders\\XSOAR integration\\SafexsoarTest', 'parentFolderId': 3, 'folderTypeId': 1, 'secretPolicyId': -1, 'inheritSecretPolicy': False, 'inheritPermissions': False, 'childFolders': None, 'secretTemplates': None}
-
-### thycotic-secret-create
+### delinea-secret-create
 ***
 Create new object Secret
 
 
 #### Base Command
 
-`thycotic-secret-create`
+`delinea-secret-create`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -704,16 +672,16 @@ Create new object Secret
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret.Create | String | Secret Model | 
+| Delinea.Secret.Create | String | Secret Model | 
 
 
 #### Command Example
-```!thycotic-secret-create name="xsoarSecret" secretTemplateId="6003" siteId="1" checkOutEnabled=true folderId=3 machine_item="my-machine" username_item="my-username" password_item="XXXXXX@@@@@####"```
+```!delinea-secret-create name="xsoarSecret" secrettemplateid="6003" siteid="1" checkoutenabled=true folderid=3 machine_item="my-machine" username_item="my-username" password_item="XXXXXX@@@@@####"```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "Create": {
                 "accessRequestWorkflowMapId": -1,
@@ -814,19 +782,15 @@ Create new object Secret
 }
 ```
 
-#### Human Readable Output
 
->Create new secret with xsoarSecret,
-> object - {'id': 5, 'name': 'xsoarSecret', 'secretTemplateId': 6003, 'folderId': 3, 'active': True, 'items': [{'itemId': 19, 'fileAttachmentId': None, 'filename': None, 'itemValue': 'my-machine', 'fieldId': 83, 'fieldName': 'Machine', 'slug': 'machine', 'fieldDescription': 'The Server or Location of the Windows Machine.', 'isFile': False, 'isNotes': False, 'isPassword': False}, {'itemId': 20, 'fileAttachmentId': None, 'filename': None, 'itemValue': 'my-username', 'fieldId': 86, 'fieldName': 'Username', 'slug': 'username', 'fieldDescription': 'The Username of the Windows User.', 'isFile': False, 'isNotes': False, 'isPassword': False}, {'itemId': 21, 'fileAttachmentId': None, 'filename': None, 'itemValue': 'XXXXXX@@@@@####', 'fieldId': 85, 'fieldName': 'Password', 'slug': 'password', 'fieldDescription': 'The password of the Windows User.', 'isFile': False, 'isNotes': False, 'isPassword': True}, {'itemId': 22, 'fileAttachmentId': None, 'filename': None, 'itemValue': '', 'fieldId': 84, 'fieldName': 'Notes', 'slug': 'notes', 'fieldDescription': 'Any additional notes.', 'isFile': False, 'isNotes': True, 'isPassword': False}], 'launcherConnectAsSecretId': -1, 'checkOutMinutesRemaining': 0, 'checkedOut': False, 'checkOutUserDisplayName': '', 'checkOutUserId': 0, 'isRestricted': True, 'isOutOfSync': False, 'outOfSyncReason': '', 'autoChangeEnabled': False, 'autoChangeNextPassword': None, 'requiresApprovalForAccess': False, 'requiresComment': False, 'checkOutEnabled': True, 'checkOutIntervalMinutes': -1, 'checkOutChangePasswordEnabled': False, 'accessRequestWorkflowMapId': -1, 'proxyEnabled': False, 'sessionRecordingEnabled': False, 'restrictSshCommands': False, 'allowOwnersUnrestrictedSshCommands': False, 'isDoubleLock': False, 'doubleLockId': 0, 'enableInheritPermissions': True, 'passwordTypeWebScriptId': -1, 'siteId': 1, 'enableInheritSecretPolicy': False, 'secretPolicyId': -1, 'lastHeartBeatStatus': 'Pending', 'lastHeartBeatCheck': '0001-01-01T00:00:00', 'failedPasswordChangeAttempts': 0, 'lastPasswordChangeAttempt': '0001-01-01T00:00:00', 'secretTemplateName': 'Windows Account', 'responseCodes': []}
-
-### thycotic-secret-delete
+### delinea-secret-delete
 ***
 Delete secret
 
 
 #### Base Command
 
-`thycotic-secret-delete`
+`delinea-secret-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -838,16 +802,16 @@ Delete secret
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret.Delete | String | Information about an object that was deleted | 
+| Delinea.Secret.Delete | String | Information about an object that was deleted | 
 
 
 #### Command Example
-```!thycotic-secret-delete id=2```
+```!delinea-secret-delete id=2```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "Deleted": {
                 "id": 2,
@@ -859,18 +823,15 @@ Delete secret
 }
 ```
 
-#### Human Readable Output
 
->Deleted secret ID:2
-
-### thycotic-user-create
+### delinea-user-create
 ***
 Create a new user
 
 
 #### Base Command
 
-`thycotic-user-create`
+`delinea-user-create`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -895,24 +856,71 @@ Create a new user
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.User.Create | String | User Model | 
+| Delinea.User.Create | String | User Model | 
 
 
 #### Command Example
-``` ```
+```!delinea-user-create displayname="UserOne" password="12345" username="UserOne" ```
 
-#### Human Readable Output
+#### Context Example
+```json
+{
+    "Delinea": {
+        "User": {
+            "Create": {
+            		"adAccountExpires":"0001-01-01T00:00:00",
+					"adGuid":null,
+					"created":"2022-06-01T08:31:15.275Z",
+					"dateOptionId":-1,
+					"displayName":"UserOne",
+					"domainId":-1,
+					"duoTwoFactor":false,
+					"emailAddress":null,
+					"enabled":true,
+					"externalUserSource":"None",
+					"fido2TwoFactor":false,
+					"id":29,
+					"ipAddressRestrictions":null,
+					"isApplicationAccount":false,
+					"isEmailCopiedFromAD":false,
+					"isEmailVerified":false,
+					"isLockedOut":false,
+					"lastLogin":0001-01-01T00:00:00,
+					"lastSessionActivity":null,
+					"lockOutReason":null,
+					"lockOutReasonDescription":null,
+					"loginFailures":0,
+					"mustVerifyEmail":false,
+					"oathTwoFactor":false,
+					"oathVerified":false,
+					"passwordLastChanged":"0001-01-01T00:00:00",
+					"personalGroupId":0,
+					"radiusTwoFactor":false,
+					"radiusUserName":null,
+					"resetSessionStarted":"0001-01-01T00:00:00",
+					"slackId":null,
+					"timeOptionId":-1,
+					"twoFactor":false,
+					"unixAuthenticationMethod":Password,
+					"userLcid":0,
+					"userName":"UserOne",
+					"verifyEmailSentDate":"0001-01-01T00:00:00"
+            }
+        }
+    }
+}
 
+```
 
-
-### thycotic-user-search
+### delinea-user-search
 ***
 Search, filter, sort, and page users
 
 
 #### Base Command
 
-`thycotic-user-search`
+`delinea-user-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -932,16 +940,16 @@ Search, filter, sort, and page users
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.User.Search | String | Specify paging and sorting options for querying records and returning results | 
+| Delinea.User.Search | String | Specify paging and sorting options for querying records and returning results | 
 
 
 #### Command Example
-```!thycotic-user-search filter.searchFields="userName" filter.searchText="xsoarUser"```
+```!delinea-user-search filter_searchfields="userName" filter_searchtext="xsoarUser"```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "User": {
             "Search": null
         }
@@ -949,18 +957,15 @@ Search, filter, sort, and page users
 }
 ```
 
-#### Human Readable Output
 
->[]
-
-### thycotic-user-update
+### delinea-user-update
 ***
 Update a single user by ID
 
 
 #### Base Command
 
-`thycotic-user-update`
+`delinea-user-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -989,24 +994,71 @@ Update a single user by ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.User.Update | String | User Model | 
+| Delinea.User.Update | String | User Model | 
 
 
 #### Command Example
-``` ```
+```!delinea-user-update id=28 displayname="myTestUser"```
 
-#### Human Readable Output
+#### Context Example
+```json
+{
+    "Delinea": {
+        "User": {
+            "Update": {
+            		"unixAuthenticationMethod":"Password",
+					"enabled":true,
+					"passwordLastChanged":"0001-01-01T00:00:00",
+					"isEmailCopiedFromAD":false,
+					"isApplicationAccount":false,
+					"lockOutReason":null,
+					"created":"2022-06-01T08:09:39",
+					"radiusUserName":"UserOne",
+					"radiusTwoFactor":false,
+					"verifyEmailSentDate":"0001-01-01T00:00:00",
+					"adAccountExpires":"0001-01-01T00:00:00",
+					"slackId":null,
+					"adGuid":null,
+					"displayName":"myTestUser",
+					"oathVerified":false,
+					"lastSessionActivity":null,
+					"externalUserSource":"None",
+					"loginFailures":0,
+					"lastLogin":"0001-01-01T00:00:00",
+					"ipAddressRestrictions":null,
+					"oathTwoFactor":false,
+					"lockOutReasonDescription":null,
+					"userName":"UserOne",
+					"fido2TwoFactor":false,
+					"emailAddress":null,
+					"resetSessionStarted":"0001-01-01T00:00:00",
+					"mustVerifyEmail":false,
+					"isEmailVerified":false,
+					"personalGroupId":0,
+					"isLockedOut":false,
+					"id":28,
+					"twoFactor":false,
+					"duoTwoFactor":false,
+					"timeOptionId":-1,
+					"userLcid":0,
+					"dateOptionId":-1,
+					"domainId":-1,
+            }
+        }
+    }
+}
+
+```
 
 
-
-### thycotic-user-delete
+### delinea-user-delete
 ***
 Delete a user by ID
 
 
 #### Base Command
 
-`thycotic-user-delete`
+`delinea-user-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1018,24 +1070,35 @@ Delete a user by ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.User.Delete | String | Information about an object that was deleted | 
+| Delinea.User.Delete | String | Information about an object that was deleted | 
 
 
 #### Command Example
-``` ```
+```!delinea-user-delete id=5 ```
 
-#### Human Readable Output
+#### Context Example
+```json
+{
+    "Delinea": {
+        "User": {
+            "Delete": {
+                "id": 5,
+                "objectType": "User",
+                "responseCodes": null
+            }
+        }
+    }
+}
+```
 
-
-
-### thycotic-secret-rpc-changepassword
+### delinea-secret-rpc-changepassword
 ***
 Change a secret's password
 
 
 #### Base Command
 
-`thycotic-secret-rpc-changepassword`
+`delinea-secret-rpc-changepassword`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1048,16 +1111,16 @@ Change a secret's password
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret.ChangePassword | String | Secret summary object | 
+| Delinea.Secret.ChangePassword | String | Secret summary object | 
 
 
 #### Command Example
-```!thycotic-secret-rpc-changepassword secret_id=4 newPassword="Test000"```
+```!delinea-secret-rpc-changepassword secret_id=4 newPassword="Test000"```
 
 #### Context Example
 ```json
 {
-    "Thycotic": {
+    "Delinea": {
         "Secret": {
             "ChangePassword": {
                 "active": true,
@@ -1091,6 +1154,3 @@ Change a secret's password
 }
 ```
 
-#### Human Readable Output
-
->{'id': 4, 'name': 'g1-machine', 'secretTemplateId': 6007, 'secretTemplateName': 'Unix Account (SSH)', 'folderId': -1, 'siteId': 1, 'active': True, 'checkedOut': False, 'isRestricted': False, 'isOutOfSync': False, 'outOfSyncReason': '', 'lastHeartBeatStatus': 'Success', 'lastPasswordChangeAttempt': '0001-01-01T00:00:00', 'responseCodes': None, 'lastAccessed': None, 'extendedFields': None, 'checkOutEnabled': False, 'autoChangeEnabled': False, 'doubleLockEnabled': False, 'requiresApproval': False, 'requiresComment': False, 'inheritsPermissions': False, 'hidePassword': False, 'createDate': '2020-11-02T18:06:07.357', 'daysUntilExpiration': None}

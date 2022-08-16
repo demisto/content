@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: Thycotic
+  id: Delinea
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
@@ -24,8 +24,8 @@ description: Secret Server is the only fully featured Privileged Account Managem
   (PAM) solution available both on premise and in the cloud. It empowers security
   and IT ops teams to secure and manage all types of privileged accounts and offers
   the fastest time to value of any PAM solution.
-display: Thycotic
-name: Thycotic
+display: Delinea
+name: Delinea
 script:
   commands:
   - arguments:
@@ -38,9 +38,9 @@ script:
     deprecated: false
     description: Extracting the password field from the required secret
     execution: false
-    name: thycotic-secret-password-get
+    name: delinea-secret-password-get
     outputs:
-    - contextPath: Thycotic.Secret.Password
+    - contextPath: Delinea.Secret.Password
       description: Password from secret
       type: String
   - arguments:
@@ -53,9 +53,9 @@ script:
     deprecated: false
     description: Extracting the username field from the required secret
     execution: false
-    name: thycotic-secret-username-get
+    name: delinea-secret-username-get
     outputs:
-    - contextPath: Thycotic.Secret.Username
+    - contextPath: Delinea.Secret.Username
       description: Username from secret
       type: String
   - arguments:
@@ -68,9 +68,9 @@ script:
     deprecated: false
     description: Search a secret by its name.
     execution: false
-    name: thycotic-secret-search-name
+    name: delinea-secret-search-name
     outputs:
-    - contextPath: Thycotic.Secret.Id
+    - contextPath: Delinea.Secret.Id
       description: List of Secret IDs.
       type: String
   - arguments:
@@ -89,9 +89,9 @@ script:
     deprecated: false
     description: Update password for a secret by ID
     execution: false
-    name: thycotic-secret-password-update
+    name: delinea-secret-password-update
     outputs:
-    - contextPath: Thycotic.Secret.Newpassword
+    - contextPath: Delinea.Secret.Newpassword
       description: New password changed for secret
       type: String
   - arguments:
@@ -104,9 +104,9 @@ script:
     deprecated: false
     description: Check Out a Secret
     execution: false
-    name: thycotic-secret-checkout
+    name: delinea-secret-checkout
     outputs:
-    - contextPath: Thycotic.Secret.Checkout
+    - contextPath: Delinea.Secret.Checkout
       description: Returns response (None = Successful)
       type: String
   - arguments:
@@ -119,9 +119,9 @@ script:
     deprecated: false
     description: Check In a secret
     execution: false
-    name: thycotic-secret-checkin
+    name: delinea-secret-checkin
     outputs:
-    - contextPath: Thycotic.Secret.Checkin
+    - contextPath: Delinea.Secret.Checkin
       description: Secret object
       type: String
   - arguments:
@@ -177,9 +177,9 @@ script:
     deprecated: false
     description: Create a new Secret folder
     execution: false
-    name: thycotic-folder-create
+    name: delinea-folder-create
     outputs:
-    - contextPath: Thycotic.Folder.Create
+    - contextPath: Delinea.Folder.Create
       description: New object folder
       type: String
   - arguments:
@@ -192,9 +192,9 @@ script:
     deprecated: false
     description: Search a specific folder by name.
     execution: false
-    name: thycotic-folder-search
+    name: delinea-folder-search
     outputs:
-    - contextPath: Thycotic.Folder.Id
+    - contextPath: Delinea.Folder.Id
       description: List of Folder IDs
       type: String
   - arguments:
@@ -207,9 +207,9 @@ script:
     deprecated: false
     description: Delete a folder by folder ID
     execution: false
-    name: thycotic-folder-delete
+    name: delinea-folder-delete
     outputs:
-    - contextPath: Thycotic.Folder.Delete
+    - contextPath: Delinea.Folder.Delete
       description: Folder ID
       type: String
   - arguments:
@@ -222,9 +222,9 @@ script:
     deprecated: false
     description: Get secret object by ID secret
     execution: false
-    name: thycotic-secret-get
+    name: delinea-secret-get
     outputs:
-    - contextPath: Thycotic.Secret
+    - contextPath: Delinea.Secret
       description: Secret object
       type: String
   - arguments:
@@ -448,9 +448,9 @@ script:
     deprecated: false
     description: Search secret ID by multiply parameters
     execution: false
-    name: thycotic-secret-search
+    name: delinea-secret-search
     outputs:
-    - contextPath: Thycotic.Secret.Secret
+    - contextPath: Delinea.Secret.Secret
       description: List of Folder IDs
       type: String
   - arguments:
@@ -507,9 +507,9 @@ script:
     deprecated: false
     description: Update a single secret folder by ID
     execution: false
-    name: thycotic-folder-update
+    name: delinea-folder-update
     outputs:
-    - contextPath: Thycotic.Folder.Update
+    - contextPath: Delinea.Folder.Update
       description: Folder object
       type: String
   - arguments:
@@ -701,9 +701,9 @@ script:
     deprecated: false
     description: Create a new Secret
     execution: false
-    name: thycotic-secret-create
+    name: delinea-secret-create
     outputs:
-    - contextPath: Thycotic.Secret.Create
+    - contextPath: Delinea.Secret.Create
       description: Secret object
       type: String
   - arguments:
@@ -716,9 +716,9 @@ script:
     deprecated: false
     description: Delete secret
     execution: false
-    name: thycotic-secret-delete
+    name: delinea-secret-delete
     outputs:
-    - contextPath: Thycotic.Secret.Delete
+    - contextPath: Delinea.Secret.Delete
       description: Secret object
       type: String
   - arguments:
@@ -844,9 +844,9 @@ script:
     deprecated: false
     description: Create a new user
     execution: false
-    name: thycotic-user-create
+    name: delinea-user-create
     outputs:
-    - contextPath: Thycotic.User.Create
+    - contextPath: Delinea.User.Create
       description: User object
       type: String
   - arguments:
@@ -911,9 +911,9 @@ script:
     deprecated: false
     description: Search, filter, sort, and page users
     execution: false
-    name: thycotic-user-search
+    name: delinea-user-search
     outputs:
-    - contextPath: Thycotic.User.Search
+    - contextPath: Delinea.User.Search
       description: List of User IDs
       type: String
   - arguments:
@@ -1087,9 +1087,9 @@ script:
     deprecated: false
     description: Update a single user by ID
     execution: false
-    name: thycotic-user-update
+    name: delinea-user-update
     outputs:
-    - contextPath: Thycotic.User.Update
+    - contextPath: Delinea.User.Update
       description: User object
       type: String
   - arguments:
@@ -1102,9 +1102,9 @@ script:
     deprecated: false
     description: Delete user by ID
     execution: false
-    name: thycotic-user-delete
+    name: delinea-user-delete
     outputs:
-    - contextPath: Thycotic.User.Delete
+    - contextPath: Delinea.User.Delete
       description: User object
       type: String
   - arguments:
@@ -1123,12 +1123,12 @@ script:
     deprecated: false
     description: Remote Password Changing
     execution: false
-    name: thycotic-secret-rpc-changepassword
+    name: delinea-secret-rpc-changepassword
     outputs:
-    - contextPath: Thycotic.Secret.ChangePassword
+    - contextPath: Delinea.Secret.ChangePassword
       description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.28442
   feed: false
   isfetch: false
   longRunning: false

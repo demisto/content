@@ -1,7 +1,7 @@
-id: Example-Thycotic-User object operations
+id: Example-Delinea-User object operations
 version: -1
-name: Example-Thycotic-User object operations
-description: 'Example for usage integration REST API User object  for Thycotic Secret
+name: Example-Delinea-User object operations
+description: 'Example for usage integration REST API User object  for Delinea Secret
   Server.'
 starttaskid: "0"
 fromversion: 6.0.0
@@ -42,10 +42,10 @@ tasks:
       version: -1
       name: Create user
       description: Create a new user
-      script: Thycotic|||thycotic-user-create
+      script: Delinea|||delinea-user-create
       type: regular
       iscommand: true
-      brand: Thycotic
+      brand: Delinea
     nexttasks:
       '#none#':
       - "2"
@@ -86,10 +86,10 @@ tasks:
       version: -1
       name: Search user
       description: Search, filter, sort, and page users
-      script: Thycotic|||thycotic-user-search
+      script: Delinea|||delinea-user-search
       type: regular
       iscommand: true
-      brand: Thycotic
+      brand: Delinea
     nexttasks:
       '#none#':
       - "3"
@@ -99,7 +99,7 @@ tasks:
       filter.searchFields: {}
       filter.searchText:
         complex:
-          root: Thycotic.User
+          root: Delinea.User
           accessor: Create
           transformers:
           - operator: getField
@@ -134,10 +134,10 @@ tasks:
       version: -1
       name: Update User
       description: Update a single user by ID
-      script: Thycotic|||thycotic-user-update
+      script: Delinea|||delinea-user-update
       type: regular
       iscommand: true
-      brand: Thycotic
+      brand: Delinea
     nexttasks:
       '#none#':
       - "4"
@@ -151,7 +151,7 @@ tasks:
       groupOwners: {}
       id:
         complex:
-          root: Thycotic.User
+          root: Delinea.User
           accessor: Search
           transformers:
           - operator: getField
@@ -191,14 +191,14 @@ tasks:
       version: -1
       name: Delete user
       description: Delete a user by ID
-      script: Thycotic|||thycotic-user-delete
+      script: Delinea|||delinea-user-delete
       type: regular
       iscommand: true
-      brand: Thycotic
+      brand: Delinea
     scriptarguments:
       id:
         complex:
-          root: Thycotic.User
+          root: Delinea.User
           accessor: Update
           transformers:
           - operator: getField
@@ -234,4 +234,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Thycotic-Test
+- Delinea-Test

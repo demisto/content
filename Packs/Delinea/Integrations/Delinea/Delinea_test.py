@@ -1,6 +1,6 @@
 import pytest
 
-from Thycotic import Client, \
+from Delinea import Client, \
     secret_password_get_command, secret_username_get_command, \
     secret_get_command, secret_password_update_command, secret_checkout_command, secret_checkin_command, \
     secret_delete_command, folder_create_command, folder_delete_command, folder_update_command
@@ -37,10 +37,10 @@ FOLDER_UPDATE_ARGS = {"id": "12", "folderName": "xsoarTF3New"}
     (folder_delete_command, FOLDER_DELETE_ARGS, FOLDER_DELETE_RAW_RESPONSE, FOLDER_DELETE_CONTEXT),
     (folder_update_command, FOLDER_UPDATE_ARGS, FOLDER_UPDATE_RAW_RESPONSE, FOLDER_UPDATE_CONTEXT)
 ])
-def test_thycotic_commands(command, args, http_response, context, mocker):
+def test_delinea_commands(command, args, http_response, context, mocker):
 
     mocker.patch.object(Client, '_generate_token')
-    client = Client(server_url="https://thss.softwarium.net/SecretServer", username="xsoar1", password="HfpuhXjv123",
+    client = Client(server_url="https://scimtest.secretservercloud.com", username="msPowerAutomateAccount", password="test",
                     proxy=False, verify=False)
 
     mocker.patch.object(Client, '_http_request', return_value=http_response)

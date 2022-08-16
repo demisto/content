@@ -1,12 +1,12 @@
 {
-    "name": "Thycotic Secret Server",
+    "name": "Delinea Secret Server",
     "description": "Secure privileges for service, application, root and administrator accounts across your enterprise.",
     "support": "partner",
-    "currentVersion": "1.0.2",
-    "author": "Thycotic, Inc",
-    "url": "https://thycotic.force.com/support/s/login",
-    "email": "support@thycotic.com",
-    "created": "2020-10-09T14:49:56Z",
+    "currentVersion": "2.0.0",
+    "author": "Delinea, Inc",
+    "url": "https://delinea.com/support",
+    "email": "support@delinea.com",
+    "created": "2022-08-10T14:49:56Z",
     "categories": [
         "Authentication"
     ],
@@ -14,7 +14,7 @@
     "useCases": [],
     "keywords": [],
     "githubUser": [
-        "AndyNikolaev"
+        "RoshaniTambadkar"
     ],
     "dependencies": {
         "CommonScripts": {

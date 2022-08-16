@@ -15,6 +15,7 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
+
     def __init__(self, server_url: str, username: str, password: str, proxy: bool, verify: bool):
         super().__init__(base_url=server_url, proxy=proxy, verify=verify)
         self._username = username
@@ -225,7 +226,7 @@ def secret_password_get_command(client, secret_id: str = ''):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix='Thycotic.Secret.Password',
+        outputs_prefix='Delinea.Secret.Password',
         outputs_key_field="secret_password",
         raw_response=secret_password,
         outputs=secret_password
@@ -240,7 +241,7 @@ def secret_username_get_command(client, secret_id: str = ''):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix='Thycotic.Secret.Username',
+        outputs_prefix='Delinea.Secret.Username',
         outputs_key_field="secret_username",
         raw_response=secret_username,
         outputs=secret_username
@@ -255,7 +256,7 @@ def secret_get_command(client, secret_id: str = ''):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix='Thycotic.Secret',
+        outputs_prefix='Delinea.Secret',
         outputs_key_field="secret",
         raw_response=secret,
         outputs=secret
@@ -268,7 +269,7 @@ def secret_search_name_command(client, search_name: str = ''):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Secret.Id",
+        outputs_prefix="Delinea.Secret.Id",
         outputs_key_field="search_id",
         raw_response=search_id,
         outputs=search_id
@@ -281,7 +282,7 @@ def secret_search_command(client, **kwargs):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Secret.Secret",
+        outputs_prefix="Delinea.Secret.Secret",
         outputs_key_field="search_secret",
         raw_response=search_result,
         outputs=search_result
@@ -296,7 +297,7 @@ def secret_password_update_command(client, secret_id: str = '', newpassword: str
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Secret.Newpassword",
+        outputs_prefix="Delinea.Secret.Newpassword",
         outputs_key_field="secret_newpassword",
         raw_response=secret_newpassword,
         outputs=secret_newpassword
@@ -305,12 +306,14 @@ def secret_password_update_command(client, secret_id: str = '', newpassword: str
 
 def secret_checkout_command(client, secret_id: str = ''):
     secret_checkout = client.secret_checkout(secret_id)
-
-    markdown = tableToMarkdown('Check Out Secret', secret_checkout)
-
+    if len(secret_checkout) == 1 and len(secret_checkout.get('responseCodes')) == 0:
+        markdown = 'Checkout Success\n'
+    else:
+        markdown = tableToMarkdown('Check Out Secret', secret_checkout)
+    
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Secret.Checkout",
+        outputs_prefix="Delinea.Secret.Checkout",
         outputs_key_field="secret_checkout",
         raw_response=secret_checkout,
         outputs=secret_checkout
@@ -323,7 +326,7 @@ def secret_checkin_command(client, secret_id: str = ''):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Secret.Checkin",
+        outputs_prefix="Delinea.Secret.Checkin",
         outputs_key_field="secret_checkin",
         raw_response=secret_checkin,
         outputs=secret_checkin
@@ -335,7 +338,7 @@ def secret_create_command(client, name: str = '', secretTemplateId: int = 0, **k
     markdown = tableToMarkdown('Created new secret', secret)
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Secret.Create",
+        outputs_prefix="Delinea.Secret.Create",
         outputs_key_field="secret",
         raw_response=secret,
         outputs=secret
@@ -348,7 +351,7 @@ def secret_delete_command(client, id: int = 0):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Secret.Deleted",
+        outputs_prefix="Delinea.Secret.Deleted",
         outputs_key_field="delete",
         raw_response=delete,
         outputs=delete
@@ -362,7 +365,7 @@ def folder_create_command(client, foldername: str = '', foldertypeid: int = 1, p
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Folder.Create",
+        outputs_prefix="Delinea.Folder.Create",
         outputs_key_field="folder",
         raw_response=folder,
         outputs=folder
@@ -375,7 +378,7 @@ def folder_search_command(client, foldername: str = ''):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Folder.Id",
+        outputs_prefix="Delinea.Folder.Id",
         outputs_key_field="folder_id",
         raw_response=folder_id,
         outputs=folder_id
@@ -388,7 +391,7 @@ def folder_update_command(client, id: str = '', **kwargs):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Folder.Update",
+        outputs_prefix="Delinea.Folder.Update",
         outputs_key_field="folder",
         raw_response=folder,
         outputs=folder
@@ -401,7 +404,7 @@ def folder_delete_command(client, folder_id: str = ''):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Folder.Delete",
+        outputs_prefix="Delinea.Folder.Delete",
         outputs_key_field="folder",
         raw_response=folder,
         outputs=folder
@@ -415,7 +418,7 @@ def user_create_command(client, **kwargs):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.User.Create",
+        outputs_prefix="Delinea.User.Create",
         outputs_key_field="user",
         raw_response=user,
         outputs=user
@@ -428,7 +431,7 @@ def user_search_command(client, **kwargs):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.User.Search",
+        outputs_prefix="Delinea.User.Search",
         outputs_key_field="user",
         raw_response=user,
         outputs=user
@@ -441,7 +444,7 @@ def user_update_command(client, id: str = '', **kwargs):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.User.Update",
+        outputs_prefix="Delinea.User.Update",
         outputs_key_field="user",
         raw_response=user,
         outputs=user
@@ -454,7 +457,7 @@ def user_delete_command(client, id: str = ''):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.User.Delete",
+        outputs_prefix="Delinea.User.Delete",
         outputs_key_field="user",
         raw_response=user,
         outputs=user
@@ -467,7 +470,7 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Thycotic.Secret.ChangePassword",
+        outputs_prefix="Delinea.Secret.ChangePassword",
         outputs_key_field="secret",
         raw_response=secret,
         outputs=secret
@@ -485,26 +488,26 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
 
-    thycotic_commands = {
-        'thycotic-secret-password-get': secret_password_get_command,
-        'thycotic-secret-username-get': secret_username_get_command,
-        'thycotic-secret-get': secret_get_command,
-        'thycotic-secret-search-name': secret_search_name_command,
-        'thycotic-secret-search': secret_search_command,
-        'thycotic-secret-password-update': secret_password_update_command,
-        'thycotic-secret-checkout': secret_checkout_command,
-        'thycotic-secret-checkin': secret_checkin_command,
-        'thycotic-secret-create': secret_create_command,
-        'thycotic-secret-delete': secret_delete_command,
-        'thycotic-secret-rpc-changepassword': secret_rpc_changepassword_command,
-        'thycotic-folder-create': folder_create_command,
-        'thycotic-folder-search': folder_search_command,
-        'thycotic-folder-update': folder_update_command,
-        'thycotic-folder-delete': folder_delete_command,
-        'thycotic-user-create': user_create_command,
-        'thycotic-user-search': user_search_command,
-        'thycotic-user-update': user_update_command,
-        'thycotic-user-delete': user_delete_command
+    delinea_commands = {
+        'delinea-secret-password-get': secret_password_get_command,
+        'delinea-secret-username-get': secret_username_get_command,
+        'delinea-secret-get': secret_get_command,
+        'delinea-secret-search-name': secret_search_name_command,
+        'delinea-secret-search': secret_search_command,
+        'delinea-secret-password-update': secret_password_update_command,
+        'delinea-secret-checkout': secret_checkout_command,
+        'delinea-secret-checkin': secret_checkin_command,
+        'delinea-secret-create': secret_create_command,
+        'delinea-secret-delete': secret_delete_command,
+        'delinea-secret-rpc-changepassword': secret_rpc_changepassword_command,
+        'delinea-folder-create': folder_create_command,
+        'delinea-folder-search': folder_search_command,
+        'delinea-folder-update': folder_update_command,
+        'delinea-folder-delete': folder_delete_command,
+        'delinea-user-create': user_create_command,
+        'delinea-user-search': user_search_command,
+        'delinea-user-update': user_update_command,
+        'delinea-user-delete': user_delete_command
     }
     try:
         client = Client(server_url=url,
@@ -513,9 +516,9 @@ def main():
                         proxy=proxy,
                         verify=verify)
 
-        if demisto.command() in thycotic_commands:
+        if demisto.command() in delinea_commands:
             return_results(
-                thycotic_commands[demisto.command()](client, **demisto.args())  # type: ignore[operator]
+                delinea_commands[demisto.command()](client, **demisto.args())  # type: ignore[operator]
             )
 
         elif demisto.command() == 'test-module':
