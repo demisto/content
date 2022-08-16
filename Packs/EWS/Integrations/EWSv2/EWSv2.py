@@ -2105,7 +2105,7 @@ def sub_main():
             test_module()
         elif demisto.command() == 'fetch-incidents':
             incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
-            demisto.incidents(str_to_unicode(incidents))
+            demisto.incidents(str_to_unicode(incidents) or [])
         elif demisto.command() == 'ews-get-attachment':
             encode_and_submit_results(fetch_attachments_for_message(**args))
         elif demisto.command() == 'ews-delete-attachment':
