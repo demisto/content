@@ -1168,7 +1168,6 @@ def main():  # pragma: no cover
             demisto.results(commands[command](client))
         # Log exceptions
     except Exception as e:
-        import traceback
         return_error(f'An error occurred: {e}', error=e)
 
 
