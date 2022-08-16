@@ -4,35 +4,35 @@
           "type": "string",
           "is_array": false
         },
-        "riskLevel": {
+        "risk.level": {
           "type": "int",
           "is_array": false
         },
-        "occurredDate": {
+        "occurred_date": {
             "type": "datetime",
             "is_array": false
           },
-        "userID": {
+        "user.id": {
             "type": "string",
             "is_array": false
           },
-        "externalID": {
+        "external_id": {
           "type": "string",
           "is_array": false
         },
-        "eventTypeID": {
+        "event_type.id": {
           "type": "string",
           "is_array": false
         },
-        "eventTypeName": {
+        "event_type.name": {
           "type": "string",
           "is_array": false
         },
-        "eventTypeDescription": {
+        "event_type.description": {
           "type": "string",
           "is_array": false
         },
-        "accountID": {
+        "account_id": {
           "type": "string",
           "is_array": false
         },

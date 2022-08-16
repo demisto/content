@@ -32,7 +32,7 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self.headers = headers
 
-    def http_request(self, method: str = 'GET', params: dict = None, body: dict = None, url_suffix: str = '',
+    def http_request(self, method: str = 'GET', params: dict = None, url_suffix: str = '',
                      resp_type: str = 'response', ok_codes: list[int] = [200]):
         """
         Overrides Base client request function.
@@ -40,7 +40,7 @@ class Client(BaseClient):
         :return: The http response
         """
         # token = self.get_access_token()
-        return super()._http_request(headers=self.headers, method=method, params=params, body=body,
+        return super()._http_request(headers=self.headers, method=method, params=params,
                                      url_suffix=url_suffix, resp_type=resp_type, ok_codes=ok_codes)  # type: ignore[misc]
 
     def get_events_request(self):
@@ -71,13 +71,16 @@ def validate_limit(limit: Optional[int]):
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_events(client: Client, max_fetch: Optional[int] = None, first_fetch_time: str = '3 days') -> List[Dict]:
+def fetch_events(client: Client, max_fetch: Optional[int] = None, first_fetch_time: str = '3 days',
+                 last_run: dict = None) -> List[Dict]:
     """
     Fetches events from the KnowBe4_KMSAT queue.
     """
     events: List[Dict] = []
     under_max_fetch = True
-
+    marker = last_run.get('marker') if last_run else {}
+    if not marker and first_fetch_time:
+        since = first_fetch_time.strftime(DATE_FORMAT)[:-4] + 'Z'
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
     while under_max_fetch:
         response = client.get_events_request()
@@ -89,6 +92,8 @@ def fetch_events(client: Client, max_fetch: Optional[int] = None, first_fetch_ti
         events.extend(fetched_events)
         if max_fetch:
             under_max_fetch = len(events) < max_fetch
+        marker = events[-1].get('page', 0)
+        query_params = {'marker': marker}
 
     return events
 
@@ -133,11 +138,15 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client, args))
         elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            events, last_run = fetch_events(client=client, first_fetch_time=first_fetch_time,
+                                            max_fetch=fetch_limit, last_run=last_run)
             send_events_to_xsiam(
-                events=fetch_events(client=client, first_fetch_time=first_fetch_time, max_fetch=fetch_limit),
+                events,
                 vendor=vendor,
                 product=product
             )
+            demisto.setLastRun(last_run)
         else:
             raise ValueError(f'Command {command} is not implemented in this integration')
     except Exception as e:
