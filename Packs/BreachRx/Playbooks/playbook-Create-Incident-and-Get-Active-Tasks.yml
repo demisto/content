@@ -1,15 +1,17 @@
 id: BreachRx - Create Incident and get Active Tasks
 version: -1
 name: BreachRx - Create Incident and get Active Tasks
+description: This Playbook creates a privacy Incident on the BreachRx platform, and
+  pulls in all tasks from that created privacy Incident into the Cortex XSOAR Incident.
 starttaskid: "0"
-description: This Playbook creates a privacy Incident on the BreachRx platform, and pulls in all tasks from that created privacy Incident into the Cortex XSOAR Incident.
+fromversion: 6.2.0
 tasks:
   "0":
     id: "0"
-    taskid: 199597c2-6cc8-43d9-8390-35bbd5411e3f
+    taskid: 6f988a81-bba5-4905-80dd-91b0cc0e870c
     type: start
     task:
-      id: 199597c2-6cc8-43d9-8390-35bbd5411e3f
+      id: 6f988a81-bba5-4905-80dd-91b0cc0e870c
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 8047e455-0873-487a-8bf7-920790f6ad25
+    taskid: c8d01d45-27a9-43ea-8e3d-aeb390859fe5
     type: regular
     task:
-      id: 8047e455-0873-487a-8bf7-920790f6ad25
+      id: c8d01d45-27a9-43ea-8e3d-aeb390859fe5
       version: -1
       name: breachrx-incident-create
       description: Create a privacy Incident on the BreachRx platform.
@@ -66,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c0faf33d-3140-4ee0-886c-ac10cc12232d
+    taskid: a2f6f9d6-9bf7-41ed-85ee-d6b3134d4b8d
     type: regular
     task:
-      id: c0faf33d-3140-4ee0-886c-ac10cc12232d
+      id: a2f6f9d6-9bf7-41ed-85ee-d6b3134d4b8d
       version: -1
       name: breachrx-incident-actions-get
       script: BreachRx|||breachrx-incident-actions-get
@@ -79,6 +81,8 @@ tasks:
       description: ''
     scriptarguments:
       incident-identifier:
+        simple: ${BreachRx.Incident.identifier}
+      incident_identifier:
         simple: ${BreachRx.Incident.identifier}
     separatecontext: false
     view: |-
@@ -108,8 +112,7 @@ view: |-
     }
   }
 inputs: []
-outputs: []
-quiet: true
-tests:
-- No tests (auto formatted)
-fromversion: 6.2.0
+outputs:
+- contextPath: BreachRx.Incident.Actions
+  description: The Actions on a BreachRx privacy Incident.
+  type: string

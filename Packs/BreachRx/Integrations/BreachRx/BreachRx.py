@@ -4,6 +4,7 @@ from collections.abc import Callable
 
 import requests
 import traceback
+from urllib.parse import urlparse
 
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
@@ -281,6 +282,14 @@ COMMANDS = {
 }
 
 
+def is_valid_url(url):
+    try:
+        result = urlparse(url)
+        return all([result.scheme, result.netloc])
+    except ValueError:
+        return False
+
+
 def main() -> None:  # pragma: no cover
     try:
         base_url = demisto.params()["api_url"]
@@ -288,6 +297,12 @@ def main() -> None:  # pragma: no cover
         api_key = demisto.params().get("api_key", {}).get("password")
         secret_key = demisto.params().get("secret_key", {}).get("password")
         verify = demisto.params().get("insecure", False)
+
+        if not is_valid_url(base_url):
+            raise Exception("The GraphQL API URL is not a valid URL.")
+
+        if not is_valid_url(demisto.params()["url"]):
+            raise Exception("The BreachRx instance URL is not a valid URL.")
 
         client = BreachRxClient(base_url, api_key, secret_key, org_name, verify)
 
