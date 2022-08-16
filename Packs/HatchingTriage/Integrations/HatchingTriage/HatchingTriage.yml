@@ -20,6 +20,11 @@ configuration:
   name: Verify SSL
   required: false
   type: 8
+- display: Use system proxy settings
+  name: system_proxy
+  defaultvalue: 'false'
+  required: false
+  type: 8
 description: Submit a high volume of samples to run in a sandbox and view reports
 display: Hatching Triage
 name: Hatching Triage
