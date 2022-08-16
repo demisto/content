@@ -1437,15 +1437,15 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | inReplyTo | ID of the item to reply to. | Required | 
-| to | A CSV list of email addresses for the 'to' field. | Required | 
-| cc | A CSV list of email addresses for the 'cc' field. | Optional | 
-| bcc | A CSV list of email addresses for the 'bcc' field. | Optional | 
+| to | A comma-separated list of email addresses for the 'to' field. | Required | 
+| cc | A comma-separated list of email addresses for the 'cc' field. | Optional | 
+| bcc | A comma-separated list of email addresses for the 'bcc' field. | Optional | 
 | subject | Subject for the email to be sent. | Optional | 
 | body | The contents (body) of the email to send. | Optional | 
 | htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
-| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
-| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
-| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
+| attachIDs | A comma-separated list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
+| attachNames | A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | A comma-separated list of CIDs to embed attachments within the email itself. | Optional | 
 
 
 #### Context Output
