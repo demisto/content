@@ -1,7 +1,4 @@
 """Delete Content script, used to keep instances tidy."""
-import traceback
-import enum
-import demistomock as demisto
 from CommonServerPython import *
 
 from abc import ABC, abstractmethod
@@ -31,7 +28,7 @@ class EntityAPI(ABC):
         pass
 
     @abstractmethod
-    def parse_all_entities_response(self, response: Union[dict, str]):
+    def parse_all_entities_response(self, response: Union[dict, str, list]):
         pass
 
 
@@ -57,17 +54,18 @@ class JobAPI(EntityAPI):
 
     def verify_specific_search_response(self, response: Union[dict, str], name: str):
         job_params = {}
-        search_results = response.get('data')
-        if search_results:
-            job_params = search_results[0]
+        if type(response) is dict:
+            search_results = response.get('data')
+            if search_results:
+                job_params = search_results[0]
 
         if not job_params or not job_params.get("id"):
             demisto.debug(f'{SCRIPT_NAME} - {self.name} to delete not found. Aborting.')
             return False
         return job_params.get("id")
 
-    def parse_all_entities_response(self, response: Union[dict, str]):
-        return [entity.get('name', '') for entity in response.get('data')]
+    def parse_all_entities_response(self, response: Union[dict, str, list]):
+        return [entity.get('name', '') for entity in response.get('data', [])] if type(response) is dict else []
 
 
 class ListAPI(EntityAPI):
@@ -85,7 +83,7 @@ class ListAPI(EntityAPI):
 
     def delete_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
-                               {'uri': f'/lists/delete',
+                               {'uri': '/lists/delete',
                                 'body': {'id': specific_id}},
                                fail_on_error=False)
 
@@ -94,7 +92,7 @@ class ListAPI(EntityAPI):
             return name
         return False
 
-    def parse_all_entities_response(self, response: Union[dict, str]):
+    def parse_all_entities_response(self, response: Union[dict, str, list]):
         return response
 
 
@@ -118,13 +116,15 @@ class InstalledPackAPI(EntityAPI):
 
     def verify_specific_search_response(self, response: Union[dict, str], name: str):
 
-        if not response or not response.get("id"):
-            demisto.debug(f'{SCRIPT_NAME} - {self.name} to delete not found. Aborting.')
-            return False
-        return response.get("id")
+        if type(response) is dict:
+            if not response or not response.get("id"):
+                demisto.debug(f'{SCRIPT_NAME} - {self.name} to delete not found. Aborting.')
+                return False
+            return response.get("id")
+        return False
 
-    def parse_all_entities_response(self, response: Union[dict, str]):
-        return [entity.get('id', '') for entity in response]
+    def parse_all_entities_response(self, response: Union[dict, str, list]):
+        return [entity.get('id', '') for entity in response] if type(response) is list else []
 
 
 def search_and_delete_existing_entity(name: str, entity_api: EntityAPI, dry_run: bool = True) -> bool:
@@ -169,9 +169,8 @@ def search_for_all_entities(entity_api: EntityAPI):
 
     if not status:
         error_message = f'{SCRIPT_NAME} - Search All {entity_api.name}s - {res}'
-        return_error(error_message)
         demisto.debug(error_message)
-        return False
+        raise Exception(error_message)
 
     entity_ids = entity_api.parse_all_entities_response(res.get('response', {}))
 
@@ -210,58 +209,69 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: List = [], incl
     return succesfully_deleted, not_deleted
 
 
-def main():
-    args = demisto.args()
-    excluded_ids = args.get('exclude_ids', [])
-    included_ids = args.get('include_ids', [])
+def get_and_delete_needed_ids(args: dict) -> CommandResults:
+    excluded_ids = argToList(args.get('exclude_ids', '[]'))
+    included_ids = argToList(args.get('include_ids', '[]'))
     dry_run = True if args.get('dry_run', 'true') == 'true' else False
     deletion_status = 'Failed'
 
     if included_ids and excluded_ids:
-        return return_error('')
+        raise ValueError('Choose to either include ids or exclude ids.')
 
     if excluded_ids:
         excluded_ids += ALWAYS_EXCLUDED
 
-    try:
-        deleted_jobs, undeleted_jobs = get_and_delete_entities(entity_api=JobAPI(), excluded_ids=excluded_ids, included_ids=included_ids, dry_run=dry_run)
+    deleted_jobs, undeleted_jobs = get_and_delete_entities(entity_api=JobAPI(), excluded_ids=excluded_ids,
+                                                           included_ids=included_ids, dry_run=dry_run)
 
-        # get all lists
-        # delete them if not excluded
-        deleted_lists, undeleted_lists = get_and_delete_entities(entity_api=ListAPI(), excluded_ids=excluded_ids, included_ids=included_ids, dry_run=dry_run)
+    # get all lists
+    # delete them if not excluded
+    deleted_lists, undeleted_lists = get_and_delete_entities(entity_api=ListAPI(), excluded_ids=excluded_ids,
+                                                             included_ids=included_ids, dry_run=dry_run)
 
-        # get all custom packs
-        # delete them if not excluded
-        deleted_packs, undeleted_packs = get_and_delete_entities(entity_api=InstalledPackAPI(), excluded_ids=excluded_ids, included_ids=included_ids, dry_run=dry_run)
+    # get all custom packs
+    # delete them if not excluded
+    deleted_packs, undeleted_packs = get_and_delete_entities(entity_api=InstalledPackAPI(), excluded_ids=excluded_ids,
+                                                             included_ids=included_ids, dry_run=dry_run)
 
-        # Add integrations, scripts, playbooks.
+    # Add integrations, scripts, playbooks.
 
-        deletion_success = deleted_jobs + deleted_lists + deleted_packs
-        deletion_failed = undeleted_jobs + undeleted_lists + undeleted_packs
-        if dry_run:
-            deletion_status = 'Dry run, nothing really deleted.'
-        else:
-            if excluded_ids:
-                if deletion_failed == excluded_ids:
-                    deletion_status = 'Completed'
-            elif included_ids:
-                if deletion_success == included_ids:
-                    deletion_status = 'Completed'
-            # Nothing excluded
-            elif not deletion_failed:
+    deletion_success = set(deleted_jobs + deleted_lists + deleted_packs)
+    deletion_failed = set(undeleted_jobs + undeleted_lists + undeleted_packs).difference(deletion_success)
+    if dry_run:
+        deletion_status = 'Dry run, nothing really deleted.'
+    else:
+        if excluded_ids:
+            if deletion_failed == excluded_ids:
                 deletion_status = 'Completed'
+            else:
+                deletion_status = 'Completed'
+                for excluded_id in excluded_ids:
+                    if excluded_id in deletion_success:
+                        deletion_status = 'Failed'
+                        break
 
-        return_results(
-            CommandResults(
-                outputs_prefix='ConfigurationSetup.Deletion',
-                outputs_key_field='name',
-                outputs={
-                    'successfully_deleted': deletion_success,
-                    'not_deleted': deletion_failed,
-                    'status': deletion_status,
-                },
-            )
-        )
+        elif included_ids:
+            if deletion_success == set(included_ids):
+                deletion_status = 'Completed'
+        # Nothing excluded
+        elif not deletion_failed:
+            deletion_status = 'Completed'
+
+    return CommandResults(
+        outputs_prefix='ConfigurationSetup.Deletion',
+        outputs_key_field='name',
+        outputs={
+            'successfully_deleted': list(deletion_success),
+            'not_deleted': list(deletion_failed),
+            'status': deletion_status,
+        },
+    )
+
+
+def main():
+    try:
+        return_results(get_and_delete_needed_ids(demisto.args()))
 
     except Exception as e:
         return_error(f'{SCRIPT_NAME} - Error occurred while deleting contents.\n{e}'
