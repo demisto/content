@@ -1,0 +1,87 @@
+{
+    "data": [
+        {
+            "id": "786a515c-1cbd-4a8c-a94a-61ad877c893c",
+            "account_id": 52306,
+            "user": {
+                "email": "maizen@paloaltonetworks.com",
+                "id": 38651943,
+                "archived": false
+            },
+            "external_id": null,
+            "source": null,
+            "description": "My description lkjhy khl lgf",
+            "occurred_date": "2022-08-09T10:05:13.890Z",
+            "risk": {
+                "level": 5,
+                "decay_mode": 0,
+                "expire_date": null
+            },
+            "metadata": null,
+            "event_type": {
+                "id": 420899085,
+                "name": "event_type_55",
+                "description": null
+            }
+        },
+        {
+            "id": "c3081dfc-1bf9-4c56-b6ff-f364f0c13d39",
+            "account_id": 52306,
+            "user": {
+                "email": "maizen@paloaltonetworks.com",
+                "id": 38651943,
+                "archived": false
+            },
+            "external_id": null,
+            "source": null,
+            "description": "My description lkjhy khl lgf",
+            "occurred_date": "2022-08-09T10:01:45.862Z",
+            "risk": {
+                "level": 5,
+                "decay_mode": 0,
+                "expire_date": null
+            },
+            "metadata": null,
+            "event_type": {
+                "id": 420894024,
+                "name": "event_type_2",
+                "description": null
+            }
+        },
+        {
+            "id": "2b265035-1a12-4e76-bcb1-6c681b86333e",
+            "account_id": 52306,
+            "user": {
+                "email": "maizen@paloaltonetworks.com",
+                "id": 38651943,
+                "archived": false
+            },
+            "external_id": null,
+            "source": null,
+            "description": "My description",
+            "occurred_date": "2022-08-04T14:14:50.917Z",
+            "risk": {
+                "level": 5,
+                "decay_mode": 0,
+                "expire_date": null
+            },
+            "metadata": null,
+            "event_type": {
+                "id": 418927900,
+                "name": "my_custom_event",
+                "description": null
+            }
+        }
+    ],
+    "meta": {
+        "count": 3,
+        "limit_value": 50,
+        "total_pages": 1,
+        "current_page": 1,
+        "next_page": null,
+        "prev_page": null,
+        "is_first_page": true,
+        "is_last_page": true,
+        "is_out_of_range": false
+    }
+}
