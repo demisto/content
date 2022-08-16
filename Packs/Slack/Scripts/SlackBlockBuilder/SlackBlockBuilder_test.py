@@ -29,7 +29,7 @@ BLOCKS_URL = "https://app.slack.com/block-kit-builder/T0DAYMVCM#%7B%22blocks%22:
              "%22label%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Label%22,%22emoji%22:true%7D%7D%5D%7D "
 
 
-def test_block_carrier_with_url():
+def test_block_carrier_with_url(mocker):
     """Tests the block carrier when given an url.
 
     Checks the output of the command function with the expected output.
@@ -40,8 +40,10 @@ def test_block_carrier_with_url():
         if command == 'addEntitlement':
             return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
 
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     block_carrier = BlockCarrier(url=BLOCKS_URL)
     mock_response = util_load_json('test_data/blocks.json')
+
     assert block_carrier.blocks_dict == mock_response
 
 

@@ -106,11 +106,12 @@ configuration:
   required: false
   type: 0
   additionalinfo: Only supported in Demisto V6.1 and above.
-- display: XSOAR API Key
-  hidden: false
+- display: ''
+  displaypassword: XSOAR API Key
   name: demisto_api_key
+  type: 9
   required: false
-  type: 4
+  hiddenusername: true
 - display: Enable DMs to the bot
   hidden: false
   name: enable_dm
