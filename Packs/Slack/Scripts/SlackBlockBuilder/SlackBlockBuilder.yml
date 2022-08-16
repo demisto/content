@@ -2,7 +2,7 @@ commonfields:
   id: SlackBlockBuilder
   version: -1
 name: SlackBlockBuilder
-script:
+script: '-'
 type: python
 tags:
 - slack
@@ -101,12 +101,9 @@ outputs:
   description: The State of the response from the user will be stored under this context path.
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.10.5.31928
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
 dependson:
   must:
   - SlackV3|||send-notification

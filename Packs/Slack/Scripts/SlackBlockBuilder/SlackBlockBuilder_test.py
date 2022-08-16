@@ -36,6 +36,10 @@ def test_block_carrier_with_url():
     """
     from SlackBlockBuilder import BlockCarrier
 
+    def executeCommand(command: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+        if command == 'addEntitlement':
+            return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
+
     block_carrier = BlockCarrier(url=BLOCKS_URL)
     mock_response = util_load_json('test_data/blocks.json')
     assert block_carrier.blocks_dict == mock_response
