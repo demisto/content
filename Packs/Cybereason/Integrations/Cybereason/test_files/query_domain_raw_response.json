@@ -1,94 +1,97 @@
 {
-  "resultIdToElementDataMap": {
-    "0.-576986290932723784": {
-      "simpleValues": {
-        "everResolvedDomain": { "totalValues": 1, "values": ["false"] },
-        "everResolvedSecondLevelDomain": {
-          "totalValues": 1,
-          "values": ["true"]
+  "data" : {
+    "resultIdToElementDataMap": {
+      "0.-576986290932723784": {
+        "simpleValues": {
+          "everResolvedDomain": { "totalValues": 1, "values": ["false"] },
+          "everResolvedSecondLevelDomain": {
+            "totalValues": 1,
+            "values": ["true"]
+          },
+          "maliciousClassificationType": {
+            "totalValues": 1,
+            "values": ["indifferent"]
+          },
+          "elementDisplayName": { "totalValues": 1, "values": ["www2.bing.com"] },
+          "isInternalDomain": { "totalValues": 1, "values": ["false"] }
         },
-        "maliciousClassificationType": {
-          "totalValues": 1,
-          "values": ["indifferent"]
+        "elementValues": {},
+        "suspicions": {},
+        "filterData": {
+          "sortInGroupValue": "0.-576986290932723784",
+          "groupByValue": "DomainNameRuntime:0.-576986290932723784 "
         },
-        "elementDisplayName": { "totalValues": 1, "values": ["www2.bing.com"] },
-        "isInternalDomain": { "totalValues": 1, "values": ["false"] }
+        "isMalicious": "false",
+        "suspicionCount": 0,
+        "guidString": "0.-576986290932723784",
+        "labelsIds": "None",
+        "malopPriority": "None",
+        "suspect": "false",
+        "malicious": "false"
       },
-      "elementValues": {},
-      "suspicions": {},
-      "filterData": {
-        "sortInGroupValue": "0.-576986290932723784",
-        "groupByValue": "DomainNameRuntime:0.-576986290932723784 "
-      },
-      "isMalicious": "false",
-      "suspicionCount": 0,
-      "guidString": "0.-576986290932723784",
-      "labelsIds": "None",
-      "malopPriority": "None",
-      "suspect": "false",
-      "malicious": "false"
+      "0.-354958457760696528": {
+        "simpleValues": {
+          "everResolvedDomain": { "totalValues": 1, "values": ["false"] },
+          "everResolvedSecondLevelDomain": {
+            "totalValues": 1,
+            "values": ["true"]
+          },
+          "elementDisplayName": {
+            "totalValues": 1,
+            "values": ["www2-www2.bing.com.trafficmanager.net"]
+          },
+          "isInternalDomain": { "totalValues": 1, "values": ["false"] }
+        },
+        "elementValues": {},
+        "suspicions": {},
+        "filterData": {
+          "sortInGroupValue": "0.-354958457760696528",
+          "groupByValue": "DomainNameRuntime:0.-354958457760696528 "
+        },
+        "isMalicious": "false",
+        "suspicionCount": 0,
+        "guidString": "0.-354958457760696528",
+        "labelsIds": "None",
+        "malopPriority": "None",
+        "suspect": "false",
+        "malicious": "false"
+      }
     },
-    "0.-354958457760696528": {
-      "simpleValues": {
-        "everResolvedDomain": { "totalValues": 1, "values": ["false"] },
-        "everResolvedSecondLevelDomain": {
-          "totalValues": 1,
-          "values": ["true"]
-        },
-        "elementDisplayName": {
-          "totalValues": 1,
-          "values": ["www2-www2.bing.com.trafficmanager.net"]
-        },
-        "isInternalDomain": { "totalValues": 1, "values": ["false"] }
-      },
-      "elementValues": {},
-      "suspicions": {},
-      "filterData": {
-        "sortInGroupValue": "0.-354958457760696528",
-        "groupByValue": "DomainNameRuntime:0.-354958457760696528 "
-      },
-      "isMalicious": "false",
-      "suspicionCount": 0,
-      "guidString": "0.-354958457760696528",
-      "labelsIds": "None",
-      "malopPriority": "None",
-      "suspect": "false",
-      "malicious": "false"
-    }
-  },
-  "suspicionsMap": {},
-  "evidenceMap": {},
-  "totalPossibleResults": 2,
-  "guessedPossibleResults": 0,
-  "queryLimits": {
-    "totalResultLimit": 10000,
-    "perGroupLimit": 100,
-    "perFeatureLimit": 100,
-    "groupingFeature": {
-      "elementInstanceType": "DomainName",
-      "featureName": "self"
-    },
-    "sortInGroupFeature": "None"
-  },
-  "queryTerminated": "false",
-  "pathResultCounts": [
-    {
-      "featureDescriptor": {
+    "suspicionsMap": {},
+    "evidenceMap": {},
+    "totalPossibleResults": 2,
+    "guessedPossibleResults": 0,
+    "queryLimits": {
+      "totalResultLimit": 10000,
+      "perGroupLimit": 100,
+      "perFeatureLimit": 100,
+      "groupingFeature": {
         "elementInstanceType": "DomainName",
-        "featureName": "None"
+        "featureName": "self"
       },
-      "count": 2
+      "sortInGroupFeature": "None"
+    },
+    "queryTerminated": "false",
+    "pathResultCounts": [
+      {
+        "featureDescriptor": {
+          "elementInstanceType": "DomainName",
+          "featureName": "None"
+        },
+        "count": 2
+      }
+    ],
+    "guids": [],
+    "paginationToken": "None",
+    "executionUUID": "None",
+    "quapiMeasurementData": {
+      "timeToGetGuids": [],
+      "timeToGetData": [],
+      "timeToGetAdditionalData": [],
+      "totalQuapiQueryTime": [],
+      "startTime": [],
+      "endTime": []
     }
-  ],
-  "guids": [],
-  "paginationToken": "None",
-  "executionUUID": "None",
-  "quapiMeasurementData": {
-    "timeToGetGuids": [],
-    "timeToGetData": [],
-    "timeToGetAdditionalData": [],
-    "totalQuapiQueryTime": [],
-    "startTime": [],
-    "endTime": []
-  }
+  },
+  "status": "SUCCESS"
 }

@@ -33,6 +33,30 @@
             "suspect": true,
             "guidString": "1899624444.1198775089551234567",
             "simpleValues": {
+                "companyName": {
+                    "totalValues": 1,
+                    "values": [
+                        "test_company_name"
+                    ]
+                },
+                "createdTime": {
+                    "totalValues": 1,
+                    "values": [
+                        "1234567890"
+                    ]
+                },
+                "modifiedTime": {
+                    "totalValues": 1,
+                    "values": [
+                        "1234567890"
+                    ]
+                },
+                "isSigned": {
+                    "totalValues": 1,
+                    "values": [
+                        "true"
+                    ]
+                },
                 "sha1String": {
                     "totalValues": 1,
                     "values": [

@@ -204,8 +204,8 @@
             "elementValues": [
               {
                 "elementType": "Machine",
-                "guid": "",
-                "name": "",
+                "guid": "123456",
+                "name": "desktop",
                 "hasSuspicions": false,
                 "hasMalops": false
               }

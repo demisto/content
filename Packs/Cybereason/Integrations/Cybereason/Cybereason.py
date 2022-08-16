@@ -1883,7 +1883,7 @@ def get_sensor_id_command(client: Client, args: dict):
         }
     response = client.cybereason_api_call('POST', '/rest/sensors/query', json_body=json_body)
     if dict_safe_get(response, ['sensors']) == []:
-        return CommandResults(readable_output=f"Could not found any Sensor ID for the machine '{machine_name}'")
+        return CommandResults(readable_output=f"Could not find any Sensor ID for the machine '{machine_name}'")
     else:
         output = {}
         for single_sensor in response['sensors']:
