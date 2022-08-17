@@ -1,5 +1,3 @@
-import json
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -23,7 +21,7 @@ def main():
 
     try:
         drilldown_results = json.loads(drilldown_results_str)
-    except json.decoder.JSONDecodeError as e:
+    except Exception as e:
         raise ValueError(f'Drilldown is not in a valid JSON structure:\n{e}')
 
     if not drilldown_results:
