@@ -150,6 +150,28 @@ class Client(BaseClient):
 
         return response
 
+    def submit_false_negative_report_request(self, recipient_email, sender_email, subject):
+        headers = self._headers
+        json_data = {
+            "report_type": "false-negative",
+            "recipient_email": recipient_email,
+            "sender_email": sender_email,
+            "subject": subject
+        }
+        response = self._http_request('post', 'detection360/reports', json_data=json_data, headers=headers)
+
+        return response
+
+    def submit_false_positive_report_request(self, portal_link):
+        headers = self._headers
+        json_data = {
+            "report_type": "false-positive",
+            'portal_link': portal_link,
+        }
+        response = self._http_request('post', 'detection360/reports', json_data=json_data, headers=headers)
+
+        return response
+
 
 def check_the_status_of_an_action_requested_on_a_case_command(client, args):
     case_id = str(args.get('case_id', ''))
@@ -345,7 +367,7 @@ def get_employee_identity_analysis_genome_data_command(client, args):
     headers = ['description', 'key', 'name', 'values']
 
     markdown = tableToMarkdown(
-        f"Analysis of {email_address}", response.get('histograms', []), headers=headers, removeNull=True)
+        f"Analysis of {email_address}", response.get('data', []), headers=headers, removeNull=True)
 
     response["email"] = email_address
     command_results = CommandResults(
@@ -483,6 +505,30 @@ def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_c
     return command_results
 
 
+def submit_false_negative_report_command(client, args):
+    recipient_email = str(args.get('recipient_email;', ''))
+    sender_email = str(args.get('sender_email', ''))
+    subject = str(args.get('subject', ''))
+    response = client.submit_false_negative_report_request(recipient_email, sender_email, subject)
+    command_results = CommandResults(
+        readable_output=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def submit_false_positive_report_command(client, args):
+    portal_link = str(args.get('portal_link;', ''))
+    response = client.submit_false_positive_report_request(portal_link)
+    command_results = CommandResults(
+        readable_output=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
 def test_module(client):
     # Run a sample request to retrieve mock data
     client.get_a_list_of_threats_request(None, None, None, None)
@@ -508,33 +554,48 @@ def main():
         client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
 
         commands = {
-            'abnormal-security-check-case-action-status':
-                check_the_status_of_an_action_requested_on_a_case_command,
-            'abnormal-security-check-threat-action-status':
-                check_the_status_of_an_action_requested_on_a_threat_command,
-            'abnormal-security-download-threat-log-csv': download_data_from_threat_log_in_csv_format_command,
-            'abnormal-security-list-abnormal-cases':
-                get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
-            'abnormal-security-list-abuse-mailbox-campaigns': get_a_list_of_campaigns_submitted_to_abuse_mailbox_command,
+            # Threat commands
             'abnormal-security-list-threats':
                 get_a_list_of_threats_command,
             'abnormal-security-get-threat':
                 get_details_of_a_threat_command,
+            'abnormal-security-manage-threat':
+                manage_a_threat_identified_by_abnormal_security_command,
+            'abnormal-security-check-threat-action-status':
+                check_the_status_of_an_action_requested_on_a_threat_command,
+            'abnormal-security-download-threat-log-csv': download_data_from_threat_log_in_csv_format_command,
+
+            # Case commands
+            'abnormal-security-list-abnormal-cases':
+                get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
             'abnormal-security-get-abnormal-case':
                 get_details_of_an_abnormal_case_command,
+            'abnormal-security-manage-abnormal-case':
+                manage_an_abnormal_case_command,
+            'abnormal-security-check-case-action-status':
+                check_the_status_of_an_action_requested_on_a_case_command,
+            'abnormal-security-get-case-analysis-and-timeline': provides_the_analysis_and_timeline_details_of_a_case_command,
+
+            # Threat Intel commands
+            'abnormal-security-get-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
+
+            # Abuse Mailbox commands
+            'abnormal-security-list-abuse-mailbox-campaigns': get_a_list_of_campaigns_submitted_to_abuse_mailbox_command,
             'abnormal-security-get-abuse-mailbox-campaign': get_details_of_an_abuse_mailbox_campaign_command,
+
+            # Employee commands
             'abnormal-security-get-employee-identity-analysis': get_employee_identity_analysis_genome_data_command,
             'abnormal-security-get-employee-information': get_employee_information_command,
             'abnormal-security-get-employee-last-30-days-login-csv':
                 get_employee_login_information_for_last_30_days_in_csv_format_command,
-            'abnormal-security-get-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
-            'abnormal-security-manage-threat':
-                manage_a_threat_identified_by_abnormal_security_command,
-            'abnormal-security-manage-abnormal-case':
-                manage_an_abnormal_case_command,
-            'abnormal-security-get-case-analysis-and-timeline': provides_the_analysis_and_timeline_details_of_a_case_command,
+
+            # Detection 360 commands
             'abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement':
                 submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
+            'abnormal-security-submit-false-negative-report':
+                submit_false_negative_report_command,
+            'abnormal-security-submit-false-positive-report':
+                submit_false_positive_report_command,
         }
 
         if command == 'test-module':
