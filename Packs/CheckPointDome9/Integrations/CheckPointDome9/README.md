@@ -1,5 +1,5 @@
 Dome9 integration allows to easily manage the security and compliance of the public cloud.
-This integration was integrated and tested with version xx of checkpointdome9
+This integration was integrated and tested with version 2 of checkpointdome9
 
 ## Configure Check Point Dome9 (CloudGuard) on Cortex XSOAR
 
