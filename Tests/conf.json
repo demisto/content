@@ -5023,7 +5023,14 @@
         {
             "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
-            "integrations": "AzureRiskyUsers"
+            "integrations": "AzureRiskyUsers",
+            "instance_names": "AzureRiskyUsers_Device_Code_Flow"
+        },
+        {
+            "playbookID": "AzureRiskyUsers",
+            "fromversion": "6.0.0",
+            "integrations": "AzureRiskyUsers",
+            "instance_names": "AzureRiskyUsers_Client_Credentials_Flow"
         },
         {
             "playbookID": "playbook-AzureKeyVault-Test",
@@ -5163,6 +5170,11 @@
             "fromversion": "6.8.0"
         },
         {
+            "integrations": "CheckPointSandBlast",
+            "playbookID": "playbook-CheckPointSandBlast_Test",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": [
                 "Microsoft Defender for Cloud Apps Event Collector"
             ],
@@ -5177,6 +5189,7 @@
         }
     ],
     "skipped_tests": {
+        "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
         "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
