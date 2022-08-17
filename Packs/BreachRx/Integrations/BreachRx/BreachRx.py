@@ -171,7 +171,7 @@ def test_module(client: BreachRxClient):
 
 def create_incident_command(
     client: BreachRxClient,
-    incident_name: str,
+    incident_name: str = None,
     description: str = None
 ) -> CommandResults:
     if not incident_name:
