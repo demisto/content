@@ -366,7 +366,7 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
         field_split = field_path.split(".")
         old_value = dict_safe_get(dict_object=incident, keys=field_split, default_return_value="Not found")
         if old_value == "Not found":
-            raise Exception('The other_fields argument is not valid. Check the name of the field whether it the right path')
+            raise Exception('The other_fields argument is invalid. Check the name of the field whether it is the right path')
         changes.append(
             {
                 'field': {'name': field_split[-1]},
