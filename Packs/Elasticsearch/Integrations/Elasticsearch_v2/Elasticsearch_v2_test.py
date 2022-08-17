@@ -863,16 +863,17 @@ def test_get_time_range(last_fetch, time_range_start, time_range_end, result):
     from Elasticsearch_v2 import get_time_range
     assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field") == result
 
+
 def test_build_eql_body():
     from Elasticsearch_v2 import build_eql_body
     assert build_eql_body(None, None, None, None, None, None, None) == {}
     assert build_eql_body("query", "fields", "size", "tiebreaker_field",
                           "timestamp_field", "event_category_field", "filter") == {
-                            "query": "query",
-                            "fields": "fields",
-                            "size":"size",
-                            "tiebreaker_field": "tiebreaker_field",
-                            "timestamp_field": "timestamp_field",
-                            "event_category_field": "event_category_field",
-                            "filter": "filter"
-                          }
+        "query": "query",
+        "fields": "fields",
+        "size": "size",
+        "tiebreaker_field": "tiebreaker_field",
+        "timestamp_field": "timestamp_field",
+        "event_category_field": "event_category_field",
+        "filter": "filter"
+    }

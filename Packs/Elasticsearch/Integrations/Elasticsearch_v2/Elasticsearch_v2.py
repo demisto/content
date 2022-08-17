@@ -161,7 +161,7 @@ def get_hit_table(hit):
     return table_context, headers
 
 
-def results_to_context(index, query, base_page, size, total_dict, response,event=False):
+def results_to_context(index, query, base_page, size, total_dict, response, event=False):
     """Creates context for the full results of a search.
 
     Args:
@@ -196,8 +196,8 @@ def results_to_context(index, query, base_page, size, total_dict, response,event
         if not event:
             results = response.get('hits').get('hits', [])
         else:
-            results = response.get('hits').get('events',[])
-            
+            results = response.get('hits').get('events', [])
+
         for hit in results:
             single_hit_table, single_header = get_hit_table(hit)
             hit_tables.append(single_hit_table)
@@ -256,7 +256,7 @@ def search_command(proxies):
         time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end)
 
     if query_dsl:
-        
+
         response = execute_raw_query(es, query_dsl)
 
     else:
@@ -303,7 +303,7 @@ def fetch_params_check():
 
     if not FETCH_QUERY:
         str_error.append("Query by which to fetch incidents is not configured.")
-    
+
     if RAW_QUERY and FETCH_QUERY_PARM:
         str_error.append("Both Query and Raw Query are configured. Please choose between Query or Raw Query.")
 
@@ -672,7 +672,7 @@ def execute_raw_query(es, raw_query):
         raw_query = json.loads(raw_query)
     except Exception as e:
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
-    
+
     body = {"query": raw_query}
     response = es.search(index=FETCH_INDEX, body=body)
     return response
