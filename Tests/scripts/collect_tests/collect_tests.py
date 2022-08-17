@@ -679,7 +679,7 @@ if __name__ == '__main__':
     parser.add_argument('--service_account', help="Path to gcloud service account")
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
-    logger.debug(f'parsed args: {args_string}')
+    logger.debug(f'parsed args:\n{args_string}')
 
     marketplace = MarketplaceVersions(args.marketplace)
 
