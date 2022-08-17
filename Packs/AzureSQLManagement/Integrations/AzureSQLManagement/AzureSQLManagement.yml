@@ -23,7 +23,7 @@ configuration:
   display: Authentication Type
   name: auth_type
   required: true
-  defaultvalue: Device
+  defaultvalue: Device Code
   options:
   - Authorization Code
   - Device Code
