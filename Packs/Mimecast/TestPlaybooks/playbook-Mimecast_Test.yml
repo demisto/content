@@ -1,6 +1,5 @@
 id: Mimecast test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Mimecast test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -432,12 +432,11 @@ tasks:
       - "31"
     scriptarguments:
       fromDate:
-        simple: 2015-10-01T14:49:18+0000
-      limit: {}
+        simple: 2019-10-01T14:49:18+0000
       resultType:
         simple: all
-      resultsNumber: {}
-      toDate: {}
+      toDate:
+        simple: 2022-07-01T14:49:18+0000
     separatecontext: false
     view: |-
       {
@@ -462,6 +461,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1543,6 +1543,409 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: e595e2e5-bbc3-44ea-8345-e3a9647daa75
+    type: regular
+    task:
+      id: e595e2e5-bbc3-44ea-8345-e3a9647daa75
+      version: -1
+      name: mimecast-search-message
+      description: 'Searches a message '
+      script: '|||mimecast-search-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      from:
+        simple: markrobertsny@pilot-meadow.b41.one
+      from_date:
+        simple: 2022-07-17T14:49:18+0000
+      to_date:
+        simple: 2022-07-18T14:49:18+0000
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 7390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 044b224b-a418-48cf-8a84-7f0c0f4dcb60
+    type: condition
+    task:
+      id: 044b224b-a418-48cf-8a84-7f0c0f4dcb60
+      version: -1
+      name: test mimecast-search-message
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Mimecast.SearchMessage.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 7565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: db5aa0a6-79e0-4b5c-8a41-d8560dc576e4
+    type: regular
+    task:
+      id: db5aa0a6-79e0-4b5c-8a41-d8560dc576e4
+      version: -1
+      name: mimecast-get-message-info
+      description: Retrieves detailed information about a specific message.
+      script: '|||mimecast-get-message-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      ids:
+        simple: eNpNj9tugkAQht9lryXuLgTEpBcoWompRsA0EBPCYQKbuqB7oNWm715om7Y3k0nm-2b-eUcSSi2AVWiOuuf0HvTN4lWy0_Rm-zu5M-9m_BgV9OoWblEf8_jyBM4-3TZbvBf2i0oiM2GztPbWK8wTBRsmDgvihsve58Kz3YjnhVjd5VoHOnkLr25X--HGOk3rBzRBHKTMa4hUrrSMbxcYQuSibFgP1d_4oEFDMARs9fk8QYq3v32ppeo4iLKrRnd5jDyCqUdNe9B7EJJ1LZqTQWpH4Fv6ufD1cp2VBmRaYpIRy8n6aqgGIdm_TRnFlGJnJJyBVCA4MQ2MiUGwiym2nJmNPj4BLsdpYw
+      show_delivered_message:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 7780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 76480e5b-3cbd-49a7-8c8f-96abf789d8fe
+    type: condition
+    task:
+      id: 76480e5b-3cbd-49a7-8c8f-96abf789d8fe
+      version: -1
+      name: test mimecast-get-message-info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Mimecast.MessageInfo.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 7960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 4ed23c95-be6a-4104-8ba3-8c545f52a468
+    type: regular
+    task:
+      id: 4ed23c95-be6a-4104-8ba3-8c545f52a468
+      version: -1
+      name: mimecast-list-hold-message
+      description: Get information about held messages, including the reason, hold level, sender and recipients
+      script: '|||mimecast-list-hold-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      admin:
+        simple: "true"
+      field_name:
+        simple: all
+      from_date:
+        simple: 2012-11-16T14:49:18+0000
+      to_date:
+        simple: 2022-08-01T14:49:18+0000
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 8170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 5afa924e-e191-45ff-8cf1-a6f4ec2bf6ce
+    type: regular
+    task:
+      id: 5afa924e-e191-45ff-8cf1-a6f4ec2bf6ce
+      version: -1
+      name: mimecast-hold-message-summery
+      description: Get counts of currenlty held messages for each hold reason.
+      script: '|||mimecast-hold-message-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 8390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 499ed6ba-8f0c-49af-8714-289075469d89
+    type: condition
+    task:
+      id: 499ed6ba-8f0c-49af-8714-289075469d89
+      version: -1
+      name: test mimecast-hold-message-summery
+      description: Get counts of currenlty held messages for each hold reason.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Mimecast.HoldMessageSummary.numberOfItems
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 8560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 4b1b5c3d-bbfb-41ae-8fec-0239f4b6c39f
+    type: regular
+    task:
+      id: 4b1b5c3d-bbfb-41ae-8fec-0239f4b6c39f
+      version: -1
+      name: mimecast-reject-hold-message
+      description: Reject a currently held message.
+      script: '|||mimecast-reject-hold-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      ids:
+        simple: eNpVzskOgjAABNB_6RUPpQUBEw8ILkiCuOByMpGWRW0RaKvR-O_C0fObycwHtDSVDS0JGAERLQN8LHPjRmq30nCzWUTels15Hpq-_Xh5eVAU1iwONXN6umZBcsguUoXOKnKjGKHrPtFbQVKKFJzwp3Zy_PC58y2ToWklmI2Nx3v9wrGCsTsGA1DcSd3vWthA0B46xgAIxvsjshW0YTruQoo2bVlxMNI75YR2CiHqoJZU0vNf__sDnRk_cQ
+      message:
+        simple: MESSAGE CONTAINS UNDESIRABLE CONTENT
+      notify:
+        simple: "true"
+      reason_type:
+        simple: MESSAGE CONTAINS UNDESIRABLE CONTENT
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 8740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 57e282bd-71c6-44c7-8fd7-238ec4a2c204
+    type: regular
+    task:
+      id: 57e282bd-71c6-44c7-8fd7-238ec4a2c204
+      version: -1
+      name: mimecast-release-hold-message
+      description: Release a currently held message.
+      script: '|||mimecast-release-hold-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      id:
+        simple: eNpVzskOgjAABNB_6RUPpQUBEw8ILkiCuOByMpGWRW0RaKvR-O_C0fObycwHtDSVDS0JGAERLQN8LHPjRmq30nCzWUTels15Hpq-_Xh5eVAU1iwONXN6umZBcsguUoXOKnKjGKHrPtFbQVKKFJzwp3Zy_PC58y2ToWklmI2Nx3v9wrGCsTsGA1DcSd3vWthA0B46xgAIxvsjshW0YTruQoo2bVlxMNI75YR2CiHqoJZU0vNf__sDnRk_cQ
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 8930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 6dbbc455-dc5f-4b21-8c8a-aa3a57ce6d82
+    type: regular
+    task:
+      id: 6dbbc455-dc5f-4b21-8c8a-aa3a57ce6d82
+      version: -1
+      name: mimecast-search-processing-message
+      description: Return messages currently being processed by Mimecast.
+      script: '|||mimecast-search-processing-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      to_date:
+        simple: 2015-11-16T14:49:18+0000
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 9120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: c153e001-0db7-4558-89b4-d3f761b5ea40
+    type: regular
+    task:
+      id: c153e001-0db7-4558-89b4-d3f761b5ea40
+      version: -1
+      name: mimecast-list-email-queues
+      description: Get the count of the inbound and outbound email queues at specified times.
+      script: '|||mimecast-list-email-queues'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      from_date:
+        simple: 2015-11-16T14:49:18+0000
+      to_date:
+        simple: 2022-11-16T14:49:18+0000
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 9290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1558,3 +1961,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''
