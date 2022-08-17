@@ -6,6 +6,14 @@ import json
 import io
 from datetime import datetime, timedelta
 import pytest
+import random
+import string
+
+
+def getRandomString(length: int):
+    # printing lowercase
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
 
 
 def util_load_json(path):
@@ -164,6 +172,20 @@ def test_fetch_incidents(requests_mock):
     assert next_fetch['last_fetch'] == "2022-05-31T00:00:00.000000Z"
 
 
+def test_get_detection_rules(requests_mock):
+    from GigamonThreatINSIGHT import Client, DetectionClient, commandGetDetectionRules
+
+    mock_response = util_load_json('test_data/detections_rules_results.json')
+    requests_mock.get('https://detections.icebrg.io/v1/rules', json=mock_response)
+
+    client: DetectionClient = Client.getClient('Detections', '')
+    response: CommandResults = commandGetDetectionRules(client, {})
+
+    assert response.outputs_prefix == 'Insight.Rules'
+    assert response.outputs_key_field == 'rules'
+    assert response.outputs == mock_response[response.outputs_key_field]
+
+
 def test_get_detection_events(requests_mock):
     from GigamonThreatINSIGHT import Client, DetectionClient, commandGetDetectionRuleEvents
 
@@ -216,88 +238,59 @@ Tests for Entity API related commands
 
 def test_get_entity_summary(requests_mock):
     from GigamonThreatINSIGHT import Client, EntityClient, commandGetEntitySummary
+    entityId = getRandomString(10)
+
     mock_response = util_load_json('test_data/entity_summary_results.json')
-    requests_mock.get('https://entity.icebrg.io/v1/entity/8.8.8.8/summary', json=mock_response)
+    requests_mock.get('https://entity.icebrg.io/v1/entity/' + entityId + '/summary', json=mock_response)
 
     client: EntityClient = Client.getClient('Entity', '')
-    response: CommandResults = commandGetEntitySummary(client, '8.8.8.8')
+    response: CommandResults = commandGetEntitySummary(client, entityId)
 
     assert response.outputs_prefix == 'Insight.Entity.Summary'
     assert response.outputs_key_field == 'summary'
     assert response.outputs == mock_response[response.outputs_key_field]
 
 
-def test_get_entity_file(requests_mock):
-    from GigamonThreatINSIGHT import Client, EntityClient, commandGetEntityFile
-    mock_response = util_load_json('test_data/entity_file_results.json')
-    requests_mock.get('https://entity.icebrg.io/v1/entity/725d4b987107aa0f797f2aad4daaf8cd/file', json=mock_response)
+def test_get_entity_pdns(requests_mock):
+    from GigamonThreatINSIGHT import Client, EntityClient, commandGetEntityPdns
+    entityId = getRandomString(10)
+
+    mock_response = util_load_json('test_data/entity_pdns_results.json')
+    requests_mock.get('https://entity.icebrg.io/v1/entity/' + entityId + '/pdns', json=mock_response)
 
     client: EntityClient = Client.getClient('Entity', '')
-    response: CommandResults = commandGetEntityFile(client, '725d4b987107aa0f797f2aad4daaf8cd')
+    response: CommandResults = commandGetEntityPdns(client, entityId)
+
+    assert response.outputs_prefix == 'Insight.Entity.PDNS'
+    assert response.outputs_key_field == 'passivedns'
+    assert response.outputs == mock_response[response.outputs_key_field]
+
+
+def test_get_entity_dhcp(requests_mock):
+    from GigamonThreatINSIGHT import Client, EntityClient, commandGetEntityDhcp
+    entityId = getRandomString(10)
+
+    mock_response = util_load_json('test_data/entity_dhcp_results.json')
+    requests_mock.get('https://entity.icebrg.io/v1/entity/' + entityId + '/dhcp', json=mock_response)
+
+    client: EntityClient = Client.getClient('Entity', '')
+    response: CommandResults = commandGetEntityDhcp(client, entityId)
+
+    assert response.outputs_prefix == 'Insight.Entity.DHCP'
+    assert response.outputs_key_field == 'records'
+    assert response.outputs == mock_response[response.outputs_key_field]
+
+
+def test_get_entity_file(requests_mock):
+    from GigamonThreatINSIGHT import Client, EntityClient, commandGetEntityFile
+    entityId = getRandomString(10)
+
+    mock_response = util_load_json('test_data/entity_file_results.json')
+    requests_mock.get('https://entity.icebrg.io/v1/entity/' + entityId + '/file', json=mock_response)
+
+    client: EntityClient = Client.getClient('Entity', '')
+    response: CommandResults = commandGetEntityFile(client, entityId)
 
     assert response.outputs_prefix == 'Insight.Entity.File'
     assert response.outputs_key_field == 'file'
     assert response.outputs == mock_response[response.outputs_key_field]
-
-
-"""
-Tests for Event API related commands
-"""
-
-
-def test_get_events(requests_mock):
-    from GigamonThreatINSIGHT import Client, EventClient, formatEvents, commandGetEvents
-    mock_response = formatEvents(util_load_json('test_data/events_results.json'), 'events')
-    requests_mock.get('https://events.icebrg.io/v2/query/events', json=mock_response)
-
-    client: EventClient = Client.getClient('Events', '')
-    response: CommandResults = commandGetEvents(client, {"query": "test"})
-
-    assert response.outputs_prefix == 'Insight.Events'
-    assert response.outputs_key_field == 'events'
-    assert response.outputs == mock_response[response.outputs_key_field]
-    assert len(response.outputs) == 2
-    for event in response.outputs:
-        assert 'src_ip' in event
-        assert 'src_internal' in event
-        if 'sensor_ids' in event:
-            assert event['sensor_ids'] == '["test"]'
-
-    mock_response = formatEvents(util_load_json('test_data/events_results.json'), 'events')
-    requests_mock.get('https://events.icebrg.io/v2/query/events', json=mock_response)
-
-    response: CommandResults = commandGetEvents(client, {"response_type": "other", "query": "test"})
-
-    assert response.outputs_prefix == 'Insight.Events'
-    assert response.outputs_key_field == 'events'
-    assert response.outputs == mock_response[response.outputs_key_field]
-    assert len(response.outputs) == 2
-
-
-def test_get_events_aggregates(requests_mock):
-    from GigamonThreatINSIGHT import Client, EventClient, formatEvents, commandGetEvents
-    mock_response = formatEvents(util_load_json('test_data/aggregations_results.json'), 'aggregations')
-    requests_mock.get('https://events.icebrg.io/v2/query/events', json=mock_response)
-
-    client: EventClient = Client.getClient('Events', '')
-    response: CommandResults = commandGetEvents(client, {"response_type": "aggregations", "query": "test GROUP BY sensor_id"})
-
-    assert response.outputs_prefix == 'Insight.Events'
-    assert response.outputs_key_field == 'data'
-    assert response.outputs == mock_response[response.outputs_key_field]
-    assert len(response.outputs) == 1
-    for aggr in response.outputs:
-        assert 'sensor_id' in aggr
-        assert 'count' in aggr
-        assert aggr['sensor_id'] == 'test'
-        assert aggr['count'] == 7
-
-    mock_response = formatEvents(util_load_json('test_data/aggregations_results.json'), 'metadata')
-    requests_mock.get('https://events.icebrg.io/v2/query/events', json=mock_response)
-
-    response: CommandResults = commandGetEvents(client, {"response_type": "metadata", "query": "test group by sensor_id"})
-
-    assert response.outputs_prefix == 'Insight.Events'
-    assert response.outputs_key_field == 'data'
-    assert response.outputs == mock_response[response.outputs_key_field]
-    assert len(response.outputs) == 1

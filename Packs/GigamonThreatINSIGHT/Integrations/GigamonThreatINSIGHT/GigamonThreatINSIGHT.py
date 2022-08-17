@@ -510,7 +510,7 @@ def commandGetEntityPdns(entityClient: EntityClient, entity: str):
     result: Dict[str, Any] = entityClient.getEntityPdns(entity)
 
     prefix = 'Insight.Entity.PDNS'
-    key = 'pasivedns'
+    key = 'passivedns'
 
     if not result or key not in result or not result.get(key):
         return "No result found."
@@ -530,7 +530,7 @@ def commandGetEntityDhcp(entityClient: EntityClient, entity: str):
     result: Dict[str, Any] = entityClient.getEntityDhcp(entity)
 
     prefix = 'Insight.Entity.DHCP'
-    key = 'dhcp'
+    key = 'records'
 
     if not result or key not in result or not result.get(key):
         return "No result found."
