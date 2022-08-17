@@ -1,4 +1,3 @@
-register_module_line('SplunkShowAsset', 'start', __line__())
 import json
 
 
