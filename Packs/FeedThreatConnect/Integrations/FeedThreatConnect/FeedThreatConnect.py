@@ -55,19 +55,19 @@ def suppress_stdout():
 
 
 def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) -> int:
-    """ Calculate dbot score by ThreatConnect assess score (0-500) to range of 0-3:
+    """ Calculate dbot score by ThreatConnect assess score (0-1000) to range of 0-3:
         1. feed dev docs:https://xsoar.pan.dev/docs/integrations/feeds
-        2. For more info - https://threatconnect.com/blog/quickly-assess-maliciousness-suspicious-activity-analyze/
+        2. For more info - https://training.threatconnect.com/learn/article/threatassess-and-cal-kb-article
 
     Args:
-        threat_assess_score: score between 0-500.
+        threat_assess_score: score between 0-1000.
 
     Returns:
         int: Calculated DbotScore (range 0-3).
     """
     score = 0
     if isinstance(threat_assess_score, int):
-        score = ceil(threat_assess_score / (500 / 3))
+        score = ceil(threat_assess_score / (1000 / 3))
 
     return score
 
