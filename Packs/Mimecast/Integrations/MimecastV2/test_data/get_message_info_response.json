@@ -71,7 +71,7 @@
                         "subject": "Dek Sales",
                         "sent": "2022-07-18T13:25:21+0000",
                         "processed": "2022-07-18T13:25:21+0000",
-                        "transmissionInfo": "test"
+                        "transmissionInfo": "test",
                         "route": "inbound"
                     },
                     "policyInfo": [
