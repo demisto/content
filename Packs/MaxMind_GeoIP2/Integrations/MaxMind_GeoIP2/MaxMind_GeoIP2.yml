@@ -38,6 +38,35 @@ configuration:
   defaultvalue: https://geoip.maxmind.com/
   type: 0
   required: true
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 script:
   script: ''
   type: python
@@ -103,6 +132,21 @@ script:
     - contextPath: MaxMind.City
       description: City the IP is located in
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     description: Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds
   runonce: false
   dockerimage: demisto/python:2.7.18.27799
