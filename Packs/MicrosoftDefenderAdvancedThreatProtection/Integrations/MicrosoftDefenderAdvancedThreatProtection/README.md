@@ -43,23 +43,23 @@ For more details about the authentication used in this integration, see [Microso
 2. Search for Microsoft Defender for Endpoint.
 3. Click **Add instance** to create and configure a new integration instance.
     
-    | **Parameter**                                           | **Description** | **Example** |
----------------------------------------------------------| ---------             | -----------           | -------            |
-    | Name                                                    | A meaningful name for the integration instance. | XXXXX Instance Alpha |
-    | Host URL                                                | The URL to the Microsoft Defender for Endpoint server, including the scheme. | `https://api.securitycenter.windows.com` |
-    | ID                                                      | The ID used to gain access to the integration. | N/A |
-    | Token                                                   | A piece of data that servers use to verify for authenticity. | eea810f5-a6f6 |
-    | Certificate Thumbprint                                  | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | A97BF50B7BB6D909CE8CAAF9FA8109A571134C33 |
-    | Private Key                                             | Used for certificate authentication. The private key of the registered certificate. | eea810f5-a6f6 |
-    | Fetch Incidents                                         | Whether to fetch the incidents. | N/A |
-    | Incident Type                                           | The type of incident to select. | Phishing |
-    | Status to filter out alerts for fetching as incidents   | The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
+    | **Parameter** | **Description** | **Example** |
+    | ---------             | -----------           | -------            |
+    | Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
+    | Host URL | The URL to the Microsoft Defender for Endpoint server, including the scheme. | `https://api.securitycenter.windows.com` |
+    | ID | The ID used to gain access to the integration. | N/A |
+    | Token | A piece of data that servers use to verify for authenticity. | eea810f5-a6f6 |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | A97BF50B7BB6D909CE8CAAF9FA8109A571134C33 |
+    | Private Key | Used for certificate authentication. The private key of the registered certificate. | eea810f5-a6f6 |
+    | Fetch Incidents | Whether to fetch the incidents. | N/A |
+    | Incident Type | The type of incident to select. | Phishing |
+    | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
     | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
-    | Trust any Certificate (Not Secure)                      | When selected, certificates are not checked. | N/A |
-    | Use system proxy settings                               | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
-    | First Fetch Timestamp                                   | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
-    | self-deployed                                           | Use a self-deployed Azure Application. |  N/A |
-    | Using GCC                                               | Whether a GCC edpoint is used. |  False |
+    | Trust any Certificate (Not Secure) | When selected, certificates are not checked. | N/A |
+    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
+    | First Fetch Timestamp | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
+    | self-deployed | Use a self-deployed Azure Application. |  N/A |
+    | Using GCC | Whether a GCC edpoint is used. |  False |
 
 
 4. Click **Test** to validate the URLs, token, and connection.
