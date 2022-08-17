@@ -399,8 +399,7 @@ class TestFetchingStixObjects:
         (None, None, None), (None, '2021-09-29T15:55:04.815Z', '2021-09-29T15:55:04.815Z'),
         ('2021-09-29T15:55:04.815Z', '2022-09-29T15:55:04.815Z', '2022-09-29T15:55:04.815Z')
     ])
-    def test_update_last_modified_indicator_date(self, last_modifies_client, last_modifies_param,
-                                                 expected_modified_result):
+    def test_update_last_modified_indicator_date(self, last_modifies_client, last_modifies_param, expected_modified_result):
         """
                Scenario: Test updating the last_fetched_indicator__modified field of the client.
 

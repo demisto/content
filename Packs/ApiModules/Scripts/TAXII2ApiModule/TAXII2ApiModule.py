@@ -1165,7 +1165,6 @@ class Taxii2FeedClient:
             str. the IOC value. if its reports we add to it [Unit42 ATOM] prefix,
             if its attack pattern remove the id from the name.
         """
-        demisto.info(f'{ioc=}, {id_to_obj=}')
         ioc_obj = id_to_obj.get(ioc)
         if ioc_obj:
             if ioc_obj.get('type') == 'report':
