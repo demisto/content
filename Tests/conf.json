@@ -5179,6 +5179,11 @@
             "playbookID": "Arkime Test playbook",
             "fromversion": "6.2.0",
             "memory_threshold": 95
+        },
+        {
+            "integrations": "McAfee MVision CASB",
+            "playbookID": "McAfee MVision CASB Test Play Book",
+            "fromversion": "6.5.0"
         }
     ],
     "skipped_tests": {
