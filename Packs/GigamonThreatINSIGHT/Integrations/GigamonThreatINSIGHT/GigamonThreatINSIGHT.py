@@ -10,7 +10,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
-import re
 from datetime import datetime, timedelta
 
 TRAINING_ACC = 'f6f6f836-8bcd-4f5d-bd61-68d303c4f634'
@@ -27,9 +26,7 @@ class Client(BaseClient):
         rtype str
         """
         url: str = ''
-        if api == 'Events':
-            url = 'https://events.icebrg.io/v2/query/'
-        elif api == 'Detections':
+        if api == 'Detections':
             url = 'https://detections.icebrg.io/v1/'
         elif api == 'Sensors':
             url = 'https://sensor.icebrg.io/v1/'
@@ -59,11 +56,6 @@ class Client(BaseClient):
                     base_url=Client.getUrl(api),
                     headers=headers
                 )
-            case 'Events':
-                return EventClient(
-                    base_url=Client.getUrl(api),
-                    headers=headers
-                )
             case 'Sensors':
                 return SensorClient(
                     base_url=Client.getUrl(api),
@@ -74,50 +66,6 @@ class Client(BaseClient):
                     base_url=Client.getUrl(api),
                     headers=headers
                 )
-
-
-class EventClient(Client):
-    """Client that makes HTTP requests to the Events API
-    """
-    def getSavedSearches(self) -> Dict[str, Any]:
-        """ Calls the GET /saved endpoint to retrieve the events' saved
-        searches
-            :return JSON response from /saved endpoint
-            :rtype Dict[str, Any]
-        """
-        demisto.debug('EventClient.getSavedSearches method has been called.')
-
-        return self._http_request(
-            method='GET',
-            url_suffix='saved'
-        )
-
-    def getHistory(self) -> Dict[str, Any]:
-        """ Calls the GET /history endpoint to retrieve the events' history
-            :return JSON response from /history endpoint
-            :rtype Dict[str, Any]
-        """
-        demisto.debug('EventClient.getHistory method has been called.')
-
-        return self._http_request(
-            method='GET',
-            url_suffix='history/'
-        )
-
-    def getEvents(self, args: str = '') -> Dict[str, Any]:
-        """ Calls the GET /events endpoint to retrieve the Events
-            :param str args: some filters to be passed in the request
-            :return JSON response from /events endpoint
-            :rtype Dict[str, Any]
-        """
-        demisto.debug('EventClient.getEvents method has been called.')
-
-        result = self._http_request(
-            method='GET',
-            url_suffix='events' + args
-        )
-
-        return result
 
 
 class SensorClient(Client):
@@ -425,149 +373,6 @@ def commandTestModule(sensorClient: SensorClient):
         return 'OK'
     except Exception:
         return 'FAILING'
-
-
-# Events API commands
-
-
-def formatEvents(r_json, response_type):
-    """ Format the event response according to the provided response type.
-        :parm Any r_json: Received response
-        :parm str response_type: Response type
-        :return The formated response
-        :rtype Any
-    """
-    if response_type == "metadata":
-        # If response type is 'metadata', only the metadata will be included
-
-        data: List[Any] = []
-        metadata: Dict[str, Any] = {}
-
-        for field in r_json:
-            if((field != "events") and (field != "aggregations")
-               and (field != "data")):
-                metadata[field] = r_json[field]
-
-        data.append(metadata)
-        r_json['data'] = data
-    elif response_type == "aggregations":
-        # If the response type is 'aggregations', only the group by fields
-        # from the aggregations will be included
-
-        for x in r_json['aggregations']:
-            group_by = x
-        fields = []
-        aggregations = []
-        for column in r_json['aggregations'][group_by]['columns']:
-            fields.append(column['field'])
-        for datum in r_json['aggregations'][group_by]['data']:
-            aggregation = {}
-            for i in range(0, len(fields)):
-                aggregation[fields[i]] = datum[i]
-            aggregations.append(aggregation)
-        r_json['data'] = aggregations
-    else:
-        # Otherwise, all the events will be included in a flat dictionary
-
-        for event in r_json['events']:
-            # flatten dict values, convert lists to string
-            new_fields = {}
-            for field in event:
-                if isinstance(event[field], list):
-                    event[field] = str(json.dumps(event[field]))
-                if isinstance(event[field], dict):
-                    new_fields.update(flattenFieldDict(field, event[field]))
-                    event[field] = "REMOVE"
-            event.update(new_fields)
-        # remove fields
-        for i in range(0, len(r_json['events'])):
-            r_json['events'][i] = {
-                k: v for k, v in r_json['events'][i].items() if v != "REMOVE"
-            }
-    return r_json
-
-
-def commandGetEventsHistory(eventClient: EventClient):
-    """ Get user's query history.
-    """
-    demisto.debug('CommandGetEventsHistory has been called.')
-
-    result: Dict[str, Any] = eventClient.getHistory()
-
-    prefix = 'Insight.UserQueryHistory'
-    key = 'history'
-
-    if not result or key not in result or not result.get(key):
-        return "No result found."
-
-    return CommandResults(
-        outputs_prefix=prefix,
-        outputs_key_field=key,
-        outputs=result.get(key)
-    )
-
-
-def commandGetEventsSavedSearches(eventClient: EventClient):
-    """ Get user's saved searches.
-    """
-    demisto.debug('CommandGetEventsSavedSearches has been called.')
-
-    result: Dict[str, Any] = eventClient.getSavedSearches()
-
-    prefix = 'Insight.SavedSearches'
-    key = 'saved_queries'
-
-    if not result or key not in result or not result.get(key):
-        return "No result found."
-
-    return CommandResults(
-        outputs_prefix=prefix,
-        outputs_key_field=key,
-        outputs=result.get(key)
-    )
-
-
-def commandGetEvents(eventClient: EventClient, args):
-    """ Perform a search for network events from Insight
-    """
-    demisto.debug('commandGetEvents has been called.')
-
-    pattern = r"^.*[Gg][Rr][Oo][Uu][Pp]\s+[Bb][Yy].*$"
-
-    # Get the response_type from the args
-    response_type = 'events'
-    if 'response_type' in args:
-        if (args['response_type'] == 'metadata'
-           or args['response_type'] == 'aggregations'):
-            response_type = args['response_type']
-        args.pop('response_type')
-
-    key = 'data' if (response_type in
-                     ("metadata", "aggregations")) else 'events'
-
-    # If the response_type is aggregation, check that a group by
-    # statement is included in the query
-    if (response_type == "aggregations"
-       and not re.search(pattern, args['query'])):
-        raise Exception(
-            '''No 'group by' statement in query.
-            Aggregation requires a 'group by' statement.'''
-        )
-
-    # Make the request and format the response
-    result: Dict[str, Any] = eventClient.getEvents(encodeArgsToURL(args))
-    formatEvents(result, response_type)
-
-    prefix = 'Insight.Events'
-
-    if not result or key not in result or not result.get(key):
-        return "No result found."
-
-    return CommandResults(
-        outputs_prefix=prefix,
-        outputs_key_field=key,
-        outputs=result.get(key)
-    )
 
 
 # Sensors API commands
@@ -1014,8 +819,6 @@ def main():
 
         sensorClient: SensorClient = Client.getClient('Sensors', api_key)
 
-        eventClient: EventClient = Client.getClient('Events', api_key)
-
         detectionClient: DetectionClient = Client.getClient(
             'Detections', api_key
         )
@@ -1038,15 +841,6 @@ def main():
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time
             )
-
-        elif command == 'insight-get-events':
-            return_results(commandGetEvents(eventClient, args))
-
-        elif command == 'insight-get-history':
-            return_results(commandGetEventsHistory(eventClient))
-
-        elif command == 'insight-get-saved-searches':
-            return_results(commandGetEventsSavedSearches(eventClient))
 
         elif command == 'insight-get-sensors':
             return commandGetSensors(sensorClient)
