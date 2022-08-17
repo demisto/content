@@ -171,9 +171,11 @@ def test_module(client: BreachRxClient):
 
 def create_incident_command(
     client: BreachRxClient,
-    incident_name: str = demisto.incident().get("name"),
+    incident_name: str,
     description: str = None
 ) -> CommandResults:
+    if not incident_name:
+        incident_name = demisto.incident().get("name")
     if not description:
         description = (
             f"""An Incident copied from the Palo Alto Networks XSOAR platform.
