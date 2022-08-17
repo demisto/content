@@ -5,22 +5,19 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-pytest = "==5.0.1"
+pytest = "*"
 pytest-mock = "*"
 requests-mock = "*"
 pytest-asyncio = "*"
+pytest-xdist = "*"
+pytest-datadir-ng = "*"
+freezegun = "*"
+pytest-json = "*"
+vcrpy = "*"
+pytest-cov = "*"
+hypothesis = "*"
 
 [packages]
-pytest = "==5.0.1"
-requests = "*"
-pylint = "*"
-pytest-mock = "*"
-requests-mock = "*"
-pytest-asyncio = "*"
-vulture = "*"
-bandit = "*"
-flake8 = "*"
-mypy = "*"
 
 [requires]
 python_version = "3.9"
