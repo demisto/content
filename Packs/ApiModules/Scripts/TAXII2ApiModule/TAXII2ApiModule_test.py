@@ -246,14 +246,17 @@ class TestInitRoots:
     Scenario: Initialize roots
     """
 
-    api_root_urls = [
-        "https://ais2.cisa.dhs.gov/public/",
-        "https://ais2.cisa.dhs.gov/default/",
-        "https://ais2.cisa.dhs.gov/ingest/",
-        "https://ais2.cisa.dhs.gov/ciscp/",
-        "https://ais2.cisa.dhs.gov/federal/"
-    ]
+    api_root_urls = ["https://ais2.cisa.dhs.gov/public/",
+                     "https://ais2.cisa.dhs.gov/default/",
+                     "https://ais2.cisa.dhs.gov/ingest/",
+                     "https://ais2.cisa.dhs.gov/ciscp/",
+                     "https://ais2.cisa.dhs.gov/federal/"]
+    v20_api_roots = [v20.ApiRoot(url) for url in api_root_urls]
+    v21_api_roots = [v21.ApiRoot(url) for url in api_root_urls]
+
     default_api_root_url = "https://ais2.cisa.dhs.gov/default/"
+    v20_default_api_root = v20.ApiRoot(default_api_root_url)
+    v21_default_api_root = v21.ApiRoot(default_api_root_url)
 
     def test_given_default_api_root_v20(self):
         """
@@ -270,8 +273,8 @@ class TestInitRoots:
                                        verify=False, objects_to_fetch=[], default_api_root='federal')
         mock_client.init_server()
         self._title = ""
-        mock_client.server._api_roots = [v20.ApiRoot(url) for url in self.api_root_urls]
-        mock_client.server._default = v20.ApiRoot(self.default_api_root_url)
+        mock_client.server._api_roots = self.v20_api_roots
+        mock_client.server._default = self.v20_default_api_root
         mock_client.server._loaded = True
 
         mock_client.init_roots()
@@ -292,7 +295,7 @@ class TestInitRoots:
                                        verify=False, objects_to_fetch=[], default_api_root=None)
         mock_client.init_server()
         self._title = ""
-        mock_client.server._api_roots = [v20.ApiRoot(url) for url in self.api_root_urls]
+        mock_client.server._api_roots = self.v20_api_roots
         mock_client.server._default = False
         mock_client.server._loaded = True
 
@@ -314,8 +317,8 @@ class TestInitRoots:
                                        verify=False, objects_to_fetch=[], default_api_root=None)
         mock_client.init_server()
         self._title = ""
-        mock_client.server._api_roots = [v20.ApiRoot(url) for url in self.api_root_urls]
-        mock_client.server._default = v20.ApiRoot(self.default_api_root_url)
+        mock_client.server._api_roots = self.v20_api_roots
+        mock_client.server._default = self.v20_default_api_root
         mock_client.server._loaded = True
 
         mock_client.init_roots()
@@ -336,8 +339,8 @@ class TestInitRoots:
                                        verify=False, objects_to_fetch=[], default_api_root='federal')
         mock_client.init_server(TAXII_VER_2_1)
         self._title = ""
-        mock_client.server._api_roots = [v21.ApiRoot(url) for url in self.api_root_urls]
-        mock_client.server._default = v21.ApiRoot(self.default_api_root_url)
+        mock_client.server._api_roots = self.v21_api_roots
+        mock_client.server._default = self.v21_default_api_root
         mock_client.server._loaded = True
 
         mock_client.init_roots()
@@ -358,7 +361,7 @@ class TestInitRoots:
                                        verify=False, objects_to_fetch=[], default_api_root=None)
         mock_client.init_server(TAXII_VER_2_1)
         self._title = ""
-        mock_client.server._api_roots = [v21.ApiRoot(url) for url in self.api_root_urls]
+        mock_client.server._api_roots = self.v21_api_roots
         mock_client.server._default = False
         mock_client.server._loaded = True
 
@@ -380,8 +383,8 @@ class TestInitRoots:
                                        verify=False, objects_to_fetch=[], default_api_root=None)
         mock_client.init_server(TAXII_VER_2_1)
         self._title = ""
-        mock_client.server._api_roots = [v21.ApiRoot(url) for url in self.api_root_urls]
-        mock_client.server._default = v21.ApiRoot(self.default_api_root_url)
+        mock_client.server._api_roots = self.v21_api_roots
+        mock_client.server._default = self.v21_default_api_root
         mock_client.server._loaded = True
 
         mock_client.init_roots()
