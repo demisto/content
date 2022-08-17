@@ -428,7 +428,7 @@ def test_connection(client: Client) -> CommandResults:
     if demisto.params().get('auth_type') == 'Device Code':
         client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     else:
-        client.azure_sql_servers_list()  # If fails, MicrosoftApiModule returns an error
+        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 
 
