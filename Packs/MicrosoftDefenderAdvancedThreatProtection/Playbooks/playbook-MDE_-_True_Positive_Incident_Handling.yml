@@ -410,17 +410,26 @@ tasks:
             iscontext: true
             value:
               simple: inputs.TicketingSystemToUse
-          operator: isEqualString
+          operator: containsString
           right:
             value:
               simple: SNOW
+        - operator: containsString
+          left:
+            value:
+              simple: inputs.TicketingSystemToUse
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow
+          ignorecase: true
       label: SNOW
     - condition:
       - - left:
             iscontext: true
             value:
               simple: inputs.TicketingSystemToUse
-          operator: isEqualString
+          operator: containsString
           right:
             value:
               simple: JIRA
