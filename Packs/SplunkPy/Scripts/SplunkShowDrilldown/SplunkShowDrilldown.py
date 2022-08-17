@@ -1,4 +1,3 @@
-register_module_line('SplunkShowDrilldown', 'start', __line__())
 import json
 
 
