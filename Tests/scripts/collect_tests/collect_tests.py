@@ -465,8 +465,8 @@ class BranchTestCollector(TestCollector):
         repo = PATHS.content_repo
         changed_files = []
 
-        current_commit = self.branch_name
         previous_commit = 'origin/master'
+        current_commit = self.branch_name
 
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
