@@ -1,5 +1,5 @@
 {
-    "name": "Abnormal Security",
+    "name": "Abnormal Security 3",
     "description": "Abnormal Security detects and protects against the whole spectrum of email attacks",
     "support": "partner",
     "currentVersion": "1.1.6",
@@ -20,7 +20,7 @@
         "phishing"
     ],
     "githubUser": [
-        "dschuand"
+        "dschuan"
     ],
     "marketplaces": [
         "xsoar",
