@@ -476,7 +476,7 @@ def test_func(proxies):
                 try:
                     raw_query = json.loads(raw_query)
                 except Exception as e:
-                    demisto.info("unable to convert raw query to dictionary, use it as a string")
+                    demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
 
                 temp = es.search(index=FETCH_INDEX, body={"query": raw_query})
             else:

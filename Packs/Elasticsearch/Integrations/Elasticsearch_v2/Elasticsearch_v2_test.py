@@ -4,7 +4,6 @@ import demistomock as demisto
 import importlib
 import Elasticsearch_v2
 import pytest
-from dateutil.parser import parse
 import requests
 import unittest
 from unittest import mock
