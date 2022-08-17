@@ -356,7 +356,7 @@ def test_search_message_command(mocker):
     args = {'message_id': '12345'}
     response = MimecastV2.search_message_command(args)
 
-    assert response.outputs == mock_response.get('data')
+    assert response.outputs == mock_response.get('data')[0].get('trackedEmails')
     assert response.outputs_prefix == 'Mimecast.SearchMessage'
     assert response.outputs_key_field == 'id'
 
@@ -382,15 +382,15 @@ def test_hold_message_summary_command(mocker):
 
 MESSAGE_INFO_ARGS = [
     (
-    {'ids': '12345, 1345',
-     'show_delivered_message': 'true'}, True),
+        {'ids': '12345, 1345',
+         'show_delivered_message': 'true'}, True),
     ({'ids': '12345, 1345',
-     'show_delivered_message': 'false'}, False)
+      'show_delivered_message': 'false'}, False)
 ]
 
 
 @pytest.mark.parametrize('args, delivered', MESSAGE_INFO_ARGS)
-def test_get_message_info_command(args, delivered, mocker):
+def test_get_message_info_command(args, delivered, mocker, requests_mock):
     """
 
         Given:
@@ -404,13 +404,13 @@ def test_get_message_info_command(args, delivered, mocker):
     """
 
     mock_response = util_load_json('test_data/get_message_info_response.json')
-    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
-
+    requests_mock.post(f'/api/message-finder/get-message-info', json=mock_response)
     response = MimecastV2.get_message_info_command(args)
 
     assert len(response) == 2
     assert ('test@test.com' in response[0].readable_output) == delivered
-    assert response[0].outputs == mock_response.get('data')
+    assert isinstance(response[0].outputs[0].get('deliveredMessage'), list)
+    assert len(response[0].outputs[0].get('deliveredMessage')) == 1
     assert response[0].outputs_prefix == 'Mimecast.MessageInfo'
 
 
@@ -435,7 +435,46 @@ def test_list_hold_messages_command(mocker):
     assert response.outputs_key_field == 'id'
 
 
-def test_reject_hold_message_command(mocker):
+REJECT_HOLD_MESSAGE = [
+    ({
+         "meta": {
+             "status": 200
+         },
+         "data": [
+             {
+                 "id": "1234",
+                 "reject": True
+             },
+             {
+                 "id": "1233",
+                 "reject": True
+             }
+         ],
+         "fail": []
+     }, 'Hold message with id 1234 was rejected successfully.\n'
+        'Hold message with id 1233 was rejected successfully.\n'),
+    ({
+         "meta": {
+             "status": 200
+         },
+         "data": [
+             {
+                 "id": "1234",
+                 "reject": False
+             },
+             {
+                 "id": "1233",
+                 "reject": True
+             }
+         ],
+         "fail": []
+     }, 'Hold message with id 1234 rejection failed.\n'
+        'Hold message with id 1233 was rejected successfully.\n')
+]
+
+
+@pytest.mark.parametrize('mock_response, readable_output', REJECT_HOLD_MESSAGE)
+def test_reject_hold_message_command(mock_response, readable_output, mocker):
     """
 
         When:
@@ -445,15 +484,44 @@ def test_reject_hold_message_command(mocker):
             - Make sure correct data is returned.
     """
 
-    mock_response = util_load_json('test_data/reject_hold_message_response.json')
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
-    args = {'ids': '1234,1223', 'message': 'test', 'reason_type': 'MESSAGE CONTAINS UNDESIRABLE CONTENT', 'notify': 'true'}
+    args = {'ids': '1234,1233', 'message': 'test', 'reason_type': 'MESSAGE CONTAINS UNDESIRABLE CONTENT',
+            'notify': 'true'}
     response = MimecastV2.reject_hold_message_command(args)
 
-    assert response.readable_output == 'Hold message was rejected successfully'
+    assert response.readable_output == readable_output
 
 
-def test_release_hold_message_command(mocker):
+RELEASE_HOLD_MESSAGE = [
+    ({
+         "meta": {
+             "status": 200
+         },
+         "data": [
+             {
+                 "id": "1234",
+                 "release": True
+             }
+         ],
+         "fail": []
+     }, 'Hold message with id 1234 was released successfully'),
+    ({
+         "meta": {
+             "status": 200
+         },
+         "data": [
+             {
+                 "id": "1234",
+                 "release": False
+             }
+         ],
+         "fail": []
+     }, 'Message release has failed.')
+]
+
+
+@pytest.mark.parametrize('mock_response, readable_output', RELEASE_HOLD_MESSAGE)
+def test_release_hold_message_command(mock_response, readable_output, mocker):
     """
 
         When:
@@ -463,13 +531,10 @@ def test_release_hold_message_command(mocker):
             - Make sure correct data is returned.
     """
 
-    mock_response = util_load_json('test_data/release_hold_message_response.json')
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
-    args = {'ids': '1234,1223'}
+    args = {'id': '1234'}
     response = MimecastV2.release_hold_message_command(args)
-    expected = 'Hold message with id 1234 was released successfully\n' \
-               'Hold message with id 1223 was released successfully\n'
-    assert response.readable_output == expected
+    assert response.readable_output == readable_output
 
 
 def test_search_processing_message_command(mocker):
@@ -508,6 +573,3 @@ def test_list_email_queues_command(mocker):
     assert response.outputs == mock_response.get('data')[0].get('messages')
     assert response.outputs_prefix == 'Mimecast.ProcessingMessage'
     assert response.outputs_key_field == 'id'
-
-
-

@@ -13,7 +13,7 @@ import requests
 
 from datetime import timedelta
 from urllib.error import HTTPError
-from typing import Dict
+from typing import Dict, Tuple
 
 # Disable insecure warnings\
 requests.packages.urllib3.disable_warnings()
@@ -67,24 +67,12 @@ default_query_xml = "<?xml version=\"1.0\"?> \n\
 ''' API COMMUNICATION FUNCTIONS'''
 
 
-def request_with_pegination(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
+def request_with_pagination(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
                             page: int = None,
-                            page_size: int = None, use_headers: bool = False, is_file: bool = False,
-                            get_len_of_results: bool = False):
+                            page_size: int = None, use_headers: bool = False, is_file: bool = False):
     """
 
-    Args:
-        get_len_of_results:
-        is_file:
-        use_headers:
-        response_param:
-        data:
-        api_endpoint:
-        limit:
-        page:
-        page_size:
-
-    Returns:
+    Creates paging response for relevant commands.
 
     """
     headers = None
@@ -107,7 +95,7 @@ def request_with_pegination(api_endpoint: str, data: list, response_param: str =
     results = []
     while True:
         if response.get('fail'):
-            return_error(json.dumps(response.get('fail')[0].get('errors')))
+            raise Exception(json.dumps(response.get('fail')[0].get('errors')))
         if response_param:
             response_data = response.get('data')[0].get(response_param)
         else:
@@ -120,16 +108,15 @@ def request_with_pegination(api_endpoint: str, data: list, response_param: str =
         # If limit is reached or there are no more pages
         if not next_page or (limit and len_of_results >= limit):
             break
-        pagination = {'page_size': page_size,
+        pagination = {'page_size': page_size,  # type: ignore
                       'pageToken': next_page}  # type: ignore
         payload['meta']['pagination'] = pagination
         response = http_request('POST', api_endpoint, payload, headers=headers)
         next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
     if page and page_size:
-        return results[(-1 * page_size):]
-    if get_len_of_results:
-        return results, len_of_results
-    return results
+        return results[(-1 * page_size):], page_size
+
+    return results, len_of_results
 
 
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers=None):
@@ -137,9 +124,11 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
     url = BASE_URL + api_endpoint
     # 2 types of auth, user and non user, mostly user is needed
     if user_auth:
+        demisto.info("in if statement")
         headers = headers or generate_user_auth_headers(api_endpoint)
 
     else:
+        demisto.info("in else statement")
         # This type of auth is only supported for basic commands: login/discover/refresh-token
         is_user_auth = False
         auth = base64.b64encode((EMAIL_ADDRESS + ':' + PASSWORD).encode("utf-8")).decode()
@@ -170,10 +159,9 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
     except HTTPError as e:
         LOG(e)
-        print('here' + str(e))
         if e.response.status_code == 418:  # type: ignore  # pylint: disable=no-member
             if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
-                return_error(
+                raise Exception(
                     'Credentials provided are expired, could not automatically refresh tokens.'
                     ' App ID + Email Address '
                     '+ Password are required.')
@@ -195,8 +183,8 @@ def search_message_request(args):
 
     """
     search_reason = args.get('search_reason')
-    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None
-    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None
+    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None  # type: ignore
+    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None  # type: ignore
     message_id = args.get('message_id')
     advanced = {
         'senderIP': args.get('sender_IP'),
@@ -214,13 +202,13 @@ def search_message_request(args):
         }
     ]}
     if advanced_is_none and message_id is None:
-        return_error('Advanced Track And Trace Options or message ID must be given in order to execute the command.')
+        raise Exception('Advanced Track And Trace Options or message ID must be given in order to execute the command.')
     elif advanced_is_none:
-        payload.get('data')[0].update({'messageId': message_id})
+        payload.get('data')[0].update({'messageId': message_id})  # type: ignore
     elif message_id is None:
-        payload.get('data')[0].update({'advancedTrackAndTraceOptions': advanced})
+        payload.get('data')[0].update({'advancedTrackAndTraceOptions': advanced})  # type: ignore
     else:
-        return_error('Only one of message id and advance options can contain value.')
+        raise Exception('Only one of message id and advance options can contain value.')
 
     return http_request(method='POST',
                         api_endpoint='/api/message-finder/search',
@@ -263,11 +251,11 @@ def list_hold_messages_request(args):
 
         """
     admin = argToBoolean(args.get('admin'))
-    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None
-    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None
+    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None  # type: ignore
+    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None  # type: ignore
     value = args.get('value', '')
     field_name = args.get('field_name', '')
-    limit = arg_to_number(args.get('limit', 100))
+    limit = arg_to_number(args.get('limit')) or 100
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     data = [
@@ -282,7 +270,7 @@ def list_hold_messages_request(args):
             'fieldName': field_name,
             'value': value
         }})
-    return request_with_pegination(api_endpoint='/api/gateway/get-hold-message-list',
+    return request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
                                    data=data,
                                    limit=limit,
                                    page=page,
@@ -351,33 +339,37 @@ def search_processing_message_request(args):
 
       """
     sort_order = args.get('sort_order')
-    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None
-    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None
+    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None  # type: ignore
+    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None  # type: ignore
+    attachments = argToBoolean(args.get('attachments')) if args.get('attachments') else None
     value = args.get('value')
     field_name = args.get('field_name')
-    attachments = argToBoolean(args.get('attachments', False))
     route = args.get('route')
-    limit = arg_to_number(demisto.args().get('limit', 100))
-    page = arg_to_number(demisto.args().get('page'))
-    page_size = arg_to_number(demisto.args().get('page_size'))
+    limit = arg_to_number(args.get('limit')) or 100
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
     data = [
         {
-            'end': to_date,
-            'filterBy': [
-                {
-                    'attachments': attachments,
-                    'route': route
-                }
-            ],
-            'start': from_date,
             'sortOrder': sort_order,
-            'searchBy': {
-                'fieldName': field_name,
-                'value': value
-            },
         }
     ]
-    return request_with_pegination(api_endpoint='/api/gateway/find-processing-messages',
+    if to_date:
+        data[0].update({'end': to_date})
+    if from_date:
+        data[0].update({'start': from_date})
+    if value or field_name:
+        data[0].update({'searchBy': {
+            'fieldName': field_name,
+            'value': value
+        }})
+    if attachments or route:
+        data[0].update({'filterBy': [
+            {
+                'attachments': attachments,
+                'route': route
+            }
+        ]})
+    return request_with_pagination(api_endpoint='/api/gateway/find-processing-messages',
                                    data=data,
                                    response_param='messages',
                                    limit=limit,
@@ -395,8 +387,9 @@ def list_email_queues_request(args):
       Returns: the payload to be sent to the API.
 
       """
-    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None
-    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None
+
+    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None  # type: ignore
+    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None  # type: ignore
     payload = {'data': [{
         'start': from_date,
         'end': to_date
@@ -491,7 +484,7 @@ def parse_query_args(args):
         query_xml = query_xml.replace('<date select=\"last_year\"/>', '<date select=\"' + args.get('date') + '\"/>')
 
         if args.get('dateTo') or args.get('dateFrom'):
-            return_error('Cannot use both date and dateFrom/dateTo arguments')
+            raise Exception('Cannot use both date and dateFrom/dateTo arguments')
 
     date_to = ""
     date_from = ""
@@ -631,22 +624,24 @@ def transformer_get_value(value):
     return transformer
 
 
-def build_get_message_info_outputs(data: dict):
+def build_get_message_info_outputs(response: dict):
     """
 
     Args:
-        data: outputs dictionary to modify
+        response: response from API
 
     Returns: outputs dictionary without dynamic keys.
 
     """
-    delivered_message: dict = data.get('deliveredMessage', {})
-    result_emails = []
-    for email in delivered_message.keys():
-        info_for_mail = delivered_message.get(email)
-        info_for_mail.update({'mail_address': email})
-        result_emails.append(info_for_mail)
-    data.update({'deliveredMessage': result_emails})
+    data = response.get('data', [])
+    for info in data:
+        delivered_message = info.get('deliveredMessage', {})
+        result_emails = []
+        for email in delivered_message.keys():
+            info_for_mail = delivered_message.get(email)
+            info_for_mail.update({'mail_address': email})
+            result_emails.append(info_for_mail)
+        info.update({'deliveredMessage': result_emails})
 
 
 def build_get_message_info_for_specific_id(id, show_recipient_info, show_delivered_message, show_retention_info,
@@ -669,7 +664,7 @@ def build_get_message_info_for_specific_id(id, show_recipient_info, show_deliver
     response = get_message_info_request(id)
 
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
     response_data = response.get('data')[0]
     recipient_info = response_data.get('recipientInfo', {})
@@ -688,12 +683,12 @@ def build_get_message_info_for_specific_id(id, show_recipient_info, show_deliver
     if show_spam_info:
         total_markdown += build_spam_info(spam_info)
 
-    build_get_message_info_outputs(response_data)
+    build_get_message_info_outputs(response)
 
     return CommandResults(
         outputs_prefix='Mimecast.MessageInfo',
         readable_output=total_markdown,
-        outputs=response_data,
+        outputs=response.get('data'),
         raw_response=response
     )
 
@@ -703,7 +698,7 @@ def build_get_message_info_for_specific_id(id, show_recipient_info, show_deliver
 
 def test_module():
     if not ACCESS_KEY:
-        return_error('Cannot test valid connection without the Access Key parameter.')
+        raise Exception('Cannot test valid connection without the Access Key parameter.')
     list_managed_url()
 
 
@@ -712,7 +707,7 @@ def query():
     contents = []
     context = {}
     messages_context = []
-    limit = arg_to_number(demisto.args().get('limit', 100))
+    limit = arg_to_number(demisto.args().get('limit')) or 100
     page = arg_to_number(demisto.args().get('page'))
     page_size = arg_to_number(demisto.args().get('page_size'))
 
@@ -730,12 +725,12 @@ def query():
         'admin': True,
         'query': query_xml
     }]
-    messages = request_with_pegination(api_endpoint='/api/archive/search',
-                                       data=data,
-                                       response_param='items',
-                                       limit=limit,
-                                       page=page,
-                                       page_size=page_size)
+    messages, _ = request_with_pagination(api_endpoint='/api/archive/search',
+                                          data=data,
+                                          response_param='items',
+                                          limit=limit,
+                                          page=page,
+                                          page_size=page_size)
 
     for message in messages:
         contents.append({
@@ -811,9 +806,9 @@ def url_decode_request(url):
     }
     response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     if not response.get('data')[0].get('url'):
-        return_error('No URL has been returned from the service')
+        raise Exception('No URL has been returned from the service')
     return response.get('data')[0].get('url')
 
 
@@ -898,7 +893,7 @@ def get_policy_request(policy_id=None):
 
     response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')
 
 
@@ -1050,7 +1045,7 @@ def update_policy():
     policy_obj, option = get_arguments_for_policy_command(policy_args)
     policy_id = str(policy_args.get('policy_id', ''))
     if not policy_id:
-        return_error("You need to enter policy ID")
+        raise Exception("You need to enter policy ID")
     policy_obj, option, policy_id = set_empty_value_args_policy_update(policy_obj, option, policy_id)
     response = create_or_update_policy_request(policy_obj, option, policy_id=policy_id)
     policy = response.get('policy')
@@ -1126,7 +1121,7 @@ def create_or_update_policy_request(policy, option, policy_id=None):
         payload['data'][0]['id'] = policy_id
     response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -1166,9 +1161,9 @@ def delete_policy_request(policy_id=None):
 
     response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     if response.get('data')[0].get('id') != policy_id:
-        return_error('Policy was not deleted.')
+        raise Exception('Policy was not deleted.')
     return response.get('data')[0]
 
 
@@ -1226,7 +1221,7 @@ def manage_sender_request(req_obj):
 
     response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -1291,7 +1286,7 @@ def list_managed_url_request():
 
     response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')
 
 
@@ -1355,7 +1350,7 @@ def create_managed_url_request(url_obj):
 
     response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -1366,7 +1361,7 @@ def list_messages():
     messages_context = []
     search_params = {}
 
-    limit = arg_to_number(demisto.args().get('limit', 100))
+    limit = arg_to_number(demisto.args().get('limit')) or 100
     page = arg_to_number(demisto.args().get('page'))
     page_size = arg_to_number(demisto.args().get('page_size'))
 
@@ -1385,11 +1380,11 @@ def list_messages():
         search_params['start'] = start_time
     subject = demisto.args().get('subject')
 
-    messages_list = request_with_pegination(api_endpoint='/api/archive/get-message-list',
-                                            data=[search_params],
-                                            limit=limit,
-                                            page=page,
-                                            page_size=page_size)
+    messages_list, _ = request_with_pagination(api_endpoint='/api/archive/get-message-list',
+                                               data=[search_params],
+                                               limit=limit,
+                                               page=page,
+                                               page_size=page_size)
     for message in messages_list:
         if subject == message.get('subject') or not subject:
             contents.append({
@@ -1439,7 +1434,7 @@ def get_url_logs():
     from_date = demisto.args().get('fromDate', '')
     to_date = demisto.args().get('toDate', '')
     scan_result = demisto.args().get('resultType', '')
-    limit = arg_to_number(demisto.args().get('limit', 100))
+    limit = arg_to_number(demisto.args().get('limit')) or 100
     page = arg_to_number(demisto.args().get('page'))
     page_size = arg_to_number(demisto.args().get('page_size'))
 
@@ -1450,12 +1445,12 @@ def get_url_logs():
     if scan_result:
         search_params['scanResult'] = scan_result
     demisto.results('here')
-    url_logs = request_with_pegination(api_endpoint='/api/ttp/url/get-logs',
-                                       data=[search_params],
-                                       response_param='clickLogs',
-                                       limit=limit,
-                                       page=page,
-                                       page_size=page_size)
+    url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
+                                          data=[search_params],
+                                          response_param='clickLogs',
+                                          limit=limit,
+                                          page=page,
+                                          page_size=page_size)
     for url_log in url_logs:
         contents.append({
             'Action': url_log.get('action'),
@@ -1505,7 +1500,7 @@ def get_attachment_logs():
     from_date = demisto.args().get('fromDate', '')
     to_date = demisto.args().get('toDate', '')
     result = demisto.args().get('resultType', '')
-    limit = arg_to_number(demisto.args().get('limit', 100))
+    limit = arg_to_number(demisto.args().get('limit')) or 100
     page = arg_to_number(demisto.args().get('page'))
     page_size = arg_to_number(demisto.args().get('page_size'))
 
@@ -1516,12 +1511,12 @@ def get_attachment_logs():
     if result:
         search_params['result'] = result
 
-    attachment_logs = request_with_pegination(api_endpoint='/api/ttp/attachment/get-logs',
-                                              data=[search_params],
-                                              response_param='attachmentLogs',
-                                              limit=limit,
-                                              page=page,
-                                              page_size=page_size)
+    attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
+                                                 data=[search_params],
+                                                 response_param='attachmentLogs',
+                                                 limit=limit,
+                                                 page=page,
+                                                 page_size=page_size)
 
     for attachment_log in attachment_logs:
         contents.append({
@@ -1574,7 +1569,7 @@ def get_impersonation_logs():
     query = demisto.args().get('query', '')
     identifiers = argToList(demisto.args().get('identifiers', ''))
     actions = argToList(demisto.args().get('actions', ''))
-    limit = arg_to_number(demisto.args().get('limit', 100))
+    limit = arg_to_number(demisto.args().get('limit')) or 100
     page = arg_to_number(demisto.args().get('page'))
     page_size = arg_to_number(demisto.args().get('page_size'))
 
@@ -1593,13 +1588,12 @@ def get_impersonation_logs():
     if actions:
         search_params['actions'] = actions
 
-    impersonation_logs, result_count = request_with_pegination(api_endpoint='/api/ttp/impersonation/get-logs',
+    impersonation_logs, result_count = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
                                                                data=[search_params],
                                                                response_param='impersonationLogs',
                                                                limit=limit,
                                                                page=page,
-                                                               page_size=page_size,
-                                                               get_len_of_results=True)
+                                                               page_size=page_size)
 
     for impersonation_log in impersonation_logs:
         contents.append({
@@ -1666,9 +1660,9 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'scanResult': 'malicious'
         }
-        url_logs = request_with_pegination(api_endpoint='/api/ttp/url/get-logs',
-                                           data=[search_params],
-                                           response_param='clickLogs')
+        url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
+                                              data=[search_params],
+                                              response_param='clickLogs')
         for url_log in url_logs:
             incident = url_to_incident(url_log)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
@@ -1685,9 +1679,9 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'result': 'malicious'
         }
-        attachment_logs = request_with_pegination(api_endpoint='/api/ttp/attachment/get-logs',
-                                                  data=[search_params],
-                                                  response_param='attachmentLogs')
+        attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
+                                                     data=[search_params],
+                                                     response_param='attachmentLogs')
         for attachment_log in attachment_logs:
             incident = attachment_to_incident(attachment_log)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
@@ -1705,10 +1699,9 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'taggedMalicious': True
         }
-        impersonation_logs, _ = request_with_pegination(api_endpoint='/api/ttp/impersonation/get-logs',
+        impersonation_logs, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
                                                         data=[search_params],
-                                                        response_param='impersonationLogs',
-                                                        get_len_of_results=True)
+                                                        response_param='impersonationLogs')
         for impersonation_log in impersonation_logs:
             incident = impersonation_to_incident(impersonation_log)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
@@ -1785,7 +1778,7 @@ def discover():
 
 def discover_request():
     if not EMAIL_ADDRESS:
-        return_error('In order to discover account\'s auth types, account\'s email is required.')
+        raise Exception('In order to discover account\'s auth types, account\'s email is required.')
     email = EMAIL_ADDRESS
     # Setup required variables
     api_endpoint = '/api/login/discover-authentication'
@@ -1796,7 +1789,7 @@ def discover_request():
     }
     response = http_request('POST', api_endpoint, payload, {}, user_auth=False)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -1816,9 +1809,9 @@ def refresh_token():
 
 def refresh_token_request():
     if not EMAIL_ADDRESS:
-        return_error('In order to refresh a token validty duration, account\'s email is required.')
+        raise Exception('In order to refresh a token validty duration, account\'s email is required.')
     if not ACCESS_KEY:
-        return_error('In order to refresh a token validty duration, account\'s access key is required.')
+        raise Exception('In order to refresh a token validty duration, account\'s access key is required.')
     email = EMAIL_ADDRESS
     access_key = ACCESS_KEY
     # Setup required variables
@@ -1831,7 +1824,7 @@ def refresh_token_request():
     }
     response = http_request('POST', api_endpoint, payload, {}, user_auth=False)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -1860,7 +1853,7 @@ def login():
 
 def login_request():
     if not EMAIL_ADDRESS:
-        return_error('In order to refresh a token validty duration, account\'s email is required.')
+        raise Exception('In order to refresh a token validty duration, account\'s email is required.')
     email = EMAIL_ADDRESS
     # Setup required variables
     api_endpoint = '/api/login/login'
@@ -1871,7 +1864,7 @@ def login_request():
     }
     response = http_request('POST', api_endpoint, payload, {}, user_auth=False)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -1921,7 +1914,7 @@ def get_message_body_content_request(message_id, message_context, message_type):
 
     response = http_request('POST', api_endpoint, payload, is_file=True)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response.content
 
 
@@ -2029,7 +2022,7 @@ def get_message_metadata_request(message_id):
 
     response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -2054,7 +2047,7 @@ def download_attachment_request(attachment_id):
     try:
         json_response = response.json()
         if json_response.get('fail'):
-            return_error(json_response.get('fail', [{}])[0].get('errors'))
+            raise Exception(json_response.get('fail', [{}])[0].get('errors'))
     except ValueError:
         pass
     return response.content
@@ -2095,7 +2088,7 @@ def create_find_groups_request():
 
     response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2194,7 +2187,7 @@ def create_get_group_members_request(group_id=-1, limit=100):
 
     response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2319,7 +2312,7 @@ def create_add_remove_group_member_request(api_endpoint):
 
     response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2414,7 +2407,7 @@ def create_group_request():
 
     response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2477,7 +2470,7 @@ def create_update_group_request():
 
     response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2540,7 +2533,7 @@ def create_mimecast_incident_request():
 
     response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2567,7 +2560,7 @@ def get_mimecast_incident_request():
 
     response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2672,7 +2665,7 @@ def create_search_file_hash_request():
 
     response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2721,7 +2714,7 @@ def search_message_command(args):
     """
     response = search_message_request(args)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
     tracked_emails = response.get('data')[0].get('trackedEmails')
 
@@ -2747,7 +2740,7 @@ def search_message_command(args):
         outputs_prefix='Mimecast.SearchMessage',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=response.get('data'),
+        outputs=tracked_emails,
         raw_response=response
     )
 
@@ -2761,7 +2754,7 @@ def hold_message_summary_command():
     """
     response = http_request('POST', api_endpoint='/api/gateway/get-hold-summary-list', payload={'data': []})
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
     summery_list = response.get('data')
 
@@ -2810,7 +2803,7 @@ def list_hold_messages_command(args):
             args: input arguments for the command.
 
     """
-    response = list_hold_messages_request(args)
+    response, _ = list_hold_messages_request(args)
     from_transformer = JsonTransformer(func=transformer_get_value('emailAddress'))
     table_json_transformer = {'to': from_transformer,
                               'from': from_transformer,
@@ -2844,11 +2837,15 @@ def reject_hold_message_command(args):
 
     """
     response = reject_hold_message_request(args)
+    readable_output = ''
 
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
-
-    readable_output = 'Hold messages were rejected successfully'
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+    for message in response.get('data', []):
+        if not message.get('reject', False):
+            readable_output += f'Hold message with id {message.get("id")} rejection failed.\n'
+        else:
+            readable_output += f'Hold message with id {message.get("id")} was rejected successfully.\n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -2864,15 +2861,15 @@ def release_hold_message_command(args):
             args: input arguments for the command.
 
         """
-    ids = argToList(args.get('ids'))
-    readable_output = ''
-    for id in ids:
-        response = release_hold_message_request(id)
+    id = args.get('id')
+    response = release_hold_message_request(id)
 
-        if response.get('fail'):
-            return_error(json.dumps(response.get('fail')[0].get('errors')))
-
-        readable_output += f'Hold message with id {id} was released successfully\n'
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+    if not response.get('data', [])[0].get('release', False):
+        readable_output = 'Message release has failed.'
+    else:
+        readable_output = f'Hold message with id {id} was released successfully'
 
     return CommandResults(
         readable_output=readable_output,
@@ -2888,7 +2885,7 @@ def search_processing_message_command(args):
         args: input arguments for the command.
 
     """
-    response = search_processing_message_request(args)
+    response, _ = search_processing_message_request(args)
     from_transformer = JsonTransformer(func=transformer_get_value('emailAddress'))
 
     table_json_transformer = {'to': from_transformer,
@@ -2945,7 +2942,7 @@ def list_email_queues_command(args):
     return CommandResults(
         outputs_prefix='Mimecast.EmailQueue',
         readable_output=total_markdown,
-        outputs=response_data,
+        outputs=response.get('data'),
         raw_response=response
     )
 
@@ -3033,18 +3030,13 @@ def main():
             return_results(reject_hold_message_command(args))
         elif demisto.command() == 'mimecast-release-hold-message':
             return_results(release_hold_message_command(args))
-        elif demisto.command() == 'mimecast-search_processing_message_command':
+        elif demisto.command() == 'mimecast-search_processing_message':
             return_results(search_processing_message_command(args))
         elif demisto.command() == 'mimecast-list-email-queues':
             return_results(list_email_queues_command(args))
 
     except Exception as e:
-        if hasattr(e, 'message'):
-            LOG(e.message)
-            LOG.print_log()
-            return_error(e.message)
-        else:
-            return_error(e)
+        return_error(e)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

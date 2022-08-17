@@ -6,8 +6,8 @@
         {
             "recipientInfo": {
                 "messageInfo": {
-                    "fromHeader": "markrobertsny@pilot-meadow.b41.one",
-                    "fromEnvelope": "markrobertsny@pilot-meadow.b41.one",
+                    "fromHeader": "test@gmail.com",
+                    "fromEnvelope": "test@gmail.com",
                     "to": [
                         "test@test.com"
                     ],
@@ -15,19 +15,19 @@
                     "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
                     "sent": "2022-07-18T13:25:21+0000",
                     "processed": "2022-07-18T13:25:21+0000",
-                    "transmissionInfo": "<pre>\nReceived: from [127.0.0.1] (ha.hamilton321.net [54.236.186.184]) by\r\n relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id\r\n us-mta-637-kTdPd4tPOISrFdeScOqcOg-1; Mon, 18 Jul 2022 09:25:21 -0400\r\nX-MC-Unique: kTdPd4tPOISrFdeScOqcOg-1\r\nFrom: markrobertsny@pilot-meadow.b41.one\r\nTo: test@test.com\r\nSubject: Demand Ken Lay Donate Proceeds from Enron Stock Sales\r\nMessage-ID: &lt;978aeeb7a7bded3d-193351@nodered-mimecast-686cbcb7f9-znlxj.hamilton321.net&gt;\r\nX-Mchapi-Account: CUSA102A236\r\nX-Mchapi-Source: lay-k/deleted_items/96.\r\nX-Mchapi-Direction: inbound\r\nDate: Mon, 18 Jul 2022 13:25:19 +0000\r\nMIME-Version: 1.0\r\nAuthentication-Results: relay.mimecast.com;\r\n\tdkim=none;\r\n\tdmarc=none;\r\n\tspf=fail (relay.mimecast.com: domain of markrobertsny@pilot-meadow.b41.one does not designate 54.236.186.184 as permitted sender) smtp.mailfrom=markrobertsny@pilot-meadow.b41.one\r\nX-Mimecast-Spam-Score: 2\r\nContent-Type: multipart/alternative;\r\n boundary=&quot;--_NmP-b3c6681b169a4881-Part_1&quot;\r\n\r\n----_NmP-b3c6681b169a4881-Part_1\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: quoted-printable\r\nx-mimecast-att: mailfile=&quot;12207180925220071&quot;\r\n\r\n\r\n----_NmP-b3c6681b169a4881-Part_1\r\nContent-Type: text/html; charset=utf-8\r\nContent-Transfer-Encoding: quoted-printable\r\nx-mimecast-att: mailfile=&quot;12207180925220111&quot;\r\n\r\n\r\n----_NmP-b3c6681b169a4881-Part_1--\r\n\n</pre>"
-                },
+                    "transmissionInfo": "test"
+                    },
                 "recipientMetaInfo": {
                     "receiptEvent": "Email Received - SPF check failed",
                     "spamEvent": "na",
                     "messageExpiresIn": 7,
-                    "processingServer": "us-mta-637.us.mimecast.lan",
+                    "processingServer": "test",
                     "transmissionSize": 5211,
                     "binaryEmailSize": 5271,
-                    "remoteIp": "54.236.186.184",
-                    "remoteHost": "ha.hamilton321.net",
-                    "remoteServerGreeting": "EHLO [127.0.0.1]",
-                    "receiptAcknowledgement": "250 SmtpThread-6678073-1658150722599@us-mta-637.us.mimecast.lan Received OK",
+                    "remoteIp": "1.2.3.4",
+                    "remoteHost": "test",
+                    "remoteServerGreeting": "test",
+                    "receiptAcknowledgement": "testK",
                     "transmissionStart": "2022-07-18T13:25:19+0000",
                     "transmissionEnd": "2022-07-18T13:25:22+0000",
                     "encryptionInfo": "TLS",
@@ -38,7 +38,7 @@
                             "extension": "eml",
                             "mimeType": "message/rfc822-stubbed",
                             "size": 1435,
-                            "hash": "aa2ddd4d877f651eae159fa334aa8aa304d1c007e60811088caf4d354d3b6197"
+                            "hash": "123"
                         },
                         {
                             "type": "Email Primary Body HTML",
@@ -46,7 +46,7 @@
                             "extension": "htm",
                             "mimeType": "text/html",
                             "size": 1918,
-                            "hash": "f670f02147a11d3794606bcaedbba07a3e84ea27f27872ecae0e595f0996fe2f"
+                            "hash": "f6121296fe2f"
                         },
                         {
                             "type": "Email Primary Body Plain Text",
@@ -54,7 +54,7 @@
                             "extension": "htm",
                             "mimeType": "text/html",
                             "size": 1918,
-                            "hash": "f670f02147a11d3794606bcaedbba07a3e84ea27f27872ecae0e595f0996fe2f"
+                            "hash": "f123f"
                         }
                     ]
                 }
@@ -62,16 +62,16 @@
             "deliveredMessage": {
                 "test@test.com": {
                     "messageInfo": {
-                        "fromHeader": "markrobertsny@pilot-meadow.b41.one",
-                        "fromEnvelope": "markrobertsny@pilot-meadow.b41.one",
+                        "fromHeader": "test@gmail.com",
+                        "fromEnvelope": "test@gmail.com",
                         "to": [
                             "test@test.com"
                         ],
                         "cc": [],
-                        "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
+                        "subject": "Dek Sales",
                         "sent": "2022-07-18T13:25:21+0000",
                         "processed": "2022-07-18T13:25:21+0000",
-                        "transmissionInfo": "<pre>\nReceived: from [127.0.0.1] (ha.hamilton321.net [54.236.186.184]) by\r\n relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id\r\n us-mta-637-kTdPd4tPOISrFdeScOqcOg-1; Mon, 18 Jul 2022 09:25:21 -0400\r\nX-MC-Unique: kTdPd4tPOISrFdeScOqcOg-1\r\nFrom: markrobertsny@pilot-meadow.b41.one\r\nTo: test@test.com\r\nSubject: Demand Ken Lay Donate Proceeds from Enron Stock Sales\r\nMessage-ID: &lt;978aeeb7a7bded3d-193351@nodered-mimecast-686cbcb7f9-znlxj.hamilton321.net&gt;\r\nX-Mchapi-Account: CUSA102A236\r\nX-Mchapi-Source: lay-k/deleted_items/96.\r\nX-Mchapi-Direction: inbound\r\nDate: Mon, 18 Jul 2022 13:25:19 +0000\r\nMIME-Version: 1.0\r\nAuthentication-Results: relay.mimecast.com;\r\n\tdkim=none;\r\n\tdmarc=none;\r\n\tspf=fail (relay.mimecast.com: domain of markrobertsny@pilot-meadow.b41.one does not designate 54.236.186.184 as permitted sender) smtp.mailfrom=markrobertsny@pilot-meadow.b41.one\r\nX-Mimecast-Spam-Score: 2\r\nX-Mimecast-Impersonation-Protect: Policy=Default Impersonation Protect Definition;Similar Internal Domain=false;Similar Monitored External Domain=false;Custom External Domain=false;Mimecast External Domain=false;Newly Observed Domain=false;Internal User Name=false;Custom Display Name List=false;Reply-to Address Mismatch=false;Targeted Threat Dictionary=false;Mimecast Threat Dictionary=false;Custom Threat Dictionary=false\r\nContent-Type: multipart/alternative;\r\n boundary=&quot;--_NmP-b3c6681b169a4881-Part_1&quot;\r\n\r\n----_NmP-b3c6681b169a4881-Part_1\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: quoted-printable\r\nx-mimecast-att: mailfile=&quot;12207180925234871&quot;\r\n\r\n\r\n----_NmP-b3c6681b169a4881-Part_1\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: quoted-printable\r\nx-mimecast-att: mailfile=&quot;12207180925234891&quot;\r\n\r\n\r\n----_NmP-b3c6681b169a4881-Part_1--\r\n\n</pre>",
+                        "transmissionInfo": "test"
                         "route": "inbound"
                     },
                     "policyInfo": [
@@ -140,11 +140,11 @@
                         "deliveryEvent": "Email Delivered via Routing Rule",
                         "emailAddress": "test@test.com",
                         "messageExpiresIn": 7,
-                        "processingServer": "us-mta-637.us.mimecast.lan",
+                        "processingServer": "testn",
                         "transmissionSize": 5754,
-                        "remoteIp": "34.235.45.235",
-                        "remoteHost": "ha.hamilton321.net",
-                        "remoteServerGreeting": "220 nodered-mimecast-686cbcb7f9-znlxj ESMTP",
+                        "remoteIp": "1.2.3.5",
+                        "remoteHost": "testt",
+                        "remoteServerGreeting": "test",
                         "receiptAcknowledgement": "250 OK: message queued",
                         "transmissionStart": "2022-07-18T13:25:24+0000",
                         "transmissionEnd": "2022-07-18T13:25:35+0000",
@@ -156,7 +156,7 @@
                                 "extension": "eml",
                                 "mimeType": "message/rfc822-stubbed",
                                 "size": 1861,
-                                "hash": "c81bdb28d0c3978679dbdaacf30af9fde9e3392a9b44434f85207cd099aacdd4"
+                                "hash": "1234"
                             },
                             {
                                 "type": "Email Primary Body HTML",
@@ -164,7 +164,7 @@
                                 "extension": "htm",
                                 "mimeType": "text/html",
                                 "size": 2013,
-                                "hash": "03b5f5ce37728ae2aa2944779893a9ea1d9135724c64be25cd35999b56c48e69"
+                                "hash": "1234"
                             },
                             {
                                 "type": "Email Primary Body Plain Text",
@@ -172,7 +172,7 @@
                                 "extension": "htm",
                                 "mimeType": "text/html",
                                 "size": 1940,
-                                "hash": "61e30f99ebc69e82d764bbb1536cb66fc71a8927ee2c3710268dfed05f965980"
+                                "hash": "1234"
                             }
                         ]
                     }
@@ -221,7 +221,7 @@
                     }
                 }
             },
-            "id": "eNpNj9tugkAQht9lryXuLgTEpBcoWompRsA0EBPCYQKbuqB7oNWm715om7Y3k0nm-2b-eUcSSi2AVWiOuuf0HvTN4lWy0_Rm-zu5M-9m_BgV9OoWblEf8_jyBM4-3TZbvBf2i0oiM2GztPbWK8wTBRsmDgvihsve58Kz3YjnhVjd5VoHOnkLr25X--HGOk3rBzRBHKTMa4hUrrSMbxcYQuSibFgP1d_4oEFDMARs9fk8QYq3v32ppeo4iLKrRnd5jDyCqUdNe9B7EJJ1LZqTQWpH4Fv6ufD1cp2VBmRaYpIRy8n6aqgGIdm_TRnFlGJnJJyBVCA4MQ2MiUGwiym2nJmNPj4BLsdpYw"
+            "id": "1234test"
         }
     ],
     "fail": []

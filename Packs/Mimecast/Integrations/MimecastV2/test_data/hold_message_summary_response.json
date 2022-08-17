@@ -4,15 +4,15 @@
     },
     "data": [
         {
-            "policyInfo": "Default Outbound URL Protect Definition",
+            "policyInfo": "Default Test",
             "numberOfItems": 8
         },
         {
-            "policyInfo": "Relaxed Spam Detection",
+            "policyInfo": "Relaxed Test",
             "numberOfItems": 1473
         },
         {
-            "policyInfo": "Default Attachment Management Definition - Block Dangerous File Types",
+            "policyInfo": "Default Test",
             "numberOfItems": 79
         }
     ],
