@@ -287,9 +287,6 @@ script:
       description: Queries users by the samAccountName attribute.
     - name: sAMAccountName
       description: Queries users by the samAccountName attribute.
-    - name: limit
-      description: The maximum number of objects to return.
-      defaultValue: "20"
     - name: email
       description: Queries by the user's email address.
     - name: user-account-control-out
@@ -299,6 +296,9 @@ script:
       - "false"
       description: Whether to include verbose translation for UserAccountControl flags. Default is false.
       defaultValue: "false"
+    - name: limit
+      description: The maximum number of objects to return.
+      defaultValue: "20"
     - name: page-size
       description: The page size to query. limit will be ignored
     - name: page-cookie
@@ -428,12 +428,12 @@ script:
       description: Search computers by custom field data (relevant only if the `customFieldType` argument is provided).
     - name: custom-field-type
       description: Search the computer by custom field type.
+    - name: limit
+      description: The maximum number of records to return.
     - name: page-size
       description: The page size to query. limit will be ignored
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
-    - name: limit
-      description: The maximum number of records to return.
     outputs:
     - contextPath: 'ActiveDirectory.Computers.dn'
       description: The computer distinguished name.
@@ -489,12 +489,12 @@ script:
       description: Queries results by the samAccountName attribute.
       required: false
       defaultValue: '*'
+    - name: limit
+      description: The maximum number of records to return.
     - name: page-size
       description: The page size to query. limit will be ignored
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
-    - name: limit
-      description: The maximum number of records to return.
     outputs:
     - contextPath: 'ActiveDirectory.Groups.dn'
       description: The group DN.
