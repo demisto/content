@@ -109,21 +109,20 @@ class BlockCarrier:
         action_id_int: int = 0
         for block in self.blocks_dict:
             if block.get('type') == 'input':
-                if block.get('label', {}).get('text'):
-                    label_text: str = block.get('label', {}).get('text', '')
-                    label_text: str = label_text.replace(" ", "")
-                    block['block_id'] = label_text
-                else:
-                    action_id: str = block.get('element', {}).get('action_id', '')
-                    block['block_id'] = action_id + str(action_id_int)
+                action_id: str = block.get('element', {}).get('type', '')
+                block['block_id'] = action_id + '_' + str(action_id_int)
+                action_id_int += 1
             elif block.get('type') == 'actions':
                 if 'elements' in block:
-                    actions_block_id: str = block.get('elements', [{}])[0].get('action_id', '')
-                    block['block_id'] = actions_block_id + str(action_id_int)
+                    actions_block_id: str = block.get('elements', [{}])[0].get('type', '')
+                    block['block_id'] = actions_block_id + '_' + str(action_id_int)
+                    action_id_int += 1
             elif block.get('type') == 'section':
                 if 'accessory' in block:
-                    sec_action_id: str = block.get('accessory', {}).get('action_id', '')
-                    block['block_id'] = sec_action_id + str(action_id_int)
+                    sec_action_id: str = block.get('accessory', {}).get('type', '')
+                    block['block_id'] = sec_action_id + '_' + str(action_id_int)
+                    block['accessory']['action_id'] = sec_action_id + str(action_id_int)
+                    action_id_int += 1
 
     def _add_submit_button(self):
         """Adds a submit button with a known action_id
@@ -175,7 +174,9 @@ class BlockCarrier:
                 or not isinstance(res[0]['Contents'], str)
                 or res[0]['Contents'] == ErrorMessages.NOT_FOUND
         ):
-            raise ValueError(f'Cannot retrieve list {self.list_name}')
+            raise ValueError(f'Cannot retrieve list {self.list_name}. Please verify the name is correct. If you have'
+                             f' not created a list before, please refer to https://xsoar.pan.dev/docs/incidents/'
+                             f'incident-lists for more information.')
         data: str = res[0]['Contents']
         if data and len(data) > 0:
             try:
@@ -195,13 +196,7 @@ class BlockCarrier:
         Inevitably, the blocks will need to be converted to a json string and then fed into the send-notification command.
         This handles that process.
         """
-        self.blocks_as_json_str = json.dumps({
-            'blocks': self.blocks_dict,
-            'entitlement': self.entitlement_string,
-            'reply': self.reply,
-            'expiry': self.expiry,
-            'default_response': self.default_response
-        })
+        self.blocks_as_json_str = json.dumps(self.blocks_dict)
 
     def format_blocks(self):
         """Finalizes the blocks for the send-notification command.
@@ -215,14 +210,18 @@ class BlockCarrier:
 
 
 class SendNotification:
-    def __init__(self, blocks: str, slack_instance: Optional[str] = None, to: Optional[str] = None,
+    def __init__(self, blocks_carrier: BlockCarrier, slack_instance: Optional[str] = None, to: Optional[str] = None,
                  channel_id: Optional[str] = None, channel: Optional[str] = None):
-        self.blocks: str = blocks
+        self.blocks_carrier: BlockCarrier = blocks_carrier
         self.send_response: list = []
         self.command_args: dict = {
             'ignoreAddURL': 'true',
             'using-brand': 'SlackV3',
-
+            'blocks': json.dumps(self.blocks_carrier.blocks_as_json_str),
+            'entitlement': self.blocks_carrier.entitlement_string,
+            'reply': self.blocks_carrier.reply,
+            'expiry': self.blocks_carrier.expiry,
+            'default_response': self.blocks_carrier.default_response
         }
         if slack_instance:
             self.command_args['using'] = slack_instance
@@ -278,7 +277,7 @@ def slack_block_builder_command(args: Dict[str, Any]):
                                  reply_entries_tag=reply_entries_tag, lifetime=lifetime,
                                  reply=reply, default_response=default_response)
     block_carrier.format_blocks()
-    notification = SendNotification(blocks=block_carrier.blocks_as_json_str, slack_instance=slack_instance, to=to,
+    notification = SendNotification(blocks_carrier=block_carrier, slack_instance=slack_instance, to=to,
                                     channel_id=channel_id, channel=channel)
     notification.send()
     human_readable = notification.send_response[0]['HumanReadable']
