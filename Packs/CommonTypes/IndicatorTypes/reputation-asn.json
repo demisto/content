@@ -30,6 +30,6 @@
         }
     },
     "expiration": 0,
-    "layout": "asn",
+    "layout": "ASN",
     "fromVersion": "6.5.0"
 }
