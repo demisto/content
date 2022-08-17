@@ -217,105 +217,12 @@ class CoreClient(BaseClient):
                     endpoint['endpoint_id'] = endpoint.get('agent_id')
 
         else:
-            filters = []
-
-            if status:
-                filters.append({
-                    'field': 'endpoint_status',
-                    'operator': 'IN',
-                    'value': [status]
-                })
-
-            if username:
-                filters.append({
-                    'field': 'username',
-                    'operator': 'IN',
-                    'value': username
-                })
-
-            if endpoint_id_list:
-                filters.append({
-                    'field': 'endpoint_id_list',
-                    'operator': 'in',
-                    'value': endpoint_id_list
-                })
-
-            if dist_name:
-                filters.append({
-                    'field': 'dist_name',
-                    'operator': 'in',
-                    'value': dist_name
-                })
-
-            if ip_list:
-                filters.append({
-                    'field': 'ip_list',
-                    'operator': 'in',
-                    'value': ip_list
-                })
-
-            if group_name:
-                filters.append({
-                    'field': 'group_name',
-                    'operator': 'in',
-                    'value': group_name
-                })
-
-            if platform:
-                filters.append({
-                    'field': 'platform',
-                    'operator': 'in',
-                    'value': platform
-                })
-
-            if alias_name:
-                filters.append({
-                    'field': 'alias',
-                    'operator': 'in',
-                    'value': alias_name
-                })
-
-            if isolate:
-                filters.append({
-                    'field': 'isolate',
-                    'operator': 'in',
-                    'value': [isolate]
-                })
-
-            if hostname:
-                filters.append({
-                    'field': 'hostname',
-                    'operator': 'in',
-                    'value': hostname
-                })
-
-            if first_seen_gte:
-                filters.append({
-                    'field': 'first_seen',
-                    'operator': 'gte',
-                    'value': first_seen_gte
-                })
-
-            if first_seen_lte:
-                filters.append({
-                    'field': 'first_seen',
-                    'operator': 'lte',
-                    'value': first_seen_lte
-                })
-
-            if last_seen_gte:
-                filters.append({
-                    'field': 'last_seen',
-                    'operator': 'gte',
-                    'value': last_seen_gte
-                })
-
-            if last_seen_lte:
-                filters.append({
-                    'field': 'last_seen',
-                    'operator': 'lte',
-                    'value': last_seen_lte
-                })
+            filters = create_request_filters(
+                status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
+                ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
+                hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+                last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
+            )
 
             if search_from:
                 request_data['search_from'] = search_from
@@ -1304,6 +1211,41 @@ class CoreClient(BaseClient):
         )
         reply = res.get("reply")
         return reply[:limit]
+
+    def add_tag_endpoint(self, endpoint_ids, tag, args):
+        """
+        Add tag to an endpoint
+        """
+        return self.call_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args, url_suffix='/tags/agents/assign/')
+
+    def remove_tag_endpoint(self, endpoint_ids, tag, args):
+        """
+        Remove tag from an endpoint.
+        """
+        return self.call_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args, url_suffix='/tags/agents/remove/')
+
+    def call_tag_endpoint(self, endpoint_ids, tag, args, url_suffix):
+        """
+        Add or remove a tag from an endpoint.
+        """
+        filters = args_to_request_filters(args)
+
+        body_request = {
+            'context': {
+                'lcaas_id': endpoint_ids,
+            },
+            'request_data': {
+                'filters': filters,
+                'tag': tag
+            },
+        }
+
+        return self._http_request(
+            method='POST',
+            url_suffix=url_suffix,
+            json_data=body_request,
+            timeout=self.timeout
+        )
 
 
 class AlertFilterArg:
@@ -3338,4 +3280,191 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.DynamicAnalysis',
         outputs=filtered_alerts,
         raw_response=raw_response,
+    )
+
+
+def create_request_filters(
+    status: Optional[str] = None,
+    username: Optional[List] = None,
+    endpoint_id_list: Optional[List] = None,
+    dist_name: Optional[List] = None,
+    ip_list: Optional[List] = None,
+    group_name: Optional[List] = None,
+    platform: Optional[List] = None,
+    alias_name: Optional[List] = None,
+    isolate: Optional[str] = None,
+    hostname: Optional[List] = None,
+    first_seen_gte=None,
+    first_seen_lte=None,
+    last_seen_gte=None,
+    last_seen_lte=None,
+):
+    filters = []
+
+    if status:
+        filters.append({
+            'field': 'endpoint_status',
+            'operator': 'IN',
+            'value': [status]
+        })
+
+    if username:
+        filters.append({
+            'field': 'username',
+            'operator': 'IN',
+            'value': username
+        })
+
+    if endpoint_id_list:
+        filters.append({
+            'field': 'endpoint_id_list',
+            'operator': 'in',
+            'value': endpoint_id_list
+        })
+
+    if dist_name:
+        filters.append({
+            'field': 'dist_name',
+            'operator': 'in',
+            'value': dist_name
+        })
+
+    if ip_list:
+        filters.append({
+            'field': 'ip_list',
+            'operator': 'in',
+            'value': ip_list
+        })
+
+    if group_name:
+        filters.append({
+            'field': 'group_name',
+            'operator': 'in',
+            'value': group_name
+        })
+
+    if platform:
+        filters.append({
+            'field': 'platform',
+            'operator': 'in',
+            'value': platform
+        })
+
+    if alias_name:
+        filters.append({
+            'field': 'alias',
+            'operator': 'in',
+            'value': alias_name
+        })
+
+    if isolate:
+        filters.append({
+            'field': 'isolate',
+            'operator': 'in',
+            'value': [isolate]
+        })
+
+    if hostname:
+        filters.append({
+            'field': 'hostname',
+            'operator': 'in',
+            'value': hostname
+        })
+
+    if first_seen_gte:
+        filters.append({
+            'field': 'first_seen',
+            'operator': 'gte',
+            'value': first_seen_gte
+        })
+
+    if first_seen_lte:
+        filters.append({
+            'field': 'first_seen',
+            'operator': 'lte',
+            'value': first_seen_lte
+        })
+
+    if last_seen_gte:
+        filters.append({
+            'field': 'last_seen',
+            'operator': 'gte',
+            'value': last_seen_gte
+        })
+
+    if last_seen_lte:
+        filters.append({
+            'field': 'last_seen',
+            'operator': 'lte',
+            'value': last_seen_lte
+        })
+
+    return filters
+
+
+def args_to_request_filters(args):
+
+    if set(args.keys()) & {  # check if any filter argument was provided
+        'endpoint_id_list', 'dist_name', 'ip_list', 'group_name', 'platform', 'alias_name',
+        'isolate', 'hostname', 'status', 'first_seen_gte', 'first_seen_lte', 'last_seen_gte', 'last_seen_lte'
+    }:
+        endpoint_id_list = argToList(args.get('endpoint_id_list'))
+        dist_name = argToList(args.get('dist_name'))
+        ip_list = argToList(args.get('ip_list'))
+        group_name = argToList(args.get('group_name'))
+        platform = argToList(args.get('platform'))
+        alias_name = argToList(args.get('alias_name'))
+        isolate = args.get('isolate')
+        hostname = argToList(args.get('hostname'))
+        status = args.get('status')
+
+        first_seen_gte = arg_to_timestamp(
+            arg=args.get('first_seen_gte'),
+            arg_name='first_seen_gte'
+        )
+
+        first_seen_lte = arg_to_timestamp(
+            arg=args.get('first_seen_lte'),
+            arg_name='first_seen_lte'
+        )
+
+        last_seen_gte = arg_to_timestamp(
+            arg=args.get('last_seen_gte'),
+            arg_name='last_seen_gte'
+        )
+
+        last_seen_lte = arg_to_timestamp(
+            arg=args.get('last_seen_lte'),
+            arg_name='last_seen_lte'
+        )
+
+        return create_request_filters(
+            endpoint_id_list=endpoint_id_list, dist_name=dist_name, ip_list=ip_list,
+            group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate, hostname=hostname,
+            first_seen_lte=first_seen_lte, first_seen_gte=first_seen_gte,
+            last_seen_lte=last_seen_lte, last_seen_gte=last_seen_gte, status=status
+        )
+    # a request must be sent with at least one filter parameter, so by default we will send the endpoint_id_list filter
+    return create_request_filters(endpoint_id_list=argToList(args.get('endpoint_ids')))
+
+
+def add_tag_to_endpoints_command(client: CoreClient, args: Dict):
+    endpoint_ids = argToList(args.get('endpoint_ids', []))
+    tag = args.get('tag')
+
+    raw_response = client.add_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args)
+
+    return CommandResults(
+        readable_output=f'Successfully added tag {tag} to endpoint(s) {endpoint_ids}', raw_response=raw_response
+    )
+
+
+def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
+    endpoint_ids = argToList(args.get('endpoint_ids', []))
+    tag = args.get('tag')
+
+    raw_response = client.remove_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args)
+
+    return CommandResults(
+        readable_output=f'Successfully removed tag {tag} from endpoint(s) {endpoint_ids}', raw_response=raw_response
     )
