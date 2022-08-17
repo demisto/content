@@ -85,7 +85,7 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
-- defaultvalue: false
+- defaultvalue: 'false'
   display: Using Microsoft GCC?
   name: is_gcc
   required: false
