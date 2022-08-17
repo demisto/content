@@ -1,5 +1,5 @@
 Dome9 integration allows to easily manage the security and compliance of the public cloud.
-This integration was integrated and tested with version 2 of checkpointdome9
+This integration was integrated and tested with version xx of checkpointdome9
 
 ## Configure Check Point Dome9 (CloudGuard) on Cortex XSOAR
 
@@ -37,7 +37,7 @@ Get a list of all active Access Leases.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 
@@ -46,14 +46,15 @@ Get a list of all active Access Leases.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.AccessLease.cloudAccountId | String | The aws Access Leases cloud Account ID. | 
-| CheckPointDome9.AccessLease.region | String | The aws Access Leases region. | 
-| CheckPointDome9.AccessLease.securityGroupId | String | The aws Access Leases security Group ID. | 
-| CheckPointDome9.AccessLease.created | String | The aws Access Leases created date. | 
-| CheckPointDome9.AccessLease.user | String | The aws Access Leases user. | 
-| CheckPointDome9.AccessLease.length | String | The aws Access Leases length. | 
-| CheckPointDome9.AccessLease.protocol | String | The aws Access Leases protocol. | 
-| CheckPointDome9.AccessLease.id | String | The aws Access Leases ID. | 
+| CheckPointDome9.AccessLease.cloudAccountId | String | The AWS Access Leases cloud account ID. |
+| CheckPointDome9.AccessLease.region | String | The AWS Access Leases region. |
+| CheckPointDome9.AccessLease.securityGroupId | String | The AWS Access Leases security group ID. |
+| CheckPointDome9.AccessLease.created | String | The AWS Access Leases created date. |
+| CheckPointDome9.AccessLease.user | String | The AWS Access Leases user. |
+| CheckPointDome9.AccessLease.length | String | The AWS Access Leases length. |
+| CheckPointDome9.AccessLease.protocol | String | The AWS Access Leases protocol. |
+| CheckPointDome9.AccessLease.id | String | The AWS Access Leases ID. |
+
 
 #### Command example
 ```!dome9-access-lease-list```
@@ -92,7 +93,6 @@ Get a list of all active Access Leases.
 >|---|---|---|---|---|---|---|
 >| id | name | ip | userMail | region | length | created |
 
-
 ### dome9-access-lease-delete
 ***
 Terminate an Access Lease.
@@ -105,12 +105,13 @@ Terminate an Access Lease.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lease_id | The access lease ID. | Required | 
+| lease_id | The Access Lease ID. | Required |
 
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
 ```!dome9-access-lease-delete lease_id=id```
 #### Context Example
@@ -138,17 +139,18 @@ Get a lease invitation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| invitation_id | The access lease invitation ID. | Optional | 
+| invitation_id | The Access Lease invitation ID. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.AccessLease.Invitation.length | String | The Access Leases Invitation length. | 
-| CheckPointDome9.AccessLease.Invitation.id | String | The Access Leases Invitation ID. | 
-| CheckPointDome9.AccessLease.Invitation.created | String | The Access Leases Invitation created time. | 
-| CheckPointDome9.AccessLease.Invitation.recipientName | String | The recipient name. | 
+| CheckPointDome9.AccessLease.Invitation.length | String | The Access Lease invitation length. |
+| CheckPointDome9.AccessLease.Invitation.id | String | The Access Lease invitation ID. |
+| CheckPointDome9.AccessLease.Invitation.created | String | The Access Lease invitation created time. |
+| CheckPointDome9.AccessLease.Invitation.recipientName | String | The Access Lease invitation recipient name. |
+
 
 #### Command example
 ```!dome9-access-lease-invitation-list```
@@ -176,7 +178,6 @@ Get a lease invitation.
 ```
 
 #### Human Readable Output
-
 >### Access Lease invitation
 >Showing 1 rows out of 1.
 >|Id|Issuername|Recipientname|Length|Created|
@@ -186,7 +187,7 @@ Get a lease invitation.
 
 ### dome9-access-lease-invitation-delete
 ***
-Delete a lease invitation.
+Delete an Access Lease invitation.
 
 
 #### Base Command
@@ -196,7 +197,7 @@ Delete a lease invitation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| invitation_id | Access lease invitation. | Required | 
+| invitation_id | Access Lease invitation. | Required |
 
 
 #### Context Output
@@ -231,25 +232,24 @@ Search for findings in CloudGuard.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| acknowledged | indicates the finding was acknowledged. Possible values are: True, False. | Optional | 
-| entity_type | The type of entity tested (e.g. S3, or EC2). Possible values are: securityGroup, iamPolicy, :iamRole, subnet, networkInterface, instance, region, vpc, s3Bucket, nacl, iamUser, kms, vminstance, elb, elasticIP, applicationLoadBalancer, lambda, ami, cloudTrail, iamGroup, cloudFront, route53RecordSetGroup, iam, vpnGateway, iamServerCertificate, route53HostedZone, acmCertificate, list&lt;cloudTrail&gt;, dynamoDbTable. | Optional | 
 | severity | The findings severities. Possible values are: High, Medium, Low. | Optional | 
-| region | The findings regions. Possible values are: Region, Global, Canada Central, Frankfurt, Ireland, London, Mumbai, N. California, Ohio, Oregon, Osaka, Paris, Seoul, Singapore, Stockholm, Sydney, São Paulo, Tokyo. | Optional |
+| region | The findings regions. Possible values are: N. Virginia, Global, Canada Central, Frankfurt, Ireland, London, Mumbai, N. California, Ohio, Oregon, Osaka, Paris, Seoul, Singapore, Stockholm, Sydney, São Paulo, Tokyo. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.Findings.id | String | The Search Request. | 
-| CheckPointDome9.Findings.severity | String | The Findings.  | 
-| CheckPointDome9.Findings.region | String | The Aggregations. | 
-| CheckPointDome9.Findings.status | Number | The total found findings. | 
-| CheckPointDome9.Findings.action | String | The Aggregations. | 
-| CheckPointDome9.Findings.alertType | Number | The total found findings. | 
+| CheckPointDome9.Findings.id | String | The findings ID. |
+| CheckPointDome9.Findings.severity | String | The severity of the findings. |
+| CheckPointDome9.Findings.region | String | The findings region. |
+| CheckPointDome9.Findings.status | Number | The status of the findings. |
+| CheckPointDome9.Findings.action | String | The action of the findings. |
+| CheckPointDome9.Findings.alertType | Number | The alert type of the findings. |
+
 
 #### Command example
 ```!dome9-findings-search```
@@ -317,10 +317,9 @@ Search for findings in CloudGuard.
 >| id | alertType | severity | region | status | action | Cloudaccountid | Description |
 
 
-
 ### dome9-ip-list-create
 ***
-Add a new IP List.
+Add a new IP list.
 
 
 #### Base Command
@@ -330,10 +329,10 @@ Add a new IP List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The IP List Name. | Required | 
-| description | The IP List description. | Required | 
-| ip | The IP list items (comma separated IP addresses). | Optional | 
-| comment | The IPs comments (one comment for one IP address, Each comment belongs to an IP address, respectively). | Optional | 
+| name | The IP list name. | Required |
+| description | The IP list description. | Required |
+| ip | Comma-separated list of IP addresses. | Optional |
+| comment | Comma-separated list of comments for the IP addresses. One comment per IP address. | Optional |
 
 
 #### Context Output
@@ -341,9 +340,10 @@ Add a new IP List.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CheckPointDome9.IpList.id | String | The IP list ID. | 
-| CheckPointDome9.IpList.name | String | The IP List Name. | 
-| CheckPointDome9.IpList.description | String | The IP List description. | 
+| CheckPointDome9.IpList.name | String | The IP list name. |
+| CheckPointDome9.IpList.description | String | The IP list description. |
 | CheckPointDome9.IpList.items | String | The IP list items \(IP addresses\). | 
+
 
 #### Command example
 ```!dome9-ip-list-create description=description2022 name=name31072022```
@@ -367,7 +367,7 @@ Add a new IP List.
 
 ### dome9-ip-list-update
 ***
-Update an IP List. This will override the existing ip list.
+Update an IP list. This will override the existing IP list.
 
 
 #### Base Command
@@ -378,15 +378,16 @@ Update an IP List. This will override the existing ip list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_id | The IP list ID. | Required | 
-| description | The IP List description. | Optional | 
-| ip | The IP list items (IP addresses). | Optional | 
-| comment | The IP's comments (one comment for each IP). | Optional | 
-| update_mode | The command mode. Default mode is add_new_items. add_new_items or replace_old_items. Possible values are: add_new_items, replace_old_items. | Optional | 
+| description | The IP list description. | Optional |
+| ip | Comma-separated list of IP addresses. | Optional |
+| comment | Comma-separated list of comments for the IP addresses. One comment per IP address. | Optional |
+| update_mode | The command mode. Default mode is add_new_items. Possible values are: add_new_items, replace_old_items. | Optional |
 
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
 ```!dome9-ip-list-update list_id=id description=NEW```
 #### Context Example
@@ -401,10 +402,9 @@ There is no context output for this command.
 #### Human Readable Output
 
 >IP list updated successfully
-
 ### dome9-ip-list-get
 ***
-Get an IP List by id.
+Get an IP List by ID.
 
 
 #### Base Command
@@ -456,11 +456,9 @@ Get an IP List by id.
 >|---|---|---|---|
 >| id | NewList-2 | ip | description |
 
-
-
 ### dome9-ip-list-delete
 ***
-Delete an IP List by id.
+Delete an IP List by ID.
 
 
 #### Base Command
@@ -470,12 +468,13 @@ Delete an IP List by id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_id | The IP list ID. | Required | 
+| list_id | The ID of the IP list to delete. | Required |
 
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
 ```!dome9-ip-list-delete list_id=id```
 #### Context Example
@@ -503,7 +502,7 @@ Get all IP addresses metadata.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 
@@ -514,8 +513,9 @@ Get all IP addresses metadata.
 | --- | --- | --- |
 | CheckPointDome9.IpList.Metadata.id | String | The IP address internal ID. | 
 | CheckPointDome9.IpList.Metadata.cidr | string | The IP address CIDR. | 
-| CheckPointDome9.IpList.Metadata.name | String | The IP address Name. | 
-| CheckPointDome9.IpList.Metadata.classificaiton | String | The IP address classification. | 
+| CheckPointDome9.IpList.Metadata.name | String | The IP address name. |
+| CheckPointDome9.IpList.Metadata.classification | String | The IP address classification. |
+
 
 #### Command example
 ```!dome9-ip-list-metadata-list```
@@ -547,10 +547,39 @@ Get all IP addresses metadata.
 >| id | name | cidr | classification |
 
 
+#### Command example
+```!dome9-ip-list-metadata-list```
+#### Context Example
+```json
+{
+    "CheckPointDome9": {
+        "IpList": {
+            "Metadata": [
+                {
+                    "cidr": "cidr",
+                    "classificaiton": "classification",
+                    "classification": "classification",
+                    "id": "id",
+                    "name": "name"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IP List metadata
+>Showing 8 rows out of 8.
+>|Id|Name|Cidr|Classification|
+>|---|---|---|---|
+>| id | name | cidr | classification |
+
 
 ### dome9-ip-list-metadata-create
 ***
-Add a new IP address metadata. An Ip Address metadata must contain CIDR, Name and Classification. Classification can be External or Unsafe or classification or InternalVpc or InternalDc or NoClassification.
+Add metadata for a new IP address. An IP address metadata must contain the CIDR, name, and classification. Classification can be External, Unsafe, Dmz, InternalVpc, InternalDc, or NoClassification.
 
 
 #### Base Command
@@ -561,8 +590,8 @@ Add a new IP address metadata. An Ip Address metadata must contain CIDR, Name an
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cidr | The IP address CIDR. | Required | 
-| name | The IP address Name. | Required | 
-| classification | The IP address classification. Possible values are: External, Unsafe, classification, InternalVpc, InternalDc, NoClassification.. | Required |
+| name | The IP address name. | Required |
+| classification | The IP address classification. Possible values are: External, Unsafe, Dmz, InternalVpc, InternalDc, NoClassification.. | Required |
 
 
 #### Context Output
@@ -571,8 +600,9 @@ Add a new IP address metadata. An Ip Address metadata must contain CIDR, Name an
 | --- | --- | --- |
 | CheckPointDome9.IpList.Metadata.id | String | The IP address internal ID. | 
 | CheckPointDome9.IpList.Metadata.cidr | string | The IP address CIDR. | 
-| CheckPointDome9.IpList.Metadata.name | String | The IP address Name. | 
-| CheckPointDome9.IpList.Metadata.classificaiton | String | The IP address classification. | 
+| CheckPointDome9.IpList.Metadata.name | String | The IP address name. |
+| CheckPointDome9.IpList.Metadata.classification | String | The IP address classification. |
+
 
 #### Command example
 ```!dome9-ip-list-metadata-create cidr=cidr classification=classification name=metadata```
@@ -603,7 +633,7 @@ Add a new IP address metadata. An Ip Address metadata must contain CIDR, Name an
 
 ### dome9-ip-list-metadata-update
 ***
-Update an existing IP address metadata. Classification can only be External or Unsafe or classification or InternalVpc or InternalDc or NoClassification.
+Update an existing IP address metadata. Classification can only be External, Unsafe, Dmz, InternalVpc, InternalDc, or NoClassification.
 
 
 #### Base Command
@@ -614,8 +644,8 @@ Update an existing IP address metadata. Classification can only be External or U
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_metadata_id | The IP address internal ID. | Required | 
-| name | The IP address Name. | Optional | 
-| classification | The IP address classification. Possible values are: External, Unsafe, classification, InternalVpc, InternalDc, NoClassification.. | Required |
+| name | The IP address nName. | Optional |
+| classification | The IP address classification. Possible values are: External, Unsafe, Dmz, InternalVpc, InternalDc, NoClassification.. | Required |
 
 
 #### Context Output
@@ -625,7 +655,7 @@ Update an existing IP address metadata. Classification can only be External or U
 | CheckPointDome9.IpList.Metadata.id | String | The IP address internal ID. | 
 | CheckPointDome9.IpList.Metadata.cidr | string | The IP address CIDR. | 
 | CheckPointDome9.IpList.Metadata.name | String | The IP address Name. | 
-| CheckPointDome9.IpList.Metadata.classificaiton | String | The IP address classification. | 
+| CheckPointDome9.IpList.Metadata.classification | String | The IP address classification. |
 
 #### Command example
 ```!dome9-ip-list-metadata-update classification=classification list_metadata_id=list_metadata_id name=NewName```
@@ -656,7 +686,7 @@ Update an existing IP address metadata. Classification can only be External or U
 
 ### dome9-ip-list-metadata-delete
 ***
-delete an IP address metadata with a specific CIDR.
+Delete an IP address metadata with a specific CIDR.
 
 
 #### Base Command
@@ -674,6 +704,7 @@ delete an IP address metadata with a specific CIDR.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
 ```!dome9-ip-list-metadata-delete account_id=account_id address=ip mask=32```
 #### Context Example
@@ -710,7 +741,7 @@ Get a list of remediations for the account.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CheckPointDome9.ComplianceRemediation.id | String | Remediation ID. | 
-| CheckPointDome9.ComplianceRemediation.ruleLogicHash | String | Hash for the rule logic.  | 
+| CheckPointDome9.ComplianceRemediation.ruleLogicHash | String | Hash for the rule logic. |
 | CheckPointDome9.ComplianceRemediation.ruleName | String | Rule name. | 
 | CheckPointDome9.ComplianceRemediation.ruleId | String | Rule ID. | 
 | CheckPointDome9.ComplianceRemediation.logic | String | The GSL logic of the exclusion. | 
@@ -765,15 +796,16 @@ Add a new remediation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ruleset_id | Ruleset ID to apply remediation on. Use the dome9-compliance-ruleset-list command to get ruleset ID list. | Required | 
+| ruleset_id | Ruleset ID to apply remediation on. Use the dome9-compliance-ruleset-list command to get the Ruleset ID list. | Required |
 | comment | Comment text. | Required | 
 | cloudbots | Cloud bots execution expressions. Possible values are: ami_set_to_private, acm_delete_certificate, cloudtrail_enable, cloudtrail_enable_log_file_validation, cloudtrail_send_to_cloudwatch, cloudwatch_create_metric_filter, config_enable, ec2_attach_sg, ec2_attach_instance_role, ec2_create_snapshot, ec2_release_eips, ec2_quarantine_instance, ec2_stop_instance, ec2_terminate_instance, ec2_update_instance_role, ec2_service_role_detach_inline_group, iam_detach_policy, iam_group_delete_inline_group, iam_generate_credential_report, iam_role_attach_policy, iam_user_attach_policy, iam_user_deactivate_unused_access_key, iam_user_delete_inline_policies, iam_user_disable_console_password, iam_user_force_password_change, iam_quarantine_role, iam_quarantine_user, iam_role_clone_with_non_enumerable_name, iam_turn_on_password_policy, igw_delete, kms_cmk_enable_key, kms_enable_rotation, lambda_detach_blanket_permissions, lambda_tag, lambda_enable_active_tracing, load_balancer_enable_access_logs, mark_for_stop_ec2_resource. | Required | 
-| rule_logic_hash | Hash for the rule logic. Use compliance-ruleset-rule-list command to fetch logic hash. | Required | 
+| rule_logic_hash | Hash for the rule logic. Use the compliance-ruleset-rule-list command to fetch logic hash. | Required |
 
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
 ```!dome9-compliance-remediation-create cloudbots=cloudbots comment=COMMENT rule_logic_hash=rule_logic_hash/k4lIw ruleset_id=rule_id```
 #### Context Example
@@ -822,12 +854,13 @@ Update a remediation.
 | ruleset_id | Ruleset ID. | Required | 
 | comment | Comment text. | Required | 
 | cloudbots | Cloud bots execution expressions. Possible values are: ami_set_to_private, acm_delete_certificate, cloudtrail_enable, cloudtrail_enable_log_file_validation, cloudtrail_send_to_cloudwatch, cloudwatch_create_metric_filter, config_enable, ec2_attach_sg, ec2_attach_instance_role, ec2_create_snapshot, ec2_release_eips, ec2_quarantine_instance, ec2_stop_instance, ec2_terminate_instance, ec2_update_instance_role, ec2_service_role_detach_inline_group, iam_detach_policy, iam_group_delete_inline_group, iam_generate_credential_report, iam_role_attach_policy, iam_user_attach_policy, iam_user_deactivate_unused_access_key, iam_user_delete_inline_policies, iam_user_disable_console_password, iam_user_force_password_change, iam_quarantine_role, iam_quarantine_user, iam_role_clone_with_non_enumerable_name, iam_turn_on_password_policy, igw_delete, kms_cmk_enable_key, kms_enable_rotation, lambda_detach_blanket_permissions, lambda_tag, lambda_enable_active_tracing, load_balancer_enable_access_logs, mark_for_stop_ec2_resource. | Required | 
-| rule_logic_hash | Hash for the rule logic. Use compliance-ruleset-rule-list command to fetch logic hash. | Required | 
+| rule_logic_hash | Hash for the rule logic. Use the compliance-ruleset-rule-list command to fetch logic hash. | Required |
 
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
 ```!dome9-compliance-remediation-update remediation_id=r_id cloudbots=cloudbots comment=COMMENT rule_logic_hash=ruleLogicHash ruleset_id=ruleset_id```
 #### Context Example
@@ -878,6 +911,7 @@ Delete a remediation.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
 ```!dome9-compliance-remediation-delete remediation_id=remediation_id```
 #### Context Example
@@ -892,10 +926,9 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Remediation deleted successfully
-
 ### dome9-compliance-ruleset-list
 ***
-Get all rulesets for the account.
+Get all Rulesets for the account.
 
 
 #### Base Command
@@ -906,7 +939,7 @@ Get all rulesets for the account.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ruleset_id | The Ruleset ID. | Optional | 
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 
@@ -966,7 +999,7 @@ Get all rulesets for the account.
 
 ### dome9-compliance-ruleset-rule-list
 ***
-Get rule details (get rule logic hash to create a new remediation).
+Get rule details. Get the rule logic hash to create a new remediation.
 
 
 #### Base Command
@@ -977,7 +1010,7 @@ Get rule details (get rule logic hash to create a new remediation).
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_id | The Ruleset ID. | Required | 
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 
@@ -1033,10 +1066,9 @@ Get rule details (get rule logic hash to create a new remediation).
 
 
 
-
 ### dome9-security-group-instance-attach
 ***
-Attach security Group to an AWS EC2 Instance.
+Attach the security group to an AWS EC2 instance.
 
 
 #### Base Command
@@ -1047,13 +1079,14 @@ Attach security Group to an AWS EC2 Instance.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | instance_id | AWS instance ID. | Required | 
-| sg_id | AWS Security group ID. | Required | 
-| nic_name | The instance nic name. | Required | 
+| sg_id | AWS security group internal ID. | Required |
+| nic_name | The instance NIC name. Use the dome9-instance-list command to get this argument. | Required |
 
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
 ```!dome9-security-group-instance-attach instance_id=i-instance_id nic_name=nic_name sg_id=sg_id```
 #### Context Example
@@ -1267,7 +1300,7 @@ There is no context output for this command.
 
 ### dome9-security-group-service-create
 ***
-Create a new Service (rule) for the security group.
+Create a new service (rule) for the security group.
 
 
 #### Base Command
@@ -1278,17 +1311,17 @@ Create a new Service (rule) for the security group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sg_id | Security group ID. | Required | 
-| policy_type | The service type (Inbound / Outbound). Possible values are: Inbound, Outbound. | Required | 
+| policy_type | The service type. Possible values are: Inbound, Outbound. | Required |
 | name | The service name. | Required | 
 | protocol_type | Service protocol type. Possible values are: ALL, HOPOPT, ICMP, IGMP, GGP, IPV4, ST, TCP, CBT, EGP, IGP, BBN_RCC_MON, NVP2, PUP, ARGUS, EMCON, XNET, CHAOS, UDP, MUX, DCN_MEAS, HMP, PRM, XNS_IDP, TRUNK1, TRUNK2, LEAF1, LEAF2, RDP, IRTP, ISO_TP4, NETBLT, MFE_NSP, MERIT_INP, DCCP, ThreePC, IDPR, XTP, DDP, IDPR_CMTP, TPplusplus, IL, IPV6, SDRP, IPV6_ROUTE, IPV6_FRAG, IDRP, RSVP, GRE, DSR, BNA, ESP, AH, I_NLSP, SWIPE, NARP, MOBILE, TLSP, SKIP, ICMPV6, IPV6_NONXT, IPV6_OPTS, CFTP, SAT_EXPAK, KRYPTOLAN, RVD, IPPC, SAT_MON, VISA, IPCV, CPNX, CPHB, WSN, PVP, BR_SAT_MON, SUN_ND, WB_MON, WB_EXPAK, ISO_IP, VMTP, SECURE_VMTP, VINES, TTP, NSFNET_IGP, DGP, TCF, EIGRP, OSPFIGP, SPRITE_RPC, LARP, MTP, AX25, IPIP, MICP, SCC_SP, ETHERIP, ENCAP, GMTP, IFMP, PNNI, PIM, ARIS, SCPS, QNX, AN, IPCOMP, SNP, COMPAQ_PEER, IPX_IN_IP, VRRP, PGM, L2TP, DDX, IATP, STP, SRP, UTI, SMP, SM, PTP, ISIS, FIRE, CRTP, CRUDP, SSCOPMCE, IPLT, SPS, PIPE, SCTP, FC, RSVP_E2E_IGNORE, MOBILITY_HEADER, UDPLITE, MPLS_IN_IP, MANET, HIP, SHIM6, WESP, ROHC. | Required | 
-| port | The service port, indicates a port range. | Required | 
+| port | The service port (indicates a port range). | Required |
 | open_for_all | Indicates if the service is open to all ports. Possible values are: True, False. | Optional | 
 | description | Service description. | Optional | 
-| data_id | IP List ID to attach. | Optional | 
-| data_name | IP List name to attach. | Optional | 
-| scope_type | Scope type (CIDR / IPList) to attach. Possible values are: CIDR, IPList. | Optional | 
-| is_valid | Service validation (True / False). Possible values are: True, False. | Optional | 
-| inbound | Service inbound (True / False). Possible values are: True, False. | Optional | 
+| data_id | IP list ID to attach. | Optional |
+| data_name | IP list name to attach. | Optional |
+| scope_type | Scope type to attach. Possible values are: CIDR, IPList. | Optional |
+| is_valid | Whether the service is valid. Possible values are: True, False. | Optional |
+| inbound | Whether the service is inbound. Possible values are: True, False. | Optional |
 | icmptype | ICMP type (when protocol is ICMP). Possible values are: All, EchoReply, DestinationUnreachable, SourceQuench, Redirect, AlternateHostAddress, Echo, RouterAdvertisement, RouterSelection, TimeExceeded, ParameterProblem, Timestamp, TimestampReply, InformationRequest, InformationReply, AddressMaskRequest, AddressMaskReply, Traceroute, DatagramConversionError, MobileHostRedirect, IPv6WhereAreYou, IPv6IAmHere, MobileRegistrationRequest, MobileRegistrationReply, DomainNameRequest, DomainNameReply, SKIP, Photuris. | Optional | 
 | icmpv6type | ICMP V6 type (when protocol is ICMPV6). | Optional | 
 
@@ -1297,8 +1330,8 @@ Create a new Service (rule) for the security group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.SecurityGroup.Service.id | String | The Security Group Service ID. | 
-| CheckPointDome9.SecurityGroup.Service.name | string | The Security Group Service name. | 
+| CheckPointDome9.SecurityGroup.Service.id | String | The security group service ID. |
+| CheckPointDome9.SecurityGroup.Service.name | string | The security group service name. |
 | CheckPointDome9.SecurityGroup.Service.protocolType | String | The service protocol type. | 
 | CheckPointDome9.SecurityGroup.Service.port | string | The service port. | 
 | CheckPointDome9.SecurityGroup.Service.scope | String | The service scope type. | 
@@ -1338,7 +1371,7 @@ Create a new Service (rule) for the security group.
 
 ### dome9-security-group-service-update
 ***
-Update a service (rule) for an AWS security group.
+Update a service (rule) for an AWS security group. Can update only the port and name.
 
 
 #### Base Command
@@ -1349,17 +1382,17 @@ Update a service (rule) for an AWS security group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sg_id | Security group ID. | Required | 
-| policy_type | The service type (Inbound / Outbound). Possible values are: Inbound, Outbound. | Required | 
+| policy_type | The service type. Possible values are: Inbound, Outbound. | Required |
 | service_name | Service name. | Required | 
 | protocol_type | The service protocol type. Possible values are: ALL, HOPOPT, ICMP, IGMP, GGP, IPV4, ST, TCP, CBT, EGP, IGP, BBN_RCC_MON, NVP2, PUP, ARGUS, EMCON, XNET, CHAOS, UDP, MUX, DCN_MEAS, HMP, PRM, XNS_IDP, TRUNK1, TRUNK2, LEAF1, LEAF2, RDP, IRTP, ISO_TP4, NETBLT, MFE_NSP, MERIT_INP, DCCP, ThreePC, IDPR, XTP, DDP, IDPR_CMTP, TPplusplus, IL, IPV6, SDRP, IPV6_ROUTE, IPV6_FRAG, IDRP, RSVP, GRE, DSR, BNA, ESP, AH, I_NLSP, SWIPE, NARP, MOBILE, TLSP, SKIP, ICMPV6, IPV6_NONXT, IPV6_OPTS, CFTP, SAT_EXPAK, KRYPTOLAN, RVD, IPPC, SAT_MON, VISA, IPCV, CPNX, CPHB, WSN, PVP, BR_SAT_MON, SUN_ND, WB_MON, WB_EXPAK, ISO_IP, VMTP, SECURE_VMTP, VINES, TTP, NSFNET_IGP, DGP, TCF, EIGRP, OSPFIGP, SPRITE_RPC, LARP, MTP, AX25, IPIP, MICP, SCC_SP, ETHERIP, ENCAP, GMTP, IFMP, PNNI, PIM, ARIS, SCPS, QNX, AN, IPCOMP, SNP, COMPAQ_PEER, IPX_IN_IP, VRRP, PGM, L2TP, DDX, IATP, STP, SRP, UTI, SMP, SM, PTP, ISIS, FIRE, CRTP, CRUDP, SSCOPMCE, IPLT, SPS, PIPE, SCTP, FC, RSVP_E2E_IGNORE, MOBILITY_HEADER, UDPLITE, MPLS_IN_IP, MANET, HIP, SHIM6, WESP, ROHC. | Required | 
-| port | Service port, indicates a port range. | Required | 
-| open_for_all | indicates the service is open to all ports. Possible values are: True, False. | Optional | 
+| port | Service port (indicates a port range). | Required |
+| open_for_all | Whether the service is open to all ports. Possible values are: True, False. | Optional |
 | description | Service description. | Optional | 
-| data_id | IP List ID. | Optional | 
-| data_name | IP List name. | Optional | 
-| scope_type | Scope type (CIDR / IPList). Possible values are: CIDR, IPList. | Optional | 
-| is_valid | Service validation (True / False). Possible values are: True, False. | Optional | 
-| inbound | Service inbound (True / False). Possible values are: True, False. | Optional | 
+| data_id | IP list ID. | Optional |
+| data_name | IP list name. | Optional |
+| scope_type | Scope type. Possible values are: CIDR, IPList. | Optional |
+| is_valid | Whether the service is valid. Possible values are: True, False. | Optional |
+| inbound | Whether the service is inbound. Possible values are: True, False. | Optional |
 | icmptype | ICMP type (when protocol is ICMP). Possible values are: All, EchoReply, DestinationUnreachable, SourceQuench, Redirect, AlternateHostAddress, Echo, RouterAdvertisement, RouterSelection, TimeExceeded, ParameterProblem, Timestamp, TimestampReply, InformationRequest, InformationReply, AddressMaskRequest, AddressMaskReply, Traceroute, DatagramConversionError, MobileHostRedirect, IPv6WhereAreYou, IPv6IAmHere, MobileRegistrationRequest, MobileRegistrationReply, DomainNameRequest, DomainNameReply, SKIP, Photuris. | Optional | 
 | icmpv6type | ICMP V6 type (when protocol is ICMPV6). | Optional | 
 
@@ -1368,8 +1401,8 @@ Update a service (rule) for an AWS security group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.SecurityGroup.Service.id | String | The Security Group Service ID. | 
-| CheckPointDome9.SecurityGroup.Service.name | string | The Security Group Service name. | 
+| CheckPointDome9.SecurityGroup.Service.id | String | The security group service ID. |
+| CheckPointDome9.SecurityGroup.Service.name | string | The security group service name. |
 | CheckPointDome9.SecurityGroup.Service.protocolType | String | The service protocol type. | 
 | CheckPointDome9.SecurityGroup.Service.port | string | The service port. | 
 | CheckPointDome9.SecurityGroup.Service.scopeType | String | The service scope type. | 
@@ -1406,10 +1439,9 @@ Update a service (rule) for an AWS security group.
 >|---|---|---|---|---|
 >|  | id | name | port | protocol |
 
-
 ### dome9-security-group-instance-detach
 ***
-Detach security Group from an AWS EC2 Instance.
+Detach the security group from an AWS EC2 Instance.
 
 
 #### Base Command
@@ -1420,8 +1452,8 @@ Detach security Group from an AWS EC2 Instance.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | instance_id | AWS instance ID. | Required | 
-| sg_id | AWS Security group ID. | Required | 
-| nic_name | The instance nic name. | Required | 
+| sg_id | AWS security group internal ID. | Required |
+| nic_name | The instance NIC name. Use the dome9-instance-list command to get this argument. | Required |
 
 
 #### Context Output
@@ -1565,7 +1597,7 @@ There is no context output for this command.
 
 ### dome9-instance-list
 ***
-Fetch an AWS EC2 instances.
+Fetch an AWS EC2 instance.
 
 
 #### Base Command
@@ -1584,7 +1616,7 @@ Fetch an AWS EC2 instances.
 | --- | --- | --- |
 | CheckPointDome9.Instance.externalId | String | The instance external ID. | 
 | CheckPointDome9.Instance.region | string | The instance region. | 
-| CheckPointDome9.Instance.nics | String | The instance nic names. | 
+| CheckPointDome9.Instance.nics | String | The instance NIC names. |
 | CheckPointDome9.Instance.name | string | The instance name. | 
 
 #### Command example
@@ -1636,8 +1668,6 @@ Fetch an AWS EC2 instances.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| account_id | cloudAccountId | i-Externalid | ami | Instancetype | true | true |  | someDate | name | Nics |  |  |  | region | arn|  | Name | vpc |
 
-
-
 ### dome9-security-group-protection-mode-update
 ***
 Change the protection mode for an AWS security group (FullManage or ReadOnly).
@@ -1685,10 +1715,9 @@ There is no context output for this command.
 >|---|---|---|---|---|---|---|---|---|
 >| cloudAccountId | name | description | true | region | sg_id | sg_id | sg_name | vpc |
 
-
 ### dome9-cloud-accounts-list
 ***
-Get cloud account list.
+Get the cloud account list.
 
 
 #### Base Command
@@ -1699,7 +1728,7 @@ Get cloud account list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | account ID. | Optional | 
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 | cloud_account_od | The cloud account ID. | Optional | 
@@ -1762,10 +1791,9 @@ There is no context output for this command.
 >|---|---|---|---|---|
 >| cloudAccountId | vendor | number |date | name |
 
-
 ### dome9-security-group-ip-list-details-get
 ***
-Get AWS cloud accounts for a specific security group and region and check if there is an IP-list that attach to a security group.
+Get AWS cloud accounts for a specific security group and region and check if there is an IP list to attach to a security group.
 
 
 #### Base Command
@@ -1775,7 +1803,7 @@ Get AWS cloud accounts for a specific security group and region and check if the
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 | sg_id | Security group ID. | Optional | 
@@ -1785,7 +1813,7 @@ Get AWS cloud accounts for a specific security group and region and check if the
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.SecurityGroup.security_group_id | String | The Security Group ID. | 
+| CheckPointDome9.SecurityGroup.security_group_id | String | The security group ID. |
 
 #### Command example
 ```!dome9-security-group-ip-list-details-get```
@@ -1819,10 +1847,9 @@ Get AWS cloud accounts for a specific security group and region and check if the
 >| cloudAccountId | name | description | true | region | sg_id | sg_id | sg_name | vpc |
 
 
-
 ### dome9-security-group-list
 ***
-Get all security group Entities.
+Get all security group entities.
 
 
 #### Base Command
@@ -1832,7 +1859,7 @@ Get all security group Entities.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 
@@ -1841,7 +1868,7 @@ Get all security group Entities.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.SecurityGroup.security_group_id | String | The Security Group ID. | 
+| CheckPointDome9.SecurityGroup.security_group_id | String | The security group ID. |
 
 #### Command example
 ```!dome9-security-group-list```
@@ -1884,7 +1911,7 @@ Get top results for each service.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 
@@ -1893,9 +1920,10 @@ Get top results for each service.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.GlobalSearch.Alert.id | String | The Global Search alert ID. |
-| CheckPointDome9.GlobalSearch.Alert.type | String | The Global Search alert type. |
-| CheckPointDome9.GlobalSearch.Alert.severity | String | The Global Search alert severity. |
+| CheckPointDome9.GlobalSearch.Alert.id | String | The global search alert ID. |
+| CheckPointDome9.GlobalSearch.Alert.type | String | The global search alert type. |
+| CheckPointDome9.GlobalSearch.Alert.severity | String | The global search alert severity. |
+
 
 #### Command example
 ```!dome9-global-search-get```
@@ -1960,7 +1988,7 @@ Get CloudTrail events for a Dome9 user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 
@@ -1969,10 +1997,10 @@ Get CloudTrail events for a Dome9 user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.CloudTrail.id | String | The Cloud Trail ID. | 
-| CheckPointDome9.CloudTrail.name | String | The Cloud Trail name. | 
-| CheckPointDome9.CloudTrail.trailArn | String | The Cloud Trail ARN. | 
-| CheckPointDome9.CloudTrail.accountId | String | The Cloud Trail account ID. | 
+| CheckPointDome9.CloudTrail.id | String | The CloudTrail ID. |
+| CheckPointDome9.CloudTrail.name | String | The CloudTrail name. |
+| CheckPointDome9.CloudTrail.trailArn | String | The CloudTrail ARN. |
+| CheckPointDome9.CloudTrail.accountId | String | The CloudTrail account ID. |
 
 #### Command example
 ```!dome9-cloud-trail-get```
@@ -2014,8 +2042,6 @@ Get CloudTrail events for a Dome9 user.
 >|Accountid|Cloudaccountid|Cloudtrailstatus|Cloudwatchlogsloggrouparn|Cloudwatchlogsrolearn|Externalid|Homeregion|Id|Includeglobalserviceevents|Ismultiregiontrail|Kmskeyid|Logfilevalidationenabled|Name|Region|S3bucketname|S3keyprefix|Snstopicarn|Snstopicname|Trailarn|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| account_id | cloudAccountId | status |  |  | arn | us-east-1 | id | true | true |  | true | name | region | name |  |  |  | arn |
-
-
 ### dome9-organizational-unit-view-get
 ***
 Get organizational unit view entities.
@@ -2028,7 +2054,7 @@ Get organizational unit view entities.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 
@@ -2037,10 +2063,10 @@ Get organizational unit view entities.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.OrganizationalUnitView.id | String | The Organizational Unit ID. | 
-| CheckPointDome9.OrganizationalUnitView.name | String | The Organizational Unit name. | 
-| CheckPointDome9.OrganizationalUnitView.path | String | The Organizational Unit path. | 
-| CheckPointDome9.OrganizationalUnitView.children | String | The Organizational Unit children. | 
+| CheckPointDome9.OrganizationalUnitView.id | String | The organizational unit ID. |
+| CheckPointDome9.OrganizationalUnitView.name | String | The organizational unit name. |
+| CheckPointDome9.OrganizationalUnitView.path | String | The organizational unit path. |
+| CheckPointDome9.OrganizationalUnitView.children | String | The organizational unit children. |
 
 #### Command example
 ```!dome9-organizational-unit-view-get```
@@ -2065,10 +2091,9 @@ Get organizational unit view entities.
 >|---|---|---|---|
 >|  | id | name | name |
 
-
 ### dome9-organizational-unit-flat-get
 ***
-Get all organizational units flat.
+Get flat organizational units.
 
 
 #### Base Command
@@ -2078,7 +2103,7 @@ Get all organizational units flat.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 
@@ -2087,10 +2112,11 @@ Get all organizational units flat.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.OrganizationalUnitFlat.id | String | The Organizational Unit ID. | 
-| CheckPointDome9.OrganizationalUnitFlat.name | String | The Organizational Unit name. | 
-| CheckPointDome9.OrganizationalUnitFlat.path | String | The Organizational Unit path. | 
-| CheckPointDome9.OrganizationalUnitFlat.parentId | String | The Organizational Unit parent ID. | 
+| CheckPointDome9.OrganizationalUnitFlat.id | String | The organizational unit ID. |
+| CheckPointDome9.OrganizationalUnitFlat.name | String | The organizational unit name. |
+| CheckPointDome9.OrganizationalUnitFlat.path | String | The organizational unit path. |
+| CheckPointDome9.OrganizationalUnitFlat.parentId | String | The organizational unit parent ID. |
+
 
 #### Command example
 ```!dome9-organizational-unit-flat-get```
@@ -2099,8 +2125,6 @@ Get all organizational units flat.
 >### Organizational Unit Flat
 >Showing 0 rows out of 0.
 >**No entries.**
-
-
 ### dome9-organizational-unit-get
 ***
 Get an organizational unit by its ID.
@@ -2113,7 +2137,7 @@ Get an organizational unit by its ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 | unit_id | The organizational unit ID. | Optional | 
@@ -2123,10 +2147,10 @@ Get an organizational unit by its ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.OrganizationalUnit.id | String | The Organizational Unit ID. | 
-| CheckPointDome9.OrganizationalUnit.name | String | The Organizational Unit name. | 
-| CheckPointDome9.OrganizationalUnit.path | String | The Organizational Unit path. | 
-| CheckPointDome9.OrganizationalUnit.parentId | String | The Organizational Unit parent ID. | 
+| CheckPointDome9.OrganizationalUnit.id | String | The organizational unit ID. |
+| CheckPointDome9.OrganizationalUnit.name | String | The organizational unit name. |
+| CheckPointDome9.OrganizationalUnit.path | String | The organizational unit path. |
+| CheckPointDome9.OrganizationalUnit.parentId | String | The organizational unit parent ID. |
 
 #### Command example
 ```!dome9-organizational-unit-get```
@@ -2172,7 +2196,6 @@ Get an organizational unit by its ID.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | date | 0 | 0 | id | true | true | 0 | 0 | name |  |  |  | 0 | 0 | 0 | date |
 
-
 ### dome9-findings-get
 ***
 Get a findings by its ID.
@@ -2192,13 +2215,14 @@ Get a findings by its ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.Finding.id | String | The Findings ID. | 
-| CheckPointDome9.Finding.bundleId | String | The Findings bundle ID. | 
-| CheckPointDome9.Finding.severity | String | The Findings severity. | 
-| CheckPointDome9.Finding.description | String | The Findings description. | 
-| CheckPointDome9.Finding.remediation | String | The Findings remediation. | 
-| CheckPointDome9.Finding.region | String | The Findings region. | 
-| CheckPointDome9.Finding.cloudAccountId | String | The Findings cloud Account ID. | 
+| CheckPointDome9.Finding.id | String | The findings ID. |
+| CheckPointDome9.Finding.bundleId | String | The findings bundle ID. |
+| CheckPointDome9.Finding.severity | String | The findings severity. |
+| CheckPointDome9.Finding.description | String | The findings description. |
+| CheckPointDome9.Finding.remediation | String | The findings remediation. |
+| CheckPointDome9.Finding.region | String | The findings region. |
+| CheckPointDome9.Finding.cloudAccountId | String | The findings cloud account ID. |
+
 
 #### Command example
 ```!dome9-findings-get finding_id=finding_id```
@@ -2260,7 +2284,6 @@ Get a findings by its ID.
 #### Human Readable Output
 
 >Finding
-
 ### dome9-findings-bundle-get
 ***
 Get the findings for a specific rule in a bundle, for all of the user's accounts.
@@ -2273,24 +2296,23 @@ Get the findings for a specific rule in a bundle, for all of the user's accounts
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. min value: 1. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
 | page_size | Number of items per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| bundle_id | The bundle ID. Use the dome9-compliance-ruleset-list command to get bundle ID list. | Required | 
-| rule_logic_hash | MD5 hash of the rule GSL string. Use compliance-ruleset-rule-list command to fetch logic hash. | Required | 
+| bundle_id | The bundle ID. Use the dome9-compliance-ruleset-list command to get the bundle ID list. | Required |
+| rule_logic_hash | MD5 hash of the rule GSL string. Use the compliance-ruleset-rule-list command to fetch the logic hash. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointDome9.FindingsBundle.id | String | The Cloud Trail ID. | 
-| CheckPointDome9.FindingsBundle.severity | String | The Cloud Trail name. | 
+| CheckPointDome9.FindingsBundle.id | String | The CloudTrail ID. |
+| CheckPointDome9.FindingsBundle.severity | String | The CloudTrail name. |
 | CheckPointDome9.FindingsBundle.remediation | String | The Cloud Trail ARN. | 
-| CheckPointDome9.FindingsBundle.accountId | String | The Cloud Trail account ID. | 
-| CheckPointDome9.FindingsBundle.description | String | The Cloud Trail ARN. | 
-| CheckPointDome9.FindingsBundle.region | String | The Cloud Trail account ID. | 
-
+| CheckPointDome9.FindingsBundle.accountId | String | The CloudTrail account ID. |
+| CheckPointDome9.FindingsBundle.description | String | The CloudTrail ARN. |
+| CheckPointDome9.FindingsBundle.region | String | The CloudTrail account ID. |
 #### Command example
 ```!dome9-findings-bundle-get bundle_id=bundle_id rule_logic_hash=ruleLogicHash```
 #### Human Readable Output
