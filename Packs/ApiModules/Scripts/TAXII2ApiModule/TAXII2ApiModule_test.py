@@ -186,13 +186,13 @@ class TestInitServer:
 
     def test_default_v20(self):
         """
-        Scenario: Intialize server with the default option
+        Scenario: Initialize server with the default option
 
         Given:
         - no version is provided to init_server
 
         Then:
-        - initalize with v20.Server
+        - initialize with v20.Server
         """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
         mock_client.init_server()
@@ -200,13 +200,13 @@ class TestInitServer:
 
     def test_v21(self):
         """
-        Scenario: Intialize server with v21
+        Scenario: Initialize server with v21
 
         Given:
         - v21 version is provided to init_server
 
         Then:
-        - initalize with v21.Server
+        - initialize with v21.Server
         """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
         mock_client.init_server(TAXII_VER_2_1)
@@ -214,7 +214,7 @@ class TestInitServer:
 
     def test_auth_key(self):
         """
-        Scenario: Intialize server with the default option with an auth key
+        Scenario: Initialize server with the default option with an auth key
 
         Given:
         - no version is provided to init_server
@@ -239,6 +239,153 @@ class TestInitServer:
         assert isinstance(mock_client.server, v20.Server)
         assert mock_auth_header_key in mock_client.server._conn.session.headers[0]
         assert mock_client.server._conn.session.headers[0].get(mock_auth_header_key) == mock_password
+
+
+class TestInitRoots:
+    """
+    Scenario: Initialize roots
+    """
+
+    api_root_urls = [
+        "https://ais2.cisa.dhs.gov/public/",
+        "https://ais2.cisa.dhs.gov/default/",
+        "https://ais2.cisa.dhs.gov/ingest/",
+        "https://ais2.cisa.dhs.gov/ciscp/",
+        "https://ais2.cisa.dhs.gov/federal/"
+    ]
+    default_api_root_url = "https://ais2.cisa.dhs.gov/default/"
+
+    def test_given_default_api_root_v20(self):
+        """
+        Given:
+        - default_api_root is given
+
+        When:
+        - Initializing roots in v20
+
+        Then:
+        - api_root is initialized with the given default_api_root
+        """
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+                                       verify=False, objects_to_fetch=[], default_api_root='federal')
+        mock_client.init_server()
+        self._title = ""
+        mock_client.server._api_roots = [v20.ApiRoot(url) for url in self.api_root_urls]
+        mock_client.server._default = v20.ApiRoot(self.default_api_root_url)
+        mock_client.server._loaded = True
+
+        mock_client.init_roots()
+        assert mock_client.api_root.url == "https://ais2.cisa.dhs.gov/federal/"
+
+    def test_no_default_api_root_v20(self):
+        """
+        Given:
+        - default_api_root is not given, and there is no defined default api_root for the server
+
+        When:
+        - Initializing roots in v20
+
+        Then:
+        - api_root is initialized with the first api_root
+        """
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+                                       verify=False, objects_to_fetch=[], default_api_root=None)
+        mock_client.init_server()
+        self._title = ""
+        mock_client.server._api_roots = [v20.ApiRoot(url) for url in self.api_root_urls]
+        mock_client.server._default = False
+        mock_client.server._loaded = True
+
+        mock_client.init_roots()
+        assert mock_client.api_root.url == "https://ais2.cisa.dhs.gov/public/"
+
+    def test_no_given_default_api_root_v20(self):
+        """
+        Given:
+        - default_api_root is not given
+
+        When:
+        - Initializing roots in v20
+
+        Then:
+        - api_root is initialized with the server defined default api_root
+        """
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+                                       verify=False, objects_to_fetch=[], default_api_root=None)
+        mock_client.init_server()
+        self._title = ""
+        mock_client.server._api_roots = [v20.ApiRoot(url) for url in self.api_root_urls]
+        mock_client.server._default = v20.ApiRoot(self.default_api_root_url)
+        mock_client.server._loaded = True
+
+        mock_client.init_roots()
+        assert mock_client.api_root.url == self.default_api_root_url
+
+    def test_given_default_api_root_v21(self):
+        """
+        Given:
+        - default_api_root is given
+
+        When:
+        - Initializing roots in v21
+
+        Then:
+        - api_root is initialized with the given default_api_root
+        """
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+                                       verify=False, objects_to_fetch=[], default_api_root='federal')
+        mock_client.init_server(TAXII_VER_2_1)
+        self._title = ""
+        mock_client.server._api_roots = [v21.ApiRoot(url) for url in self.api_root_urls]
+        mock_client.server._default = v21.ApiRoot(self.default_api_root_url)
+        mock_client.server._loaded = True
+
+        mock_client.init_roots()
+        assert mock_client.api_root.url == "https://ais2.cisa.dhs.gov/federal/"
+
+    def test_no_default_api_root_v21(self):
+        """
+        Given:
+        - default_api_root is not given, and there is no defined default api_root for the server
+
+        When:
+        - Initializing roots in v21
+
+        Then:
+        - api_root is initialized with the first api_root
+        """
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+                                       verify=False, objects_to_fetch=[], default_api_root=None)
+        mock_client.init_server(TAXII_VER_2_1)
+        self._title = ""
+        mock_client.server._api_roots = [v21.ApiRoot(url) for url in self.api_root_urls]
+        mock_client.server._default = False
+        mock_client.server._loaded = True
+
+        mock_client.init_roots()
+        assert mock_client.api_root.url == "https://ais2.cisa.dhs.gov/public/"
+
+    def test_no_given_default_api_root_v21(self):
+        """
+        Given:
+        - default_api_root is not given
+
+        When:
+        - Initializing roots in v21
+
+        Then:
+        - api_root is initialized with the server defined default api_root
+        """
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+                                       verify=False, objects_to_fetch=[], default_api_root=None)
+        mock_client.init_server(TAXII_VER_2_1)
+        self._title = ""
+        mock_client.server._api_roots = [v21.ApiRoot(url) for url in self.api_root_urls]
+        mock_client.server._default = v21.ApiRoot(self.default_api_root_url)
+        mock_client.server._loaded = True
+
+        mock_client.init_roots()
+        assert mock_client.api_root.url == self.default_api_root_url
 
 
 class TestFetchingStixObjects:
