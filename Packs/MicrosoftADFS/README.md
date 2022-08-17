@@ -13,7 +13,7 @@ In either option, you will need to configure the vendor and product for this spe
 You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
 
 You can configure the vendor and product by replacing [vendor]\_[product]\_raw with msft_adfs_raw
-When configuring an XDR collector profile, you should use a yml that will be used, among other things, to configure the vendor 
+When configuring an XDR collector profile, you should use a yml that will be used, among other things, to configure the vendor
 and product. This example demonstrates how to set the configuration file:
 
 ```
@@ -22,7 +22,7 @@ winlogbeat.event_logs:
     event_id: 510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207
 
   - name: AD FS/Admin
-  
+
   processors:
     - add_fields:
         fields:
