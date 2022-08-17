@@ -50,6 +50,14 @@ class IdSetItem(DictBased):
     def implementing_playbooks(self) -> tuple[str, ...]:
         return tuple(self.get('implementing_playbooks', (), warn_if_missing=False))
 
+    @property
+    def implementing_integrations(self) -> tuple[str, ...]:
+        result = set()
+        # command_to_integrations is {command: [integration, ...]}
+        for command, integrations in self.get('command_to_integration', {}, warn_if_missing=False).items():
+            result.update(integrations)
+        return tuple(sorted(result))
+
 
 class IdSet(DictFileBased):
     """

@@ -134,6 +134,13 @@ class CollectionResult:
                     raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
                     raise SkippedTestException(test, skip_place='.pack_ignore')
+                for integration in test_playbook.integrations:
+                    if reason := conf.skipped_integrations.get(integration):
+                        raise SkippedTestException(
+                            test,
+                            'conf.json (integrations)',
+                            skip_reason=f'{test=} uses {integration=}, which is skipped with {reason=}'
+                        )
 
             if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
                 raise SkippedTestException(test, skip_place='conf.json', skip_reason=skip_reason)
