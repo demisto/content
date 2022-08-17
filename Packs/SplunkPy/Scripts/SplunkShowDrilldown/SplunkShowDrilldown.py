@@ -29,5 +29,3 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
         return_results(main())
     except Exception as e:
         return_error(f'Got an error while parsing Splunk events: {e}', error=e)
-
-register_module_line('SplunkShowDrilldown', 'end', __line__())
