@@ -163,10 +163,7 @@ def complete_auth(client: AKSClient) -> str:
 
 
 def test_connection(client: AKSClient) -> str:
-    if demisto.params().get('auth_type') == 'Device Code':
-        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
-    else:
-        client.clusters_list_request()  # If fails, MicrosoftApiModule returns an error
+    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return '✅ Success!'
 
 
