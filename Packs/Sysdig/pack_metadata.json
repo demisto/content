@@ -1,0 +1,21 @@
+{
+    "name": "Sysdig",
+    "description": "This is a core integration for Sysdig Container security functions.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jim Garrisi",
+    "url": "",
+    "email": "",
+    "created": "2022-08-17T20:10:41Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "jmgarrisi"
+    ]
+}

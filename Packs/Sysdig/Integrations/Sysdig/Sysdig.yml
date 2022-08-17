@@ -1,0 +1,138 @@
+category: Utilities
+commonfields:
+  id: Sysdig
+  version: -1
+configuration:
+- defaultvalue: https://us2.app.sysdig.com/
+  display: Server URL (e.g., https://us2.app.sysdig.com)
+  name: url
+  required: true
+  type: 0
+- display: Sysdig Monitor API Key
+  name: monitorkey
+  required: true
+  type: 4
+- display: Sysdig Secure API Key
+  name: securekey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Security for containers, Kubernetes, and cloud.
+display: Sysdig
+name: Sysdig
+script:
+  commands:
+  - arguments: []
+    description: Returns existing alerts
+    name: sysdig-get-alerts
+  - arguments: []
+    description: Returns current metrics
+    name: sysdig-get-metrics
+  - arguments: []
+    description: Lists sysdig users
+    name: sysdig-get-users
+  - arguments:
+    - defaultValue: "86400"
+      description: Duration in seconds
+      name: duration
+    - defaultValue: "100"
+      description: Number of hosts to return
+      name: count
+    - auto: PREDEFINED
+      defaultValue: "no"
+      description: Set to 'yes' to return raw json results
+      name: print_json
+      predefined:
+      - "yes"
+      - "no"
+    description: Lists container hosts
+    name: sysdig-list-hosts
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: All
+      description: Name of container event
+      name: eventName
+      predefined:
+      - All
+      - Container out of memory
+      - Container died
+      - Container Killed
+      - Back Off Container Start or Image Pull
+      - Container Unhealthy
+      - Free Disk Space Failed
+      - FailedScheduling
+      - Killing Container
+      - Pod Deleted
+      - Scaling Replica Set
+      - Pod Created
+      - Container Image Pull
+      - Create or Start Failed
+      - Pod Create Failed
+      - Updated load balancer with new hosts
+      - Error updating load balancer with new hosts
+      - Node Ready
+      - Node Registered
+      - Starting Kubelet
+      - Removing Node
+      - Deleting Node
+      - Node not Ready
+      - Node Rebooted
+    - defaultValue: "100"
+      description: Max number of results to return
+      name: limit
+    description: List container events
+    name: sysdig-get-events
+  - arguments: []
+    description: List sysdig policies
+    name: sysdig-list-policies
+    outputs:
+    - contextPath: Policies.Description
+      description: Description
+      type: string
+    - contextPath: Policies.Name
+      description: Name of policy
+      type: string
+  - arguments:
+    - defaultValue: "100"
+      description: Max number of vulnerabilities to return.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: all
+      description: Type of workload to query for vulnerabilities
+      name: workloadType
+      predefined:
+      - all
+      - daemonset
+      - deployment
+      - statefulset
+      - pod
+      - replicaset
+    - auto: PREDEFINED
+      defaultValue: "no"
+      description: Return csv output
+      name: csv
+      predefined:
+      - "yes"
+      - "no"
+    description: List container vulnerabilities
+    name: sysdig-list-vulnerabilities
+  - arguments:
+    - description: ID of container image to query (results from sysdig-list-policies)
+      name: resultId
+      required: true
+    - defaultValue: "20"
+      description: Number of results to return
+      name: limit
+    description: List individual vulnerabilities by container or pod
+    name: sysdig-list-vulns-by-container
+  dockerimage: demisto/sysdig:1.0
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
