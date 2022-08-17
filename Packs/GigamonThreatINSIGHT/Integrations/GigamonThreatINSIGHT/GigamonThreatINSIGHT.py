@@ -494,10 +494,16 @@ def commandGetEventsHistory(eventClient: EventClient):
 
     result: Dict[str, Any] = eventClient.getHistory()
 
+    prefix = 'Insight.UserQueryHistory'
+    key = 'history'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.UserQueryHistory',
-        outputs_key_field='history',
-        outputs=result.get('history')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -508,10 +514,16 @@ def commandGetEventsSavedSearches(eventClient: EventClient):
 
     result: Dict[str, Any] = eventClient.getSavedSearches()
 
+    prefix = 'Insight.SavedSearches'
+    key = 'saved_queries'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.SavedSearches',
-        outputs_key_field='saved_queries',
-        outputs=result.get('saved_queries')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -530,8 +542,8 @@ def commandGetEvents(eventClient: EventClient, args):
             response_type = args['response_type']
         args.pop('response_type')
 
-    keyField = 'data' if (response_type in
-                          ("metadata", "aggregations")) else 'events'
+    key = 'data' if (response_type in
+                     ("metadata", "aggregations")) else 'events'
 
     # If the response_type is aggregation, check that a group by
     # statement is included in the query
@@ -546,10 +558,15 @@ def commandGetEvents(eventClient: EventClient, args):
     result: Dict[str, Any] = eventClient.getEvents(encodeArgsToURL(args))
     formatEvents(result, response_type)
 
+    prefix = 'Insight.Events'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Events',
-        outputs_key_field=keyField,
-        outputs=result.get(keyField)
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -563,10 +580,16 @@ def commandGetSensors(sensorClient: SensorClient):
 
     result: Dict[str, Any] = sensorClient.getSensors()
 
+    prefix = 'Insight.Sensors'
+    key = 'sensors'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Sensors',
-        outputs_key_field='sensors',
-        outputs=result.get('sensors')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -577,10 +600,16 @@ def commandGetDevices(sensorClient: SensorClient):
 
     result: Dict[str, Any] = sensorClient.getDevices()
 
+    prefix = 'Insight.Devices'
+    key = 'device_list'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Devices',
-        outputs_key_field='device_list',
-        outputs=result.get('device_list')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -590,14 +619,18 @@ def commandGetTasks(sensorClient: SensorClient, args):
     demisto.debug('commandGetTasks has been called.')
 
     taskid: str = args['task_uuid'] if 'task_uuid' in args else ''
-    keyField = 'pcap_task' if taskid != '' else 'pcaptasks'
-
     result: Dict[str, Any] = sensorClient.getTasks(taskid)
 
+    prefix = 'Insight.Tasks'
+    key = 'pcap_task' if taskid != '' else 'pcaptasks'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Tasks',
-        outputs_key_field=keyField,
-        outputs=result.get(keyField)
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -628,10 +661,16 @@ def commandGetTelemetry(sensorClient: SensorClient, telemetry: str, args):
 
     result: Dict[str, Any] = sensorClient.getTelemetry(telemetry, args)
 
+    prefix = 'Insight.Telemetry.' + telemetry
+    key = 'data'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Telemetry.' + telemetry,
-        outputs_key_field='data',
-        outputs=result.get('data')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -645,10 +684,16 @@ def commandGetEntitySummary(entityClient: EntityClient, entity: str):
 
     result: Dict[str, Any] = entityClient.getEntitySummary(entity)
 
+    prefix = 'Insight.Entity.Summary'
+    key = 'summary'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Entity.Summary',
-        outputs_key_field='summary',
-        outputs=result.get('summary')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -659,10 +704,16 @@ def commandGetEntityPdns(entityClient: EntityClient, entity: str):
 
     result: Dict[str, Any] = entityClient.getEntityPdns(entity)
 
+    prefix = 'Insight.Entity.PDNS'
+    key = 'pasivedns'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Entity.PDNS',
-        outputs_key_field='pasivedns',
-        outputs=result.get('pasivedns')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -673,10 +724,16 @@ def commandGetEntityDhcp(entityClient: EntityClient, entity: str):
 
     result: Dict[str, Any] = entityClient.getEntityDhcp(entity)
 
+    prefix = 'Insight.Entity.DHCP'
+    key = 'dhcp'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Entity.DHCP',
-        outputs_key_field='dhcp',
-        outputs=result.get('dhcp')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -687,10 +744,16 @@ def commandGetEntityFile(entityClient: EntityClient, hash: str):
 
     result: Dict[str, Any] = entityClient.getEntityFile(hash)
 
+    prefix = 'Insight.Entity.File'
+    key = 'file'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Entity.File',
-        outputs_key_field='file',
-        outputs=result.get('file')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -832,10 +895,16 @@ def commandGetDetections(detectionClient: DetectionClient, args):
     if 'include' in args and args['include'] == 'rules':
         result = addDetectionRules(result)
 
+    prefix = 'Insight.Detections'
+    key = 'detections'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Detections',
-        outputs_key_field='detections',
-        outputs=result.get('detections')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -848,10 +917,16 @@ def commandGetDetectionRules(detectionClient: DetectionClient, args):
         encodeArgsToURL(args)
     )
 
+    prefix = 'Insight.Rules'
+    key = 'rules'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Rules',
-        outputs_key_field='rules',
-        outputs=result.get('rules')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -867,10 +942,16 @@ def commandGetDetectionRuleEvents(detectionClient: DetectionClient, args):
         rule_uuid, encodeArgsToURL(args)
     )
 
+    prefix = 'Insight.Detections'
+    key = 'events'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
     return CommandResults(
-        outputs_prefix='Insight.Detections',
-        outputs_key_field='events',
-        outputs=result.get('events')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
