@@ -62,6 +62,13 @@ configuration:
   name: mirror_tag
   required: false
   type: 0
+- additionalinfo: Comma separated incident fields to copy from remote incident, 'all' to copy all incident fields or leave empty to copy default incident fields.
+  defaultvalue: ""
+  display: Custom Fields to Mirror
+  hidden: false
+  name: custom_mirroring_fields
+  required: false
+  type: 0
 - defaultvalue: Incoming And Outgoing
   display: Incident Mirroring Direction
   name: mirror_direction
