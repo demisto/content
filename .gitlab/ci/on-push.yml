@@ -257,8 +257,12 @@ prepare-testing-bucket-mpv2:
       fi
 
     # TODO Uncomment, so it runs all tests in the Tests/integration_tests directory
-    # - python3 -m pytest Tests/integration_tests/
-    - python3 -m pytest Tests/integration_tests/test_e2e_demisto_sdk_flow_foo.py || EXIT_CODE=$?
+    # - python3 -m pytest Tests/integration_tests/ || EXIT_CODE=$?
+    - |
+      export INSTANCE_DNS=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].InstanceDNS")
+      export TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL=http://"$INSTANCE_DNS":"$TUNNEL_PORT"
+      python3 -m pytest Tests/integration_tests/test_e2e_demisto_sdk_flow_foo.py || EXIT_CODE=$?
 
     - |
       if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
