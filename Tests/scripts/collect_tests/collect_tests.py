@@ -481,7 +481,7 @@ class BranchTestCollector(TestCollector):
             contrib_diff = run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
             logger.info(f'contribution branch, contribution diff:\n{contrib_diff}')
 
-        diff_command = f'git diff --name-status {current_commit}...{previous_commit}'
+        diff_command = f'git diff --name-status {previous_commit}...{current_commit}'
         logger.debug(f'running {diff_command}')
 
         diff: str = run_command(diff_command)
