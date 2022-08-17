@@ -1,4 +1,3 @@
-import base64
 import uuid
 from string import Template
 from bottle import request, route, run
