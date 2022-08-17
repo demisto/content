@@ -1,6 +1,5 @@
 Search for and analyze data in real time. 
  Supports version 6 and later.
-This integration was integrated and tested with version xx of Elasticsearch v2
 
 ## Permissions
 
