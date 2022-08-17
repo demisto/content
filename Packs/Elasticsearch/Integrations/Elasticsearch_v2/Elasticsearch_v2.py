@@ -649,14 +649,15 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
         dictionary (Ex. {"range":{'gt': 1000 'lt':1001}})
     """
     range_dict = {}
-    if not last_fetch:  # this is the first fetch
+    if not last_fetch and time_range_start:  # this is the first fetch
         start_date = dateparser.parse(time_range_start)
 
         start_time = convert_date_to_timestamp(start_date)
     else:
         start_time = last_fetch
 
-    range_dict['gt'] = start_time
+    if start_time:
+        range_dict['gt'] = start_time
 
     if time_range_end:
         end_date = dateparser.parse(time_range_end)
