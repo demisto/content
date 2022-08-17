@@ -20,7 +20,6 @@ from exceptions import (DeprecatedPackException, InvalidTestException,
                         PrivateTestException, SkippedPackException,
                         SkippedTestException, TestMissingFromIdSetException,
                         UnsupportedPackException)
-from git import Repo
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
@@ -688,7 +687,7 @@ if __name__ == '__main__':
     else:
         match (args.nightly, marketplace):
             case False, _:  # not nightly
-                branch_name = Repo(PATHS.content_path).active_branch.name
+                branch_name = PATHS.content_repo.active_branch.name
                 collector = BranchTestCollector(branch_name, marketplace, args.service_account)
             case True, MarketplaceVersions.XSOAR:
                 collector = XSOARNightlyTestCollector()
