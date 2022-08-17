@@ -2340,4 +2340,4 @@ def test_gcc_resource(mocker, is_gcc: bool):
         m.get('https://example.com')
         client.indicators_http_request('https://example.com', should_use_security_center=True)
         assert req.call_args[1]['resource'] == {True: SECURITY_CENTER_RESOURCE_BASE_GCC,
-                                              False: SECURITY_CENTER_RESOURCE_BASE_COMMERCIAL}[is_gcc]
+                                                False: SECURITY_CENTER_RESOURCE_BASE_COMMERCIAL}[is_gcc]
