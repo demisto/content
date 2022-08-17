@@ -6944,10 +6944,13 @@ def return_error(message, error='', outputs=None):
         :rtype: ``dict``
     """
     is_command = hasattr(demisto, 'command')
-    is_server_handled = is_command and demisto.command() in ('fetch-incidents',
-                                                             'fetch-credentials',
-                                                             'long-running-execution',
-                                                             'fetch-indicators')
+    try:
+        is_server_handled = is_command and demisto.command() in ('fetch-incidents',
+                                                                 'fetch-credentials',
+                                                                 'long-running-execution',
+                                                                 'fetch-indicators')
+    except Exception:
+        is_server_handled = False
     message = LOG(message)
     if error:
         LOG(str(error))
@@ -7072,7 +7075,7 @@ class ExecutionMetrics(object):
 
     @staticmethod
     def is_supported():
-        if is_demisto_version_ge('7.0.0'):
+        if is_demisto_version_ge('6.8.0'):
             return True
         return False
 
@@ -7169,6 +7172,24 @@ class ExecutionMetrics(object):
                 else:
                     self._metrics.append({'Type': metric_type, 'APICallsCount': metric_value})
             self.metrics = CommandResults(execution_metrics=self._metrics)
+
+
+def append_metrics(execution_metrics, results):
+    """
+    Returns a 'CommandResults' list appended with metrics.
+
+    :type execution_metrics: ``ExecutionMetrics``
+    :param execution_metrics: Metrics object to be added to CommandResults list(optional).
+
+    :type results: ``list``
+    :param results: 'CommandResults' list to append metrics to (required).
+
+    :return: results appended with the metrics if the server version is supported.
+    :rtype: ``list``
+    """
+    if execution_metrics.metrics is not None and execution_metrics.is_supported():
+        results.append(execution_metrics.metrics)
+    return results
 
 
 class CommandRunner:
@@ -8059,6 +8080,11 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
             # found timezone - appending it to the date format
             date_format += time_zone[0]
 
+        # Make the fractions shorter less than 6 charactors
+        # e.g. '2022-01-23T12:34:56.123456789+09:00' to '2022-01-23T12:34:56.123456+09:00'
+        #      '2022-01-23T12:34:56.123456789' to '2022-01-23T12:34:56.123456'
+        date_string = re.sub(r'([0-9]+\.[0-9]{6})[0-9]*([Zz]|[+-]\S+?)?', '\\1\\2', date_string)
+
         return datetime.strptime(date_string, date_format)
 
 
@@ -8218,17 +8244,17 @@ if 'requests' in sys.modules:
         :type proxy: ``bool``
         :param proxy: Whether to run the integration using the system proxy.
 
-        :type ok_codes: ``tuple``
+        :type ok_codes: ``tuple`` or ``None``
         :param ok_codes:
             The request codes to accept as OK, for example: (200, 201, 204).
-            If you specify "None", will use requests.Response.ok
+            Will use requests.Response.ok if set to None.
 
-        :type headers: ``dict``
+        :type headers: ``dict`` or ``None``
         :param headers:
             The request headers, for example: {'Accept`: `application/json`}.
             Can be None.
 
-        :type auth: ``dict`` or ``tuple``
+        :type auth: ``dict`` or ``tuple`` or ``None``
         :param auth:
             The request authorization, for example: (username, password).
             Can be None.
