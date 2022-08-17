@@ -9,7 +9,7 @@ import copy
 import types
 import urllib3
 from taxii2client import v20, v21
-from taxii2client.common import TokenAuth, _HTTPConnection, _to_json, _filter_kwargs_to_query_params
+from taxii2client.common import TokenAuth, _HTTPConnection
 import tempfile
 
 # disable insecure warnings
@@ -19,7 +19,7 @@ urllib3.disable_warnings()
 TAXII_VER_2_0 = "2.0"
 TAXII_VER_2_1 = "2.1"
 
-DFLT_LIMIT_PER_REQUEST = 3000
+DFLT_LIMIT_PER_REQUEST = 100
 API_USERNAME = "_api_token_key"
 HEADER_USERNAME = "_header:"
 
@@ -200,7 +200,6 @@ class Taxii2FeedClient:
         Initializes a server in the requested version
         :param version: taxii version key (either 2.0 or 2.1)
         """
-        demisto.debug('In init_server')
         server_url = urljoin(self.base_url)
         self._conn = _HTTPConnection(
             verify=self.verify, proxies=self.proxies, version=version, auth=self.auth, cert=self.crt
@@ -227,7 +226,6 @@ class Taxii2FeedClient:
         """
         Initializes the api roots (used to get taxii server objects)
         """
-        demisto.debug('In init_roots')
         if not self.server:
             self.init_server()
         try:
@@ -249,8 +247,6 @@ class Taxii2FeedClient:
     def set_api_root(self):
         roots_to_api = {str(api_root.url).split('/')[-2]: api_root
                         for api_root in self.server.api_roots}  # type: ignore[union-attr, attr-defined]
-        demisto.debug(f'In set_api_root start: {roots_to_api=} and {self.server.api_roots=}, '  # type: ignore[attr-defined]
-                      f'where {self.default_api_root=} and {self.server.default=}')  # type: ignore[attr-defined]
 
         if self.default_api_root:
             if not roots_to_api.get(self.default_api_root):
@@ -264,7 +260,6 @@ class Taxii2FeedClient:
         else:
             self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
 
-        demisto.debug(f'In set_api_root end: {self.api_root=}')
         # override _conn - api_root isn't initialized with the right _conn
         self.api_root._conn = self._conn  # type: ignore[union-attr, attr-defined]
 
@@ -272,15 +267,12 @@ class Taxii2FeedClient:
         """
         Collects available taxii collections
         """
-        demisto.debug('In init_collections')
         self.collections = [x for x in self.api_root.collections]  # type: ignore[union-attr, attr-defined, assignment]
-        demisto.debug(f'In init_collections end, {self.collections=}')
 
     def init_collection_to_fetch(self, collection_to_fetch=None):
         """
         Tries to initialize `collection_to_fetch` if possible
         """
-        demisto.debug('In init_collection_to_fetch')
         if collection_to_fetch is None and isinstance(self.collection_to_fetch, str):
             # self.collection_to_fetch will be changed from str -> Union[v20.Collection, v21.Collection]
             collection_to_fetch = self.collection_to_fetch
@@ -298,7 +290,6 @@ class Taxii2FeedClient:
                     "Could not find the provided Collection name in the available collections. "
                     "Please make sure you entered the name correctly."
                 )
-        demisto.debug(f'In init_collection_to_fetch end, {self.collection_to_fetch=}')
 
     def initialise(self):
         self.init_server()
@@ -787,7 +778,6 @@ class Taxii2FeedClient:
         if page_size <= 0:
             return []
         envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
-        demisto.debug('before load_stix_objects_from_envelope')
         indicators = self.load_stix_objects_from_envelope(envelopes, limit)
 
         return indicators
@@ -852,7 +842,6 @@ class Taxii2FeedClient:
 
     def parse_dict_envelope(self, envelopes: Dict[str, Any],
                             parse_objects_func, limit: int = -1):
-        demisto.debug('In parse_dict_envelope')
         indicators = []
         relationships_list: List[Dict[str, Any]] = []
         for obj_type, envelope in envelopes.items():
@@ -872,14 +861,11 @@ class Taxii2FeedClient:
             else:
                 relationships_list.extend(stix_objects)
 
-            i = 1
             while envelope.get("more", False):
                 page_size = self.get_page_size(limit, cur_limit)
                 envelope = self.collection_to_fetch.get_objects(
                     limit=page_size, next=envelope.get("next", ""), type=obj_type
                 )
-                demisto.debug(f'After calling self.collection_to_fetch.get_objects the {i} time')
-                i += 1
                 if isinstance(envelope, Dict):
                     stix_objects = envelope.get("objects")
                     if obj_type != "relationship":
@@ -899,7 +885,6 @@ class Taxii2FeedClient:
                     )
         if relationships_list:
             indicators.extend(self.parse_relationships(relationships_list))
-        demisto.debug('In parse_dict_envelope end')
         return indicators
 
     def poll_collection(
@@ -909,49 +894,19 @@ class Taxii2FeedClient:
         Polls a taxii collection
         :param page_size: size of the request page
         """
-        demisto.debug('In poll_collection')
         types_envelopes = {}
         get_objects = self.collection_to_fetch.get_objects
         if len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
-            self.objects_to_fetch.append('relationship')  # todo holds ALL the values of the other objects with no errors
+            self.objects_to_fetch.append('relationship')
         for obj_type in self.objects_to_fetch:
-            demisto.info(f'{obj_type=}')
             kwargs['type'] = obj_type
             if isinstance(self.collection_to_fetch, v20.Collection):
-                demisto.debug('In v2.0, calling regular get_objects')
                 envelope = v20.as_pages(get_objects, per_request=page_size, **kwargs)
-                demisto.debug(f'{envelope=}')
             else:
-                demisto.debug('In v2.1, calling v21_get_objects')
-                envelope = self.v21_get_objects(limit=page_size, **kwargs)
+                envelope = get_objects(limit=page_size, **kwargs)
             if envelope:
                 types_envelopes[obj_type] = envelope
         return types_envelopes
-
-    def v21_get_objects(self, accept="application/taxii+json;version=2.1", **filter_kwargs):
-        collection = self.collection_to_fetch
-        demisto.debug(f'{collection=}')
-        collection._verify_can_read()
-        query_params = _filter_kwargs_to_query_params(filter_kwargs)
-        demisto.debug(f'{query_params=}')
-        merged_headers = collection._conn._merge_headers({"Accept": accept, "Content-Type": "application/taxii+json"})
-        demisto.debug(f'{merged_headers=}')
-
-        resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
-        demisto.debug(f'GOT RESPONSE {resp.content=}\n{resp.text=}\n{resp.status_code=}\n{resp.headers=}\n')
-        if len(resp.text) <= 2:  # in case it is not a json that has to have {}
-            return {}
-
-        try:
-            demisto.debug('Setting resp_json to _to_json(resp)')
-            resp_json = _to_json(resp)
-        except Exception as e:
-            demisto.debug(f'When trying _to_json got Exception: {e}')
-            demisto.debug('Setting resp_json to json.loads(resp.content)')
-            resp_json = json.loads(resp.content)
-
-        demisto.debug(f'SUCCESS! {resp_json=}\n\n')
-        return resp_json
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """
