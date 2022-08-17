@@ -13,19 +13,12 @@ configuration:
   required: true
   defaultvalue: https://graphql.app.breachrx.io
   type: 0
-- displaypassword: API Key
-  display: API Key
-  additionalinfo: The API Key to use for connection
-  name: api_key
+- display: API Key
+  displaypassword: Secret Key
+  additionalinfo: The API credentials to use for connection
+  name: credentials
   required: true
-  hiddenusername: true
-  type: 9
-- displaypassword: Secret Key
-  display: Secret Key
-  additionalinfo: The API Key to use for connection
-  name: secret_key
-  required: true
-  hiddenusername: true
+  hiddenusername: false
   type: 9
 - display: Use system proxy settings
   name: proxy

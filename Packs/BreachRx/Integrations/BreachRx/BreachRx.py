@@ -296,8 +296,8 @@ def main() -> None:  # pragma: no cover
     try:
         base_url = demisto.params()["api_url"]
         org_name = demisto.params()["url"].split(".")[0].replace("https://", "")
-        api_key = demisto.params().get("api_key", {}).get("password")
-        secret_key = demisto.params().get("secret_key", {}).get("password")
+        api_key = demisto.params().get("credentials", {}).get("identifier")
+        secret_key = demisto.params().get("credentials", {}).get("password")
         verify = demisto.params().get("insecure", False)
 
         if not is_valid_url(base_url):
