@@ -231,7 +231,7 @@ script:
     description: Associates a device to a user
     execution: false
     name: duoadmin-associate-device-to-user
-  dockerimage: demisto/duoadmin:1.0.0.24033
+  dockerimage: demisto/duoadmin:1.0.0.33011
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -3,7 +3,7 @@ import io
 import json
 import pytest
 from requests.auth import _basic_auth_str
-from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list
+from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list, MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V20
 import demistomock as demisto
 
 HEADERS = {
@@ -512,3 +512,19 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
         assert response.json == objects
+
+
+@pytest.mark.parametrize('header', (MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20))
+def test_taxii21_with_taxii20_header(mocker, taxii2_server_v21, header: str):
+    """
+    Given
+        a TAXII 2.1 server
+    When
+        calling /taxii2/ with TAXII 2.0 header
+    Then
+        validate that an appropriate error is returned
+    """
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    with APP.test_client() as test_client:
+        response = test_client.get('/taxii2/', headers=HEADERS | {'Accept': header})
+        assert response.status_code == 406
