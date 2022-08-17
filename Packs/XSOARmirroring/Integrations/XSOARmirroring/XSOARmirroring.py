@@ -789,7 +789,7 @@ def main() -> None:
             if demisto.params().get('isFetch'):
                 fetch_incidents(
                     client=client,
-                    max_results=max_results,
+                    max_results=1,
                     last_run=demisto.getLastRun(),
                     first_fetch_time=first_fetch_time,
                     query=query,
