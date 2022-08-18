@@ -787,7 +787,46 @@ script:
     - contextPath: Insight.Telemetry.Packetstats.tx_packets
       description: Number of transmit packets
       type: number
-    description: Get network metrics to a given sensor's interfaces
+    description: Get packetstats telemetry data grouped by time.
+  - name: insight-get-telemetry-network
+    arguments:
+    - name: account_code
+      description: 'Account code to filter by.'
+    - name: interval
+      auto: PREDEFINED
+      predefined:
+      - hour
+      - day
+      description: 'The interval to filter by (day, month_to_day).'
+    - name: latest_each_month
+      description: "latest_each_month\tNo\tNo\tFilters out all but the latest day and month_to_date for each month."
+    - name: sort_order
+      description: 'Sorts by account code first, then timestamp. asc or desc. The default is desc.'
+    - name: limit
+      description: 'The maximum number of records to return, default: 100, max: 1000.'
+      defaultValue: '1000'
+    - name: offset
+      description: 'The number of records to skip past. Default: 0.'
+    - name: start_date
+      description: 'Start date to filter by.'
+    - name: end_date
+      description: 'End date to filter by.'
+    outputs:
+    - contextPath: Insight.Telemetry.NetworkUsage.account_code
+      description: The account code for the network usage.
+      type: string
+    - contextPath: Insight.Telemetry.NetworkUsage.percentile_bps
+      description: The top percentile BPS value across sensors.
+      type: long
+    - contextPath: Insight.Telemetry.NetworkUsage.percentile
+      description: Percentile of BPS records to calculate for percentile_bps.
+      type: int
+    - contextPath: Insight.Telemetry.NetworkUsage.interval
+      description: Time span the calculation was performed over (day, month_to_day).
+    - contextPath: Insight.Telemetry.Packetstats.timestamp
+      description: The date the calculation was performed until.
+      type: date
+    description: Get network telemetry data grouped by time
   dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   runonce: false
