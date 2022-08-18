@@ -532,9 +532,9 @@ def test_taxii21_with_taxii20_header(mocker, taxii2_server_v21, header: str):
 
 
 @pytest.mark.parametrize('query,types,expected_response', (
-    ('test', [], 'test'),
-    ('test', ['file'], '(test) and (type:"File")'),
-    ('test', ['file', 'domain'], '(test) and (type:"File" or type:"domain")'),
+    ('my custom query', [], 'my custom query'),
+    ('my custom query', ['file'], '(my custom query) and (type:"File")'),
+    ('my custom query', ['file', 'domain'], '(my custom query) and (type:"File" or type:"domain")'),
 ))
 def test_create_query(query: str, types: list[str], expected_response: str):
     """
