@@ -462,7 +462,7 @@ class BranchTestCollector(TestCollector):
 
     def _get_changed_files(self) -> tuple[str, ...]:
         repo = PATHS.content_repo
-        changed_files = []
+        changed_files: list[str] = []
 
         previous_commit = 'origin/master'
         current_commit = self.branch_name
@@ -476,19 +476,19 @@ class BranchTestCollector(TestCollector):
                 current_commit = 'origin/master'
 
         elif self.branch_name == 'master':
-            previous_commit, current_commit = tuple(repo.iter_commits(max_count=2))
+            current_commit, previous_commit = tuple(repo.iter_commits(max_count=2))
 
         elif os.getenv('CONTRIB_BRANCH'):
             # gets files of unknown status
             contrib_diff: tuple[str, ...] = tuple(filter(lambda f: f.startswith('Packs/'), repo.untracked_files))
-            logger.info(f'contribution branch found, contrib-diff:\n' + '\n'.join(contrib_diff))
+            logger.info('contribution branch found, contrib-diff:\n' + '\n'.join(contrib_diff))
             changed_files.extend(contrib_diff)
 
-        diff = repo.git.diff(previous_commit, current_commit, '--name-status')
+        diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
         logger.debug(f'raw changed files string:\n{diff}')
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
-        for line in filter(None, diff.splitlines()):
+        for line in diff.splitlines():
             try:
                 git_status, file_path = line.split()
             except ValueError:
