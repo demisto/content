@@ -10,9 +10,9 @@ configuration:
   name: api_key
   type: 4
   required: true
-- display: First Fetch Time
+- display: First Fetch Time (Amount of day before current date)
   name: first_fetch
-  defaultvalue: set to 7 days before current date
+  defaultvalue: 7
   type: 0
   required: false
 - display: Fetch incidents
