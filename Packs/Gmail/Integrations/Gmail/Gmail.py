@@ -1097,9 +1097,12 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
-def search_all_mailboxes(receive_only_accounts):
+def search_all_mailboxes(receive_only_accounts, max_results):
     users_next_page_token = None
     service = get_service('admin', 'directory_v1')
+    accounts_counter = 0
+    msg_counter = 0
+    entry_print_goal = max_results
     while True:
         command_args = {
             'maxResults': 100,
@@ -1108,25 +1111,24 @@ def search_all_mailboxes(receive_only_accounts):
         }
 
         result = service.users().list(**command_args).execute()
-        users_count = len(result['users'])
         users_next_page_token = result.get('nextPageToken')
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            accounts_counter = 0
             futures = []
             entries = []
             for user in result['users']:
                 futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
             for future in concurrent.futures.as_completed(futures):
                 accounts_counter += 1
-                entries.append(future.result())
-                if accounts_counter % 100 == 0:
+                entry, num_of_messages = future.result()
+                msg_counter += num_of_messages
+                entries.append(entry)
+                if msg_counter >= entry_print_goal or accounts_counter % 100 == 0:
+                    entry_print_goal = msg_counter + max_results
                     demisto.info(
-                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
-                            int((accounts_counter / users_count) * 100),
+                        'Still searching. Searched {} of total accounts, and found {} results so far'.format(
                             accounts_counter,
-                            users_count,
-                            len(entries)),
+                            msg_counter),
                     )
 
         if receive_only_accounts:
@@ -1181,11 +1183,11 @@ def search_command(mailbox=None):
     # In case the user wants only account list without content.
     if receive_only_accounts:
         if mails:
-            return {'Mailbox': mailbox, 'q': q}
-        return {'Mailbox': None, 'q': q}
+            return {'Mailbox': mailbox, 'q': q}, len(mails)
+        return {'Mailbox': None, 'q': q}, len(mails)
 
     res = emails_to_entry('Search in {}:\nquery: "{}"'.format(mailbox, q), mails, 'full', mailbox)
-    return res
+    return res, len(mails)
 
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
@@ -2193,7 +2195,10 @@ def main():
         else:
             if command == 'gmail-search-all-mailboxes':
                 receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
-                demisto.results(cmd_func(receive_only_accounts))  # type: ignore
+                max_results = arg_to_number(demisto.args().get('max-results', 100))
+                demisto.results(cmd_func(receive_only_accounts, max_results))  # type: ignore
+            if command == 'gmail-search':
+                demisto.results(cmd_func()[0])  # type: ignore
             else:
                 demisto.results(cmd_func())  # type: ignore
 
