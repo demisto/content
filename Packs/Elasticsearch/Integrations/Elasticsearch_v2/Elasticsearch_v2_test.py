@@ -187,6 +187,7 @@ MOCK_ES7_INCIDENTS = str([
                    '"_source": {"Date": "2019-08-27T18:00:00Z"}'
                    '}',
         'occurred': '2019-08-27T18:00:00Z',
+        'dbotMirrorId': '123',
         'labels': [
             {
                 'type': 'Date',
@@ -203,6 +204,7 @@ MOCK_ES7_INCIDENTS = str([
                    '"_source": {"Date": "2019-08-27T18:01:25.343212Z"}'
                    '}',
         'occurred': '2019-08-27T18:01:25Z',
+        'dbotMirrorId': '456',
         'labels': [
             {
                 'type': 'Date',
@@ -222,7 +224,8 @@ MOCK_ES7_INCIDENTS_WITHOUT_LABELS = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "2019-08-27T18:00:00Z"}'
                    '}',
-        'occurred': '2019-08-27T18:00:00Z'
+        'occurred': '2019-08-27T18:00:00Z',
+        'dbotMirrorId': '123'
     }, {
         'name': 'Elasticsearch: Index: customer, ID: 456',
         'rawJSON': '{'
@@ -232,7 +235,8 @@ MOCK_ES7_INCIDENTS_WITHOUT_LABELS = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "2019-08-27T18:01:25.343212Z"}'
                    '}',
-        'occurred': '2019-08-27T18:01:25Z'
+        'occurred': '2019-08-27T18:01:25Z',
+        'dbotMirrorId': '456'
     }
 ])
 
@@ -247,6 +251,7 @@ MOCK_ES6_INCIDETNS = str([
                    '"_source": {"Date": "2019-08-29T14:45:00.123Z"}'
                    '}',
         'occurred': '2019-08-29T14:45:00Z',
+        'dbotMirrorId': '123',
         'labels':
             [
                 {
@@ -264,6 +269,7 @@ MOCK_ES6_INCIDETNS = str([
                    '"_source": {"Date": "2019-08-29T14:46:00.123456Z"}'
                    '}',
         'occurred': '2019-08-29T14:46:00Z',
+        'dbotMirrorId': '456',
         'labels':
             [
                 {
@@ -285,6 +291,7 @@ MOCK_ES6_INCIDETNS_WITHOUT_LABELS = str([
                    '"_source": {"Date": "2019-08-29T14:45:00.123Z"}'
                    '}',
         'occurred': '2019-08-29T14:45:00Z',
+        'dbotMirrorId': '123'
     }, {
         'name': 'Elasticsearch: Index: users, ID: 456',
         'rawJSON': '{'
@@ -295,6 +302,7 @@ MOCK_ES6_INCIDETNS_WITHOUT_LABELS = str([
                    '"_source": {"Date": "2019-08-29T14:46:00.123456Z"}'
                    '}',
         'occurred': '2019-08-29T14:46:00Z',
+        'dbotMirrorId': '456'
     }
 ])
 
@@ -346,6 +354,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
                    '"_source": {"Date": "1572502634"}'
                    '}',
         'occurred': '2019-10-31T06:17:14Z',
+        'dbotMirrorId': '123',
         'labels': [
             {
                 'type': 'Date',
@@ -362,6 +371,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
                    '"_source": {"Date": "1572502640"}'
                    '}',
         'occurred': '2019-10-31T06:17:20Z',
+        'dbotMirrorId': '456',
         'labels': [
             {
                 'type': 'Date',
@@ -382,6 +392,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS = str([
                    '"_source": {"Date": "1572502634"}'
                    '}',
         'occurred': '2019-10-31T06:17:14Z',
+        'dbotMirrorId': '123'
     }, {
         'name': 'Elasticsearch: Index: customer, ID: 456',
         'rawJSON': '{'
@@ -392,6 +403,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS = str([
                    '"_source": {"Date": "1572502640"}'
                    '}',
         'occurred': '2019-10-31T06:17:20Z',
+        'dbotMirrorId': '456'
     }
 ])
 
