@@ -29,11 +29,6 @@ There are no inputs for this script.
 | File.Info | File information | Unknown |
 | File.Extension | File extension | Unknown |
 | File.SSDeep | SSDeep hash of the file | Unknown |
-| File.Attachment.description | File description of incident attachments | Unknown |
-| File.Attachment.name | File name of incident attachments | Unknown |
-| File.Attachment.path | File path of incident attachments | Unknown |
-| File.Attachment.showMediaFile | showMediaFile of incident attachments | Unknown |
-| File.Attachment.type | File content type of incident attachments | Unknown |
 | AttachmentFile.Name | Filename of incident attachments | Unknown |
 | AttachmentFile.Type | File type of incident attachments | Unknown |
 | AttachmentFile.Size | File size of incident attachments | Unknown |

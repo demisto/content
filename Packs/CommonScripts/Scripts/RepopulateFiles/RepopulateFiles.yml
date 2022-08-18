@@ -31,16 +31,6 @@ outputs:
   description: File extension
 - contextPath: File.SSDeep
   description: SSDeep hash of the file
-- contextPath: File.Attachment.description
-  description: File description of incident attachments
-- contextPath: File.Attachment.name
-  description: File name of incident attachments
-- contextPath: File.Attachment.path
-  description: File path of incident attachments
-- contextPath: File.Attachment.showMediaFile
-  description: showMediaFile of incident attachments
-- contextPath: File.Attachment.type
-  description: File content type of incident attachments
 - contextPath: AttachmentFile.Name
   description: Filename of incident attachments
 - contextPath: AttachmentFile.Type

@@ -101,8 +101,7 @@ def main():
         for ent in demisto.incident().get('attachment') or []:
             inc_attachment_ent = find_attachment_entry(war_attachment_ents, ent)
             if inc_attachment_ent:
-                inc_attachment_ent.update({'Attachment': ent})
-                inc_attachment_ents.append(inc_attachment_ent)
+                inc_attachment_ents.append(dict(inc_attachment_ent, Attachment=ent))
 
         entry_context = {outputPaths['file']: war_attachment_ents}
         if inc_attachment_ents:

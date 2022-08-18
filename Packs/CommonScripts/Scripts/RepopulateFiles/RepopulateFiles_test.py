@@ -167,14 +167,6 @@ class TestRepopulateFiles:
             'Info': 'ASCII text, with no line terminators',
             'Type': 'txt',
             'Extension': 'txt',
-            'EntryID': '3@202',
-            'Attachment': {
-                'description': '',
-                'isTempPath': False,
-                'name': 'test.txt',
-                'path': '202_c046d6af-e9d2-4308-8c35-f487a520de5f_test.txt',
-                'showMediaFile': False,
-                'type': 'text/plain'
-            }
+            'EntryID': '3@202'
         }
         ]
