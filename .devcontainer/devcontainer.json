@@ -46,7 +46,8 @@
 		"shd101wyy.markdown-preview-enhanced",
 		"Gruntfuggly.todo-tree",
 		"redhat.vscode-yaml",
-		"PKief.material-icon-theme"
+		"PKief.material-icon-theme",
+		"KevinRose.vsc-python-indent"
 	],
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
