@@ -154,6 +154,7 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
     logging.info('Retrieving the credentials for Cortex XSIAM server')
     xsiam_machine = options.xsiam_machine
     xsiam_servers = get_json_file(options.xsiam_servers_path)
+    # todo: add here
     api_key, server_numeric_version, base_url, xdr_auth_id = XSIAMBuild.get_xsiam_configuration(xsiam_machine,
                                                                                                 xsiam_servers)
     # Configure the Server
