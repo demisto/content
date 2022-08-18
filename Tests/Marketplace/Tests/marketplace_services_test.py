@@ -1083,7 +1083,7 @@ This is visible
                                                                   build_number=build_number,
                                                                   modified_files_data=modified_data)
 
-        assert version_changelog['releaseNotes'] == "No relevant release notes found."
+        assert not version_changelog['releaseNotes']
 
     @pytest.mark.parametrize('release_notes, upload_marketplace, expected_result', [
         ('''
