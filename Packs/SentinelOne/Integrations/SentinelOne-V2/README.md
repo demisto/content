@@ -64,6 +64,35 @@ Returns all agents that match the specified criteria.
 | SentinelOne.Agents.SiteName | string | Site name associated with the agent. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| activeThreats__gt | valid |
+| computerName | valid |
+| scanStatus | valid |
+| osType | osTypes |
+| createdAt__gte | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- | 
+| SentinelOne.Agents.NetworkStatus | valid |
+| SentinelOne.Agents.ID | valid |
+| SentinelOne.Agents.AgentVersion | valid |
+| SentinelOne.Agents.isDecommissioned | valid |
+| SentinelOne.Agents.IsActive | valid |
+| SentinelOne.Agents.LastActiveDate | valid |
+| SentinelOne.Agents.RegisteredAt | valid |
+| SentinelOne.Agents.ExternalIP | valid |
+| SentinelOne.Agents.ThreatCount | activeThreat |
+| SentinelOne.Agents.EncryptedApplications | valid |
+| SentinelOne.Agents.OSName | valid |
+| SentinelOne.Agents.ComputerName | valid |
+| SentinelOne.Agents.Domain | valid |
+| SentinelOne.Agents.CreatedAt | valid |
+| SentinelOne.Agents.SiteName | valid |
+
+
 #### Command Example
 ```!sentinelone-list-agents```
 
@@ -133,6 +162,25 @@ Creates an exclusion item that matches the specified input filter.
 | SentinelOne.Exclusions.CreatedAt | date | Time when the allow list item was created. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| type | valid |
+| value | valid |
+| osType | valid |
+| description | valid |
+| mode | valid |
+| groupIds | valid |
+| siteIds | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- | 
+| SentinelOne.Exclusions.ID | valid |
+| SentinelOne.Exclusions.Type | valid |
+| SentinelOne.Exclusions.CreatedAt | valid |
+
+
 ### sentinelone-get-white-list
 ***
 Lists all exclusion items that match the specified input filter.
@@ -165,6 +213,29 @@ Lists all exclusion items that match the specified input filter.
 | SentinelOne.Exclusions.OsType | string | OS type of the exclusion item. | 
 | SentinelOne.Exclusions.UserName | string | User name of the user that added the exclusion item. | 
 | SentinelOne.Exclusions.Mode | string | A comma-separated list of modes by which to filter \(path exclusions only\), for example: "suppress". | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| ids | valid |
+| osTypes | valid |
+| type | valid |
+| limit | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- | 
+| SentinelOne.Exclusions.ID | valid |
+| SentinelOne.Exclusions.Type | valid |
+| SentinelOne.Exclusions.CreatedAt | valid |
+| SentinelOne.Exclusions.Value | valid |
+| SentinelOne.Exclusions.Source | valid |
+| SentinelOne.Exclusions.UserID | valid |
+| SentinelOne.Exclusions.UpdatedAt | valid |
+| SentinelOne.Exclusions.OsType | valid |
+| SentinelOne.Exclusions.UserName | valid |
+| SentinelOne.Exclusions.Mode | valid |
 
 
 #### Command Example
@@ -220,6 +291,20 @@ Gets the file reputation by a SHA1 hash.
 | --- | --- | --- |
 | SentinelOne.Hash.Rank | Number | The hash reputation \(1-10\). | 
 | SentinelOne.Hash.Hash | String | The content hash. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| {hash} | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Hash.Rank | valid |
+| SentinelOne.Hash.Hash | None (need to return from the input) |
+| SentinelOne.Hash.Classification | None |
+| SentinelOne.Hash.Classification Source | None |
 
 
 #### Command Example
@@ -292,6 +377,36 @@ Returns threats according to the specified filters.
 | SentinelOne.Threat.MarkedAsBenign | Boolean | Whether the threat is marked as benign. Relevant for version 2.0 only. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| contentHash | contentHashes |
+| mitigationStatuses | valid |
+| createdAt__lt | valid |
+| createdAt__gt | valid |
+| createdAt__lte | valid |
+| createdAt__gte | valid |
+| resolved | valid |
+| displayName__like | displayName |
+| query | valid |
+| ids | valid |
+| limit | valid |
+| classifications | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Threat.ID | valid |
+| SentinelOne.Threat.AgentComputer | agentComputerName |
+| SentinelOne.Threat.CreatedDate | createdAt |
+| SentinelOne.Threat.SiteID | valid |
+| SentinelOne.Threat.Classification | valid |
+| SentinelOne.Threat.MitigationStatus | valid |
+| SentinelOne.Threat.AgentID | valid |
+| SentinelOne.Threat.Rank | None |
+| SentinelOne.Threat.MarkedAsBenig | None |
+
+
 #### Command Example
 ```!sentinelone-get-threats resolved=true```
 
@@ -351,7 +466,7 @@ Returns threats according to the specified filters.
 
 ### sentinelone-threat-summary
 ***
-Returns a dashboard threat summary.
+Returns a dashboard threat summary.  Can only be used with API V2.1
 
 
 #### Base Command
@@ -411,7 +526,7 @@ Returns a dashboard threat summary.
 
 ### sentinelone-mark-as-threat
 ***
-Marks suspicious threats as threats.
+Marks suspicious threats as threats. Can only be used with API V2.0
 
 
 #### Base Command
@@ -458,9 +573,24 @@ Applies a mitigation action to a group of threats that match the specified input
 | SentinelOne.Threat.Mitigation.Action | Number | Number of threats affected. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| filter | valid |
+| ids | valid |
+| action | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Threat.ID | None (need to return from the input) |
+| SentinelOne.Threat.Mitigated | None |
+| SentinelOne.Threat.Mitigation.Action | effected |
+
+
 ### sentinelone-resolve-threat
 ***
-Resolves threats using the threat ID.
+Resolves threats using the threat ID. Can only be used with API V2.0
 
 
 #### Base Command
@@ -515,6 +645,31 @@ Returns the details of an agent according to the agent ID.
 | SentinelOne.Agent.Domain | string | Domain name of the agent. | 
 | SentinelOne.Agent.CreatedAt | date | Agent creation time. | 
 | SentinelOne.Agent.SiteName | string | Site name associated with the agent. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| ids | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.NetworkStatus | valid |
+| SentinelOne.Agent.ID | valid |
+| SentinelOne.Agent.AgentVersion | valid |
+| SentinelOne.Agent.IsDecomissioned | isDecommissioned (misspelled) |
+| SentinelOne.Agent.IsActive | valid |
+| SentinelOne.Agent.LastActiveDate | valid |
+| SentinelOne.Agent.RegisteredAt | valid |
+| SentinelOne.Agent.ExternalIP | valid |
+| SentinelOne.Agent.ThreatCount | activeThreats |
+| SentinelOne.Agent.EncryptedApplica | valid |
+| SentinelOne.Agent.OSName| valid |
+| SentinelOne.Agent.ComputerName | valid |
+| SentinelOne.Agent.Domain | valid |
+| SentinelOne.Agent.CreatedAt | valid |
+| SentinelOne.Agent.SiteName | valid |
 
 
 #### Command Example
@@ -595,6 +750,40 @@ Returns all sites that match the specified criteria.
 | SentinelOne.Site.CreatedAt | date | Timestamp when the site was created. | 
 | SentinelOne.Site.Expiration | string | Timestamp when the site will expire. | 
 | SentinelOne.Site.UnlimitedLicenses | boolean | Whether the site has unlimited licenses. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| updatedAt | valid |
+| query | valid |
+| siteType | valid |
+| features | valid |
+| state | valid |
+| suite | valid |
+| adminOnly | valid |
+| accountId | valid |
+| name | valid |
+| createdAt | valid |
+| limit | valid |
+| siteIds | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Site.Creator | valid |
+| SentinelOne.Site.Name | valid |
+| SentinelOne.Site.Type | siteType |
+| SentinelOne.Site.AccountName | valid |
+| SentinelOne.Site.State | valid |
+| SentinelOne.Site.HealthStatus | valid |
+| SentinelOne.Site.Suite | valid |
+| SentinelOne.Site.ActiveLicenses | valid |
+| SentinelOne.Site.ID | valid |
+| SentinelOne.Site.TotalLicenses | valid |
+| SentinelOne.Site.CreatedAt | valid |
+| SentinelOne.Site.Expiration | valid |
+| SentinelOne.Site.UnlimitedLicenses | valid |
 
 
 #### Command Example
@@ -728,6 +917,18 @@ Reactivates an expired site.
 | SentinelOne.Site.Reactivated | boolean | Whether the site was reactivated. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| site_id | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Site.ID | None (need to return from the input) |
+| SentinelOne.Site.Reactivated | success |
+
+
 ### sentinelone-get-activities
 ***
 Returns a list of activities.
@@ -779,6 +980,48 @@ Returns a list of activities.
 | SentinelOne.Activity.ID | String | Activity ID. | 
 | SentinelOne.Activity.CreatedAt | Date | Activity creation time \(UTC\). | 
 | SentinelOne.Activity.Description | String | Extra activity information. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| created_at__gt | valid |
+| userEmails | valid |
+| groupIds | valid |
+| created_at__lte | valid |
+| ids | valid |
+| includeHidden | valid |
+| created_at__lt | valid |
+| threatIds | valid |
+| activityTypes | valid |
+| userIds | valid |
+| created_at__gte | valid |
+| createdAt_between | valid |
+| agentIds | valid |
+| limit | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Activity.AgentID | valid |
+| SentinelOne.Activity.AgentUpdated | agentUpdatedVersion |
+| SentinelOne.Activity.SiteID | valid |
+| SentinelOne.Activity.UserID | valid |
+| SentinelOne.Activity.SecondaryDescription | valid |
+| SentinelOne.Activity.OsFamily | valid |
+| SentinelOne.Activity.ActivityType | valid |
+| SentinelOne.Activity.data.SiteID | None |
+| SentinelOne.Activity.data.SiteName | valid |
+| SentinelOne.Activity.data.username | valid |
+| SentinelOne.Activity.Hash | valid |
+| SentinelOne.Activity.UpdatedAt | valid |
+| SentinelOne.Activity.Comments | valid |
+| SentinelOne.Activity.ThreatID | valid |
+| SentinelOne.Activity.PrimaryDescription | valid |
+| SentinelOne.Activity.GroupID | valid |
+| SentinelOne.Activity.ID | valid |
+| SentinelOne.Activity.CreatedAt | valid |
+| SentinelOne.Activity.Description | valid |
 
 
 #### Command Example
@@ -941,6 +1184,37 @@ Returns data for the specified group.
 | SentinelOne.Group.createdAt | Date | Timestamp of group creation. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| type | valid |
+| groupIds | valid |
+| id | valid |
+| isDefault | valid |
+| name | valid |
+| query | valid |
+| rank | valid |
+| limit | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Group.siteId | valid |
+| SentinelOne.Group.filterName | valid |
+| SentinelOne.Group.creatorId | valid |
+| SentinelOne.Group.name | valid |
+| SentinelOne.Group.creator | valid |
+| SentinelOne.Group.rank | valid |
+| SentinelOne.Group.updatedAt | valid |
+| SentinelOne.Group.totalAgents | valid |
+| SentinelOne.Group.filterId | valid |
+| SentinelOne.Group.isDefault | valid |
+| SentinelOne.Group.inherits | valid |
+| SentinelOne.Group.type | valid |
+| SentinelOne.Group.id | valid |
+| SentinelOne.Group.createdAt | valid |
+
+
 #### Command Example
 ```!sentinelone-get-groups```
 
@@ -1000,6 +1274,18 @@ Moves agents to a new group.
 | SentinelOne.Agent.AgentsMoved | Number | The number of agents that were moved to another group. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| group_id | valid |
+| agentIds | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.AgentsMoved | valid |
+
+
 #### Command Example
 ``` ```
 
@@ -1024,7 +1310,20 @@ Deletes a group, by the group ID.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.DeleteGroup.Success | String | the status of the command. | 
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| group_id | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.DeleteGroup.Success | valid |
+
 
 #### Command Example
 ``` ```
@@ -1059,6 +1358,22 @@ DEPRECATED - Retrieves running processes for a specific agent.
 | SentinelOne.Agent.cpuUsage | Number | CPU usage \(%\). | 
 | SentinelOne.Agent.executablePath | String | Executable path. | 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| ids | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.memoryUsage | valid |
+| SentinelOne.Agent.startTime | valid |
+| SentinelOne.Agent.pid | valid |
+| SentinelOne.Agent.processName | valid |
+| SentinelOne.Agent.cpuUsage | valid |
+| SentinelOne.Agent.executablePath | valid |
+
+
 
 ### sentinelone-connect-agent
 ***
@@ -1081,6 +1396,18 @@ Connects agents to network.
 | --- | --- | --- |
 | SentinelOne.Agent.AgentsAffected | Number | The number of affected agents. | 
 | SentinelOne.Agent.ID | String | The IDs of the affected agents. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| ids | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.AgentsAffected | affected |
+| SentinelOne.Agent.ID | None (need to return from the input) |
 
 
 #### Command Example
@@ -1125,6 +1452,18 @@ Disconnects agents from network.
 | SentinelOne.Agent.ID | String | The IDs of the affected agents. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| ids | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.NetworkStatus | None |
+| SentinelOne.Agent.ID | None (need to return from the input) |
+
+
 #### Command Example
 ```!sentinelone-disconnect-agent agent_id=657613730168123595```
 
@@ -1165,7 +1504,24 @@ Broadcasts a message to all agents that match the input filters.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.BroadcastMessage.Affected  | String | Number of agents that receive the Broadcast. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| isActive | valid |
+| groupIds | valid |
+| ids | valid |
+| domains | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.BroadcastMessage.Affected | valid |
+
 
 #### Command Example
 ```!sentinelone-broadcast-message message="Hey There, just checking" agent_id=657613730168123595```
@@ -1208,6 +1564,31 @@ Returns all Deep Visibility events that match the query.
 | Event.ID | String | Event process ID. | 
 | Event.Name | String | Event name. | 
 | Event.Type | String | Event type. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| query_id | valid |
+| limit | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Event.ProcessUID | srcProcUid |
+| SentinelOne.Event.SHA256 | valid |
+| SentinelOne.Event.AgentOS | valid |
+| SentinelOne.Event.ProcessID | pid |
+| SentinelOne.Event.User | valid |
+| SentinelOne.Event.Time | processStartTime |
+| SentinelOne.Event.Endpoint | agentName |
+| SentinelOne.Event.SiteName | valid |
+| SentinelOne.Event.EventType | valid |
+| SentinelOne.Event.ProcessName | valid |
+| SentinelOne.Event.MD5 | valid |
+| Event.ID | id |
+| Event.Name | None |
+| Event.Type | eventType |
 
 
 #### Command Example
@@ -1304,6 +1685,35 @@ Returns a list of Deep Visibility events from query by event type - process.
 | SentinelOne.Event.ProcessDisplayName | String | Process display name. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| query_id | valid |
+| limit | valid |
+| event_type | Event_type (need to be added if using GET/web/api/v2.1/dv/events/{event_type} ) |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Event.ParentProcessID | parentPid |
+| SentinelOne.Event.ProcessUID | None |
+| SentinelOne.Event.SHA1 | valid |
+| SentinelOne.Event.SubsystemType | processSubSystem |
+| SentinelOne.Event.ParentProcessStartTim | valid |
+| SentinelOne.Event.ProcessID | Pid |
+| SentinelOne.Event.ParentProcessUID | None |
+| SentinelOne.Event.User | valid |
+| SentinelOne.Event.Time | processStartTime |
+| SentinelOne.Event.ParentProcessName | valid |
+| SentinelOne.Event.SiteName | valid |
+| SentinelOne.Event.EventType | valid |
+| SentinelOne.Event.Endpoint | agentName |
+| SentinelOne.Event.IntegrityLevel | processIntegrityLevel |
+| SentinelOne.Event.CMD | processCmd |
+| SentinelOne.Event.ProcessName | valid |
+| SentinelOne.Event.ProcessDisplayName | valid |
+
+
 #### Command Example
 ```!sentinelone-get-processes query_id=q034ae362a30eba5a187cbe601d19abaa```
 
@@ -1332,6 +1742,19 @@ Sends a shutdown command to all agents that match the input filter.
 | SentinelOne.Agent.ID | String | The ID of the agent that was shutdown. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| query | valid |
+| ids | valid |
+| groupIds | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.ID | None |
+
+
 #### Command Example
 ``` ```
 
@@ -1354,6 +1777,27 @@ Sends an uninstall command to all agents that match the input filter.
 | query | A free-text search term, will match applicable attributes (sub-string match). Note: A device's physical addresses will only be matched if they start with the search term  (not if they contain the search term). | Optional | 
 | agent_id | A comma-separated list of agents IDs to shutdown. | Optional | 
 | group_id | The ID of the network group. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.uninstall.Affected | String | Number of agents that were uninstalled | 
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| query | valid |
+| ids | valid |
+| groupIds | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.uninstall.Affected | valid |
+
+
 ### sentinelone-get-blocklist
 ***
 Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
@@ -1490,3 +1934,688 @@ There is no context output for this command.
 
 #### Command Example
 ```!sentinelone-download-fetched-file activity_id=ACTIVITY_ID agent_id=AGENT_ID password=PossiblyInfected0987&*()```
+
+
+### sentinelone-update-threats-verdict
+***
+Updates the analyst verdict to a group of threats that match the specified input filter.
+
+#### Base Command
+
+`sentinelone-update-threats-verdict`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| verdict | Analyst verdict action. Can be "undefined", "true_positive", "false_positive","suspicious" | Required | 
+| threat_ids | A comma-separated list of threat IDs. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Threat.ID | String | The threat ID. |
+| SentinelOne.Threat.Updated | Boolean | Whether the threat was successfully updated the analyst verdict. |
+| SentinelOne.Threat.Update.Action | String | Name of the analyst verdict action performed on the threats. |
+
+#### Command Example
+```!sentinelone-update-threats-verdict threat_ids="14417837215288624" action=false_positive```
+
+
+### sentinelone-update-alerts-verdict
+***
+Updates the analyst verdict to a group of alerts that match the specified input filter.
+
+
+#### Base Command
+
+`sentinelone-update-alerts-verdict`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| verdict | Analyst verdict action. Can be "undefined", "true_positive", "false_positive", "suspicious" | Required | 
+| alert_ids | A comma-separated list of alert IDs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Alert.ID | String | The alert ID. | 
+| SentinelOne.Alert.Updated | Boolean | Whether the alert was successfully updated the analyst verdict. | 
+| SentinelOne.Alert.Update.Action | String | Name of the analyst verdict action performed on the alerts. | 
+
+#### Command Example
+```!sentinelone-update-alerts-verdict threat_ids="14417837215288624" action=false_positive```
+
+### sentinelone-create-star-rule
+***
+Creates a custom STAR rule.
+
+
+#### Base Command
+
+`sentinelone-create-star-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the star rule | Required | 
+| rule_severity | The rule severity. Can be "Low", "Medium", "High" and "Critical" | Required | 
+| expiration_mode | Type of Expiration Mode. Can be "Permanent" or "Temporary" | Required | 
+| query_type | Type of the query. For now it's "events" | Required | 
+| query | The query string for which to return events. | Required | 
+| description | The description of the star rule | Optional |
+| expiration_date | If expiration mode is "Temporary" then it should be supplied,for example, "2019-08-03T04:49:26.257525Z" | Optional |
+| site_ids | A comma separated list of site IDs | Optional |
+| group_ids | A comma separated list of Group IDs | Optional |
+| account_ids | A comma separated list of Account IDs | Optional |
+| network_quarantine | To enable the network quarantine of the star rule. Can be true or false | Required |
+| treatAsThreat | The treatAsThreat. Can be "Malicious", "Suspicious" and "UNDEFINED" | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | String | The star rule ID. | 
+| SentinelOne.StarRule.Name | String | The star rule name. | 
+| SentinelOne.StarRule.Status | String | The status of the star rule |
+| SentinelOne.StarRule.Severity | String | The severity of the star rule |
+| SentinelOne.StarRule.Description | String | The description of the star rule | 
+| SentinelOne.StarRule.Network Quarantine | Boolean | The Network Quarantine of the star rule |
+| SentinelOne.StarRule.Treat As Threat | String | The Treat As Threat of the star rule |
+| SentinelOne.StarRule.Expiration Mode | String | The expiration mode of the star rule |
+| SentinelOne.StarRule.Expiration Date | String | The expiration date of the star rule | 
+| SentinelOne.StarRule.Scope Hierarchy | String | The scope hierarchy of the star rule |
+| SentinelOne.StarRule.Created At | String | The created time for the star rule |
+| SentinelOne.StarRule.Updated At | String | The updated time for the star rule |
+
+
+#### Command Example
+```!sentinelone-create-star-rule name="test" rule_severity=Low expiration_mode=Temporary expiration_date=2022-06-23T09:29:29.206941Z query_type=events query="Dstip EXISTS" network_quarantine=false treatAsThreat=Malicious ```
+
+
+### sentinelone-get-star-rules
+***
+Get a list of Custom Detection Rules for a given scope.
+
+
+#### Base Command
+
+`sentinelone-get-star-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | The status of the star rule. You can provide one or more values with comma seperated. Available options are: "Activating, Active, Deleted, Deleting, Disabled, Disabling and Draft".Example: "Draft,Active". | Optional | 
+| creator_contains | Free-text filter by rule creator (supports multiple values). Example:"Service Pack 1". | Optional | 
+| queryType | Return rules with the filtered type. Example: "events". | Optional | 
+| query | Free-text filter by S1 query (supports multiple values). Example:"Service Pack 1". | Optional | 
+| description_contains | Free-text filter by rule description (supports multiple values).Example: "Service Pack 1" | Optional | 
+| ruleIds | A list of Rules IDs. Example: "225494730938493804,225494730938493915". | Optional | 
+| name_contains | Free-text filter by rule name (supports multiple values). Example: "Service Pack 1". | Optional | 
+| accountIds | List of Account IDs to filter by. Example: "225494730938493804,225494730938493915". | Optional | 
+| expirationMode | Return rules with the filtered expiration mode. Example: "Permanent". | Optional | 
+| limit | Limit number of returned items (1-1000). Example: "10". | Optional | 
+| siteIds | List of Site IDs to filter by. Example: "225494730938493804,225494730938493915". | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | Number | The Star Rule ID | 
+| SentinelOne.StarRule.Creator | String | The Star Rule Creator | 
+| SentinelOne.StarRule.Name | String | The Star Rule Name | 
+| SentinelOne.StarRule.Status | String | The Star Rule Status | 
+| SentinelOne.StarRule.Severity | String | The Star Rule Severity | 
+| SentinelOne.StarRule.Generated Alerts | String | The Star Rule Generated Alerts | 
+| SentinelOne.StarRule.Description | String | The Star Rule Description | 
+| SentinelOne.StarRule.Status Reason | String | The Star Rule Status Reason | 
+| SentinelOne.StarRule.Expiration Mode | String | The Star Rule Expiration Mode | 
+| SentinelOne.StarRule.Expiration Date | Date | The Star Rule Expiration Date | 
+| SentinelOne.StarRule.Expired | Boolean | The Star Rule Expired or Not | 
+
+
+#### Command Example
+```!sentinelone-get-star-rules```
+
+### sentinelone-update-star-rule
+***
+Updates a custom STAR rule.
+
+
+#### Base Command
+
+`sentinelone-update-star-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | Rule ID  Example: "225494730938493804". | Required | 
+| name | The name of the star rule | Required | 
+| rule_severity | The rule severity. Can be "Low", "Medium", "High" and "Critical" | Required | 
+| expiration_mode | Type of Expiration Mode. Can be "Permanent" or "Temporary" | Required | 
+| query_type | Type of the query. For now it's "events" | Required | 
+| query | The query string for which to return events. | Required | 
+| description | The description of the star rule | Optional |
+| expiration_date | If expiration mode is "Temporary" then it should be supplied,for example, "2019-08-03T04:49:26.257525Z" | Optional |
+| site_ids | A comma separated list of site IDs | Optional |
+| group_ids | A comma separated list of Group IDs | Optional |
+| account_ids | A comma separated list of Account IDs | Optional |
+| network_quarantine | To enable the network quarantine of the star rule. Can be true or false | Required |
+| treatAsThreat | The treatAsThreat. Can be "Malicious", "Suspicious" and "UNDEFINED" | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | String | The star rule ID. | 
+| SentinelOne.StarRule.Name | String | The star rule name. | 
+| SentinelOne.StarRule.Status | String | The status of the star rule |
+| SentinelOne.StarRule.Severity | String | The severity of the star rule |
+| SentinelOne.StarRule.Description | String | The description of the star rule | 
+| SentinelOne.StarRule.Network Quarantine | Boolean | The Network Quarantine of the star rule |
+| SentinelOne.StarRule.Treat As Threat | String | The Treat As Threat of the star rule |
+| SentinelOne.StarRule.Expiration Mode | String | The expiration mode of the star rule |
+| SentinelOne.StarRule.Expiration Date | String | The expiration date of the star rule | 
+| SentinelOne.StarRule.Scope Hierarchy | String | The scope hierarchy of the star rule |
+| SentinelOne.StarRule.Created At | String | The created time for the star rule |
+| SentinelOne.StarRule.Updated At | String | The updated time for the star rule |
+
+
+#### Command Example
+```!sentinelone-update-star-rule rule_id=225494730938493804 name="test" rule_severity=Low expiration_mode=Temporary expiration_date=2022-06-23T09:29:29.206941Z query_type=events query="Dstip EXISTS" network_quarantine=false treatAsThreat=Malicious ```
+
+
+### sentinelone-enable-star-rules
+***
+Activate Custom Detection Rules that match the specified input filter.
+
+
+#### Base Command
+
+`sentinelone-enable-star-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_ids | A comma-separated list of star rule IDs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | String | The Rule ID. | 
+| SentinelOne.StarRule.Enabled | Boolean | Whether the star rule was successfully eabled or not. | 
+
+#### Command Example
+```!sentinelone-enable-star-rules rule_ids=225494730938493804```
+
+### sentinelone-disable-star-rules
+***
+Disable Custom Detection Rules that match the specified input filter.
+
+
+#### Base Command
+
+`sentinelone-disable-star-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_ids | A comma-separated list of star rule IDs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | String | The Rule ID. | 
+| SentinelOne.StarRule.Disabled | Boolean | Whether the star rule was successfully disabled or not. | 
+
+#### Command Example
+```!sentinelone-disable-star-rules rule_ids=225494730938493804```
+
+### sentinelone-delete-star-rule
+***
+Deletes Custom Detection Rules that match the specified input filter.
+
+
+#### Base Command
+
+`sentinelone-delete-star-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_ids | A comma-separated list of star rule IDs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | String | The Rule ID. | 
+| SentinelOne.StarRule.Deleted | Boolean | Whether the star rule was successfully deleted or not. | 
+
+#### Command Example
+```!sentinelone-delete-star-rule rule_ids=225494730938493804```
+
+### sentinelone-write-threat-note
+***
+Add a threat note to one or more threats.
+
+
+#### Base Command
+
+`sentinelone-write-threat-note`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_ids | A comma-separated list of threat IDs. | Required | 
+| note | Threat Note Text | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Threat.ID | String | The Threat ID. | 
+| SentinelOne.Threat.Note | String | The Threat Note. | 
+| SentinelOne.Threat.Status | String | Whether the note was added successfully or not. | 
+
+#### Command Example
+```!sentinelone-write-threat-note threat_ids=14417837215288624 note="a sample test"```
+
+### sentinelone-create-ioc
+***
+Add an IoC to the Threat Intelligence database.
+
+
+#### Base Command
+
+`sentinelone-create-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Threat Intelligence indicator name. | Required | 
+| source | The source of the identified Threat Intelligence indicator. | Required | 
+| type | The type of the Threat Intelligence indicator | Required | 
+| method | The comparison method used by SentinelOne to trigger the event. | Required | 
+| validUntil | Expiration date for the Threat Intelligence indicator. | Required |
+| value | The value of the Threat Intelligence indicator. | Required |
+| account_ids | List of Account IDs to filter by. | Required | 
+| externalId | The unique identifier of the indicator as provided by the Threat Intelligence source | Optional |
+| description | Description of the Threat Intelligence indicator | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.IOC.UUID | String | The IOC UUID. | 
+| SentinelOne.IOC.Name | String | Threat Intelligence indicator name. | 
+| SentinelOne.IOC.Source | String | The source of the identified Threat Intelligence indicator. |
+| SentinelOne.IOC.Type | String | The type of the Threat Intelligence indicator. |
+| SentinelOne.IOC.Batch Id | String | The IOC Batch Id. |
+| SentinelOne.IOC.Creator | String | The IOC Creator. |
+| SentinelOne.IOC.Scope | String | The IOC Scope. |
+| SentinelOne.IOC.Scope Id | String | The IOC Scope Id. |
+| SentinelOne.IOC.Valid Until | String | Expiration date for the Threat Intelligence indicator. |
+| SentinelOne.IOC.Description | String | Description of the Threat Intelligence indicator |
+| SentinelOne.IOC.External Id | String | The unique identifier of the indicator as provided by the Threat Intelligence source |
+
+#### Command Example
+```!sentinelone-create-ioc name="test" source="proof_test" type="IPV4" method="EQUALS" validUntil="2022-06-25T07:52:09.428858Z" value="10.0.2.15" account_ids="106802936546889425464"```
+
+
+### sentinelone-delete-ioc
+***
+Delete an IoC from the Threat Intelligence database that matches a filter.
+
+
+#### Base Command
+
+`sentinelone-delete-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_ids | List of Account IDs to filter by. | Required | 
+| uuids | UUID of threat Intelligence indicator. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.IOC.UUID | String | The IOC UUID. | 
+| SentinelOne.IOC.Deleted | Boolean | Threat Intelligence indicator deleted or not. | 
+
+#### Command Example
+```!sentinelone-delete-ioc account_ids=106802961889425793 uuids=ef367d66175288e75fa6b29c53d46d4```
+
+### sentinelone-get-iocs 
+***
+Get the IOCs of a specified Account that match the filter.
+
+#### Base Command
+
+`sentinelone-get-iocs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_ids | List of Account IDs to filter by. | Required |  
+| upload_time_gte | The time at which the Threat Intelligence indicator was uploaded to SentinelOne DB greater or equal than. Example: "2022-07-13T20:33:29.007906Z". | Required |
+| upload_time_lte | The time at which the Threat Intelligence indicator was uploaded to SentinelOne DB lessthan or equal than. Example: "2022-07-13T20:33:29.007906Z". | Required |
+| limit | Limit number of returned items (1-1000). Example: "10". But limit is defaulted to 1000 | Optional |
+| cursor | Cursor position returned by the last request. Should be used for iterating over more than 1000 items. Example: "YWdlbnRfaWQ6NTgwMjkzODE=". | Optional |
+| uuids | A list of unique Ids of the parent process of the indicator of compromise. Example: "2cffae871197f20d864fe8363eee6651". | Optional |
+| type | The type of the Threat Intelligence indicator | OPtional |
+| batch_id | Unique ID of the uploaded indicators batch. Example: "atmtn000000028a881bcf939dc6d92ab55443". | Optional |
+| source | List of the sources of the identified Threat Intelligence indicator. Example: "AlienVault". | Optional | 
+| value | The value of the Threat Intelligence indicator. Example: "175.0.x.x". | Optional |
+| external_id | The unique identifier of the indicator as provided by the Threat Intelligence source. Example: "e277603e-1060-5ad4-9937-c26c97f1ca68". | Optional |
+| name_contains | Free-text filter by the Indicator name (supports multiple values). Example: "foo.dll". | Optional |
+| creator_contains | Free-text filter by the user uploaded the Threat Intelligence indicator (supports multiple values). Example: "admin@sentinelone.com". | Optional | 
+| description_contains | Free-text filter by the description of the indicator (supports multiple values). Example: "Malicious-activity". | Optional |
+| category_in | The categories of the Threat Intelligence indicator, e.g. the malware type associated with the IOC | Optional |
+| updated_at_gte | The time at which the indicator was last updated in SentinelOne DB greater or equal than. Example: "2021-07-13T20:33:29.007906Z". | Optional |
+| updated_at_lte | The time at which the indicator was last updated in SentinelOne DB lessthan or equal than. Example: "2021-07-13T20:33:29.007906Z". | Optional |
+| creation_time_gte | Creation Time as set by the user greater or equal than. Example: "2021-07-13T20:33:29.007906Z". | Optional |
+| creation_time_lte | Creation Time as set by the user lessthan or equal than. Example: "2021-07-13T20:33:29.007906Z". | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.IOC.UUID | String | The IOC UUID. | 
+| SentinelOne.IOC.Creator | String | Threat Intelligence indicator Creator. | 
+| SentinelOne.IOC.Name | String | Threat Intelligence indicator Name. |
+| SentinelOne.IOC.Value | String | Threat Intelligence indicator Value. |
+| SentinelOne.IOC.Description | String | Threat Intelligence indicator Description. |
+| SentinelOne.IOC.Type | String | Threat Intelligence indicator Type. |
+| SentinelOne.IOC.External Id | String | Threat Intelligence indicator External Id. |
+| SentinelOne.IOC.Source | String | Threat Intelligence indicator Source. |
+| SentinelOne.IOC.Upload Time | String | Threat Intelligence indicator Upload Time. |
+| SentinelOne.IOC.Valid Until | String | Threat Intelligence indicator Expiration Time. |
+
+#### Command Example
+```!sentinelone-get-iocs account_ids="1068029618885547693" upload_time_gte="2022-04-25T07:52:09.428858Z" upload_time_lte="2022-06-30T07:52:09.428858Z"```
+
+
+### sentinelone-create-power-query
+*** 
+Start a Deep Visibility Power Query, get back status and potential results (ping afterwards using the queryId if query has not finished)
+
+#### Base Command
+
+`sentinelone-create-power-query`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Events matching the query search term will be returned. | Required |  
+| from_date | Events created after this timestamp. | Required |
+| to_date | Events created before or at this timestamp | Required |
+| limit | Limit number of returned items (1-100000) | Optional |
+
+#### Context Output
+
+The context outputs are based on the power query
+
+#### Command Example
+```!sentinelone-create-power-query query="event.time = * | columns eventTime = event.time, agentUuid = agent.uuid" from_date="2022-06-05T04:49:26.257525Z" to_date="2022-06-07T04:49:26.257525Z"```
+
+### sentinelone-ping-power-query
+***
+Ping a Deep Visibility Power Query using the queryId if results have not returned from an initial Power Query or a previous ping
+#### Base Command
+
+`sentinelone-ping-power-query`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| queryId | QueryId | Required |  
+
+
+#### Context Output
+
+The context outputs are based on the power query
+
+#### Command Example
+```!sentinelone-ping-power-query queryId="pqe18ccaaa69fedc65889eb155dbe039"```
+
+
+### sentinelone-expire-site
+***
+Expire the Site of the given ID.
+
+#### Base Command
+
+`sentinelone-expire-site`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | Provide valid Site ID | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Site.ID | String | The Site ID. | 
+| SentinelOne.Site.Name | String | The Site Name. | 
+| SentinelOne.Site.State | String | The Site State. | 
+| SentinelOne.Site.SKU | String | The sku of product features active for this site. |
+| SentinelOne.Site.Site Type | String | The Site type. | 
+| SentinelOne.Site.Suite | String | The Site Suite. |
+| SentinelOne.Site.Total Licences | String | The Total Licences. | 
+| SentinelOne.Site.Account ID | String | The Account ID. | 
+| SentinelOne.Site.Creator | String | Full name of the creating user. | 
+| SentinelOne.Site.Creator ID | String | Id of the creating user. |
+| SentinelOne.Site.Description | String | Description. | 
+| SentinelOne.Site.Expiration | String | Expiration. |
+
+#### Command Example
+```!sentinelone-expire-site site_id=55106802961889425793```
+
+### sentinelone-fetch-threat-file
+***
+Fetch a file associated with the threat that matches the filter. 
+
+
+#### Base Command
+
+`sentinelone-fetch-threat-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | Please provide the Valid Threat ID. Example: 14629133470822878. | Required | 
+| password | File encryption password (Aleast 10 characters, three out of this list "uppercase", "lowercase", "digits" and "symbols" are mandatory. Maximum length is 256 characters) | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Threat.ID | String | The threat ID. | 
+| SentinelOne.Threat.Downloadable | Boolean | The file is downlable or not | 
+| SentinelOne.Threat.ZippedFile | String | Details of the zipped folder. |
+
+#### Command Example
+```!sentinelone-fetch-threat-file threat_ids=106802961889425793 password=Mypassword1!```
+
+
+### sentinelone-update-threats-status
+***
+Updates the incident status to a group of threats that match the specified input filter. If you want to update the status of threats to 'Resolved' then the analyst verdict value should not be 'undefined'
+
+#### Base Command
+
+`sentinelone-update-threats-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | Incident status. Can be "in_progress", "resolved", "unresolved" | Required | 
+| threat_ids | A comma-separated list of threat IDs. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Threat.ID | String | The threat ID. | 
+| SentinelOne.Threat.Updated | Boolean | Whether the threat was successfully updated or not | 
+| SentinelOne.Threat.Status | String | Name of the status performed on the threats. |
+
+#### Command Example
+```!sentinelone-update-threats-status status=in_progress threat_ids=67683743445454363```
+
+
+### sentinelone-update-alerts-status
+***
+Updates the incident status to a group of alerts that match the specified input filter.
+
+#### Base Command
+
+`sentinelone-update-alerts-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | Incident status. Can be "in_progress", "resolved", "unresolved" | Required | 
+| alert_ids | A comma-separated list of alert IDs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Alert.ID | String | The alert ID. | 
+| SentinelOne.Alert.Updated | Boolean | Whether the alert was successfully updated or not | 
+| SentinelOne.Alert.Status | String | Name of the status performed on the alerts. |
+
+#### Command Example
+```!sentinelone-update-alerts-status status=in_progress alert_ids=36386764344636343```
+
+
+### sentinelone-get-alerts
+***
+Get a list of alerts for a given scope
+
+#### Base Command
+
+`sentinelone-get-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| created_from | Created at greater or equal than. Example: "2018-02-27T04:49:26.257525Z". | Required | 
+| created_until | Created at lesser or equal than. Example: "2018-02-27T04:49:26.257525Z". | Required | 
+| ruleName | Free-text filter by rule name. Example: "rule1". | Optional |
+| incidentStatus | Incident status. Example: "IN_PROGRESS". | Optional | 
+| analystVerdict | Analyst verdict. Example: "TRUE_POSITIVE". | Optional | 
+| alert_ids | A comma-separated list of alert IDs. | Optional |
+| limit | Limit number of returned items (1-1000). Example: "10". But defaulted to 1000 | Optional |
+| site_ids | List of Site IDs to filter by. Example: "225494730938493804,225494730938493915". | Optional | 
+| cursor | Cursor position returned by the last request. Should be used for iterating over more than 1000 items. Example: "YWdlbnRfaWQ6NTgwMjkzODE=". | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Alert.EventType | String | Event type | 
+| SentinelOne.Alert.RuleName | String | The RuleName. | 
+| SentinelOne.Alert.SrcProcUser | String | User | 
+| SentinelOne.Alert.SrcProcName | String | Name. | 
+| SentinelOne.Alert.SrcProcPath | String | File path | 
+| SentinelOne.Alert.SrcProcCommandline | String | command line | 
+| SentinelOne.Alert.SrcProcSHA1 | String | File hash sha1 | 
+| SentinelOne.Alert.SrcProcStartTime | String | Pid starttime | 
+| SentinelOne.Alert.SrcProcStorylineId | String | Storyline | 
+| SentinelOne.Alert.SrcParentProcName | String | Name. | 
+| SentinelOne.Alert.SrcParentProcPath | String | File path | 
+| SentinelOne.Alert.SrcParentProcCommandline | String | command line | 
+| SentinelOne.Alert.SrcParentProcStartTime | String | Pid starttime | 
+| SentinelOne.Alert.SrcParentProcUser | String | User | 
+| SentinelOne.Alert.SrcParentProcSHA1 | String | File hash sha1 | 
+| SentinelOne.Alert.SrcProcSignerIdentity | String | File signer identity | 
+| SentinelOne.Alert.SrcParentProcSignerIdentity | String | File signer identity | 
+| SentinelOne.Alert.AlertCreatedAt | String | Alert created at | 
+| SentinelOne.Alert.AlertId | String | Alert Id | 
+| SentinelOne.Alert.AnalystVerdict | String | AnalystVerdict | 
+| SentinelOne.Alert.IncidentStatus | String | Incident status | 
+| SentinelOne.Alert.EndpointName | String | Endpoint name | 
+| SentinelOne.Alert.AgentId | String | Agent Id | 
+| SentinelOne.Alert.AgentUUID | String | Agent UUID | 
+| SentinelOne.Alert.dvEventId | String | DV event id | 
+| SentinelOne.Alert.AgentOS | String | Agent OS | 
+| SentinelOne.Alert.AgentVersion | String | Agent Version | 
+| SentinelOne.Alert.SiteId | String | Site Id | 
+| SentinelOne.Alert.RuleId | String | Rule Id | 
+
+#### Command Example
+```!sentinelone-get-alerts created_from=2012-02-27T04:49:26.257525Z created_until=2012-05-27T04:49:26.257525Z```
+
+
+### sentinelone-get-installed-applications
+***
+Get the installed applications for a specific Agent.
+
+#### Base Command
+
+`sentinelone-get-installed-applications`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_ids | A comma separated value of Agent IDs. Example: 14629133470822878,14627455454652878 | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Application.Name | String | The Application Name | 
+| SentinelOne.Application.Publisher | String | The Publisher | 
+| SentinelOne.Application.Size | String | The size of the application in bytes | 
+| SentinelOne.Application.Version | String | The Version of the application | 
+| SentinelOne.Application.InstalledOn | String | Installed Date | 
+ 
+
+#### Command Example
+```!sentinelone-get-installed-applications agent_ids="1463801667584541849,1463801667584545236"```
+
+
+### sentinelone-initiate-endpoint-scan
+***
+Initiate the endpoint virus scan on provided agent IDs
+
+#### Base Command
+
+`sentinelone-initiate-endpoint-scan`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_ids | A comma separated value of Agent IDs. Example: 14629133470822878,14627455454652878 | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Agent.Agent ID | String | The Agent ID | 
+| SentinelOne.Agent.Initiated | String | Whether the scan was initiated or not | 
+
+#### Command Example
+```!sentinelone-initiate-endpoint-scan agent_ids="1463801667584541849,1463801667584545236"```
+
