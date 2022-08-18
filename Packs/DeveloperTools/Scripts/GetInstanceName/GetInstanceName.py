@@ -20,7 +20,7 @@ def get_instance_name_command(args: Dict[str, Any]) -> CommandResults:
 
     instance_names = instance_check(instances, integration_name)
 
-    if instance_names:
+    if not instance_names:
         raise DemistoException(f'No instance for integration {integration_name}.')
 
     if argToBoolean(args.get('return_all_instances')):
