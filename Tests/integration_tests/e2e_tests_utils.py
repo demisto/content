@@ -11,15 +11,16 @@ def git_clone_demisto_sdk(destination_folder: str, sdk_git_branch: str = 'master
     '''Clone demisto-sdk from GitHub and add it to sys.path
     '''
     git_clone_command = ('git'
-                            f' -C {destination_folder}'
-                            ' clone'
-                            f' -b {sdk_git_branch}'
-                            ' --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git'
-                            )
+                         f' -C {destination_folder}'
+                         ' clone'
+                         f' -b {sdk_git_branch}'
+                         ' --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git'
+                         )
     print(f'Cloning demisto-sdk with: {git_clone_command}')
-    e2e_tests_utils.cli(git_clone_command)
+    cli(git_clone_command)
     sys.path.insert(1, f'{destination_folder}/demisto-sdk')
     # type:ignore [return]
+
 
 def cli(command: str) -> subprocess.CompletedProcess:
     if command:
@@ -28,6 +29,7 @@ def cli(command: str) -> subprocess.CompletedProcess:
         ret_value.check_returncode()
         return ret_value
     raise Exception('cli cannot be empty.')
+
 
 def connect_to_server(insecure: bool = False):
     verify = (not insecure) if insecure else None  # set to None so demisto_client will use env var DEMISTO_VERIFY_SSL
