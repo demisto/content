@@ -5174,6 +5174,11 @@
             "playbookID": "Arkime Test playbook",
             "fromversion": "6.2.0",
             "memory_threshold": 95
+        },
+        {
+            "integrations": "CheckPointDome9",
+            "playbookID": "Dome9",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
