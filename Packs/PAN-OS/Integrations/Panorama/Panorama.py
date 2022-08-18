@@ -898,6 +898,7 @@ def panorama_push_to_device_group_command(args: dict):
         raise Exception("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
     demisto.info(f'{args.get("push_job_id")=}')
+    description = args.get('description')
 
     if push_job_id := args.get('push_job_id'):
         result = panorama_push_status(job_id=push_job_id)
@@ -906,6 +907,7 @@ def panorama_push_to_device_group_command(args: dict):
 
         push_output = parse_push_status_response(result)
         push_output['DeviceGroup'] = DEVICE_GROUP
+        push_output['Description'] = description
 
         return PollResult(
             response=CommandResults(  # this is what the response will be in case job has finished
@@ -923,7 +925,8 @@ def panorama_push_to_device_group_command(args: dict):
             context_output = {
                 'DeviceGroup': DEVICE_GROUP,
                 'JobID': job_id,
-                'Status': 'Pending'
+                'Status': 'Pending',
+                'Description': description
             }
             continue_to_poll = True
             push_output = CommandResults(  # type: ignore[assignment]
@@ -950,7 +953,7 @@ def panorama_push_to_device_group_command(args: dict):
             continue_to_poll=continue_to_poll,
             args_for_next_run=args_for_next_run,
             partial_result=CommandResults(
-                readable_output=f'Waiting for push with Job-ID {job_id} to push changes to device-group {DEVICE_GROUP}...'
+                readable_output=f'Waiting for Job-ID {job_id} to finish push changes to device-group {DEVICE_GROUP}...'
             )
         )
     # if 'result' in result['response']:
