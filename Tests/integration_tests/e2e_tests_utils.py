@@ -19,7 +19,6 @@ def git_clone_demisto_sdk(destination_folder: str, sdk_git_branch: str = 'master
     print(f'Cloning demisto-sdk with: {git_clone_command}')
     cli(git_clone_command)
     sys.path.insert(1, f'{destination_folder}/demisto-sdk')
-    # type:ignore [return]
 
 
 def cli(command: str) -> subprocess.CompletedProcess:
