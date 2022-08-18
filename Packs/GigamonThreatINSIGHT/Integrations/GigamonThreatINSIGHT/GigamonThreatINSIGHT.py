@@ -71,6 +71,7 @@ class Client(BaseClient):
 class SensorClient(Client):
     """Client that makes HTTP requests to the Sensor API
     """
+
     def getSensors(self) -> Dict[str, Any]:
         """ Calls the GET /sensors endpoint to retrieve the sensors
             :return JSON response from /sensors endpoint
@@ -488,7 +489,7 @@ def commandGetEventsTelemetry(sensorClient: SensorClient, args):
     """
     demisto.debug('commandGetEventsTelemetry has been called.')
 
-    result: Dict[str, Any] = sensorClient.getTelemetry('events', encodeArgsToURL(args))
+    result: Dict[str, Any] = sensorClient.getTelemetry('events', args)
 
     prefix = 'Insight.Telemetry.Events'
     key = 'data'
@@ -508,7 +509,7 @@ def commandGetNetworkTelemetry(sensorClient: SensorClient, args):
     """
     demisto.debug('commandGetNetworkTelemetry has been called.')
 
-    result: Dict[str, Any] = sensorClient.getTelemetry('network_usage', encodeArgsToURL(args))
+    result: Dict[str, Any] = sensorClient.getTelemetry('network_usage', args)
 
     prefix = 'Insight.Telemetry.NetworkUsage'
     key = 'network_usage'
@@ -524,11 +525,11 @@ def commandGetNetworkTelemetry(sensorClient: SensorClient, args):
 
 
 def commandGetPacketstatsTelemetry(sensorClient: SensorClient, args):
-    """ Get network metrics to a given sensor's interfaces
+    """ Get packetstats telemetry data grouped by time.
     """
     demisto.debug('commandGetPacketstatsTelemetry has been called.')
 
-    result: Dict[str, Any] = sensorClient.getTelemetry('packetstats', encodeArgsToURL(args))
+    result: Dict[str, Any] = sensorClient.getTelemetry('packetstats', args)
 
     prefix = 'Insight.Telemetry.Packetstats'
     key = 'data'

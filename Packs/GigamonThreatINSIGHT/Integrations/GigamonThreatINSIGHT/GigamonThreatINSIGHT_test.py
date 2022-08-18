@@ -88,7 +88,7 @@ def test_get_events_telemetry(requests_mock):
     requests_mock.get('https://sensor.icebrg.io/v1/telemetry/events', json=mock_response)
 
     client: SensorClient = Client.getClient('Sensors', '')
-    response: CommandResults = commandGetEventsTelemetry(client, {})
+    response: CommandResults = commandGetEventsTelemetry(client, '')
 
     assert response.outputs_prefix == 'Insight.Telemetry.Events'
     assert response.outputs_key_field == 'data'
@@ -101,7 +101,7 @@ def test_get_packetstats_telemetry(requests_mock):
     requests_mock.get('https://sensor.icebrg.io/v1/telemetry/packetstats', json=mock_response)
 
     client: SensorClient = Client.getClient('Sensors', '')
-    response: CommandResults = commandGetPacketstatsTelemetry(client, {})
+    response: CommandResults = commandGetPacketstatsTelemetry(client, '')
 
     assert response.outputs_prefix == 'Insight.Telemetry.Packetstats'
     assert response.outputs_key_field == 'data'
@@ -114,7 +114,7 @@ def test_get_networkaccess_telemetry(requests_mock):
     requests_mock.get('https://sensor.icebrg.io/v1/telemetry/network_usage', json=mock_response)
 
     client: SensorClient = Client.getClient('Sensors', '')
-    response: CommandResults = commandGetNetworkTelemetry(client, {})
+    response: CommandResults = commandGetNetworkTelemetry(client, '')
 
     assert response.outputs_prefix == 'Insight.Telemetry.NetworkUsage'
     assert response.outputs_key_field == 'network_usage'
