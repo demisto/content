@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -30,6 +29,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: e67ebe31-7e70-47b8-897a-bc1e17226101
@@ -64,6 +65,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: bf4ba0da-661b-400e-82b9-debadd531039
@@ -104,6 +107,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 8da949ba-e939-4a9c-830e-fdff167f5c34
@@ -144,6 +149,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: bc96def5-01d7-42e9-80e7-ef22da8baf6a
@@ -178,6 +185,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 591136e6-2a0a-46f7-882c-15807e341822
@@ -218,6 +227,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 03dc3c53-0ea8-413c-8bdb-4d357bf05f4f
@@ -252,6 +263,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: e6cb05e5-53d6-488a-8f80-55df7471f636
@@ -292,6 +305,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 3fe1cdeb-3df9-42b2-8472-2bf464d66d0b
@@ -326,6 +341,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: f6f12b98-7aa8-48a3-8ca7-ffdc8adb6d56
@@ -366,6 +383,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: f05b5035-1746-44ff-83ae-9d47b52d022a
@@ -400,6 +419,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: a8a9b78c-2718-4cc2-873d-4b2b76fdfe4d
@@ -440,6 +461,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 8f374640-9a3e-49a8-80cb-a5e4e2371261
@@ -472,6 +495,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 4b023b7c-02de-4103-814e-8154f916b6ac
@@ -483,13 +508,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1770
+          "y": 2310
         }
       }
     note: false
@@ -497,6 +521,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 03f5d9cd-a68a-48d0-85ff-3cd5fcf1bd75
@@ -530,6 +556,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 316490d4-ac60-45c6-88c5-5cd18a5a4a84
@@ -576,6 +604,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: a452d599-b462-418e-827f-b04e2289facb
@@ -610,6 +640,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: b1e56aa5-31e9-442a-8ce6-cf45068919e0
@@ -644,6 +676,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: 3eaadf02-9952-4985-894a-b6e5feefc550
@@ -660,7 +694,7 @@ tasks:
       brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
-      - "14"
+      - "27"
     scriptarguments:
       id:
         simple: ${ThreatStream.List.ID}
@@ -681,6 +715,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: 0be289ab-4e5d-4d96-80bc-902f06f4bad4
@@ -717,6 +753,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: fc5263b7-65ac-455f-81a7-b07bd9e16dec
@@ -730,7 +768,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "27"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -777,6 +815,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: e2f08e38-6a69-4ec9-87c8-c375d4a08a8f
@@ -811,6 +851,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: ca8dcc22-5987-48c9-81ce-5e2e78a49015
@@ -827,7 +869,7 @@ tasks:
       brand: Anomali ThreatStream v3
     nexttasks:
       '#none#':
-      - "14"
+      - "27"
     scriptarguments:
       id:
         simple: ${ThreatStream.List.ID}
@@ -967,12 +1009,132 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 13ba55e8-5415-4606-8445-f92edf04159e
+    type: regular
+    task:
+      id: 13ba55e8-5415-4606-8445-f92edf04159e
+      version: -1
+      name: threatstream-search-intelligence
+      description: Return filtered intelligence from ThreatStream. If a query is defined,
+        it overrides all other arguments that were passed to the command.
+      script: Anomali ThreatStream v3|||threatstream-search-intelligence
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v3
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      limit:
+        simple: "1"
+      type:
+        simple: ip
+      value:
+        simple: 1.2.4.5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: c7011a77-fe89-4c20-83cf-baa69ee3f490
+    type: regular
+    task:
+      id: c7011a77-fe89-4c20-83cf-baa69ee3f490
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: eb4c681c-94ac-4e6c-85c8-48dca9044e00
+    type: condition
+    task:
+      id: eb4c681c-94ac-4e6c-85c8-48dca9044e00
+      version: -1
+      name: Validate Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.Intelligence.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.Intelligence.ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2225,
+        "height": 2765,
         "width": 2100,
         "x": 50,
         "y": -390

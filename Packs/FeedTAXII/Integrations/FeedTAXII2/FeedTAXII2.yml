@@ -71,7 +71,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username / API Key (see '?')
+- display: Username / API Key
   name: credentials
   required: false
   type: 9

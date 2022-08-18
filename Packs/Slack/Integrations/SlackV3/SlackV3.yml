@@ -54,6 +54,12 @@ configuration:
   name: allow_incidents
   required: false
   type: 8
+- display: Ignore event retries
+  name: ignore_event_retries
+  required: false
+  type: 8
+  additionalinfo: In some cases, events may not be processed fast enough. If you wish to attempt to retry the event, select `false`. Please note, this can result in some responses being double-posted.
+  defaultvalue: 'true'
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -62,18 +68,18 @@ configuration:
   name: unsecure
   required: false
   type: 8
-- display: Enable Incident Mirroring
+- defaultvalue: 'true'
+  display: Enable Incident Mirroring
   name: mirroring
   required: false
   type: 8
-  defaultvalue: 'true'
 - defaultvalue: 'true'
-  additionalinfo: If your organization does not require incident mirroring, or data collection, it is possible to disable the `longRunning` parameter. For those organizations who do wish to use these features, the parameter should be set to `True` to enable the long-running container.
   display: Long running instance. Required for investigation mirroring and direct messages.
-  hidden: false
   name: longRunning
   required: false
   type: 8
+  additionalinfo: If your organization does not require incident mirroring, or data collection, it is possible to disable the `longRunning` parameter. For those organizations who do wish to use these features, the parameter should be set to `True` to enable the long-running container.
+  hidden: false
 - defaultvalue: Cortex XSOAR
   display: Bot display name in Slack
   name: bot_name
@@ -89,29 +95,29 @@ configuration:
   name: max_limit_time
   required: false
   type: 0
-- defaultvalue: '200'
-  display: Number of objects to return in each paginated call
+- display: Number of objects to return in each paginated call
   name: paginated_count
   required: false
   type: 0
-- additionalinfo: Only supported in Demisto V6.1 and above.
-  display: Comma separated list of tags To filter the messages sent from demisto.
+  defaultvalue: '200'
+- display: Comma separated list of tags To filter the messages sent from demisto.
   hidden: false
   name: filtered_tags
   required: false
   type: 0
+  additionalinfo: Only supported in Demisto V6.1 and above.
 - display: Enable DMs to the bot
   hidden: false
   name: enable_dm
   required: false
-  defaultvalue: 'false'
   type: 8
+  defaultvalue: 'false'
 - display: Disable Caching of Users and Channels
+  name: disable_caching
+  type: 8
+  required: false
   additionalinfo: This parameter prevents this integration from storing Users and Channels into the integration context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
   hidden: false
-  name: disable_caching
-  required: false
-  type: 8
   defaultvalue: 'false'
 - display: Common Channels
   name: common_channels
@@ -558,7 +564,7 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.31031
+  dockerimage: demisto/slackv3:1.0.0.32378
   feed: false
   isfetch: false
   longRunning: true

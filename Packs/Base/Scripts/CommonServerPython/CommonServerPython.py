@@ -6944,10 +6944,13 @@ def return_error(message, error='', outputs=None):
         :rtype: ``dict``
     """
     is_command = hasattr(demisto, 'command')
-    is_server_handled = is_command and demisto.command() in ('fetch-incidents',
-                                                             'fetch-credentials',
-                                                             'long-running-execution',
-                                                             'fetch-indicators')
+    try:
+        is_server_handled = is_command and demisto.command() in ('fetch-incidents',
+                                                                 'fetch-credentials',
+                                                                 'long-running-execution',
+                                                                 'fetch-indicators')
+    except Exception:
+        is_server_handled = False
     message = LOG(message)
     if error:
         LOG(str(error))
@@ -7072,7 +7075,7 @@ class ExecutionMetrics(object):
 
     @staticmethod
     def is_supported():
-        if is_demisto_version_ge('7.0.0'):
+        if is_demisto_version_ge('6.8.0'):
             return True
         return False
 
@@ -7169,6 +7172,24 @@ class ExecutionMetrics(object):
                 else:
                     self._metrics.append({'Type': metric_type, 'APICallsCount': metric_value})
             self.metrics = CommandResults(execution_metrics=self._metrics)
+
+
+def append_metrics(execution_metrics, results):
+    """
+    Returns a 'CommandResults' list appended with metrics.
+
+    :type execution_metrics: ``ExecutionMetrics``
+    :param execution_metrics: Metrics object to be added to CommandResults list(optional).
+
+    :type results: ``list``
+    :param results: 'CommandResults' list to append metrics to (required).
+
+    :return: results appended with the metrics if the server version is supported.
+    :rtype: ``list``
+    """
+    if execution_metrics.metrics is not None and execution_metrics.is_supported():
+        results.append(execution_metrics.metrics)
+    return results
 
 
 class CommandRunner:
