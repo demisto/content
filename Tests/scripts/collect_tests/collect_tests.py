@@ -13,13 +13,14 @@ from constants import (ALWAYS_INSTALLED_PACKS,
                        ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
                        SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
-from demisto_sdk.commands.common.tools import find_type, str2bool
+from demisto_sdk.commands.common.tools import find_type, run_command, str2bool
 from exceptions import (DeprecatedPackException, InvalidTestException,
                         NonDictException, NoTestsConfiguredException,
                         NothingToCollectException, NotUnderPackException,
                         PrivateTestException, SkippedPackException,
                         SkippedTestException, TestMissingFromIdSetException,
                         UnsupportedPackException)
+from git import Repo
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
@@ -461,44 +462,46 @@ class BranchTestCollector(TestCollector):
         )
 
     def _get_changed_files(self) -> tuple[str, ...]:
-        repo = PATHS.content_repo
-        changed_files: list[str] = []
+        contrib_diff = None  # overridden on contribution branches, added to the git diff.
 
-        previous_commit = 'origin/master'
         current_commit = self.branch_name
+        previous_commit = 'origin/master'
 
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
         if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account)
-            if self.branch_name == 'master':
-                current_commit = 'origin/master'
+            current_commit = 'origin/master' if self.branch_name == 'master' else self.branch_name
 
         elif self.branch_name == 'master':
-            current_commit, previous_commit = tuple(repo.iter_commits(max_count=2))
+            previous_commit, current_commit = run_command("git log -n 2 --pretty='%H'").replace("'", "").split()
 
         elif os.getenv('CONTRIB_BRANCH'):
-            # gets files of unknown status
-            contrib_diff: tuple[str, ...] = tuple(filter(lambda f: f.startswith('Packs/'), repo.untracked_files))
-            logger.info('contribution branch found, contrib-diff:\n' + '\n'.join(contrib_diff))
-            changed_files.extend(contrib_diff)
+            contrib_diff = run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
+            logger.info(f'contribution branch, contribution diff:\n{contrib_diff}')
 
-        diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
-        logger.debug(f'raw changed files string:\n{diff}')
+        diff_command = f'git diff --name-status {current_commit}...{previous_commit}'
+        logger.debug(f'running {diff_command}')
+
+        diff: str = run_command(diff_command)
+        logger.debug(f'Changed files:\n{diff}')
+
+        if contrib_diff:
+            logger.debug('adding contrib_diff to diff')
+            diff = f'{diff}\n{contrib_diff}'
+            logger.debug(f'diff is now\n{diff}')
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
-        for line in diff.splitlines():
-            try:
-                git_status, file_path = line.split()
-            except ValueError:
-                raise ValueError(f'unexpected line format (expected `<modifier>\t<file>`, got {line}')
+        files = []
+        for line in filter(None, diff.splitlines()):
+            git_status, file_path = line.split()
             if git_status == 'D':  # git-deleted file
                 logger.warning(f'Found a file deleted from git {file_path}, '
                                f'skipping it as TestCollector cannot properly find the appropriate tests (by design)')
                 continue
-            changed_files.append(file_path)  # non-deleted files (added, modified)
-        return tuple(changed_files)
+            files.append(file_path)  # non-deleted files (added, modified)
+        return tuple(files)
 
 
 class UploadCollector(BranchTestCollector):
@@ -687,7 +690,7 @@ if __name__ == '__main__':
     else:
         match (args.nightly, marketplace):
             case False, _:  # not nightly
-                branch_name = PATHS.content_repo.active_branch.name
+                branch_name = Repo(PATHS.content_path).active_branch.name
                 collector = BranchTestCollector(branch_name, marketplace, args.service_account)
             case True, MarketplaceVersions.XSOAR:
                 collector = XSOARNightlyTestCollector()
