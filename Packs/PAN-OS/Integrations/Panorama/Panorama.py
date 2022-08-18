@@ -5186,8 +5186,7 @@ def panorama_security_policy_match_command(args: dict):
     context_list = []
     raw_list = []
     for target, vsys in devices(targets=argToList(args.get('target')), vsys_s=argToList(args.get('vsys'))):
-        matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_,
-                                                        to_,
+        matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
                                                         protocol, source, source_user, target, vsys)
         if matching_rules:
 
