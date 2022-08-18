@@ -24,7 +24,7 @@
                     ],
                     "received": "2022-07-18T13:25:00+0000",
                     "subject": "Stock Sales",
-                    "senderIP": "54.236.186.184",
+                    "senderIP": "1.2.3.4",
                     "attachments": false,
                     "route": "inbound",
                     "sent": "2022-07-18T13:25:00+0000",

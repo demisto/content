@@ -404,6 +404,7 @@ def test_get_message_info_command(args, delivered, mocker, requests_mock):
     """
 
     mock_response = util_load_json('test_data/get_message_info_response.json')
+    MimecastV2.BASE_URL = 'http://test.com'
     requests_mock.post(f'/api/message-finder/get-message-info', json=mock_response)
     response = MimecastV2.get_message_info_command(args)
 
