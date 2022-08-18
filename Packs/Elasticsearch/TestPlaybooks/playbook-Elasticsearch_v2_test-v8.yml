@@ -1,6 +1,6 @@
-id: Elasticsearch_v2_test
+id: Elasticsearch_v2_test-v8
 version: -1
-name: Elasticsearch_v2_test
+name: Elasticsearch_v2_test-v8
 starttaskid: "0"
 tasks:
   "0":
