@@ -13,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -52,7 +52,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -89,7 +88,6 @@ tasks:
       query:
         simple: '*'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -130,7 +128,6 @@ tasks:
           right:
             value:
               simple: "0"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -173,7 +170,6 @@ tasks:
       sort-order:
         simple: desc
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -214,7 +210,6 @@ tasks:
           right:
             value:
               simple: xPXG62wBqofk71c5KdOw
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -240,8 +235,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -276,7 +271,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -311,7 +305,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -354,7 +347,6 @@ tasks:
       sort-order:
         simple: asc
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -395,7 +387,6 @@ tasks:
           right:
             value:
               simple: vfWp3GwBqofk71c5-NOI
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -431,7 +422,6 @@ tasks:
       query:
         simple: check
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -469,7 +459,6 @@ tasks:
             value:
               simple: Elasticsearch.Search.Query
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -498,3 +487,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''
