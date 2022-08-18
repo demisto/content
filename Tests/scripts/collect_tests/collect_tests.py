@@ -476,7 +476,7 @@ class BranchTestCollector(TestCollector):
                 current_commit = 'origin/master'
 
         elif self.branch_name == 'master':
-            previous_commit, current_commit = tuple(repo.iter_commits(max_count=2))
+            current_commit, previous_commit = tuple(repo.iter_commits(max_count=2))
 
         elif os.getenv('CONTRIB_BRANCH'):
             # gets files of unknown status
@@ -484,7 +484,7 @@ class BranchTestCollector(TestCollector):
             logger.info('contribution branch found, contrib-diff:\n' + '\n'.join(contrib_diff))
             changed_files.extend(contrib_diff)
 
-        diff = repo.git.diff(previous_commit, current_commit, '--name-status')
+        diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
         logger.debug(f'raw changed files string:\n{diff}')
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
