@@ -130,7 +130,7 @@ class TAXII2Server:
         self.collections_by_id: dict = dict()
         self.namespace_uuid = uuid.uuid5(PAWN_UUID, demisto.getLicenseID())
         self.create_collections(collections)
-        self.types_for_indicator_sdo = types_for_indicator_sdo if types_for_indicator_sdo else []
+        self.types_for_indicator_sdo = types_for_indicator_sdo or []
 
     @property
     def taxii_collections_media_type(self):
@@ -492,7 +492,7 @@ def handle_response(status_code: int, content: dict, date_added_first: str = Non
     return make_response(jsonify(content), status_code, headers)
 
 
-def create_query(query: str, types: list) -> str:
+def create_query(query: str, types: list[str]) -> str:
     """
     Args:
         query: collections query
@@ -503,23 +503,20 @@ def create_query(query: str, types: list) -> str:
     """
     new_query = ''
     if types:
+        demisto.debug(f'raw query: {query}')
         xsoar_types: list = []
         if 'domain-name' in types:
-            xsoar_types.extend(STIX2_TYPES_TO_XSOAR['domain-name'])
-        for t in types:
-            if t != 'domain-name':
-                try:
-                    xsoar_type = STIX2_TYPES_TO_XSOAR[t]
-                except KeyError:
-                    xsoar_type = t
-                xsoar_types.append(xsoar_type)
+            xsoar_types.append(STIX2_TYPES_TO_XSOAR['domain-name'])
+        for t in filter(lambda x: x != 'domain-name', types):
+            xsoar_types.append(STIX2_TYPES_TO_XSOAR.get(t, t))
 
         if query.strip():
             new_query = f'({query}) '
 
-        new_query += ' or '.join([f'type:"{x}"' for x in xsoar_types])
+        if or_part := (' or '.join(f'type:"{x}"' for x in xsoar_types)):
+            new_query += f' and ({or_part})'
 
-        demisto.debug(f'new query: {new_query}')
+        demisto.debug(f'modified query, after adding types: {new_query}')
         return new_query
     else:
         return query
@@ -807,10 +804,11 @@ def parse_content_range(content_range: str) -> tuple:
     return offset, limit
 
 
-def get_collections(params: dict = demisto.params()) -> dict:
+def get_collections(params: Optional[dict] = None) -> dict:
     """
     Gets the indicator query collections from the integration parameters.
     """
+    params = params or demisto.params()
     collections_json: str = params.get('collections', '')
 
     try:
