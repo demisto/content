@@ -481,7 +481,7 @@ class BranchTestCollector(TestCollector):
         elif os.getenv('CONTRIB_BRANCH'):
             # gets files of unknown status
             contrib_diff: tuple[str, ...] = tuple(filter(lambda f: f.startswith('Packs/'), repo.untracked_files))
-            logger.info(f'contribution branch found, contrib-diff:\n' + '\n'.join(contrib_diff))
+            logger.info('contribution branch found, contrib-diff:\n' + '\n'.join(contrib_diff))
             changed_files.extend(contrib_diff)
 
         diff = repo.git.diff(previous_commit, current_commit, '--name-status')
