@@ -459,7 +459,7 @@ class TestParsingSCOIndicators:
         xsoar_expected_response = [
             {
                 'value': 15139,
-                'score': 3,
+                'score': Common.DBotScore.NONE,
                 'rawJSON': autonomous_system_obj,
                 'type': 'ASN',
                 'fields': {
@@ -483,7 +483,7 @@ class TestParsingSCOIndicators:
                 [
                     {
                         'value': '1.1.1.1',
-                        'score': 3,
+                        'score': Common.DBotScore.NONE,
                         'type': 'IP',
                         'fields': {
                             'stixid': 'ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e',
@@ -512,7 +512,7 @@ class TestParsingSCOIndicators:
                             'type': 'domain-name',
                             'value': 'example.com'
                         },
-                        'score': 3,
+                        'score': Common.DBotScore.NONE,
                         'type': 'Domain',
                         'value': 'example.com'
                     }
@@ -571,7 +571,7 @@ class TestParsingSCOIndicators:
                     'trafficlightprotocol': 'GREEN'
                 },
                 'rawJSON': file_obj,
-                'score': 3,
+                'score': Common.DBotScore.NONE,
                 'type': 'File',
                 'value': '841a8921140aba50671ebb0770fecc4ee308c4952cfeff8de154ab14eeef4649'
             }
@@ -605,7 +605,7 @@ class TestParsingSCOIndicators:
                     'trafficlightprotocol': 'GREEN'
                 },
                 'rawJSON': mutex_obj,
-                'score': 3,
+                'score': Common.DBotScore.NONE,
                 'type': 'Mutex',
                 'value': '__CLEANSWEEP__'
             }
@@ -665,7 +665,7 @@ class TestParsingSCOIndicators:
                     'trafficlightprotocol': 'GREEN'
                 },
                 'rawJSON': registry_object,
-                'score': 3,
+                'score': Common.DBotScore.NONE,
                 'type': 'Registry Key',
                 'value': "hkey_local_machine\\system\\bar\\foo"
             }
