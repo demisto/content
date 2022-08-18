@@ -24,3 +24,4 @@
 !misp-publish-event event_id=20536
 !misp-set-event-attributes event_id=123 attribute_data='[{"type":"domain","value":"target.domain"}]'
 !misp-check-warninglist value=8.8.8.8
+!misp-add-email-object entry_id=${Email.EntryID} event_id=1655

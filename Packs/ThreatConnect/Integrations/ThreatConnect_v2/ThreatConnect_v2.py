@@ -548,7 +548,7 @@ def tc_associated_groups(tc, owners, indicator_value, indicator_type):
     if apiBranch is not None:
         if apiBranch in ENCODED_API_BRANCHES:
             indicator_value = quote(indicator_value, safe='')
-        ro.set_request_uri("/v2/indicators/{}/{}/tags".format(apiBranch, indicator_value))
+        ro.set_request_uri("/v2/indicators/{}/{}/groups".format(apiBranch, indicator_value))
         results = tc.api_request(ro)
         if results.headers['content-type'] == 'application/json':
             if 'data' in results.json():
