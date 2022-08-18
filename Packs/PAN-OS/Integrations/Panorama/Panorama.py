@@ -21,7 +21,6 @@ from panos.network import Zone
 from urllib.error import HTTPError
 
 import shutil
-
 ''' IMPORTS '''
 import json
 import uuid
@@ -454,23 +453,23 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         'key': API_KEY,
         'where': where,  # default where will be bottom for BC purposes
         'element': add_argument_open(action, 'action', False)
-                   + add_argument_target(target, 'target')
-                   + add_argument_open(description, 'description', False)
-                   + add_argument_list(source, 'source', True, True)
-                   + add_argument_list(destination, 'destination', True, True)
-                   + add_argument_list(application, 'application', True)
-                   + add_argument_list(category, 'category', True)
-                   + add_argument_open(source_user, 'source-user', True)
-                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
-                   + add_argument_list(to, 'to', True, True)  # default to will always be any
-                   + add_argument_list(service, 'service', True, True)
-                   + add_argument_yes_no(negate_source, 'negate-source')
-                   + add_argument_yes_no(negate_destination, 'negate-destination')
-                   + add_argument_yes_no(disable, 'disabled')
-                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-                   + add_argument(log_forwarding, 'log-setting', False)
-                   + add_argument_list(tags, 'tag', True)
-                   + add_argument_profile_setting(profile_setting, 'profile-setting')
+        + add_argument_target(target, 'target')
+        + add_argument_open(description, 'description', False)
+        + add_argument_list(source, 'source', True, True)
+        + add_argument_list(destination, 'destination', True, True)
+        + add_argument_list(application, 'application', True)
+        + add_argument_list(category, 'category', True)
+        + add_argument_open(source_user, 'source-user', True)
+        + add_argument_list(from_, 'from', True, True)  # default from will always be any
+        + add_argument_list(to, 'to', True, True)  # default to will always be any
+        + add_argument_list(service, 'service', True, True)
+        + add_argument_yes_no(negate_source, 'negate-source')
+        + add_argument_yes_no(negate_destination, 'negate-destination')
+        + add_argument_yes_no(disable, 'disabled')
+        + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+        + add_argument(log_forwarding, 'log-setting', False)
+        + add_argument_list(tags, 'tag', True)
+        + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
     if dst:
         if where not in ('before', 'after'):
@@ -727,11 +726,11 @@ def panorama_commit_command(args: dict):
         }
         return PollResult(
             response=CommandResults(  # this is what the response will be in case job has finished
-                outputs_prefix='Panorama.Commit',
-                outputs_key_field='JobID',
-                outputs=commit_output,
-                readable_output=tableToMarkdown('Commit Status:', commit_output, removeNull=True)
-            ),
+                    outputs_prefix='Panorama.Commit',
+                    outputs_key_field='JobID',
+                    outputs=commit_output,
+                    readable_output=tableToMarkdown('Commit Status:', commit_output, removeNull=True)
+                ),
             continue_to_poll=commit_status.get('job', {}).get('status') != 'FIN',  # continue polling if job isn't done
         )
     else:  # either no polling is required or this is the first run
@@ -751,8 +750,7 @@ def panorama_commit_command(args: dict):
                 readable_output=tableToMarkdown('Commit Status:', context_output, removeNull=True)
             )
         else:  # nothing to commit in pan-os, hence even if polling=true, no reason to poll anymore.
-            commit_output = result.get('response', {}).get(
-                'msg') or 'There are no changes to commit.'  # type: ignore[assignment]
+            commit_output = result.get('response', {}).get('msg') or 'There are no changes to commit.'  # type: ignore[assignment]
             continue_to_poll = False
 
         return PollResult(
@@ -1023,7 +1021,6 @@ def panorama_push_to_template_stack_command(args: dict):
     else:
         # no changes to commit
         return_results(result['response']['msg']['line'])
-
 
 @logger
 def panorama_push_status(job_id: str, target: Optional[str] = None):
@@ -2643,8 +2640,14 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
     return dbot_score
 
 
-def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list,
-                                      additional_malicious: list, target: Optional[str] = None):
+def panorama_get_url_category_command(
+    url_cmd: str,
+    url: str,
+    additional_suspicious: list,
+    additional_malicious: list,
+    reliability: str,
+    target: Optional[str] = None
+):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -2680,7 +2683,8 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
                 indicator=url,
                 indicator_type=DBotScoreType.URL,
                 integration_name='PAN-OS',
-                score=max_url_dbot_score
+                score=max_url_dbot_score,
+                reliability=reliability
             )
             url_obj = Common.URL(
                 url=url,
@@ -2700,7 +2704,8 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
                 indicator=url,
                 indicator_type=DBotScoreType.URL,
                 integration_name='PAN-OS',
-                score=score
+                score=score,
+                reliability=reliability
             )
             url_obj = Common.URL(
                 url=url,
@@ -2860,9 +2865,9 @@ def create_url_filter_params(
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
     element = add_argument_list(url_category_list, action, True) + \
-              add_argument_list(override_allow_list, 'allow-list', True) + \
-              add_argument_list(override_block_list, 'block-list', True) + \
-              add_argument(description, 'description', False)
+        add_argument_list(override_allow_list, 'allow-list', True) + \
+        add_argument_list(override_block_list, 'block-list', True) + \
+        add_argument(description, 'description', False)
     major_version = get_pan_os_major_version()
     if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
         element += "<action>block</action>"
@@ -2979,8 +2984,7 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
     allow_name, block_name = set_edit_url_filter_xpaths(major_version)
 
     if element_to_change == 'description':
-        params[
-            'xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
+        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
         params['element'] = add_argument_open(element_value, 'description', False)
         result = http_request(URL, 'POST', body=params)
         url_filter_output['Description'] = element_value
@@ -5115,7 +5119,7 @@ def devices(targets=None, vsys_s=None):
     Yields:
         target, vsys
     """
-    if VSYS:  # for FW intstances
+    if VSYS:    # for FW intstances
         yield None, None
     elif targets and vsys_s:
         for target in targets:
@@ -5162,8 +5166,7 @@ def readable_security_policy_match_outputs(context_list):
             table_name = 'Matching Security Policies:'
 
         readable_list.append(tableToMarkdown(table_name, context['Rules'], removeNull=True,
-                                             headers=['Name', 'Action', 'From', 'Source', 'To', 'Destination',
-                                                      'Application'],
+                                             headers=['Name', 'Action', 'From', 'Source', 'To', 'Destination', 'Application'],
                                              headerTransform=format_readable_security_policy_match_headers))
 
     return '\n'.join(readable_list)
@@ -5791,14 +5794,12 @@ def panorama_check_latest_panos_software_command(target: Optional[str] = None):
     versions = to_context.get('sw-updates', {}).get('versions').get('entry', [])
     if len(versions) > 5:
         versions = versions[:5]
-    human_readable = tableToMarkdown('5 latest pan-os software releases', versions,
-                                     ['version', 'filename', 'size', 'released-on', 'downloaded', 'current', 'latest',
-                                      'uploaded'], removeNull=True)
+    human_readable = tableToMarkdown('5 latest pan-os software releases', versions, ['version', 'filename', 'size', 'released-on', 'downloaded' , 'current' , 'latest', 'uploaded'], removeNull=True)
     return CommandResults(readable_output=human_readable,
-                          outputs=to_context,
-                          raw_response=result,
-                          outputs_prefix='Panorama.LatestVersions'
-                          )
+                                  outputs=to_context,
+                                  raw_response=result,
+                                  outputs_prefix='Panorama.LatestVersions'
+                                  )
 
 
 @logger
@@ -7995,6 +7996,8 @@ class Topology:
         :param device: Either Panorama or Firewall Pandevice instance
         """
         if isinstance(device, Panorama):
+            serial_number_or_hostname = device.serial if device.serial else device.hostname
+
             # Check if HA is active and if so, what the system state is.
             panorama_ha_state_result = run_op_command(device, "show high-availability state")
             enabled = panorama_ha_state_result.find("./result/enabled")
@@ -8004,7 +8007,7 @@ class Topology:
                     state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
                     if "active" in state:
                         # TODO: Work out how to get the Panorama peer serial..
-                        self.ha_active_devices[device.serial] = "peer serial not implemented here.."
+                        self.ha_active_devices[serial_number_or_hostname] = "peer serial not implemented here.."
                         self.get_all_child_firewalls(device)
                         return
                 else:
@@ -8013,8 +8016,8 @@ class Topology:
                 self.get_all_child_firewalls(device)
 
             # This is a bit of a hack - if no ha, treat it as active
-            self.ha_active_devices[device.serial] = "STANDALONE"
-            self.panorama_objects[device.serial] = device
+            self.ha_active_devices[serial_number_or_hostname] = "STANDALONE"
+            self.panorama_objects[serial_number_or_hostname] = device
 
             return
 
@@ -8062,7 +8065,12 @@ class Topology:
         # This means we don't need to refresh the state.
         for device in self.all(filter_str):
             if self.ha_active_devices:
-                if device.serial in self.ha_active_devices:
+                # Handle case of no SN or hostname
+                serial_or_hostname = device.serial
+                if not serial_or_hostname:
+                    serial_or_hostname = device.hostname
+
+                if serial_or_hostname in self.ha_active_devices:
                     yield device
             else:
                 status = device.refresh_ha_active()
@@ -8118,7 +8126,7 @@ class Topology:
             yield firewall
 
     def all(
-            self, filter_string: Optional[str] = None, target: Optional[str] = None
+        self, filter_string: Optional[str] = None, target: Optional[str] = None
     ) -> Iterator[Union[Firewall, Panorama]]:
         """
         Returns an iterable for all devices in the topology
@@ -8146,7 +8154,7 @@ class Topology:
         """
         all_devices = {**self.firewall_objects, **self.panorama_objects}
         if device := all_devices.get(filter_string):
-            return device
+           return device
 
         raise DemistoException(f"filter_str {filter_string} is not the exact ID of a host in this topology; " +
                                f"use a more specific filter string.")
@@ -8160,7 +8168,7 @@ class Topology:
 
     @classmethod
     def build_from_string(
-            cls, hostnames: str, username: str, password: str, port: Optional[int] = None, api_key: Optional[str] = None
+        cls, hostnames: str, username: str, password: str, port: Optional[int] = None, api_key: Optional[str] = None
     ):
         """
         Splits a csv list of hostnames and builds the topology based on it. This allows you to pass a series of PanOS hostnames
@@ -8246,10 +8254,10 @@ class Topology:
         )
 
     def get_all_object_containers(
-            self,
-            device_filter_string: Optional[str] = None,
-            container_name: Optional[str] = None,
-            top_level_devices_only: Optional[bool] = False,
+        self,
+        device_filter_string: Optional[str] = None,
+        container_name: Optional[str] = None,
+        top_level_devices_only: Optional[bool] = False,
     ) -> List[Tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, Vsys]]]:
         """
         Given a device, returns all the possible configuration containers that can contain objects -
@@ -8996,7 +9004,7 @@ def flatten_xml_to_dict(element, object_dict: dict, class_type: Callable):
     return object_dict
 
 
-def dataclass_from_element(device: Union[Panorama, Firewall], class_type: Callable, element):
+def dataclass_from_element(device: Union[Panorama, Firewall],class_type: Callable, element):
     """
     Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass parameters must match
     element: Optional[Element]
@@ -9046,6 +9054,7 @@ def resolve_container_name(container: Union[Panorama, Firewall, DeviceGroup, Tem
         return "shared"
 
     return container.name
+
 
 
 @dataclass
@@ -9114,8 +9123,7 @@ class HygieneRemediation:
 
     @staticmethod
     def fix_log_forwarding_profile_enhanced_logging(topology: Topology,
-                                                    issues: List[ConfigurationHygieneIssue]) -> List[
-        ConfigurationHygieneFix]:
+                                                    issues: List[ConfigurationHygieneIssue]) -> List[ConfigurationHygieneFix]:
         """
         Given a list of hygiene issues, sourced by `pan-os-hygiene-check-log-forwarding`, enables enhanced application logging to
         fix that issue.
@@ -9287,6 +9295,7 @@ class ObjectGetter:
         "SecurityProfileGroup": SecurityProfileGroup,
         "SecurityRule": SecurityRule,
         "NatRule": NatRule,
+        "LogForwardingProfile": LogForwardingProfile,
     }
 
     @staticmethod
@@ -9444,8 +9453,8 @@ class HygieneLookups:
 
     @staticmethod
     def check_log_forwarding_profiles(
-            topology: Topology,
-            device_filter_str: Optional[str] = None,
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
     ):
         """
         Evaluates the log forwarding profiles configured througout the environment to validate at least one is present with the
@@ -9527,9 +9536,9 @@ class HygieneLookups:
 
     @staticmethod
     def get_conforming_threat_profiles(
-            profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]],
-            minimum_block_severities: List[str],
-            minimum_alert_severities: List[str]
+        profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]],
+        minimum_block_severities: List[str],
+        minimum_alert_severities: List[str]
     ) -> Union[List[VulnerabilityProfile], List[AntiSpywareProfile]]:
         """
         Given a list of threat (vulnerability or spyware) profiles, return any that conform to best practices.
@@ -9571,10 +9580,10 @@ class HygieneLookups:
 
     @staticmethod
     def check_vulnerability_profiles(
-            topology: Topology,
-            device_filter_str: Optional[str] = None,
-            minimum_block_severities: Optional[List[str]] = None,
-            minimum_alert_severities: Optional[List[str]] = None
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+        minimum_block_severities: Optional[List[str]] = None,
+        minimum_alert_severities: Optional[List[str]] = None
     ) -> ConfigurationHygieneCheckResult:
         """
         Checks the environment to ensure at least one vulnerability profile is configured according to visibility best practices.
@@ -9823,8 +9832,7 @@ class HygieneLookups:
         )
 
     @staticmethod
-    def check_security_zones(topology: Topology,
-                             device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+    def check_security_zones(topology: Topology, device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
         """
         Check all security zones are configured with Log Forwarding profiles.
         :param device_filter_str: Filter checks to a specific device or devices
@@ -9859,8 +9867,7 @@ class HygieneLookups:
         )
 
     @staticmethod
-    def check_security_rules(topology: Topology,
-                             device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+    def check_security_rules(topology: Topology, device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
         """
         Check all security rules, in all rulebases, are configured with Log Forwarding and threat profiles.
         :param device_filter_str: Filter checks to a specific device or devices
@@ -9937,8 +9944,8 @@ class PanoramaCommand:
 
     @staticmethod
     def get_device_groups(
-            topology: Topology,
-            device_filter_str: Optional[str] = None,
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
     ) -> List[DeviceGroupInformation]:
         """
         Get all the device groups from Panorama and their associated devices.
@@ -9962,8 +9969,8 @@ class PanoramaCommand:
 
     @staticmethod
     def get_template_stacks(
-            topology: Topology,
-            device_filter_str: Optional[str] = None,
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
     ) -> List[TemplateStackInformation]:
         """
         Get all the template-stacks from Panorama and their associated devices.
@@ -9987,8 +9994,7 @@ class PanoramaCommand:
         return result
 
     @staticmethod
-    def push_style(topology: Topology, device: Union[Firewall, Panorama], style: str,
-                   filter: Optional[List[str]] = None):
+    def push_style(topology: Topology, device: Union[Firewall, Panorama], style: str, filter: Optional[List[str]] = None):
         """
         Given a pan-os-python push style, a device and the topology object, work out what DGs and templates we need to push,
         then push them.
@@ -10006,8 +10012,7 @@ class PanoramaCommand:
             commit_groups = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))
             commit_group_names = set([x.name for x in commit_groups])
         else:
-            raise DemistoException(
-                f"Provided push style {style} is invalid. Please specify `device group` or `template stack`")
+            raise DemistoException(f"Provided push style {style} is invalid. Please specify `device group` or `template stack`")
 
         if filter:
             commit_group_names = set([x for x in commit_group_names if x in filter])
@@ -10038,9 +10043,9 @@ class UniversalCommand:
 
     @staticmethod
     def get_system_info(
-            topology: Topology,
-            device_filter_str: Optional[str] = None,
-            target: Optional[str] = None
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+        target: Optional[str] = None
     ) -> ShowSystemInfoCommandResult:
         """
         Get the running system information
@@ -10061,9 +10066,9 @@ class UniversalCommand:
 
     @staticmethod
     def get_available_software(
-            topology: Topology,
-            device_filter_str: Optional[str] = None,
-            target: Optional[str] = None
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+        target: Optional[str] = None
     ) -> SoftwareVersionCommandResult:
         """
         Get all available software updates
@@ -10080,11 +10085,11 @@ class UniversalCommand:
 
     @staticmethod
     def download_software(
-            topology: Topology,
-            version: str,
-            sync: bool = False,
-            device_filter_str: Optional[str] = None,
-            target: Optional[str] = None
+        topology: Topology,
+        version: str,
+        sync: bool = False,
+        device_filter_str: Optional[str] = None,
+        target: Optional[str] = None
     ) -> DownloadSoftwareCommandResult:
         """
         Download the given software version to the device. This is an async command, and returns
@@ -10106,10 +10111,10 @@ class UniversalCommand:
 
     @staticmethod
     def install_software(
-            topology: Topology, version: str,
-            sync: Optional[bool] = False,
-            device_filter_str: Optional[str] = None,
-            target: Optional[str] = None
+        topology: Topology, version: str,
+        sync: Optional[bool] = False,
+        device_filter_str: Optional[str] = None,
+        target: Optional[str] = None
     ) -> InstallSoftwareCommandResult:
 
         """
@@ -10176,12 +10181,12 @@ class UniversalCommand:
 
     @staticmethod
     def show_jobs(
-            topology: Topology,
-            device_filter_str: Optional[str] = None,
-            job_type: Optional[str] = None,
-            status=None,
-            id: Optional[int] = None,
-            target: Optional[str] = None
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+        job_type: Optional[str] = None,
+        status=None,
+        id: Optional[int] = None,
+        target: Optional[str] = None
     ) -> List[ShowJobsAllResultData]:
 
         """
@@ -10250,7 +10255,7 @@ class FirewallCommand:
 
     @staticmethod
     def get_counter_global(
-            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowCounterGlobalCommmandResult:
         """
         Gets the global counter details
@@ -10273,7 +10278,7 @@ class FirewallCommand:
 
     @staticmethod
     def get_routing_summary(
-            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowRouteSummaryCommandResult:
         """
         Gets the routing summary table
@@ -10294,7 +10299,7 @@ class FirewallCommand:
 
     @staticmethod
     def get_bgp_peers(
-            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowRoutingProtocolBGPCommandResult:
         """
         Gets all BGP peers
@@ -10333,7 +10338,7 @@ class FirewallCommand:
 
     @staticmethod
     def get_ha_status(
-            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> List[ShowHAState]:
         """
         Gets the HA status of the device. If HA is not enabled, assumes the device is active.
@@ -10393,7 +10398,7 @@ class FirewallCommand:
 
     @staticmethod
     def get_routes(
-            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowRoutingRouteCommandResult:
         """
         Gets the entire routing table.
@@ -10443,7 +10448,7 @@ def test_topology_connectivity(topology: Topology):
 
 
 def get_arp_tables(
-        topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
+    topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
 ) -> ShowArpCommandResult:
     """
     Gets all arp tables from all firewalls in the topology.
@@ -10455,7 +10460,7 @@ def get_arp_tables(
 
 
 def get_route_summaries(
-        topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
+    topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
 ) -> ShowRouteSummaryCommandResult:
     """
     Pulls all route summary information from the topology
@@ -10467,8 +10472,8 @@ def get_route_summaries(
 
 
 def get_routes(topology: Topology,
-               device_filter_string: Optional[str] = None, target: Optional[str] = None
-               ) -> ShowRoutingRouteCommandResult:
+    device_filter_string: Optional[str] = None, target: Optional[str] = None
+) -> ShowRoutingRouteCommandResult:
     """
     Pulls all route summary information from the topology
     :param topology: `Topology` instance !no-auto-argument
@@ -10479,9 +10484,9 @@ def get_routes(topology: Topology,
 
 
 def get_system_info(
-        topology: Topology,
-        device_filter_string: Optional[str] = None,
-        target: Optional[str] = None
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None
 ) -> ShowSystemInfoCommandResult:
     """
     Gets information from all PAN-OS systems in the topology.
@@ -10493,8 +10498,8 @@ def get_system_info(
 
 
 def get_device_groups(
-        topology: Topology,
-        device_filter_string: Optional[str] = None,
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
 ) -> List[DeviceGroupInformation]:
     """
     Gets the operational information of the device groups in the topology.
@@ -10505,8 +10510,8 @@ def get_device_groups(
 
 
 def get_template_stacks(
-        topology: Topology,
-        device_filter_string: Optional[str] = None,
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
 ) -> List[TemplateStackInformation]:
     """
     Gets the operational information of the template-stacks in the topology.
@@ -10517,9 +10522,9 @@ def get_template_stacks(
 
 
 def get_global_counters(
-        topology: Topology,
-        device_filter_string: Optional[str] = None,
-        target: Optional[str] = None
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None
 ) -> ShowCounterGlobalCommmandResult:
     """
     Gets global counter information from all the PAN-OS firewalls in the topology
@@ -10531,9 +10536,9 @@ def get_global_counters(
 
 
 def get_bgp_peers(
-        topology: Topology,
-        device_filter_string: Optional[str] = None,
-        target: Optional[str] = None
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None
 ) -> ShowRoutingProtocolBGPCommandResult:
     """
     Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
@@ -10545,9 +10550,9 @@ def get_bgp_peers(
 
 
 def get_available_software(
-        topology: Topology,
-        device_filter_string: Optional[str] = None,
-        target: Optional[str] = None
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None
 ) -> SoftwareVersionCommandResult:
     """
     Check the devices for software that is available to be installed.
@@ -10559,9 +10564,9 @@ def get_available_software(
 
 
 def get_ha_state(
-        topology: Topology,
-        device_filter_string: Optional[str] = None,
-        target: Optional[str] = None
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None
 ) -> List[ShowHAState]:
     """
     Get the HA state and associated details from the given device and any other details.
@@ -10574,12 +10579,12 @@ def get_ha_state(
 
 
 def get_jobs(
-        topology: Topology,
-        device_filter_string: Optional[str] = None,
-        status: Optional[str] = None,
-        job_type: Optional[str] = None,
-        id: Optional[str] = None,
-        target: Optional[str] = None
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    status: Optional[str] = None,
+    job_type: Optional[str] = None,
+    id: Optional[str] = None,
+    target: Optional[str] = None
 ) -> List[ShowJobsAllResultData]:
     """
     Get all the jobs from the devices in the environment, or a single job when ID is specified.
@@ -10605,11 +10610,11 @@ def get_jobs(
 
 
 def download_software(
-        topology: Topology,
-        version: str,
-        device_filter_string: Optional[str] = None,
-        sync: Optional[bool] = False,
-        target: Optional[str] = None
+    topology: Topology,
+    version: str,
+    device_filter_string: Optional[str] = None,
+    sync: Optional[bool] = False,
+    target: Optional[str] = None
 ) -> DownloadSoftwareCommandResult:
     """
     Download The provided software version onto the device.
@@ -10624,11 +10629,11 @@ def download_software(
 
 
 def install_software(
-        topology: Topology,
-        version: str,
-        device_filter_string: Optional[str] = None,
-        sync: Optional[bool] = False,
-        target: Optional[str] = None
+    topology: Topology,
+    version: str,
+    device_filter_string: Optional[str] = None,
+    sync: Optional[bool] = False,
+    target: Optional[str] = None
 ) -> InstallSoftwareCommandResult:
     """
     Install the given software version onto the device. Download the software first with
@@ -10653,7 +10658,7 @@ def reboot(topology: Topology, target: str) -> RestartSystemCommandResult:
     return UniversalCommand.reboot(topology, hostid=target)
 
 
-def system_status(topology: Topology, target: str) -> CheckSystemStatus:
+def system_status(topology: Topology,  target: str) -> CheckSystemStatus:
     """
     Checks the status of the given device, checking whether it's up or down and the operational mode normal
 
@@ -10678,8 +10683,8 @@ def update_ha_state(topology: Topology, target: str, state: str) -> HighAvailabi
 
 
 def check_log_forwarding(
-        topology: Topology,
-        device_filter_string: Optional[str] = None
+    topology: Topology,
+    device_filter_string: Optional[str] = None
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks all log forwarding profiles to confirm at least one meets PAN best practices.  This will validate profiles
@@ -10692,10 +10697,10 @@ def check_log_forwarding(
 
 
 def check_vulnerability_profiles(
-        topology: Topology,
-        device_filter_string: Optional[str] = None,
-        minimum_block_severities: str = "critical,high",
-        minimum_alert_severities: str = "medium,low"
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    minimum_block_severities: str = "critical,high",
+    minimum_alert_severities: str = "medium,low"
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured Vulnerability profiles to ensure at least one meets best practices. This will validate profiles
@@ -10812,8 +10817,7 @@ def get_conforming_vulnerability_profiles(
     )
 
 
-def check_security_zones(topology: Topology,
-                         device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+def check_security_zones(topology: Topology, device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
     """
     Check configured security zones have correct settings.
 
@@ -10823,8 +10827,7 @@ def check_security_zones(topology: Topology,
     return HygieneLookups.check_security_zones(topology, device_filter_str=device_filter_string)
 
 
-def check_security_rules(topology: Topology,
-                         device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+def check_security_rules(topology: Topology, device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
     """
     Check security rules are configured correctly.
 
@@ -10867,8 +10870,7 @@ def fix_log_forwarding(topology: Topology, issue: List) -> List[ConfigurationHyg
     :param topology: `Topology` instance !no-auto-argument
     :param issue: Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
     """
-    return HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(topology,
-                                                                          issues=hygiene_issue_dict_to_object(issue))
+    return HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(topology, issues=hygiene_issue_dict_to_object(issue))
 
 
 def fix_security_zone_log_setting(
@@ -11115,6 +11117,7 @@ def main():
         params = demisto.params()
         additional_malicious = argToList(params.get('additional_malicious'))
         additional_suspicious = argToList(params.get('additional_suspicious'))
+        reliability = params.get('integrationReliability')
         initialize_instance(args=args, params=params)
         command = demisto.command()
         LOG(f'Command being called is: {command}')
@@ -11217,22 +11220,33 @@ def main():
         # URL Filtering capabilities
         elif command == 'url':
             if USE_URL_FILTERING:  # default is false
-                panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
-                                                  additional_suspicious=additional_suspicious,
-                                                  additional_malicious=additional_malicious)
+                panorama_get_url_category_command(
+                    url_cmd='url',
+                    url=args.get('url'),
+                    additional_suspicious=additional_suspicious,
+                    additional_malicious=additional_malicious,
+                    reliability=reliability
+                )
             # do not error out
 
         elif command == 'panorama-get-url-category' or command == 'pan-os-get-url-category':
-            panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
-                                              additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious,
-                                              target=args.get('target'),
-                                              )
+            panorama_get_url_category_command(
+                url_cmd='url',
+                url=args.get('url'),
+                additional_suspicious=additional_suspicious,
+                additional_malicious=additional_malicious,
+                target=args.get('target'),
+                reliability=reliability
+            )
 
         elif command == 'panorama-get-url-category-from-cloud' or command == 'pan-os-get-url-category-from-cloud':
-            panorama_get_url_category_command(url_cmd='url-info-cloud', url=args.get('url'),
-                                              additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious)
+            panorama_get_url_category_command(
+                url_cmd='url-info-cloud',
+                url=args.get('url'),
+                additional_suspicious=additional_suspicious,
+                additional_malicious=additional_malicious,
+                reliability=reliability
+            )
 
         elif command == 'panorama-get-url-category-from-host' or command == 'pan-os-get-url-category-from-host':
             panorama_get_url_category_command(url_cmd='url-info-host', url=args.get('url'),
