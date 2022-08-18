@@ -362,6 +362,34 @@ def flattenDict(dt):
     return string
 
 
+def formatEvents(r_json):
+    """ Format the events in the response to be shown as a table.
+        :parm Any r_json: Received response
+        :return The formated response
+        :rtype list
+    """
+    columns = r_json['columns'] if 'columns' in r_json else []
+    data = r_json['data'] if 'data' in r_json else []
+
+    if not data:
+        return []
+
+    newData = []
+    f = 0
+
+    for row in data:
+        if len(columns) != len(row):
+            f += 1
+
+        newRow = {}
+        for i, field in enumerate(columns):
+            newRow[field] = row[i]
+        newData.append(newRow)
+
+    demisto.info(f"{f} events' size did not matched the headers' size and were ignored.")
+    return newData
+
+
 # Commands Methods
 
 
@@ -455,18 +483,54 @@ def commandCreateTask(sensorClient: SensorClient, args):
     )
 
 
-def commandGetTelemetry(sensorClient: SensorClient, telemetry: str, args):
-    """ Get the specific requested telemetry:
-            - 'events': Get event telemetry data grouped by time
-            - 'network': Get network telemetry data grouped by time
-            - 'packetstats':Get network metrics to a given sensor's interfaces
-        :parm str telemetry: The telemetry being requested
+def commandGetEventsTelemetry(sensorClient: SensorClient, args):
+    """ Get event telemetry data grouped by time
     """
-    demisto.debug(f'commandGetTelemetry ({telemetry}) has been called.')
+    demisto.debug('commandGetEventsTelemetry has been called.')
 
-    result: Dict[str, Any] = sensorClient.getTelemetry(telemetry, args)
+    result: Dict[str, Any] = sensorClient.getTelemetry('events', encodeArgsToURL(args))
 
-    prefix = 'Insight.Telemetry.' + telemetry
+    prefix = 'Insight.Telemetry.Events'
+    key = 'data'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
+    return CommandResults(
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=formatEvents(result)
+    )
+
+
+def commandGetNetworkTelemetry(sensorClient: SensorClient, args):
+    """ Get network telemetry data grouped by time
+    """
+    demisto.debug('commandGetNetworkTelemetry has been called.')
+
+    result: Dict[str, Any] = sensorClient.getTelemetry('network_usage', encodeArgsToURL(args))
+
+    prefix = 'Insight.Telemetry.NetworkUsage'
+    key = 'network_usage'
+
+    if not result or key not in result or not result.get(key):
+        return "No result found."
+
+    return CommandResults(
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
+    )
+
+
+def commandGetPacketstatsTelemetry(sensorClient: SensorClient, args):
+    """ Get network metrics to a given sensor's interfaces
+    """
+    demisto.debug('commandGetPacketstatsTelemetry has been called.')
+
+    result: Dict[str, Any] = sensorClient.getTelemetry('packetstats', encodeArgsToURL(args))
+
+    prefix = 'Insight.Telemetry.Packetstats'
     key = 'data'
 
     if not result or key not in result or not result.get(key):
@@ -843,7 +907,7 @@ def main():
             )
 
         elif command == 'insight-get-sensors':
-            return commandGetSensors(sensorClient)
+            return_results(commandGetSensors(sensorClient))
 
         elif command == 'insight-get-devices':
             return_results(commandGetDevices(sensorClient))
@@ -887,22 +951,22 @@ def main():
 
         elif command == 'insight-get-telemetry-events':
             return_results(
-                commandGetTelemetry(
-                    sensorClient, 'Events', encodeArgsToURL(args)
+                commandGetEventsTelemetry(
+                    sensorClient, encodeArgsToURL(args)
                 )
             )
 
         elif command == 'insight-get-telemetry-network':
             return_results(
-                commandGetTelemetry(
-                    sensorClient, 'Network', encodeArgsToURL(args)
+                commandGetNetworkTelemetry(
+                    sensorClient, encodeArgsToURL(args)
                 )
             )
 
         elif command == 'insight-get-telemetry-packetstats':
             return_results(
-                commandGetTelemetry(
-                    sensorClient, 'Packetstats', encodeArgsToURL(args)
+                commandGetPacketstatsTelemetry(
+                    sensorClient, encodeArgsToURL(args)
                 )
             )
 

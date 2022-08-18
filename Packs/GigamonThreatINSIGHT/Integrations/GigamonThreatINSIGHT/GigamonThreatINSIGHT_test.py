@@ -81,6 +81,46 @@ def test_get_device_list(requests_mock):
     assert response.outputs == mock_response['devices'][response.outputs_key_field]
 
 
+def test_get_events_telemetry(requests_mock):
+    from GigamonThreatINSIGHT import Client, SensorClient, commandGetEventsTelemetry
+    mock_response = util_load_json('test_data/events_telemetry_results.json')
+    expected_response = util_load_json('test_data/events_telemetry_expected_response.json')
+    requests_mock.get('https://sensor.icebrg.io/v1/telemetry/events', json=mock_response)
+
+    client: SensorClient = Client.getClient('Sensors', '')
+    response: CommandResults = commandGetEventsTelemetry(client, {})
+
+    assert response.outputs_prefix == 'Insight.Telemetry.Events'
+    assert response.outputs_key_field == 'data'
+    assert response.outputs == expected_response
+
+
+def test_get_packetstats_telemetry(requests_mock):
+    from GigamonThreatINSIGHT import Client, SensorClient, commandGetPacketstatsTelemetry
+    mock_response = util_load_json('test_data/packetstats_telemetry_results.json')
+    requests_mock.get('https://sensor.icebrg.io/v1/telemetry/packetstats', json=mock_response)
+
+    client: SensorClient = Client.getClient('Sensors', '')
+    response: CommandResults = commandGetPacketstatsTelemetry(client, {})
+
+    assert response.outputs_prefix == 'Insight.Telemetry.Packetstats'
+    assert response.outputs_key_field == 'data'
+    assert response.outputs == mock_response[response.outputs_key_field]
+
+
+def test_get_networkaccess_telemetry(requests_mock):
+    from GigamonThreatINSIGHT import Client, SensorClient, commandGetNetworkTelemetry
+    mock_response = util_load_json('test_data/network_telemetry_results.json')
+    requests_mock.get('https://sensor.icebrg.io/v1/telemetry/network_usage', json=mock_response)
+
+    client: SensorClient = Client.getClient('Sensors', '')
+    response: CommandResults = commandGetNetworkTelemetry(client, {})
+
+    assert response.outputs_prefix == 'Insight.Telemetry.NetworkUsage'
+    assert response.outputs_key_field == 'network_usage'
+    assert response.outputs == mock_response[response.outputs_key_field]
+
+
 def test_get_tasks(requests_mock):
     from GigamonThreatINSIGHT import Client, SensorClient, commandGetTasks
     mock_response = util_load_json('test_data/tasks_results.json')
