@@ -510,7 +510,7 @@ def create_query(query: str, types: list[str]) -> str:
             xsoar_types.extend(xsoar_type if isinstance(xsoar_type, tuple) else (xsoar_type,))
 
         if query.strip():
-            new_query = f'({query}) '
+            new_query = f'({query})'
 
         if or_part := (' or '.join(f'type:"{x}"' for x in xsoar_types)):
             new_query += f' and ({or_part})'
