@@ -1717,6 +1717,51 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 <div class="cl-preview-section">
 <p>user: <a href="mailto:%22test@demistodev.onmicrosoft.com">"test@demistodev.onmicrosoft.com</a>" session has been revoked successfully</p>
 </div>
+
+<h3>15. Change a user account - on premise</h3>
+
+<hr />
+<p>Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user, but does not terminate an existing session. Supported only in a self deployed app flow with the Permission: UserAuthenticationMethod.ReadWrite.All(Delegated)</p>
+
+<p>Base Command</p>
+
+<p><code>msgraph-user-change-password-on-premise</code></p>
+
+<p>Input</p>
+
+<table style="width:749px">
+	<thead>
+		<tr>
+			<th style="width:243px"><strong>Argument Name</strong></th>
+			<th style="width:367px"><strong>Description</strong></th>
+			<th style="width:130px"><strong>Required</strong></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td style="width:243px">user</td>
+			<td style="width:367px">User ID or userPrincipalName.</td>
+			<td style="width:130px">Required</td>
+		</tr>
+		<tr>
+			<td style="width:243px">password</td>
+			<td style="width:367px">The new password.</td>
+			<td style="width:130px">Optional</td>
+		</tr>
+		<tr>
+			<td style="width:243px">nonsensitive_password</td>
+			<td style="width:367px">The new password. This argument can eb used in playbooks, but note its value will NOT be hidden in logs</td>
+			<td style="width:130px">Optional</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p>Context Output</p>
+
+<p>There is no context output for this command.</p>
+
 ### msgraph-user-test
 ***
 Tests connectivity to Microsoft Graph User.
