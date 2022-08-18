@@ -747,7 +747,7 @@ class Client(BaseClient):
                 json_response = json.loads(str(res['result']))
             except (TypeError, json.JSONDecodeError):
                 json_response = res['result']
-            return json_response, response
+            return json_response, res
         elif res['status'] == 'Error':
             raise DemistoException(f"Error occurred. Status: ({res['status']}) Code: ({res['code']}) Result: "
                                    f"{res['result']}")
