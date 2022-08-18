@@ -23,7 +23,7 @@ def get_instance_name_command(args: Dict[str, Any]) -> CommandResults:
     if not instance_names:
         raise DemistoException(f'No instance for integration {integration_name}.')
 
-    if argToBoolean(args.get('return_all_instances')):
+    if argToBoolean(args.get('return_all_instances', 'false')):
         return CommandResults(
             outputs_prefix='Instances',
             outputs_key_field='',
