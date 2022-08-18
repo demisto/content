@@ -45,8 +45,7 @@ configuration:
   name: api_key_secret
   required: false
   type: 4
-description: Case management that enables visibility across your tools for continual
-  IR improvement.
+description: Case management that enables visibility across your tools for continual IR improvement.
 display: IBM Resilient Systems
 name: IBM Resilient Systems
 script:
@@ -59,30 +58,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ,
-        e.g., 2018-05-07T10:59:07Z.
+      description: Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
       isArray: false
       name: date-created-before
       required: false
       secret: false
     - default: false
-      description: Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ,
-        e.g., 2018-05-07T10:59:07Z.
+      description: Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
       isArray: false
       name: date-created-after
       required: false
       secret: false
     - default: false
-      description: Created date of the incident within the last time frame (days/hours/minutes).
-        Should be given a number, along with with the timeframe argument.
+      description: Created date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument.
       isArray: false
       name: date-created-within-the-last
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Time frame to search within for incident. Should be given with
-        within-the-last/due-in argument. Possible values: "days", "hours", "minutes".'
+      description: 'Time frame to search within for incident. Should be given with within-the-last/due-in argument. Possible values: "days", "hours", "minutes".'
       isArray: false
       name: timeframe
       predefined:
@@ -92,22 +87,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Occurred date of the incident within the last time frame (days/hours/minutes).
-        Should be given a number, along with the timeframe argument.
+      description: Occurred date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
       isArray: false
       name: date-occurred-within-the-last
       required: false
       secret: false
     - default: false
-      description: Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ,
-        e.g., 2018-05-07T10:59:07Z.
+      description: Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
       isArray: false
       name: date-occurred-before
       required: false
       secret: false
     - default: false
-      description: Occurred date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ,
-        e.g., 2018-05-07T10:59:07Z.
+      description: Occurred date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
       isArray: false
       name: date-occurred-after
       required: false
@@ -166,8 +158,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Due date of the incident in given time frame (days/hours/minutes).
-        Should be given a number, along with the timeframe argument.
+      description: Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
       isArray: false
       name: due-in
       required: false
@@ -296,11 +287,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A JSON object of the form: {field_name: new_field_value}. For example: `{"description": {"textarea": {"format": "html", "content": "The new description"}},
-              "name": {"text": "The new name"}}`. Because of API limitations we currently
-              support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea.
-              For more information, refer to https://xsoar.pan.dev/docs/reference/integrations/ibm-resilient-systems.
-              In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields value will be used.'
+      description: 'A JSON object of the form: {field_name: new_field_value}. For example: `{"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}`. The name should be the path to it in the incident separated by "." For example: `{"properties.incident_summary": {"text": "The new name"}}". Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. For more information, refer to https://xsoar.pan.dev/docs/reference/integrations/ibm-resilient-systems. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields value will be used.'
       isArray: false
       name: other-fields
       required: false
@@ -657,9 +644,7 @@ script:
       description: The date the note was modified.
       type: Date
     - contextPath: Resilient.IncidentNote.is_deleted
-      description: "The flag indicating if the note is deleted.
-      Generally, note objects are removed from the database when the user deletes them.
-      However, if the user deletes a parent note, the parent is just marked as deleted (and its text is cleared)."
+      description: The flag indicating if the note is deleted. Generally, note objects are removed from the database when the user deletes them. However, if the user deletes a parent note, the parent is just marked as deleted (and its text is cleared).
       type: Boolean
     - contextPath: Resilient.IncidentNote.modify_user.id
       description: The ID of the user who last modified the note.
@@ -689,8 +674,7 @@ script:
       description: For a task note, the list of that task's members, if any. Null for incident notes.
       type: Unknown
     - contextPath: Resilient.IncidentNote.task_at_id
-      description: "For a task note, whether that task is an automatic task.
-      Null for incident notes and task notes that are not automatically generated."
+      description: For a task note, whether that task is an automatic task. Null for incident notes and task notes that are not automatically generated.
       type: Unknown
     - contextPath: Resilient.IncidentNote.inc_owner
       description: The owner of the incident to which this note belongs.
@@ -788,127 +772,126 @@ script:
     execution: false
     name: rs-add-artifact
     outputs:
-      - contextPath: Resilient.IncidentArtifact.id
-        description: The ID of the artifact.
-        type: Number
-      - contextPath: Resilient.IncidentArtifact.type
-        description: The type of the artifact.
-        type: Number
-      - contextPath: Resilient.IncidentArtifact.value
-        description: The value of the artifact. For example, the IP address for an IP address artifact.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.description
-        description: The description of the artifact.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.attachment
-        description: The files attached to the artifact.
-        type: Unknown
-      - contextPath: Resilient.IncidentArtifact.parent_id
-        description: The parent artifact ID.
-        type: Number
-      - contextPath: Resilient.IncidentArtifact.creator.id
-        description: The ID of the artifact creator.
-        type: Number
-      - contextPath: Resilient.IncidentArtifact.creator.fname
-        description: The first name of the artifact creator.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.creator.lname
-        description: The last name of the artifact creator.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.creator.display_name
-        description: The display name of the artifact creator.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.creator.status
-        description: The status of the artifact creator.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.creator.email
-        description: The email of the artifact creator.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.creator.phone
-        description: The phone number of the artifact creator.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.creator.cell
-        description: The cellphone number of the artifact creator.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.creator.title
-        description: The user's job title (e.g., Incident Response Manager).
-        type: String
-      - contextPath: Resilient.IncidentArtifact.creator.locked
-        description: The status of the creator's account. (True if locked. false otherwise).
-        type: Boolean
-      - contextPath: Resilient.IncidentArtifact.creator.password_changed
-        description: Whether the user's password has changed. (True if changed, false otherwise).
-        type: Boolean
-      - contextPath: Resilient.IncidentArtifact.creator.is_external
-        description: Whether the user's account is authenticated externally.
-        type: Boolean
-      - contextPath: Resilient.IncidentArtifact.creator.ui_theme
-        description: The UI theme the user has selected. The Resilient UI recognizes the following values (darkmode, lightmode, verydarkmode).
-        type: String
-      - contextPath: Resilient.IncidentArtifact.inc_id
-        description: The incident ID.
-        type: Number
-      - contextPath: Resilient.IncidentArtifact.inc_name
-        description: The incident name.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.inc_owner
-        description: The incident owner.
-        type: Number
-      - contextPath: Resilient.IncidentArtifact.created
-        description: The date when the artifact is created.
-        type: Date
-      - contextPath: Resilient.IncidentArtifact.last_modified_time
-        description: The last date on which the artifact changed.
-        type: Date
-      - contextPath: Resilient.IncidentArtifact.last_modified_by.id
-        description: The ID of the user who last changed the artifact.
-        type: Number
-      - contextPath: Resilient.IncidentArtifact.last_modified_by.type
-        description: The type of user who last changed the artifact.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.last_modified_by.name
-        description: The name of the user who last changed the artifact.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.last_modified_by.display_name
-        description: The display name of the user who last changed the artifact.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.perms.read
-        description: Whether the current user has permission to read this artifact.
-        type: Boolean
-      - contextPath: Resilient.IncidentArtifact.perms.write
-        description: Whether the current user has permission to write to this artifact.
-        type: Boolean
-      - contextPath: Resilient.IncidentArtifact.perms.delete
-        description: Whether the current user has permission to delete this artifact.
-        type: Boolean
-      - contextPath: Resilient.IncidentArtifact.properties
-        description: The additional artifact properties.
-        type: Unknown
-      - contextPath: Resilient.IncidentArtifact.hash
-        description: The hash of the incident.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.relating
-        description: 'Whether this artifact should be used for relating to other incidents.
-        Null means use the default specified by the type. True means to always relate. False means to never relate.'
-        type: Boolean
-      - contextPath: Resilient.IncidentArtifact.creator_principal.id
-        description: The ID of the principal.
-        type: Number
-      - contextPath: Resilient.IncidentArtifact.creator_principal.type
-        description: The type of the principal. Currently only user or group.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.creator_principal.name
-        description: The API name of the principal.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.creator_principal.display_name
-        description: The display name of the principal.
-        type: String
-      - contextPath: Resilient.IncidentArtifact.ip.source
-        description: Whether the IP address is a source.
-        type: Boolean
-      - contextPath: Resilient.IncidentArtifact.ip.destination
-        description: Whether the IP address is a destination.
-        type: Boolean
+    - contextPath: Resilient.IncidentArtifact.id
+      description: The ID of the artifact.
+      type: Number
+    - contextPath: Resilient.IncidentArtifact.type
+      description: The type of the artifact.
+      type: Number
+    - contextPath: Resilient.IncidentArtifact.value
+      description: The value of the artifact. For example, the IP address for an IP address artifact.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.description
+      description: The description of the artifact.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.attachment
+      description: The files attached to the artifact.
+      type: Unknown
+    - contextPath: Resilient.IncidentArtifact.parent_id
+      description: The parent artifact ID.
+      type: Number
+    - contextPath: Resilient.IncidentArtifact.creator.id
+      description: The ID of the artifact creator.
+      type: Number
+    - contextPath: Resilient.IncidentArtifact.creator.fname
+      description: The first name of the artifact creator.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.creator.lname
+      description: The last name of the artifact creator.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.creator.display_name
+      description: The display name of the artifact creator.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.creator.status
+      description: The status of the artifact creator.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.creator.email
+      description: The email of the artifact creator.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.creator.phone
+      description: The phone number of the artifact creator.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.creator.cell
+      description: The cellphone number of the artifact creator.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.creator.title
+      description: The user's job title (e.g., Incident Response Manager).
+      type: String
+    - contextPath: Resilient.IncidentArtifact.creator.locked
+      description: The status of the creator's account. (True if locked. false otherwise).
+      type: Boolean
+    - contextPath: Resilient.IncidentArtifact.creator.password_changed
+      description: Whether the user's password has changed. (True if changed, false otherwise).
+      type: Boolean
+    - contextPath: Resilient.IncidentArtifact.creator.is_external
+      description: Whether the user's account is authenticated externally.
+      type: Boolean
+    - contextPath: Resilient.IncidentArtifact.creator.ui_theme
+      description: The UI theme the user has selected. The Resilient UI recognizes the following values (darkmode, lightmode, verydarkmode).
+      type: String
+    - contextPath: Resilient.IncidentArtifact.inc_id
+      description: The incident ID.
+      type: Number
+    - contextPath: Resilient.IncidentArtifact.inc_name
+      description: The incident name.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.inc_owner
+      description: The incident owner.
+      type: Number
+    - contextPath: Resilient.IncidentArtifact.created
+      description: The date when the artifact is created.
+      type: Date
+    - contextPath: Resilient.IncidentArtifact.last_modified_time
+      description: The last date on which the artifact changed.
+      type: Date
+    - contextPath: Resilient.IncidentArtifact.last_modified_by.id
+      description: The ID of the user who last changed the artifact.
+      type: Number
+    - contextPath: Resilient.IncidentArtifact.last_modified_by.type
+      description: The type of user who last changed the artifact.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.last_modified_by.name
+      description: The name of the user who last changed the artifact.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.last_modified_by.display_name
+      description: The display name of the user who last changed the artifact.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.perms.read
+      description: Whether the current user has permission to read this artifact.
+      type: Boolean
+    - contextPath: Resilient.IncidentArtifact.perms.write
+      description: Whether the current user has permission to write to this artifact.
+      type: Boolean
+    - contextPath: Resilient.IncidentArtifact.perms.delete
+      description: Whether the current user has permission to delete this artifact.
+      type: Boolean
+    - contextPath: Resilient.IncidentArtifact.properties
+      description: The additional artifact properties.
+      type: Unknown
+    - contextPath: Resilient.IncidentArtifact.hash
+      description: The hash of the incident.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.relating
+      description: Whether this artifact should be used for relating to other incidents. Null means use the default specified by the type. True means to always relate. False means to never relate.
+      type: Boolean
+    - contextPath: Resilient.IncidentArtifact.creator_principal.id
+      description: The ID of the principal.
+      type: Number
+    - contextPath: Resilient.IncidentArtifact.creator_principal.type
+      description: The type of the principal. Currently only user or group.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.creator_principal.name
+      description: The API name of the principal.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.creator_principal.display_name
+      description: The display name of the principal.
+      type: String
+    - contextPath: Resilient.IncidentArtifact.ip.source
+      description: Whether the IP address is a source.
+      type: Boolean
+    - contextPath: Resilient.IncidentArtifact.ip.destination
+      description: Whether the IP address is a destination.
+      type: Boolean
   dockerimage: demisto/resilient:1.0.0.24033
   feed: false
   isfetch: true
@@ -919,3 +902,5 @@ script:
   subtype: python2
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
