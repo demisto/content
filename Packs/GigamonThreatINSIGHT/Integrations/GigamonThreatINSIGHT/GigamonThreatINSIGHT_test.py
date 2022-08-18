@@ -41,18 +41,18 @@ Tests for Sensor API related commands
 def test_test_module(requests_mock):
     from GigamonThreatINSIGHT import Client, SensorClient, commandTestModule
 
-    client: SensorClient = Client.getClient('Sensors', '')
-    response = commandTestModule(client)
-    assert response == 'FAILING'
-
     mock_response = {
         'result_count': 10,
         'sensors': []
     }
     requests_mock.get('https://sensor.icebrg.io/v1/sensors', json=mock_response)
 
+    with pytest.raises(Exception):
+        commandTestModule(client)
+
+    client: SensorClient = Client.getClient('Sensors', '')
     response = commandTestModule(client)
-    assert response == 'OK'
+    assert response == 'ok'
 
 
 def test_get_sensors(requests_mock):

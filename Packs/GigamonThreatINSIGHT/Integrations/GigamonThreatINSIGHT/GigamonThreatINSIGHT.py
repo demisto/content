@@ -399,9 +399,10 @@ def commandTestModule(sensorClient: SensorClient):
     """
     try:
         commandGetSensors(sensorClient)
-        return 'OK'
-    except Exception:
-        return 'FAILING'
+        return 'ok'
+    except Exception as e:
+        demisto.error(f'Module test failed: {e}')
+        raise e
 
 
 # Sensors API commands
@@ -891,9 +892,17 @@ def main():
         if command == 'test-module':
             return_results(commandTestModule(sensorClient))
 
-        if command == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             # default first fetch to -7days
-            first_fetch_time = datetime.now() - timedelta(days=7)
+            delta = arg_to_number(
+                arg=params.get('first_fetch'),
+                arg_name='first_fetch',
+                required=False
+            )
+            if not delta:
+                delta = 7
+
+            first_fetch_time = datetime.now() - timedelta(days=delta)
             max_results = arg_to_number(
                 arg=params.get('max_fetch'),
                 arg_name='max_fetch',
