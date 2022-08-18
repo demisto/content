@@ -3,7 +3,8 @@ import io
 import json
 import pytest
 from requests.auth import _basic_auth_str
-from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list, MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V20
+from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list, MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V20, \
+    create_query
 import demistomock as demisto
 
 HEADERS = {
@@ -396,8 +397,8 @@ def test_taxii20_indicators_objects(mocker, taxii2_server_v20):
     objects = util_load_json('test_files/objects20-indicators.json')
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     mocker.patch('TAXII2Server.SERVER.types_for_indicator_sdo', [
-                 'ipv4-addr', 'domain-name', 'ipv6-addr', 'user-account',
-                 'email-addr', 'windows-registry-key', 'file', 'url'])
+        'ipv4-addr', 'domain-name', 'ipv6-addr', 'user-account',
+        'email-addr', 'windows-registry-key', 'file', 'url'])
     mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
     headers = copy.deepcopy(HEADERS)
     headers['Content-Range'] = 'items 0-2/5'
@@ -528,3 +529,20 @@ def test_taxii21_with_taxii20_header(mocker, taxii2_server_v21, header: str):
     with APP.test_client() as test_client:
         response = test_client.get('/taxii2/', headers=HEADERS | {'Accept': header})
         assert response.status_code == 406
+
+
+@pytest.mark.parametrize('query,types,expected_response', (
+    ('test', [], 'test'),
+    ('test', ['file'], '(test) and (type:"File")'),
+    ('test', ['file', 'domain'], '(test) and (type:"File" or type:"domain")'),
+))
+def test_create_query(query: str, types: list[str], expected_response: str):
+    """
+        Given
+            a query and types to match
+        When
+            calling create_query
+        Then
+            Validate that right query is returned.
+    """
+    assert create_query(query, types) == expected_response
