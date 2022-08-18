@@ -722,6 +722,7 @@ class XSIAMBuild(Build):
         xsiam_servers = get_json_file(xsiam_servers_path)
         conf = xsiam_servers.get(xsiam_machine)
         xsiam_servers_api_keys = get_json_file(xsiam_servers_api_keys_path)
+        logging.info(f'{xsiam_servers_api_keys_path=}, {xsiam_servers_api_keys=}')
         return xsiam_servers_api_keys.get(xsiam_machine), conf.get('demisto_version'), \
                conf.get('base_url'), conf.get('x-xdr-auth-id')
 
