@@ -462,7 +462,7 @@ class BranchTestCollector(TestCollector):
 
     def _get_changed_files(self) -> tuple[str, ...]:
         repo = PATHS.content_repo
-        changed_files = []
+        changed_files: list[str] = []
 
         previous_commit = 'origin/master'
         current_commit = self.branch_name
@@ -488,7 +488,7 @@ class BranchTestCollector(TestCollector):
         logger.debug(f'raw changed files string:\n{diff}')
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
-        for line in filter(None, diff.splitlines()):
+        for line in diff.splitlines():
             try:
                 git_status, file_path = line.split()
             except ValueError:
