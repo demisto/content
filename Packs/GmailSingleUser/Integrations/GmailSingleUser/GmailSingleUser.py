@@ -163,8 +163,8 @@ class Client:
         }
         resp, content = h.request(TOKEN_URL, "POST", urllib.parse.urlencode(body), TOKEN_FORM_HEADERS)
         if resp.status not in {200, 201}:
-            raise ValueError('Error obtaining refresh token. Make sure to follow auth flow. {} {} {}'.format(
-                resp.status, resp.reason, content))
+            raise ValueError(f'Error obtaining refresh token. Make sure to follow auth flow. '
+                             f'{resp.status} {resp.reason} {content}')
         resp_json = json.loads(content)
         if not resp_json.get('refresh_token'):
             raise ValueError('Error obtaining refresh token. Missing refresh token in response: {}'.format(content))
@@ -569,9 +569,9 @@ class Client:
             'in': _in,
             'has': 'attachment' if has_attachments else ''
         }
-        q = ' '.join('%s:%s ' % (name, value,)
+        q = ' '.join('%s:%s ' % (name, value, )
                      for name, value in query_values.items() if value != '')
-        q = ('%s %s' % (q, query,)).strip()
+        q = ('%s %s' % (q, query, )).strip()
 
         command_args = {
             'userId': user_id,
