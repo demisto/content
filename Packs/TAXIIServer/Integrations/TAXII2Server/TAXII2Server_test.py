@@ -397,8 +397,8 @@ def test_taxii20_indicators_objects(mocker, taxii2_server_v20):
     objects = util_load_json('test_files/objects20-indicators.json')
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     mocker.patch('TAXII2Server.SERVER.types_for_indicator_sdo', [
-        'ipv4-addr', 'domain-name', 'ipv6-addr', 'user-account',
-        'email-addr', 'windows-registry-key', 'file', 'url'])
+                 'ipv4-addr', 'domain-name', 'ipv6-addr', 'user-account',
+                 'email-addr', 'windows-registry-key', 'file', 'url'])
     mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
     headers = copy.deepcopy(HEADERS)
     headers['Content-Range'] = 'items 0-2/5'

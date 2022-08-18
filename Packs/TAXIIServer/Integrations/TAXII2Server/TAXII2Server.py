@@ -669,8 +669,7 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
         https://docs.oasis-open.org/cti/stix/v2.1/cs01/stix-v2.1-cs01.html#_muftrcpnf89v
     """
     try:
-        expiration_parsed = parse(xsoar_indicator.get('expiration')).strftime(
-            STIX_DATE_FORMAT)  # type: ignore[arg-type]
+        expiration_parsed = parse(xsoar_indicator.get('expiration')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
     except Exception:
         expiration_parsed = ''
 
