@@ -11,8 +11,7 @@ from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
     get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
-    get_machine_users_command, get_machine_alerts_command, SECURITY_CENTER_RESOURCE_BASE_COMMERCIAL, \
-    SECURITY_CENTER_RESOURCE_BASE_GCC
+    get_machine_users_command, get_machine_alerts_command,SECURITY_GCC_RESOURCE, SECURITY_CENTER_RESOURCE
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 with open('test_data/expected_hunting_queries.json') as expected_json:
@@ -2339,5 +2338,5 @@ def test_gcc_resource(mocker, is_gcc: bool):
     with requests_mock.Mocker() as m:
         m.get('https://example.com')
     client.indicators_http_request('https://example.com', should_use_security_center=True)
-    assert req.call_args[1]['resource'] == {True: SECURITY_CENTER_RESOURCE_BASE_GCC,
-                                            False: SECURITY_CENTER_RESOURCE_BASE_COMMERCIAL}[is_gcc]
+    assert req.call_args[1]['resource'] == {True: SECURITY_GCC_RESOURCE,
+                                            False: SECURITY_CENTER_RESOURCE}[is_gcc]

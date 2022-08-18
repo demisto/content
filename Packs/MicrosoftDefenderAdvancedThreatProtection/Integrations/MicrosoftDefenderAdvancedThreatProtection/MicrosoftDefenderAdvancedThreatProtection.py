@@ -61,8 +61,10 @@ HEALTH_STATUS_TO_ENDPOINT_STATUS = {
     "Unknown": None,
 }
 
-SECURITY_CENTER_RESOURCE_BASE_COMMERCIAL = 'https://api.securitycenter.microsoft.com'
-SECURITY_CENTER_RESOURCE_BASE_GCC = 'https://api-gcc-securitycenter.microsoft.us'
+SECURITY_GCC_RESOURCE = 'https://api-gcc-securitycenter.microsoft.us'
+SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
+SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
+SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH = 'https://api.securitycenter.microsoft.com/api/indicators/import'
 GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
 INTEGRATION_NAME = 'Microsoft Defender ATP'
@@ -1115,10 +1117,7 @@ class MsClient:
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
         self.max_alerts_to_fetch = max_fetch
-        self.security_center_resource_base = {True: SECURITY_CENTER_RESOURCE_BASE_GCC,
-                                              False: SECURITY_CENTER_RESOURCE_BASE_COMMERCIAL}[is_gcc]
-        self.security_center_indicator_endpoint = f'{self.security_center_resource_base}/api/indicators'
-        self.security_center_indicator_endpoint_batch = f'{self.security_center_indicator_endpoint}/import'
+        self.is_gcc = is_gcc
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
@@ -1126,7 +1125,7 @@ class MsClient:
         """
         if kwargs.pop('should_use_security_center', None):
             kwargs['scope'] = Scopes.security_center_apt_service
-            kwargs['resource'] = self.security_center_resource_base
+            kwargs['resource'] = {True: SECURITY_GCC_RESOURCE, False: SECURITY_CENTER_RESOURCE}[self.is_gcc]
         else:
             kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
         return self.ms_client.http_request(*args, **kwargs)
@@ -1713,8 +1712,8 @@ class MsClient:
                 Returns:
                     List of responses.
                 """
-        cmd_url = urljoin(self.security_center_indicator_endpoint, indicator_id) if indicator_id \
-            else self.security_center_indicator_endpoint_batch
+        cmd_url = urljoin(SECURITY_CENTER_INDICATOR_ENDPOINT,
+                          indicator_id) if indicator_id else SECURITY_CENTER_INDICATOR_ENDPOINT
         params = {'$top': limit}
         resp = self.indicators_http_request(
             'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
@@ -1834,7 +1833,7 @@ class MsClient:
             recommendedActions=recommended_actions,
             rbacGroupNames=rbac_group_names
         ))
-        resp = self.indicators_http_request('POST', full_url=self.security_center_indicator_endpoint, json_data=body,
+        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
                                             url_suffix=None, should_use_security_center=True)
         return assign_params(values_to_ignore=[None], **resp)
 
@@ -1842,8 +1841,8 @@ class MsClient:
         """
         https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide
         """
-        resp = self.indicators_http_request('POST', full_url=self.security_center_indicator_endpoint_batch,
-                                            json_data=body, url_suffix=None, should_use_security_center=True)
+        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH, json_data=body,
+                                            url_suffix=None, should_use_security_center=True)
         return resp
 
     def update_indicator(
@@ -3838,7 +3837,7 @@ def sc_delete_indicator_command(client: MsClient, args: Dict[str, str]) -> Comma
           An indication of whether the indicator was deleted successfully.
     """
     indicator_id = args['indicator_id']
-    client.delete_indicator(indicator_id, client.security_center_indicator_endpoint, use_security_center=True)
+    client.delete_indicator(indicator_id, SECURITY_CENTER_INDICATOR_ENDPOINT, use_security_center=True)
     return CommandResults(readable_output=f'Indicator ID: {indicator_id} was successfully deleted')
 
 
