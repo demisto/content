@@ -20,6 +20,15 @@ configuration:
   name: insecure
   required: false
   type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 8037d7f8-714c-42eb-8aba-db627fd22a1e
+    propagationLabels:
+    - all
+    toServerVersion: ""
 description: Security for containers, Kubernetes, and cloud.
 display: Sysdig
 name: Sysdig
@@ -50,6 +59,16 @@ script:
       - "no"
     description: Lists container hosts
     name: sysdig-list-hosts
+    outputs:
+    - contextPath: HostCount.Count
+      description: Count of hosts
+      type: number
+    - contextPath: HostCount.DateAdded
+      description: Date added
+      type: date
+    - contextPath: HostCount.Host
+      description: Hostname
+      type: string
   - arguments:
     - auto: PREDEFINED
       defaultValue: All
@@ -85,6 +104,37 @@ script:
       name: limit
     description: List container events
     name: sysdig-get-events
+    outputs:
+    - contextPath: Events.EventDescription
+      description: Event description
+      type: string
+    - contextPath: Events.EventName
+      description: Event name
+      type: string
+    - contextPath: Events.CreatedOn
+      description: Date created
+      type: date
+    - contextPath: Events.EventType
+      description: Event type
+      type: string
+    - contextPath: Events.EventId
+      description: Event Id
+      type: string
+    - contextPath: Events.EventSource
+      description: Event source
+      type: string
+    - contextPath: Events.Timestamp
+      description: Timestamp
+      type: date
+    - contextPath: Events.EventSeverity
+      description: Event severity
+      type: string
+    - contextPath: Events.EventScope
+      description: Event scope
+      type: string
+    - contextPath: Events.EventVersion
+      description: Event version
+      type: string
   - arguments: []
     description: List sysdig policies
     name: sysdig-list-policies
@@ -119,6 +169,25 @@ script:
       - "no"
     description: List container vulnerabilities
     name: sysdig-list-vulnerabilities
+    outputs:
+    - contextPath: ContainerVulns.policyEvaluationsResult
+      description: Policy Evaluations Result
+    - contextPath: ContainerVulns.exploitCount
+      description: Count of exploits
+      type: unknown
+    - contextPath: ContainerVulns.storedAt
+      description: Time stored
+      type: string
+    - contextPath: ContainerVulns.imageId
+      description: Image Id
+      type: string
+    - contextPath: ContainerVulns.resultId
+      description: Result Id
+      type: string
+    - contextPath: ContainerVulns.runningVulnsBySev
+      description: Running vulnerabilities by severity
+    - contextPath: ContainerVulns.vulnsBySev
+      description: Vulnerabilities by severity
   - arguments:
     - description: ID of container image to query (results from sysdig-list-policies)
       name: resultId
@@ -128,11 +197,42 @@ script:
       name: limit
     description: List individual vulnerabilities by container or pod
     name: sysdig-list-vulns-by-container
+    outputs:
+    - contextPath: ContainerVulns.vuln_cvssScore
+      description: CVSS score
+      type: string
+    - contextPath: ContainerVulns.package_name
+      description: Name of vulnerable package
+      type: string
+    - contextPath: ContainerVulns.vuln_cvssVersion
+      description: CVSS version
+      type: string
+    - contextPath: ContainerVulns.vuln_exploitable
+      description: Is the vulnerability exploitable?
+      type: boolean
+    - contextPath: ContainerVulns.vuln_name
+      description: Name of vulnerability
+      type: string
+    - contextPath: ContainerVulns.package_type
+      description: Package type
+      type: string
+    - contextPath: ContainerVulns.package_id
+      description: Package Id
+      type: string
+    - contextPath: ContainerVulns.vuln_disclosureDate
+      description: Vulnerability disclosure date
+      type: date
+    - contextPath: ContainerVulns.id
+      description: Id
+      type: string
+    - contextPath: ContainerVulns.package_version
+      description: Package version
+      type: string
+    - contextPath: ContainerVulns.fixedInVersion
+      description: Fixed version
+      type: string
   dockerimage: demisto/sysdig:1.0
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)

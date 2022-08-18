@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 
 import demistomock as demisto  # noqa: F401
@@ -17,7 +16,7 @@ USE_SSL = not demisto.params().get('insecure', False)
 def time_convert(dtString):
     try:
         dtConverted = datetime.fromtimestamp(int(str(dtString).split('.')[0])).isoformat()
-    except:
+    except Exception:
         dtConverted = datetime.fromtimestamp(int(str(int(dtString / 1000)).split('.')[0])).isoformat()
     return dtConverted
 
@@ -66,10 +65,8 @@ def get_metrics():
     if not ok:
         return res
     results = []
-    string = ''
     for metric_id, metric in res.items():
         results.append(metric)
-        #string = string + 'Metric name: ' + metric_id + ', type: ' + metric['type'] + '\n'
     entry = {'Type': entryTypes['note'],
              'Contents': results,
              'ContentsFormat': formats['json'],

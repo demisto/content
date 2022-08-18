@@ -86,7 +86,12 @@ Lists container hosts
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| HostCount.Count | number | Count of hosts | 
+| HostCount.DateAdded | date | Date added | 
+| HostCount.Host | string | Hostname | 
+
 ### sysdig-get-events
 ***
 List container events
@@ -105,7 +110,19 @@ List container events
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Events.EventDescription | string | Event description | 
+| Events.EventName | string | Event name | 
+| Events.CreatedOn | date | Date created | 
+| Events.EventType | string | Event type | 
+| Events.EventId | string | Event Id | 
+| Events.EventSource | string | Event source | 
+| Events.Timestamp | date | Timestamp | 
+| Events.EventSeverity | string | Event severity | 
+| Events.EventScope | string | Event scope | 
+| Events.EventVersion | string | Event version | 
+
 ### sysdig-list-policies
 ***
 List sysdig policies
@@ -146,7 +163,16 @@ List container vulnerabilities
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ContainerVulns.policyEvaluationsResult | unknown | Policy Evaluations Result | 
+| ContainerVulns.exploitCount | unknown | Count of exploits | 
+| ContainerVulns.storedAt | string | Time stored | 
+| ContainerVulns.imageId | string | Image Id | 
+| ContainerVulns.resultId | string | Result Id | 
+| ContainerVulns.runningVulnsBySev | unknown | Running vulnerabilities by severity | 
+| ContainerVulns.vulnsBySev | unknown | Vulnerabilities by severity | 
+
 ### sysdig-list-vulns-by-container
 ***
 List individual vulnerabilities by container or pod
@@ -165,4 +191,16 @@ List individual vulnerabilities by container or pod
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ContainerVulns.vuln_cvssScore | string | CVSS score | 
+| ContainerVulns.package_name | string | Name of vulnerable package | 
+| ContainerVulns.vuln_cvssVersion | string | CVSS version | 
+| ContainerVulns.vuln_exploitable | boolean | Is the vulnerability exploitable? | 
+| ContainerVulns.vuln_name | string | Name of vulnerability | 
+| ContainerVulns.package_type | string | Package type | 
+| ContainerVulns.package_id | string | Package Id | 
+| ContainerVulns.vuln_disclosureDate | date | Vulnerability disclosure date | 
+| ContainerVulns.id | string | Id | 
+| ContainerVulns.package_version | string | Package version | 
+| ContainerVulns.fixedInVersion | string | Fixed version | 
