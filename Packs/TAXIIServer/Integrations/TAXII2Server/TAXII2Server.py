@@ -67,7 +67,7 @@ XSOAR_TYPES_TO_STIX_SDO = {
     FeedIndicatorType.CVE: 'vulnerability',
 }
 
-STIX2_TYPES_TO_XSOAR: dict[str, tuple[str, ...]] = {
+STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
     'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
     'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     'report': ThreatIntel.ObjectsNames.REPORT,
