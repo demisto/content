@@ -1751,12 +1751,8 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
         for offense in offenses] if mirror_direction else offenses
 
     enriched_offenses = enrich_offenses_result(client, offenses_with_mirror, ip_enrich, asset_enrich)
-    demisto.debug(f"{enriched_offenses=}")
     final_offenses = sanitize_outputs(enriched_offenses)
-    demisto.debug(f"{final_offenses=}")
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
-    print(incidents)
-    demisto.debug(f"{incidents=}")
     return incidents, new_highest_offense_id
 
 
@@ -1808,8 +1804,7 @@ def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional
         'name': f'''{offense.get('id')} {offense.get('description', '')}''',
         'rawJSON': json.dumps(offense),
         'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
-        'type': incident_type,
-        'dbotMirrorId': str(offense.get('id'))
+        'type': incident_type
     } for offense in offenses]
 
 
