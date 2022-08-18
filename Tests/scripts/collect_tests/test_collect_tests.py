@@ -312,7 +312,7 @@ def test_only_collect_pack_args():
 
 
 def test_only_collect_and_ignore_lists_are_disjoint():
-    from constants import ONLY_INSTALL_PACK_FILE_TYPES, IGNORED_FILE_TYPES
+    from constants import IGNORED_FILE_TYPES, ONLY_INSTALL_PACK_FILE_TYPES
     assert ONLY_INSTALL_PACK_FILE_TYPES.isdisjoint(IGNORED_FILE_TYPES)
 
 
