@@ -5,7 +5,7 @@ args:
   name: integration_name
   required: true
   secret: false
-- description: Whether to return a list of all the instance names related to the integation name.
+- description: Whether to return a full list of instance names related to the given integation name.
   name: return_all_instances
 comment: Given an integration name, returns the instance name.
 commonfields:
