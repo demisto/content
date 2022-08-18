@@ -56,6 +56,7 @@ DOCKER_HARDENING_CONFIGURATION = {
     'monitoring.pprof': 'true',
     'enable.pprof.memory.dump': 'true',
     'limit.memory.dump.size': '14000',
+    'memdump.debug.level': '1',
 }
 DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
     'docker.run.internal.asuser': 'true'
