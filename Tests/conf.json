@@ -3468,7 +3468,13 @@
         },
         {
             "integrations": "MicrosoftGraphApplications",
-            "playbookID": "MSGraph Applications Test"
+            "playbookID": "MSGraph Applications Test",
+            "instance_names": "ms_graph_applications_device_code"
+        },
+        {
+            "integrations": "MicrosoftGraphApplications",
+            "playbookID": "MSGraph Applications Test",
+            "instance_names": "ms_graph_applications_client_cred"
         },
         {
             "integrations": "EWS Extension Online Powershell v2",
