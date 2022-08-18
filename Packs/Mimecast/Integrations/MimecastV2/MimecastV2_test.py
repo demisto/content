@@ -55,7 +55,11 @@ set_empty_value_args_res_list = [update_two_args, 'no_action', 'IDFROMMIMECAST']
 set_empty_value_args_res_list_all = [update_all_args, 'no_action', 'IDFROMMIMECAST']
 demisto_args = {'policy_id': 'IDFROMMIMECAST'}
 
-BASE_URL = 'https://test.com'
+MimecastV2.BASE_URL = 'http://test.com'
+MimecastV2.APP_KEY = 'test_key'
+MimecastV2.EMAIL_ADDRESS = 'test@test.com'
+MimecastV2.APP_ID = '1234'
+MimecastV2.ACCESS_KEY = '12345'
 
 
 def util_load_json(path):
@@ -404,8 +408,6 @@ def test_get_message_info_command(args, delivered, mocker, requests_mock):
     """
 
     mock_response = util_load_json('test_data/get_message_info_response.json')
-    MimecastV2.BASE_URL = 'http://test.com'
-    MimecastV2.APP_KEY = 'test_key'
     requests_mock.post(f'/api/message-finder/get-message-info', json=mock_response)
     response = MimecastV2.get_message_info_command(args)
 
