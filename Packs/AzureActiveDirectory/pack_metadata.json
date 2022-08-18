@@ -1,6 +1,6 @@
 {
-    "name": "Azure Active Directory Identity and Access (Deprecated) (Deprecated)",
-    "description": "Deprecated. No available replacement.",
+    "name": "Azure Active Directory Identity and Access (Deprecated)",
+    "description": "Deprecated. Use Microsoft Graph Identity and Access instead.",
     "support": "xsoar",
     "currentVersion": "1.2.10",
     "author": "Cortex XSOAR",
