@@ -70,7 +70,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ```
 !taegis-fetch-alerts ids=`["6594e97f-a898-5b28-82b2-ea03293cdaa1"]`
-!taegis-fetch-investigation-alerts id=936c1cc1-db8f-430c-837c-1c914fcca35a
 ```
 
 #### Context Example
