@@ -67,7 +67,7 @@ XSOAR_TYPES_TO_STIX_SDO = {
     FeedIndicatorType.CVE: 'vulnerability',
 }
 
-STIX2_TYPES_TO_XSOAR = {
+STIX2_TYPES_TO_XSOAR: dict[str, tuple[str, ...]] = {
     'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
     'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     'report': ThreatIntel.ObjectsNames.REPORT,
@@ -80,7 +80,7 @@ STIX2_TYPES_TO_XSOAR = {
     'vulnerability': FeedIndicatorType.CVE,
     'ipv4-addr': FeedIndicatorType.IP,
     'ipv6-addr': FeedIndicatorType.IPv6,
-    'domain-name': [FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain],
+    'domain-name': (FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain),
     'user-account': FeedIndicatorType.Account,
     'email-addr': FeedIndicatorType.Email,
     'url': FeedIndicatorType.URL,
@@ -505,10 +505,9 @@ def create_query(query: str, types: list[str]) -> str:
     if types:
         demisto.debug(f'raw query: {query}')
         xsoar_types: list = []
-        if 'domain-name' in types:
-            xsoar_types.append(STIX2_TYPES_TO_XSOAR['domain-name'])
-        for t in filter(lambda x: x != 'domain-name', types):
-            xsoar_types.append(STIX2_TYPES_TO_XSOAR.get(t, t))
+        for t in types:
+            xsoar_type = STIX2_TYPES_TO_XSOAR.get(t, t)
+            xsoar_types.extend((xsoar_type,) if isinstance(xsoar_type, str) else xsoar_type)
 
         if query.strip():
             new_query = f'({query}) '
@@ -670,7 +669,8 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
         https://docs.oasis-open.org/cti/stix/v2.1/cs01/stix-v2.1-cs01.html#_muftrcpnf89v
     """
     try:
-        expiration_parsed = parse(xsoar_indicator.get('expiration')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+        expiration_parsed = parse(xsoar_indicator.get('expiration')).strftime(
+            STIX_DATE_FORMAT)  # type: ignore[arg-type]
     except Exception:
         expiration_parsed = ''
 
@@ -692,7 +692,7 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
         description=xsoar_indicator.get('CustomFields', {}).get('description', '')
     )
     return dict({k: v for k, v in stix_object.items()
-                if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
+                 if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
 
 
 def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
