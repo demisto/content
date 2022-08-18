@@ -3400,6 +3400,7 @@ def create_events_search(client: Client,
                          ) -> str:
     additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
         if fetch_mode == FetchMode.correlations_events_only.value else ''
+    now: int = int(datetime.now().timestamp() * 1000)
     try:
         # Get all the events starting from one hour after epoch
         if not offense_start_time:
@@ -3407,7 +3408,7 @@ def create_events_search(client: Client,
             offense_start_time = offense['start_time']
         query_expression = (
             f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
-            f'START {offense_start_time}'
+            f'START {offense_start_time} STOP {now}'
         )
         print_debug_msg(f'Creating search for offense ID: {offense_id}, '
                         f'query_expression: {query_expression}')
