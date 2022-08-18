@@ -497,7 +497,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a dashboard threat summary.
+    description: Returns a dashboard threat summary. Can only be used with API V2.1.
     execution: false
     name: sentinelone-threat-summary
     outputs:
@@ -546,7 +546,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Marks suspicious threats as threats.
+    description: Marks suspicious threats as threats. Can only be used with API V2.0.
     execution: false
     name: sentinelone-mark-as-threat
     outputs:
@@ -598,7 +598,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Resolves threats using the threat ID.
+    description: Resolves threats using the threat ID. Can only be used with API V2.0.
     execution: false
     name: sentinelone-resolve-threat
     outputs:
