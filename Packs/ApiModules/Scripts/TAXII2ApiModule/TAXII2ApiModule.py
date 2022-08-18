@@ -707,7 +707,7 @@ class Taxii2FeedClient:
         """
         sco_indicator = {
             'value': sco_object.get(value_mapping),
-            'score': 3,
+            'score': Common.DBotScore.NONE,
             'rawJSON': sco_object,
             'type': STIX_2_TYPES_TO_CORTEX_TYPES.get(sco_object.get('type'))  # type: ignore[arg-type]
         }
