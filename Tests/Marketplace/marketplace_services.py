@@ -1715,7 +1715,12 @@ class Pack(object):
         #     return {}, True
 
         # Convert the RN dict to string
-        changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes).strip()
+
+        finall_release_notes = construct_entities_block(filtered_release_notes).strip()
+        if not finall_release_notes:
+            finall_release_notes = "No relevant release notes found."
+
+        changelog_entry[Changelog.RELEASE_NOTES] = finall_release_notes
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
 
