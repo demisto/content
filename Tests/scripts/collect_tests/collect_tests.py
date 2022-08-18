@@ -19,7 +19,7 @@ from exceptions import (DeprecatedPackException, InvalidTestException,
                         NothingToCollectException, NotUnderPackException,
                         PrivateTestException, SkippedPackException,
                         SkippedTestException, TestMissingFromIdSetException,
-                        UnsupportedPackException)
+                        UnsupportedPackException, NonNightlyPackInNightlyBuildException)
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
@@ -145,6 +145,9 @@ class CollectionResult:
 
         if pack:
             PACK_MANAGER.validate_pack(pack)
+            
+            if is_nightly and pack not in conf.nightly_integrations:
+                raise NonNightlyPackInNightlyBuildException(pack)
 
     @staticmethod
     def __empty_result() -> 'CollectionResult':
