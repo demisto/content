@@ -127,25 +127,20 @@ class Client(BaseClient):
         self, method: str, url_suffix: str, data: dict = None, json_body: Any = None, headers: dict = HEADERS,
             return_json: bool = True, custom_response: bool = False) -> Any:
         demisto.info(f'running request with url={SERVER + url_suffix}')
-        try:
-            res = self._http_request(
-                method,
-                url_suffix=url_suffix,
-                data=data,
-                json_data=json_body,
-                resp_type='response',
-                headers=headers,
-                error_handler=self.error_handler
-            )
-            if custom_response:
-                return res
-            if res.status_code not in [200, 204]:
-                raise Exception('Your request failed with the following error: ' + str(res.content) + '. Response Status code: '
+        res = self._http_request(
+            method,
+            url_suffix=url_suffix,
+            data=data,
+            json_data=json_body,
+            resp_type='response',
+            headers=headers,
+            error_handler=self.error_handler
+        )
+        if custom_response:
+            return res
+        if res.status_code not in [200, 204]:
+            raise Exception('Your request failed with the following error: ' + str(res.content) + '. Response Status code: '
                                 + str(res.status_code))
-
-        except Exception as e:
-            demisto.error(e)
-            raise
 
         if return_json:
             try:
