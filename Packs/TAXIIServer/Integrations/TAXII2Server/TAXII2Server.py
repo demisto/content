@@ -507,7 +507,7 @@ def create_query(query: str, types: list[str]) -> str:
         xsoar_types: list = []
         for t in types:
             xsoar_type = STIX2_TYPES_TO_XSOAR.get(t, t)
-            xsoar_types.extend((xsoar_type,) if isinstance(xsoar_type, str) else xsoar_type)
+            xsoar_types.extend(xsoar_type if isinstance(xsoar_type, tuple) else (xsoar_type,))
 
         if query.strip():
             new_query = f'({query}) '
