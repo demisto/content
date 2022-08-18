@@ -360,7 +360,7 @@ class Client(BaseClient):
         Returns:
             dict: dict containing the alert as returned from the API.
         """
-
+        print(f'Getting alert with id {alert_id}')
         return self._http_request(
             method='GET',
             url_suffix='/get_alert_details',
