@@ -709,7 +709,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0",
-            "timeout": 1500
+            "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -2927,6 +2927,11 @@
             "playbookID": "Elasticsearch_v2_test-v6"
         },
         {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v8",
+            "playbookID": "Elasticsearch_v2_test-v8"
+        },
+        {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
         },
@@ -3468,7 +3473,13 @@
         },
         {
             "integrations": "MicrosoftGraphApplications",
-            "playbookID": "MSGraph Applications Test"
+            "playbookID": "MSGraph Applications Test",
+            "instance_names": "ms_graph_applications_device_code"
+        },
+        {
+            "integrations": "MicrosoftGraphApplications",
+            "playbookID": "MSGraph Applications Test",
+            "instance_names": "ms_graph_applications_client_cred"
         },
         {
             "integrations": "EWS Extension Online Powershell v2",
@@ -5023,7 +5034,14 @@
         {
             "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
-            "integrations": "AzureRiskyUsers"
+            "integrations": "AzureRiskyUsers",
+            "instance_names": "AzureRiskyUsers_Device_Code_Flow"
+        },
+        {
+            "playbookID": "AzureRiskyUsers",
+            "fromversion": "6.0.0",
+            "integrations": "AzureRiskyUsers",
+            "instance_names": "AzureRiskyUsers_Client_Credentials_Flow"
         },
         {
             "playbookID": "playbook-AzureKeyVault-Test",
@@ -5151,11 +5169,21 @@
             "fromversion": "6.8.0"
         },
         {
+            "playbookID": "playbook-BmcITSM-Test",
+            "fromversion": "6.2.0",
+            "integrations": "BmcITSM"
+        },
+        {
             "integrations": [
                 "Github Event Collector"
             ],
             "playbookID": "Github Event Collector-test",
             "fromversion": "6.8.0"
+        },
+        {
+            "integrations": "CheckPointSandBlast",
+            "playbookID": "playbook-CheckPointSandBlast_Test",
+            "fromversion": "6.2.0"
         },
         {
             "integrations": [
@@ -5172,6 +5200,8 @@
         }
     ],
     "skipped_tests": {
+        "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
+        "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
@@ -5308,7 +5338,8 @@
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
-        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
+        "Elasticsearch_v2_test-v8": "CRTX-61980"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -5424,13 +5455,12 @@
         "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
-        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated",
         "Alibaba Action Trail Event Collector": "XSIAM integration",
         "Salesforce Event Collector": "XSIAM integration",
-        "Github Event Collector" : "XSIAM integration",
+        "Github Event Collector": "XSIAM integration",
         "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration"
     },
     "nightly_integrations": [
@@ -5543,7 +5573,8 @@
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
         "RSA Archer v2": "cannot connect to proxy",
         "Anomali ThreatStream v3": "recording is not working",
-        "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked."
+        "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
+        "Cortex XDR - IR": "internal product, no need to mock"
     },
     "parallel_integrations": [
         "AWS - ACM",

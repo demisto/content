@@ -3,6 +3,8 @@ from os import getenv
 from pathlib import Path
 from typing import Iterable, Union
 
+from git import Repo
+
 _SANITY_FILES_FOR_GLOB = (
     # if any of the files under this list (or descendants) is changed, and no other files are changed,
     # sanity test will be run. All other files NOT under /Packs are ignored.
@@ -24,6 +26,7 @@ class PathManager:
 
     def __init__(self, content_path: Path):
         self.content_path = content_path
+        self.content_repo = Repo(content_path)
         logging.debug(f'PathManager uses {self.content_path.resolve()=}, {PathManager.ARTIFACTS_PATH.resolve()=}')
 
         self.packs_path = self.content_path / 'Packs'
