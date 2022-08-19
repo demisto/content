@@ -9,17 +9,10 @@ from datetime import datetime, timedelta
 import time
 import re
 
-# if not demisto.getParam('proxy'):
-#     del os.environ['HTTP_PROXY']
-#     del os.environ['HTTPS_PROXY']
-#     del os.environ['http_proxy']
-#     del os.environ['https_proxy']
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-# SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
 SERVER = demisto.params().get('server', '')
 if SERVER.endswith('/'):
     SERVER = SERVER[:-1]
@@ -640,7 +633,6 @@ def unisolate_machine(client: Client, machine: str) -> Any:
 def malop_processes_command(client: Client, args: dict):
     malop_guids = args.get('malopGuids')
     machine_name = args.get('machineName')
-    # date_time = dateparser.parse(args.get('dateTime')).timestamp()
     date_time=args.get('dateTime')
 
     filter_input = []
