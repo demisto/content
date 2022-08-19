@@ -791,7 +791,6 @@ tasks:
           right:
             value:
               simple: AWS S3
-    continueonerrortype: ""
     view: |-
       {
         "position": {
