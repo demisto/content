@@ -264,12 +264,12 @@ mock_alerts_response = {
 
 @pytest.fixture
 def orca_client() -> OrcaClient:
-    api_key = "dummy api key"
+    api_token = "dummy api key"
     client = BaseClient(
         base_url=DUMMY_ORCA_API_DNS_NAME,
         verify=True,
         headers={
-            'Authorization': f'Bearer {api_key}'
+            'Authorization': f'Token {api_token}'
         },
         proxy=True)
     return OrcaClient(client=client)
@@ -434,7 +434,7 @@ def test_get_alerts_by_non_existent_type_should_return_empty_list(requests_mock,
 
 
 def test_fetch_incidents_first_run_should_succeed(requests_mock, orca_client: OrcaClient) -> None:
-    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/query/alerts", json=mock_alerts_response)
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query", json=mock_alerts_response)
     last_run, fetched_incidents = fetch_incidents(
         orca_client,
         last_run={'lastRun': None},
@@ -455,7 +455,7 @@ def test_fetch_incidents_not_first_run_return_empty(orca_client: OrcaClient) -> 
     # validates that fetch-incidents is returning an a empty list when it is not the first run
     last_run, fetched_incidents = fetch_incidents(
         orca_client,
-        last_run={'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)},
+        last_run={'step': "fetch", 'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)},
         max_fetch=20,
         pull_existing_alerts=True,
         first_fetch_time=None
@@ -608,7 +608,7 @@ def test_test_module_fail(requests_mock, orca_client: OrcaClient) -> None:
 def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
     mock_response = mock_alerts_response.copy()  # deepcopy not needed
     mock_response["next_page_token"] = "NEXT_PAGE"
-    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/query/alerts", json=mock_response)
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query", json=mock_response)
 
     # Get first page
     last_run, fetched_incidents = fetch_incidents(
@@ -620,7 +620,7 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
     assert len(fetched_incidents) == 2
     assert last_run['next_page_token'] == 'NEXT_PAGE'
     mock_response["next_page_token"] = None  # type: ignore
-    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/query/alerts", json=mock_response)
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query", json=mock_response)
 
     # Get next page
     last_run, fetched_incidents = fetch_incidents(
@@ -632,6 +632,7 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
     assert len(fetched_incidents) == 2
     assert 'next_page_token' not in last_run
 
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query", json={"status": "success", "data": []})
     # No pages and no updates
     last_run, fetched_incidents = fetch_incidents(
         orca_client, last_run,

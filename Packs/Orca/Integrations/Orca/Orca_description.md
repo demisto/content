@@ -1,12 +1,7 @@
 ## Orca Security
 This section explains how to fully configure the instance of Orca Security in Cortex XSOAR.
 ### Integration flow
-- If "Pull Existing Alerts" is checked, on initialization, XSOAR pulls all Orca Alerts as XSOAR incidents (this may take time, depending on the number of Alerts to pull)
-There Are 2 integration flows:
-- Orca-Push (realtime)
-    - After Connecting XSOAR integration on Orca platform, Orca will stream in realtime Alerts to XSOAR (including Alert state changes)
-- XSOAR-Pull (periodical, 1 minute interval)
-    - XSOAR will query for Orca Alerts/ Alert updates every 1 minute 
+XSOAR will query for Orca Alerts/ Alert updates every 1 minute 
 
 
 ## Steps to follow

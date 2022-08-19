@@ -5,7 +5,11 @@ commonfields:
 configuration:
 - display: API Key
   name: apikey
-  required: true
+  required: false
+  type: 4
+- display: API Token
+  name: api_token
+  required: false
   type: 4
 - display: API Host
   name: api_host
@@ -61,8 +65,7 @@ configuration:
   - XSOAR-Pull
   required: false
   type: 15
-description: Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS,
-  Azure, and GCP.
+description: Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS, Azure, and GCP.
 display: Orca
 name: Orca
 script:
@@ -105,7 +108,7 @@ script:
     - contextPath: Orca.Manager.Asset
       description: Asset description
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: true
   longRunning: false
