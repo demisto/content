@@ -4,7 +4,7 @@
         "Configuration Setup"
     ],
     "caseInsensitive": true,
-    "cliName": "s3bucketname",
+    "cliName": "incidentconfigurationsetups3bucketname",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -13,7 +13,7 @@
     "id": "incident_configurationsetup_s3bucketname",
     "isReadOnly": false,
     "locked": false,
-    "name": "S3 Bucket Name",
+    "name": "XSOAR CI/CD S3 Bucket Name",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
