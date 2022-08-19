@@ -24,6 +24,12 @@ class Main:
         value = m.expand(self.__output_format)
         if self.__action_dt:
             value = demisto.dt(value, self.__action_dt)
+            if value is None:
+                vaule = ''
+            elif isinstance(value, bool):
+                value = json.dumps(value)
+            else:
+                value = str(value)
         return value
 
     def run(self):

@@ -5,6 +5,10 @@ import json
 def side_effect_demisto_dt(obj, dt):
     if dt == '.=val.toUpperCase()':
         return obj.upper()
+    elif dt == '.=true':
+        return True
+    elif dt == '.=null':
+        return None
     return None
 
 

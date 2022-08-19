@@ -88,5 +88,25 @@
     "period_matches_newline": "",
     "action_dt": ".=val.toUpperCase()",
     "result": "aa XBYB cc"
+  },
+  {
+    "value": "abc",
+    "regex": "b",
+    "output_format": "",
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": ".=null",
+    "result": "ac"
+  },
+  {
+    "value": "abc",
+    "regex": "b",
+    "output_format": "",
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": ".=true",
+    "result": "atruec"
   }
 ]
