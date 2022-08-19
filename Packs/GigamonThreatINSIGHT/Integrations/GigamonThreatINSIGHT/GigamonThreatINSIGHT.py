@@ -228,7 +228,7 @@ class DetectionClient(Client):
             :return JSON response from /rules endpoint
             :rtype Dict[str, Any]
         """
-        demisto.debug('SensorClient.getDetectionRules method has been called.')
+        demisto.debug('DetectionClient.getDetectionRules method has been called.')
         return self._http_request(
             method='GET',
             url_suffix='/rules' + args
@@ -245,7 +245,7 @@ class DetectionClient(Client):
             :rtype Dict[str, Any]
         """
         demisto.debug(
-            'SensorClient.getDetectionRuleEvents method has been called.')
+            'DetectionClient.getDetectionRuleEvents method has been called.')
 
         return self._http_request(
             method='GET',
