@@ -1,7 +1,5 @@
 !insight-get-sensors
 !insight-get-sensors account_uuid=0a7dae9g-6f74-4c75-78ef-856483763e1d4
-!insight-get-events query="dns:dst.internal=false" limit=100 start_date=2019-01-01T00:00:00.000Z end_date=2019-01-31T23:59:59.999Z
-!insight-get-events query="event_type='http' AND src.ip='10.1.1.20' AND dst.ip='1.2.3.4'"
 !insight-get-devices start_date=2019-01-01T00:00:00.000Z end_date=2019-01-31T23:59:59.999Z
 !insight-get-tasks task_uuid=8d7ryg9b-3fh2-2k10-11tn-32g502302r1d2
 !insight-create-task name="Possible Exfiltration via FTP" account_uuid=0a7dae9g-6f74-4c75-78ef-856483763e1d4 description="Capture possible exfiltration via FTP" bpf="host 1.2.3.4 and port 21" requested_start_date=2019-01-01T00:00:00.000Z requested_end_date=2019-01-31T23:59:59.999Z
