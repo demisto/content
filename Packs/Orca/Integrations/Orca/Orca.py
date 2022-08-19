@@ -133,6 +133,7 @@ class OrcaClient:
 
         return response
 
+
 def map_orca_score_to_demisto_score(orca_score: int) -> Union[int, float]:  # pylint: disable=E1136
     # demisto_unknown = 0  (commented because of linter issues)
     demisto_informational = 0.5

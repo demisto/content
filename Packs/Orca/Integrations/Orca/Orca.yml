@@ -9,7 +9,7 @@ configuration:
   type: 4
 - display: API Token
   name: api_token
-  required: false
+  required: true
   type: 4
 - display: API Host
   name: api_host
@@ -58,7 +58,6 @@ configuration:
     \ will periodically query for Orca Alerts"
   defaultvalue: XSOAR-Pull
   display: Fetch Type
-  hidden: false
   name: fetch_type
   options:
   - Orca-Push
