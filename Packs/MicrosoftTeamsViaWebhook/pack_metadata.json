@@ -1,0 +1,21 @@
+{
+    "name": "Microsoft Teams via Webhook",
+    "description": "Integration to send notifications to a Microsoft Teams channel via Incoming Webhook.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Mike Beauchamp",
+    "url": "",
+    "email": "",
+    "created": "2022-08-19T21:17:02Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "beauchompers"
+    ]
+}
