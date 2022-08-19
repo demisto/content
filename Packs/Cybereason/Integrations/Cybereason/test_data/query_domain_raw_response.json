@@ -12,7 +12,7 @@
             "totalValues": 1,
             "values": ["indifferent"]
           },
-          "elementDisplayName": { "totalValues": 1, "values": ["www2.bing.com"] },
+          "elementDisplayName": { "totalValues": 1, "values": ["ewww2.example.com"] },
           "isInternalDomain": { "totalValues": 1, "values": ["false"] }
         },
         "elementValues": {},
@@ -38,7 +38,7 @@
           },
           "elementDisplayName": {
             "totalValues": 1,
-            "values": ["www2-www2.bing.com.trafficmanager.net"]
+            "values": ["www2-www2.example.com.trafficmanager.net"]
           },
           "isInternalDomain": { "totalValues": 1, "values": ["false"] }
         },

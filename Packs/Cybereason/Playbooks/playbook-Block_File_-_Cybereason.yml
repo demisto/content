@@ -1,8 +1,8 @@
-id: Cybereason - Block File
+id: Block File - Cybereason
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Cybereason - Block File
+name: Block File - Cybereason
 description: This playbook accepts an MD5 hash and blocks the file using the Cybereason
   integration.
 starttaskid: '0'

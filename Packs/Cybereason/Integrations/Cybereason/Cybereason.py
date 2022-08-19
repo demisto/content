@@ -9,17 +9,10 @@ from datetime import datetime, timedelta
 import time
 import re
 
-# if not demisto.getParam('proxy'):
-#     del os.environ['HTTP_PROXY']
-#     del os.environ['HTTPS_PROXY']
-#     del os.environ['http_proxy']
-#     del os.environ['https_proxy']
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-# SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
 SERVER = demisto.params().get('server', '')
 if SERVER.endswith('/'):
     SERVER = SERVER[:-1]
@@ -127,25 +120,20 @@ class Client(BaseClient):
         self, method: str, url_suffix: str, data: dict = None, json_body: Any = None, headers: dict = HEADERS,
             return_json: bool = True, custom_response: bool = False) -> Any:
         demisto.info(f'running request with url={SERVER + url_suffix}')
-        try:
-            res = self._http_request(
-                method,
-                url_suffix=url_suffix,
-                data=data,
-                json_data=json_body,
-                resp_type='response',
-                headers=headers,
-                error_handler=self.error_handler
-            )
-            if custom_response:
-                return res
-            if res.status_code not in [200, 204]:
-                raise Exception('Your request failed with the following error: ' + str(res.content) + '. Response Status code: '
+        res = self._http_request(
+            method,
+            url_suffix=url_suffix,
+            data=data,
+            json_data=json_body,
+            resp_type='response',
+            headers=headers,
+            error_handler=self.error_handler
+        )
+        if custom_response:
+            return res
+        if res.status_code not in [200, 204]:
+            raise Exception('Your request failed with the following error: ' + str(res.content) + '. Response Status code: '
                                 + str(res.status_code))
-
-        except Exception as e:
-            demisto.error(e)
-            raise
 
         if return_json:
             try:
@@ -645,7 +633,6 @@ def unisolate_machine(client: Client, machine: str) -> Any:
 def malop_processes_command(client: Client, args: dict):
     malop_guids = args.get('malopGuids')
     machine_name = args.get('machineName')
-    # date_time = dateparser.parse(args.get('dateTime')).timestamp()
     date_time=args.get('dateTime')
 
     filter_input = []

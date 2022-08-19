@@ -3,7 +3,7 @@
   "remediationId": "248da40a-9ac2-4868-840b-e6d74e79a233",
   "start": 1660031986906,
   "end": 1660031987872,
-  "initiatingUser": "prashant@metronlabs.com",
+  "initiatingUser": "example@example.com",
   "statusLog": [
     {
       "machineId": "-1845090846.1198775089551518743",
