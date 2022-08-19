@@ -419,10 +419,10 @@ def commandGetSensors(sensorClient: SensorClient):
     key = 'sensors'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Sensors."
@@ -445,10 +445,10 @@ def commandGetDevices(sensorClient: SensorClient):
     key = 'device_list'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Devices."
@@ -472,10 +472,10 @@ def commandGetTasks(sensorClient: SensorClient, args):
     key = 'pcap_task' if taskid != '' else 'pcaptasks'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Tasks."
@@ -512,12 +512,12 @@ def commandGetEventsTelemetry(sensorClient: SensorClient, args):
 
     prefix = 'Insight.Telemetry.Events'
     key = 'data'
-    
+
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Event Telemetry."
@@ -540,10 +540,10 @@ def commandGetNetworkTelemetry(sensorClient: SensorClient, args):
     key = 'network_usage'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Network Telemetry."
@@ -566,10 +566,10 @@ def commandGetPacketstatsTelemetry(sensorClient: SensorClient, args):
     key = 'data'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Packetstats Telemetry."
@@ -595,10 +595,10 @@ def commandGetEntitySummary(entityClient: EntityClient, entity: str):
     key = 'summary'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Entity Summary."
@@ -621,10 +621,10 @@ def commandGetEntityPdns(entityClient: EntityClient, entity: str):
     key = 'passivedns'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Entity Pdns."
@@ -647,10 +647,10 @@ def commandGetEntityDhcp(entityClient: EntityClient, entity: str):
     key = 'records'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Entity Dhcp."
@@ -673,10 +673,10 @@ def commandGetEntityFile(entityClient: EntityClient, hash: str):
     key = 'file'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Entity File."
@@ -830,10 +830,10 @@ def commandGetDetections(detectionClient: DetectionClient, args):
     key = 'detections'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Detections."
@@ -858,10 +858,10 @@ def commandGetDetectionRules(detectionClient: DetectionClient, args):
     key = 'rules'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Detection Rules."
@@ -889,10 +889,10 @@ def commandGetDetectionRuleEvents(detectionClient: DetectionClient, args):
     key = 'events'
 
     if not result:
-        raise Exception(f'We receive an invalid response from the server (The response is null')
-        
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
     if key not in result:
-        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
         return "We could not find any result for Get Detections Rule Events."
