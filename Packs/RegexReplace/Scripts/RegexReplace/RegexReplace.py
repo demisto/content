@@ -25,7 +25,7 @@ class Main:
         if self.__action_dt:
             value = demisto.dt(value, self.__action_dt)
             if value is None:
-                vaule = ''
+                value = ''
             elif isinstance(value, bool):
                 value = json.dumps(value)
             else:
