@@ -418,8 +418,14 @@ def commandGetSensors(sensorClient: SensorClient):
     prefix = 'Insight.Sensors'
     key = 'sensors'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Sensors."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -438,8 +444,14 @@ def commandGetDevices(sensorClient: SensorClient):
     prefix = 'Insight.Devices'
     key = 'device_list'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Devices."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -459,8 +471,14 @@ def commandGetTasks(sensorClient: SensorClient, args):
     prefix = 'Insight.Tasks'
     key = 'pcap_task' if taskid != '' else 'pcaptasks'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Tasks."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -494,9 +512,15 @@ def commandGetEventsTelemetry(sensorClient: SensorClient, args):
 
     prefix = 'Insight.Telemetry.Events'
     key = 'data'
+    
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result.get(key):
+        return "We could not find any result for Get Event Telemetry."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -515,8 +539,14 @@ def commandGetNetworkTelemetry(sensorClient: SensorClient, args):
     prefix = 'Insight.Telemetry.NetworkUsage'
     key = 'network_usage'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Network Telemetry."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -535,8 +565,14 @@ def commandGetPacketstatsTelemetry(sensorClient: SensorClient, args):
     prefix = 'Insight.Telemetry.Packetstats'
     key = 'data'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Packetstats Telemetry."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -558,8 +594,14 @@ def commandGetEntitySummary(entityClient: EntityClient, entity: str):
     prefix = 'Insight.Entity.Summary'
     key = 'summary'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Entity Summary."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -578,8 +620,14 @@ def commandGetEntityPdns(entityClient: EntityClient, entity: str):
     prefix = 'Insight.Entity.PDNS'
     key = 'passivedns'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Entity Pdns."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -598,8 +646,14 @@ def commandGetEntityDhcp(entityClient: EntityClient, entity: str):
     prefix = 'Insight.Entity.DHCP'
     key = 'records'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Entity Dhcp."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -618,8 +672,14 @@ def commandGetEntityFile(entityClient: EntityClient, hash: str):
     prefix = 'Insight.Entity.File'
     key = 'file'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Entity File."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -769,8 +829,14 @@ def commandGetDetections(detectionClient: DetectionClient, args):
     prefix = 'Insight.Detections'
     key = 'detections'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Detections."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -791,8 +857,14 @@ def commandGetDetectionRules(detectionClient: DetectionClient, args):
     prefix = 'Insight.Rules'
     key = 'rules'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Detection Rules."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -816,8 +888,14 @@ def commandGetDetectionRuleEvents(detectionClient: DetectionClient, args):
     prefix = 'Insight.Detections'
     key = 'events'
 
-    if not result or key not in result or not result.get(key):
-        return "No result found."
+    if not result:
+        raise Exception(f'We receive an invalid response from the server (The response is null')
+        
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key}')
+
+    if not result.get(key):
+        return "We could not find any result for Get Detections Rule Events."
 
     return CommandResults(
         outputs_prefix=prefix,
