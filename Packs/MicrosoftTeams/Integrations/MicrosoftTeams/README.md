@@ -12,7 +12,10 @@ The web server for the integration runs within a long-running Docker container. 
 ![image](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/MicrosoftTeamsProtocalDiagram.png)
 
 ## Important Information
- - The messaging endpoint must be either the URL of the Cortex XSOAR server, including the configured port, or the proxy that redirects the messages received from Teams to the Cortex XSOAR server.
+ - The messaging endpoint must be one of the following:
+ 	- the URL of the Cortex XSOAR server, including the configured port
+ 	- the Cortex XSOAR rerouting URL that you've defined for your Microsoft Teams instance (see the [Using Cortex XSOAR rerouting](#1-using-cortex-xsoar-rerouting) section for more details)
+ 	- or a proxy that redirects the messages received from Teams to the Cortex XSOAR server (see the [Using NGINX as reverse proxy](#2-using-nginx-as-reverse-proxy) section for more details)
  - Microsoft Teams will send events to the messaging endpoints via HTTPS request, which means the messaging endpoint must be accesible for Microsoft Teams to reach to it. As follows, the messaging endpoint can not contain private IP address or any DNS that will block the request from Microsoft Teams.
 In order to verify that the messaging endpoint is open as expected, you can surf to the messaging endpoint from a browser in an environment which is disconnected from the Cortex XSOAR environment.
  - It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
