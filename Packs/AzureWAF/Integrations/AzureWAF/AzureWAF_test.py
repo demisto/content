@@ -64,7 +64,8 @@ def test_get_policy_by_resource_body(mocker, demisto_args, expected_results):
         subscription_id='test',
         resource_group_name='test',
         verify=True,
-        proxy=False
+        proxy=False,
+        auth_type='Device'
     )
     m = mocker.patch.object(client, 'http_request', return_value={'properties': 'test'})
     waf.policies_get_command(client, **demisto_args)
@@ -118,7 +119,8 @@ def test_policy_upsert_request_body_happy(mocker, demisto_args, expected_results
         subscription_id='test',
         resource_group_name='test',
         verify=True,
-        proxy=False
+        proxy=False,
+        auth_type='Device'
     )
     m = mocker.patch.object(client, 'http_request', return_value={'name': 'pol1', 'id': 'id', 'properties': {}})
     waf.policy_upsert_command(client, **demisto_args)
@@ -172,9 +174,32 @@ def test_policy_upsert_request_body_fails(mocker, demisto_args, expected_error_m
         subscription_id='test',
         resource_group_name='test',
         verify=True,
-        proxy=False
+        proxy=False,
+        auth_type='Device'
     )
     mocker.patch.object(client, 'http_request', return_value={})
     with pytest.raises(Exception) as e:
         waf.policy_upsert_command(client, **demisto_args)
     assert str(e.value) == expected_error_msg
+
+
+@pytest.mark.parametrize('params, expected_results', [
+    ({'auth_type': 'Device Code'}, "When using device code flow configuration"),
+    ({'auth_type': 'Authorization Code'}, "When using user auth flow configuration")])
+def test_test_module_command(mocker, params, expected_results):
+    """
+        Given:
+            - Case 1: Integration params with 'Device' as auth_type.
+            - Case 2: Integration params with 'User Auth' as auth_type.
+        When:
+            - Calling test-module command.
+        Then
+            - Assert the right exception was thrown.
+            - Case 1: Should throw an exception related to Device-code-flow config and return True.
+            - Case 2: Should throw an exception related to User-Auth-flow config and return True.
+    """
+    mocker.patch.object(waf, "test_connection", side_effect=Exception('mocked error'))
+    mocker.patch.object(demisto, 'params', return_value=params)
+    with pytest.raises(Exception) as e:
+        waf.test_module(None, {})
+    assert expected_results in str(e.value)
