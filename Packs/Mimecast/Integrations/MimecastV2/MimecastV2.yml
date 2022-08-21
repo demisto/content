@@ -55,7 +55,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-  defaultvalue: 'true'
   additionalinfo:
 - display: Fetch URL incidents
   name: fetchURL
@@ -75,11 +74,11 @@ configuration:
   type: 8
   defaultvalue: "true"
   additionalinfo:
-- defaultvalue: '24'
-  display: Hours before first fetch to retrieve incidents
+- display: Hours before first fetch to retrieve incidents
   name: fetchDelta
   required: false
   type: 0
+  defaultvalue: '24'
   additionalinfo:
 - display: Incident type
   name: incidentType
