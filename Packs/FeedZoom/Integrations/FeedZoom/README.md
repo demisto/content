@@ -6,6 +6,10 @@ One example of these providers is Zoom.
 
 This pack aims to address this issue by automating the collection of endpoint data in the form of an indicator feed. This will facilitate validation of the indicators before using them in enforcement points, for example firewalls, proxies, and more.
 
+## Note regarding Fetch Interval Time Parameter
+
+Be aware, the default value of this parameter is 240 minutes, setting more frequent fetch interval may cause errors from the vendor.
+
 ## Zoom Network Settings
 For information about Zoom network settings, see the (Zoom documentation)[https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom].
 

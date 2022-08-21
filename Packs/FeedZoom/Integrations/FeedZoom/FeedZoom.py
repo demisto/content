@@ -153,11 +153,18 @@ def get_indicators_command(
     tlp_color = params.get('tlp_color')
     limit = int(args.get("limit", "10"))
     indicators = fetch_indicators(client, feed_tags, tlp_color, limit)
-    human_readable = tableToMarkdown(
-        "Indicators from Zoom Feed:", indicators, headers=["value", "type"], removeNull=True
-    )
 
-    return human_readable, {}, {"raw_response": indicators}
+    if indicators:
+        human_readable = tableToMarkdown(
+            "Indicators from Zoom Feed:", indicators, headers=["value", "type"], removeNull=True
+        )
+    else:
+        human_readable = "No indicators from Zoom Feed were fetched."
+
+    return CommandResults(readable_output=human_readable,
+                          raw_response=indicators,
+                          outputs_key_field='indicator_id',
+                          outputs_prefix='FeedZoom.Indicators')
 
 
 def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
@@ -186,13 +193,13 @@ def main():
     demisto.info(f"Command being called is {command}")
 
     try:
-        client = Client(base_url=ZOOM_DOCS_IP_RANGES_URL, verify=insecure, proxy=proxy, )
+        client = Client(base_url=ZOOM_DOCS_IP_RANGES_URL, verify=insecure, proxy=proxy)
 
         commands: Dict[
             str, Callable[[Client, Dict[str, str], Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]
         ] = {"test-module": test_module, "zoom-get-indicators": get_indicators_command}
         if command in commands:
-            return_outputs(*commands[command](client, demisto.params(), demisto.args()))
+            return_results(*commands.get(command)(client, demisto.params(), demisto.args()))
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, demisto.params())

@@ -3,8 +3,8 @@ commonfields:
   version: -1
 fromversion: 5.5.0
 name: Zoom Feed
-beta: true
-display: Zoom Feed (Beta)
+beta: false
+display: Zoom Feed
 category: Data Enrichment & Threat Intelligence
 description: Use the Zoom Feed integration to get indicators from the feed.
 configuration:
@@ -50,6 +50,20 @@ configuration:
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this
     reputation
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - display: Source Reliability
   name: feedReliability
   defaultvalue: A - Completely reliable
@@ -90,7 +104,7 @@ configuration:
   required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  defaultvalue: "30"
+  defaultvalue: "240"
   type: 19
   required: false
 - display: Tags
