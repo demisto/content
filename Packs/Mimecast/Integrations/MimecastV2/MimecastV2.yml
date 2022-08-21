@@ -93,30 +93,6 @@ configuration:
   required: false
   type: 0
   additionalinfo:
-- name: incidentType
-  display: Incident type
-  required: false
-  defaultvalue:
-  type: 13
-  additionalinfo:
-- name: isFetch
-  display: Fetch incidents
-  required: false
-  defaultvalue: "true"
-  type: 8
-  additionalinfo:
-- name: incidentType
-  display: Incident type
-  required: false
-  defaultvalue:
-  type: 13
-  additionalinfo:
-- name: isFetch
-  display: Fetch incidents
-  required: false
-  defaultvalue: "true"
-  type: 8
-  additionalinfo:
 - display: Incident type
   name: incidentType
   required: false
@@ -1593,289 +1569,289 @@ script:
       - "false"
     outputs:
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.extension
-      description: ""
+      description: "Component extension type."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.hash
-      description: ""
+      description: "Component hash."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.mimeType
-      description: ""
+      description: "Component mime type."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.name
-      description: ""
+      description: "Component name."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.size
-      description: ""
+      description: "Component size."
       type: Number
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.type
-      description: ""
+      description: "Component type."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.deliveryEvent
-      description: ""
+      description: "Message event of delivery description."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.emailAddress
-      description: ""
+      description: "Email address of recipient."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.encryptionInfo
-      description: ""
+      description: "Encryption type."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.messageExpiresIn
-      description: ""
+      description: "Expiration time of message."
       type: Number
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.processingServer
-      description: ""
+      description: "Processing server address."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.receiptAcknowledgement
-      description: ""
+      description: "Recipient acknowledgement."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteHost
-      description: ""
+      description: "Remote host address."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteIp
-      description: ""
+      description: "Remote IP address."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteServerGreeting
-      description: ""
+      description: "Remote server greeting."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionEnd
-      description: ""
+      description: "Transmission end date."
       type: Date
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionSize
-      description: ""
+      description: "Transmission size."
       type: Number
     - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionStart
-      description: ""
+      description: "Transmission start date."
       type: Date
     - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.fromEnvelope
-      description: ""
+      description: "Sender mail. (From envelope)"
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.fromHeader
-      description: ""
+      description: "Sender mail. (From header)"
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.processed
-      description: ""
+      description: "Processed time and date."
       type: Date
     - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.route
-      description: ""
+      description: "Message route."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.sent
-      description: ""
+      description: "Message sent time and date."
       type: Date
     - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.subject
-      description: ""
+      description: "Message subject."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.to
-      description: ""
+      description: "Recipients info."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.transmissionInfo
-      description: ""
+      description: "Transmission info."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.policyInfo.inherited
-      description: ""
+      description: "Is policy is inherited."
       type: Boolean
     - contextPath: Mimecast.MessageInfo.deliveredMessage.policyInfo.policyName
-      description: ""
+      description: "Policy name."
       type: String
     - contextPath: Mimecast.MessageInfo.deliveredMessage.policyInfo.policyType
-      description: ""
+      description: "Policy type."
       type: String
     - contextPath: Mimecast.MessageInfo.id
-      description: ""
+      description: "Message id."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.binaryEmailSize
-      description: ""
+      description: "Email size."
       type: Number
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.extension
-      description: ""
+      description: "Component extension type."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.hash
-      description: ""
+      description: "Component hash"
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.mimeType
-      description: ""
+      description: "Component mime type."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.name
-      description: ""
+      description: "Component name."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.size
-      description: ""
+      description: "Component size."
       type: Number
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.type
-      description: ""
+      description: "Component type."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.encryptionInfo
-      description: ""
+      description: "Encryption information."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.fromEnvelope
-      description: ""
+      description: "The routable email address (From evelope)."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.fromHeader
-      description: ""
+      description: "The routable email address (From header)."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.messageExpiresIn
-      description: ""
+      description: "Expiry time of message."
       type: Number
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.processed
-      description: ""
+      description: "Message processed time."
       type: Date
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.processingServer
-      description: ""
+      description: "Message processing server."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.receiptAcknowledgement
-      description: ""
+      description: "Recipient acknowledgement."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.receiptEvent
-      description: ""
+      description: "Receipt event name."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.remoteHost
-      description: ""
+      description: "Remote host address."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.remoteIp
-      description: ""
+      description: "Remote ip address."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.remoteServerGreeting
-      description: ""
+      description: "Remote server greeting."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.sent
-      description: ""
+      description: "Message send time and date."
       type: Date
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.spamEvent
-      description: ""
+      description: "Spam event name."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.subject
-      description: ""
+      description: "Message subject."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.to
-      description: ""
+      description: "Recipient info."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionEnd
-      description: ""
+      description: "Transmission end date."
       type: Date
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionInfo
-      description: ""
+      description: "Transmission info."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionSize
-      description: ""
+      description: "Transmission size."
       type: Number
     - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionStart
-      description: ""
+      description: "Transmission start date."
       type: Date
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.binaryEmailSize
-      description: ""
+      description: "Email size."
       type: Number
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.extension
-      description: ""
+      description: "Component extension type."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.hash
-      description: ""
+      description: "Component extension type."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.mimeType
-      description: ""
+      description: "Component mime type."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.name
-      description: ""
+      description: "Component name."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.size
-      description: ""
+      description: "Component size."
       type: Number
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.type
-      description: ""
+      description: "Component type."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.encryptionInfo
-      description: ""
+      description: "Encryption information."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.messageExpiresIn
-      description: ""
+      description: "Expiration time of message."
       type: Number
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.processingServer
-      description: ""
+      description: "Processing server address."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.receiptAcknowledgement
-      description: ""
+      description: "Recipient acknowledgement."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.receiptEvent
-      description: ""
+      description: "Receipt event name."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteHost
-      description: ""
+      description: "Remote host address."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteIp
-      description: ""
+      description: "Remote ip address."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteServerGreeting
-      description: ""
+      description: "Remote server greeting."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.spamEvent
-      description: ""
+      description: "Spam event name."
       type: String
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionEnd
-      description: ""
+      description: "Transmission end date."
       type: Date
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionSize
-      description: ""
+      description: "Transmission size."
       type: Number
     - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionStart
-      description: ""
+      description: "Transmission start date."
       type: Date
     - contextPath: Mimecast.MessageInfo.retentionInfo.currentPurgeDate
-      description: ""
+      description: "Current purge date and time."
       type: Date
     - contextPath: Mimecast.MessageInfo.retentionInfo.originalPurgeDate
-      description: ""
+      description: "Original purge date and time."
       type: Date
     - contextPath: Mimecast.MessageInfo.retentionInfo.purgeBasedOn
-      description: ""
+      description: "Value that purge based on."
       type: String
     - contextPath: Mimecast.MessageInfo.retentionInfo.retentionAdjustmentDays
-      description: ""
+      description: "Retention adjustment days."
       type: Number
     - contextPath: Mimecast.MessageInfo.spamInfo.detectionLevel
-      description: ""
+      description: "Spam detection level."
       type: String
     - contextPath: Mimecast.MessageInfo.spamInfo.dkim.allow
-      description: ""
+      description: "Is dkim allowed."
       type: Boolean
     - contextPath: Mimecast.MessageInfo.spamInfo.dkim.info
-      description: ""
+      description: "Dkim info."
       type: String
     - contextPath: Mimecast.MessageInfo.spamInfo.dmarc.allow
-      description: ""
+      description: "Is dmarc allowed."
       type: Boolean
     - contextPath: Mimecast.MessageInfo.spamInfo.dmarc.info
-      description: ""
+      description: "Dmarc info."
       type: String
     - contextPath: Mimecast.MessageInfo.spamInfo.greyEmail
-      description: ""
+      description: "Is grey email."
       type: Boolean
     - contextPath: Mimecast.MessageInfo.spamInfo.managedSender.allow
-      description: ""
+      description: "Is managedSender allowed."
       type: Boolean
     - contextPath: Mimecast.MessageInfo.spamInfo.managedSender.info
-      description: ""
+      description: "managedSender info."
       type: String
     - contextPath: Mimecast.MessageInfo.spamInfo.permittedSender.allow
-      description: ""
+      description: "Is permittedSender allowed."
       type: Boolean
     - contextPath: Mimecast.MessageInfo.spamInfo.permittedSender.info
-      description: ""
+      description: "permittedSender info."
       type: String
     - contextPath: Mimecast.MessageInfo.spamInfo.rbl.allow
-      description: ""
+      description: "Is rbl allowed."
       type: Boolean
     - contextPath: Mimecast.MessageInfo.spamInfo.rbl.info
-      description: ""
+      description: "rbl info."
       type: String
     - contextPath: Mimecast.MessageInfo.spamInfo.spamScore
-      description: ""
+      description: "Spam score."
       type: Number
     - contextPath: Mimecast.MessageInfo.spamInfo.spf.allow
-      description: ""
+      description: "Is dmarc allowed."
       type: Boolean
     - contextPath: Mimecast.MessageInfo.spamInfo.spf.info
-      description: ""
+      description: "spf info."
       type: String
     - contextPath: Mimecast.MessageInfo.status
-      description: ""
+      description: "Message status."
       type: String
   - name: mimecast-list-hold-message
     description: Get information about held messages, including the reason, hold level, sender and recipients
