@@ -177,7 +177,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: The Default API Root to use (e.g. default, public).
+- additionalinfo: The Default API Root to use (e.g. default, public). When remained empty, the server default API root is used, or the first API root if no default is defined.
   display: Default API Root to use
   name: default_api_root
   required: false
