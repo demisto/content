@@ -5176,7 +5176,7 @@
             "memory_threshold": 95
         },
         {
-            "integrations": "CheckPointDome9",
+            "integrations": "checkpointdome9",
             "playbookID": "Dome9",
             "fromversion": "6.2.0"
         }
