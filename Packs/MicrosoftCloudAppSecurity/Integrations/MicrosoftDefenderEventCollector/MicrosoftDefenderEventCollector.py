@@ -25,6 +25,8 @@ TYPES_TO_RETRIEVE = {'alerts': dict(type='alerts', filters={}),
                      'activities_admin': dict(type='activities', filters={"activity.type": {"eq": True}}),
                      'activities_login': dict(type='activities', filters={
                          "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}})}
+VENDOR = "Microsoft"
+PRODUCT = "defender_cloud_apps"
 
 ''' HELPER CLASSES '''
 
@@ -374,8 +376,6 @@ def main(command: str, demisto_params: dict):
     try:
         demisto_params['client_secret'] = demisto_params['credentials']['password']
         push_to_xsiam = argToBoolean(demisto_params.get('should_push_events', 'false'))
-        vendor = demisto_params.get('vendor')
-        product = demisto_params.get('product')
 
         after = demisto_params.get('after')
         if after and not isinstance(after, int):
@@ -398,7 +398,7 @@ def main(command: str, demisto_params: dict):
 
             if command == 'fetch-events':
                 # publishing events to XSIAM
-                send_events_to_xsiam(events, vendor=vendor, product=product)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(DefenderGetEvents.get_last_run(events))
 
             elif command == 'microsoft-defender-cloud-apps-get-events':
@@ -413,7 +413,7 @@ def main(command: str, demisto_params: dict):
                 return_results(command_results)
                 if push_to_xsiam:
                     # publishing events to XSIAM
-                    send_events_to_xsiam(events, vendor=vendor, product=product)
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     # Log exceptions and return errors
     except Exception as e:
