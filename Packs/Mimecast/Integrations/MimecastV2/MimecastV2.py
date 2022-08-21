@@ -3030,7 +3030,7 @@ def main():
             return_results(reject_hold_message_command(args))
         elif demisto.command() == 'mimecast-release-hold-message':
             return_results(release_hold_message_command(args))
-        elif demisto.command() == 'mimecast-search_processing_message':
+        elif demisto.command() == 'mimecast-search-processing-message':
             return_results(search_processing_message_command(args))
         elif demisto.command() == 'mimecast-list-email-queues':
             return_results(list_email_queues_command(args))
