@@ -4252,6 +4252,7 @@
         {
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
+            "instance_names": ["aks_device_code_instance", "aks_user_auth_instance"],
             "integrations": [
                 "Azure Kubernetes Services"
             ]
