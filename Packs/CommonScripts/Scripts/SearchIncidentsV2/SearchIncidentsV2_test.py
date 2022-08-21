@@ -90,11 +90,6 @@ EXAMPLE_INCIDENTS_RAW_RESPONSE = [
         u'type': u'SomeType-A',
         u'name': u'Go Phish',
     },
-    {
-        u'id': u'4',
-        u'type': u'Another Type-A',
-        u'name': u'Hello',
-    },
 ]
 
 FILTER_TO_MATCHED_INCIDENTS = [
@@ -102,8 +97,7 @@ FILTER_TO_MATCHED_INCIDENTS = [
     ({'type': 'Type-A, SomeTypeA'}, ['2']),
     ({'type': ['Type-A', 'SomeType-A']}, ['2', '3']),
     ({'type': 'Another'}, []),
-    ({'name': 'Phishing'}, ['1']),
-    ({'name': 'Phishing,Phishing Campaign'}, ['1', '2']),
+    ({'name': 'Phish'}, ['1', '2', '3']),
 ]
 
 
