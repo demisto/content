@@ -8,14 +8,10 @@ def test_e2e_demisto_sdk_flow_playbook(tmpdir, insecure: bool = False):
     e2e_tests_utils.cli(f'mkdir {tmpdir}/git')
     e2e_tests_utils.git_clone_demisto_sdk(destination_folder=f'{tmpdir}/git', sdk_git_branch='testsuite-playbook')
 
-    # import TestSuite
-    # from TestSuite.pack import Pack
     from TestSuite.playbook import Playbook
     from TestSuite.repo import Repo
 
     repo = Repo(tmpdir)
-
-    # client = e2e_tests_utils.connect_to_server(insecure=insecure)
 
     pack_name = 'foo_' + str(random.randint(1, 1000))
     pack = repo.create_pack(name=pack_name)
@@ -30,7 +26,6 @@ def test_e2e_demisto_sdk_flow_playbook(tmpdir, insecure: bool = False):
     e2e_tests_utils.cli(f'mkdir {tmpdir}/Packs/{pack_name}_updated')
 
     print(f'Trying to download the updated playbook from {playbook_name} to {tmpdir}/Packs/{pack_name}_updated/Playbooks')
-    # e2e_tests_utils.cli(f'demisto-sdk download -i Packs/{pack_name}')
     e2e_tests_utils.cli(f'demisto-sdk download --insecure -i {playbook_name} -o {tmpdir}/Packs/{pack_name}_updated')
 
     print('Generating docs (creating a readme file)'
