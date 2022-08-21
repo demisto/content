@@ -1,7 +1,7 @@
 {
-    "id": "McAfee MVision CASB Threat",
+    "id": "McAfee Skyhigh Security Threat",
     "version": -1,
-    "name": "McAfee MVision CASB Threat",
+    "name": "McAfee Skyhigh Security Threat",
     "system": false,
     "group": "incident",
     "detailsV2": {
@@ -444,7 +444,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "mcafeemvisioncasbactivitynames",
+                                "fieldId": "mcafeeskyhighsecurityactivitynames",
                                 "height": 22,
                                 "id": "eb231b30-fb98-11ec-b8f1-4f20a873546d",
                                 "index": 0,
@@ -453,7 +453,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "mcafeemvisioncasbactorid",
+                                "fieldId": "mcafeeskyhighsecurityactorid",
                                 "height": 22,
                                 "id": "f5e2b940-fb98-11ec-b8f1-4f20a873546d",
                                 "index": 1,
@@ -462,7 +462,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "mcafeemvisioncasbactoridtype",
+                                "fieldId": "mcafeeskyhighsecurityactoridtype",
                                 "height": 22,
                                 "id": "f7073c10-fb98-11ec-b8f1-4f20a873546d",
                                 "index": 2,
@@ -471,7 +471,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "mcafeemvisioncasbsignificantlyupdatedat",
+                                "fieldId": "mcafeeskyhighsecuritysignificantlyupdatedat",
                                 "height": 22,
                                 "id": "fe9919d0-fb98-11ec-b8f1-4f20a873546d",
                                 "index": 3,
@@ -480,7 +480,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "mcafeemvisioncasbanomalycount",
+                                "fieldId": "mcafeeskyhighsecurityanomalycount",
                                 "height": 22,
                                 "id": "0c3aa220-fb99-11ec-b8f1-4f20a873546d",
                                 "index": 4,
@@ -489,7 +489,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "mcafeemvisioncasbanomalyids",
+                                "fieldId": "mcafeeskyhighsecurityanomalyids",
                                 "height": 22,
                                 "id": "0cf566a0-fb99-11ec-b8f1-4f20a873546d",
                                 "index": 5,
@@ -499,7 +499,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "mcafeemvisioncasbistokenized",
+                                "fieldId": "mcafeeskyhighsecurityistokenized",
                                 "height": 22,
                                 "id": "26aa0f10-fb99-11ec-b8f1-4f20a873546d",
                                 "index": 6,
@@ -509,7 +509,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "mcafeemvisioncasbresolutionaction",
+                                "fieldId": "mcafeeskyhighsecurityresolutionaction",
                                 "height": 22,
                                 "id": "1d80ef80-fb99-11ec-b8f1-4f20a873546d",
                                 "index": 7,
@@ -518,7 +518,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "mcafeemvisioncasbuserattributes",
+                                "fieldId": "mcafeeskyhighsecurityuserattributes",
                                 "height": 22,
                                 "id": "2e7dfee0-fb99-11ec-b8f1-4f20a873546d",
                                 "index": 8,
@@ -566,5 +566,5 @@
         ]
     },
     "fromVersion": "6.5.0",
-    "description": "Layout for McAfee MVision CASB Threat incident type."
+    "description": "Layout for McAfee Skyhigh Security Threat incident type."
 }

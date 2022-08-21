@@ -3,7 +3,7 @@ import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
-from McAfeeMVisionCASB import main
+from McAfeeSkyhighSecurity import main
 
 
 def util_load_json(path):
@@ -17,13 +17,13 @@ def test_incident_query_command(mocker):
         - An app client object
         - Relevant arguments
     When:
-        - mvision-casb-incident-query command is executed
+        - skyhigh-security-incident-query command is executed
     Then:
         - Ensure the output is a list of incidents in the correct format
     """
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
     mocker.patch.object(demisto, 'args', return_value={'limit': 3})
-    mocker.patch.object(demisto, 'command', return_value='mvision-casb-incident-query')
+    mocker.patch.object(demisto, 'command', return_value='skyhigh-security-incident-query')
     response = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
@@ -41,13 +41,13 @@ def test_status_update_command(mocker):
         - An app client object
         - Relevant arguments
     When:
-        - mvision-casb-incident-status-update command is executed
+        - skyhigh-security-incident-status-update command is executed
     Then:
         - Ensure the readable output is in the correct format
     """
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
     mocker.patch.object(demisto, 'args', return_value={'incident_ids': 'CAP-1111', 'status': 'archived'})
-    mocker.patch.object(demisto, 'command', return_value='mvision-casb-incident-status-update')
+    mocker.patch.object(demisto, 'command', return_value='skyhigh-security-incident-status-update')
     response = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
@@ -63,13 +63,13 @@ def test_anomaly_activity_list_command(mocker):
         - An app client object
         - Relevant arguments
     When:
-        - mvision-casb-anomaly-activity-list command is executed
+        - skyhigh-security-anomaly-activity-list command is executed
     Then:
         - Ensure the readable output is in the correct format
     """
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
     mocker.patch.object(demisto, 'args', return_value={'anomaly_id': '1111'})
-    mocker.patch.object(demisto, 'command', return_value='mvision-casb-anomaly-activity-list')
+    mocker.patch.object(demisto, 'command', return_value='skyhigh-security-anomaly-activity-list')
     response = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
@@ -85,13 +85,13 @@ def test_policy_dictionary_list_command(mocker):
         - An app client object
         - Relevant arguments
     When:
-        - mvision-casb-policy-dictionary-list command is executed
+        - skyhigh-security-policy-dictionary-list command is executed
     Then:
         - Ensure the output is a list of policies in the correct format
     """
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
     mocker.patch.object(demisto, 'args', return_value={'limit': 3})
-    mocker.patch.object(demisto, 'command', return_value='mvision-casb-policy-dictionary-list')
+    mocker.patch.object(demisto, 'command', return_value='skyhigh-security-policy-dictionary-list')
     response = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
@@ -108,7 +108,7 @@ def test_policy_dictionary_update_command(mocker):
         - An app client object
         - Relevant arguments
     When:
-        - mvision-casb-policy-dictionary-update command is executed
+        - skyhigh-security-policy-dictionary-update command is executed
     Then:
         - Ensure the readable output is in the correct format
     """
@@ -116,7 +116,7 @@ def test_policy_dictionary_update_command(mocker):
     mocker.patch.object(demisto, 'args', return_value={
         'dictionary_id': '1111', 'name': '(Default) Internal Domains', 'content': 'gmail.com, outlook.com'
     })
-    mocker.patch.object(demisto, 'command', return_value='mvision-casb-policy-dictionary-update')
+    mocker.patch.object(demisto, 'command', return_value='skyhigh-security-policy-dictionary-update')
     response = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
@@ -144,7 +144,7 @@ def test_fetch_incidents(mocker):
         - Ensure the output in the first interval is a list of 3 (max_fetch) incidents
         - Ensure the output of the second interval is a list of 0 incidents
     """
-    from McAfeeMVisionCASB import Client, fetch_incidents
+    from McAfeeSkyhighSecurity import Client, fetch_incidents
 
     client = Client(base_url='https://www.example.com/', verify=False)
     params = {'max_fetch': 3}

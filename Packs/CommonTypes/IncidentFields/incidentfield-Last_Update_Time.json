@@ -13,8 +13,8 @@
         "Microsoft Defender For Endpoint",
         "OpsGenie Incident",
         "OpsGenie Alert",
-        "McAfee MVision CASB Alert",
-        "McAfee MVision CASB Threat"
+        "McAfee Skyhigh Security Alert",
+        "McAfee Skyhigh Security Threat"
     ],
     "breachScript": "",
     "caseInsensitive": true,

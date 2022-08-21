@@ -3,12 +3,12 @@
     "fromVersion": "5.5.0",
     "associatedToAll": false,
     "associatedTypes": [
-        "McAfee MVision CASB Alert",
-        "McAfee MVision CASB Threat"
+        "McAfee Skyhigh Security Alert",
+        "McAfee Skyhigh Security Threat"
     ],
     "breachScript": "",
     "caseInsensitive": true,
-    "cliName": "mcafeemvisioncasbscanname",
+    "cliName": "mcafeeskyhighsecurityscanname",
     "closeForm": false,
     "columns": null,
     "content": true,
@@ -18,10 +18,10 @@
     "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
-    "id": "incident_mcafeemvisioncasbscanname",
+    "id": "incident_mcafeeskyhighsecurityscanname",
     "isReadOnly": false,
     "locked": false,
-    "name": "McAfee MVision CASB Scan Name",
+    "name": "McAfee Skyhigh Security Scan Name",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",

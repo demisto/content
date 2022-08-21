@@ -1,18 +1,18 @@
 {
     "description": "",
     "feed": false,
-    "id": "McAfee MVision CASB Incoming Mapper",
+    "id": "McAfee Skyhigh Security Incoming Mapper",
     "mapping": {
-        "McAfee MVision CASB Threat": {
+        "McAfee Skyhigh Security Threat": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "McAfee MVision CASB Activity Names": {
+                "McAfee Skyhigh Security Activity Names": {
                     "simple": "activityNames"
                 },
-                "McAfee MVision CASB Actor ID": {
+                "McAfee Skyhigh Security Actor ID": {
                     "simple": "actorId"
                 },
-                "McAfee MVision CASB Actor ID Type": {
+                "McAfee Skyhigh Security Actor ID Type": {
                     "simple": "actorIdType"
                 },
                 "Alert Category": {
@@ -30,7 +30,7 @@
                 "Risk Score": {
                     "simple": "incidentRiskScore"
                 },
-                "McAfee MVision CASB Significantly Updated At": {
+                "McAfee Skyhigh Security Significantly Updated At": {
                     "simple": "significantlyUpdatedAt"
                 },
                 "Source Status": {
@@ -45,54 +45,54 @@
                 "Alert Action": {
                     "simple": "information.remediationResponse"
                 },
-                "McAfee MVision CASB Anomaly Count": {
+                "McAfee Skyhigh Security Anomaly Count": {
                     "simple": "information.anomalyCount"
                 },
-                "McAfee MVision CASB Anomaly IDs": {
+                "McAfee Skyhigh Security Anomaly IDs": {
                     "simple": "information.anomalyIds"
                 },
                 "Device External IP": {
                     "simple": "information.device.ip"
                 },
-                "McAfee MVision CASB Device Type": {
+                "McAfee Skyhigh Security Device Type": {
                     "simple": "information.device.device_type"
                 },
                 "Event ID": {
                     "simple": "information.eventId"
                 },
-                "McAfee MVision CASB Is Tokenized": {
+                "McAfee Skyhigh Security Is Tokenized": {
                     "simple": "information.isTokenized"
                 },
                 "OS": {
                     "simple": "information.device.os.platform"
                 },
-                "McAfee MVision CASB Resolution Action": {
+                "McAfee Skyhigh Security Resolution Action": {
                     "simple": "information.resolutionAction"
                 },
                 "User Agent": {
                     "simple": "information.device.application.user_agent"
                 },
-                "McAfee MVision CASB User Attributes": {
+                "McAfee Skyhigh Security User Attributes": {
                     "simple": "information.userAttributes"
                 }
             }
         },
-        "McAfee MVision CASB Alert": {
+        "McAfee Skyhigh Security Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Account ID": {
                     "simple": "information.accountId"
                 },
-                "McAfee MVision CASB Activity Count": {
+                "McAfee Skyhigh Security Activity Count": {
                     "simple": "information.activityCount"
                 },
-                "McAfee MVision CASB Activity Names": {
+                "McAfee Skyhigh Security Activity Names": {
                     "simple": "activityNames"
                 },
-                "McAfee MVision CASB Actor ID": {
+                "McAfee Skyhigh Security Actor ID": {
                     "simple": "actorId"
                 },
-                "McAfee MVision CASB Actor ID Type": {
+                "McAfee Skyhigh Security Actor ID Type": {
                     "simple": "actorIdType"
                 },
                 "Alert Action": {
@@ -101,13 +101,13 @@
                 "Alert Category": {
                     "simple": "incidentGroup"
                 },
-                "McAfee MVision CASB Anomaly Category": {
+                "McAfee Skyhigh Security Anomaly Category": {
                     "simple": "information.anomalyCategory"
                 },
-                "McAfee MVision CASB Anomaly Cause": {
+                "McAfee Skyhigh Security Anomaly Cause": {
                     "simple": "information.anomalyCause"
                 },
-                "McAfee MVision CASB Anomaly Value": {
+                "McAfee Skyhigh Security Anomaly Value": {
                     "simple": "information.contentItemValue"
                 },
                 "Categories": {
@@ -119,34 +119,34 @@
                 "Cloud Service": {
                     "simple": "serviceNames"
                 },
-                "McAfee MVision CASB Content Item Hierarchy": {
+                "McAfee Skyhigh Security Content Item Hierarchy": {
                     "simple": "information.Content Item Created On"
                 },
-                "McAfee MVision CASB Content Item ID": {
+                "McAfee Skyhigh Security Content Item ID": {
                     "simple": "information.contentItemId"
                 },
-                "McAfee MVision CASB Content Item Name": {
+                "McAfee Skyhigh Security Content Item Name": {
                     "simple": "information.contentItemName"
                 },
-                "McAfee MVision CASB Content Item Parent": {
+                "McAfee Skyhigh Security Content Item Parent": {
                     "simple": "information.contentItemParent"
                 },
-                "McAfee MVision CASB Content Item Size": {
+                "McAfee Skyhigh Security Content Item Size": {
                     "simple": "information.contentItemSize"
                 },
-                "McAfee MVision CASB Content Item Type": {
+                "McAfee Skyhigh Security Content Item Type": {
                     "simple": "information.contentItemType"
                 },
                 "Country": {
                     "simple": "information.countries"
                 },
-                "McAfee MVision CASB Destination Hostname": {
+                "McAfee Skyhigh Security Destination Hostname": {
                     "simple": "information.destinationHost"
                 },
                 "Device External IP": {
                     "simple": "information.device.ip"
                 },
-                "McAfee MVision CASB Device Type": {
+                "McAfee Skyhigh Security Device Type": {
                     "simple": "information.device.device_type"
                 },
                 "Domain Name": {
@@ -161,16 +161,16 @@
                 "File Hash": {
                     "simple": "information.Checksums"
                 },
-                "McAfee MVision CASB Is Part Of Threat": {
+                "McAfee Skyhigh Security Is Part Of Threat": {
                     "simple": "information.isPartOfThreat"
                 },
-                "McAfee MVision CASB Is Tokenized": {
+                "McAfee Skyhigh Security Is Tokenized": {
                     "simple": "information.isTokenized"
                 },
                 "Last Update Time": {
                     "simple": "timeModified"
                 },
-                "McAfee MVision CASB Malware Confidence": {
+                "McAfee Skyhigh Security Malware Confidence": {
                     "simple": "information.malwareConfidence"
                 },
                 "Malware Family": {
@@ -197,7 +197,7 @@
                 "Region": {
                     "simple": "information.region"
                 },
-                "McAfee MVision CASB Resolution Action": {
+                "McAfee Skyhigh Security Resolution Action": {
                     "simple": "information.resolutionAction"
                 },
                 "Risk Score": {
@@ -206,13 +206,13 @@
                 "Rule Name": {
                     "simple": "information.primaryRuleGroup"
                 },
-                "McAfee MVision CASB Scan Name": {
+                "McAfee Skyhigh Security Scan Name": {
                     "simple": "information.scanName"
                 },
-                "McAfee MVision CASB Scan Run Date": {
+                "McAfee Skyhigh Security Scan Run Date": {
                     "simple": "information.scanRunDate"
                 },
-                "McAfee MVision CASB Significantly Updated At": {
+                "McAfee Skyhigh Security Significantly Updated At": {
                     "simple": "significantlyUpdatedAt"
                 },
                 "Source IPs": {
@@ -224,22 +224,22 @@
                 "Start Time": {
                     "simple": "timeCreated"
                 },
-                "McAfee MVision CASB Total Match Count": {
+                "McAfee Skyhigh Security Total Match Count": {
                     "simple": "information.totalMatchCount"
                 },
-                "McAfee MVision CASB URLs": {
+                "McAfee Skyhigh Security URLs": {
                     "simple": "information.destinationUrl"
                 },
-                "McAfee MVision CASB Unique Activity Names": {
+                "McAfee Skyhigh Security Unique Activity Names": {
                     "simple": "information.uniqueActivityNames"
                 },
                 "User Agent": {
                     "simple": "information.device.application.user_agent"
                 },
-                "McAfee MVision CASB User Attributes": {
+                "McAfee Skyhigh Security User Attributes": {
                     "simple": "information.userAttributes"
                 },
-                "McAfee MVision CASB content Item Created On": {
+                "McAfee Skyhigh Security content Item Created On": {
                     "simple": "information.contentItemCreatedOn"
                 },
                 "severity": {
@@ -248,7 +248,7 @@
             }
         }
     },
-    "name": "McAfee MVision CASB Incoming Mapper",
+    "name": "McAfee Skyhigh Security Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.5.0"

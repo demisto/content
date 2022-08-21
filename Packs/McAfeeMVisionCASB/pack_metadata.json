@@ -1,6 +1,6 @@
 {
-    "name": "McAfee MVision CASB",
-    "description": "MVision CASB is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.\n",
+    "name": "McAfee Skyhigh Security",
+    "description": "Skyhigh Security is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.\n",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

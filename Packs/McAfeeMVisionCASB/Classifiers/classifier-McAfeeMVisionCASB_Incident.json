@@ -1,13 +1,13 @@
 {
-    "defaultIncidentType": "McAfee MVision CASB Alert",
+    "defaultIncidentType": "McAfee Skyhigh Security Alert",
     "description": "",
     "feed": false,
-    "id": "McAfee MVision CASB Incident",
+    "id": "McAfee Skyhigh Security Incident",
     "keyTypeMap": {
-        "Alert": "McAfee MVision CASB Alert",
-        "Threat": "McAfee MVision CASB Threat"
+        "Alert": "McAfee Skyhigh Security Alert",
+        "Threat": "McAfee Skyhigh Security Threat"
     },
-    "name": "McAfee MVision CASB Incident",
+    "name": "McAfee Skyhigh Security Incident",
     "propagationLabels": [
         "all"
     ],

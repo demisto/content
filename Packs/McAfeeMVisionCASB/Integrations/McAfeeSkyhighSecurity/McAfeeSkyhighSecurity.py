@@ -155,7 +155,7 @@ def fetch_incidents(client: Client, params: dict) -> Tuple[dict, list]:
             if (incident_id := incident.get('incidentId')) not in ids:
                 xsoar_incidents.append(
                     {
-                        'name': f'McAfee MVision CASB Incident {incident_id}',
+                        'name': f'McAfee Skyhigh Security Incident {incident_id}',
                         'occurred': incident.get('timeModified'),
                         'rawJSON': json.dumps(incident),
                         'dbotMirrorId': incident_id,
@@ -211,12 +211,12 @@ def incident_query_command(client: Client, args: Dict) -> CommandResults:
             })
 
         readable_output = tableToMarkdown(
-            'MVISION CASB Incidents', readable_dict, headerTransform=pascalToSpace, removeNull=True
+            'Skyhigh Security Incidents', readable_dict, headerTransform=pascalToSpace, removeNull=True
         )
 
         return CommandResults(
             outputs=incidents,
-            outputs_prefix='MVisionCASB.Incident',
+            outputs_prefix='SkyhighSecurity.Incident',
             outputs_key_field='incidentId',
             readable_output=readable_output,
             raw_response=incidents,
@@ -247,7 +247,7 @@ def anomaly_activity_list_command(client: Client, args: Dict) -> CommandResults:
 
     return CommandResults(
         outputs=result,
-        outputs_prefix='MVisionCASB.Dictionaries',
+        outputs_prefix='SkyhighSecurity.Dictionaries',
         outputs_key_field='ID',
         readable_output=tableToMarkdown('', result),
         raw_response=result
@@ -273,12 +273,12 @@ def policy_dictionary_list_command(client: Client, args: Dict) -> CommandResults
             )
 
     readable_output = tableToMarkdown(
-        'List of MVISION CASB Policies', filtered_policies, headerTransform=pascalToSpace, removeNull=True
+        'List of Skyhigh Security Policies', filtered_policies, headerTransform=pascalToSpace, removeNull=True
     )
 
     return CommandResults(
         outputs=filtered_policies,
-        outputs_prefix='MVisionCASB.Dictionaries',
+        outputs_prefix='SkyhighSecurity.Dictionaries',
         outputs_key_field='ID',
         readable_output=readable_output,
         raw_response=filtered_policies,
@@ -319,11 +319,11 @@ def main() -> None:
 
     try:
         commands: Dict = {
-            'mvision-casb-incident-query': incident_query_command,
-            'mvision-casb-incident-status-update': status_update_command,
-            'mvision-casb-anomaly-activity-list': anomaly_activity_list_command,
-            'mvision-casb-policy-dictionary-list': policy_dictionary_list_command,
-            'mvision-casb-policy-dictionary-update': policy_dictionary_update_command,
+            'skyhigh-security-incident-query': incident_query_command,
+            'skyhigh-security-incident-status-update': status_update_command,
+            'skyhigh-security-anomaly-activity-list': anomaly_activity_list_command,
+            'skyhigh-security-policy-dictionary-list': policy_dictionary_list_command,
+            'skyhigh-security-policy-dictionary-update': policy_dictionary_update_command,
         }
 
         client = Client(

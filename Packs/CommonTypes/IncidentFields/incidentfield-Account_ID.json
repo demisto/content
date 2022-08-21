@@ -6,8 +6,8 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-		"McAfee MVision CASB Alert",
-		"McAfee MVision CASB Threat"
+		"McAfee Skyhigh Security Alert",
+		"McAfee Skyhigh Security Threat"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

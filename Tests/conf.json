@@ -5201,8 +5201,8 @@
             "memory_threshold": 95
         },
         {
-            "integrations": "McAfee MVision CASB",
-            "playbookID": "McAfee MVision CASB Test Play Book",
+            "integrations": "McAfee Skyhigh Security",
+            "playbookID": "McAfee Skyhigh Security Test Play Book",
             "fromversion": "6.5.0"
         }
     ],

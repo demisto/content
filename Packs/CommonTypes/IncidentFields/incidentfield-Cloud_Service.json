@@ -28,8 +28,8 @@
         "Trend Micro CAS Event",
         "CrowdStrike Falcon Detection",
         "CrowdStrike Falcon Incident",
-        "McAfee MVision CASB Alert",
-        "McAfee MVision CASB Threat"
+        "McAfee Skyhigh Security Alert",
+        "McAfee Skyhigh Security Threat"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,

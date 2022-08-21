@@ -1,5 +1,0 @@
-!mvision-casb-incident-query limit="3" start_time="3 days"
-!mvision-casb-incident-status-update incident_ids=CAP-114044 status=archived
-!mvision-casb-policy-dictionary-list limit="3"
-!mvision-casb-policy-dictionary-update dictionary_id="26436" name="(Default) Internal Domains" content="gmail.com, outlook.com"
-!mvision-casb-anomaly-activity-list anomaly_id="1111"

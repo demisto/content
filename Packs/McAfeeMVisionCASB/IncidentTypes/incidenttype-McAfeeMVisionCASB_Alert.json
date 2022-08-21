@@ -9,9 +9,9 @@
     "disabled": false,
     "hours": 0,
     "hoursR": 0,
-    "id": "McAfee MVision CASB Alert",
+    "id": "McAfee Skyhigh Security Alert",
     "locked": false,
-    "name": "McAfee MVision CASB Alert",
+    "name": "McAfee Skyhigh Security Alert",
     "playbookId": "",
     "preProcessingScript": "",
     "readonly": false,
@@ -21,5 +21,5 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "layout": "McAfee MVision CASB Alert"
+    "layout": "McAfee Skyhigh Security Alert"
 }

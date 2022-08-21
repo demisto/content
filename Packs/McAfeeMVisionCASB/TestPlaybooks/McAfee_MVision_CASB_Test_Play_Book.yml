@@ -1,7 +1,7 @@
-id: McAfee MVision CASB Test Play Book
+id: McAfee Skyhigh Security Test Play Book
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: McAfee MVision CASB Test Play Book
+name: McAfee Skyhigh Security Test Play Book
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
       version: -1
       name: incident-query
       description: Retrieves a list of incidents in ascending time modified order.
-      script: '|||mvision-casb-incident-query'
+      script: '|||skyhigh-security-incident-query'
       type: regular
       iscommand: true
       brand: ""
@@ -88,7 +88,7 @@ tasks:
           left:
             value:
               complex:
-                root: MVisionCASB
+                root: SkyhighSecurity
                 accessor: Incident
             iscontext: true
     view: |-
@@ -118,7 +118,7 @@ tasks:
         Note!
         For multiple Ids  - single status will be changed for all IDs
         e.g. 123, 456, 789 >> change status to >> closed.
-      script: '|||mvision-casb-incident-status-update'
+      script: '|||skyhigh-security-incident-status-update'
       type: regular
       iscommand: true
       brand: ""
@@ -128,7 +128,7 @@ tasks:
     scriptarguments:
       incident_ids:
         complex:
-          root: MVisionCASB.Incident
+          root: SkyhighSecurity.Incident
           accessor: incidentId
       status:
         simple: new
@@ -156,7 +156,7 @@ tasks:
       version: -1
       name: policy-dictionary-list
       description: List existing Policy Dictionaries.
-      script: '|||mvision-casb-policy-dictionary-list'
+      script: '|||skyhigh-security-policy-dictionary-list'
       type: regular
       iscommand: true
       brand: ""
@@ -203,7 +203,7 @@ tasks:
           left:
             value:
               complex:
-                root: MVisionCASB.dictionaries
+                root: SkyhighSecurity.dictionaries
                 accessor: ID
             iscontext: true
     view: |-
@@ -229,7 +229,7 @@ tasks:
       version: -1
       name: policy-dictionary-update
       description: Adds new content to an existing Policy Dictionaries.
-      script: '|||mvision-casb-policy-dictionary-update'
+      script: '|||skyhigh-security-policy-dictionary-update'
       type: regular
       iscommand: true
       brand: ""
@@ -241,11 +241,11 @@ tasks:
         simple: gmail.com, outlook.com
       dictionary_id:
         complex:
-          root: MVisionCASB.dictionaries
+          root: SkyhighSecurity.dictionaries
           accessor: ID
       name:
         complex:
-          root: MVisionCASB.dictionaries
+          root: SkyhighSecurity.dictionaries
           accessor: Name
     separatecontext: false
     view: |-
@@ -271,7 +271,7 @@ tasks:
       version: -1
       name: anomaly-activity-list
       description: Fetches activities for a given anomaly Id.
-      script: '|||mvision-casb-anomaly-activity-list'
+      script: '|||skyhigh-security-anomaly-activity-list'
       type: regular
       iscommand: true
       brand: ""
@@ -319,7 +319,7 @@ tasks:
           left:
             value:
               complex:
-                root: MVisionCASB
+                root: SkyhighSecurity
                 accessor: AnomalyActivity
             iscontext: true
     view: |-

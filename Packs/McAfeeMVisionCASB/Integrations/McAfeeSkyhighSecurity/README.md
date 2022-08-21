@@ -1,17 +1,17 @@
 
 ### Additional information
-MVision CASB is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
-This integration was integrated and tested with version 1 of McAfee MVision CASB.
+Skyhigh Security is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
+This integration was integrated and tested with version 1 of McAfee Skyhigh Security.
 
 ### API limitations
 
 Do to [API](https://success.myshn.net/Skyhigh_CASB/Skyhigh_CASB_APIs/Incidents_API/02_Incidents_API_Paths#_responses_3) limitations, keep in mind that over time the integration can start to work more slowly.
 The solution is to restart the last-run.
 
-## Configure McAfee MVision CASB on Cortex XSOAR
+## Configure McAfee Skyhigh Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for McAfee MVision CASB.
+2. Search for McAfee Skyhigh Security.
 3. Click **Add instance** to create and configure a new integration instance.
 
    | **Parameter**  | **Description** | **Required** |
@@ -30,7 +30,7 @@ The solution is to restart the last-run.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### mvision-casb-incident-query
+### skyhigh-security-incident-query
 
 ---
 
@@ -38,7 +38,7 @@ Retrieves a list of incidents in ascending time modified order.
 
 #### Base Command
 
-`mvision-casb-incident-query`
+`skyhigh-security-incident-query`
 
 #### Input
 
@@ -58,17 +58,17 @@ Retrieves a list of incidents in ascending time modified order.
 
 | **Path**             | **Type** | **Description**          |
 | ------ | ----- | ------ |
-| MVisionCASB.Incident | Unknown  | The incident's metadata. |
+| SkyhighSecurity.Incident | Unknown  | The incident's metadata. |
 
 #### Command example
 
-`!mvision-casb-incident-query limit="3" start_time="3 days"`
+`!skyhigh-security-incident-query limit="3" start_time="3 days"`
 
 #### Context Example
 
 ```json
 {
-  "MVisionCASB": {
+  "SkyhighSecurity": {
     "Incident": [
       {
         "activityNames": [],
@@ -203,7 +203,7 @@ Retrieves a list of incidents in ascending time modified order.
 
 #### Human Readable Output
 
-> ### MVISION CASB Incidents
+> ### Skyhigh Security Incidents
 >
 > | Alert Severity | Incident ID | Service Name   | Status | Time (UTC)  | User Name  |
 > | ---- | ---- | ----- | ------ | ------ | ---- |
@@ -211,7 +211,7 @@ Retrieves a list of incidents in ascending time modified order.
 > | low   | CAP-555555  | SAP - SuccessFactors HXM Suite  | new  | 2022-07-02T02:38:16.706Z | NOT AVAILABLE |
 > | low   | CAP-999999  | SAP - SuccessFactors HXM Suite  | new  | 2022-07-02T02:38:16.888Z | NOT AVAILABLE |
 
-### mvision-casb-incident-status-update
+### skyhigh-security-incident-status-update
 
 ---
 
@@ -223,7 +223,7 @@ e.g., 123, 456, 789 >> change status to >> closed.
 
 #### Base Command
 
-`mvision-casb-incident-status-update`
+`skyhigh-security-incident-status-update`
 
 #### Input
 
@@ -238,13 +238,13 @@ There is no context output for this command.
 
 #### Command example
 
-`!mvision-casb-incident-status-update incident_ids=CAP-114044 status=archived`
+`!skyhigh-security-incident-status-update incident_ids=CAP-114044 status=archived`
 
 #### Human Readable Output
 
 > Status updated for user
 
-### mvision-casb-anomaly-activity-list
+### skyhigh-security-anomaly-activity-list
 
 ---
 
@@ -252,7 +252,7 @@ Fetches activities for a given anomaly ID.
 
 #### Base Command
 
-`mvision-casb-anomaly-activity-list`
+`skyhigh-security-anomaly-activity-list`
 
 #### Input
 
@@ -264,47 +264,47 @@ Fetches activities for a given anomaly ID.
 
 | **Path** | **Type** | **Description**                                               |
 | --- | ----- | --- |
-| MVisionCASB.AnomalyActivity.timeStamp          | String   | The timestamp of the anomaly activity.   |                     |
-| MVisionCASB.AnomalyActivity.actionName         | String  | The action name.  |
-| MVisionCASB.AnomalyActivity.asnName            | String  | The ASN name of an activity.  |                                |
-| MVisionCASB.AnomalyActivity.city               | String  | The city where the anomaly activity occurred.    |
-| MVisionCASB.AnomalyActivity.collabGroup        | String  | The collaboration group for the anomaly activity.  |
-| MVisionCASB.AnomalyActivity.count              | Number  | The number of anomalies detected.      |
-| MVisionCASB.AnomalyActivity.country            | String   | The country of the anomaly activity.   |
-| MVisionCASB.AnomalyActivity.deviceManaged      | Boolean   | Whether the anomaly activity is managed by the device or not. |
-| MVisionCASB.AnomalyActivity.directory          | String   | The directory of the anomaly activity.    |
-| MVisionCASB.AnomalyActivity.downloadBytes      | Number   | The number of bytes downloaded by the anomaly activity.   |
-| MVisionCASB.AnomalyActivity.eventCount         | Number   | The number of anomalies detected.     |
-| MVisionCASB.AnomalyActivity.fileFolderPath     | String   | The file folder path for the anomaly activity.    |
-| MVisionCASB.AnomalyActivity.fileName           | String   | The file name of the anomaly activity.                        |
-| MVisionCASB.AnomalyActivity.fileSharingEnabled | Boolean  | Whether the CASB file sharing is enabled or not.   |             |
-| MVisionCASB.AnomalyActivity.fileSize           | Number   | The file size of the anomaly activity.  |
-| MVisionCASB.AnomalyActivity.fileType           | String   | The file type of the anomaly activity.   |
-| MVisionCASB.AnomalyActivity.geoOrgNameV1       | String   | The geo organization name.     |
-| MVisionCASB.AnomalyActivity.httpMethod         | String   | The HTTP method used by the anomaly activity.     |
-| MVisionCASB.AnomalyActivity.instanceId         | String   | The instance ID for the anomaly activity.   |
-| MVisionCASB.AnomalyActivity.isSourceTrusted    | Boolean  | Whether the anomaly activity source is trusted or not.       |
-| MVisionCASB.AnomalyActivity.networkType        | String   | The network type for the anomaly.    |
-| MVisionCASB.AnomalyActivity.objectType         | String   | The object type for the anomaly activity.   |
-| MVisionCASB.AnomalyActivity.operation          | String   | The operation type.    |
-| MVisionCASB.AnomalyActivity.proxyDescription   | String   | The proxy description for the anomaly activity.   |
-| MVisionCASB.AnomalyActivity.proxyType          | String   | The proxy type for the anomaly activity.   |
-| MVisionCASB.AnomalyActivity.region             | String   | The region where the anomaly activity occurred.  |
-| MVisionCASB.AnomalyActivity.serviceName        | String   | The name of the service.    |
-| MVisionCASB.AnomalyActivity.siteUrl            | String   | The URL of the CASB's site.       |
-| MVisionCASB.AnomalyActivity.sourceIP           | IP     | The IP address of the source IP.   |
-| MVisionCASB.AnomalyActivity.sourceIdentifier   | String   | The source identifier for the anomaly activity.   |
-| MVisionCASB.AnomalyActivity.targetId           | String   | The target ID for the anomaly activity.                       |
-| MVisionCASB.AnomalyActivity.targetType         | String   | The anomaly activity type.   |
-| MVisionCASB.AnomalyActivity.tenantId           | Number   | The tenant ID for the anomaly activity.     |
-| MVisionCASB.AnomalyActivity.threatCategory     | String   | The threat category for the anomaly activity.    |
-| MVisionCASB.AnomalyActivity.trustEntity        | String   | The trust entity for the anomaly activity.      |
-| MVisionCASB.AnomalyActivity.trustReason        | String   | The trust reason of the anomaly activity.    |
-| MVisionCASB.AnomalyActivity.uploadBytes        | Number   | The number of bytes uploaded.       |
-| MVisionCASB.AnomalyActivity.url                | String   | The URL of the anomaly activity.     |
-| MVisionCASB.AnomalyActivity.user               | String   | The user who triggered the anomaly.     |
+| SkyhighSecurity.AnomalyActivity.timeStamp          | String   | The timestamp of the anomaly activity.   |                     |
+| SkyhighSecurity.AnomalyActivity.actionName         | String  | The action name.  |
+| SkyhighSecurity.AnomalyActivity.asnName            | String  | The ASN name of an activity.  |                                |
+| SkyhighSecurity.AnomalyActivity.city               | String  | The city where the anomaly activity occurred.    |
+| SkyhighSecurity.AnomalyActivity.collabGroup        | String  | The collaboration group for the anomaly activity.  |
+| SkyhighSecurity.AnomalyActivity.count              | Number  | The number of anomalies detected.      |
+| SkyhighSecurity.AnomalyActivity.country            | String   | The country of the anomaly activity.   |
+| SkyhighSecurity.AnomalyActivity.deviceManaged      | Boolean   | Whether the anomaly activity is managed by the device or not. |
+| SkyhighSecurity.AnomalyActivity.directory          | String   | The directory of the anomaly activity.    |
+| SkyhighSecurity.AnomalyActivity.downloadBytes      | Number   | The number of bytes downloaded by the anomaly activity.   |
+| SkyhighSecurity.AnomalyActivity.eventCount         | Number   | The number of anomalies detected.     |
+| SkyhighSecurity.AnomalyActivity.fileFolderPath     | String   | The file folder path for the anomaly activity.    |
+| SkyhighSecurity.AnomalyActivity.fileName           | String   | The file name of the anomaly activity.                        |
+| SkyhighSecurity.AnomalyActivity.fileSharingEnabled | Boolean  | Whether the CASB file sharing is enabled or not.   |             |
+| SkyhighSecurity.AnomalyActivity.fileSize           | Number   | The file size of the anomaly activity.  |
+| SkyhighSecurity.AnomalyActivity.fileType           | String   | The file type of the anomaly activity.   |
+| SkyhighSecurity.AnomalyActivity.geoOrgNameV1       | String   | The geo organization name.     |
+| SkyhighSecurity.AnomalyActivity.httpMethod         | String   | The HTTP method used by the anomaly activity.     |
+| SkyhighSecurity.AnomalyActivity.instanceId         | String   | The instance ID for the anomaly activity.   |
+| SkyhighSecurity.AnomalyActivity.isSourceTrusted    | Boolean  | Whether the anomaly activity source is trusted or not.       |
+| SkyhighSecurity.AnomalyActivity.networkType        | String   | The network type for the anomaly.    |
+| SkyhighSecurity.AnomalyActivity.objectType         | String   | The object type for the anomaly activity.   |
+| SkyhighSecurity.AnomalyActivity.operation          | String   | The operation type.    |
+| SkyhighSecurity.AnomalyActivity.proxyDescription   | String   | The proxy description for the anomaly activity.   |
+| SkyhighSecurity.AnomalyActivity.proxyType          | String   | The proxy type for the anomaly activity.   |
+| SkyhighSecurity.AnomalyActivity.region             | String   | The region where the anomaly activity occurred.  |
+| SkyhighSecurity.AnomalyActivity.serviceName        | String   | The name of the service.    |
+| SkyhighSecurity.AnomalyActivity.siteUrl            | String   | The URL of the CASB's site.       |
+| SkyhighSecurity.AnomalyActivity.sourceIP           | IP     | The IP address of the source IP.   |
+| SkyhighSecurity.AnomalyActivity.sourceIdentifier   | String   | The source identifier for the anomaly activity.   |
+| SkyhighSecurity.AnomalyActivity.targetId           | String   | The target ID for the anomaly activity.                       |
+| SkyhighSecurity.AnomalyActivity.targetType         | String   | The anomaly activity type.   |
+| SkyhighSecurity.AnomalyActivity.tenantId           | Number   | The tenant ID for the anomaly activity.     |
+| SkyhighSecurity.AnomalyActivity.threatCategory     | String   | The threat category for the anomaly activity.    |
+| SkyhighSecurity.AnomalyActivity.trustEntity        | String   | The trust entity for the anomaly activity.      |
+| SkyhighSecurity.AnomalyActivity.trustReason        | String   | The trust reason of the anomaly activity.    |
+| SkyhighSecurity.AnomalyActivity.uploadBytes        | Number   | The number of bytes uploaded.       |
+| SkyhighSecurity.AnomalyActivity.url                | String   | The URL of the anomaly activity.     |
+| SkyhighSecurity.AnomalyActivity.user               | String   | The user who triggered the anomaly.     |
 
-### mvision-casb-policy-dictionary-list
+### skyhigh-security-policy-dictionary-list
 
 ---
 
@@ -312,7 +312,7 @@ List existing policy dictionaries.
 
 #### Base Command
 
-`mvision-casb-policy-dictionary-list`
+`skyhigh-security-policy-dictionary-list`
 
 #### Input
 
@@ -327,19 +327,19 @@ List existing policy dictionaries.
 
 | **Path**   | **Type** | **Description**    |
 | ------- | -------- | ----------- |
-| MVisionCASB.dictionaries.ID           | Number   | The ID for the dictionary.   |
-| MVisionCASB.dictionaries.LastModified | String   | The date the dictionary was last modified. |
-| MVisionCASB.dictionaries.Name    | String   | The name of the dictionary.     |
+| SkyhighSecurity.dictionaries.ID           | Number   | The ID for the dictionary.   |
+| SkyhighSecurity.dictionaries.LastModified | String   | The date the dictionary was last modified. |
+| SkyhighSecurity.dictionaries.Name    | String   | The name of the dictionary.     |
 
 #### Command example
 
-`!mvision-casb-policy-dictionary-list limit="3"`
+`!skyhigh-security-policy-dictionary-list limit="3"`
 
 #### Context Example
 
 ```json
 {
-  "MVisionCASB": {
+  "SkyhighSecurity": {
     "dictionaries": [
       {
         "ID": 121212,
@@ -363,7 +363,7 @@ List existing policy dictionaries.
 
 #### Human Readable Output
 
-> ### List of MVISION CASB Policies
+> ### List of Skyhigh Security Policies
 >
 > | ID    | Last Modified   | Name   |
 > | ------ | ----- | ------- |
@@ -371,7 +371,7 @@ List existing policy dictionaries.
 > | 131313 | 2020-04-15T13:08:09.000+0000 | Access Whitelist Users     |
 > | 141414 | 2021-07-14T12:22:37.000+0000 | Allowed Geo    |
 
-### mvision-casb-policy-dictionary-update
+### skyhigh-security-policy-dictionary-update
 
 ---
 
@@ -379,7 +379,7 @@ Adds new content to an existing policy dictionary.
 
 #### Base Command
 
-`mvision-casb-policy-dictionary-update`
+`skyhigh-security-policy-dictionary-update`
 
 #### Input
 
@@ -395,7 +395,7 @@ There is no context output for this command.
 
 #### Command example
 
-`!mvision-casb-policy-dictionary-update dictionary_id="121212" name="(Default) Internal Domains" content="gmail.com, outlook.com"`
+`!skyhigh-security-policy-dictionary-update dictionary_id="121212" name="(Default) Internal Domains" content="gmail.com, outlook.com"`
 
 #### Human Readable Output
 

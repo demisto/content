@@ -17,8 +17,8 @@
   "Update",
   "Deactivate",
   "Reactivate",
-  "McAfee MVision CASB Alert",
-  "McAfee MVision CASB Threat"
+  "McAfee Skyhigh Security Alert",
+  "McAfee Skyhigh Security Threat"
  ],
  "useAsKpi": true,
  "locked": false,

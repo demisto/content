@@ -1,6 +1,6 @@
 category: CASB
 commonfields:
-  id: McAfee MVision CASB
+  id: McAfee Skyhigh Security
   version: -1
 configuration:
 - defaultvalue: https://www.myshn.net
@@ -30,9 +30,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: MVision CASB is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
-display: McAfee MVision CASB
-name: McAfee MVision CASB
+description: Skyhigh Security is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
+display: McAfee Skyhigh Security
+name: McAfee Skyhigh Security
 script:
   commands:
   - arguments:
@@ -110,9 +110,9 @@ script:
     deprecated: false
     description: Retrieves a list of incidents in ascending time modified order.
     execution: false
-    name: mvision-casb-incident-query
+    name: skyhigh-security-incident-query
     outputs:
-    - contextPath: MVisionCASB.Incident
+    - contextPath: SkyhighSecurity.Incident
       description: The incident's metadata.
       type: Unknown
   - arguments:
@@ -143,7 +143,7 @@ script:
       For multiple IDs, a single status will be applied for all IDs
       e.g., 123, 456, 789 >> change status to >> closed.
     execution: false
-    name: mvision-casb-incident-status-update
+    name: skyhigh-security-incident-status-update
   - arguments:
     - default: false
       description: The anomaly ID from where to retrieve the activities. Only for incidents of type anomaly (ANO-123).
@@ -154,123 +154,123 @@ script:
     deprecated: false
     description: Fetches activities for a given anomaly ID.
     execution: false
-    name: mvision-casb-anomaly-activity-list
+    name: skyhigh-security-anomaly-activity-list
     outputs:
-    - contextPath: MVisionCASB.AnomalyActivity.timeStamp
+    - contextPath: SkyhighSecurity.AnomalyActivity.timeStamp
       description: The timestamp of the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.actionName
+    - contextPath: SkyhighSecurity.AnomalyActivity.actionName
       description: The action name.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.asnName
+    - contextPath: SkyhighSecurity.AnomalyActivity.asnName
       description: The ASN name of an activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.city
+    - contextPath: SkyhighSecurity.AnomalyActivity.city
       description: The city where the anomaly activity occurred.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.collabGroup
+    - contextPath: SkyhighSecurity.AnomalyActivity.collabGroup
       description: The collaboration group for the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.count
+    - contextPath: SkyhighSecurity.AnomalyActivity.count
       description: The number of anomalies detected.
       type: Number
-    - contextPath: MVisionCASB.AnomalyActivity.country
+    - contextPath: SkyhighSecurity.AnomalyActivity.country
       description: The country of the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.deviceManaged
+    - contextPath: SkyhighSecurity.AnomalyActivity.deviceManaged
       description: Whether the anomaly activity is managed by the device or not.
       type: Boolean
-    - contextPath: MVisionCASB.AnomalyActivity.directory
+    - contextPath: SkyhighSecurity.AnomalyActivity.directory
       description: The directory of the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.downloadBytes
+    - contextPath: SkyhighSecurity.AnomalyActivity.downloadBytes
       description: The number of bytes downloaded by the anomaly activity.
       type: Number
-    - contextPath: MVisionCASB.AnomalyActivity.eventCount
+    - contextPath: SkyhighSecurity.AnomalyActivity.eventCount
       description: The number of anomalies detected.
       type: Number
-    - contextPath: MVisionCASB.AnomalyActivity.fileFolderPath
+    - contextPath: SkyhighSecurity.AnomalyActivity.fileFolderPath
       description: The file folder path for the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.fileName
+    - contextPath: SkyhighSecurity.AnomalyActivity.fileName
       description: The file name of the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.fileSharingEnabled
+    - contextPath: SkyhighSecurity.AnomalyActivity.fileSharingEnabled
       description: Whether the CASB file sharing is enabled or not.
       type: Boolean
-    - contextPath: MVisionCASB.AnomalyActivity.fileSize
+    - contextPath: SkyhighSecurity.AnomalyActivity.fileSize
       description: The file size of the anomaly activity.
       type: Number
-    - contextPath: MVisionCASB.AnomalyActivity.fileType
+    - contextPath: SkyhighSecurity.AnomalyActivity.fileType
       description: The file type of the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.geoOrgNameV1
+    - contextPath: SkyhighSecurity.AnomalyActivity.geoOrgNameV1
       description: The geo organization name.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.httpMethod
+    - contextPath: SkyhighSecurity.AnomalyActivity.httpMethod
       description: The HTTP method used by the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.instanceId
+    - contextPath: SkyhighSecurity.AnomalyActivity.instanceId
       description: The instance ID for the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.isSourceTrusted
+    - contextPath: SkyhighSecurity.AnomalyActivity.isSourceTrusted
       description: Whether the anomaly activity source is trusted or not.
       type: Boolean
-    - contextPath: MVisionCASB.AnomalyActivity.networkType
+    - contextPath: SkyhighSecurity.AnomalyActivity.networkType
       description: The network type for the anomaly.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.objectType
+    - contextPath: SkyhighSecurity.AnomalyActivity.objectType
       description: The object type for the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.operation
+    - contextPath: SkyhighSecurity.AnomalyActivity.operation
       description: The operation type.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.proxyDescription
+    - contextPath: SkyhighSecurity.AnomalyActivity.proxyDescription
       description: The proxy description for the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.proxyType
+    - contextPath: SkyhighSecurity.AnomalyActivity.proxyType
       description: The proxy type for the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.region
+    - contextPath: SkyhighSecurity.AnomalyActivity.region
       description: The Region where the anomaly activity occurred.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.serviceName
+    - contextPath: SkyhighSecurity.AnomalyActivity.serviceName
       description: The name of the service.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.siteUrl
+    - contextPath: SkyhighSecurity.AnomalyActivity.siteUrl
       description: The URL of the CASB's site.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.sourceIP
+    - contextPath: SkyhighSecurity.AnomalyActivity.sourceIP
       description: The IP address of the source IP.
       type: IP
-    - contextPath: MVisionCASB.AnomalyActivity.sourceIdentifier
+    - contextPath: SkyhighSecurity.AnomalyActivity.sourceIdentifier
       description: The source identifier for the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.targetId
+    - contextPath: SkyhighSecurity.AnomalyActivity.targetId
       description: The target ID for the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.targetType
+    - contextPath: SkyhighSecurity.AnomalyActivity.targetType
       description: The anomaly activity type.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.tenantId
+    - contextPath: SkyhighSecurity.AnomalyActivity.tenantId
       description: The tenant ID for the anomaly activity.
       type: Number
-    - contextPath: MVisionCASB.AnomalyActivity.threatCategory
+    - contextPath: SkyhighSecurity.AnomalyActivity.threatCategory
       description: The threat category for the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.trustEntity
+    - contextPath: SkyhighSecurity.AnomalyActivity.trustEntity
       description: The trust entity for the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.trustReason
+    - contextPath: SkyhighSecurity.AnomalyActivity.trustReason
       description: The trust reason of the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.uploadBytes
+    - contextPath: SkyhighSecurity.AnomalyActivity.uploadBytes
       description: The number of bytes uploaded.
       type: Number
-    - contextPath: MVisionCASB.AnomalyActivity.url
+    - contextPath: SkyhighSecurity.AnomalyActivity.url
       description: The URL of the anomaly activity.
       type: String
-    - contextPath: MVisionCASB.AnomalyActivity.user
+    - contextPath: SkyhighSecurity.AnomalyActivity.user
       description: The user who triggered the anomaly.
       type: String
   - arguments:
@@ -301,15 +301,15 @@ script:
     deprecated: false
     description: List existing policy dictionaries.
     execution: false
-    name: mvision-casb-policy-dictionary-list
+    name: skyhigh-security-policy-dictionary-list
     outputs:
-    - contextPath: MVisionCASB.Dictionaries.ID
+    - contextPath: SkyhighSecurity.Dictionaries.ID
       description: The ID for the dictionary.
       type: Number
-    - contextPath: MVisionCASB.Dictionaries.LastModified
+    - contextPath: SkyhighSecurity.Dictionaries.LastModified
       description: The date the dictionary was last modified.
       type: String
-    - contextPath: MVisionCASB.Dictionaries.Name
+    - contextPath: SkyhighSecurity.Dictionaries.Name
       description: The name of the dictionary.
       type: String
   - arguments:
@@ -334,7 +334,7 @@ script:
     deprecated: false
     description: Adds new content to an existing policy dictionary.
     execution: false
-    name: mvision-casb-policy-dictionary-update
+    name: skyhigh-security-policy-dictionary-update
   dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
@@ -344,8 +344,8 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultclassifier: McAfee MVision CASB Incident
-defaultmapperin: McAfee MVision CASB Incoming Mapper
+defaultclassifier: McAfee Skyhigh Security Incident
+defaultmapperin: McAfee Skyhigh Security Incoming Mapper
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0

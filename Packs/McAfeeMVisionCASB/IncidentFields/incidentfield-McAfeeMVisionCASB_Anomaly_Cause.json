@@ -3,12 +3,12 @@
     "fromVersion": "5.5.0",
     "associatedToAll": false,
     "associatedTypes": [
-        "McAfee MVision CASB Alert",
-        "McAfee MVision CASB Threat"
+        "McAfee Skyhigh Security Alert",
+        "McAfee Skyhigh Security Threat"
     ],
     "breachScript": "",
     "caseInsensitive": true,
-    "cliName": "mcafeemvisioncasbanomalycause",
+    "cliName": "mcafeeskyhighsecurityanomalycause",
     "closeForm": false,
     "columns": null,
     "content": true,
@@ -18,10 +18,10 @@
     "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
-    "id": "incident_mcafeemvisioncasbanomalycause",
+    "id": "incident_mcafeeskyhighsecurityanomalycause",
     "isReadOnly": false,
     "locked": false,
-    "name": "McAfee MVision CASB Anomaly Cause",
+    "name": "McAfee Skyhigh Security Anomaly Cause",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",
