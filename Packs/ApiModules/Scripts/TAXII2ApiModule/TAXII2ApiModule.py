@@ -226,7 +226,6 @@ class Taxii2FeedClient:
         """
         Initializes the api roots (used to get taxii server objects)
         """
-        demisto.debug('In init_roots')
         if not self.server:
             self.init_server()
         try:
@@ -247,25 +246,22 @@ class Taxii2FeedClient:
 
     def set_api_root(self):
         roots_to_api = {str(api_root.url).split('/')[-2]: api_root
-                        for api_root in self.server.api_roots}  # type: ignore[union-attr, attr-defined]
-        demisto.debug(f'In set_api_root start: {roots_to_api=} and {self.server.api_roots=}, '  # type: ignore[attr-defined]
-                      f'where {self.default_api_root=} and {self.server.default=}')  # type: ignore[attr-defined]
+                        for api_root in self.server.api_roots}  # type: ignore[attr-defined]
 
         if self.default_api_root:
             if not roots_to_api.get(self.default_api_root):
-                raise DemistoException(f'The given default api root {self.default_api_root} doesn\'t exists.'
-                                       f'Available api roots are {roots_to_api}.')
-            self.api_root = roots_to_api.get(self.default_api_root)  # type: ignore[union-attr, attr-defined]
+                raise DemistoException(f'The given default API root {self.default_api_root} doesn\'t exists.'
+                                       f'Available API roots are {list(roots_to_api.keys())}.')
+            self.api_root = roots_to_api.get(self.default_api_root)
 
-        elif self.server.default:  # type: ignore[union-attr, attr-defined]
-            self.api_root = self.server.default  # type: ignore[union-attr, attr-defined]
+        elif server_default := self.server.default:  # type: ignore[attr-defined]
+            self.api_root = server_default
 
         else:
-            self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
+            self.api_root = self.server.api_roots[0]  # type: ignore[attr-defined]
 
-        demisto.debug(f'In set_api_root end: {self.api_root=}')
         # override _conn - api_root isn't initialized with the right _conn
-        self.api_root._conn = self._conn  # type: ignore[union-attr, attr-defined]
+        self.api_root._conn = self._conn  # type: ignore[union-attr]
 
     def init_collections(self):
         """
@@ -868,7 +864,7 @@ class Taxii2FeedClient:
             while envelope.get("more", False):
                 page_size = self.get_page_size(limit, cur_limit)
                 envelope = self.collection_to_fetch.get_objects(
-                    limit=page_size, next=envelope.get("next", "")
+                    limit=page_size, next=envelope.get("next", ""), type=obj_type
                 )
                 if isinstance(envelope, Dict):
                     stix_objects = envelope.get("objects")

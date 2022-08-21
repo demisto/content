@@ -391,6 +391,14 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
                                     'description': f'Invalid Accept header: {accept_header}, '
                                                    f'please use one ot the following Accept headers: '
                                                    f'{accept_headers}'})
+
+        if SERVER.version == TAXII_VER_2_1 and accept_header in {MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20}:
+            return handle_response(HTTP_406_NOT_ACCEPABLE, {
+                'title': 'Invalid TAXII Header',
+                'description': 'The media type (version=2.0) provided in the Accept header'
+                               ' is not supported on TAXII v2.1.'
+            })
+
         return f(*args, **kwargs)
 
     return validate_request_headers
