@@ -4,7 +4,7 @@ Use this pack if you only want to fetch and send emails from a single user's mai
 ## What does this pack do?
 Using the commands in this integration, you can:
 - Send emails.
-- Reply an email.
+- Reply to an email.
 - Access the attachments of an email.
 
 
