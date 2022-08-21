@@ -1279,23 +1279,27 @@ def scan_results_command(client: Client, args: Dict[str, Any]) ->\
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
+    """
+    main function, parses params and runs command functions
     """
 
-    api_key = demisto.params().get('apikey')
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
+
+    api_key = params.get('apikey')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url = urljoin(params.get('url'), '/api/v1')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_datetime(
-        arg=demisto.params().get('first_fetch', '3 days'),
+        arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
     )
@@ -1305,11 +1309,11 @@ def main() -> None:
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = params.get('proxy', False)
 
     # Integration that implements reputation commands (e.g. url, ip, domain,..., etc) must have
     # a reliability score of the source providing the intelligence data.
-    reliability = demisto.params().get('integrationReliability', DBotScoreReliability.C)
+    reliability = params.get('integrationReliability', DBotScoreReliability.C)
 
     # INTEGRATION DEVELOPER TIP
     # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
@@ -1317,7 +1321,7 @@ def main() -> None:
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
     try:
         headers = {
             'Authorization': f'Bearer {api_key}'
@@ -1328,20 +1332,20 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client, first_fetch_timestamp)
             return_results(result)
 
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
-            alert_status = demisto.params().get('alert_status', None)
-            alert_type = demisto.params().get('alert_type', None)
-            min_severity = demisto.params().get('min_severity', None)
+            alert_status = params.get('alert_status', None)
+            alert_type = params.get('alert_type', None)
+            min_severity = params.get('min_severity', None)
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(
-                arg=demisto.params().get('max_fetch'),
+                arg=params.get('max_fetch'),
                 arg_name='max_fetch',
                 required=False
             )
@@ -1364,38 +1368,41 @@ def main() -> None:
             # of incidents to create
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'ip':
-            default_threshold_ip = int(demisto.params().get('threshold_ip', '65'))
-            return_results(ip_reputation_command(client, demisto.args(), default_threshold_ip, reliability))
+        elif command == 'ip':
+            default_threshold_ip = int(params.get('threshold_ip', '65'))
+            return_results(ip_reputation_command(client, args, default_threshold_ip, reliability))
 
-        elif demisto.command() == 'domain':
-            default_threshold_domain = int(demisto.params().get('threshold_domain', '65'))
-            return_results(domain_reputation_command(client, demisto.args(), default_threshold_domain, reliability))
+        elif command == 'domain':
+            default_threshold_domain = int(params.get('threshold_domain', '65'))
+            return_results(domain_reputation_command(client, args, default_threshold_domain, reliability))
 
-        elif demisto.command() == 'helloworld-say-hello':
-            return_results(say_hello_command(client, demisto.args()))
+        elif command == 'helloworld-say-hello':
+            return_results(say_hello_command(client, args))
 
-        elif demisto.command() == 'helloworld-search-alerts':
-            return_results(search_alerts_command(client, demisto.args()))
+        elif command == 'helloworld-search-alerts':
+            return_results(search_alerts_command(client, args))
 
-        elif demisto.command() == 'helloworld-get-alert':
-            return_results(get_alert_command(client, demisto.args()))
+        elif command == 'helloworld-get-alert':
+            return_results(get_alert_command(client, args))
 
-        elif demisto.command() == 'helloworld-update-alert-status':
-            return_results(update_alert_status_command(client, demisto.args()))
+        elif command == 'helloworld-update-alert-status':
+            return_results(update_alert_status_command(client, args))
 
-        elif demisto.command() == 'helloworld-scan-start':
-            return_results(scan_start_command(client, demisto.args()))
+        elif command == 'helloworld-scan-start':
+            return_results(scan_start_command(client, args))
 
-        elif demisto.command() == 'helloworld-scan-status':
-            return_results(scan_status_command(client, demisto.args()))
+        elif command == 'helloworld-scan-status':
+            return_results(scan_status_command(client, args))
 
-        elif demisto.command() == 'helloworld-scan-results':
-            return_results(scan_results_command(client, demisto.args()))
+        elif command == 'helloworld-scan-results':
+            return_results(scan_results_command(client, args))
+
+        else:
+            raise NotImplementedError(f'Command {command} is not implemented')
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
