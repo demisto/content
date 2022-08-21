@@ -9,11 +9,11 @@ from typing import Iterable, Optional
 
 from constants import (ALWAYS_INSTALLED_PACKS,
                        DEFAULT_MARKETPLACE_WHEN_MISSING,
-                       DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
-                       SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS,
-                       XSOAR_SANITY_TEST_NAMES)
+                       DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES,
+                       ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
+                       SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
-from demisto_sdk.commands.common.tools import find_type, run_command, str2bool
+from demisto_sdk.commands.common.tools import find_type, str2bool
 from exceptions import (DeprecatedPackException, InvalidTestException,
                         NonDictException, NoTestsConfiguredException,
                         NothingToCollectException, NotUnderPackException,
@@ -133,10 +133,10 @@ class CollectionResult:
                 if not (playbook_path := test_playbook.path):
                     raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
-                    raise SkippedTestException(test, 'skipped in .pack_ignore')
+                    raise SkippedTestException(test, skip_place='.pack_ignore')
 
             if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
-                raise SkippedTestException(test, skip_reason)
+                raise SkippedTestException(test, skip_place='conf.json', skip_reason=skip_reason)
 
             if test in conf.private_tests:  # type:ignore[union-attr]
                 raise PrivateTestException(test)
@@ -274,6 +274,7 @@ class BranchTestCollector(TestCollector):
         :param private_pack_path: path to a pack, only used for content-private.
         """
         super().__init__(marketplace)
+        logger.debug(f'Created BranchTestCollector for {branch_name}')
         self.branch_name = branch_name
         self.service_account = service_account
         self.private_pack_path: Optional[Path] = private_pack_path
@@ -405,10 +406,7 @@ class BranchTestCollector(TestCollector):
             # Suitable logic follows, see collect_yml
             content_item = None
 
-        if file_type in {FileType.PACK_IGNORE, FileType.SECRET_IGNORE, FileType.DOC_FILE, FileType.README}:
-            raise NothingToCollectException(path, f'ignored type {file_type}')
-
-        elif file_type in ONLY_INSTALL_PACK:
+        if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             # install pack without collecting tests.
             return self._collect_pack(
                 pack_name=find_pack_folder(path).name,
@@ -430,14 +428,21 @@ class BranchTestCollector(TestCollector):
                 FileType.MAPPER: (self.conf.incoming_mapper_to_test, CollectionReason.MAPPER_CHANGED),
                 FileType.CLASSIFIER: (self.conf.classifier_to_test, CollectionReason.CLASSIFIER_CHANGED),
             }[file_type]
-            if not (tests := source.get(content_item)):  # type: ignore[call-overload]
+            if not (tests := source.get(content_item, ())):  # type: ignore[call-overload]
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
                 reason_description = f'no specific tests for {relative_path} were found'
-        elif path.suffix == '.yml':
+
+        elif path.suffix == '.yml':  # file_type is often None in these cases
             return self._collect_yml(path)  # checks for containing folder (content item type)
 
+        elif file_type in IGNORED_FILE_TYPES:
+            raise NothingToCollectException(path, f'ignored type {file_type}')
+
+        elif file_type is None:
+            raise NothingToCollectException(path, 'unknown file type')
+
         else:
-            raise ValueError(f'Unexpected {file_type=} for {relative_path}')
+            raise ValueError(path, f'unexpected content type {file_type} - please update collect_tests.py')
 
         if not content_item:
             raise RuntimeError(f'failed collecting {path} for an unknown reason')
@@ -456,42 +461,44 @@ class BranchTestCollector(TestCollector):
         )
 
     def _get_changed_files(self) -> tuple[str, ...]:
-        contrib_diff = None  # overridden on contribution branches, added to the git diff.
+        repo = PATHS.content_repo
+        changed_files: list[str] = []
 
-        current_commit = self.branch_name
         previous_commit = 'origin/master'
+        current_commit = self.branch_name
 
-        logger.info(f'Getting changed files for {self.branch_name=}')
+        logger.debug(f'Getting changed files for {self.branch_name=}')
 
         if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account)
-            current_commit = 'origin/master' if self.branch_name == 'master' else self.branch_name
+            if self.branch_name == 'master':
+                current_commit = 'origin/master'
 
         elif self.branch_name == 'master':
-            previous_commit, current_commit = run_command("git log -n 2 --pretty='%H'").replace("'", "").split()
+            current_commit, previous_commit = tuple(repo.iter_commits(max_count=2))
 
         elif os.getenv('CONTRIB_BRANCH'):
-            contrib_diff = run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
-            logger.info(f'contribution branch, {contrib_diff=}')
+            # gets files of unknown status
+            contrib_diff: tuple[str, ...] = tuple(filter(lambda f: f.startswith('Packs/'), repo.untracked_files))
+            logger.info('contribution branch found, contrib-diff:\n' + '\n'.join(contrib_diff))
+            changed_files.extend(contrib_diff)
 
-        diff: str = run_command(f'git diff --name-status {current_commit}...{previous_commit}')
-        logger.debug(f'Changed files:\n{diff}')
-
-        if contrib_diff:
-            logger.debug('adding contrib_diff to diff')
-            diff = f'{diff}\n{contrib_diff}'
+        diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
+        logger.debug(f'raw changed files string:\n{diff}')
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
-        files = []
-        for line in filter(None, diff.splitlines()):
-            git_status, file_path = line.split()
+        for line in diff.splitlines():
+            try:
+                git_status, file_path = line.split()
+            except ValueError:
+                raise ValueError(f'unexpected line format (expected `<modifier>\t<file>`, got {line}')
             if git_status == 'D':  # git-deleted file
                 logger.warning(f'Found a file deleted from git {file_path}, '
                                f'skipping it as TestCollector cannot properly find the appropriate tests (by design)')
                 continue
-            files.append(file_path)  # non-deleted files (added, modified)
-        return tuple(files)
+            changed_files.append(file_path)  # non-deleted files (added, modified)
+        return tuple(changed_files)
 
 
 class UploadCollector(BranchTestCollector):
@@ -648,7 +655,7 @@ def output(result: Optional[CollectionResult]):
     pack_str = '\n'.join(packs)
     machine_str = ', '.join(sorted(map(str, machines)))
 
-    logger.info(f'collected {len(tests)} tests:\n{test_str}')
+    logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
     logger.info(f'collected {len(packs)} packs:\n{pack_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
 
@@ -658,7 +665,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v2022-08-10')
+    logger.info('TestCollector v20220817')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
@@ -667,23 +674,27 @@ if __name__ == '__main__':
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
-    options = parser.parse_args()
-    marketplace = MarketplaceVersions(options.marketplace)
+    args = parser.parse_args()
+    args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
+    logger.debug(f'parsed args:\n{args_string}')
+
+    marketplace = MarketplaceVersions(args.marketplace)
 
     collector: TestCollector
 
-    if options.changed_pack_path:
-        collector = BranchTestCollector('master', marketplace, options.service_account, options.changed_pack_path)
+    if args.changed_pack_path:
+        collector = BranchTestCollector('master', marketplace, args.service_account, args.changed_pack_path)
     else:
-        match (options.nightly, marketplace):
+        match (args.nightly, marketplace):
             case False, _:  # not nightly
-                collector = BranchTestCollector('master', marketplace, options.service_account)
+                branch_name = PATHS.content_repo.active_branch.name
+                collector = BranchTestCollector(branch_name, marketplace, args.service_account)
             case True, MarketplaceVersions.XSOAR:
                 collector = XSOARNightlyTestCollector()
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector()
             case _:
-                raise ValueError(f"unexpected values of (either) {marketplace=}, {options.nightly=}")
+                raise ValueError(f"unexpected values of (either) {marketplace=}, {args.nightly=}")
 
-    collected = collector.collect(run_nightly=options.nightly)
+    collected = collector.collect(run_nightly=args.nightly)
     output(collected)  # logs and writes to output files
