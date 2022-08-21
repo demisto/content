@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import pytest
-from StixCreator import main
+from StixCreator import main, guess_indicator_type
 
 FILE_INDICATOR = \
     {
@@ -43,3 +43,14 @@ def test_stixCreator_with_indicators(mocker, indicators, stix_type):
     main()
     results = demisto.results.call_args[0]
     assert stix_type in results[0]['Contents']
+
+
+@pytest.mark.parametrize('k,v,exp', (
+    ('actually-ip', '', 'ip'),  # key detection
+    ('', '1.1.1.1', 'ip'),      # val detection (further tested in CSP_test.py)
+    ('sha1sh', '', 'sha1'),     # key detection
+    ('test', 't', 'test'),      # no detection
+))
+def test_guess_indicator_type(k, v, exp):
+    a = guess_indicator_type(k, v)
+    assert a == exp
