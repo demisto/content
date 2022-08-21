@@ -93,7 +93,7 @@
         },
         {
             "integrations": "AzureWAF",
-            "instance_names": "azure_waf_prod",
+            "instance_names":["azure_waf_prod", "azure_waf_user_auth_instance"],
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -2927,6 +2927,11 @@
             "playbookID": "Elasticsearch_v2_test-v6"
         },
         {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v8",
+            "playbookID": "Elasticsearch_v2_test-v8"
+        },
+        {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
         },
@@ -3802,6 +3807,7 @@
         {
             "playbookID": "Azure SQL - Test",
             "fromversion": "5.0.0",
+            "instance_names": ["azure_sql_user_auth_instance", "azure_sql_device_code_instance"],
             "integrations": [
                 "Azure SQL Management"
             ]
@@ -4246,6 +4252,7 @@
         {
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
+            "instance_names": ["aks_device_code_instance", "aks_user_auth_instance"],
             "integrations": [
                 "Azure Kubernetes Services"
             ]
@@ -5309,7 +5316,8 @@
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
-        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
+        "Elasticsearch_v2_test-v8": "CRTX-61980"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
