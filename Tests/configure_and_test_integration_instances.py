@@ -710,7 +710,6 @@ class XSIAMBuild(Build):
         super().__init__(options)
         self.is_xsiam = True
         self.xsiam_machine = options.xsiam_machine
-        self.xsiam_servers = get_json_file(options.xsiam_servers_path)
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
             self.get_xsiam_configuration(options.xsiam_machine, options.xsiam_servers_path,
                                          options.xsiam_servers_api_keys)
