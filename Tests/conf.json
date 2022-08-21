@@ -93,7 +93,7 @@
         },
         {
             "integrations": "AzureWAF",
-            "instance_names": "azure_waf_prod",
+            "instance_names":["azure_waf_prod", "azure_waf_user_auth_instance"],
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
