@@ -1,280 +1,50 @@
-import json
-import requests
 from datetime import date, timedelta
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from typing import Dict, Any, Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-import dateparser
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-''' IMPORTS '''
-
-requests.packages.urllib3.disable_warnings()
-
-''' GLOBAL VARS '''
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-BASE_URL = demisto.params().get('url')
-if BASE_URL and BASE_URL[-1] != '/':
-    BASE_URL += '/'
-API_KEY = demisto.params().get('apikey')
-VERIFY_CERTIFICATE = not demisto.params().get('insecure')
-# How many time before the first fetch to retrieve incidents
-FIRST_FETCH, _ = parse_date_range(demisto.params().get('first_fetch', '12 hours') or '12 hours',
-                                  date_format=TIME_FORMAT)
-
-''' COMMAND FUNCTIONS '''
 
 
-def get_list(list_id):
-    fullurl = BASE_URL + 'api/lists/{}/members.json'.format(list_id)
-    res = requests.get(
-        fullurl,
-        headers={
-            'Content-Type': 'application/json',
-            'Authorization': API_KEY
-        },
-        verify=VERIFY_CERTIFICATE
-    )
+class Client(BaseClient):
+    """
+    Client will implement the service API, and should not contain any Demisto logic.
+    Should only do requests and return data.
+    """
 
-    if res.status_code < 200 or res.status_code >= 300:
-        return_error('Get list failed. URL: {}, StatusCode: {}'.format(fullurl, res.status_code))
+    def get_incidents_request(self, query_params):
+        """Perform an API request to get incidents from ProofPoint.
 
-    return res.json()
+        Args:
+            params(dict): The params of the request
 
-
-def get_list_command():
-    ''' Retrieves all indicators of a the given list ID in Threat Response '''
-    list_id = demisto.args().get('list-id')
-    list_items = get_list(list_id)
-
-    demisto.results({'list': list_items})
+        Returns:
+            list. The incidents returned from the API call
+        """
+        raw_response = self._http_request(
+            method='GET',
+            url_suffix='api/incidents',
+            params=query_params,
+        )
+        return raw_response
 
 
-def add_to_list(list_id, indicator, comment, expiration):
-    fullurl = BASE_URL + 'api/lists/{}/members.json'.format(list_id)
-
-    indicator = {
-        'member': indicator
-    }
-    if comment:
-        indicator['description'] = comment
-
-    if expiration:
-        indicator['expiration'] = expiration
-
-    res = requests.post(
-        fullurl,
-        headers={
-            'Authorization': API_KEY
-        },
-        verify=VERIFY_CERTIFICATE,
-        json=indicator
-    )
-
-    if res.status_code < 200 or res.status_code >= 300:
-        return_error('Add to list failed. URL: {}, Request Body: {}'.format(fullurl, json.dumps(indicator)))
-
-    return res.json()
-
-
-def add_to_list_command():
-    ''' Adds given indicators to the given list ID in Threat Response '''
-    list_id = demisto.args().get('list-id')
-    indicators = argToList(demisto.args().get('indicator'))
-    comment = demisto.args().get('comment')
-    expiration = demisto.args().get('expiration')
-
-    message = ''
-    for indicator in indicators:
-        add_to_list(list_id, indicator, comment, expiration)
-        message += '{} added successfully to {}\n'.format(indicator, list_id)
-
-    demisto.results(message)
-
-
-def block_ip_command():
-    ''' Adds given IPs to the relevant blacklist in Threat Response '''
-    list_id = demisto.params().get('blacklist_ip', demisto.args().get('blacklist_ip'))
-    ips = argToList(demisto.args().get('ip'))
-    expiration = demisto.args().get('expiration')
-
-    message = ''
-    for ip in ips:
-        add_to_list(list_id, ip, None, expiration)
-        message += '{} added successfully to block_ip list\n'.format(ip)
-
-    demisto.results(message)
-
-
-def block_domain_command():
-    ''' Adds given domains to the relevant blacklist in Threat Response '''
-    list_id = demisto.params().get('blacklist_domain', demisto.args().get('blacklist_domain'))
-    domains = argToList(demisto.args().get('domain'))
-    expiration = demisto.args().get('expiration')
-
-    message = ''
-    for domain in domains:
-        add_to_list(list_id, domain, None, expiration)
-        message += '{} added successfully to block_domain list\n'.format(domain)
-
-    demisto.results(message)
-
-
-def block_url_command():
-    ''' Adds given URLs to the relevant blacklist in Threat Response '''
-    list_id = demisto.params().get('blacklist_url', demisto.args().get('blacklist_url'))
-    urls = argToList(demisto.args().get('url'))
-    expiration = demisto.args().get('expiration')
-
-    message = ''
-    for url in urls:
-        add_to_list(list_id, url, None, expiration)
-        message += '{} added successfully to block_url list\n'.format(url)
-
-    demisto.results(message)
-
-
-def block_hash_command():
-    ''' Adds given hashes to the relevant blacklist in Threat Response '''
-    list_id = demisto.params().get('blacklist_hash', demisto.args().get('blacklist_hash'))
-    hashes = argToList(demisto.args().get('hash'))
-    expiration = demisto.args().get('expiration')
-
-    message = ''
-    for h in hashes:
-        add_to_list(list_id, h, None, expiration)
-        message += '{} added successfully to block_hash list\n'.format(h)
-
-    demisto.results(message)
-
-
-def search_indicators(list_id, indicator_filter):
-    list_indicators = get_list(list_id)
-    found_items = []
-    for item in list_indicators:
-        item_indicator = demisto.get(item, 'host.host')
-        if indicator_filter in item_indicator:
-            found_items.append(item)
-
-    return found_items
-
-
-def search_indicator_command():
-    ''' Retrieves indicators of a list, using a filter '''
-    list_id = demisto.args().get('list-id')
-    indicator_filter = demisto.args().get('filter')
-    found = search_indicators(list_id, indicator_filter)
-
-    demisto.results({'indicators': found})
-
-
-def delete_indicator(list_id, indicator_filter):
-    indicator = search_indicators(list_id, indicator_filter)
-    if len(indicator) == 0:
-        return_error('{} not exists in {}'.format(indicator_filter, list_id))
-
-    indicator_id = indicator.get('id')  # pylint: disable=E1101
-    fullurl = BASE_URL + 'api/lists/{}/members/{}.json'.format(list_id, indicator_id)
-    res = requests.delete(
-        fullurl,
-        headers={
-            'Authorization': API_KEY
-        },
-        verify=VERIFY_CERTIFICATE
-    )
-    if res.status_code < 200 or res.status_code >= 300:
-        return_error('Delete indicator failed. URL: {}, StatusCode: {}'.format(fullurl, res.status_code))
-
-
-def delete_indicator_command():
-    ''' Deletes an indicator from a list '''
-    list_id = demisto.args().get('list-id')
-    indicator = demisto.args().get('indicator')
-    delete_indicator(list_id, indicator)
-
-    demisto.results('{} deleted successfully from list {}'.format(list_id, indicator))
-
-
-def test():
+def test_module(client, first_fetch):
     """Perform API call to check that the API is accessible.
 
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
+    query_params = {
+        'created_after': first_fetch,
+        'state': 'open'
+    }
 
-    get_incidents_request(
-        {
-            'created_after': date.today(),
-            'state': 'open'
-        }
-    )
-    demisto.results('ok')
-
-
-# TRAP API
-def create_incident_field_context(incident):
-    """Parses the 'incident_fields' entry of the incident and returns it
-
-    Args:
-        incident (dict): The incident to parse
-
-    Returns:
-        list. The parsed incident fields list
-    """
-    incident_field_values = dict()
-    for incident_field in incident.get('incident_field_values', []):
-        incident_field_values[incident_field['name'].replace(" ", "_")] = incident_field['value']
-
-    return incident_field_values
-
-
-def get_emails_context(event):
-    """Returns the context of the emails in the event
-
-    Args:
-        event (dict): The event to parse the emails from
-
-    Returns:
-        list. The parsed emails list from the event
-    """
-    emails_context = []
-    for email in event.get('emails', []):
-        emails_context.append(
-            assign_params(**{
-                'sender': email.get('sender', {}).get('email'),
-                'recipient': email.get('recipient', {}).get('email'),
-                'subject': email.get('subject'),
-                'message_id': email.get('messageId'),
-                'message_delivery_time': email.get('messageDeliveryTime', {}).get('millis'),
-                'body': email.get('body'),
-                'body_type': email.get('bodyType'),
-                'headers': email.get('headers'),
-                'urls': email.get('urls'),
-                'sender_vap': email.get('sender', {}).get('vap'),
-                'recipient_vap': email.get('recipient', {}).get('vap'),
-                'attachments': email.get('attachments'),
-            }))
-
-    return emails_context
-
-
-def create_incidents_context(incidents_list):
-    """Parses the incidents list and returns the incidents context
-
-    Args:
-        incidents_list (list): The incidents list to parse
-
-    Returns:
-        list. The context created from the incidents list
-    """
-    context = list(incidents_list)
-    for incident in context:
-        incident['incident_field_values'] = create_incident_field_context(incident)
-
-        if incident.get('events'):
-            for event in incident['events']:
-                event['emails'] = get_emails_context(event)
-
-    return context
+    client.get_incidents_request(query_params)
+    return 'ok'
 
 
 def create_incidents_human_readable(human_readable_message, incidents_list):
@@ -307,48 +77,16 @@ def create_incidents_human_readable(human_readable_message, incidents_list):
     return tableToMarkdown(human_readable_message, human_readable, human_readable_headers, removeNull=True)
 
 
-def list_incidents_command():
+def list_incidents_command(client, args):
     """ Retrieves incidents from ProofPoint API """
-    args = demisto.args()
     limit = int(args.pop('limit'))
 
-    incidents_list = get_incidents_request(args)
+    incidents_list = client.get_incidents_request(args)
 
     incidents_list = incidents_list[:limit]
     human_readable = create_incidents_human_readable('List Incidents Results:', incidents_list)
-    context = create_incidents_context(incidents_list)
 
-    return_outputs(human_readable, {'ProofPointTRAP.Incident(val.id === obj.id)': context}, incidents_list)
-
-
-def get_incident_command():
-    """
-        Retrieves a single incident from ProofPoint API
-    """
-    args = demisto.args()
-    incident_id = args.pop('incident_id')
-    expand_events = args.get('expand_events')
-    fullurl = BASE_URL + 'api/incidents/{}.json'.format(incident_id)
-    incident_data = requests.get(
-        fullurl,
-        headers={
-            'Content-Type': 'application/json',
-            'Authorization': API_KEY
-        },
-        params={
-            'expand_events': expand_events,
-        },
-        verify=VERIFY_CERTIFICATE,
-    )
-
-    if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Get incident failed. URL: {}, StatusCode: {}'.format(fullurl, incident_data.status_code))
-
-    incident_data = incident_data.json()
-    human_readable = create_incidents_human_readable('Incident Results:', [incident_data])
-    context = create_incidents_context([incident_data])
-
-    return_outputs(human_readable, {'ProofPointTRAP.Incident(val.id === obj.id)': context}, incident_data)
+    return human_readable
 
 
 def pass_sources_list_filter(incident, sources_list):
@@ -417,36 +155,6 @@ def filter_incidents(incidents_list):
     return filtered_incidents_list
 
 
-def get_incidents_request(params):
-    """Perform an API request to get incidents from ProofPoint.
-
-    Args:
-        params(dict): The params of the request
-
-    Returns:
-        list. The incidents returned from the API call
-    """
-    fullurl = BASE_URL + 'api/incidents'
-    incidents_list = requests.get(
-        fullurl,
-        headers={
-            'Content-Type': 'application/json',
-            'Authorization': API_KEY
-        },
-        params=params,
-        verify=VERIFY_CERTIFICATE
-    )
-    if incidents_list.status_code < 200 or incidents_list.status_code >= 300:
-        if incidents_list.status_code == 502 or incidents_list.status_code == 504:
-            return_error('The operation failed. There is a possibility you are trying to get too many incidents.\n'
-                         'You may consider adding a filter argument to the command.\n'
-                         'URL: {}, StatusCode: {}'.format(fullurl, incidents_list.status_code))
-        else:
-            return_error('The operation failed. URL: {}, StatusCode: {}'.format(fullurl, incidents_list.status_code))
-
-    return incidents_list.json()
-
-
 def get_time_delta(fetch_delta):
     """Gets the time delta from a string that is combined with a number and a string of (minute/hour)
     Args:
@@ -474,9 +182,9 @@ def get_time_delta(fetch_delta):
     return time_delta
 
 
-def get_new_incidents(request_params, last_fetched_id):
+def get_new_incidents(client, request_params, last_fetched_id):
     """Perform an API request to get incidents from ProofPoint , filters then according to params, order them and
-    return only the new incidnts.
+    return only the new incidents.
 
     As the api does not return the results in an specific order, we query the api on specific time frames using
     created_before and created_after using the fetch delta parameter.
@@ -486,13 +194,13 @@ def get_new_incidents(request_params, last_fetched_id):
     Returns:
         list. The incidents returned from after the necessary actions.
     """
-    incidents = get_incidents_request(request_params)
+    incidents = client.get_incidents_request(request_params)
     filtered_incidents_list = filter_incidents(incidents)
     ordered_incidents = sorted(filtered_incidents_list, key=lambda k: (k['created_at'], k['id']))
     return list(filter(lambda incident: int(incident.get('id')) > last_fetched_id, ordered_incidents))
 
 
-def get_incidents_batch_by_time_request(params):
+def get_incidents_batch_by_time_request(client, params):
     """Perform an API request to get incidents from ProofPoint in batches to prevent a timeout.
 
     As the api does not return the results in an specific order, we query the api on specific time frames using
@@ -530,7 +238,7 @@ def get_incidents_batch_by_time_request(params):
                 str(fetch_limit), str([incident.get('id') for incident in incidents_list]), str(len(incidents_list)),
                 str(request_params['created_after']), str(request_params['created_before'])))
 
-        new_incidents = get_new_incidents(request_params, last_fetched_id)
+        new_incidents = get_new_incidents(client, request_params, last_fetched_id)
         incidents_list.extend(new_incidents)
 
         # advancing fetch time by given fetch delta time
@@ -546,7 +254,7 @@ def get_incidents_batch_by_time_request(params):
     if len(incidents_list) < fetch_limit:
         # fetching the last batch
         request_params['created_before'] = current_time.isoformat().split('.')[0] + 'Z'
-        new_incidents = get_new_incidents(request_params, last_fetched_id)
+        new_incidents = get_new_incidents(client, request_params, last_fetched_id)
         incidents_list.extend(new_incidents)
 
         demisto.debug(
@@ -557,21 +265,16 @@ def get_incidents_batch_by_time_request(params):
     return incidents_list_limit
 
 
-def fetch_incidents_command():
+def fetch_incidents_command(client, first_fetch, last_run, fetch_limit, fetch_delta, incidents_states):
     """
         Fetches incidents from the ProofPoint API.
     """
-    integration_params = demisto.params()
-    last_fetch = demisto.getLastRun().get('last_fetch', {})
-    last_fetched_id = demisto.getLastRun().get('last_fetched_incident_id', {})
+    last_fetch = last_run.get('last_fetch', {})
+    last_fetched_id = last_run.get('last_fetched_incident_id', {})
 
-    fetch_delta = integration_params.get('fetch_delta', '6 hours')
-    fetch_limit = integration_params.get('fetch_limit', '50')
-
-    incidents_states = integration_params.get('states')
     for state in incidents_states:
         if not last_fetch.get(state):
-            last_fetch[state] = FIRST_FETCH
+            last_fetch[state] = first_fetch
 
     for state in incidents_states:
         if not last_fetched_id.get(state):
@@ -587,7 +290,7 @@ def fetch_incidents_command():
             'fetch_limit': fetch_limit
         }
         id = last_fetched_id[state]
-        incidents_list = get_incidents_batch_by_time_request(request_params)
+        incidents_list = get_incidents_batch_by_time_request(client, request_params)
         for incident in incidents_list:
             id = incident.get('id')
             inc = {
@@ -606,103 +309,14 @@ def fetch_incidents_command():
     demisto.debug("End of current fetch function with last_fetch {} and last_fetched_id {}".format(str(last_fetch), str(
         last_fetched_id)))
 
-    demisto.setLastRun({'last_fetch': last_fetch})
-    demisto.setLastRun({'last_fetched_incident_id': last_fetched_id})
+    last_run = {
+        'last_fetch': last_fetch,
+        'last_fetched_incident_id': last_fetched_id
+    }
 
     demisto.info('extracted {} incidents'.format(len(incidents)))
 
-    demisto.incidents(incidents)
-
-
-def create_add_comment_human_readable(incident):
-    """Creates the human readable entry for the 'add_comment_to_incident' command
-
-    Args:
-        incident (dict): The incident to parse
-
-    Returns:
-        str. The command human readable in markdown format
-    """
-    human_readable = []
-    human_readable_headers = ['Incident ID', 'Created At', 'Details', 'Comments Summary', 'Action ID']
-    incident_id = incident.get('incident_id')
-    human_readable.append({
-        'Created At': incident.get('created_at'),
-        'Incident ID': incident_id,
-        'Details': incident.get('detail'),
-        'Comments Summary': incident.get('summary'),
-        'Action ID': incident.get('id')
-    })
-
-    return tableToMarkdown('Comments added successfully to incident:{}'.format(incident_id), human_readable,
-                           human_readable_headers, removeNull=True)
-
-
-def add_comment_to_incident_command():
-    """
-        Adds comments to an incident by incident ID
-    """
-    args = demisto.args()
-    incident_id = args.get('incident_id')
-    comments_to_add = args.get('comments')
-    details = args.get('details')
-    request_body = {
-        "summary": comments_to_add,
-        "detail": details
-    }
-
-    fullurl = BASE_URL + 'api/incidents/{}/comments.json'.format(incident_id)
-    incident_data = requests.post(
-        fullurl,
-        headers={
-            'Content-Type': 'application/json',
-            'Authorization': API_KEY
-        },
-        json=request_body,
-        verify=VERIFY_CERTIFICATE
-    )
-
-    if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Add comment to incident command failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
-
-    incident_data = incident_data.json()
-    human_readable = create_add_comment_human_readable(incident_data)
-
-    return_outputs(human_readable,
-                   {'ProofPointTRAP.IncidentComment(val.incident_id === obj.incident_id)': incident_data},
-                   incident_data)
-
-
-def add_user_to_incident_command():
-    """
-        Adds user to an incident by incident ID
-    """
-    args = demisto.args()
-    incident_id = args.get('incident_id')
-    attackers = argToList(args.get('attackers'))
-    targets = argToList(args.get('targets'))
-    request_body = {
-        "targets": targets,
-        "attackers": attackers
-    }
-
-    fullurl = BASE_URL + 'api/incidents/{incident_id}/users.json'
-    incident_data = requests.post(
-        fullurl,
-        headers={
-            'Content-Type': 'application/json',
-            'Authorization': API_KEY
-        },
-        json=request_body,
-        verify=VERIFY_CERTIFICATE
-    )
-
-    if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Add comment to incident command failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
-
-    return_outputs('The user was added successfully to incident {}'.format(incident_id), {}, {})
+    return incidents, last_run
 
 
 def parse_json_argument(argument_string_value, argument_name):
@@ -717,220 +331,69 @@ def parse_json_argument(argument_string_value, argument_name):
     return parsed_arg
 
 
-def prepare_ingest_alert_request_body(args):
-    json_arguments = ['attacker', 'cnc_host', 'detector', 'email', 'forensics_hosts', 'target', 'threat_info',
-                      'custom_fields']
-    request_body = dict()  # type: dict
-    for argument_name, argument_value in args.items():
-        if argument_name in json_arguments:
-            parsed_argument = parse_json_argument(argument_value, argument_name)
-            request_body.update(parsed_argument)
-
-        else:
-            request_body[argument_name] = argument_value
-    return request_body
-
-
-def ingest_alert_command():
-    """
-        Ingest an alert into Threat Response.
-    """
+def main():  # pragma: no cover
+    """main function, parses params and runs command functions
+        """
     args = demisto.args()
-    json_source_id = args.pop('post_url_id', demisto.params().get('post_url_id'))
-
-    if not json_source_id:
-        return_error("To ingest alert into TRAP, you mast specify a post_url_id,"
-                     "either as an argument or as an integration parameter.")
-
-    request_body = prepare_ingest_alert_request_body(assign_params(**args))
-    fullurl = BASE_URL + 'threat/json_event/events/{}'.format(json_source_id)
-    alert_data = requests.post(
-        fullurl,
-        headers={
-            'Content-Type': 'application/json'
-        },
-        json=request_body,
-        verify=VERIFY_CERTIFICATE
-    )
-
-    if alert_data.status_code < 200 or alert_data.status_code >= 300:
-        return_error('Failed to ingest the alert into TRAP. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, alert_data.status_code))
-
-    return_outputs('The alert was successfully ingested to TRAP', {}, {})
-
-
-def close_incident_command():
-    args = demisto.args()
-    incident_id = args.get('incident_id')
-    details = args.get('details')
-    summary = args.get('summary')
-    request_body = {
-        "summary": summary,
-        "detail": details
-    }
-
-    fullurl = BASE_URL + f'api/incidents/{incident_id}/close.json'
-    incident_data = requests.post(
-        fullurl,
-        headers={
-            'Content-Type': 'application/json',
-            'Authorization': API_KEY
-        },
-        json=request_body,
-        verify=VERIFY_CERTIFICATE
-    )
-
-    if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Incident closure failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
-
-    return_outputs('The incident {} was successfully closed'.format(incident_id), {}, {})
-
-
-def search_quarantine():
-    arg_time = dateparser.parse(demisto.args().get('time'))
-    if isinstance(arg_time, datetime):
-        emailTAPtime = int(arg_time.timestamp())
-    else:
-        return_error("Timestamp was bad")
-
-    lstAlert = []
-    mid = demisto.args().get('message_id')
-    recipient = demisto.args().get('recipient')
-
-    incidents_list = get_incidents_request({})
-    found = {'email': False, 'mid': False, 'quarantine': False}
-    resQ = []
-
-    # Collecting emails inside alert to find those with same recipient and messageId
-    for incident in incidents_list:
-        for alert in incident.get('events'):
-            for email in alert.get('emails'):
-                if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and email.get(
-                        'messageDeliveryTime', {}).get('millis'):
-                    found['mid'] = True
-                    emailTRAPtimestamp = int(email.get('messageDeliveryTime', {}).get('millis') / 1000)
-                    if emailTAPtime == emailTRAPtimestamp:
-                        found['email'] = True
-                        lstAlert.append({
-                            'incidentid': incident.get('id'),
-                            'alertid': alert.get('id'),
-                            'alerttime': alert.get('received'),
-                            'incidenttime': incident.get('created_at'),
-                            'messageId': mid,
-                            'quarantine_results': incident.get('quarantine_results')
-                        })
-
-    quarantineFoundcpt = 0
-
-    # Go though the alert list, and check the quarantine results:
-    for alert in lstAlert:
-        for quarantine in alert.get('quarantine_results'):
-            if quarantine.get('messageId') == mid and quarantine.get('recipient') == recipient:
-                found['quarantine'] = True
-                tsquarantine = dateparser.parse(quarantine.get("startTime"))
-                tsalert = dateparser.parse(alert.get("alerttime"))
-                if isinstance(tsquarantine, datetime) and isinstance(tsalert, datetime):
-                    diff = (tsquarantine - tsalert).total_seconds()
-                    # we want to make sure quarantine starts 2 minuts after creating the alert.
-                    if 0 < diff < 120:
-                        resQ.append({
-                            'quarantine': quarantine,
-                            'alert': {
-                                'id': alert.get('alertid'),
-                                'time': alert.get('alerttime')
-                            },
-                            'incident': {
-                                'id': alert.get('incidentid'),
-                                'time': alert.get('incidenttime')
-                            }
-                        })
-                    else:
-                        quarantineFoundcpt += 1
-                else:
-                    demisto.debug(f"Failed to parse timestamp of incident: {alert=} {quarantine=}.")
-
-    if quarantineFoundcpt > 0:
-        return CommandResults(
-            readable_output=f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined but time alert does not match")
-    if not found['mid']:
-        return CommandResults(readable_output=f"Message ID {mid} not found in TRAP incidents")
-
-    midtxt = f'{mid} Message ID found in TRAP alerts,'
-    if not found['email']:
-        return CommandResults(
-            readable_output=f"{midtxt} but timestamp between email delivery time and time given as argument doesn't match")
-    elif not found['quarantine']:
-        demisto.debug("\n".join([json.dumps(alt, indent=4) for alt in lstAlert]))
-        return CommandResults(f"{midtxt} but not in the quarantine list meaning that email has not be quarantined.")
-
-    return CommandResults(
-        outputs_prefix='ProofPointTRAP.Quarantine',
-        outputs=resQ,
-        readable_output=tableToMarkdown("Quarantine Result", resQ),
-        raw_response=resQ
-    )
-
-
-''' EXECUTION CODE '''
-
-
-def main():
-    handle_proxy(demisto.params().get('proxy'))
     command = demisto.command()
-    demisto.info('Command being called is {}'.format(command))
+    params = demisto.params()
 
-    if command == 'test-module':
-        test()
+    api_key = params.get('credentials', {}).get('password')
+    base_url = demisto.params().get('url')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
-    elif command == 'fetch-incidents':
-        fetch_incidents_command()
+    # How many time before the first fetch to retrieve incidents
+    first_fetch, _ = parse_date_range(params.get('first_fetch', '12 hours') or '12 hours',
+                                      date_format=TIME_FORMAT)
+    fetch_limit = params.get('fetch_limit', '100')
+    fetch_delta = params.get('fetch_delta', '6 hours')
+    incidents_states = params.get('states')
 
-    elif command == 'proofpoint-tr-get-list':
-        get_list_command()
+    demisto.debug('Command being called is {}'.format(command))
 
-    elif command == 'proofpoint-tr-add-to-list':
-        add_to_list_command()
+    try:
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': api_key
+        }
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            headers=headers,
+            proxy=proxy,
+        )
+        if command == 'test-module':
+            return_results(test_module(client, first_fetch))
 
-    elif command == 'proofpoint-tr-block-ip':
-        block_ip_command()
+        elif command in ('proofpoint-trap-get-events', 'fetch-events'):
 
-    elif command == 'proofpoint-tr-block-domain':
-        block_domain_command()
+            if command == 'proofpoint-trap-get-events':
+                events, results = list_incidents_command(client, args)
+                return_results(results)
 
-    elif command == 'proofpoint-tr-block-url':
-        block_url_command()
+            else:  # command == 'fetch-events':
+                last_run = demisto.getLastRun()
+                events, last_run = fetch_incidents_command(
+                    client,
+                    first_fetch,
+                    last_run,
+                    fetch_limit,
+                    fetch_delta,
+                    incidents_states,
+                )
+                demisto.setLastRun(last_run)
 
-    elif command == 'proofpoint-tr-block-hash':
-        block_hash_command()
+            if argToBoolean(args.get('should_push_events', 'true')):
+                send_events_to_xsiam(
+                    events,
+                    params.get('vendor', 'trap'),
+                    params.get('product', 'proofpoint')
+                )
 
-    elif command == 'proofpoint-tr-delete-indicator':
-        delete_indicator_command()
-
-    elif command == 'proofpoint-tr-search-indicator':
-        search_indicator_command()
-
-    elif command == 'proofpoint-tr-list-incidents':
-        list_incidents_command()
-
-    elif command == 'proofpoint-tr-get-incident':
-        get_incident_command()
-
-    elif command == 'proofpoint-tr-update-incident-comment':
-        add_comment_to_incident_command()
-
-    elif command == 'proofpoint-tr-add-user-to-incident':
-        add_user_to_incident_command()
-
-    elif command == 'proofpoint-tr-ingest-alert':
-        ingest_alert_command()
-
-    elif command == 'proofpoint-tr-close-incident':
-        close_incident_command()
-
-    elif command == 'proofpoint-tr-verify-quarantine':
-        return_results(search_quarantine())
+    # Log exceptions and return errors
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 if __name__ == '__builtin__' or __name__ == 'builtins':
