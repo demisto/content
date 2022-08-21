@@ -246,22 +246,22 @@ class Taxii2FeedClient:
 
     def set_api_root(self):
         roots_to_api = {str(api_root.url).split('/')[-2]: api_root
-                        for api_root in self.server.api_roots}  # type: ignore[union-attr, attr-defined]
+                        for api_root in self.server.api_roots}  # type: ignore[attr-defined]
 
         if self.default_api_root:
             if not roots_to_api.get(self.default_api_root):
                 raise DemistoException(f'The given default API root {self.default_api_root} doesn\'t exists.'
                                        f'Available API roots are {list(roots_to_api.keys())}.')
-            self.api_root = roots_to_api.get(self.default_api_root)  # type: ignore[union-attr, attr-defined]
+            self.api_root = roots_to_api.get(self.default_api_root)
 
-        elif self.server.default:  # type: ignore[union-attr, attr-defined]
-            self.api_root = self.server.default  # type: ignore[union-attr, attr-defined]
+        elif server_default := self.server.default:  # type: ignore[attr-defined]
+            self.api_root = server_default
 
         else:
-            self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
+            self.api_root = self.server.api_roots[0]  # type: ignore[attr-defined]
 
         # override _conn - api_root isn't initialized with the right _conn
-        self.api_root._conn = self._conn  # type: ignore[union-attr, attr-defined]
+        self.api_root._conn = self._conn  # type: ignore[union-attr]
 
     def init_collections(self):
         """
