@@ -3807,6 +3807,7 @@
         {
             "playbookID": "Azure SQL - Test",
             "fromversion": "5.0.0",
+            "instance_names": ["azure_sql_user_auth_instance", "azure_sql_device_code_instance"],
             "integrations": [
                 "Azure SQL Management"
             ]
