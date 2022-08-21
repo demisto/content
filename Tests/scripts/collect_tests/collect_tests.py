@@ -666,7 +666,8 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20220814')
+    logger.info('TestCollector v20220821')
+    logger.info(f'CONTRIB_BRANCH='+os.getenv('CONTRIB_BRANCH', ''))
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
