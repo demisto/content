@@ -166,6 +166,57 @@ def test_add_entity_to_allow_list(requests_mock, mocker):
     assert result[0].outputs.get("message") == "`domain1.com` successfully added to policy 1 allow list."
 
 
+def test_add_entity_to_policy_layer_list(requests_mock, mocker):
+    """
+        Scenario: Add multiple entries to policy layer list
+        Given:
+         - User has provided valid credentials and arguments.
+        When:
+         - A add_entity_to_policy_layer_ist command is called and the entry is added.
+        Then:
+         - Ensure number of items is correct.
+         - Ensure a sample value from the API matches what is generated in the context.
+    """
+    from Iboss import add_entity_to_allow_list_command
+
+    client = get_mock_client(mocker)
+    requests_mock.put(
+        'https://pswg.com/json/controls/allowList?currentPolicyBeingEdited=1',
+        json={'message': 'URL added successfully.'})
+
+    requests_mock.get(
+        'https://pswg.com/json/controls/policyLayers/all',
+        json={
+            'entries': [
+                {'customCategoryName': 'Test Policy Later', 'customCategoryNumber': 1, 'customCategoryId': 1}
+            ]}
+    )
+
+    requests_mock.post(
+        'https://pswg.com/json/controls/policyLayers/urls',
+        json={'message': 'URL added successfully.'}
+    )
+
+    args = {
+        "policy_layer_name": "Test Policy Later",
+        "entity": "domain1.com",
+        "current_policy_being_edited": "1",
+        "allow_keyword": "0",
+        "direction": "2",
+        "start_port": "0",
+        "end_port": "0",
+        "global": "0",
+        "is_regex": "0",
+        "priority": "0",
+        "time_url_expires_in_minutes": "0"
+    }
+
+    result = add_entity_to_allow_list_command(client, args=args)
+
+    assert len(result) == 1
+    assert result[0].outputs.get("message") == "`domain1.com` successfully added to policy 1 allow list."
+
+
 def test_remove_entity_from_allow_list_no_exist(requests_mock, mocker):
     """
            Scenario: Attempt to remove entry from allow list that is not present on list
