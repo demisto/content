@@ -443,9 +443,9 @@ def main():
                     algorithm=algorithm)
         if default_value and not matched:
             value = default_value
-    except Exception:
+    except Exception as err:
         # Don't return an error by return_error() as this is transformer.
-        raise
+        raise DemistoException(str(err))
 
     return_results(value)
 

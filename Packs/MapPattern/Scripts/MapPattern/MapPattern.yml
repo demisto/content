@@ -77,7 +77,7 @@ args:
   description: The list of the special patterns which match to any values regardless
     of algorithm.
 - name: default_value
-  description: The value to return when unmatched.
+  description: The value to return when all the patterns are not satisfied.
 scripttarget: 0
 subtype: python3
 runonce: false
