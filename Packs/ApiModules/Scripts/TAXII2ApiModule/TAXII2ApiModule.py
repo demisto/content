@@ -129,6 +129,7 @@ class Taxii2FeedClient:
             limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
             certificate: str = None,
             key: str = None,
+            default_api_root: str = None,
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -145,6 +146,7 @@ class Taxii2FeedClient:
         :param tlp_color: Traffic Light Protocol color
         :param certificate: TLS Certificate
         :param key: TLS Certificate key
+        :param default_api_root: The default API Root to use
         """
         self._conn = None
         self.server = None
@@ -197,6 +199,7 @@ class Taxii2FeedClient:
         ]
         self.id_to_object: Dict[str, Any] = {}
         self.objects_to_fetch = objects_to_fetch
+        self.default_api_root = default_api_root
 
     def init_server(self, version=TAXII_VER_2_0):
         """
@@ -235,21 +238,36 @@ class Taxii2FeedClient:
             # disable logging as we might receive client error and try 2.1
             logging.disable(logging.ERROR)
             # try TAXII 2.0
-            self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
-            # override _conn - api_root isn't initialized with the right _conn
-            self.api_root._conn = self._conn  # type: ignore[attr-defined]
+            self.set_api_root()
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
         except Exception as e:
             if "406 Client Error" not in str(e):
                 raise e
             # switch to TAXII 2.1
             self.init_server(version=TAXII_VER_2_1)
-            self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
-            # override _conn - api_root isn't initialized with the right _conn
-            self.api_root._conn = self._conn  # type: ignore[attr-defined]
+            self.set_api_root()
         finally:
             # enable logging
             logging.disable(logging.NOTSET)
+
+    def set_api_root(self):
+        roots_to_api = {str(api_root.url).split('/')[-2]: api_root
+                        for api_root in self.server.api_roots}  # type: ignore[attr-defined]
+
+        if self.default_api_root:
+            if not roots_to_api.get(self.default_api_root):
+                raise DemistoException(f'The given default API root {self.default_api_root} doesn\'t exists.'
+                                       f'Available API roots are {list(roots_to_api.keys())}.')
+            self.api_root = roots_to_api.get(self.default_api_root)
+
+        elif server_default := self.server.default:  # type: ignore[attr-defined]
+            self.api_root = server_default
+
+        else:
+            self.api_root = self.server.api_roots[0]  # type: ignore[attr-defined]
+
+        # override _conn - api_root isn't initialized with the right _conn
+        self.api_root._conn = self._conn  # type: ignore[union-attr]
 
     def init_collections(self):
         """
@@ -970,7 +988,7 @@ class Taxii2FeedClient:
             while envelope.get("more", False):
                 page_size = self.get_page_size(limit, cur_limit)
                 envelope = self.collection_to_fetch.get_objects(
-                    limit=page_size, next=envelope.get("next", "")
+                    limit=page_size, next=envelope.get("next", ""), type=obj_type
                 )
                 if isinstance(envelope, Dict):
                     stix_objects = envelope.get("objects")

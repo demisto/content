@@ -228,6 +228,7 @@ def main():
     certificate = params.get('certificate', None)
     key = params.get('key', None)
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
+    default_api_root = params.get('default_api_root')
 
     demisto.info(f'{objects_to_fetch=}')
 
@@ -249,6 +250,7 @@ def main():
             tlp_color=tlp_color,
             certificate=certificate,
             key=key,
+            default_api_root=default_api_root,
         )
         client.initialise()
         commands = {
