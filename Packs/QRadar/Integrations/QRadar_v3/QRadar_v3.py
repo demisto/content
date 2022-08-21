@@ -17,7 +17,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' ADVANCED GLOBAL PARAMETERS '''
 
-FAILURE_SLEEP = 15  # sleep between consecutive failures events fetch
+FAILURE_SLEEP = 30  # sleep between consecutive failures events fetch
 FETCH_SLEEP = 60  # sleep between fetches
 BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
@@ -1537,9 +1537,7 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
     offense_id = offense['id']
     while num_of_failures <= max_retries:
         try:
-            ret_value = create_events_search(client, fetch_mode, event_columns, events_limit, offense_id, offense['start_time'])
-            time.sleep(EVENTS_MODIFIED_SECS)
-            return ret_value
+            return create_events_search(client, fetch_mode, event_columns, events_limit, offense_id, offense['start_time'])
         except Exception:
             print_debug_msg(f'Failed to create search for offense ID: {offense_id}. '
                             f'Retry number {num_of_failures}/{max_retries}.')
@@ -1642,21 +1640,24 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     events_count = offense.get('event_count', 0)
     events: List[dict] = []
     failure_message = ''
-    search_id = create_search_with_retry(client, fetch_mode, offense, events_columns,
-                                         events_limit)
     is_success = True
-    if search_id == QueryStatus.ERROR.value:
-        failure_message = 'Search for events was failed.'
-        is_success = False
+    for _ in range(MAX_FETCH_EVENT_RETIRES):
+        search_id = create_search_with_retry(client, fetch_mode, offense, events_columns,
+                                             events_limit)
+        if search_id == QueryStatus.ERROR.value:
+            failure_message = 'Search for events was failed.'
+        else:
+            events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
+        events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
+        print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
+        offense['events_fetched'] = events_fetched
+        if events:
+            offense['events'] = events
+            break
+        time.sleep(FAILURE_SLEEP)
+        print_debug_msg(f'No events for offense {offense_id}. Retrying.')
     else:
-        events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
-    events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
-    print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
-    offense['events_fetched'] = events_fetched
-    if events:
-        offense['events'] = events
-    else:
-        print_debug_msg(f'No events were fetched for offense {offense_id}'
+        print_debug_msg(f'No events were fetched for offense {offense_id}.\n'
                         f'Adding to mirroring queue to be queried again.')
         is_success = False
     mirroring_events_message = update_events_mirror_message(mirror_options=MIRROR_OFFENSE_AND_EVENTS,
@@ -3400,7 +3401,6 @@ def create_events_search(client: Client,
                          ) -> str:
     additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
         if fetch_mode == FetchMode.correlations_events_only.value else ''
-    now: int = int(datetime.now().timestamp() * 1000)
     try:
         # Get all the events starting from one hour after epoch
         if not offense_start_time:
@@ -3408,7 +3408,7 @@ def create_events_search(client: Client,
             offense_start_time = offense['start_time']
         query_expression = (
             f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
-            f'START {offense_start_time} STOP {now}'
+            f'START {offense_start_time}'
         )
         print_debug_msg(f'Creating search for offense ID: {offense_id}, '
                         f'query_expression: {query_expression}')
