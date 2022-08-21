@@ -60,6 +60,7 @@ MimecastV2.APP_KEY = 'test_key'
 MimecastV2.EMAIL_ADDRESS = 'test@test.com'
 MimecastV2.APP_ID = '1234'
 MimecastV2.ACCESS_KEY = '12345'
+MimecastV2.SECRET_KEY = 'test_key'
 
 
 def util_load_json(path):
