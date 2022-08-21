@@ -1395,7 +1395,7 @@ def main() -> None:
 
         if demisto.command() == "get-modified-remote-data":
             # Hotfix for mirroring issues.
-            raise NotImplementedError(f'The "get-modified-remote-data" command is not implemented')
+            raise NotImplementedError('The "get-modified-remote-data" command is not implemented')
 
         elif demisto.command() == "argus-add-attachment":
             return_results(add_attachment_command(demisto.args()))
