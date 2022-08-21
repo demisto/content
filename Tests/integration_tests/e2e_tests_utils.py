@@ -15,10 +15,10 @@ def git_clone_demisto_sdk(destination_folder: str, sdk_git_branch: str = 'master
     git.Repo.clone_from(url='https://github.com/demisto/demisto-sdk.git',
                         to_path=destination_folder,
                         multi_options=[
-                        f'-b {sdk_git_branch}',
-                        '--single-branch',
-                        '--depth 1'
-                        ]
+                                       f'-b {sdk_git_branch}',
+                                       '--single-branch',
+                                       '--depth 1'
+                                       ]
                         )
 
     sys.path.insert(1, f'{destination_folder}')
