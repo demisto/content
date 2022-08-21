@@ -22,8 +22,8 @@ class Client:
     API Client to communicate with AzureDevOps.
     """
 
-    def __init__(self, client_id: str, organization: str, verify: bool, proxy: bool, auth_type: str, tenant_id: str,
-                 enc_key: str, auth_code: str, redirect_uri: str):
+    def __init__(self, client_id: str, organization: str, verify: bool, proxy: bool, auth_type: str,
+                 tenant_id: str = None, enc_key: str = None, auth_code: str = None, redirect_uri: str = None):
         if '@' in client_id:  # for use in test-playbook
             client_id, refresh_token = client_id.split('@')
             integration_context = get_integration_context()
