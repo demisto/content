@@ -30,6 +30,7 @@ def options_handler():
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.')
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         type=str2bool, default=False, required=True)
+    parser.add_argument('--xsiam_servers_api_keys', help='Path to the file with XSIAM Servers api keys.')
     options = parser.parse_args()
     # disable-secrets-detection-end
 
@@ -153,11 +154,13 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
     """
     logging.info('Retrieving the credentials for Cortex XSIAM server')
     xsiam_machine = options.xsiam_machine
-    xsiam_servers = get_json_file(options.xsiam_servers_path)
-    # todo: add here
-    api_key, server_numeric_version, base_url, xdr_auth_id = XSIAMBuild.get_xsiam_configuration(xsiam_machine,
-                                                                                                xsiam_servers)
+    api_key, server_numeric_version, base_url, xdr_auth_id = XSIAMBuild.get_xsiam_configuration(
+        xsiam_machine,
+        options.xsiam_servers_path,
+        options.xsiam_servers_api_keys)
     # Configure the Server
+    logging.info(f'{options.xsiam_servers_api_keys=}, {options.xsiam_servers_path=}, {xsiam_machine=}')
+    logging.info(f'{api_key=}, {server_numeric_version=}, {base_url=}, {xdr_auth_id=}')
     server = XSIAMServer(api_key, server_numeric_version, base_url, xdr_auth_id, xsiam_machine)
     XSIAMBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
 

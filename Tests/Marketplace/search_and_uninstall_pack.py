@@ -1,5 +1,4 @@
 import ast
-import json
 import argparse
 import os
 import sys
@@ -198,6 +197,8 @@ def main():
                                       verify_ssl=False,
                                       api_key=api_key,
                                       auth_id=xdr_auth_id)
+    logging.info(f'{options.xsiam_servers_api_keys=}, {options.xsiam_servers_path=}, {host=}')
+    logging.info(f'{api_key=}, {base_url=}, {xdr_auth_id=}')
 
     success = reset_base_pack_version(client) and uninstall_all_packs(client,
                                                                       host) and wait_for_uninstallation_to_complete(
