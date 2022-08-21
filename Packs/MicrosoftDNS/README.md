@@ -18,26 +18,14 @@ and product. This example demonstrates how to set the configuration file:
 
 ```
 filebeat.inputs:
-  - type: filestream
-    id: dns
-    enabled: true
-    paths:
-      - c:\Windows\System32\dns\DNS.log
-    processors:
-      - dissect:
-           tokenizer: "%{date} %{+time} %{+time} %{threadid} %{context}  %{internalpacketidentifier} %{protocol} %{SendReceiveIndicator} %{RemoteIP->|ip}  %{xid} %{QueryType->} %{opcode} [%{qflags}] %{questiontype->}   %{questionnamenondetailed}"
-           target_prefix: ""
-      - drop_fields:
-          fields: [ "message" ]
-      - add_locale: ~
-      - rename:
-          fields:
-            - from: "event.timezone"
-              to: "timezone"
-      - add_fields:
-          fields:
-            vendor: msft
-            product: dns
+- type: filestream
+  paths:
+    - c:\Windows\System32\dns\DNS.log
+processors:
+  - add_fields:
+      fields:
+        vendor: msft
+        product: dns
 ```
 
 **Please note**: The above configuration uses the default location of the logs. In case your linux saves the logs under a different location, you would need to change it in the yaml (under the `paths` field).
