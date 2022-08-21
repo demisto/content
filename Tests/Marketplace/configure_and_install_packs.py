@@ -159,8 +159,6 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
         options.xsiam_servers_path,
         options.xsiam_servers_api_keys)
     # Configure the Server
-    logging.info(f'{options.xsiam_servers_api_keys=}, {options.xsiam_servers_path=}, {xsiam_machine=}')
-    logging.info(f'{api_key=}, {server_numeric_version=}, {base_url=}, {xdr_auth_id=}')
     server = XSIAMServer(api_key, server_numeric_version, base_url, xdr_auth_id, xsiam_machine)
     XSIAMBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
 
