@@ -130,7 +130,7 @@ script:
       defaultValue: "yes"
       description: Whether to output the search results to the context.
     - name: page-size
-      description: The page size to query. limit will be ignored
+      description: The page size to query. limit will be ignored.
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
@@ -294,13 +294,13 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to include verbose translation for UserAccountControl flags. Default is false.
+      description: Whether to include verbose translation for UserAccountControl flags. 
       defaultValue: "false"
     - name: limit
       description: The maximum number of objects to return.
       defaultValue: "20"
     - name: page-size
-      description: The page size to query. limit will be ignored
+      description: The page size to query. limit value will be ignored.
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
@@ -431,7 +431,7 @@ script:
     - name: limit
       description: The maximum number of records to return.
     - name: page-size
-      description: The page size to query. limit will be ignored
+      description: The page size to query. limit value will be ignored.
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
@@ -492,7 +492,7 @@ script:
     - name: limit
       description: The maximum number of records to return.
     - name: page-size
-      description: The page size to query. limit will be ignored
+      description: The page size to query. limit value will be ignored.
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
