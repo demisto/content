@@ -1,11 +1,20 @@
-Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and provide additional visibility into phishing and other malicious email attacks.
-Proofpoint TAP detects, analyzes and blocks advanced threats before they reach your inbox. This includes ransomware and other advanced email threats delivered through malicious attachments and URLs.
+Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and provide additional visibility into phishing and other malicious email attacks<~XSOAR>XSOAR</~XSOAR><~XSIAM>XSIAM</~XSIAM>.
+Proofpoint TAP detects, analyzes and blocks advanced threats before they reach your inbox. This includes ransomware and other advanced email threats delivered through malicious attachments and URLs<~XSOAR>XSOAR</~XSOAR><~XSIAM>XSIAM</~XSIAM>.
 
 This pack includes XSIAM content.
 
 ## Collect Events from Vendor
 
 In order to use the collector to collect events from the vendor,  to collect events.You will need to configure the vendor and product for this specific collector.
+
+
+<br/>This pack includes XSIAM content.
+
+### Collect Events from Proofpoint TAP (XSIAM)
+
+You can configure the vendor and product by replacing vendor_product_raw with proofpoint_tap_raw.
+
+
 
 ## What does this pack do?
 - Fetches events for all clicks and messages relating to known threats within a specified time period.
