@@ -17,6 +17,8 @@ OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
 SCOPE_BY_CONNECTION = {'Device Code': "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access",
                        'Authorization Code': "https://management.azure.com/.default"}
+
+
 class Client:
     """
     API Client to communicate with AzureDevOps.
@@ -1566,6 +1568,7 @@ def fetch_incidents(client, project: str, repository: str, integration_instance:
 
     demisto.incidents(incidents)
 
+
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
@@ -1583,7 +1586,7 @@ def test_module(client: Client) -> str:
     # either manually or by using an API that uses them.
     if "Device" in client.connection_type:
         raise DemistoException("Test module is avilable for Authorization Code only, for other authentication types use the "
-            "azure-devops-auth-start command")
+                               "azure-devops-auth-start command")
 
     test_connection(client)
     return "ok"
@@ -1597,11 +1600,11 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     is_mirroring = params.get('is_mirroring', False)
-    tenant_id=params.get('tenant_id')
+    tenant_id = params.get('tenant_id')
     auth_type = params.get('auth_type', 'Device')
-    auth_code=params.get('auth_code', {}).get('password', '')
-    redirect_uri=params.get('redirect_uri')
-    enc_key=params.get('credentials', {}).get('password', '')
+    auth_code = params.get('auth_code', {}).get('password', '')
+    redirect_uri = params.get('redirect_uri')
+    enc_key = params.get('credentials', {}).get('password', '')
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -1690,7 +1693,6 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(str(e))
-
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
