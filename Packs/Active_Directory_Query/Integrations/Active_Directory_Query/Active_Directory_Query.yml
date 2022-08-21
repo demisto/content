@@ -300,7 +300,7 @@ script:
       description: The maximum number of objects to return.
       defaultValue: "20"
     - name: page-size
-      description: The page size to query. limit value will be ignored.
+      description: The page size to query. The limit value will be ignored.
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
@@ -431,7 +431,7 @@ script:
     - name: limit
       description: The maximum number of records to return.
     - name: page-size
-      description: The page size to query. limit value will be ignored.
+      description: The page size to query. The limit value will be ignored.
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
@@ -492,7 +492,7 @@ script:
     - name: limit
       description: The maximum number of records to return.
     - name: page-size
-      description: The page size to query. limit value will be ignored.
+      description: The page size to query. The limit value will be ignored.
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
