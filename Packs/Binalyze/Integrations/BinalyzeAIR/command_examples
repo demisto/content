@@ -1,0 +1,15 @@
+!binalyze-air-isolate endpoint="hostname" organization_id=0 isolation=enable
+
+!binalyze-air-isolate endpoint="hostname" organization_id=0 isolation=disable
+
+!binalyze-air-acquire endpoint="hostname" profile="quick" caseid="c-2022-0001" organization_id=0
+
+!binalyze-air-acquire endpoint="hostname" profile="browsing-history" caseid="c-2022-0001" organization_id=0
+
+!binalyze-air-acquire endpoint="hostname" profile="compromise-assessment" caseid="c-2022-0001" organization_id=0
+
+!binalyze-air-acquire endpoint="hostname" profile="event-logs" caseid="c-2022-0001" organization_id=0
+
+!binalyze-air-acquire endpoint="hostname" profile="memory-ram-pagefile" caseid="c-2022-0001" organization_id=0
+
+!binalyze-air-acquire endpoint="hostname" profile="full" caseid="c-2022-0001" organization_id=0

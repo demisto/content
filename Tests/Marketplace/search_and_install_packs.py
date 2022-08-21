@@ -6,10 +6,11 @@ import json
 import glob
 import re
 import sys
+from concurrent.futures import ThreadPoolExecutor
+
 import demisto_client
-from threading import Thread, Lock
+from threading import Lock
 from demisto_client.demisto_api.rest import ApiException
-from demisto_sdk.commands.common.tools import run_threads_list
 
 from google.cloud.storage import Bucket
 from packaging.version import Version
@@ -629,18 +630,12 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     packs_to_install: list = []  # we save all the packs we want to install, to avoid duplications
     installation_request_body: list = []  # the packs to install, in the request format
 
-    threads_list = []
     lock = Lock()
 
-    for pack_id in pack_ids:
-        thread = Thread(target=search_pack_and_its_dependencies,
-                        kwargs={'client': client,
-                                'pack_id': pack_id,
-                                'packs_to_install': packs_to_install,
-                                'installation_request_body': installation_request_body,
-                                'lock': lock})
-        threads_list.append(thread)
-    run_threads_list(threads_list)
+    with ThreadPoolExecutor(max_workers=130) as pool:
+        for pack_id in pack_ids:
+            pool.submit(search_pack_and_its_dependencies,
+                        client, pack_id, packs_to_install, installation_request_body, lock)
 
     install_packs(client, host, installation_request_body)
 
