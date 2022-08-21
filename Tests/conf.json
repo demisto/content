@@ -2927,6 +2927,11 @@
             "playbookID": "Elasticsearch_v2_test-v6"
         },
         {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v8",
+            "playbookID": "Elasticsearch_v2_test-v8"
+        },
+        {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
         },
@@ -3468,7 +3473,13 @@
         },
         {
             "integrations": "MicrosoftGraphApplications",
-            "playbookID": "MSGraph Applications Test"
+            "playbookID": "MSGraph Applications Test",
+            "instance_names": "ms_graph_applications_device_code"
+        },
+        {
+            "integrations": "MicrosoftGraphApplications",
+            "playbookID": "MSGraph Applications Test",
+            "instance_names": "ms_graph_applications_client_cred"
         },
         {
             "integrations": "EWS Extension Online Powershell v2",
@@ -5023,7 +5034,14 @@
         {
             "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
-            "integrations": "AzureRiskyUsers"
+            "integrations": "AzureRiskyUsers",
+            "instance_names": "AzureRiskyUsers_Device_Code_Flow"
+        },
+        {
+            "playbookID": "AzureRiskyUsers",
+            "fromversion": "6.0.0",
+            "integrations": "AzureRiskyUsers",
+            "instance_names": "AzureRiskyUsers_Client_Credentials_Flow"
         },
         {
             "playbookID": "playbook-AzureKeyVault-Test",
@@ -5320,7 +5338,8 @@
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
-        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
+        "Elasticsearch_v2_test-v8": "CRTX-61980"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
