@@ -10,15 +10,18 @@ from demisto_sdk.commands.common.tools import (get_demisto_version,
 def git_clone_demisto_sdk(destination_folder: str, sdk_git_branch: str = 'master'):
     '''Clone demisto-sdk from GitHub and add it to sys.path
     '''
-    git_clone_command = ('git'
-                         f' -C {destination_folder}'
-                         ' clone'
-                         f' -b {sdk_git_branch}'
-                         ' --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git'
-                         )
-    print(f'Cloning demisto-sdk with: {git_clone_command}')
-    cli(git_clone_command)
-    sys.path.insert(1, f'{destination_folder}/demisto-sdk')
+    print(f'Cloning demisto-sdk to {destination_folder}')
+    import git
+    git.Repo.clone_from(url='https://github.com/demisto/demisto-sdk.git',
+                        to_path=destination_folder,
+                        multi_options=[
+                         f'-b {sdk_git_branch}',
+                         '--single-branch',
+                         '--depth 1'
+                        ]
+                        )
+
+    sys.path.insert(1, f'{destination_folder}')
 
 
 def cli(command: str) -> subprocess.CompletedProcess:
