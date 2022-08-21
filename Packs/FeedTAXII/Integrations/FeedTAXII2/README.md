@@ -30,7 +30,7 @@ Ingest indicator feeds from TAXII 2.0 and 2.1 servers.
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Tags | Supports CSV values. | False |
-| Default API Root to use | The Default API Root to use \(e.g. default, public\). When remained empty, the server default API root is used, or the first API root if no default is defined. Providing an API root that can't be reached will result in an error message with all possible API roots listed. | False |
+| Default API Root to use | The Default API Root to use (e.g. default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead. Providing an API root that can't be reached will result in an error message with all possible API roots listed. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
