@@ -7287,6 +7287,7 @@ def whois_request(domain, server, port=43, is_refer_server=False):
 
 
 def whois_request_get_response(socket, domain):
+    # print("domain:", domain)
     socket.send(("%s\r\n" % domain).encode("utf-8"))
     buff = b""
     while True:
@@ -8477,17 +8478,19 @@ def ip_command(ips, reliability):
 
 def whois_command(reliability):
     query = demisto.args().get('query')
-    domain = get_domain_from_query(query)
-    whois_result = get_whois(domain)
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
-    dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': str(whois_result),
-        'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-        'EntryContext': dbot_score,
-    })
+    domains = argToList(query)
+    for query in domains:
+        domain = get_domain_from_query(query)
+        whois_result = get_whois(domain)
+        md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
+        dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': str(whois_result),
+            'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
+            'EntryContext': dbot_score,
+        })
 
 
 def test_command():

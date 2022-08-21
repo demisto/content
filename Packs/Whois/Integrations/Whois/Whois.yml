@@ -41,10 +41,13 @@ script:
   - arguments:
     - default: false
       description: The domain to enrich.
-      isArray: false
+      isArray: true
       name: query
       required: true
       secret: false
+    - name: recursive
+      description: get the raw response from the whois server recursively.
+      defaultValue: true
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
