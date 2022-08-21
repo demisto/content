@@ -722,8 +722,8 @@ class XSIAMBuild(Build):
         xsiam_servers = get_json_file(xsiam_servers_path)
         conf = xsiam_servers.get(xsiam_machine)
         xsiam_servers_api_keys = get_json_file(xsiam_servers_api_keys_path)
-        return xsiam_servers_api_keys.get(xsiam_machine), conf.get('demisto_version'), \
-               conf.get('base_url'), conf.get('x-xdr-auth-id')
+        api_key = xsiam_servers_api_keys.get(xsiam_machine)
+        return api_key, conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
 
     def configure_servers_and_restart(self):
         # No need of this step in XSIAM.
