@@ -1,12 +1,11 @@
 # Azure DevOps
 Manage Git repositories in Azure DevOps Services. Integration capabilities include retrieving, creating, and updating pull requests. Run pipelines and retrieve git information.
-** Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
-This integration was integrated and tested with version 6.1 of AzureDevOps
 
-## Configure AzureDevOps (Beta) on Cortex XSOAR
+
+## Configure AzureDevOps on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AzureDevOps (Beta).
+2. Search for AzureDevOps.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -14,14 +13,21 @@ This integration was integrated and tested with version 6.1 of AzureDevOps
     | Client ID | App Registration Client ID | True |
     | Organization | Organizaion name | True |
     | Maximum incidents for one fetch. | Default is 50. Maximum is 200. | False |
-    | Pull-request project name | The name of the project which the pull requests belongs to. This argument is mandatory for Fetch functionality. | False |
-    | Pull-request repository name | The name of the repository pull request's target branch. This argument is mandatory for Fetch functionality. | False |
+    | Pull-request project name | The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This argument is mandatory for Fetch functionality. | False |
+    | Pull-request repository name | The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality. | False |
     | Incident type |  | False |
     | Fetch incidents |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Outgoing mirroring |  | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
+    | Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\) or Device Code Flow. | False |
+    | Tenant ID (for user-auth mode) |  | False |
+    | Client Secret (for user-auth mode) |  | False |
+    | Client Secret (for user-auth mode) |  | False |
+    | Application redirect URI (for user-auth mode) |  | False |
+    | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
+    | Authorization code |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -254,8 +260,8 @@ Add a user, assign the user a license and extensions, and make the user a member
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_email | The email address of the user to add to the organization. | Required | 
-| account_license_type | The type of account license. Possible values: "express", "stakeholder", "advanced", "earlyAdopter", and "professional". More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#accountlicensetype. | Required | 
-| group_type | The project group type. Possible values: "projectReader", "projectContributor", "projectAdministrator", and "projectStakeholder". More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#grouptype. | Required | 
+| account_license_type | The type of account license. Possible values: "express", "stakeholder", "advanced", "earlyAdopter", and "professional". More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#accountlicensetype . Possible values are: express, stakeholder, advanced, earlyAdopter, professional. | Required | 
+| group_type | The project group type. Possible values: "projectReader", "projectContributor", "projectAdministrator", and "projectStakeholder". More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#grouptype . Possible values are: projectReader, projectContributor, projectAdministrator, projectStakeholder. | Required | 
 | project_id | The ID of the project. | Required | 
 
 
@@ -1328,7 +1334,7 @@ Retrieve information for a pipeline run.
 | project | The name of the project. | Required | 
 | pipeline_id | The ID of the pipeline to retrieve. | Required | 
 | run_id | The ID of the pipeline run to retrieve. | Required | 
-| scheduled | Indicates if the command was scheduled. Possible values are: True, False. Default is False. | Optional | 
+| scheduled | Indicates if the command was scheduled. Possible values: "True" or "False". Possible values are: True, False. Default is False. | Optional | 
 | interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
 | timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
 
@@ -1624,3 +1630,11 @@ Retrieve repository branches list.
 >|---|
 >| refs/heads/main |
 
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and AzureDevOps corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and AzureDevOps.
