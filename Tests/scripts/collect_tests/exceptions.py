@@ -36,7 +36,7 @@ class SkippedPackException(InvalidPackException):
 
 
 class NonDictException(Exception):
-    def __init__(self, path: Path):
+    def __init__(self, path: Optional[Path]):
         self.message = path
         super().__init__(self.message)
 

@@ -113,7 +113,7 @@ class DictBased:
 
     def __init__(self, dict_: dict):
         if not isinstance(dict_, dict):
-            raise ValueError('DictBased must be initialized with a dict')
+            raise NonDictException(None)
         self.content = dict_
         self.from_version: Version | NegativeInfinityType = self._calculate_from_version()
         self.to_version: Version | InfinityType = self._calculate_to_version()
@@ -179,7 +179,12 @@ class DictFileBased(DictBased):
                     body = json.load(file)
                 case '.yml':
                     body = yaml.load(file)
-        super().__init__(body)
+                case _:
+                    raise NonDictException(path)
+        try:
+            super().__init__(body)
+        except NonDictException:
+            raise NonDictException(path)
 
 
 class ContentItem(DictFileBased):
