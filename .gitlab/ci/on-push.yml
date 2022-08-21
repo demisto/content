@@ -256,10 +256,11 @@ prepare-testing-bucket-mpv2:
         cp ./Tests/test_playbooks_report.json $ARTIFACTS_FOLDER/test_playbooks_report.json
       fi
 
-    - |
+   #    export DEMISTO_BASE_URL="http://$INSTANCE_DNS:$TUNNEL_PORT"
+   - |
       INSTANCE_DNS=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].InstanceDNS")
       TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
-      export DEMISTO_BASE_URL="http://$INSTANCE_DNS:$TUNNEL_PORT"
+≈      export DEMISTO_BASE_URL="http://localhost:$TUNNEL_PORT"
       echo "DEMISTO_BASE_URL: $DEMISTO_BASE_URL"
       python3 -m pytest Tests/integration_tests/ || EXIT_CODE=$?
 
