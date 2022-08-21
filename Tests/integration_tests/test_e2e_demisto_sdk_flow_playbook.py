@@ -24,14 +24,14 @@ def test_e2e_demisto_sdk_flow_playbook(tmpdir, insecure: bool = False):
     playbook.create_default_playbook(name=playbook_name)
 
     print(f'Trying to upload playbook from {tmpdir}/Packs/{pack_name}/Playbooks/{playbook_name}.yml')
-    e2e_tests_utils.cli(f'demisto-sdk upload -i {tmpdir}/Packs/{pack_name}/Playbooks/{playbook_name}.yml')
+    e2e_tests_utils.cli(f'demisto-sdk upload --insecure -i {tmpdir}/Packs/{pack_name}/Playbooks/{playbook_name}.yml')
 
     # Preparing updated pack folder
     e2e_tests_utils.cli(f'mkdir {tmpdir}/Packs/{pack_name}_updated')
 
     print(f'Trying to download the updated playbook from {playbook_name} to {tmpdir}/Packs/{pack_name}_updated/Playbooks')
     # e2e_tests_utils.cli(f'demisto-sdk download -i Packs/{pack_name}')
-    e2e_tests_utils.cli(f'demisto-sdk download -i {playbook_name} -o {tmpdir}/Packs/{pack_name}_updated')
+    e2e_tests_utils.cli(f'demisto-sdk download --insecure -i {playbook_name} -o {tmpdir}/Packs/{pack_name}_updated')
 
     print('Generating docs (creating a readme file)'
           f' for the playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml'
@@ -48,4 +48,4 @@ def test_e2e_demisto_sdk_flow_playbook(tmpdir, insecure: bool = False):
                         )
 
     print(f'Uploading updated playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
-    e2e_tests_utils.cli(f'demisto-sdk upload -i {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
+    e2e_tests_utils.cli(f'demisto-sdk upload --insecure -i {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
