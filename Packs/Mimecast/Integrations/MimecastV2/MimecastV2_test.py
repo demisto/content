@@ -409,7 +409,7 @@ def test_get_message_info_command(args, delivered, mocker, requests_mock):
     """
 
     mock_response = util_load_json('test_data/get_message_info_response.json')
-    requests_mock.post(f'/api/message-finder/get-message-info', json=mock_response)
+    requests_mock.post('/api/message-finder/get-message-info', json=mock_response)
     response = MimecastV2.get_message_info_command(args)
 
     assert len(response) == 2
@@ -441,41 +441,37 @@ def test_list_hold_messages_command(mocker):
 
 
 REJECT_HOLD_MESSAGE = [
-    ({
-         "meta": {
-             "status": 200
-         },
-         "data": [
-             {
-                 "id": "1234",
+    ({"meta": {
+        "status": 200
+    },
+        "data": [{
+            "id": "1234",
                  "reject": True
-             },
-             {
+                 },
+                 {
                  "id": "1233",
                  "reject": True
-             }
-         ],
-         "fail": []
-     }, 'Hold message with id 1234 was rejected successfully.\n'
+                 }
+                 ],
+        "fail": []
+    }, 'Hold message with id 1234 was rejected successfully.\n'
         'Hold message with id 1233 was rejected successfully.\n'),
-    ({
-         "meta": {
-             "status": 200
-         },
-         "data": [
-             {
-                 "id": "1234",
-                 "reject": False
-             },
-             {
-                 "id": "1233",
-                 "reject": True
-             }
-         ],
-         "fail": []
-     }, 'Hold message with id 1234 rejection failed.\n'
-        'Hold message with id 1233 was rejected successfully.\n')
-]
+    ({"meta": {
+        "status": 200
+    },
+        "data": [
+        {
+            "id": "1234",
+            "reject": False
+        },
+        {
+            "id": "1233",
+            "reject": True
+        }
+    ],
+        "fail": []
+    }, 'Hold message with id 1234 rejection failed.\n'
+        'Hold message with id 1233 was rejected successfully.\n')]
 
 
 @pytest.mark.parametrize('mock_response, readable_output', REJECT_HOLD_MESSAGE)
@@ -498,31 +494,28 @@ def test_reject_hold_message_command(mock_response, readable_output, mocker):
 
 
 RELEASE_HOLD_MESSAGE = [
-    ({
-         "meta": {
-             "status": 200
-         },
-         "data": [
-             {
-                 "id": "1234",
-                 "release": True
-             }
-         ],
-         "fail": []
-     }, 'Hold message with id 1234 was released successfully'),
-    ({
-         "meta": {
-             "status": 200
-         },
-         "data": [
-             {
-                 "id": "1234",
-                 "release": False
-             }
-         ],
-         "fail": []
-     }, 'Message release has failed.')
-]
+    ({"meta": {
+        "status": 200
+    },
+        "data": [
+        {
+            "id": "1234",
+            "release": True
+        }
+    ],
+        "fail": []
+    }, 'Hold message with id 1234 was released successfully'),
+    ({"meta": {
+        "status": 200
+    },
+        "data": [
+        {
+            "id": "1234",
+            "release": False
+        }
+    ],
+        "fail": []
+    }, 'Message release has failed.')]
 
 
 @pytest.mark.parametrize('mock_response, readable_output', RELEASE_HOLD_MESSAGE)
