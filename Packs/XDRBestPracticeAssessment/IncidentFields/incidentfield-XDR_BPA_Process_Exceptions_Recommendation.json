@@ -4,30 +4,26 @@
         "XDR Best Practice Assessment"
     ],
     "caseInsensitive": true,
-    "cliName": "alertingrecommendation",
+    "cliName": "xdrbpaprocessexceptionsrecommendation",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_alertingrecommendation",
+    "id": "incident_xdrbpaprocessexceptionsrecommendation",
     "isReadOnly": false,
     "locked": false,
-    "name": "Alerting Recommendation",
+    "name": "XDR BPA Process Exceptions Recommendation",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
-    "propagationLabels": [
-        "all"
-    ],
     "required": false,
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "longText",
+    "type": "markdown",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
-    "version": -1,
-    "fromVersion": "6.2.0"
+    "version": -1
 }
