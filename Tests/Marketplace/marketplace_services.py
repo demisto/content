@@ -646,6 +646,7 @@ class Pack(object):
             Metadata.TAGS: list(self._tags or []),
             Metadata.CATEGORIES: self._categories,
             Metadata.CONTENT_ITEMS: self._content_items,
+            Metadata.EXTERNAL_CONTENT_DISPLAYS: self._external_content_displays_map,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
             Metadata.USE_CASES: self._use_cases,
@@ -1970,6 +1971,16 @@ class Pack(object):
                 PackFolders.WIZARDS.value: "wizard",
             }
 
+            xsiam_items_names_to_display_mapping = {
+                content_item_name_mapping[PackFolders.PARSING_RULES.value]: "Parsing Rule",
+                content_item_name_mapping[PackFolders.MODELING_RULES.value]: "Modeling Rule",
+                content_item_name_mapping[PackFolders.CORRELATION_RULES.value]: "Correlation Rule",
+                content_item_name_mapping[PackFolders.XSIAM_DASHBOARDS.value]:"XSIAM Dashboard",
+                content_item_name_mapping[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
+                content_item_name_mapping[PackFolders.TRIGGERS.value]: "Trigger",
+                content_item_name_mapping[PackFolders.WIZARDS.value]: "Wizard",
+            }
+
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 current_directory = root.split(os.path.sep)[-1]
                 parent_directory = root.split(os.path.sep)[-2]
@@ -2244,10 +2255,17 @@ class Pack(object):
 
             logging.success(f"Finished collecting content items for {self._pack_name} pack")
             task_status = True
-        except Exception:
+        except Exception as e:
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
             self._content_items = content_items_result
+            
+            display_getter = lambda items, display : f'{display}s' if len(items) > 1 else display
+            self._external_content_displays_map = {
+                name: display_getter(content_items_result.get(name), display) 
+                for name, display in xsiam_items_names_to_display_mapping.items()
+                if content_items_result.get(name)
+            }
 
             return task_status
 

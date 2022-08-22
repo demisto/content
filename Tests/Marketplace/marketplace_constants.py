@@ -152,6 +152,7 @@ class Metadata(object):
     TAGS = 'tags'
     CATEGORIES = 'categories'
     CONTENT_ITEMS = 'contentItems'
+    EXTERNAL_CONTENT_DISPLAYS = 'externalContentDisplays'
     SEARCH_RANK = 'searchRank'
     INTEGRATIONS = 'integrations'
     USE_CASES = 'useCases'
