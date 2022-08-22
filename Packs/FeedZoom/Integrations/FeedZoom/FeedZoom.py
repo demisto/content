@@ -151,7 +151,7 @@ def get_indicators_command(
     """
     feed_tags = argToList(params.get("feedTags", ""))
     tlp_color = params.get('tlp_color')
-    limit = int(args.get("limit", "10"))
+    limit = arg_to_number(args.get('limit', '10'))
     indicators = fetch_indicators(client, feed_tags, tlp_color, limit)
 
     if indicators:
@@ -162,9 +162,7 @@ def get_indicators_command(
         human_readable = "No indicators from Zoom Feed were fetched."
 
     return CommandResults(readable_output=human_readable,
-                          raw_response=indicators,
-                          outputs_key_field='indicator_id',
-                          outputs_prefix='FeedZoom.Indicators')
+                          raw_response=indicators)
 
 
 def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:

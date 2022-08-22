@@ -50,20 +50,6 @@ configuration:
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: A - Completely reliable
-  display: Source Reliability
-  name: integrationReliability
-  options:
-  - A+ - 3rd party enrichment
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
 - display: Source Reliability
   name: feedReliability
   defaultvalue: A - Completely reliable
