@@ -1,2 +1,9 @@
 [file:Hurukai.yml]
 ignore=IN126
+[known_words]
+filesize
+eventlog
+eventid
+harfanglab-telemetry-eventlog
+harfanglab-endpoint-search
+harfanglab-telemetry-processes
