@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from SiemApiModule import *  # noqa: E402
 from AWSApiModule import *  # noqa: E402
 
 import urllib3.util
@@ -82,6 +81,9 @@ class AWSGuardDutyGetEvents(IntegrationGetEvents):
 
                 if not events:
                     break
+
+def get_events(collect_from, limit):
+
 
 
 def main():
