@@ -1513,8 +1513,13 @@ def fetch_incidents_command() -> List[Dict]:
     return ctx.get('samples', [])
 
 
-def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, event_columns: str, events_limit: int,
-                             max_retries: int = EVENTS_SEARCH_FAILURE_LIMIT) -> str:
+def create_search_with_retry(client: Client,
+                             fetch_mode: str,
+                             offense: Dict,
+                             event_columns: str,
+                             events_limit: int,
+                             max_retries: int = EVENTS_SEARCH_FAILURE_LIMIT,
+                             ) -> str:
     """
     Creates a search to retrieve events for an offense.
     Has retry mechanism, because QRadar service tends to return random errors when
@@ -1533,19 +1538,14 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
     Returns:
         (str): The search id or `error` from `SearchQueryStatus`
     """
-    num_of_failures = 0
     offense_id = offense['id']
-    while num_of_failures <= max_retries:
+    for i in range(max_retries):
         search_id = create_events_search(client, fetch_mode, event_columns, events_limit, offense_id, offense['start_time'])
         if search_id == QueryStatus.ERROR.value:
             print_debug_msg(f'Failed to create search for offense ID: {offense_id}. '
-                            f'Retry number {num_of_failures}/{max_retries}.')
+                            f'Retry number {i+1}/{max_retries}.')
             print_debug_msg(traceback.format_exc())
-            num_of_failures += 1
-            if num_of_failures == max_retries:
-                print_debug_msg(f'Max retries for creating search for offense: {offense_id}. Returning empty.')
-                break
-    print_debug_msg(f'Could not create search query for {offense_id}.')
+    print_debug_msg(f'Max retries for creating search for offense: {offense_id}. Returning empty.')
     return QueryStatus.ERROR.value
 
 
