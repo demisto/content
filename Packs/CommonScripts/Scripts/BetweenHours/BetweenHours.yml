@@ -28,7 +28,7 @@ outputs:
   description: The value to check.
   type: string
 - contextPath: BetweenHours.begin_time
-  description: he start time range in the format HH:MM:SS.
+  description: The start time range in the format HH:MM:SS.
   type: string
 - contextPath: BetweenHours.end_time
   description: The end time range in the format HH:MM:SS.
