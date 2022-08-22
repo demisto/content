@@ -1,10 +1,11 @@
 import hashlib
 import secrets
 import string
+from itertools import zip_longest
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-from itertools import zip_longest
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -750,12 +751,11 @@ def handle_incoming_closing_incident(incident_data):
             'ContentsFormat': EntryFormat.JSON
         }
         incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
-        incident_data['closeNotes'] = f'{MIRROR_IN_CLOSE_REASON}\n{incident_data.get("resolve_comment")}'
+        incident_data['closeNotes'] = incident_data.get('resolve_comment')
 
         if incident_data.get('status') == 'resolved_known_issue':
-            close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
-            closing_entry['Contents']['closeNotes'] = close_notes
-            incident_data['closeNotes'] = close_notes
+            closing_entry['Contents']['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
+            incident_data['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
 
     return closing_entry
 
