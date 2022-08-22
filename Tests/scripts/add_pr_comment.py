@@ -4,10 +4,8 @@ from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comme
 from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggingManager
 
 
-JOB_ID = os.environ.get("CI_JOB_ID")
-
-print("This is the env")
-print(json.dumps(dict(os.environ), indent=4))
+# JOB_ID = os.environ.get("CI_JOB_ID")
+JOB_ID = os.environ.get("CIRCLE_WORKFLOW_ID")
 
 # COVERAGE_LINK = f'https://xsoar.docs.pan.run/-/content/-/jobs/{JOB_ID}/artifacts/artifacts/coverage_report/html/' \
 #                 f'index.html'
