@@ -1,12 +1,11 @@
 {
-    "name": "Google Key Management Service",
-    "description": "Use the Google Key Management Service API for CryptoKey management and encrypt/decrypt functionality.",
+    "name": "Microsoft DNS",
+    "description": "The Microsoft Domain Name Server (DNS) produces audit logs that identify resources from your company that are connected to the internet or your private network, and translate domain names to IP addresses.",
     "support": "xsoar",
-    "currentVersion": "1.0.11",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Network Security"
     ],
@@ -14,7 +13,6 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
         "marketplacev2"
     ]
 }
