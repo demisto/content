@@ -2,7 +2,7 @@ The Active Directory Query integration enables you to access and manage Active D
 This integration was integrated and tested with version 1.5.0 of Active Directory Query v2
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-active-directory-query-v2).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---active-directory-query-v2).
 
 Use Cases
 ---------
@@ -187,7 +187,7 @@ For more information on LDAP filters, see the [LDAP documentation](https://ldap.
 | size-limit        | The maximum number of records to return. Default is 50. | Optional | 
 | time-limit        | The maximum time to pull records (in seconds). | Optional | 
 | context-output    | Whether to output the search results to the context. Possible values are: yes, no. Default is yes. | Optional | 
-| page-size         | The page size to query. limit will be ignored. | Optional | 
+| page-size         | The page size to query. The size-limit value will be ignored. | Optional | 
 | page-cookie       | An opaque string received in a paged search, used for requesting subsequent entries. | Optional | 
 
 
@@ -592,7 +592,7 @@ Retrieves detailed information about a user account. The user can be specified b
 | limit | The maximum number of objects to return. Default is 20.                                                                                    | Optional | 
 | email | Queries by the user's email address.                                                                                                       | Optional | 
 | user-account-control-out | Whether to include verbose translation for UserAccountControl flags. Default is false. Possible values are: true, false. Default is false. | Optional | 
-| page-size | The page size to query. limit will be ignored.                                                                                             | Optional | 
+| page-size | The page size to query. The limit value will be ignored.                                                                                             | Optional | 
 | page-cookie | An opaque string received in a paged search, used for requesting subsequent entries.                                                       | Optional | 
 
 
@@ -668,7 +668,7 @@ Retrieves detailed information about a computer account. The computer can be spe
 | custom-field-data | Search computers by custom field data (relevant only if the `customFieldType` argument is provided). | Optional | 
 | custom-field-type | Search the computer by custom field type. | Optional | 
 | limit | The maximum number of records to return. | Optional |
-| page-size | The page size to query. limit will be ignored. | Optional | 
+| page-size | The page size to query. The value limit will be ignored. | Optional | 
 | page-cookie | An opaque string received in a paged search, used for requesting subsequent entries. | Optional |
 
 #### Context Output
@@ -727,7 +727,7 @@ Retrieves the list of users or computers that are members of the specified group
 | disable-nested-search | Whether to disable recursive retrieval of group memberships of a user. Possible values are: false, true. Default is false. | Optional | 
 | sAMAccountName | Queries results by the samAccountName attribute. Default is *. | Optional |
 | limit | The maximum number of records to return. | Optional | 
-| page-size | The page size to query. limit will be ignored. | Optional | 
+| page-size | The page size to query. The limit value will be ignored. | Optional | 
 | page-cookie | An opaque string received in a paged search, used for requesting subsequent entries. | Optional | 
 
 
@@ -1052,10 +1052,11 @@ There is no context output for this command.
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Active Directory Query v2 corresponding events (available from Cortex XSOAR version 6.0.0).
-To set up the mirroring:
-1. Enable *Fetching incidents* in your instance configuration.
+
+To set up the mirroring, enable *Fetching incidents* in your instance configuration.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Active Directory Query v2.
 
 ## Breaking changes from the previous version of this integration - Active Directory Query v2
