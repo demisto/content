@@ -130,7 +130,7 @@ script:
       defaultValue: "yes"
       description: Whether to output the search results to the context.
     - name: page-size
-      description: The page size to query. limit will be ignored.
+      description: The page size to query. size-limit will be ignored.
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
