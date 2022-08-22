@@ -1,8 +1,9 @@
+from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
 import urllib3
 import copy
 from operator import itemgetter
-from CommonServerPython import *  # noqa: F401
+
 from typing import Tuple, Callable
 
 # Disable insecure warnings
@@ -269,6 +270,7 @@ class CoreClient(BaseClient):
         return reply.get('reply')
 
     def unisolate_endpoint(self, endpoint_id, incident_id=None):
+        print("IN API MODULE")
         request_data = {
             'endpoint_id': endpoint_id,
         }
