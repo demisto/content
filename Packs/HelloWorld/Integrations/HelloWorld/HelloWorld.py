@@ -520,15 +520,16 @@ def convert_to_demisto_severity(severity: str) -> int:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, first_fetch_time: int) -> str:
+def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
     """
     Tests API connectivity and authentication'
-    When 'ok' is retuned it indicates the integration works like it is supposed to and connection to the service is
+    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
     successful.
     Raises exceptions if something goes wrong.
 
     Args:
         client (Client): HelloWorld client to use.
+        params (Dict): Integration parameters.
         first_fetch_time (int): The first fetch time as configured in the integration params.
 
     Returns:
@@ -552,6 +553,23 @@ def test_module(client: Client, first_fetch_time: int) -> str:
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
+
+    # Tests fetch incident:
+    if params.get('isFetch'):
+        alert_status = params.get('alert_status', None)
+        alert_type = params.get('alert_type', None)
+        min_severity = params.get('min_severity', None)
+
+        fetch_incidents(
+            client=client,
+            max_results=1,
+            last_run=demisto.getLastRun(),
+            first_fetch_time=first_fetch_time,
+            alert_status=alert_status,
+            min_severity=min_severity,
+            alert_type=alert_type
+        )
+
     return 'ok'
 
 
@@ -751,6 +769,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     command_results: List[CommandResults] = []
 
     for ip in ips:
+        if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity
+            raise ValueError(f'IP "{ip}" is not valid')
         ip_data = client.get_ip_reputation(ip)
         ip_data['ip'] = ip
 
@@ -1334,7 +1354,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, first_fetch_timestamp)
+            result = test_module(client, params, first_fetch_timestamp)
             return_results(result)
 
         elif command == 'fetch-incidents':
