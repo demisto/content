@@ -8,8 +8,9 @@ from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
 from exceptions import (BlankPackNameException, DeprecatedPackException,
                         NonDictException, NonexistentPackException,
+                        NonXsoarSupportedPackException,
                         NoTestsConfiguredException, NotUnderPackException,
-                        SkippedPackException, UnsupportedPackException)
+                        SkippedPackException)
 from logger import logger
 from packaging import version
 from packaging._structures import InfinityType, NegativeInfinityType
@@ -301,7 +302,7 @@ class PackManager:
         if not (support_level := self[pack].get('support')):
             raise ValueError(f'pack {pack} has no support level (`support`) field or value')
         if support_level.lower() != 'xsoar':
-            raise UnsupportedPackException(pack)
+            raise NonXsoarSupportedPackException(pack)
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
