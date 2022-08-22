@@ -106,6 +106,7 @@ class Pack(object):
         self._tags = None  # initialized in enhance_pack_attributes function
         self._categories = None  # initialized in enhance_pack_attributes function
         self._content_items = None  # initialized in collect_content_items function
+        self._external_content_displays_map = None  # initialized in collect_content_items function
         self._search_rank = None  # initialized in enhance_pack_attributes function
         self._related_integration_images = None  # initialized in enhance_pack_attributes function
         self._use_cases = None  # initialized in enhance_pack_attributes function
