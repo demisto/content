@@ -2,35 +2,35 @@ from pathlib import Path
 from typing import Optional
 
 
-class InvalidPackException(Exception):
+class UnsupportedPackException(Exception):
     def __init__(self, pack_name: str, reason: str):
-        self.message = f'invalid pack {pack_name}: {reason}'
+        self.message = f'Unsupported pack {pack_name}: {reason}'
 
     def __str__(self):
         return self.message
 
 
-class BlankPackNameException(InvalidPackException):
+class BlankPackNameException(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'Blank pack name')
 
 
-class NonexistentPackException(InvalidPackException):
+class NonexistentPackException(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'Nonexistent pack name')
 
 
-class UnsupportedPackException(InvalidPackException):
+class NonXsoarSupportedPack(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'pack support level is not XSOAR')
 
 
-class DeprecatedPackException(InvalidPackException):
+class DeprecatedPackException(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'Pack is deprecated')
 
 
-class SkippedPackException(InvalidPackException):
+class SkippedPackException(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'Pack is skipped')
 
