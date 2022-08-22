@@ -886,7 +886,7 @@ def panorama_push_to_template_stack(args: dict):
 
 
 @polling_function(
-    name=demisto.command(),
+    name='pan-os-push-to-device-group',
     interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
     timeout=arg_to_number(demisto.args().get('timeout', 120))
 )
@@ -903,7 +903,7 @@ def panorama_push_to_device_group_command(args: dict):
     if push_job_id := args.get('push_job_id'):
         result = panorama_push_status(job_id=push_job_id)
 
-        push_status = panorama_push_status(job_id=push_job_id).get('response', {}).get('result', {})
+        push_status = result.get('response', {}).get('result', {})
 
         push_output = parse_push_status_response(result)
         push_output['DeviceGroup'] = DEVICE_GROUP
@@ -921,6 +921,7 @@ def panorama_push_to_device_group_command(args: dict):
     else:
         result = panorama_push_to_device_group(args)
         job_id = result.get('response', {}).get('result', {}).get('job', '')
+        demisto.info(f'{job_id=}')
         if job_id:
             context_output = {
                 'DeviceGroup': DEVICE_GROUP,
@@ -956,6 +957,7 @@ def panorama_push_to_device_group_command(args: dict):
                 readable_output=f'Waiting for Job-ID {job_id} to finish push changes to device-group {DEVICE_GROUP}...'
             )
         )
+
     # if 'result' in result['response']:
     #     # commit has been given a jobid
     #     push_output = {

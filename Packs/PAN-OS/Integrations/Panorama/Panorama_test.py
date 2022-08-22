@@ -1227,7 +1227,7 @@ class TestPanoramaPushToDeviceGroupCommand:
         mocked_responses += [  # add a mocked response indicating that the job is still in progress
             MockedResponse(
                 text='<response status="success"><result><job><tenq>2022/07/16 07:50:04</tenq><tdeq>07:50:04<'
-                     '/tdeq><id>123</id><user>app</user><type>Commit</type><status>ACT</status><queued>NO</queued>'
+                     '/tdeq><id>123</id><user>app</user><type>CommitAll</type><status>ACT</status><queued>NO</queued>'
                      '<stoppable>no</stoppable><result>PEND</result><tfin>Still Active</tfin><description></'
                      'description><positionInQ>0</positionInQ><progress>69</progress><warnings></warnings>'
                      '<details></details></job></result></response>',
@@ -1259,19 +1259,22 @@ class TestPanoramaPushToDeviceGroupCommand:
     def test_panorama_push_to_devices_command_with_polling(self, mocker, api_response_queue):
         """
         Given:
-            - pan-os-commit command arguments
-            - expected structure of the URL to commit pan-os configuration
+            - pan-os-push-to-device-group command arguments
             - a queue for api responses of the following:
-                1) first value in the queue is the panorama commit api response
+                1) first value in the queue is the panorama push to the device group api response
                 2) panorama job status api response which indicates job isn't done yet (different number each time)
                 3) last value in the queue is the panorama job status that indicates it has finished and succeeded
 
         When:
-            - running pan-os-commit with polling argument.
+            - running pan-os-push-to-device-group with polling argument = True
 
         Then:
-            - make sure that the panorama_commit_command function querying for the commit job ID status until its done.
-            - make sure that eventually after polling the panorama_commit_command, that it returns the expected output.
+            - make sure that the panorama_push_to_device_group_command function querying for
+              the push job ID status until its done.
+            - make sure that eventually after polling the panorama_push_to_device_group_command,
+              that it returns the expected output.
+            - make sure readable output is printed out only once.
+            - make sure context output is returned only when polling is finished.
         """
         import requests
         import Panorama
@@ -1305,7 +1308,11 @@ class TestPanoramaPushToDeviceGroupCommand:
             command_result = panorama_push_to_device_group_command(polling_args)
 
         # last response of the command should be job status and the commit description
-        assert command_result.outputs == {'JobID': '123', 'Description': description, 'Status': 'Success'}
+        assert command_result.outputs.get('JobID') == '123'
+        assert command_result.outputs.get('Status') == 'Completed'
+        assert command_result.outputs.get('Details')
+        assert command_result.outputs.get('Warnings')
+        assert command_result.outputs.get('Description') == 'a simple push'
 
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',

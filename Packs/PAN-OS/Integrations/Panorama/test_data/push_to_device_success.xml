@@ -19,7 +19,7 @@
 			<warnings></warnings>
 			<devices>
 				<entry>
-					<serial-no>007051000050926</serial-no>
+					<serial-no>1234</serial-no>
 					<devicename>PA-VM</devicename>
 					<multi-vsys>no</multi-vsys>
 					<vsys></vsys>
@@ -44,8 +44,8 @@
 					</details>
 				</entry>
 				<entry>
-					<serial-no>007051000086000</serial-no>
-					<devicename>PA-VM_FW-02_8.1.0</devicename>
+					<serial-no>1234</serial-no>
+					<devicename>test</devicename>
 					<multi-vsys>no</multi-vsys>
 					<vsys></vsys>
 					<status>commit succeeded with warnings</status>
