@@ -55,10 +55,6 @@
     "evidence": {
       "type": "string",
       "is_array": true
-    },
-    "for_test_only": {
-      "type": "string",
-      "is_array": true
     }
   }
 }

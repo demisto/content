@@ -3071,7 +3071,7 @@ class TestXSIAMDisplays:
          """ dummy pack fixture
          """
          # dummy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
-         d_path = '/Users/ilappe/dev/demisto/content/Packs/Microsoft365Defender'
+         d_path = '/Users/ilappe/dev/demisto/content/Packs/MyXSIAMPack_content'
          sample_pack = Pack(pack_name="Jira", pack_path=d_path)
          # sample_pack.description = 'Sample description'
          # sample_pack.current_version = '1.0.0'

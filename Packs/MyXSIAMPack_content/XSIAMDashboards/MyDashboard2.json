@@ -1,0 +1,247 @@
+{
+  "dashboards_data": [
+    {
+      "name": "New Import test 2",
+      "description": null,
+      "status": "ENABLED",
+      "sharing": "PUBLIC",
+      "layout": [
+        {
+          "id": "row-3211",
+          "data": [
+            {
+              "key": "xql_1624365753840",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.3333333333,
+                "height": 400,
+                "phrase": "dataset = XqlRDPWithUnusualProcessTest_json",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": [
+                  ]
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {
+                  },
+                  "rowHeight": "{\"rowHeight\":40,\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            },
+            {
+              "key": "xql_1646052781404",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.3333333333,
+                "height": 400,
+                "phrase": "cold_dataset = endpoints",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": [
+                  ]
+                }
+              }
+            },
+            {
+              "key": "xql_1618303947361",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.3333333333,
+                "height": 400,
+                "phrase": "dataset = xdr_data\n",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": [
+
+                  ]
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {
+
+                  },
+                  "rowHeight": "{\"rowHeight\":100,\"gridRowsHeight\":\"high-row\"}",
+                  "columnWidth": "\"stretch\""
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-9587",
+          "data": [
+            {
+              "key": "xql_1625391762082",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 350.5,
+                "phrase": "dataset = XqlRDPWithUnusualProcessTest_json",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": [
+
+                  ]
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {
+
+                  },
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_dashboard_id": 1,
+      "global_id": "ce27311ce69c41b1b4a84c7888b34853"
+    }
+  ],
+  "widgets_data": [
+    {
+      "widget_key": "xql_1618303947361",
+      "title": "New XQL test",
+      "creation_time": 1618303947369,
+      "description": "",
+      "data": {
+        "phrase": "dataset = xdr_data\n",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": [
+
+          ]
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {
+
+          },
+          "rowHeight": "{\"rowHeight\":100,\"gridRowsHeight\":\"high-row\"}",
+          "columnWidth": "\"stretch\""
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1624365753840",
+      "title": "Who cares number 2",
+      "creation_time": 1624365753840,
+      "description": null,
+      "data": {
+        "phrase": "dataset = XqlRDPWithUnusualProcessTest_json",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": [
+
+          ]
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {
+
+          },
+          "rowHeight": "{\"rowHeight\":40,\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xqlrdpwithunusualprocesstest_json"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1625391762082",
+      "title": "Ole Bole",
+      "creation_time": 1625391762082,
+      "description": null,
+      "data": {
+        "phrase": "dataset = XqlRDPWithUnusualProcessTest_json",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": [
+
+          ]
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {
+
+          },
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xqlrdpwithunusualprocesstest_json"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1646052781404",
+      "title": "Some fake",
+      "creation_time": 1646052781404,
+      "description": null,
+      "data": {
+        "phrase": "cold_dataset = endpoints",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": [
+
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "endpoints"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    }
+  ]
+}
