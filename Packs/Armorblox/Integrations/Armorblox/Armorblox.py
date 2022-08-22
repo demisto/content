@@ -166,6 +166,7 @@ def fetch_incidents_command(client):
 
 def main():
     ''' EXECUTION '''
+    demisto.info(f'Command being called is {demisto.command()}')
     try:
 
         client = Client(
