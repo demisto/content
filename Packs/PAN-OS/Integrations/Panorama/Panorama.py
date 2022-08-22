@@ -906,7 +906,8 @@ def panorama_push_to_device_group_command(args: dict):
 
         push_output = parse_push_status_response(result)
         push_output['DeviceGroup'] = DEVICE_GROUP
-        push_output['Description'] = description
+        if description:
+            push_output['Description'] = description
 
         return PollResult(
             response=CommandResults(  # this is what the response will be in case job has finished
