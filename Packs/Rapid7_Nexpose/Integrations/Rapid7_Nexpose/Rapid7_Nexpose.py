@@ -1,156 +1,919 @@
+import urllib3
+
 import demistomock as demisto
+
+from enum import Enum
+from time import strptime, struct_time
+
 from CommonServerPython import *
 from CommonServerUserPython import *
-import time
-import re
-import requests
-import json
-
-RANGE_OPERATORS = ['in-range', 'is-between', 'not-in-range']
-YEAR_IN_MINUTES = 525600
-MONTH_IN_MINUTES = 43800
-WEEK_IN_MINUTES = 10080
-DAY_IN_MINUTES = 1440
-HOUR_IN_MINUTES = 60
-
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-SESSION = ''
-USERNAME = demisto.params()['credentials']['identifier']
-PASSWORD = demisto.params()['credentials']['password']
-VERIFY_SSL = not demisto.params().get('unsecure', False)
-TOKEN = demisto.params().get('token')
 
 
-def get_server_url():
-    url = demisto.params()['server']
-    url = re.sub('/[\/]+$/', '', url)
-    url = re.sub('\/$', '', url)
-    return url
+API_DEFAULT_PAGE_SIZE = 10  # Default page size that's set on the API. Used for calculations.
+DEFAULT_PAGE_SIZE = 50  # Default page size to use
+MATCH_DEFAULT_VALUE = "any"  # Default "match" value to use when using search filters. Can be either "all" or "any".
+REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a report after starting its generation
+
+urllib3.disable_warnings()  # Disable insecure warnings
 
 
-BASE_URL = get_server_url()
-SERVER_URL = BASE_URL + '/api/3'
+class ReportFileFormat(Enum):
+    """An Enum of possible file formats to use for reports."""
+    PDF = 1
+    RTF = 2
+    XML = 3
+    HTML = 4
+    Text = 5
 
 
-def get_login_headers():
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json'
-    }
-
-    if TOKEN is not None:
-        headers['Token'] = TOKEN
-
-    return headers
+class ScanStatus(Enum):
+    """An Enum of possible scan status values."""
+    PAUSE = 1
+    RESUME = 2
+    STOP = 3
 
 
-def login():
-    url = BASE_URL + '/data/user/login'
-    headers = get_login_headers()
-    body = {
-        'nexposeccusername': USERNAME,
-        'nexposeccpassword': PASSWORD
-    }
-    res = requests.post(url, headers=headers, data=body, verify=VERIFY_SSL)
-    if res.status_code < 200 or res.status_code >= 300:
-        return ''
-    body = res.json()
-    if 'sessionID' not in body:
-        return ''
-
-    return body['sessionID']
+class SiteImportance(Enum):
+    """An Enum of possible site importance values."""
+    VERY_LOW = 1
+    LOW = 2
+    NORMAL = 3
+    HIGH = 4
+    VERY_HIGH = 5
 
 
-def get_headers():
-    headers = {
-        'Content-Type': 'application/json'
-    }
-
-    if TOKEN is not None:
-        headers['Token'] = TOKEN
-    return headers
+class InvalidSiteNameException(DemistoException):
+    pass
 
 
-def get_site_headers():
-    headers = get_headers()
+class Client(BaseClient):
+    """Client class for interactions with Rapid7 Nexpose API."""
 
-    headers['Cookie'] = 'nexposeCCSessionID=' + SESSION
-    headers['nexposeCCSessionID'] = SESSION
+    def __init__(self, url: str, username: str, password: str, token: Union[str, None] = None, verify: bool = True):
+        """
+        Initialize the client.
 
-    return headers
+        Args:
+            url (str): Nexpose server base URL.
+            username (str): Username to use for authentication.
+            password (str): Password to use for authentication.
+            token (str | None, optional): 2FA token to use for authentication.
+            verify (bool, optional): Whether to verify SSL certificates. Defaults to True.
+        """
+
+        self._headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        }
+
+        # Add 2FA token to headers if provided
+        if token:
+            self._headers.update({"Token": token})
+
+        super().__init__(
+            base_url=url.rstrip("/") + "/api/3",
+            auth=(username, password),
+            headers=self._headers,
+            ok_codes=(200, 201),
+            verify=verify,
+        )
+
+    def _paged_http_request(self, page_size: Union[int, None], page: Union[int, None] = None,
+                            sort: Union[str, None] = None, limit: Union[int, None] = None, **kwargs) -> list:
+        """
+        Run _http_request with pagination handling.
+
+        Args:
+            page_size (int | None, optional): Number of scans to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
+                Defaults to None.
+            limit (int | None, optional): Limit the number of items to return. None means to not use a limit.
+                Defaults to None.
+            **kwargs: Parameters to pass when calling `_http_request`.
+
+        Returns:
+            list: A list containing all paginated items.
+        """
+        if DEFAULT_PAGE_SIZE and not page_size:
+            page_size = DEFAULT_PAGE_SIZE
+
+        kwargs["params"] = kwargs.get("params", {})  # If `params` is None, set it to an empty dict
+
+        if page:
+            kwargs["params"]["page"] = str(page)
+
+        # If sort is not None, split it into a list
+        if sort:
+            sort = sort.split(sep=";")
+
+        kwargs["params"].update(find_valid_params(
+            page_size=page_size,
+            sort=sort,
+            limit=limit,
+        ))
+
+        response: dict = self._http_request(**kwargs)
+        result = response.get("resources", [])
+
+        if not result:
+            return []
+
+        if not page:
+            # If page_size is not set, the size that will be used is API's default.
+            _page_size = page_size if page_size else API_DEFAULT_PAGE_SIZE
+
+            total_pages = response["page"].get("totalPages", 1)
+            page_count = 1
+
+            while page_count < total_pages and (limit is None or len(result) < limit):
+                page_count += 1
+                kwargs["params"]["page"] = str(page_count)
+                response = self._http_request(**kwargs)
+                result.extend(response.get("resources"))
+
+        if limit and limit < len(result):
+            return result[:limit]
+
+        return result
+
+    def create_report(self, report_id: str) -> str:
+        """
+        | Generates a configured report.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/generateReport
+
+        Args:
+            report_id (str): ID of the configured report to generate.
+
+        Returns:
+            str: ID of the generated report instance.
+        """
+        return str(self._http_request(
+            url_suffix=f"/reports/{report_id}/generate",
+            method="POST",
+            resp_type="json",
+        ).get("id"))
+
+    def create_report_config(self, scope: dict[str, Any], template_id: str,
+                             report_name: str, report_format: str) -> str:
+        """
+        | Create a new report configuration.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createReport
+
+        Args:
+            scope (dict[str, Any]): Scope of the report, see Nexpose's documentation for more details.
+            template_id (str): ID of report template to use.
+            report_name (str): Name for the report that will be generated.
+            report_format (str): Format of the report that will be generated.
+
+        Returns:
+            str: ID of the created report configuration.
+        """
+        post_data = {
+            "scope": scope,
+            "template": template_id,
+            "name": report_name,
+            "format": report_format
+        }
+
+        return str(self._http_request(
+            url_suffix=f"/reports",
+            method="POST",
+            json_data=post_data,
+            resp_type="json",
+        ).get("id"))
+
+    def create_site(self, name: str, description: Union[str, None] = None, assets: Union[list[str], None] = None,
+                    site_importance: Union[str, None] = None, template_id: Union[str, None] = None) -> dict:
+        """
+        | Create a new site.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSite
+
+        Args:
+            name (str): Name of the site. Must be unique.
+            description (str | None, optional): Description of the site. Defaults to None.
+            assets (list[str] | None, optional): List of asset IDs to be included in site scans. Defaults to None.
+            site_importance (str | None, optional): Importance of the site. Can be either:
+                "very_low", "low", "normal", "high" or "very_high".
+                Defaults to None (results in using API's default - "normal").
+            template_id (str | None, optional): The identifier of a scan template.
+                Defaults to None (results in using default scan template).
+
+        Returns:
+            dict: API response with information about the newly created site.
+        """
+        post_data = find_valid_params(
+            name=name,
+            description=description,
+            importance=site_importance,
+            template_id=template_id,
+            scanTemplateId=template_id,
+        )
+
+        if assets:
+            post_data["scan"] = {
+                "assets": {
+                    "includedTargets": {
+                        "addresses": assets
+                    }}}
+
+        return self._http_request(
+            url_suffix=f"/sites",
+            method="POST",
+            json_data=post_data,
+            resp_type="json",
+        )
+
+    def delete_site(self, site_id: str) -> dict:
+        """
+        | Delete a site.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/deleteSite
+
+        Args:
+            site_id (str): ID of the site to delete.
+
+        Returns:
+            dict: API response with information about the deleted site.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}",
+            method="DELETE",
+            resp_type="json",
+        )
+
+    def download_report(self, report_id: str, instance_id: str) -> bytes:
+        """
+        | Download a report.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/downloadReport
+
+        Args:
+            report_id (str): ID of the report to download.
+            instance_id (str): ID of the report instance.
+
+        Returns:
+            bytes: Report file in bytes.
+        """
+        return self._http_request(
+            url_suffix=f"reports/{report_id}/history/{instance_id}/output",
+            method="GET",
+            resp_type="content",
+        )
+
+    def get_asset_vulnerability(self, asset_id: str, vulnerability_id: str) -> dict:
+        """
+        | Retrieve information about vulnerability findings on an asset.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getAssetVulnerability
+
+        Args:
+            asset_id (str): ID of the asset to retrieve information about.
+            vulnerability_id (str): ID of the vulnerability to look for.
+
+        Returns:
+            dict: API response with information about vulnerability findings on the asset.
+        """
+        return self._http_request(
+            url_suffix=f"assets/{asset_id}/vulnerabilities/{vulnerability_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_asset_vulnerabilities(self, asset_id: str, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
+                                  sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+        """
+        | Retrieves a list of all vulnerability findings on an asset.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getAssetVulnerabilities
+
+        Args:
+            asset_id (str): ID of the site to retrieve linked assets from.
+            page_size (int | None, optional): Number of scans to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
+                Defaults to None.
+            limit (int | None, optional): Limit the number of assets to return. None means to not use a limit.
+                Defaults to None.
+
+        Returns:
+            list[dict]: A list with all vulnerability findings on an asset.
+        """
+        return self._paged_http_request(
+            url_suffix=f"/assets/{asset_id}/vulnerabilities",
+            method="GET",
+            page_size=page_size,
+            sort=sort,
+            limit=limit,
+            resp_type="json",
+        )
+
+    def get_asset(self, asset_id: str) -> dict:
+        """
+        | Retrieve information about a specific asset.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getAsset
+
+        Args:
+            asset_id (str): ID of the asset to retrieve information about.
+
+        Returns:
+            dict: API response with information about a specific asset.
+        """
+        return self._http_request(
+            url_suffix=f"/assets/{asset_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_assets(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
+                   sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+        """
+        | Retrieve a list of all assets.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getAssets
+
+        Args:
+            page_size (int | None, optional): Number of scans to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
+                Defaults to None.
+            limit (int | None, optional): Limit the number of assets to return. None means to not use a limit.
+                Defaults to None.
+
+        Returns:
+            list[dict]: A list of all assets (up to a limit, if set).
+        """
+        return self._paged_http_request(
+            url_suffix="/assets",
+            method="GET",
+            page_size=page_size,
+            sort=sort,
+            limit=limit,
+            resp_type="json",
+        )
+
+    def get_assigned_shared_credentials(self, site_id: str) -> dict:
+        """
+        | Retrieve information about all credentials that are shared with a specific site.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteSharedCredentials
+
+        Args:
+            site_id (str): ID of the site to retrieve credentials that are shared with.
+
+        Returns:
+            dict: API response with information shared credentials that are shared with a specific site.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/shared_credentials",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_report_history(self, report_id: str, instance_id: str) -> dict:
+        """
+        | Retrieve information about a generated report.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getReportInstance
+
+        Args:
+            report_id (str): ID of the report to retrieve information about.
+            instance_id (str): ID of the report instance to retrieve information about.
+
+        Returns:
+            dict: API response with information about the generated report.
+        """
+        return self._http_request(
+            url_suffix=f"/reports/{report_id}/history/{instance_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_report_templates(self) -> dict:
+        """
+        | Retrieve a list of all available report templates.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getReportTemplates
+
+        Returns:
+            dict: API response with information about all available report templates.
+        """
+        return self._http_request(
+            url_suffix="/report_templates",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_scan(self, scan_id: str) -> dict:
+        """
+        | Retrieve information about a specific scan.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getScan
+
+        Args:
+            scan_id (str): ID of the scan to retrieve.
+
+        Returns:
+            dict: API response with information about a specific scan.
+        """
+        return self._http_request(
+            url_suffix=f"/scan/{scan_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_scans(self, active: Union[bool, None] = False, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
+                  sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+        """
+        | Retrieve a list of all scans.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getScans
+
+        Args:
+            active (bool | None, optional): Whether to return active scans or not. Defaults to False.
+            page_size (int | None, optional): Number of scans to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
+                Defaults to None.
+            limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
+                Defaults to None.
+
+        Returns:
+            list[dict]: A list of all scans (up to a limit, if set).
+        """
+        params = {"active": active}
+
+        return self._paged_http_request(
+            url_suffix="/scans",
+            method="GET",
+            params=params,
+            page_size=page_size,
+            sort=sort,
+            limit=limit,
+            resp_type="json",
+        )
+
+    def get_scan_schedule(self, site_id: str, schedule_id: str) -> dict:
+        """
+        | Retrieve information about a specific scheduled scan from a specific site.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteScanSchedule
+
+        Args:
+            site_id (str): ID of the site to retrieve scheduled scan from.
+            schedule_id (str): ID of the scheduled scan to retrieve.
+
+        Returns:
+            dict: API response with information about a specific scheduled scans from the specific site.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/scan_schedules/{schedule_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_scan_schedules(self, site_id: str) -> dict:
+        """
+        | Retrieve information about all scheduled scans from a specific site.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteScanSchedules
+
+        Args:
+            site_id (str): ID of the site to retrieve scheduled scans from.
+
+        Returns:
+            dict: API response with information about all scheduled scans from the specific site.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/scan_schedules",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_shared_credential(self, credential_id: str) -> dict:
+        """
+        | Retrieve information about a specific shared credential.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSharedCredential
+
+        Args:
+            credential_id (str): ID of the shared credential to retrieve information about.
+
+        Returns:
+            dict: API response with information about a specific shared credential.
+        """
+        return self._http_request(
+            url_suffix=f"/shared_credentials/{credential_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_shared_credentials(self) -> dict:
+        """
+        | Retrieve information about all shared credentials.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSharedCredentials
+
+        Returns:
+            dict: API response with all shared credentials and their information.
+        """
+        return self._http_request(
+            url_suffix=f"/shared_credentials",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_site_assets(self, site_id: str, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
+                        sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+        """
+        | Retrieve a list of all assets that are linked with a specific site.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteAssets
+
+        Args:
+            site_id (str): ID of the site to retrieve linked assets from.
+            page_size (int | None, optional): Number of assets to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
+                Defaults to None.
+            limit (int | None, optional): Limit the number of sites to return. None means to not use a limit.
+                Defaults to None.
+
+        Returns:
+            list[dict]: A list with all assets that are linked with a specific site (up to a limit, if set).
+        """
+        return self._paged_http_request(
+            url_suffix=f"/sites/{site_id}/assets",
+            method="GET",
+            page_size=page_size,
+            sort=sort,
+            limit=limit,
+            resp_type="json",
+        )
+
+    def get_site_scans(self, site_id: str, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
+                       sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+        """
+        | Retrieve a list of scans from a specific site.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteScans
+
+        Args:
+            site_id (str): ID of the site to retrieve scans from.
+            page_size (int | None, optional): Number of scans to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
+                Defaults to None.
+            limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
+                Defaults to None.
+
+        Returns:
+            list[dict]: API response with information about all scans from the specific site.
+        """
+        return self._paged_http_request(
+            url_suffix=f"/sites/{site_id}/scans",
+            method="GET",
+            page_size=page_size,
+            sort=sort,
+            limit=limit,
+            resp_type="json",
+        )
+
+    def get_sites(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
+                  sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+        """
+        | Retrieve a list of sites.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSites
+
+        Args:
+            page_size (int | None, optional): Number of scans to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
+                Defaults to None.
+            limit (int | None, optional): Limit the number of sites to return. None means to not use a limit.
+                Defaults to None.
+
+        Returns:
+            list[dict]: A list of sites (up to a limit, if set).
+        """
+        return self._paged_http_request(
+            url_suffix="/sites",
+            method="GET",
+            page_size=page_size,
+            sort=sort,
+            limit=limit,
+            resp_type="json",
+        )
+
+    def get_vulnerabilities(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
+                            sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+        """
+        | Retrieve information about all existing vulnerabilities.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getVulnerabilities
+
+        Args:
+            page_size (int | None, optional): Number of scans to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
+                Defaults to None.
+            limit (int | None, optional): Limit the number of sites to return. None means to not use a limit.
+                Defaults to None.
+
+        Returns:
+            list[dict]: A list of sites (up to a limit, if set).
+        """
+        return self._paged_http_request(
+            url_suffix="/vulnerabilities",
+            method="GET",
+            page_size=page_size,
+            sort=sort,
+            limit=limit,
+            resp_type="json",
+        )
+
+    def get_vulnerability(self, vulnerability_id: str) -> dict:
+        """
+        | Retrieve information about a specific vulnerability.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getVulnerability
+
+        Args:
+            vulnerability_id (str): ID of the vulnerability to retrieve information about.
+
+        Returns:
+            dict: API response with information about a specific vulnerability.
+        """
+        return self._http_request(
+            url_suffix=f"/vulnerabilities/{vulnerability_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_vulnerability_exception(self, vulnerability_exception_id: str) -> dict:
+        """
+        | Retrieve information about an exception made on a vulnerability.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getVulnerabilityException
+
+        Args:
+            vulnerability_exception_id (str): ID of the vulnerability exception to retrieve information about.
+
+        Returns:
+            dict: API response with information about a specific exception made on a vulnerability.
+        """
+        return self._http_request(
+            url_suffix=f"/vulnerabilities/{vulnerability_exception_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_asset_vulnerability_solution(self, asset_id: str, vulnerability_id: str) -> dict:
+        """
+        | Retrieve information about solutions that can be used to remediate a vulnerability on an asset.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getAssetVulnerabilitySolutions
+
+        Args:
+            asset_id (str): ID of the asset to retrieve solutions for.
+            vulnerability_id (str): ID of the vulnerability to retrieve solutions for.
+
+        Returns:
+            dict: API response with information about solutions that can be used to remediate
+                a vulnerability on an asset.
+        """
+        return self._http_request(
+            url_suffix=f"/assets/{asset_id}/vulnerabilities/{vulnerability_id}/solution",
+            method="GET",
+            resp_type="json",
+        )
+
+    def search_assets(self, filters: Union[list[dict], None], match: str,
+                      page_size: Union[int, None] = DEFAULT_PAGE_SIZE, sort: Union[str, None] = None,
+                      limit: Union[int, None] = None) -> list[dict]:
+        """
+        | Retrieve a list of all assets with access permissions that match the provided search filters.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/findAssets
+
+        Args:
+            filters (list[dict] | None, optional): List of filters to use for searching assets. Defaults to None.
+            match (str): Determine if the filters should match all or any of the filters.
+                Can be either "all" or "any". Defaults to MATCH_DEFAULT_VALUE.
+            page_size (int | None, optional): Number of scans to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
+                Defaults to None.
+            limit (int | None, optional): Limit the number of sites to return. None means to not use a limit.
+                Defaults to None.
+
+        Returns:
+            list[dict]: A list of assets (up to a limit, if set) matching the filters.
+        """
+        post_data = find_valid_params(
+            filters=filters,
+            match=match,
+        )
+
+        return self._paged_http_request(
+            url_suffix="/assets/search",
+            method="POST",
+            json_data=post_data,
+            page_size=page_size,
+            sort=sort,
+            limit=limit,
+            resp_type="json",
+        )
+
+    def start_site_scan(self, site_id: str, scan_name: str, hosts: list[str]) -> dict:
+        """
+        | Start a scan for a specific site.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/startScan
+
+        Args:
+            site_id (str): ID of the site to start a scan on.
+            scan_name (str): Name to set for the new scan.
+            hosts (list[str]): Hosts to scan.
+
+        Returns:
+            dict: API response with information about the started scan.
+        """
+        post_data = {
+            "name": scan_name,
+            "hosts": hosts
+        }
+
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/scans",
+            method="POST",
+            json_data=post_data,
+            resp_type="json",
+        )
+
+    def update_scan_status(self, scan_id: str, status: str) -> dict:
+        """
+        | Update status for a specific scan.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setScanStatus
+
+        Args:
+            scan_id (str): ID of the scan to update.
+            status (str): Status to set the scan to. Can be either "pause", "stop", or "resume".
+        """
+        return self._http_request(
+            url_suffix=f"/scans/{scan_id}/{status}",
+            method="POST",
+            resp_type="json",
+        )
+
+    def find_site_id(self, name: str) -> Union[str, None]:
+        """
+        Find a site ID by its name.
+
+        Returns:
+            str | None: Site ID corresponding to the passed name. None if no match was found.
+        """
+        for site in self.get_sites():
+            if site["name"] == name:
+                return str(site["id"])
+
+        return None
 
 
-def get_site(asset_id):
-    url = BASE_URL + '/data/assets/' + str(asset_id) + '/scans'
-    headers = get_site_headers()
-    res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
-    if res.status_code < 200 or res.status_code >= 300:
-        return ''
-    response = res.json()
-    if response is None or response['records'] is None or len(response['records']) == 0:
-        return ''
+class Site:
+    """A class representing a site, which can be identified by ID or name."""
 
-    return {
-        'id': response['records'][0]['siteID'],
-        'name': response['records'][0]['siteName'],
-        'ip': response['records'][0]['ipAddress']
-    }
+    def __init__(self, site_id: Union[str, None] = None,
+                 site_name: Union[str, None] = None, client: Union[Client, None] = None) -> None:
+        """
+        Create a new Site object.
+        Required parameters are either `site_id`, or both `site_name` and `client`.
+
+        Args:
+            site_id (str | None, optional): ID of the site.
+            site_name (str | None, optional): Name of the site to create an object for.
+            client (Client | None): Client object to use for API requests.
+                Required to fetch ID if only name is provided.
+
+        Raises:
+            ValueError: If neither of `site_id` and `site_name` was provided,
+            or `site_name` was provided without a `site_id`, and `client` was not provided.
+            InvalidSiteNameException: If no ID was provided and a site with a matching name could not be found.
+        """
+        if site_id:
+            self.id = site_id
+
+        elif site_name:
+            if not client:
+                raise ValueError("Can't fetch site ID as no Client was provided.")
+
+            self.id = client.find_site_id(site_name)
+
+            if not self.id:
+                raise InvalidSiteNameException(f"No site with name `{site_name}` was found.")
+
+        else:
+            raise ValueError("Site must have either an ID or a name.")
+
+        self.name = site_name
+        self._client = client
 
 
-def send_request(path, method='get', body=None, params=None, headers=None, is_file=False):
-    body = body if body is not None else {}
-    params = params if params is not None else {}
+def convert_asset_search_filters(search_filters: Union[str, list[str]]) -> list[dict]:
+    """
+    | Convert string-based asset search filters to dict-based asset search filters that can be used in Nexpose's API.
+    |
+    | Format specification can be found under "Search Criteria" on:
+        https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses
 
-    url = '{}/{}'.format(SERVER_URL, path)
+    Args:
+        search_filters (str | list[str]): List of string-based search filters.
 
-    headers = headers if headers is not None else get_headers()
-    res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params,
-                           auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
-    if res.status_code < 200 or res.status_code >= 300:
-        raise Exception('Got status code ' + str(
-            res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
-    return res.json() if is_file is False else res.content
+    Returns:
+        list(dict): List of the same search filters in a dict-based format.
+    """
+    if isinstance(search_filters, str):
+        search_filters = [search_filters]
+
+    range_operators = ["in-range", "is-between", "not-in-range"]
+    normalized_filters = []
+
+    for search_filter in search_filters:
+        # Example: risk-score is-between 5,10
+        #   _field = risk-score
+        #   _operator = is-greater-than
+        #   _value = 5,10
+        _field, _operator, _value = search_filter.split(" ")
+        values = argToList(_value)
+
+        # Convert numbers to floats if values are numbers
+        # TODO: Check if float conversion has any meaning, remove if not
+        for i, value in enumerate(values):
+            current_value = None
+
+            try:
+                values[i] = float(value)
+
+            except Exception:
+                pass
+
+        filter_dict = {
+            "field": _field,
+            "operator": _operator,
+        }
+
+        if len(values) > 1:
+            if _operator in range_operators:
+                filter_dict["lower"] = values[0]
+                filter_dict["upper"] = values[1]
+            else:
+                filter_dict["values"] = values
+        else:
+            filter_dict["value"] = values[0]
+
+        normalized_filters.append(filter_dict)
+
+    return normalized_filters
 
 
-def iso8601_duration_as_minutes(d):
-    if d is None:
-        return 0
-    if d[0] != 'P':
-        raise ValueError('Not an ISO 8601 Duration string')
-    minutes = 0
-    # split by the 'T'
-    for i, item in enumerate(d.split('T')):
-        for number, period in re.findall('(?P<number>\d+)(?P<period>S|M|H|D|W|Y)', item):
-            # print '%s -> %s %s' % (d, number, unit )
-            number = float(number)
-            this = 0
-            if period == 'Y':
-                this = number * YEAR_IN_MINUTES  # 365.25
-            elif period == 'W':
-                this = number * WEEK_IN_MINUTES
-            elif period == 'D':
-                this = number * DAY_IN_MINUTES
-            elif period == 'H':
-                this = number * HOUR_IN_MINUTES
-            elif period == 'M':
-                # ambiguity betweeen months and minutes
-                if i == 0:
-                    this = number * MONTH_IN_MINUTES  # assume 30 days
-                else:
-                    this = number
-            elif period == 'S':
-                this = number / 60
-            minutes = minutes + this
-    return minutes
+def convert_datetime_str(time_str: str) -> struct_time:
+    """
+    Convert a time string formatted in one of the time formats used by Nexpose's API for scans to a `struct_time` object.
+
+    Args:
+        time_str (str): A time string formatted in one of the time formats used by Nexpose's API for scans.
+
+    Returns:
+        struct_time: The datetime represented in a `struct_time` object.
+    """
+    try:
+        return strptime(time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+    except ValueError:
+        return strptime(time_str, "%Y-%m-%dT%H:%M:%SZ")
 
 
 def dq(obj, path):
-    '''
+    """
     return a value in an object path. in case of multiple objects in path, searches them all.
     @param obj - dictionary tree to search in
-    @param path (list) - a path of the desired value in the object. for example: ['root', 'key', 'subkey']
-    '''
+    @param path (list) - a path of the desired value in the object. for example ['root', 'key', 'subkey']
+    """
+    # TODO: Remove or rewrite this function
     if len(path) == 0:
         return obj
 
@@ -166,291 +929,934 @@ def dq(obj, path):
     return None
 
 
-def translate_single_object(obj, map_fields, filter_func=None):
-    d = {}
-    for f in map_fields:
-        if filter_func is None or filter_func(f):
-            d[f['to']] = dq(obj, f['from'].split('.'))
+def find_asset_last_change(asset_data: dict) -> dict:
+    """
+    Retrieve the last change (usually a scan) from an asset's history.
 
-    return d
+    Args:
+        asset_data (dict): The asset data as it was retrieved from the API.
 
-
-def translate_object(content, map_fields, filter_func=None):
-    '''
-    Converts object fields according to mapping dictionary
-    @param content - original content to copy
-    @param mapFields - an object assosiating source and destination object fields
-    @filter_func - function to filter out fields
-    @returns the mapped object
-    '''
-    if isinstance(content, (list, tuple)):
-        return [translate_single_object(item, map_fields, filter_func) for item in content]
-    else:
-        return translate_single_object(content, map_fields, filter_func)
-
-
-def get_list_response(path, method='get', limit=None, body={}, params={}):
-    final_result = []  # type: ignore
-    page_diff = 0
-    page_number = 0
-
-    while True:
-        page = page_number
-        page_number += 1
-        params['page'] = page
-        if limit is not None:
-            params['size'] = limit
-        response = send_request(path, method=method, body=body, params=params)
-        if not response:
-            break
-        if response['resources'] is not None:
-            final_result = final_result + response['resources']
-        if response['page'] is not None:
-            page_diff = response['page']['totalPages'] - response['page']['number']
-        if page_diff < 1 or limit is not None:
-            break
-
-    return final_result
-
-
-def get_last_scan(asset):
-    if asset['history'] is None:
-        return "-"
-    sorted_dates = sorted(asset['history'], key=get_datetime_from_asset_history_item,
-                          reverse=True)
-
-    if sorted_dates[0] is not None:
+    Returns:
+        dict: A dictionary containing data about the latest change in asset's history.
+    """
+    if not asset_data.get("history"):
         return {
-            'date': sorted_dates[0]['date'] if 'date' in sorted_dates[0] else '-',
-            'id': sorted_dates[0]['scanId'] if 'scanId' in sorted_dates[0] else '-'
-        }
-    else:
-        return {
-            'date': '-',
-            'id': '-'
+            "date": "-",
+            "id": "-"
         }
 
+    sorted_scans = sorted(asset_data["history"], key=lambda x: convert_datetime_str(x.get("date")), reverse=True)
 
-def get_datetime_from_asset_history_item(item):
-    try:
-        return time.strptime(item['date'], "%Y-%m-%dT%H:%M:%S.%fZ")
-    except ValueError:
-        return time.strptime(item['date'], "%Y-%m-%dT%H:%M:%SZ")
+    return {
+        "date": sorted_scans[0]["date"] if "date" in sorted_scans[0] else "-",
+        "id": sorted_scans[0]["scanId"] if "scanId" in sorted_scans[0] else "-"
+    }
 
 
-def get_asset_command():
-    asset = get_asset(demisto.args()['id'])
+def find_valid_params(**kwargs):
+    """
+    A function for filtering kwargs to remove keys with a None value.
 
-    if asset is None:
-        return "Asset not found"
-    last_scan = get_last_scan(asset)
-    asset['LastScanDate'] = last_scan['date']
-    asset['LastScanId'] = last_scan['id']
-    asset['Site'] = get_site(asset['id'])['name']
+    Args:
+        kwargs: A collection of keyword args to filter.
 
-    asset_headers = [
-        'AssetId',
-        'Addresses',
-        'Hardware',
-        'Aliases',
-        'HostType',
-        'Site',
-        'OperatingSystem',
-        'CPE',
-        'LastScanDate',
-        'LastScanId',
-        'RiskScore'
-    ]
+    Returns:
+        dict: A dictionary containing only keywords with a value that isn't None.
+    """
+    new_kwargs = {}
 
-    asset_output = translate_object(asset, [
-        {'from': 'id', 'to': 'AssetId'},
-        {'from': 'addresses.ip', 'to': 'Addresses'},
-        {'from': 'addresses.mac', 'to': 'Hardware'},
-        {'from': 'hostNames.name', 'to': 'Aliases'},
-        {'from': 'type', 'to': 'HostType'},
-        {'from': 'Site', 'to': 'Site'},
-        {'from': 'os', 'to': 'OperatingSystem'},
-        {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
-        {'from': 'cpe.v2.3', 'to': 'CPE'},
-        {'from': 'LastScanDate', 'to': 'LastScanDate'},
-        {'from': 'LastScanId', 'to': 'LastScanId'},
-        {'from': 'riskScore', 'to': 'RiskScore'}
-    ])
+    for key, value in kwargs.items():
+        if value:
+            new_kwargs[key] = value
 
-    software_output = None
-    services_output = None
-    users_output = None
+    return new_kwargs
 
-    if 'software' in asset and len(asset['software']) > 0:
-        software_headers = [
-            'Software',
-            'Version'
-        ]
 
-        software_output = translate_object(asset['software'], [
-            {'from': 'description', 'to': 'Software'},
-            {'from': 'version', 'to': 'Version'}
-        ])
+def get_scan_entry(scan: dict) -> CommandResults:
+    """
+    Generate entry data from scan data (as received from the API).
 
-    if 'services' in asset and len(asset['services']) > 0:
-        service_headers = [
-            'Name',
-            'Port',
-            'Product',
-            'Protocol'
-        ]
+    Args:
+        scan (dict): Scan data as it was received from the API.
 
-        services_output = translate_object(asset['services'], [
-            {'from': 'name', 'to': 'Name'},
-            {'from': 'port', 'to': 'Port'},
-            {'from': 'product', 'to': 'Product'},
-            {'from': 'protocol', 'to': 'Protocol'}
-        ])
-
-    if 'users' in asset and len(asset['users']) > 0:
-        user_headers = [
-            'FullName',
-            'Name',
-            'UserId'
-        ]
-
-        users_output = translate_object(asset['users'], [
-            {'from': 'name', 'to': 'Name'},
-            {'from': 'fullName', 'to': 'FullName'},
-            {'from': 'id', 'to': 'UserId'},
-        ])
+    Returns:
+        CommandResults: Scan data in a normalized format that will be displayed in the UI.
+    """
+    scan_output = normalize_scan_data(scan)
 
     vulnerability_headers = [
-        'Id',
-        'Title',
-        'Malware',
-        'Exploit',
-        'CVSS',
-        'Risk',
-        'PublishedOn',
-        'ModifiedOn',
-        'Severity',
-        'Instances',
+        "Critical",
+        "Severe",
+        "Moderate",
+        "Total",
     ]
 
-    vulnerabilities = get_vulnerabilities(asset['id'])
-    asset['vulnerabilities'] = vulnerabilities
+    vulnerability_output = replace_key_names(
+        data=scan["vulnerabilities"],
+        name_mapping={
+            "critical": "Critical",
+            "severe": "Severe",
+            "moderate": "Moderate",
+            "total": "Total",
+        },
+        recursive=True,
+    )
+
+    scan_hr = tableToMarkdown(
+        name="Nexpose scan " + str(scan["id"]),
+        t=scan_output,
+        headers=[
+            "Id",
+            "ScanType",
+            "ScanName",
+            "StartedBy",
+            "Assets",
+            "TotalTime",
+            "Completed",
+            "Status",
+            "Message",
+        ],
+        removeNull=True)
+
+    scan_hr += tableToMarkdown("Vulnerabilities", vulnerability_output, vulnerability_headers, removeNull=True)
+    scan_output["Vulnerabilities"] = vulnerability_output
+
+    return CommandResults(
+        outputs_prefix="Nexpose.Scan",
+        outputs_key_field="Id",
+        outputs=scan_output,
+        readable_output=scan_hr,
+        raw_response=scan,
+    )
+
+
+def get_session():
+    # TODO: Remove alongside get_site once get_site is removed
+    url = demisto.params()["server"].rstrip("/") + "/data/user/login"
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json"
+    }
+
+    if demisto.params().get("token"):
+        headers["token"] = demisto.params().get("token")
+
+    body = {
+        "nexposeccusername": demisto.params()["credentials"]["identifier"],
+        "nexposeccpassword": demisto.params()["credentials"]["password"]
+    }
+
+    res = requests.post(url, headers=headers, data=body, verify=not demisto.params().get("unsecure", False))
+    if res.status_code < 200 or res.status_code >= 300:
+        return ""
+    body = res.json()
+    if "sessionID" not in body:
+        return ""
+
+    return body["sessionID"]
+
+
+def find_site_from_asset(asset_id: str):
+    # TODO: Remove demisto.params() and improve code
+    # TODO: Check why this function uses a non-API endpoint, and adjust this function accordingly.
+    url = demisto.params()["server"].rstrip("/") + "/data/assets/" + str(asset_id) + "/scans"
+    username = demisto.params()["credentials"]["identifier"]
+    password = demisto.params()["credentials"]["password"]
+    token = demisto.params().get("token")
+    verify = not demisto.params().get("unsecure", False)
+    session = get_session()
+
+    headers = {"Content-Type": "application/json"}
+
+    if token:
+        headers["token"] = token
+
+    headers["Cookie"] = "nexposeCCSessionID=" + session
+    headers["nexposeCCSessionID"] = session
+
+    res = requests.post(url, headers=headers, auth=(username, password), verify=verify)
+
+    if res.status_code < 200 or res.status_code >= 300:
+        return ""
+
+    response = res.json()
+    if response is None or response["records"] is None or len(response["records"]) == 0:
+        return ""
+
+    return {
+        "id": response["records"][0]["siteID"],
+        "name": response["records"][0]["siteName"],
+        "ip": response["records"][0]["ipAddress"]
+    }
+
+
+def iso8601_duration_as_minutes(duration_string: str) -> float:
+    """
+    Convert an ISO 8601 Duration string to a float representing the same duration time.
+
+    Args:
+        duration_string (str): A string representing an ISO 8601 Duration time.
+
+    Returns:
+         float: The same duration represented as a float.
+    """
+    if duration_string is None:
+        return 0
+
+    if duration_string[0] != "P":
+        raise ValueError(f"{duration_string} is not a valid ISO 8601 Duration string.")
+
+    year_in_minutes = 525600
+    month_in_minutes = 43800
+    week_in_minutes = 10080
+    day_in_minutes = 1440
+    hour_in_minutes = 60
+
+    minutes = 0
+
+    # Split by "T" char
+    for i, item in enumerate(duration_string.split("T")):
+        for number, period in re.findall(r"(?P<number>\d+)(?P<period>[SMHDWY])", item):
+            number = float(number)
+            this = 0
+            if period == "Y":
+                this = number * year_in_minutes  # 365.25
+            elif period == "W":
+                this = number * week_in_minutes
+            elif period == "D":
+                this = number * day_in_minutes
+            elif period == "H":
+                this = number * hour_in_minutes
+            elif period == "M":
+                # Ambiguity between months and minutes
+                if i == 0:
+                    this = number * month_in_minutes  # Assume 30 days
+                else:
+                    this = number
+            elif period == "S":
+                this = number / 60
+            minutes = minutes + this
+    return minutes
+
+
+def normalize_scan_data(scan: dict) -> dict:
+    """
+    Normalizes scan data received from the API to a format that will be displayed in the UI.
+
+    Args:
+        scan (dict): Scan data as it was received from the API.
+
+    Returns:
+        dict: Scan data in a normalized format that will be displayed in the UI.
+    """
+    scan_output = replace_key_names(
+        data=scan,
+        name_mapping={
+            "id": "Id",
+            "scanType": "ScanType",
+            "scanName": "ScanName",
+            "startedBy": "StartedBy",
+            "assets": "Assets",
+            "duration": "TotalTime",
+            "endTime": "Completed",
+            "status": "Status",
+            "message": "Message",
+        },
+        recursive=False,
+    )
+
+    scan_output["TotalTime"] = str(iso8601_duration_as_minutes(scan_output["TotalTime"])) + " minutes"
+
+    return scan_output
+
+
+# TODO: Disable "recursive" if it's not actually needed.
+def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, str],
+                      recursive: bool = False) -> Union[dict, list, tuple, set]:
+    """
+    Replace key names in a dictionary.
+
+    Args:
+        data (dict | list | tuple): An iterable to replace key names for dictionaries within it.
+        name_mapping (dict): A dictionary in a `from: to` mapping format of which key names to replace with what.
+            the value of the keys ("from") can represent nested dict items in a "parent.child" format.
+        recursive (bool, optional): Whether to replace key names in all sub-dictionaries. Defaults to False.
+
+    Returns:
+        Union[dict, list, tuple]: The same data-structure with key names of dicts replaced according to mapping.
+    """
+    # TODO: Fix issue when nested key is inside a list
+    data_before = data.copy()
+    if isinstance(data, Union[list, tuple]):
+        return [replace_key_names(
+            data=data[i],
+            name_mapping=name_mapping,
+            recursive=recursive,
+        ) for i in range(len(data))]
+
+    elif isinstance(data, dict):
+        for key, value in name_mapping.items():
+            nested_keys = key.split(".")
+            data_iterator = data
+
+            while nested_keys:
+                current_key = nested_keys.pop()
+
+                if data.get(current_key):
+                    if len(nested_keys) == 0:
+                        data[value] = data.pop(current_key)
+                        break
+
+                    else:
+                        data_iterator = data_iterator[current_key]
+
+                else:
+                    break
+
+        if recursive:
+            for item in data:
+                if isinstance(data[item], Union[dict, list, tuple]):
+                    data[item] = replace_key_names(data[item], name_mapping, recursive)
+
+    return data
+
+
+# --- Command Functions --- #
+def create_assets_report_command(client: Client, asset_ids: list[str], template_id: Union[str, None] = None,
+                                 report_name: Union[str, None] = None,
+                                 report_format: Union[ReportFileFormat, None] = None,
+                                 download_immediately: Union[bool, None] = None) -> Union[dict, CommandResults]:
+    """
+    Create a report about specific assets.
+
+    Args:
+        client (Client): Client to use for API requests.
+        asset_ids (list[str]): List of assets to include in the report.
+        template_id (str | None, optional): ID of report template to use.
+            Defaults to None (will result in using the first available template)
+        report_name (str): Name for the report that will be generated.
+        report_format (ReportFileFormat): Format of the report that will be generated.
+        download_immediately: Union[bool, None] = Whether to download the report automatically after creation.
+    """
+    if not template_id:
+        templates = client.get_report_templates()
+
+        if not templates.get("resources"):
+            raise ValueError("No available templates were found.")
+
+        template_id = templates["resources"][0]["id"]
+
+    if not report_name:
+        report_name = "report " + str(datetime.now())
+
+    if not report_format:
+        report_format = ReportFileFormat.PDF
+
+    if download_immediately is None:
+        download_immediately = True
+
+    report_id = client.create_report_config(
+        scope={"assets": [int(asset_id) for asset_id in asset_ids]}, # TODO: Check if conversion to int is actually needed
+        template_id=template_id,
+        report_name=report_name,
+        report_format=report_format.name.lower(),
+    )
+
+    instance_id = client.create_report(report_id)
+
+    context = {
+        "Name": report_name,
+        "ID": report_id,
+        "InstanceID": instance_id,
+        "Format": report_format.name.lower(),
+    }
+    hr = tableToMarkdown("Report Information", context)
+
+    if download_immediately:
+        try:
+            # Wait for the report to be completed
+            time.sleep(REPORT_DOWNLOAD_WAIT_TIME)
+
+            return download_report_command(
+                client=client,
+                report_id=report_id,
+                instance_id=instance_id,
+                report_name=report_name,
+                report_format=report_format,
+            )
+
+        except Exception as e:
+            # If we received 404 it could mean that the report generation process has not finished yet. in that case
+            # we'll return the report's info to enable users to query for the report's status and download it.
+            if "404" not in str(e):
+                raise
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="Nexpose.Report",
+        outputs=context,
+        outputs_key_field=["ID", "InstanceID"],
+    )
+
+
+def create_scan_report_command(client: Client, scan_id: str, template_id: Union[str, None] = None,
+                               report_name: Union[str, None] = None, report_format: Union[ReportFileFormat, None] = None,
+                               download_immediately: Union[bool, None] = None) -> Union[dict, CommandResults]:
+    """
+    Create a report about specific sites.
+
+    Args:
+        client (Client): Client to use for API requests.
+        scan_id (scan): ID of the scan to create a report on.
+        template_id (str | None, optional): ID of report template to use. Defaults to None.
+        report_name (str): Name for the report that will be generated.
+        report_format (ReportFileFormat): Format of the report that will be generated.
+        download_immediately: Union[bool, None] = Whether to download the report automatically after creation.
+        """
+    if not template_id:
+        templates = client.get_report_templates()
+
+        if not templates.get("resources"):
+            raise ValueError("No available templates were found.")
+
+        template_id = templates["resources"][0]["id"]
+
+    report_id = client.create_report_config(
+        scope={"scan": scan_id},
+        template_id=template_id,
+        report_name=report_name,
+        report_format=report_format.name.lower(),
+    )
+
+    instance_id = client.create_report(report_id)
+
+    context = {
+        "Name": report_name,
+        "ID": report_id,
+        "InstanceID": instance_id,
+        "Format": report_format.name.lower(),
+    }
+
+    hr = tableToMarkdown("Report Information", context)
+
+    if download_immediately:
+        # Wait for the report to be completed
+        time.sleep(REPORT_DOWNLOAD_WAIT_TIME)
+
+        try:
+            return download_report_command(
+                client=client,
+                report_id=report_id,
+                instance_id=instance_id,
+                report_name=report_name,
+                report_format=report_format,
+            )
+
+        # If a 404 response was received, it could mean that the report generation process has not finished yet.
+        # In that case, report's info will still be returned to enable users
+        # to query for the report's status and download it.
+        except DemistoException as e:
+            if "404" not in str(e):
+                raise
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="Nexpose.Report",
+        outputs=context,
+        outputs_key_field=["ID", "InstanceID"],
+    )
+
+
+def create_site_command(client: Client, name: str, description: Union[str, None] = None,
+                        assets: Union[list[str], None] = None, site_importance: Union[SiteImportance, None] = None,
+                        template_id: Union[str, None] = None) -> CommandResults:
+    """
+    Create a new site.
+
+    Args:
+        client (Client): Client to use for API requests.
+        name (str): Name of the site. Must be unique.
+        description (str | None, optional): Description of the site. Defaults to None.
+        assets (list[str] | None, optional): List of asset IDs to be included in site scans. Defaults to None.
+        site_importance (SiteImportance | None, optional): Importance of the site.
+            Defaults to None (results in using API's default - "normal").
+        template_id (str | None, optional): The identifier of a scan template.
+            Defaults to None (results in using default scan template).
+    """
+    response = client.create_site(name, description, assets, site_importance.name.lower(), template_id)
+
+    output = {
+        "Id": response["id"]
+    }
+
+    return CommandResults(
+        readable_output=tableToMarkdown("New site created", output),
+        outputs_prefix="Nexpose.Site",
+        outputs_key_field="Id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def create_sites_report_command(client: Client, sites: list[Site], template_id: Union[str, None] = None,
+                                report_name: Union[str, None] = None, report_format: Union[ReportFileFormat, None] = None,
+                                download_immediately: Union[bool, None] = None) -> Union[dict, CommandResults]:
+    """
+    Create a report about specific sites.
+
+    Args:
+        client (Client): Client to use for API requests.
+        sites (list[Site]): List of sites to create the report about.
+        template_id (str | None, optional): ID of report template to use.
+                Defaults to None (will result in using the first available template)
+        report_name (str): Name for the report that will be generated.
+        report_format (ReportFileFormat): Format of the report that will be generated.
+        download_immediately: Union[bool, None] = Whether to download the report automatically after creation.
+    """
+    if not template_id:
+        templates = client.get_report_templates()
+
+        if not templates.get("resources"):
+            raise ValueError("No available templates were found.")
+
+        template_id = templates["resources"][0]["id"]
+
+    if not report_name:
+        report_name = "report " + str(datetime.now())
+
+    if not report_format:
+        report_format = ReportFileFormat.PDF
+
+    if download_immediately is None:
+        download_immediately = True
+
+    report_id = client.create_report_config(
+        scope={"sites": sites},
+        template_id=template_id,
+        report_name=report_name,
+        report_format=report_format.name.lower(),
+    )
+
+    instance_id = client.create_report(report_id)
+
+    context = {
+        "Name": report_name,
+        "ID": report_id,
+        "InstanceID": instance_id,
+        "Format": report_format.name.lower(),
+    }
+
+    hr = tableToMarkdown("Report Information", context)
+
+    if download_immediately:
+        try:
+            # Wait for the report to be completed
+            time.sleep(REPORT_DOWNLOAD_WAIT_TIME)
+
+            return download_report_command(
+                client=client,
+                report_id=report_id,
+                instance_id=instance_id,
+                report_name=report_name,
+                report_format=report_format,
+            )
+
+        except Exception as e:
+            # If we received 404 it could mean that the report generation process has not finished yet. in that case
+            # we'll return the report's info to enable users to query for the report's status and download it.
+            if "404" not in str(e):
+                raise
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="Nexpose.Report",
+        outputs=context,
+        outputs_key_field=["ID", "InstanceID"],
+    )
+
+
+def delete_site_command(client: Client, site: Site) -> CommandResults:
+    """
+    Delete a site.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site (Site): Site to delete.
+    """
+    client.delete_site(site.id)
+
+    return CommandResults(
+        readable_output=f"Site ID {site.id} has been deleted.",
+        outputs_prefix="Nexpose.Report",
+        outputs_key_field=["ID", "InstanceID"],
+    )
+
+
+def download_report_command(client: Client, report_id: str, instance_id: str,
+                            report_name: Union[str, None], report_format: ReportFileFormat) -> dict:
+    """
+    Download a report file.
+
+    Args:
+        client (Client): Client to use for API requests.
+        report_id (str): ID of the report to download.
+        instance_id (str): ID of the report instance.
+        report_name (str | None, optional): Name to give the generated report file.
+            Defaults to None (results in using a "report <date>" format as a name).
+        report_format (ReportFileFormat): File format to use for the generated report.
+
+    Returns:
+        dict: A dict generated by `CommonServerPython.fileResult` representing a War Room entry.
+    """
+    # TODO: Check if format can actually be changed from the default PDF received from Nexpose. Delete if not?
+
+    if not report_name:
+        report_name = f"report {str(datetime.now())}"
+
+    report_data = client.download_report(
+        report_id=report_id,
+        instance_id=instance_id
+    )
+
+    return fileResult(
+        filename=f"{report_name}.{report_format.name.lower()}",
+        data=report_data,
+        file_type=entryTypes["entryInfoFile"],
+    )
+
+
+def get_asset_command(client: Client, asset_id: str) -> CommandResults:
+    """
+    Retrieve information about an asset.
+
+    Args:
+        client (Client): Client to use for API requests.
+        asset_id (str): ID of the asset to retrieve information about.
+    """
+    asset = client.get_asset(asset_id)
+
+    if asset.get("status") == "404":
+        return CommandResults(readable_output="Asset not found")
+
+    last_scan = find_asset_last_change(asset)
+    asset["LastScanDate"] = last_scan["date"]
+    asset["LastScanId"] = last_scan["id"]
+    asset["Site"] = find_site_from_asset(asset["id"])["name"]
+
+    asset_headers = [
+        "AssetId",
+        "Addresses",
+        "Hardware",
+        "Aliases",
+        "HostType",
+        "Site",
+        "OperatingSystem",
+        "CPE",
+        "LastScanDate",
+        "LastScanId",
+        "RiskScore"
+    ]
+
+    asset_output = replace_key_names(
+        data=asset,
+        name_mapping={
+            "id": "AssetId",
+            "addresses.ip": "Addresses",
+            "addresses.mac": "Hardware",
+            "hostNames.name": "Aliases",
+            "type": "HostType",
+            "Site": "Site",
+            "os": "OperatingSystem",
+            "vulnerabilities.total": "Vulnerabilities",
+            "cpe.v2.3": "CPE",
+            "riskScore": "RiskScore",
+        },
+        recursive=True,
+    )
+
+    # Set all vars to None
+    software_headers = software_output = service_headers = services_output = users_headers = users_output = None
+
+    if "software" in asset and len(asset["software"]) > 0:  # TODO: Replace with: if len(asset.get("software", [])) > 0
+        software_headers = [
+            "Software",
+            "Version",
+        ]
+
+        software_output = replace_key_names(
+            data=asset["software"],
+            name_mapping={
+                "description": "Software",
+                "version": "Version",
+            },
+            recursive=True,
+        )
+
+    if "services" in asset and len(asset["services"]) > 0:
+        service_headers = [
+            "Name",
+            "Port",
+            "Product",
+            "Protocol",
+        ]
+
+        services_output = replace_key_names(
+            data=asset["services"],
+            name_mapping={
+                "name": "Name",
+                "port": "Port",
+                "product": "Product",
+                "protocol": "Protocol",
+            },
+            recursive=True,
+        )
+
+    if "users" in asset and len(asset["users"]) > 0:
+        users_headers = [
+            "FullName",
+            "Name",
+            "UserId",
+        ]
+
+        users_output = replace_key_names(
+            data=asset["users"],
+            name_mapping={
+                "name": "Name",
+                "fullName": "FullName",
+                "id": "UserId",
+            },
+            recursive=True,
+        )
+
+    vulnerability_headers = [
+        "Id",
+        "Title",
+        "Malware",
+        "Exploit",
+        "CVSS",
+        "Risk",
+        "PublishedOn",
+        "ModifiedOn",
+        "Severity",
+        "Instances",
+    ]
+
+    vulnerabilities = client.get_vulnerabilities(asset["id"])
+    asset["vulnerabilities"] = vulnerabilities
+
     vulnerabilities_output = []
-    cves_output = []  # type: ignore
-    for i, v in enumerate(asset['vulnerabilities']):
-        detailed_vuln = get_vulnerability(v['id'])
-        # Add to raw output
-        asset['vulnerabilities'][i] = dict(list(asset['vulnerabilities'][i].items()) + list(detailed_vuln.items()))
-        cvss = dq(detailed_vuln['cvss'], ['v2', 'score'])
+    cves_output = []
 
-        if ('cves' in detailed_vuln):
-            cves_output = cves_output + [{
-                'ID': cve
-            } for cve in detailed_vuln['cves']]
+    for idx, vulnerability in enumerate(asset["vulnerabilities"]):
+        extra_info = client.get_vulnerability(vulnerability["id"])
+        asset["vulnerabilities"][idx].update(extra_info)
 
-        output_vuln = {
-            'Id': v['id'],
-            'Title': detailed_vuln['title'],
-            'Malware': detailed_vuln['malwareKits'],
-            'Exploit': detailed_vuln['exploits'],
-            'CVSS': cvss,
-            'Risk': detailed_vuln['riskScore'],
-            'PublishedOn': detailed_vuln['published'],
-            'ModifiedOn': detailed_vuln['modified'],
-            'Severity': detailed_vuln['severity'],
-            'Instances': v['instances'],
+        cvss = dq(extra_info["cvss"], ["v2", "score"])  # TODO: Find a more intuitive way to do this without dq
+
+        if "cves" in extra_info:
+            cves_output.extend(
+                [{"ID": cve} for cve in extra_info["cves"]]
+            )
+
+        output_vulnerability = {
+            "Id": vulnerability["id"],
+            "Title": extra_info["title"],
+            "Malware": extra_info["malwareKits"],
+            "Exploit": extra_info["exploits"],
+            "CVSS": cvss,
+            "Risk": extra_info["riskScore"],
+            "PublishedOn": extra_info["published"],
+            "ModifiedOn": extra_info["modified"],
+            "Severity": extra_info["severity"],
+            "Instances": vulnerability["instances"],
         }
 
-        vulnerabilities_output.append(output_vuln)
+        vulnerabilities_output.append(output_vulnerability)
 
-    asset_md = tableToMarkdown('Nexpose asset ' + str(asset['id']), asset_output, asset_headers, removeNull=True)
-    vulnerabilities_md = tableToMarkdown('Vulnerabilities', vulnerabilities_output, vulnerability_headers,
-                                         removeNull=True) if len(vulnerabilities_output) > 0 else ''
-    software_md = tableToMarkdown('Software', software_output, software_headers,
-                                  removeNull=True) if software_output is not None else ''
-    services_md = tableToMarkdown('Services', services_output, service_headers,
-                                  removeNull=True) if services_output is not None else ''
-    users_md = tableToMarkdown('Users', users_output, user_headers, removeNull=True) if users_output is not None else ''
+    asset_md = tableToMarkdown("Nexpose asset " + str(asset["id"]), asset_output, asset_headers, removeNull=True)
+    vulnerabilities_md = tableToMarkdown("Vulnerabilities", vulnerabilities_output, vulnerability_headers,
+                                         removeNull=True) if len(vulnerabilities_output) > 0 else ""
+    software_md = tableToMarkdown("Software", software_output, software_headers,
+                                  removeNull=True) if software_output is not None else ""
+    services_md = tableToMarkdown("Services", services_output, service_headers,
+                                  removeNull=True) if services_output is not None else ""
+    users_md = tableToMarkdown("Users", users_output, users_headers,
+                               removeNull=True) if users_output is not None else ""
 
     md = asset_md + vulnerabilities_md + software_md + services_md + users_md
 
-    asset_output['Vulnerability'] = vulnerabilities_output
-    asset_output['Software'] = software_output
-    asset_output['Service'] = services_output
-    asset_output['User'] = users_output
+    asset_output["Vulnerability"] = vulnerabilities_output
+    asset_output["Software"] = software_output
+    asset_output["Service"] = services_output
+    asset_output["User"] = users_output
 
     endpoint = {
-        'IP': asset_output['Addresses'],
-        'MAC': asset_output['Hardware'],
-        'HostName': asset_output['Aliases'],
-        'OS': asset_output['OperatingSystem']
+        "IP": asset_output["Addresses"],
+        "MAC": asset_output["Hardware"],
+        "HostName": asset_output["Aliases"],
+        "OS": asset_output["OperatingSystem"]
     }
 
     context = {
-        'Nexpose.Asset(val.AssetId==obj.AssetId)': asset_output,
-        'Endpoint(val.IP==obj.IP)': endpoint
+        "Nexpose.Asset(val.AssetId==obj.AssetId)": asset_output,
+        "Endpoint(val.IP==obj.IP)": endpoint
     }
 
-    if len(cves_output) > 0:
-        context['CVE(val.ID==obj.ID)'] = cves_output
+    if cves_output:
+        context["CVE(val.ID==obj.ID)"] = cves_output
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': asset,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': context
+    # TODO: Switch to CommandResults
+    return {
+        "Type": entryTypes["note"],
+        "Contents": asset,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": md,
+        "EntryContext": context
     }
 
-    return entry
 
+def get_assets_command(client: Client, sort: Union[str, None] = None,
+                       limit: Union[int, None] = None) -> Union[CommandResults, list[CommandResults]]:
+    """
+    Retrieve a list of all assets.
 
-def get_asset(asset_id):
-    path = 'assets/' + str(asset_id)
-    return send_request(path)
+    Args:
+        client (Client): Client to use for API requests.
+        sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format. Defaults to None.
+        limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
+            Defaults to None.
+    """
+    assets = client.get_assets(
+        sort=sort,
+        limit=limit
+    )
 
+    if not assets:
+        return CommandResults(readable_output="No assets found")
 
-def get_asset_vulnerability_command():
-    v = get_asset_vulnerability(demisto.args()['id'], demisto.args()['vulnerabilityId'])
+    for asset in assets:
+        last_scan = find_asset_last_change(asset)
+        asset["LastScanDate"] = last_scan["date"]
+        asset["LastScanId"] = last_scan["id"]
+        site = find_site_from_asset(asset["id"])
+        asset["Site"] = site["name"] if site != "" else ""
 
-    if v is None:
-        return 'Vulnerability not found'
-
-    vuln_headers = [
-        'Id',
-        'Title',
-        'Severity',
-        'RiskScore',
-        'CVSS',
-        'CVSSV3',
-        'Published',
-        'Added',
-        'Modified',
-        'CVSSScore',
-        'CVSSV3Score',
-        'Categories',
-        'CVES'
+    headers = [
+        "AssetId",
+        "Address",
+        "Name",
+        "Site",
+        "Exploits",
+        "Malware",
+        "OperatingSystem",
+        "Vulnerabilities",
+        "RiskScore",
+        "Assessed",
+        "LastScanDate",
+        "LastScanId"
     ]
 
-    detailed_vuln = get_vulnerability(v['id'])
-    # Add to raw output
-    v = dict(list(v.items()) + list(detailed_vuln.items()))
-    vuln_outputs = translate_object(detailed_vuln, [
-        {'from': 'id', 'to': 'Id'},
-        {'from': 'title', 'to': 'Title'},
-        {'from': 'severity', 'to': 'Severity'},
-        {'from': 'riskScore', 'to': 'RiskScore'},
-        {'from': 'cvss.v2.vector', 'to': 'CVSS'},
-        {'from': 'cvss.v3.vector', 'to': 'CVSSV3'},
-        {'from': 'published', 'to': 'Published'},
-        {'from': 'added', 'to': 'Added'},
-        {'from': 'modified', 'to': 'Modified'},
-        {'from': 'cvss.v2.score', 'to': 'CVSSScore'},
-        {'from': 'cvss.v3.score', 'to': 'CVSSV3Score'},
-        {'from': 'categories', 'to': 'Categories'},
-        {'from': 'cves', 'to': 'CVES'}
-    ])
+    replace_key_names(
+        data=assets,
+        name_mapping={
+            "id": "AssetId",
+            "ip": "Address",
+            "hostName": "Name",
+            "Site": "Site",
+            "vulnerabilities.exploits": "Exploits",
+            "vulnerabilities.malwareKits": "Malware",
+            "os": "OperatingSystem",
+            "vulnerabilities.total": "Vulnerabilities",
+            "riskScore": "RiskScore",
+            "assessedForVulnerabilities": "Assessed",
+        },
+        recursive=True,
+    )
+
+    result = [CommandResults(
+        outputs_prefix="Nexpose.Asset",
+        outputs_key_field="Id",
+        outputs=assets,
+        raw_response=assets,
+        readable_output=tableToMarkdown("Nexpose assets", assets, headers, removeNull=True),
+        )]
+
+    result.extend(
+        [CommandResults(
+            readable_output=" ",
+            indicator=Common.Endpoint(
+                hostname=asset.get("Name"),
+                ip_address=asset.get("Address"),
+                domain=None,
+                mac_address=None,
+                os=asset.get("OperatingSystem"),
+            )
+        ) for asset in assets])
+
+    return result
+
+
+def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability_id: str) -> CommandResults:
+    """
+    Retrieve information about vulnerability findings on an asset.
+
+    Args:
+        client (Client): Client to use for API requests.
+        asset_id (str): ID of the asset to retrieve information about.
+        vulnerability_id (str): ID of the vulnerability to look for
+    """
+    vulnerability_data = client.get_asset_vulnerability(
+        asset_id=asset_id,
+        vulnerability_id=vulnerability_id,
+    )
+
+    # TODO: If 404 is received, check that asset_id and vulnerability_id are valid.
+    # If they are, print a message saying that the asset is not vulnerable.
+    # Otherwise print an error saying which parameter is invalid.
+
+    if vulnerability_data is None:
+        return CommandResults(readable_output="Vulnerability not found")
+
+    vulnerability_headers = [
+        "Id",
+        "Title",
+        "Severity",
+        "RiskScore",
+        "CVSS",
+        "CVSSV3",
+        "Published",
+        "Added",
+        "Modified",
+        "CVSSScore",
+        "CVSSV3Score",
+        "Categories",
+        "CVES"
+    ]
+
+    # Add extra info about vulnerability
+    vulnerability_extra_data = client.get_vulnerability(asset_id)
+    vulnerability_data.update(vulnerability_extra_data)
+
+    vulnerability_outputs = replace_key_names(
+        data=vulnerability_extra_data,
+        name_mapping={
+            "id": "Id",
+            "title": "Title",
+            "severity": "Severity",
+            "riskScore": "RiskScore",
+            "cvss.v2.vector": "CVSS",
+            "cvss.v3.vector": "CVSSV3",
+            "published": "Published",
+            "added": "Added",
+            "modified": "Modified",
+            "cvss.v2.score": "CVSSScore",
+            "cvss.v3.score": "CVSSV3Score",
+            "categories": "Categories",
+            "cves": "CVES",
+        },
+        recursive=True,
+    )
 
     results_headers = [
         "Port",
@@ -460,993 +1866,719 @@ def get_asset_vulnerability_command():
         "Status"
     ]
 
-    results_output = []  # type: ignore
-    if 'results' in v and len(v['results']) > 0:
-        results_output = translate_object(v['results'], [
-            {'from': 'port', 'to': 'Port'},
-            {'from': 'protocol', 'to': 'Protocol'},
-            {'from': 'since', 'to': 'Since'},
-            {'from': 'proof', 'to': 'Proof'},
-            {'from': 'status', 'to': 'Status'}
-        ])
+    results_output = []
+
+    if vulnerability_data.get("results"):
+        results_output = replace_key_names(
+            data=vulnerability_data["results"],
+            name_mapping={
+                "port": "Port",
+                "protocol": "Protocol",
+                "since": "Since",
+                "proof": "Proof",
+                "status": "Status",
+            },
+            recursive=True,
+        )
 
     # Remove HTML tags
-    for r in results_output:
-        r['Proof'] = re.sub('<.*?>', '', r['Proof'])
+    for result in results_output:
+        result["Proof"] = re.sub("<.*?>", "", result["Proof"])
 
     solutions_headers = [
-        'Type',
-        'Summary',
-        'Steps',
-        'Estimate',
-        'AdditionalInformation'
+        "Type",
+        "Summary",
+        "Steps",
+        "Estimate",
+        "AdditionalInformation"
     ]
 
+    # Add solutions data
     solutions_output = None
-    solutions = get_vulnerability_solutions(demisto.args()['id'], demisto.args()['vulnerabilityId'])
-    # Add to raw output
-    v['solutions'] = solutions
-    if solutions is not None and len(solutions) > 0:
-        solutions_output = translate_object(solutions['resources'], [
-            {'from': 'type', 'to': 'Type'},
-            {'from': 'summary.text', 'to': 'Summary'},
-            {'from': 'steps.text', 'to': 'Steps'},
-            {'from': 'estimate', 'to': 'Estimate'},
-            {'from': 'additionalInformation.text', 'to': 'AdditionalInformation'}
-        ])
+    solutions = client.get_asset_vulnerability_solution(asset_id, vulnerability_id)
+    vulnerability_data["solutions"] = solutions
+
+    if solutions:
+        solutions_output = replace_key_names(
+            data=solutions.get("resources"),
+            name_mapping={
+                "type": "Type",
+                "summary.text": "Summary",
+                "steps.text": "Steps",
+                "estimate": "Estimate",
+                "additionalInformation.text": "AdditionalInformation",
+            },
+            recursive=True,
+        )
+
         for i, val in enumerate(solutions_output):
-            solutions_output[i]['Estimate'] = str(
-                iso8601_duration_as_minutes(solutions_output[i]['Estimate'])) + ' minutes'
+            solutions_output[i]["Estimate"] = str(
+                iso8601_duration_as_minutes(solutions_output[i]["Estimate"])) + " minutes"
 
-    vulnerabilities_md = tableToMarkdown('Vulnerability ' + demisto.args()['vulnerabilityId'], vuln_outputs,
-                                         vuln_headers, removeNull=True)
-    results_md = tableToMarkdown('Checks', results_output, results_headers, removeNull=True) if len(
-        results_output) > 0 else ''
-    solutions_md = tableToMarkdown('Solutions', solutions_output, solutions_headers,
-                                   removeNull=True) if solutions_output is not None else ''
-    md = vulnerabilities_md + results_md + solutions_md
-    cves = []  # type: ignore
-    if (vuln_outputs['CVES'] is not None and len(vuln_outputs['CVES']) > 0):
+    vulnerabilities_md = tableToMarkdown("Vulnerability " + vulnerability_id, vulnerability_outputs,
+                                         vulnerability_headers, removeNull=True)
+    results_md = tableToMarkdown("Checks", results_output, results_headers, removeNull=True) if len(
+        results_output) > 0 else ""
+    solutions_md = tableToMarkdown("Solutions", solutions_output, solutions_headers,
+                                   removeNull=True) if solutions_output is not None else ""
+
+    cves = []
+
+    if vulnerability_outputs["CVES"] is not None and len(vulnerability_outputs["CVES"]) > 0:
         cves = [{
-            'ID': cve
-        } for cve in vuln_outputs['CVES']]
+            "ID": cve
+        } for cve in vulnerability_outputs["CVES"]]
 
-    vuln_outputs['Check'] = results_output
-    vuln_outputs['Solution'] = solutions_output
+    vulnerability_outputs["Check"] = results_output
+    vulnerability_outputs["Solution"] = solutions_output
+
     asset = {
-        'AssetId': demisto.args()['id'],
-        'Vulnerability': [vuln_outputs]
+        "AssetId": asset_id,
+        "Vulnerability": [vulnerability_outputs]
     }
 
     context = {
-        'Nexpose.Asset(val.AssetId==obj.AssetId)': asset,
+        "Nexpose.Asset(val.AssetId==obj.AssetId)": asset,
     }
 
     if len(cves) > 0:
-        context['CVE(val.ID==obj.ID)'] = cves  # type: ignore
+        context["CVE(val.ID==obj.ID)"] = cves
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': v,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': context
+    return {
+        "Type": entryTypes["note"],
+        "Contents": vulnerability_data,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": md,
+        "EntryContext": context
     }
 
-    return entry
+
+def get_generated_report_status_command(client: Client, report_id: str, instance_id: str) -> CommandResults:
+    """
+    Retrieve information about a generated report's status.
+
+    Args:
+        client (Client): Client to use for API requests.
+        report_id (str): ID of the report to retrieve information about.
+        instance_id (str): ID of the report instance to retrieve information about.
+    """
+
+    response = client.get_report_history(report_id, instance_id)
+
+    context = {
+        "ID": report_id,
+        "InstanceID": instance_id,
+        "Status": response.get("status", "unknown"),
+    }
+
+    hr = tableToMarkdown("Report Generation Status", context)
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="Nexpose.Report",
+        outputs=context,
+        outputs_key_field=["ID", "InstanceID"],
+        raw_response=response,
+    )
 
 
-def get_vulnerabilities(asset_id):
-    path = 'assets/' + str(asset_id) + '/vulnerabilities'
-    return get_list_response(path)
+def get_report_templates_command(client: Client) -> CommandResults:
+    """
+    Retrieve information about all available report templates.
 
+    Args:
+        client (Client): Client to use for API requests.
+    """
+    response_data = client.get_report_templates()
 
-def get_asset_vulnerability(asset_id, vulnerability_id):
-    path = 'assets/' + str(asset_id) + '/vulnerabilities/' + str(vulnerability_id)
-    return send_request(path)
-
-
-def get_vulnerability(vulnerability_id):
-    path = 'vulnerabilities/' + str(vulnerability_id)
-    return send_request(path)
-
-
-def get_vulnerability_solutions(asset_id, vulnerability_id):
-    path = 'assets/' + str(asset_id) + '/vulnerabilities/' + str(vulnerability_id) + '/solution'
-
-    return send_request(path)
-
-
-def search_by_filter(text_filters):
-    if (text_filters is None):
-        return []
-
-    filters = get_search_filters(text_filters)
-    assets = search_assets(filters, demisto.args()['match'], demisto.args().get('limit'), demisto.args().get('sort'))
-
-    return assets
-
-
-def search_assets_command():
-    queries = demisto.args().get('query')
-    ip_addresses = demisto.args().get('ipAddressIs')
-    host_names = demisto.args().get('hostNameIs')
-    risk_score = demisto.args().get('riskScoreHigherThan')
-    vulnerability_title = demisto.args().get('vulnerabilityTitleContains')
-    siteIds = demisto.args().get('siteIdIn')
-
-    assets = None
-    if queries is not None:
-        assets = search_by_filter(queries.split(';'))
-    elif risk_score is not None:
-        assets = search_by_filter(['risk-score is-greater-than ' + str(risk_score)])
-    elif vulnerability_title is not None:
-        assets = search_by_filter(['vulnerability-title contains ' + vulnerability_title])
-    elif siteIds is not None:
-        assets = search_by_filter(['site-id in ' + siteIds])
-    elif ip_addresses is not None:
-        ips = ip_addresses.split(',')
-        assets = []
-        for i, ip in enumerate(ips):
-            assets = assets + search_by_filter(['ip-address is ' + str(ip)])
-    elif host_names is not None:
-        host_names = host_names.split(',')
-        assets = []
-        for i, host_name in enumerate(host_names):
-            assets = assets + search_by_filter(['host-name is ' + str(host_name)])
-
-    if (assets is None or len(assets) == 0):
-        return 'No assets found'
-
-    for asset in assets:
-        last_scan = get_last_scan(asset)
-        asset['LastScanDate'] = last_scan['date']
-        asset['LastScanId'] = last_scan['id']
-        site = get_site(asset['id'])
-        asset['Site'] = site['name'] if site != '' else ''
+    if not response_data.get("resources"):
+        return CommandResults(readable_output="No templates found")
 
     headers = [
-        'AssetId',
-        'Address',
-        'Name',
-        'Site',
-        'Exploits',
-        'Malware',
-        'OperatingSystem',
-        'RiskScore',
-        'Assessed',
-        'LastScanDate',
-        'LastScanId'
+        "Id",
+        "Name",
+        "Description",
+        "Type"
     ]
 
-    outputs = translate_object(assets, [
-        {'from': 'id', 'to': 'AssetId'},
-        {'from': 'ip', 'to': 'Address'},
-        {'from': 'hostName', 'to': 'Name'},
-        {'from': 'Site', 'to': 'Site'},
-        {'from': 'vulnerabilities.exploits', 'to': 'Exploits'},
-        {'from': 'vulnerabilities.malwareKits', 'to': 'Malware'},
-        {'from': 'os', 'to': 'OperatingSystem'},
-        {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
-        {'from': 'riskScore', 'to': 'RiskScore'},
-        {'from': 'assessedForVulnerabilities', 'to': 'Assessed'},
-        {'from': 'LastScanDate', 'to': 'LastScanDate'},
-        {'from': 'LastScanId', 'to': 'LastScanId'}
-    ])
+    outputs = replace_key_names(
+        data=response_data["resources"],
+        name_mapping={
+            "id": "Id",
+            "name": "Name",
+            "description": "Description",
+            "type": "Type",
+        },
+        recursive=True,
+    )
 
-    endpoint = [{
-        'IP': o['Address'],
-        'HostName': o['Name'],
-        'OS': o['OperatingSystem']
-    } for o in outputs]
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': assets,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Nexpose assets', outputs, headers, removeNull=True),
-        'EntryContext': {
-            'Nexpose.Asset(val.AssetId==obj.AssetId)': outputs,
-            'Endpoint(val.IP==obj.IP)': endpoint
-        }
-    }
-
-    return entry
+    return CommandResults(
+        outputs_prefix="Nexpose.Template",
+        outputs_key_field="Id",
+        outputs=outputs,
+        readable_output=tableToMarkdown("Nexpose templates", outputs, headers, removeNull=True),
+        raw_response=response_data,
+    )
 
 
-def get_search_filters(text_filters):
-    filters = []
-    for text in text_filters:
-        components = text.split(' ')
-        field = components[0]
-        operator = components[1]
-        value = components[2].split(',')
-        # Convert numbers to floats if values are numbers
-        for i, v in enumerate(value):
-            curr_val = None
-            try:
-                curr_val = float(v)
-            except Exception:
-                curr_val = v
-            value[i] = curr_val
+def get_scan_command(client: Client, scan_ids: Union[str, list[str]]) -> Union[CommandResults, list[CommandResults]]:
+    """
+    Retrieve information about a specific or multiple scans.
 
-        flt = {
-            'field': field,
-            'operator': operator,
-        }
-        if len(value) > 1:
-            if operator in RANGE_OPERATORS:
-                flt['lower'] = value[0]
-                flt['upper'] = value[1]
-            else:
-                flt['values'] = value
-        else:
-            flt['value'] = value[0]
-        filters.append(flt)
-    return filters
-
-
-def search_assets(filters, match, limit=None, sort=None):
-    search_body = {
-        'filters': filters,
-        'match': match
-    }
-
-    path = 'assets/search'
-    params = {}
-    if sort is not None:
-        params['sort'] = sort.split(';')
-
-    return get_list_response(path, method='post', limit=limit, body=search_body, params=params)
-
-
-def get_assets_command():
-    limit = demisto.args().get('limit')
-    sort = demisto.args().get('sort')
-    assets = get_assets(limit=limit, sort=sort)
-
-    if (assets is None or len(assets) == 0):
-        return 'No assets found'
-
-    for asset in assets:
-        last_scan = get_last_scan(asset)
-        asset['LastScanDate'] = last_scan['date']
-        asset['LastScanId'] = last_scan['id']
-        site = get_site(asset['id'])
-        asset['Site'] = site['name'] if site != '' else ''
-
-    headers = [
-        'AssetId',
-        'Address',
-        'Name',
-        'Site',
-        'Exploits',
-        'Malware',
-        'OperatingSystem',
-        'Vulnerabilities',
-        'RiskScore',
-        'Assessed',
-        'LastScanDate',
-        'LastScanId'
-    ]
-
-    outputs = translate_object(assets, [
-        {'from': 'id', 'to': 'AssetId'},
-        {'from': 'ip', 'to': 'Address'},
-        {'from': 'hostName', 'to': 'Name'},
-        {'from': 'Site', 'to': 'Site'},
-        {'from': 'vulnerabilities.exploits', 'to': 'Exploits'},
-        {'from': 'vulnerabilities.malwareKits', 'to': 'Malware'},
-        {'from': 'os', 'to': 'OperatingSystem'},
-        {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
-        {'from': 'riskScore', 'to': 'RiskScore'},
-        {'from': 'assessedForVulnerabilities', 'to': 'Assessed'},
-        {'from': 'LastScanDate', 'to': 'LastScanDate'},
-        {'from': 'LastScanId', 'to': 'LastScanId'}
-    ])
-
-    endpoint = [{
-        'IP': o['Address'],
-        'HostName': o['Name'],
-        'OS': o['OperatingSystem']
-    } for o in outputs]
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': assets,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Nexpose assets', outputs, headers, removeNull=True),
-        'EntryContext': {
-            'Nexpose.Asset(val.AssetId==obj.AssetId)': outputs,
-            'Endpoint(val.IP==obj.IP)': endpoint
-        }
-    }
-
-    return entry
-
-
-def get_assets(limit=None, sort=None):
-    params = {}
-    if sort is not None:
-        params['sort'] = sort.split(';')
-    return get_list_response('assets', limit=limit, params=params)
-
-
-def get_scan_command():
-    ids = argToList(str(demisto.args()['id']))
+    Args:
+        client (Client): Client to use for API requests.
+        scan_ids (str | list): ID of the scan to retrieve.
+    """
+    if isinstance(scan_ids, str):
+        scan_ids = [scan_ids]
 
     scans = []
-    for id in ids:
-        scan = get_scan(id)
-        if (scan is None):
-            return 'Scan not found'
+
+    for scan_id in scan_ids:
+        scan = client.get_scan(scan_id)
+
+        if not scan:
+            return CommandResults(readable_output="Scan not found")
+
         scan_entry = get_scan_entry(scan)
         scans.append(scan_entry)
+
+    if len(scans) == 1:
+        return scans[0]
 
     return scans
 
 
-def map_scan(scan):
-    scan_output = translate_object(scan, [
-        {'from': 'id', 'to': 'Id'},
-        {'from': 'scanType', 'to': 'ScanType'},
-        {'from': 'scanName', 'to': 'ScanName'},
-        {'from': 'startedBy', 'to': 'StartedBy'},
-        {'from': 'assets', 'to': 'Assets'},
-        {'from': 'duration', 'to': 'TotalTime'},
-        {'from': 'endTime', 'to': 'Completed'},
-        {'from': 'status', 'to': 'Status'},
-        {'from': 'message', 'to': 'Message'}
-    ])
+def get_scans_command(client: Client, active: Union[bool, None] = None, sort: Union[str, None] = None,
+                      limit: Union[int, None] = None) -> CommandResults:
+    """
+    Retrieve a list of all scans.
 
-    if isinstance(scan_output, list):
-        for scan in scan_output:
-            scan['TotalTime'] = str(iso8601_duration_as_minutes(scan['TotalTime'])) + ' minutes'
-    else:
-        scan_output['TotalTime'] = str(iso8601_duration_as_minutes(scan_output['TotalTime'])) + ' minutes'
+    Args:
+        client (Client): Client to use for API requests.
+        active (bool | None, optional): Whether to return active scans or not. Defaults to False.
+        sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format. Defaults to None.
+        limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
+            Defaults to None.
+    """
+    scans: list = client.get_scans(
+        active=active,
+        sort=sort,
+        limit=limit,
+    )
 
-    return scan_output
+    if not scans:
+        return CommandResults(readable_output="No scans found")
 
+    normalized_scans = [normalize_scan_data(scan) for scan in scans]
 
-def get_scan_human_readable(scan_output, title):
-    scan_headers = [
-        'Id',
-        'ScanType',
-        'ScanName',
-        'StartedBy',
-        'Assets',
-        'TotalTime',
-        'Completed',
-        'Status',
-        'Message'
-    ]
+    scan_hr = tableToMarkdown(
+        name="Nexpose scans",
+        t=normalized_scans,
+        headers=[
+            "Id",
+            "ScanType",
+            "ScanName",
+            "StartedBy",
+            "Assets",
+            "TotalTime",
+            "Completed",
+            "Status",
+            "Message",
+        ],
+        removeNull=True)
 
-    return tableToMarkdown(title, scan_output, scan_headers, removeNull=True)
-
-
-def get_scan_entry(scan):
-    scan_output = map_scan(scan)
-
-    vuln_headers = [
-        'Critical',
-        'Severe',
-        'Moderate',
-        'Total'
-    ]
-
-    vuln_output = translate_object(scan['vulnerabilities'], [
-        {'from': 'critical', 'to': 'Critical'},
-        {'from': 'severe', 'to': 'Severe'},
-        {'from': 'moderate', 'to': 'Moderate'},
-        {'from': 'total', 'to': 'Total'}
-    ])
-
-    scan_hr = get_scan_human_readable(scan_output, 'Nexpose scan ' + str(scan['id']))
-    vuln_hr = tableToMarkdown('Vulnerabilities', vuln_output, vuln_headers, removeNull=True)
-    hr = scan_hr + vuln_hr
-
-    scan_output['Vulnerabilities'] = vuln_output
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': scan,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': {
-            'Nexpose.Scan(val.Id==obj.Id)': scan_output,
-        }
-    }
-
-    return entry
+    return CommandResults(
+        outputs_prefix="Nexpose.Scan",
+        outputs_key_field="Id",
+        outputs=normalized_scans,
+        readable_output=scan_hr,
+        raw_response=scans,
+    )
 
 
-def get_scan(scan_id):
-    path = 'scans/' + str(scan_id)
-    return send_request(path)
+def get_sites_command(client: Client, sort: Union[str, None] = None, limit: Union[int, None] = None) -> CommandResults:
+    """
+    Retrieve a list of sites.
 
+    Args:
+        client (Client): Client to use for API requests.
+        sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format. Defaults to None.
+        limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
+            Defaults to None.
+    """
+    sites = client.get_sites(
+        sort=sort,
+        limit=limit
+    )
 
-def create_site_command():
-    assets = argToList(demisto.args()['assets'])
-    site = create_site(demisto.args()['name'], assets,
-                       demisto.args().get('description'), demisto.args().get('importance'),
-                       demisto.args().get('scanTemplateId'))
-
-    if not site or 'id' not in site:
-        raise Exception('Site creation failed, could not get the new site')
-
-    output = {
-        'Id': site['id']
-    }
-
-    md = tableToMarkdown('New site created', output)
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': site,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': {
-            'Nexpose.Site(val.Id==obj.Id)': output,
-        }
-    }
-
-    return entry
-
-
-def create_site(name, assets, description=None, importance=None, template_id=None):
-    site_body = {
-        'name': name
-    }
-
-    if assets:
-        site_body['scan'] = {
-            'assets': {
-                'includedTargets': {
-                    'addresses': assets
-                }
-            }
-        }
-    if description:
-        site_body['description'] = description
-    if importance:
-        site_body['importance'] = importance
-    if template_id:
-        site_body['scanTemplateId'] = template_id
-
-    path = 'sites'
-
-    return send_request(path, 'post', body=site_body)
-
-
-def delete_site_command():
-    site_id = demisto.args()['id']
-
-    res = delete_site(site_id)
-
-    hr = "Site " + str(site_id) + " deleted"
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr
-    }
-
-    return entry
-
-
-def delete_site(site_id):
-    path = 'sites/' + str(site_id)
-
-    return send_request(path, 'delete')
-
-
-def get_sites_command():
-    sites = get_sites(limit=demisto.args().get('limit'), sort=demisto.args().get('sort'))
-
-    if (sites is None or len(sites) == 0):
-        return 'No sites found'
+    if not sites:
+        return CommandResults(readable_output="No sites found")
 
     headers = [
-        'Id',
-        'Name',
-        'Assets',
-        'Vulnerabilities',
-        'Risk',
-        'Type',
-        'LastScan'
+        "Id",
+        "Name",
+        "Assets",
+        "Vulnerabilities",
+        "Risk",
+        "Type",
+        "LastScan"
     ]
 
-    outputs = translate_object(sites, [
-        {'from': 'id', 'to': 'Id'},
-        {'from': 'name', 'to': 'Name'},
-        {'from': 'assets', 'to': 'Assets'},
-        {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
-        {'from': 'riskScore', 'to': 'Risk'},
-        {'from': 'type', 'to': 'Type'},
-        {'from': 'lastScanTime', 'to': 'LastScan'}
-    ])
+    outputs = replace_key_names(
+        data=sites,
+        name_mapping={
+            "id": "Id",
+            "name": "Name",
+            "assets": "Assets",
+            "vulnerabilities.total": "Vulnerabilities",
+            "riskScore": "Risk",
+            "type": "Type",
+            "lastScanTime": "LastScan",
+        },
+        recursive=True,
+    )
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': sites,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Nexpose sites', outputs, headers, removeNull=True),
-        'EntryContext': {
-            'Nexpose.Site(val.Id==obj.Id)': outputs,
-        }
-    }
-
-    return entry
-
-
-def get_sites(limit=None, sort=None):
-    path = 'sites'
-    params = {}
-    if sort is not None:
-        params['sort'] = sort.split(';')
-    return get_list_response(path, limit=limit, params=params)
+    return CommandResults(
+        outputs_prefix="Nexpose.Site",
+        outputs_key_field="Id",
+        outputs=outputs,
+        readable_output=tableToMarkdown("Nexpose sites", outputs, headers, removeNull=True),
+        raw_response=sites,
+    )
 
 
-def get_report_templates_command():
-    templates = get_report_templates()
+def search_assets_command(client: Client, filter_query: Union[str, None] = None,
+                          ip_addresses: Union[str, None] = None, hostnames: Union[str, None] = None,
+                          risk_score: Union[str, None] = None, vulnerability_title: Union[str, None] = None,
+                          sites: Union[Site, list[Site], None] = None, match: Union[str, None] = None,
+                          sort: Union[str, None] = None, limit: Union[int, None] = None) -> CommandResults:
+    """
+    Retrieve a list of all assets with access permissions that match the provided search filters.
 
-    if (templates is None or len(templates) == 0 or 'resources' not in templates):
-        return 'No templates found'
+    Args:
+        client (Client): Client to use for API requests.
+        filter_query (str | None, optional): String based filters to use separated by ';'. Defaults to None.
+        ip_addresses (str | None, optional): IP address(es) to filter for separated by ','. Defaults to None.
+        hostnames (str | None, optional): Hostname(s) to filter for separated by ','. Defaults to None.
+        risk_score (str | None, optional): Filter for risk scores that are higher than the provided value.
+            Defaults to None.
+        vulnerability_title (str | None, optional): Filter for vulnerability titles that contain the provided value.
+            Defaults to None. Defaults to None.
+        sites (Site | list[Site] | None, optional): Filter for assets that are under a specific site(s).
+            Defaults to None.
+        match (str | None, optional): Determine if the filters should match all or any of the filters.
+            Can be either "all" or "any". Defaults to None (Results in using MATCH_DEFAULT_VALUE).
+        sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format. Defaults to None.
+        limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
+            Defaults to None.
+    """
+    if not match:
+        match = MATCH_DEFAULT_VALUE
+
+    filters_data: list[Union[list[str], str]] = []
+
+    if filter_query:
+        filters_data.append(filter_query.split(";"))
+
+    if risk_score:
+        filters_data.append("risk-score is-greater-than " + risk_score)
+
+    if vulnerability_title:
+        filters_data.append("vulnerability-title contains " + vulnerability_title)
+
+    if sites:
+        str_site_ids: str
+
+        if isinstance(sites, list):
+            str_site_ids = ",".join([site.id for site in sites])
+
+        else:  # elif isinstance(sites, Site):
+            str_site_ids = sites.id
+
+        filters_data.append("site-id in " + str_site_ids)
+
+    if ip_addresses:
+        ips = argToList(ip_addresses)
+
+        for ip in ips:
+            filters_data.append("ip-address is " + ip)  # TODO: Change to `in <list of comma separated ip addresses>` instead of multiple filters?
+
+    if hostnames:
+        hostnames = argToList(hostnames)
+
+        for hostname in hostnames:
+            filters_data.append("host-name is " + hostname)  # TODO: Change to `in <list of comma separated hostnames>` instead if multiple filters?
+
+    found_assets = []
+
+    for filter_data in filters_data:
+        found_assets.extend(
+            client.search_assets(
+                filters=convert_asset_search_filters(filter_data),
+                match=match,
+                sort=sort,
+                limit=limit,
+            )
+        )
+
+    if not found_assets:
+        return CommandResults(readable_output="No assets were found")
+
+    for asset in found_assets:
+        last_scan = find_asset_last_change(asset)
+        asset["LastScanDate"] = last_scan["date"]
+        asset["LastScanId"] = last_scan["id"]
+        site = find_site_from_asset(asset["id"])
+        asset["Site"] = site["name"] if site != "" else ""
 
     headers = [
-        'Id',
-        'Name',
-        'Description',
-        'Type'
+        "AssetId",
+        "Address",
+        "Name",
+        "Site",
+        "Exploits",
+        "Malware",
+        "OperatingSystem",
+        "RiskScore",
+        "Assessed",
+        "LastScanDate",
+        "LastScanId"
     ]
 
-    outputs = translate_object(templates['resources'], [
-        {'from': 'id', 'to': 'Id'},
-        {'from': 'name', 'to': 'Name'},
-        {'from': 'description', 'to': 'Description'},
-        {'from': 'type', 'to': 'Type'},
-    ])
+    outputs = replace_key_names(
+        data=found_assets,
+        name_mapping={
+            "id": "AssetId",
+            "ip": "Address",
+            "hostName": "Name",
+            "vulnerabilities.exploits": "Exploits",
+            "vulnerabilities.malwareKits": "Malware",
+            "os": "OperatingSystem",
+            "vulnerabilities.total": "Vulnerabilities",
+            "riskScore": "RiskScore",
+            "assessedForVulnerabilities": "Assessed",
+        },
+        recursive=True,
+    )
+    endpoints = [{"IP": asset["Address"], "HostName": asset["Name"], "OS": asset["OperatingSystem"]}
+                 for asset in outputs]
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': templates,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Nexpose templates', outputs, headers, removeNull=True),
-        'EntryContext': {
-            'Nexpose.Template(val.Id==obj.Id)': outputs,
+    # TODO: Convert to CommandResults
+    return {
+        "Type": entryTypes["note"],
+        "Contents": found_assets,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": tableToMarkdown("Nexpose assets", outputs, headers, removeNull=True),
+        "EntryContext": {
+            "Nexpose.Asset(val.AssetId==obj.AssetId)": outputs,
+            "Endpoint(val.IP==obj.IP)": endpoints
         }
     }
 
-    return entry
 
-
-def get_report_templates():
-    path = 'report_templates'
-
-    return send_request(path)
-
-
-def create_assets_report_command():
-    assets = str(demisto.args()['assets']).split(',')
-    template = demisto.args().get('template')
-    name = demisto.args().get('name', 'report ' + str(datetime.now()))
-    report_format = demisto.args().get('format') or 'pdf'
-    download_immediately = argToBoolean(demisto.args().get('download_immediately', 'true'))
-
-    scope = {
-        'assets': assets
-    }
-    report_id = create_report(scope, name, template, report_format)
-    instance_id = generate_report(report_id)
-    context = {
-        'Name': name,
-        'ID': report_id,
-        'InstanceID': instance_id,
-        'Format': report_format,
-    }
-    hr = tableToMarkdown('Report Information', context)
-    if download_immediately:
-        try:
-            # Wait for the report to be completed
-            time.sleep(10)
-            return download_report(report_id, instance_id, name, report_format)
-        except Exception as err:
-            # If we received 404 it could mean that the report generation process has not finished yet. in that case
-            # we'll return the report's info to enable users to query for the report's status and download it.
-            if '404' not in str(err):
-                raise
-
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix='Nexpose.Report',
-        outputs=context,
-        outputs_key_field=['ID', 'InstanceID'],
-    )
-
-
-def create_sites_report_command():
+def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None,
+                              hostnames: Union[str, list, None] = None,
+                              scan_name: Union[str, None] = None) -> CommandResults:
     """
-    The create report process is divided to the following steps:
-    1. Configures a new report for generation.
-    2. Generates a configured report and returns the instance identifier of the report.
-    3. Checks the status of the report generation process.
-    4. Downloads the report.
+    | Start a scan on the provided assets.
+    |
+    | Note: Both `ips` and `hostnames` are optional, but at least one of them must be provided.
+
+    Args:
+        client (Client): Client to use for API requests.
+        ips (str | list | None, optional): IP(s) of assets to scan. Defaults to None
+        hostnames (str | list | None, optional): Hostname(s) of assets to scan. Defaults to None
+        scan_name (str | None): Name to set for the new scan.
+            Defaults to None (Results in using a "scan <date>" format).
     """
-    sites = str(demisto.args()['sites']).split(',')
-    template = demisto.args().get('template')
-    name = demisto.args().get('name', 'report ' + str(datetime.now()))
-    report_format = demisto.args().get('format') or 'pdf'
-    download_immediately = argToBoolean(demisto.args().get('download_immediately', 'true'))
-    scope = {
-        'sites': sites
-    }
+    if not (ips or hostnames):
+        raise ValueError("At least one of `ips` and `hostnames` must be provided")
 
-    report_id = create_report(scope, name, template, report_format)
-    instance_id = generate_report(report_id)
-    context = {
-        'Name': name,
-        'ID': str(report_id),
-        'InstanceID': str(instance_id),
-        'Format': report_format,
-    }
-    hr = tableToMarkdown('Report Information', context)
-    if download_immediately:
-        try:
-            # Wait for the report to be completed
-            time.sleep(10)
-            return download_report(report_id, instance_id, name, report_format)
-        except Exception as err:
-            # If we received 404 it could mean that the report generation process has not finished yet. in that case
-            # we'll return the report's info to enable users to query for the report's status and download it.
-            if '404' not in str(err):
-                raise
+    if not scan_name:
+        scan_name = f"scan {datetime.now()}"
 
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix='Nexpose.Report',
-        outputs=context,
-        outputs_key_field=['ID', 'InstanceID'],
-    )
+    if isinstance(ips, str):
+        ips = [ips]
 
+    if isinstance(hostnames, str):
+        hostnames = [hostnames]
 
-def create_scan_report_command():
-    scan = demisto.args()['scan']
-    template = demisto.args().get('template')
-    name = demisto.args().get('name', 'report ' + str(datetime.now()))
-    report_format = demisto.args().get('format') or 'pdf'
-    download_immediately = argToBoolean(demisto.args().get('download_immediately', 'true'))
-    scope = {
-        'scan': scan
-    }
-
-    report_id = create_report(scope, name, template, report_format)
-    instance_id = generate_report(report_id)
-    context = {
-        'Name': name,
-        'ID': report_id,
-        'InstanceID': instance_id,
-        'Format': report_format,
-    }
-    hr = tableToMarkdown('Report Information', context)
-    if download_immediately:
-        try:
-            # Wait for the report to be completed
-            time.sleep(10)
-            return download_report(report_id, instance_id, name, report_format)
-        except Exception as err:
-            # If we received 404 it could mean that the report generation process has not finished yet. in that case
-            # we'll return the report's info to enable users to query for the report's status and download it.
-            if '404' not in str(err):
-                raise
-
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix='Nexpose.Report',
-        outputs=context,
-        outputs_key_field=['ID', 'InstanceID'],
-    )
-
-
-def create_report(scope, name, template, report_format):
-    if not template:
-        templates = get_report_templates()
-        if not templates or 'resources' not in templates:
-            return 'No templates found'
-        template = templates['resources'][0]['id']
-    for i, (k, v) in enumerate(scope.items()):
-        if not isinstance(v, list):
-            scope[k] = int(v)
-        else:
-            for i, v in enumerate(scope[k]):
-                scope[k][i] = int(v)
-    path = 'reports'
-    body = {
-        'scope': scope,
-        'template': template,
-        'name': name,
-        'format': report_format
-    }
-
-    result = send_request(path, 'post', body=body)
-    return result.get('id')
-
-
-def generate_report(report_id):
-    path = 'reports/{}/generate'.format(report_id)
-    instance = send_request(path, 'post')
-    if not instance.get('id'):
-        return 'Failed to generate report'
-    return instance['id']
-
-
-def download_report(report_id, instance_id, name, report_format):
-    path = 'reports/{}/history/{}/output'.format(report_id, instance_id)
-    headers = {
-        'Accept': 'application/json',
-        'Accept-Encoding': 'gzip, deflate, br'
-    }
-
-    report = send_request(path, headers=headers, is_file=True)
-
-    return fileResult(name + '.' + report_format, report, entryTypes['entryInfoFile'])
-
-
-def download_report_command():
-    report_id = demisto.args()['report_id']
-    instance_id = demisto.args()['instance_id']
-    name = demisto.args().get('name', 'report ' + str(datetime.now()))
-    report_format = demisto.args().get('format', 'pdf')
-
-    return download_report(report_id, instance_id, name, report_format)
-
-
-def get_generate_report_status_command():
-    report_id = demisto.args()['report_id']
-    instance_id = demisto.args()['instance_id']
-    path = 'reports/{}/history/{}'.format(report_id, instance_id)
-    result = send_request(path)
-    context = {
-        'ID': report_id,
-        'InstanceID': instance_id,
-        'Status': result.get('status', 'unknown'),
-    }
-    hr = tableToMarkdown('Report Generation Status', context)
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix='Nexpose.Report',
-        outputs=context,
-        outputs_key_field=['ID', 'InstanceID'],
-        raw_response=result,
-    )
-
-
-def start_assets_scan_command():
-    ips = demisto.args().get('IPs')
-    host_names = demisto.args().get('hostNames')
-    name = demisto.args().get('name', 'scan ' + str(datetime.now()))
-
-    text_filters = None
     if ips:
-        ips = ips.split(',')
-        text_filters = ['ip-address is ' + ips[0]]
-    elif host_names:
-        host_names = host_names.split(',')
-        text_filters = ['host-name is ' + host_names[0]]
+        asset_filter = "ip-address is " + ips[0]
 
-    if text_filters is None:
-        return 'No IPs or hosts were provided'
+    else:  # elif hostnames
+        asset_filter = "host-name is " + hostnames[0]
 
-    filters = get_search_filters(text_filters)
-    asset = search_assets(filters, match='all')
+    asset = client.search_assets(filters=convert_asset_search_filters(asset_filter), match="all")
 
-    if asset is None or len(asset) == 0:
-        return 'Could not find assets'
+    if not asset:
+        return CommandResults(readable_output="Could not find assets")
 
-    site = get_site(asset[0]['id'])
-    if site is None or 'id' not in site:
-        return 'Could not find site'
+    site = find_site_from_asset(asset[0]["id"])
 
-    hosts = []  # type: ignore
+    if site is None or "id" not in site:  # TODO: Check if `site` can actually be None
+        return CommandResults(readable_output="Could not find site")
+
+    hosts = []
+
     if ips:
-        hosts += ips
-    if host_names:
-        hosts += host_names
+        hosts.extend(ips)
 
-    scan_response = start_scan(site['id'], hosts, name)
+    if hostnames:
+        hosts.extend(hostnames)
 
-    if (scan_response is None or 'id' not in scan_response):
-        return 'Could not start scan'
+    scan_response = client.start_site_scan(
+        site_id=site["id"],
+        scan_name=scan_name,
+        hosts=hosts
+    )
 
-    scan = get_scan(scan_response['id'])
+    if "id" not in scan_response:
+        return CommandResults(readable_output="Could not start scan")
 
-    return get_scan_entry(scan)
+    return get_scan_entry(client.get_scan(scan_response["id"]))
 
 
-def start_site_scan_command():
-    site = demisto.args()['site']
-    name = demisto.args().get('name', 'scan ' + str(datetime.now()))
-    hosts = demisto.args().get('hosts', '')
+def start_site_scan_command(client: Client, site: Site,
+                            scan_name: Union[str, None], hosts: Union[list[str], None]) -> CommandResults:
+    """
+    Start a scan for a specific site.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site (Site): Site to start a scan on.
+        scan_name (str | None): Name to set for the new scan.
+            Defaults to None (Results in using a "scan <date>" format).
+        hosts (list[str] | None): Hosts to scan. Defaults to None (Results in scanning all hosts).
+    """
+    if not scan_name:
+        scan_name = f"scan {datetime.now()}"
 
     if not hosts:
-        assets = get_site_assets(site)
-        hosts = [asset['ip'] for asset in assets]
-    else:
-        hosts = argToList(hosts)
+        assets = client.get_site_assets(site.id)
+        hosts = [asset["ip"] for asset in assets]
 
-    scan_response = start_scan(site, hosts, name)
+    scan_response = client.start_site_scan(
+        site_id=site.id,
+        scan_name=scan_name,
+        hosts=hosts
+    )
 
-    if (scan_response is None or 'id' not in scan_response):
-        return 'Could not start scan'
+    if not scan_response or "id" not in scan_response:
+        return CommandResults(readable_output="Could not start scan")
 
-    scan = get_scan(scan_response['id'])
-
-    return get_scan_entry(scan)
-
-
-def start_scan(site, hosts, name):
-    path = 'sites/' + str(site) + '/scans'
-    body = {
-        'name': name,
-        'hosts': hosts
-    }
-
-    return send_request(path, 'post', body=body)
+    scan_data = client.get_scan(scan_response.get("id"))
+    return get_scan_entry(scan_data)
 
 
-def get_site_assets(site_id):
-    path = 'sites/' + site_id + '/assets'
+def update_scan_command(client: Client, scan_id: str, scan_status: ScanStatus) -> CommandResults:
+    """
+    Update status for a specific scan.
 
-    return get_list_response(path)
+    Args:
+        client (Client): Client to use for API requests.
+        scan_id (str): ID of the scan to update.
+        scan_status (ScanStatus): Status to set the scan to.
+    """
+    response = client.update_scan_status(scan_id, scan_status.name.lower())
 
-
-def get_scans_command():
-    scans = get_scans(demisto.args().get('sort'), demisto.args().get('limit'), demisto.args().get('active'))
-
-    if not scans or len(scans) == 0:
-        return 'No scans found'
-
-    scan_output = map_scan(scans)
-    scan_hr = get_scan_human_readable(scan_output, 'Nexpose scans')
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': scans,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': scan_hr,
-        'EntryContext': {
-            'Nexpose.Scan(val.Id==obj.Id)': scan_output,
-        }
-    }
-
-    return entry
-
-
-def get_scans(sort, limit, active):
-    path = 'scans'
-    params = {}
-    if sort is not None:
-        params['sort'] = sort.split(';')
-    if active is not None:
-        params['active'] = active
-
-    return get_list_response(path, method='get', limit=limit, params=params)
-
-
-def stop_scan_command():
-    scan_id = demisto.args()['id']
-    res = set_scan_status(scan_id, 'stop')
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Successfully stopped the scan',
-    }
-
-    return entry
-
-
-def pause_scan_command():
-    scan_id = demisto.args()['id']
-    res = set_scan_status(scan_id, 'pause')
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Successfully paused the scan',
-    }
-
-    return entry
-
-
-def resume_scan_command():
-    scan_id = demisto.args()['id']
-    res = set_scan_status(scan_id, 'resume')
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Successfully resumed the scan',
-    }
-
-    return entry
-
-
-def set_scan_status(scan_id, scan_status):
-    path = 'scans/' + str(scan_id) + '/' + scan_status
-
-    return send_request(path, 'post')
+    return CommandResults(
+        readable_output=f"Successfully updated scan status to \"{scan_status.name.lower()}\"",
+        raw_response=response,
+    )
 
 
 def main():
     try:
+        args = demisto.args()
+        params = demisto.params()
+        command = demisto.command()
         handle_proxy()
-        global SESSION
-        SESSION = login()
-        if demisto.command() == 'test-module':
-            get_assets(limit=1)
-            return_results('ok')
-        if demisto.command() == 'nexpose-get-assets':
-            return_results(get_assets_command())
-        if demisto.command() == 'nexpose-get-asset':
-            return_results(get_asset_command())
-        if demisto.command() == 'nexpose-get-asset-vulnerability':
-            return_results(get_asset_vulnerability_command())
-        if demisto.command() == 'nexpose-search-assets':
-            return_results(search_assets_command())
-        if demisto.command() == 'nexpose-get-scan':
-            return_results(get_scan_command())
-        if demisto.command() == 'nexpose-get-sites':
-            return_results(get_sites_command())
-        if demisto.command() == 'nexpose-get-report-templates':
-            return_results(get_report_templates_command())
-        if demisto.command() == 'nexpose-create-assets-report':
-            return_results(create_assets_report_command())
-        if demisto.command() == 'nexpose-create-sites-report':
-            return_results(create_sites_report_command())
-        if demisto.command() == 'nexpose-create-scan-report':
-            return_results(create_scan_report_command())
-        if demisto.command() == 'nexpose-get-report-status':
-            return_results(get_generate_report_status_command())
-        if demisto.command() == 'nexpose-download-report':
-            return_results(download_report_command())
-        if demisto.command() == 'nexpose-start-site-scan':
-            return_results(start_site_scan_command())
-        if demisto.command() == 'nexpose-start-assets-scan':
-            return_results(start_assets_scan_command())
-        if demisto.command() == 'nexpose-create-site':
-            return_results(create_site_command())
-        if demisto.command() == 'nexpose-delete-site':
-            return_results(delete_site_command())
-        if demisto.command() == 'nexpose-stop-scan':
-            return_results(stop_scan_command())
-        if demisto.command() == 'nexpose-pause-scan':
-            return_results(pause_scan_command())
-        if demisto.command() == 'nexpose-resume-scan':
-            return_results(resume_scan_command())
-        if demisto.command() == 'nexpose-get-scans':
-            return_results(get_scans_command())
+
+        client = Client(
+            url=params.get("server"),
+            username=params["credentials"].get("identifier"),
+            password=params["credentials"].get("password"),
+            token=params.get("token"),
+            verify=not params.get("unsecure")
+        )
+
+        if command == "test-module":
+            client.get_assets(page_size=1, limit=1)
+            results = "ok"
+        elif command == "nexpose-create-assets-report":
+            results = create_assets_report_command(
+                client=client,
+                asset_ids=argToList(args.get("assets")),
+                template_id=args.get("template"),
+                report_name=args.get("name"),
+                report_format=ReportFileFormat(args.get("format").upper()),
+                download_immediately=argToBoolean(args.get("download_immediately"))
+            )
+        elif command == "nexpose-create-scan-report":
+            results = create_scan_report_command(
+                client=client,
+                scan_id=args.get("scans"),
+                template_id=args.get("template"),
+                report_name=args.get("name"),
+                report_format=ReportFileFormat(args.get("format").upper()),
+                download_immediately=argToBoolean(args.get("download_immediately")),
+            )
+        elif command == "nexpose-create-site":
+            results = create_site_command(
+                client=client,
+                name=args.get("name"),
+                description=args.get("description"),
+                assets=argToList(args.get("assets")),
+                site_importance=SiteImportance(args.get("importance").upper()),
+                template_id=args.get("scanTemplateId"),
+            )
+        elif command == "nexpose-create-sites-report":
+            sites_list = [Site(site_id=site_id, client=client) for site_id in argToList(args.get("sites"))]
+            sites_list.extend(
+                [Site(site_name=site_name, client=client) for site_name in argToList(args.get("site_names"))]
+            )
+
+            results = create_sites_report_command(
+                client=client,
+                sites=sites_list,
+                template_id=args.get("template"),
+                report_name=args.get("name"),
+                report_format=ReportFileFormat(args.get("format").upper()),
+                download_immediately=argToBoolean(args.get("download_immediately")),
+            )
+        elif command == "nexpose-delete-site":
+            results = delete_site_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
+            )
+        elif command == "nexpose-download-report":
+            results = download_report_command(
+                client=client,
+                report_id=args.get("report_id"),
+                instance_id=args.get("instance_id"),
+                report_name=args.get("name"),
+                report_format=ReportFileFormat(args.get("format", "pdf").upper()),
+            )
+        elif command == "nexpose-get-asset":
+            results = get_asset_command(
+                client=client,
+                asset_id=args.get("id")
+            )
+        elif command == "nexpose-get-asset-vulnerability":
+            results = get_asset_vulnerability_command(
+                client=client,
+                asset_id=args.get("id"),
+                vulnerability_id=args.get("vulnerabilityId"),
+            )
+        elif command == "nexpose-get-assets":
+            results = get_assets_command(
+                client=client,
+                sort=args.get("sort"),
+                limit=arg_to_number(args.get("limit"))
+            )
+        elif command == "nexpose-get-report-templates":
+            results = get_report_templates_command(
+                client=client,
+            )
+        elif command == "nexpose-get-report-status":
+            results = get_generated_report_status_command(
+                client=client,
+                report_id=args.get("report_id"),
+                instance_id=args.get("instance_id")
+            )
+        elif command == "nexpose-get-scan":
+            results = get_scan_command(
+                client=client,
+                scan_ids=argToList(str(args.get(id))),
+            )
+        elif command == "nexpose-get-scans":
+            results = get_scans_command(
+                client=client,
+                active=args.get("active"),
+                sort=args.get("sort"),
+                limit=arg_to_number(args.get("limit")),
+            )
+        elif command == "nexpose-get-sites":
+            results = get_sites_command(
+                client=client,
+                sort=args.get("sort"),
+                limit=arg_to_number(args.get("limit")),
+            )
+        elif command == "nexpose-pause-scan":
+            results = update_scan_command(
+                client=client,
+                scan_id=args.get("id"),
+                scan_status=ScanStatus.PAUSE,
+            )
+        elif command == "nexpose-resume-scan":
+            results = update_scan_command(
+                client=client,
+                scan_id=args.get("id"),
+                scan_status=ScanStatus.RESUME,
+            )
+        elif command == "nexpose-search-assets":
+            sites: list[Site] = []
+
+            for site_id in argToList(args.get("siteIdIn")):
+                sites.append(Site(site_id=site_id, client=client))
+
+            for site_name in argToList(args.get("siteNameIn")):
+                sites.append(Site(site_name=site_name, client=client))
+
+            results = search_assets_command(
+                client=client,
+                filter_query=args.get("query"),
+                ip_addresses=args.get("ipAddressIs"),
+                hostnames=args.get("hostNameIs"),
+                risk_score=args.get("riskScoreHigherThan"),
+                vulnerability_title=args.get("vulnerabilityTitleContains"),
+                sites=sites,
+                match=args.get("match"),
+                sort=args.get("sort"),
+                limit=arg_to_number(args.get("limit")),
+            )
+        elif command == "nexpose-start-assets-scan":
+            results = start_assets_scan_command(
+                client=client,
+                ips=argToList(args.get("IPs")),
+                hostnames=argToList(args.get("hostNames")),
+                scan_name=args.get("name"),
+            )
+        elif command == "nexpose-start-site-scan":
+            results = start_site_scan_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
+                scan_name=args.get("name"),
+                hosts=argToList(args.get("hosts")),
+            )
+        elif command == "nexpose-stop-scan":
+            results = update_scan_command(
+                client=client,
+                scan_id=args.get("id"),
+                scan_status=ScanStatus.STOP,
+            )
+        else:
+            raise NotImplementedError(f"Command {command} not implemented")
+
+        return_results(results)
+
     except Exception as e:
         LOG(e)
         LOG.print_log(False)
-        return_error(e.message)
+        return_error(str(e))
 
 
-# python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

@@ -211,7 +211,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Multiple criteria of <string> Filter to match assets, according to the Search Criteria API standard. multiple filters can be provided using '';'' separator. For example: ''ip-address in range 1.2.3.4,1.2.3.8;host-name is myhost''. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
+      description: 'Multiple criteria of <string> Filter to match assets, according to the Search Criteria API standard. multiple filters can be provided using '';'' separator. For example: ''ip-address in-range 1.2.3.4,1.2.3.8;host-name is myhost''. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
       isArray: false
       name: query
       required: false
@@ -255,8 +255,14 @@ script:
       secret: false
     - default: false
       description: Multiple criteria of integer<int32> Search by site ids
-      isArray: false
+      isArray: true
       name: siteIdIn
+      required: false
+      secret: false
+    - default: false
+      description: Multiple criteria of <string> Search by site names
+      isArray: true
+      name: siteNameIn
       required: false
       secret: false
     - auto: PREDEFINED
@@ -509,7 +515,13 @@ script:
       description: Id of the site to delete
       isArray: false
       name: id
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: Name of the site to delete (can be used instead of `site_id`)
+      isArray: false
+      name: site_name
+      required: false
       secret: false
     deprecated: false
     description: Deletes a site.
@@ -575,7 +587,7 @@ script:
   - arguments:
     - default: false
       description: Multiple criteria of integer<int64> Asset ids to create the report on, comma separated.
-      isArray: false
+      isArray: true
       name: assets
       required: true
       secret: false
@@ -649,8 +661,14 @@ script:
   - arguments:
     - default: false
       description: Multiple criteria of integer<int32> Site ids to create the report on, comma separated.
-      isArray: false
+      isArray: true
       name: sites
+      required: true
+      secret: false
+    - default: false
+      description: Multiple criteria of <string> Site names to create the report on, comma separated.
+      isArray: true
+      name: site_names
       required: true
       secret: false
     - default: false
@@ -854,13 +872,13 @@ script:
   - arguments:
     - default: false
       description: Multiple criteria of <string> IP addresses of assets, comma separated.
-      isArray: false
+      isArray: true
       name: IPs
       required: false
       secret: false
     - default: false
       description: Multiple criteria of <string> Host names of assets, comma separated.
-      isArray: false
+      isArray: true
       name: hostNames
       required: false
       secret: false
@@ -1059,8 +1077,8 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python2
-  dockerimage: demisto/python:2.7.18.27799
+  subtype: python3
+  dockerimage: demisto/python3:3.10.6.33415
 fromversion: 5.0.0
 tests:
 - nexpose_test

@@ -1,0 +1,264 @@
+[
+    {
+        "assets": 4,
+        "id": 848,
+        "importance": "normal",
+        "lastScanTime": "2021-08-03T14:09:15.321Z",
+        "links": [
+            {
+                "href": "https://nexpose.local/api/3/sites/848",
+                "rel": "self"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/alerts",
+                "rel": "Alerts"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/scan_engine",
+                "rel": "Scan Engine"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/scan_schedules",
+                "rel": "Schedules"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/organization",
+                "rel": "Organization"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/tags",
+                "rel": "Tags"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/users",
+                "rel": "Users"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/scan_template",
+                "rel": "Template"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/site_credentials",
+                "rel": "Site Credentials"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/shared_credentials",
+                "rel": "Assigned Shared Credentials"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/web_authentication/html_forms",
+                "rel": "Web HTML Forms Authentication"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/web_authentication/http_headers",
+                "rel": "Web HTTP Headers Authentication"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/assets",
+                "rel": "Assets"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/included_targets",
+                "rel": "Included Targets"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/excluded_targets",
+                "rel": "Excluded Targets"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/included_asset_groups",
+                "rel": "Included Asset Groups"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/848/excluded_asset_groups",
+                "rel": "Excluded Asset Groups"
+            }
+        ],
+        "name": "Authenticated-Assets",
+        "riskScore": 21183.0,
+        "scanEngine": 3,
+        "scanTemplate": "full-audit-without-web-spider",
+        "type": "static",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 13,
+            "severe": 26,
+            "total": 39
+        }
+    },
+    {
+        "assets": 19,
+        "id": 724,
+        "importance": "normal",
+        "lastScanTime": "2021-06-29T07:06:54.733Z",
+        "links": [
+            {
+                "href": "https://nexpose.local/api/3/sites/724",
+                "rel": "self"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/alerts",
+                "rel": "Alerts"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/scan_engine",
+                "rel": "Scan Engine"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/scan_schedules",
+                "rel": "Schedules"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/organization",
+                "rel": "Organization"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/tags",
+                "rel": "Tags"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/users",
+                "rel": "Users"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/scan_template",
+                "rel": "Template"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/site_credentials",
+                "rel": "Site Credentials"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/shared_credentials",
+                "rel": "Assigned Shared Credentials"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/web_authentication/html_forms",
+                "rel": "Web HTML Forms Authentication"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/web_authentication/http_headers",
+                "rel": "Web HTTP Headers Authentication"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/assets",
+                "rel": "Assets"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/included_targets",
+                "rel": "Included Targets"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/excluded_targets",
+                "rel": "Excluded Targets"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/included_asset_groups",
+                "rel": "Included Asset Groups"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/724/excluded_asset_groups",
+                "rel": "Excluded Asset Groups"
+            }
+        ],
+        "name": "PANW",
+        "riskScore": 224343.0,
+        "scanEngine": 3,
+        "scanTemplate": "full-audit-without-web-spider",
+        "type": "static",
+        "vulnerabilities": {
+            "critical": 142,
+            "moderate": 18,
+            "severe": 319,
+            "total": 479
+        }
+    },
+    {
+        "assets": 9,
+        "description": "This is a test site with test asset",
+        "id": 1,
+        "importance": "very_low",
+        "lastScanTime": "2020-11-26T17:13:54.117Z",
+        "links": [
+            {
+                "href": "https://nexpose.local/api/3/sites/1",
+                "rel": "self"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/alerts",
+                "rel": "Alerts"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/scan_engine",
+                "rel": "Scan Engine"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/scan_schedules",
+                "rel": "Schedules"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/organization",
+                "rel": "Organization"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/tags",
+                "rel": "Tags"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/users",
+                "rel": "Users"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/scan_template",
+                "rel": "Template"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/site_credentials",
+                "rel": "Site Credentials"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/shared_credentials",
+                "rel": "Assigned Shared Credentials"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/web_authentication/html_forms",
+                "rel": "Web HTML Forms Authentication"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/web_authentication/http_headers",
+                "rel": "Web HTTP Headers Authentication"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/assets",
+                "rel": "Assets"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/included_targets",
+                "rel": "Included Targets"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/excluded_targets",
+                "rel": "Excluded Targets"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/included_asset_groups",
+                "rel": "Included Asset Groups"
+            },
+            {
+                "href": "https://nexpose.local/api/3/sites/1/excluded_asset_groups",
+                "rel": "Excluded Asset Groups"
+            }
+        ],
+        "name": "Test",
+        "riskScore": 20965.0,
+        "scanEngine": 3,
+        "scanTemplate": "full-audit-without-web-spider",
+        "type": "static",
+        "vulnerabilities": {
+            "critical": 7,
+            "moderate": 3,
+            "severe": 42,
+            "total": 52
+        }
+    }
+]

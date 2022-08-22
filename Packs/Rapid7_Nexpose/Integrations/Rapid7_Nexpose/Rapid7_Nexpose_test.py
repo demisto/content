@@ -1,88 +1,52 @@
-import demistomock as demisto
-import requests
+import json
+from pathlib import Path
 
-ITEM_WITHOUT_MS = {
-    'date': '2019-05-03T03:01:54Z'
-}
+import pytest
 
-ITEM_WITH_MS = {
-    'date': '2019-05-03T03:02:54.123Z'
-}
-
-ITEM_WITH_SCANID = {
-    'date': '2019-05-03T03:03:54.123Z',
-    'scanId': '1'
-}
+from Rapid7_Nexpose import *
 
 
-class ResponseMock:
-    def __init__(self):
-        self.status_code = 200
-
-    def json(self):
-        return ''
-
-
-def init_integration(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'credentials': {
-            'identifier': 'a',
-            'password': 'a'
-        },
-        'server': 'nexpose.com',
-        'proxy': True
-    })
-    mocker.patch.object(requests, 'post', return_value=ResponseMock())
+@pytest.fixture
+def mock_client():
+    return Client(
+        url="url",
+        username="username",
+        password="password",
+        verify=False,
+    )
 
 
-def test_get_datetime_from_asset_history_item(mocker):
-    init_integration(mocker)
-    from Rapid7_Nexpose import get_datetime_from_asset_history_item
+def load_test_data(file_name: str) -> dict:
+    """
+    A function for loading and returning data from json files within the "test_data" folder.
 
-    assert(get_datetime_from_asset_history_item(ITEM_WITH_MS))
-    assert(get_datetime_from_asset_history_item(ITEM_WITHOUT_MS))
+    Args:
+        file_name (str): Name of a json file to load data from.
 
-
-def test_sort_with_and_without_ms(mocker):
-    init_integration(mocker)
-    from Rapid7_Nexpose import get_datetime_from_asset_history_item
-
-    dt_arr = [ITEM_WITH_MS, ITEM_WITHOUT_MS]
-    sorted_dt_arr = sorted(dt_arr, key=get_datetime_from_asset_history_item)
-    assert(sorted_dt_arr[0] == ITEM_WITHOUT_MS)
-    assert(sorted_dt_arr[1] == ITEM_WITH_MS)
+    Returns:
+        dict: Dictionary data loaded from the json file.
+    """
+    with open(Path("test_data") / file_name, "r") as f:
+        return json.load(f)
 
 
-def test_get_last_scan(mocker):
-    init_integration(mocker)
-    from Rapid7_Nexpose import get_last_scan
+@pytest.mark.parametrize("test_input, expected_output",
+                         [
+                             ("PT2M16.481S", 10.016666666666667),
+                             ("PT2M17.976S", 18.266666666666666),
+                             ("PT59.669S", 11.15),
+                         ])  # TODO: Make test samples more varied?
+def test_iso8601_duration_as_minutes(test_input: str, expected_output: float):
+    assert iso8601_duration_as_minutes(test_input) == expected_output
 
-    # test empty history
-    expected = '-'
-    assert(get_last_scan({'history': None}) == expected)
 
-    # test history with assorted items
-    asset = {
-        'history': [
-            ITEM_WITH_MS,
-            ITEM_WITHOUT_MS
-        ]
-    }
-    expected = {
-        'date': '2019-05-03T03:02:54.123Z',
-        'id': '-'
-    }
-
-    # test history with assorted items + scanId
-    asset = {
-        'history': [
-            ITEM_WITH_MS,
-            ITEM_WITHOUT_MS,
-            ITEM_WITH_SCANID
-        ]
-    }
-    expected = {
-        'date': '2019-05-03T03:03:54.123Z',
-        'id': '1'
-    }
-    assert(get_last_scan(asset) == expected)
+@pytest.mark.parametrize("test_input, expected_output",
+                         [
+                             ("PANW", "724"),
+                             ("Authenticated-Assets", "848"),
+                             ("Test", "1"),
+                             ("Site-That-Doesn't-Exist", None),
+                         ])
+def test_find_site_id(mocker, mock_client: Client, test_input: str, expected_output: Union[str, None]):
+    mocker.patch.object(Client, "_paged_http_request", return_value=load_test_data("client_get_sites.json"))
+    assert mock_client.find_site_id(test_input) == expected_output
