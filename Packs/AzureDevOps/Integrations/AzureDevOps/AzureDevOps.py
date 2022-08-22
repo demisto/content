@@ -1585,11 +1585,14 @@ def test_module(client: Client) -> str:
     # This  should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
     if "Device" in client.connection_type:
-        raise DemistoException("Test module is avilable for Authorization Code only, for other authentication types use the "
-                               "azure-devops-auth-start command")
+        raise DemistoException("Please enable the integration and run `!azure-devops-auth-start`"
+                               "and `!azure-deops-auth-complete` to log in."
+                               "You can validate the connection by running `!azure-devops-auth-test`\n"
+                               "For more details press the (?) button.")
 
-    test_connection(client)
-    return "ok"
+    else:
+        raise DemistoException("Test module in unavilable for Authorization Code mode")
+
 
 
 def main() -> None:
