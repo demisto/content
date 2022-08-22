@@ -390,7 +390,7 @@ tasks:
       - "50"
     scriptarguments:
       domain:
-        simple: google.com
+        simple: microsoft.com
       retry-count:
         simple: "3"
     separatecontext: false
