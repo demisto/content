@@ -267,6 +267,7 @@ def get_a_list_of_campaigns_submitted_to_abuse_mailbox_command(client, args):
 
 
 def get_a_list_of_threats_command(client, args):
+    a = 1
     filter_ = str(args.get('filter', ''))
     page_size = args.get('page_size', None)
     page_number = args.get('page_number', None)
