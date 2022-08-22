@@ -1307,7 +1307,6 @@ class TestPanoramaPushToDeviceGroupCommand:
             assert not command_result.outputs  # make sure no context output is being returned to war-room during polling
             command_result = panorama_push_to_device_group_command(polling_args)
 
-        # last response of the command should be job status and the commit description
         assert command_result.outputs.get('JobID') == '123'
         assert command_result.outputs.get('Status') == 'Completed'
         assert command_result.outputs.get('Details')
