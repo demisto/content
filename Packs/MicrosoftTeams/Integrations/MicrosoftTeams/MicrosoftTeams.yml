@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: Microsoft Teams test
+  id: Microsoft Teams test2
   version: -1
 configuration:
 - display: Bot ID
@@ -72,8 +72,8 @@ configuration:
   required: false
   type: 13
 description: Send messages and notifications to your team members.
-display: Microsoft Teams test
-name: Microsoft Teams test
+display: Microsoft Teams test2
+name: Microsoft Teams test2
 script:
   commands:
   - arguments:
