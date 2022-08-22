@@ -1558,7 +1558,10 @@ outputs:
   description: Indicators extracted from the command line
   type: unknown
 - contextPath: commandline.original
-  description: The command line
+  description: The original command line
+  type: unknown
+- contextPath: commandline
+  description: The encoded command line
   type: unknown
 - contextPath: CommandlineVerdict
   description: The command line verdict
