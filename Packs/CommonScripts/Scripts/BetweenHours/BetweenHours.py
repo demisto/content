@@ -1,4 +1,3 @@
-from imaplib import _CommandResults
 import dateparser
 import demistomock as demisto
 from CommonServerPython import *
