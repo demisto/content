@@ -112,6 +112,7 @@ configuration:
   type: 9
   required: false
   hiddenusername: true
+  additionalinfo: Adding an API key will enable the integration to handle blocks which contain a state and is necessary for the SlackBlockBuilder script.
 - display: Enable DMs to the bot
   hidden: false
   name: enable_dm
