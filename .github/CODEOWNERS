@@ -37,7 +37,7 @@
 /Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders
 /Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
 /Packs/ArcSightESM/Integrations/ArcSightESMv2/* @demisto/content-leaders
-/Packs/QRadar/Integrations/QRadar_v3/* @tkatzir
+/Packs/QRadar/Integrations/QRadar_v3/* @ilaner
 /Packs/Slack/Integrations/Slack/* @demisto/content-leaders
 /Packs/SplunkPy/Integrations/SplunkPy/* @demisto/content-leaders
 /Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
@@ -73,10 +73,12 @@ Utils/trigger_nightly_sdk_build.sh @dorschw
 
 # Dependencies
 pyproject.toml @ilaner
-poetry.lock @ilaner
 
 # Devcontainers
 .devcontainer/* @ilaner
+
+# VSCode
+.vscode/* @ilaner
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @daryakoval
