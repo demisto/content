@@ -75,8 +75,8 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: true
     - default: false
       description: Fetch events from this time (<number> <time unit>, e.g., 12 hours, 7 days).
@@ -89,7 +89,7 @@ script:
     description: Get events.
     execution: false
     name: dropbox-get-events
-  dockerimage: demisto/fastapi:1.0.0.29740
+  dockerimage: demisto/fastapi:1.0.0.32142
   feed: false
   isfetch: false
   longRunning: false
