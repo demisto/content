@@ -1,5 +1,5 @@
 Integrate Prisma SASE API
-This integration was integrated and tested with version 1.0 of Prisma SASE
+This integration was integrated and tested with version 1.0 of Prisma SASE API
 
 ## Configure Prisma SASE on Cortex XSOAR
 
@@ -73,7 +73,7 @@ Create a new security rule
 #### Context Example
 ```json
 {
-    "id": "b71e385c-1c8a-42fc-9444-54bccbd148b9",
+    "id": "b71e38##-1c8a-42fc-9444-54bc####48b9",
     "name": "Outbound Security Rule",
     "folder": "Shared",
     "position": "pre",
@@ -151,7 +151,7 @@ List security rules
 #### Context Example
 ```json
 {
-    "id": "b71e385c-1c8a-42fc-9444-54bccbd148b9",
+    "id": "b71e38##-1c8a-42fc-9444-54####48b9",
     "name": "Outbound Security Rule",
     "folder": "Shared",
     "position": "pre",
@@ -270,7 +270,7 @@ Edit or update existing security rule
 | PrismaAccess.UpdatedSecurityRule | unknown | Updated security rule | 
 
 #### Command Example
-```!prisma-access-update-security-rule id="53cd1c5e-a3c2-4c31-b975-56b48588736c" name="customer-b" ```
+```!prisma-access-update-security-rule id="53c###5e-a3c2-4c31-b975-56b###736c" name="customer-b" ```
 ```action="allow" description="Customer B Secure Access" application="any" category="any" destination="any" ```
 ```profile_setting="url_dns_bp" service="application-default" source="any" source_user="CN=customergroup,DC=domain,DC=com" from="trust" to="any"```
 
@@ -292,7 +292,7 @@ Edit or update existing security rule
     "from": [
         "trust"
     ],
-    "id": "53cd1c5e-a3c2-4c31-b975-56b48588736c",
+    "id": "53c####e-a3c2-4c31-b975-56####736c",
     "name": "customer-b",
     "profile_setting": {
         "group": [
@@ -346,8 +346,8 @@ Query the aggregate monitor API
     "header": {
         "createdAt": "2022-07-13T20:54:57Z",
         "dataCount": 1,
-        "requestId": "3abf8489-3816-479e-8237-8125fd987fa2",
-        "clientRequestId": "8e1b66e1-6542-4bc2-b348-4455d8e3e2b4",
+        "requestId": "3abf####-3816-479e-8237-8125###a2",
+        "clientRequestId": "8e##6e1-65#2-4b#2-b3#8-445##e2b4",
         "status": {
             "subCode": 200
         }
@@ -395,7 +395,7 @@ Get a security rule using the name
 {
     "data": [
         {
-            "id": "b71e385c-1c8a-42fc-94e4-54bccbd148b9",
+            "id": "b71e38##-1c8a-42fc-94e4-54bccbd148b9",
             "name": "cid-1252366",
             "folder": "Shared",
             "position": "pre",
@@ -496,7 +496,7 @@ Get specific config job by the jobid
             "summary": "",
             "type_i": "53",
             "type_str": "CommitAndPush",
-            "uname": "example user"
+            "uname": "someuser@example.com"
         }
     ]
 }
@@ -594,12 +594,12 @@ Delete security rule
 | PrismaAccess.DeletedSecurityRule | unknown | Deleted security rule info | 
 
 #### Command Example
-```!prisma-access-delete-security-rule rule_id=b71e385c-1c8a-499c-94e4-54bccbd148b9 tsg_id=1234567```
+```!prisma-access-delete-security-rule rule_id=b71e38##-1c8a-499c-94e4-54bcc###8b9 tsg_id=1234567```
 
 #### Context Example
 ```json
 {
-    "id": "b71e385c-1c8a-499c-94e4-54bccbd148b9",
+    "id": "b71e38##-1c8a-499c-94e4-54bc###8b9",
     "name": "Outbound Security Rule",
     "folder": "Shared",
     "position": "pre",
@@ -640,5 +640,167 @@ Delete security rule
             "best-practice"
         ]
     }
+}
+```
+
+### prisma-access-create-address-object
+***
+Create a new address object
+
+
+#### Base Command
+
+`prisma-access-create-address-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| folder | Prisma Access Folder Location for the Object. | Required | 
+| tsg_id | Tenant services group ID. | Optional | 
+| name | Friendly Name of the Address Object. | Required | 
+| description | Address Object description. | Optional | 
+| ip_netmask | IP/Netmask of the Object using the slash notation. | Optional | 
+| tag | Address Object tag(s).  Use , as a delimiter for multiple tags. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAccess.CreatedAddressObject | unknown | Created Address Object | 
+
+#### Command Example
+```!prisma-access-create-address-object folder=Shared name=TestXSOARAddress5 description="test address created by xsoar" ip_netmask="192.168.1.0/24"```
+
+#### Context Example
+```json
+{
+    "description": "test address created by xsoar",
+    "folder": "Shared",
+    "id": "51###3c-a1ac-4902-809f-b952###c2a5",
+    "ip_netmask": "192.168.1.0/24",
+    "name": "TestXSOARAddress5"
+}
+```
+
+### prisma-access-edit-address-object
+***
+Edit address object
+
+
+#### Base Command
+
+`prisma-access-edit-address-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the Address Object to edit. | Required | 
+| tsg_id | Tenant services group ID. | Optional | 
+| name | Friendly Name of the Address Object. | Required | 
+| description | Address Object description. | Optional | 
+| ip_netmask | IP/Netmask of the Object using the slash notation. | Optional | 
+| tag | Address Object tag(s).  Use , as a delimiter for multiple tags. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAccess.EditedAddressObject | unknown | Edited Address Object | 
+
+#### Command Example
+```!prisma-access-edit-address-object id="511##c-a1ac-4902-809f-b95###c2a5" name="TestXSOARAddress5" ip_netmask="192.168.2.0/24"```
+
+#### Context Example
+```json
+{
+    "folder": "Shared",
+    "id": "511##3c-a1ac-4902-809f-b952##c2a5",
+    "ip_netmask": "192.168.2.0/24",
+    "name": "TestXSOARAddress5"
+}
+```
+
+
+### prisma-access-delete-address-object
+***
+Delete address object
+
+
+#### Base Command
+
+`prisma-access-delete-address-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the Address Object to delete. | Required | 
+| tsg_id | Tenant services group ID. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAccess.DeletedAddressObject | unknown | Deleted Address Object | 
+
+#### Command Example
+```!prisma-access-delete-address-object id="489##7-379e-4c48-a967-9b9####2ec14"```
+
+#### Context Example
+```json
+{
+    "description": "test address created by xsoar",
+    "folder": "Shared",
+    "id": "489####7-379e-4c48-a967-9b9###14",
+    "ip_netmask": "192.168.1.0/24",
+    "name": "TestXSOARAddress"
+}
+```
+
+### prisma-access-list-address-objects
+***
+List Address Objects
+
+
+#### Base Command
+
+`prisma-access-list-address-objects`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| folder | "Shared" "Mobile Users" "Remote Networks" "Service Connections" "Mobile Users Container" "Mobile Users Explicit Proxy". | Required | 
+| name | name of the security object. | Optional | 
+| limit | Results paging limit. Default is 10. | Optional | 
+| offset | Results paging offset. | Optional | 
+| tsg_id | Tenant services group ID. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAccess.FoundSecurityRule | unknown | Found security rule | 
+
+#### Command Example
+```!prisma-access-list-address-objects folder="Shared" name="TestXSOARAddress5" limit="10"```
+
+#### Context Example
+```json
+{
+    "data": [
+        {
+            "description": "test address created by xsoar",
+            "folder": "Shared",
+            "id": "511####c-a1ac-4902-809f-b952###2a5",
+            "ip_netmask": "192.168.1.0/24",
+            "name": "TestXSOARAddress5"
+        }
+    ],
+    "limit": 10,
+    "offset": 0,
+    "total": 1
 }
 ```

@@ -121,7 +121,7 @@ def test_push_candidate_config_command(mocker, requests_mock, args, default_tsg_
     # Write and define the expected
     "args, default_tsg_id",
     [
-        ({"id": "1624ec11-b599-4372-a0d7-fec07ecb8203",
+        ({"id": "####ec11-b599-4372-a0d7-####ecb8203",
           "name": "cid-1252366",
           "folder": "Shared",
           "position": "pre",
@@ -313,7 +313,7 @@ def test_list_config_jobs_command(mocker, requests_mock, args, default_tsg_id):
     # Write and define the expected
     "args, default_tsg_id",
     [
-        ({"rule_id": "b71e385c-1c8a-42fc-94e4-54bccbd148b9",
+        ({"rule_id": "####385c-1c8a-42fc-94e4-####cbd148b9",
           "tsg_id": "1234567"}, "1234567")
     ]
 )
@@ -335,3 +335,145 @@ def test_delete_security_rule_command(mocker, requests_mock, args, default_tsg_i
     result = delete_security_rule_command(client, args, default_tsg_id)
     assert result.outputs_prefix == 'PrismaAccess.DeletedSecurityRule'
     assert result.outputs == mock_response
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args, default_tsg_id",
+    [
+        ({"name": "TestXSOARAddress",
+          "folder": "Shared",
+          "description": "Test address created by xsoar",
+          "ip_netmask": "192.168.1.0/24",
+          "tsg_id": "1234567"}, "1234567")
+    ]
+)
+def test_create_address_object_command(mocker, requests_mock, args, default_tsg_id):
+
+    from PrismaSASE import create_address_object_command
+    mock_response = {
+        "description": "Test address created by xsoar",
+        "folder": "Shared",
+        "id": "####f837-379e-4c48-a967-####7a52ec14",
+        "ip_netmask": "192.168.1.0/24",
+        "name": "TestXSOARAddress"}
+
+    requests_mock.post('http://base_url/sse/config/v1/addresses', json=mock_response)
+    client = Client(base_url='http://base_url',
+                    client_id='clientid',
+                    client_secret='clientsecret',
+                    oauth_url='oauthurl',
+                    verify='false',
+                    proxy='false')
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+
+    result = create_address_object_command(client, args, default_tsg_id)
+
+    assert result.outputs_prefix == 'PrismaAccess.CreatedAddress'
+    assert result.outputs == mock_response
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args, default_tsg_id",
+    [
+        ({"name": "TestXSOARAddress",
+          "folder": "Shared",
+          "description": "Test address created by xsoar changed",
+          "ip_netmask": "192.168.2.0/24",
+          "id": "####f837-379e-4c48-a967-####7a52ec14",
+          "tsg_id": "1234567"}, "1234567")
+    ]
+)
+def test_edit_address_object_command(mocker, requests_mock, args, default_tsg_id):
+
+    from PrismaSASE import edit_address_object_command
+    mock_response = {
+        "description": "Test address created by xsoar changed",
+        "folder": "Shared",
+        "id": "####f837-379e-4c48-a967-####a52ec14",
+        "ip_netmask": "192.168.2.0/24",
+        "name": "TestXSOARAddress"}
+
+    mock_url = f'http://base_url/sse/config/v1/addresses/{args.get("id")}'
+
+    requests_mock.put(mock_url, json=mock_response)
+
+    client = Client(base_url='http://base_url',
+                    client_id='clientid',
+                    client_secret='clientsecret',
+                    oauth_url='oauthurl',
+                    verify='false',
+                    proxy='false')
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+
+    result = edit_address_object_command(client, args, default_tsg_id)
+
+    assert result.outputs_prefix == 'PrismaAccess.EditedAddress'
+    assert result.outputs == mock_response
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args, default_tsg_id",
+    [
+        ({"id": "####f837-379e-4c48-a967-####7a52ec14",
+          "tsg_id": "1234567"}, "1234567")
+    ]
+)
+def test_delete_address_object_command(mocker, requests_mock, args, default_tsg_id):
+
+    from PrismaSASE import delete_address_object_command
+    mock_response = {
+        "description": "Test address created by xsoar changed",
+        "folder": "Shared",
+        "id": "####f837-379e-4c48-a967-####7a52ec14",
+        "ip_netmask": "192.168.2.0/24",
+        "name": "TestXSOARAddress"}
+
+    mock_url = f'http://base_url/sse/config/v1/addresses/{args.get("id")}'
+
+    requests_mock.delete(mock_url, json=mock_response)
+
+    client = Client(base_url='http://base_url',
+                    client_id='clientid',
+                    client_secret='clientsecret',
+                    oauth_url='oauthurl',
+                    verify='false',
+                    proxy='false')
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+
+    result = delete_address_object_command(client, args, default_tsg_id)
+
+    assert result.outputs_prefix == 'PrismaAccess.DeletedAddress'
+    assert result.outputs == mock_response
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args, default_tsg_id",
+    [
+        ({"folder": "Shared",
+          "limit": "20",
+          "tsg_id": "1234567"}, "1234567")
+    ]
+)
+def test_list_address_objects_command(mocker, requests_mock, args, default_tsg_id):
+
+    from PrismaSASE import list_address_objects_command
+    mock_response = json.loads(load_mock_response('list-address-objects.json'))
+    requests_mock.get('http://base_url/sse/config/v1/addresses?folder=Shared&limit=20', json=mock_response)
+    client = Client(base_url='http://base_url',
+                    client_id='clientid',
+                    client_secret='clientsecret',
+                    oauth_url='oauthurl',
+                    verify='false',
+                    proxy='false')
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    result = list_address_objects_command(client, args, default_tsg_id)
+    assert result.outputs_prefix == 'PrismaAccess.FoundAddressObjects'
+    assert result.outputs == mock_response.get('data')

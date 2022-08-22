@@ -281,6 +281,79 @@ script:
     outputs:
     - contextPath: PrismaAccess.DeletedSecurityRule
       description: Deleted security rule info
+  - arguments:
+    - description: Prisma Access Folder Location for the Object
+      name: folder
+      required: true
+    - description: Tenant services group ID
+      name: tsg_id
+    - description: Friendly Name of the Address Object
+      name: name
+      required: true
+    - description: Address Object description
+      name: description
+    - description: IP/Netmask of the Object using the slash notation
+      name: ip_netmask
+    - description: Address Object tag(s).  Use , as a delimiter for multiple tags.
+      isArray: true
+      name: tag
+    description: Create a new address object
+    name: prisma-access-create-address-object
+    outputs:
+    - contextPath: PrismaAccess.CreatedAddressObject
+      description: Created Address Object
+  - arguments:
+    - description: ID of the Address Object to edit
+      name: id
+      required: true
+    - description: Tenant services group ID
+      name: tsg_id
+    - description: Friendly Name of the Address Object
+      name: name
+      required: true
+    - description: Address Object description
+      name: description
+    - description: IP/Netmask of the Object using the slash notation
+      name: ip_netmask
+    - description: Address Object tag(s).  Use , as a delimiter for multiple tags.
+      isArray: true
+      name: tag
+    description: Edit address object
+    name: prisma-access-edit-address-object
+    outputs:
+    - contextPath: PrismaAccess.EditedAddressObject
+      description: Edited Address Object
+  - arguments:
+    - description: ID of the Address Object to delete
+      name: id
+      required: true
+    - description: Tenant services group ID
+      name: tsg_id
+    description: Delete address object
+    name: prisma-access-delete-address-object
+    outputs:
+    - contextPath: PrismaAccess.DeletedAddressObject
+      description: Deleted Address Object
+  - arguments:
+    - description: '"Shared" "Mobile Users" "Remote Networks" "Service Connections" "Mobile Users Container" "Mobile Users Explicit Proxy"'
+      name: folder
+      required: true
+    - description: name of the security object
+      name: name
+    - auto: PREDEFINED
+      defaultValue: "10"
+      description: Results paging limit
+      name: limit
+    - description: Results paging offset
+      name: offset
+    - description: Tenant services group ID
+      name: tsg_id
+    description: List Address Objects
+    name: prisma-access-list-address-objects
+    outputs:
+    - contextPath: PrismaAccess.FoundSecurityRule
+      description: Found security rule
+  
   dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   script: ''

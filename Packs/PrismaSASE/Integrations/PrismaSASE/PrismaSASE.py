@@ -63,25 +63,25 @@ class Client(BaseClient):
         keys = args.keys()
         for key in SECURITYRULE_FIELDS:
             if key in keys:
-                if key == 'profile_setting':
 
-                    if isinstance(args.get(key), list):
-                        val = args.get(key)
-                    else:
-                        val = [x.strip() for x in args.get(key).split(',')]   # type: ignore
+                if args.get(key) != "" and args.get(key) != "None":
+                    if key == 'profile_setting':
+                        if isinstance(args.get(key), list):
+                            val = args.get(key)
+                        else:
+                            val = [x.strip() for x in args.get(key).split(',')]   # type: ignore
 
-                    rule[key] = {'group': val}
+                        rule[key] = {'group': val}
 
-                elif isinstance(SECURITYRULE_FIELDS.get(key), str):
-                    rule[key] = args.get(key)   # type: ignore
+                    elif isinstance(SECURITYRULE_FIELDS.get(key), str):
+                        rule[key] = args.get(key)   # type: ignore
 
-                elif isinstance(SECURITYRULE_FIELDS.get(key), list):
-                    if isinstance(args.get(key), list):
-                        val = args.get(key)
-                    else:
-                        val = [x.strip() for x in args.get(key).split(';')]   # type: ignore
-
-                    rule[key] = val   # type: ignore
+                    elif isinstance(SECURITYRULE_FIELDS.get(key), list):
+                        if isinstance(args.get(key), list):
+                            val = args.get(key)
+                        else:
+                            val = [x.strip() for x in args.get(key).split(';')]   # type: ignore
+                        rule[key] = val   # type: ignore
 
         return rule
 
@@ -143,6 +143,78 @@ class Client(BaseClient):
         return self._http_request(
             method="DELETE",
             url_suffix=uri,
+            headers=headers
+        )
+
+    def create_address_object(self, address: dict, folder: str, tsg_id: str):
+        uri = '/sse/config/v1/addresses'
+        access_token = self.get_access_token(tsg_id)
+
+        query_params = {
+            'folder': encode_string_results(folder)
+        }
+
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': f"Bearer {access_token}"
+        }
+
+        return self._http_request(
+            method="POST",
+            url_suffix=uri,
+            params=query_params,
+            json_data=address,
+            headers=headers
+        )
+
+    def edit_address_object(self, address: dict, addressid: str, tsg_id: str):
+        uri = f'/sse/config/v1/addresses/{addressid}'
+        access_token = self.get_access_token(tsg_id)
+
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': f"Bearer {access_token}"
+        }
+
+        return self._http_request(
+            method="PUT",
+            url_suffix=uri,
+            json_data=address,
+            headers=headers
+        )
+
+    def delete_address_object(self, address_id: str, tsg_id: str):
+        uri = f'/sse/config/v1/addresses/{address_id}'
+        access_token = self.get_access_token(tsg_id)
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': f"Bearer {access_token}"
+        }
+
+        return self._http_request(
+            method="DELETE",
+            url_suffix=uri,
+            headers=headers
+        )
+
+    def list_address_objects(self, query_params: dict, tsg_id: str):
+        uri = '/sse/config/v1/addresses'
+
+        access_token = self.get_access_token(tsg_id)
+
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': f"Bearer {access_token}"
+        }
+
+        return self._http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params,
             headers=headers
         )
 
@@ -343,6 +415,124 @@ def create_security_rule_command(client: Client, args: dict, default_tsg_id: str
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rule Created', outputs),
+        raw_response=raw_response
+    )
+
+
+def create_address_object_command(client: Client, args: dict, default_tsg_id: str):
+
+    # Create new Prisma Access address object
+
+    address_object = {
+        "ip_netmask": args.get('ip_netmask'),
+        "name": args.get('name')}
+
+    if args.get('description'):
+        address_object["description"] = args.get('description')
+
+    if args.get('tag'):
+        address_object["tag"] = args.get('tag')
+
+    if args.get('tsg_id'):
+        tsg_id = args.get('tsg_id')
+    else:
+        tsg_id = default_tsg_id
+
+    raw_response = client.create_address_object(address_object, args.get('folder'), tsg_id)  # type: ignore
+    outputs = raw_response
+
+    return CommandResults(
+        outputs_prefix='PrismaAccess.CreatedAddress',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Address Object Created', outputs),
+        raw_response=raw_response
+    )
+
+
+def edit_address_object_command(client: Client, args: dict, default_tsg_id: str):
+
+    # Create new Prisma Access address object
+
+    address_object = {
+        "ip_netmask": args.get('ip_netmask'),
+        "name": args.get('name')}
+
+    if args.get('description'):
+        address_object["description"] = args.get('description')
+
+    if args.get('tag'):
+        address_object["tag"] = args.get('tag')
+
+    if args.get('tsg_id'):
+        tsg_id = args.get('tsg_id')
+    else:
+        tsg_id = default_tsg_id
+
+    raw_response = client.edit_address_object(address_object, args.get('id'), tsg_id)  # type: ignore
+    outputs = raw_response
+
+    return CommandResults(
+        outputs_prefix='PrismaAccess.EditedAddress',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Address Object Edited', outputs),
+        raw_response=raw_response
+    )
+
+
+def delete_address_object_command(client: Client, args: dict, default_tsg_id: str):
+
+    # Delete Prisma Access address object
+
+    if args.get('tsg_id'):
+        tsg_id = args.get('tsg_id')
+    else:
+        tsg_id = default_tsg_id
+
+    raw_response = client.delete_address_object(args.get('id'), tsg_id)  # type: ignore
+    outputs = raw_response
+
+    return CommandResults(
+        outputs_prefix='PrismaAccess.DeletedAddress',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Address Object Deleted', outputs),
+        raw_response=raw_response
+    )
+
+
+def list_address_objects_command(client: Client, args: dict, default_tsg_id: str):
+
+    # Get address objects for a given Prisma Access Folder / Position
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+
+    if args.get('tsg_id'):
+        tsg_id = args.get('tsg_id')
+    else:
+        tsg_id = default_tsg_id
+
+    if args.get('name'):
+        query_params["name"] = encode_string_results(args.get('name'))
+
+    if args.get('limit'):
+        query_params["limit"] = encode_string_results(args.get('limit'))
+
+    if args.get('offset'):
+        query_params["offset"] = encode_string_results(args.get('offset'))
+
+    raw_response = client.list_address_objects(query_params, tsg_id)  # type: ignore
+
+    outputs = (raw_response)['data']
+
+    return CommandResults(
+        outputs_prefix='PrismaAccess.FoundAddressObjects',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Address Objects', outputs),
         raw_response=raw_response
     )
 
@@ -592,7 +782,11 @@ def main():
         'prisma-access-update-security-rule': update_security_rule_command,
         'prisma-access-get-security-rule-by-name': get_security_rule_by_name_command,
         'prisma-access-query-agg-monitor-api': query_agg_monitor_api_command,
-        'prisma-access-delete-security-rule': delete_security_rule_command
+        'prisma-access-delete-security-rule': delete_security_rule_command,
+        'prisma-access-create-address-object': create_address_object_command,
+        'prisma-access-edit-address-object': edit_address_object_command,
+        'prisma-access-delete-address-object': delete_address_object_command,
+        'prisma-access-list-address-objects': list_address_objects_command
     }
 
     command = demisto.command()

@@ -1,7 +1,16 @@
-## BaseIntegration Help
+This integration was integrated and tested with version 1.0 of Prisma SASE API
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+## Configure Prisma SASE on Cortex XSOAR
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+1. Navigate to **Common Services** > **Identity & Access** > **Servers & Services**.
+2. Add or create a service account with the proper privleges
+3. Make a note of the Client ID and Client Secret.  These will be used to configure the integration.
+
+The TSG ID represents the specific Prisma Access tenant that will be targeted for each API call.  
+Configure a default TSG_ID to be used for API calls.
+
+The TSG can be specified per command which allows a single service account to access multiple Prisma Access tenants.
+
+
+## Prisma SASE API
+[https://pan.dev/sase](https://pan.dev/sase)
