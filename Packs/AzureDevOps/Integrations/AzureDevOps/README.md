@@ -260,8 +260,8 @@ Add a user, assign the user a license and extensions, and make the user a member
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_email | The email address of the user to add to the organization. | Required | 
-| account_license_type | The type of account license. Possible values: "express", "stakeholder", "advanced", "earlyAdopter", and "professional". More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#accountlicensetype . Possible values are: express, stakeholder, advanced, earlyAdopter, professional. | Required | 
-| group_type | The project group type. Possible values: "projectReader", "projectContributor", "projectAdministrator", and "projectStakeholder". More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#grouptype . Possible values are: projectReader, projectContributor, projectAdministrator, projectStakeholder. | Required | 
+| account_license_type | The type of account license. More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#accountlicensetype. Possible values are: express, stakeholder, advanced, earlyAdopter, professional. | Required | 
+| group_type | The project group type. More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#grouptype. Possible values are: projectReader, projectContributor, projectAdministrator, projectStakeholder. | Required | 
 | project_id | The ID of the project. | Required | 
 
 
@@ -555,7 +555,7 @@ Update a pull request. At least one of the following arguments must be provided:
 | pull_request_id | The ID of the pull request to update. | Required | 
 | title | The updated pull-request title. | Optional | 
 | description | The updated pull-request description. | Optional | 
-| status | The updated pull-request status. Possible values: "abandoned", "completed", and "active". Possible values are: abandoned, completed, active. | Optional | 
+| status | The updated pull-request status. Possible values are: abandoned, completed, active. | Optional | 
 
 
 #### Context Output
@@ -1334,7 +1334,7 @@ Retrieve information for a pipeline run.
 | project | The name of the project. | Required | 
 | pipeline_id | The ID of the pipeline to retrieve. | Required | 
 | run_id | The ID of the pipeline run to retrieve. | Required | 
-| scheduled | Indicates if the command was scheduled. Possible values: "True" or "False". Possible values are: True, False. Default is False. | Optional | 
+| scheduled | Indicates if the command was scheduled. Possible values are: True, False. Default is False. | Optional | 
 | interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
 | timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
 
