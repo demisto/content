@@ -1536,9 +1536,8 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
     num_of_failures = 0
     offense_id = offense['id']
     while num_of_failures <= max_retries:
-        try:
-            return create_events_search(client, fetch_mode, event_columns, events_limit, offense_id, offense['start_time'])
-        except Exception:
+        search_id = create_events_search(client, fetch_mode, event_columns, events_limit, offense_id, offense['start_time'])
+        if search_id == QueryStatus.ERROR.value:
             print_debug_msg(f'Failed to create search for offense ID: {offense_id}. '
                             f'Retry number {num_of_failures}/{max_retries}.')
             print_debug_msg(traceback.format_exc())
@@ -1546,7 +1545,6 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
             if num_of_failures == max_retries:
                 print_debug_msg(f'Max retries for creating search for offense: {offense_id}. Returning empty.')
                 break
-            time.sleep(FAILURE_SLEEP)
     print_debug_msg(f'Could not create search query for {offense_id}.')
     return QueryStatus.ERROR.value
 
