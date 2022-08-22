@@ -20,7 +20,7 @@ class NonexistentPackException(UnsupportedPackException):
         super().__init__(pack_name, 'Nonexistent pack name')
 
 
-class NonXsoarSupportedPack(UnsupportedPackException):
+class NonXsoarSupportedPackException(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'pack support level is not XSOAR')
 
