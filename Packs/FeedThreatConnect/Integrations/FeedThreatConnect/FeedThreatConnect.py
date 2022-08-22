@@ -114,20 +114,22 @@ class Method(str, Enum):
     DELETE = 'DELETE'
 
 
-class Client:
-    def __init__(self, api_id: str, api_secret: str, base_url: str, verify: bool = False):
+class Client(BaseClient):
+    def __init__(self, api_id: str, api_secret: str, base_url: str, verify: bool = False, proxy: bool = False):
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         self.api_id = api_id
         self.api_secret = api_secret
-        self.base_url = base_url
-        self.verify = verify
 
     def make_request(self, method: Method, url_suffix: str, payload: dict = {}, params: dict = {},
                      parse_json=True):  # pragma: no cover  # noqa
         headers = self.create_header(url_suffix, method)
 
-        url = urljoin(self.base_url, url_suffix)
-        response = requests.request(method=method, url=url, headers=headers, data=payload, params=params,
-                                    verify=self.verify)
+        # url = urljoin(self.base_url, url_suffix)
+        # response = requests.request(method=method, url=url, headers=headers, data=payload, params=params,
+        #                             verify=self.verify)
+        response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type='json',
+                                      params=params,
+                                      headers=headers)
         if parse_json:
             return json.loads(response.text), response.status_code
         return response
@@ -157,8 +159,9 @@ def module_test_command(client: Client):
         dict: Operation entry context - Empty.
         dict: Operation raw response - Empty.
     """
-    url = '/api/v3/groups?resultLimit=4'
-    response, status_code = client.make_request(Method.GET, url)
+    url = '/api/v3/groups'
+    params = {'resultLimit': 2}
+    response, status_code = client.make_request(Method.GET, url, params=params)
     if status_code == 200:
         return "ok", {}, {}
     else:
@@ -167,11 +170,14 @@ def module_test_command(client: Client):
                                                            'local help desk'))
 
 
-def set_fields_query(fields: list) -> str:
-    fields_str = ''
-    for field in fields:
-        fields_str += f'&fields={field}'
-    return fields_str
+def create_or_query(delimiter_str: str, param_name: str) -> str:
+    if not delimiter_str:
+        return ''
+    arr = delimiter_str.split(',')
+    query = ''
+    for item in arr:
+        query += f'{param_name}="{item}" OR '
+    return query[:len(query) - 3]
 
 
 def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no cover
@@ -186,28 +192,30 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no 
     owners = f'AND ({create_or_query(demisto.getParam("owners"), "ownerName")}) '
     tags = f'AND ({create_or_query(demisto.getParam("tags"), "tags")}) '
     status = f'AND ({create_or_query(demisto.getParam("status"), "status")}) '
-    fields = set_fields_query(argToList(demisto.getParam("fields")))
+    fields = argToList(demisto.getParam("fields"))
     group_type = f'AND ({create_or_query(demisto.params().get("group_type", "Incident"), "typeName")}) '
     first_fetch_time = demisto.getParam("first_fetch_time")
     from_date = ''
     if first_fetch_time:
-        first_fetch_time = dateparser.parse(demisto.getParam('first_fetch_time').strip()).strftime("%Y-%m-%d")  # type: ignore # noqa
+        first_fetch_time = dateparser.parse(demisto.getParam('first_fetch_time').strip()).strftime(
+            "%Y-%m-%d")  # type: ignore # noqa
         from_date = f'AND (dateAdded > "{first_fetch_time}") '
     page = 0
-    tql = f'{owners if owners != "AND () " else ""}{tags if tags != "AND () " else ""}' \
-          f'{group_type if group_type != "AND () " else ""}{status if status != "AND () " else ""}' \
-          f'{from_date if from_date != "AND () " else ""}'.replace('AND', '', 1)
+    params = {'resultLimit': 500, 'resultStart': page}
+    tql = f'{owners if owners != "AND () " else ""}' \
+          f'{tags if tags != "AND () " else ""}' \
+          f'{group_type if group_type != "AND () " else ""}' \
+          f'{status if status != "AND () " else ""}' \
+          f'{from_date if from_date != "AND () " else ""}'.replace('AND', '', 1)  # replace the first preceding 'AND'
     if tql:
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
-        tql = f'?tql={tql}'
-    else:
-        tql = ''
-        if fields:
-            fields = fields.replace('&', '?', 1)  # type: ignore
-    url = f'/api/v3/groups{tql}{fields}&resultStart={page}&resultLimit=500'
+        params['tql'] = tql
+    if fields:
+        params['fields'] = fields
+    url = f'/api/v3/groups'
     indicators = []
     while True:
-        response, status_code = client.make_request(Method.GET, url)
+        response, status_code = client.make_request(Method.GET, url, params=params)
         if status_code == 200:
             indicators.extend(response.get('data', {}))
             if 'next' in response:
@@ -222,16 +230,6 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no 
     return [parse_indicator(indicator) for indicator in indicators]
 
 
-def create_or_query(delimiter_str: str, param_name: str) -> str:
-    if not delimiter_str:
-        return ''
-    arr = delimiter_str.split(',')
-    query = ''
-    for item in arr:
-        query += f'{param_name}="{item}" OR '
-    return query[:len(query) - 3]
-
-
 def get_indicators_command(client: Client):  # pragma: no cover
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
 
@@ -243,17 +241,19 @@ def get_indicators_command(client: Client):  # pragma: no cover
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    limit = demisto.args().get('limit', '50')
-    offset = demisto.args().get('offset', '0')
+    params = {'resultLimit': int(demisto.args().get('limit', 50)), 'resultStart': int(demisto.args().get('offset', 0))}
     owners = demisto.getArg('owners') or demisto.getParam('owners')
     owners = create_or_query(owners, "ownerName")
     owners = urllib.parse.quote(owners.encode('utf8'))  # type: ignore
-    url = f'/api/v3/indicators?tql={owners}&resultStart={offset}&resultLimit={limit}'
+    if owners:
+        params['tql'] = owners
+    url = f'/api/v3/indicators'
 
-    response, status_code = client.make_request(Method.GET, url)
+    response, status_code = client.make_request(Method.GET, url, params=params)
     if status_code == 200:
         readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
-                                               t=[parse_indicator(indicator) for indicator in response.get('data')])  # type: ignore # noqa
+                                               t=[parse_indicator(indicator) for indicator in
+                                                  response.get('data')])  # type: ignore # noqa
 
         return readable_output, {}, list(response.get('data'))
     else:
@@ -273,9 +273,9 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    url = '/api/v3/security/owners?resultLimit=500'
-
-    response, status_code = client.make_request(Method.GET, url)
+    url = '/api/v3/security/owners'
+    params = {'resultLimit': 500}
+    response, status_code = client.make_request(Method.GET, url, params=params)
     if status_code != 200:
         return_error('Error from the API: ' + response.get('message',
                                                            'An error has occurred if it persist please contact your '
@@ -289,8 +289,9 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
 
 def main():  # pragma: no cover
     insecure = not demisto.getParam('insecure')
+    proxy = not demisto.getParam('proxy')
     client = Client(demisto.getParam('api_access_id'), demisto.getParam('api_secret_key').get('password'),
-                    demisto.getParam('tc_api_path'), insecure)
+                    demisto.getParam('tc_api_path'), verify=insecure, proxy=proxy)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     commands = {
@@ -307,6 +308,7 @@ def main():  # pragma: no cover
             readable_output, outputs, raw_response = commands[command](client)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
+        raise e
         return_error(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')
 
 
