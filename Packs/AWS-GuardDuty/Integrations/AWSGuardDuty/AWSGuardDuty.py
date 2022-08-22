@@ -715,6 +715,9 @@ def main():   # pragma: no cover
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
                                timeout, retries)
 
+        region = demisto.args().get('region')
+        client = aws_client.aws_session(service=SERVICE, region=region)
+
         # The command demisto.command() holds the command sent from the user.
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
