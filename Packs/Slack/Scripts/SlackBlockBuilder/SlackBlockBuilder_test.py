@@ -80,6 +80,11 @@ COMMAND_ARGS = {
 
 
 def test_block_builder_command_list(mocker):
+    """
+    Given: An XSOAR list containing a valid Slack Block JSON.
+    When: Executing the block builder command using the list argument.
+    Then: Assert that the readable output from the command indicates that the message was successfully sent.
+    """
     from SlackBlockBuilder import slack_block_builder_command
 
     mock_list = util_load_json('test_data/list.json')
@@ -102,6 +107,11 @@ def test_block_builder_command_list(mocker):
 
 
 def test_block_builder_command_url(mocker):
+    """
+    Given: A URL which contains a valid URI encoded Slack Block JSON.
+    When: Executing the block builder command using the url argument.
+    Then: Assert that the readable output from the command indicates that the message was successfully sent.
+    """
     from SlackBlockBuilder import slack_block_builder_command
 
     mock_list = util_load_json('test_data/list.json')

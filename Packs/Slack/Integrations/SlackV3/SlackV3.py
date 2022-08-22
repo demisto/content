@@ -1519,6 +1519,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 except requests.exceptions.ConnectionError as err:
                     err_message = f'Error submitting context command to server. Check your API Key: {err}'
                     demisto.updateModuleHealth(err_message)
+            if state and not DEMISTO_API_KEY:
+                demisto.debug("A state was found in the message, but no API key was configured.")
 
         # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
         # are not mirrored

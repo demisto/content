@@ -1,5 +1,7 @@
 SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination.
 
+The Slack Block Kit Builder can be found [here](https://app.slack.com/block-kit-builder).
+
 ## Script Data
 ---
 
