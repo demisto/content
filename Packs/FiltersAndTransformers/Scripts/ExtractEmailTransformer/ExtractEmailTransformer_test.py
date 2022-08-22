@@ -5,6 +5,8 @@ import pytest
 data_test_main = [
     ({'value': 'test'}, []),
     ({'value': 'test@test.com'}, ['test@test.com']),
+    ({'value': 'Test'}, []),
+    ({'value': 'Test@test.com'}, ['Test@test.com']),
     ({'value': 'test@test.com,test?test@test.com'}, ['test@test.com', 'test@test.com']),
 ]
 
@@ -15,4 +17,4 @@ def test_main(args, command_outputs, mocker):
     mocker.patch('ExtractEmailTransformer.execute_command', return_value=command_outputs)
     results_mocker = mocker.patch('ExtractEmailTransformer.return_results')
     main()
-    results_mocker.args[0] == command_outputs
+    assert results_mocker.args[0] == command_outputs
