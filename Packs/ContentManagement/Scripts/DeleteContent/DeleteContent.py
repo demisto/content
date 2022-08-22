@@ -7,7 +7,7 @@ from typing import Tuple
 SCRIPT_NAME = 'DeleteContent'
 ALWAYS_EXCLUDED = ['Base', 'ContentManagement', 'CleanUpContent', 'CommonDashboards', 'CommonScripts', 'CommonReports',
                    'CommonPlaybooks', 'CommonTypes', 'CommonWidgets', 'DemistoRESTAPI', 'FiltersAndTransformers',
-                   'DefaultPlaybook']
+                   'DefaultPlaybook', 'DemistoLocking']
 
 
 class EntityAPI(ABC):
