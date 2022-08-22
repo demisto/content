@@ -34,13 +34,13 @@ In order to verify that the messaging endpoint is open as expected, you can surf
  - You must not set a certificate and/or private key if you are using the Cortex XSOAR rerouting setup.
  - Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
  In order to verify which certificate is used, run the following (replace \<MESSAGING-ENDPOINT> with the messaging endpoint):
-     ```
-     curl <MESSAGING-ENDPOINT> -vI
-     ```
+    ```
+     curl \<MESSAGING-ENDPOINT> -vI
+    ```
      Make sure the output does not contain the following:
-     ```
+    ```
      curl: (60) SSL certificate problem: self signed certificate
-     ```
+    ```
  - The following domains are used by this integration:
     - microsoft.com
     - botframework.com
