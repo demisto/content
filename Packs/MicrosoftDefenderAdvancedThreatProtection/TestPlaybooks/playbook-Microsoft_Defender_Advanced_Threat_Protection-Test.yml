@@ -367,10 +367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 2b579b17-5cfc-47c2-808a-a640db5d8254
+    taskid: 0f03a93e-83bc-4854-8d5d-c10a8791e32c
     type: regular
     task:
-      id: 2b579b17-5cfc-47c2-808a-a640db5d8254
+      id: 0f03a93e-83bc-4854-8d5d-c10a8791e32c
       version: -1
       name: Get machine related to domain
       description: Retrieves a collection of machines that have communicated to or from a given domain address.
@@ -884,10 +884,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: c97ccd05-9fb2-476d-8c9d-b155f6e0b1a4
+    taskid: 9988f8d4-ae62-4cb3-85a5-9a9856321161
     type: regular
     task:
-      id: c97ccd05-9fb2-476d-8c9d-b155f6e0b1a4
+      id: 9988f8d4-ae62-4cb3-85a5-9a9856321161
       version: -1
       name: Start Investigation
       description: Start an automated investigation on a machine.
@@ -902,7 +902,18 @@ tasks:
       comment:
         simple: testing
       machine_id:
-        simple: ${MicrosoftATP.DomainMachine.Machines.ID}
+        complex:
+          root: MicrosoftATP.DomainMachine.Machines
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MicrosoftATP.DomainMachine.Machines.OSPlatform
+                iscontext: true
+              right:
+                value:
+                  simple: Windows10
+          accessor: ID
     separatecontext: false
     view: |-
       {
