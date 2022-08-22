@@ -17,7 +17,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' ADVANCED GLOBAL PARAMETERS '''
 
-FAILURE_SLEEP = 30  # sleep between consecutive failures events fetch
+FAILURE_SLEEP = 20  # sleep between consecutive failures events fetch
 FETCH_SLEEP = 60  # sleep between fetches
 BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
@@ -1654,8 +1654,8 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         if events:
             offense['events'] = events
             break
+        print_debug_msg(f'No events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP}.')
         time.sleep(FAILURE_SLEEP)
-        print_debug_msg(f'No events were fetched for offense {offense_id}. Retrying.')
     else:
         print_debug_msg(f'No events were fetched for offense {offense_id}.\n'
                         f'If mirroring is enabled, it will be queried again in mirroring.')
@@ -3214,11 +3214,11 @@ def update_events_mirror_message(mirror_options: Optional[Any],
     elif failure_message:
         mirroring_events_message = failure_message
     elif fetch_mode == FetchMode.all_events.value and events_mirrored < min(events_count, events_limit):
-        mirroring_events_message = 'Mirroring events did not get all events of the offense'
+        mirroring_events_message = 'Fetching events did not get all events of the offense'
     elif events_mirrored == events_count:
-        mirroring_events_message = 'All available events in the offense were mirrored.'
+        mirroring_events_message = 'All available events in the offense were fetched.'
     elif events_mirrored_collapsed == events_limit:
-        mirroring_events_message = 'Mirroring events has reached events limit in this incident.'
+        mirroring_events_message = 'Fetching events has reached events limit in this incident.'
 
     return mirroring_events_message
 
