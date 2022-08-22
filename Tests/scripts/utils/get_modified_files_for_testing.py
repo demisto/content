@@ -70,7 +70,7 @@ def resolve_type(file_path: str) -> Optional[FileType]:
     """
     # if conf.json file
     # TODO: remove if when demisto-sdk 1.7.3 is released
-    if checked_type(file_path, [content_constant_paths.CONF_PATH if IS_UP_TO_DATE else constants.CONF_PATH]):
+    if checked_type(file_path, [content_constant_paths.CONF_PATH.as_posix() if IS_UP_TO_DATE else constants.CONF_PATH]):
         return FileType.CONF_JSON
     # landingPage_sections.json file
     if checked_type(file_path, [LANDING_PAGE_SECTIONS_JSON_PATH]):
