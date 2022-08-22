@@ -159,8 +159,7 @@ demisto-sdk-nightly:run-end-to-end-tests:
   tags:
     - gke # Better when not needing docker-in-docker
   extends:
-    - .test_content_on_xsoar_server_instances_base
-    # - .sdk-nightly-schedule-rule-always
+    - .sdk-nightly-schedule-rule-always
   variables:
     INSTANCE_ROLE: "Server Master"
   needs: ["create-instances"]
