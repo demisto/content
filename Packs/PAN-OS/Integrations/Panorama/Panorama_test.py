@@ -1316,7 +1316,7 @@ class TestPanoramaPushToDeviceGroupCommand:
 
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
-                         [pytest.param({},
+                         [pytest.param({'polling': 'false'},
                                        {'action': 'all',
                                         'cmd': '<commit-all><shared-policy><device-group><entry name="some_device"/>'
                                                '</device-group></shared-policy></commit-all>',
@@ -1326,11 +1326,9 @@ class TestPanoramaPushToDeviceGroupCommand:
                                                            '<line>Commit job enqueued with jobid 19420</line></msg>'
                                                            '<job>19420</job></result></response>', status_code=200,
                                                       reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {'DeviceGroup': 'some_device',
-                                                                                  'JobID': '19420',
-                                                                                  'Status': 'Pending'}},
+                                       {'DeviceGroup': 'some_device', 'JobID': '19420', 'Status': 'Pending'},
                                        id='no args'),
-                          pytest.param({'serial_number': '1337'},
+                          pytest.param({'serial_number': '1337', 'polling': 'false'},
                                        {'action': 'all',
                                         'cmd': '<commit-all><shared-policy><device-group><entry name="some_device">'
                                                '<devices><entry name="1337"/></devices></entry></device-group>'
@@ -1341,11 +1339,9 @@ class TestPanoramaPushToDeviceGroupCommand:
                                                            '<line>Commit job enqueued with jobid 19420</line></msg>'
                                                            '<job>19420</job></result></response>', status_code=200,
                                                       reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {'DeviceGroup': 'some_device',
-                                                                                  'JobID': '19420',
-                                                                                  'Status': 'Pending'}},
+                                       {'DeviceGroup': 'some_device', 'JobID': '19420', 'Status': 'Pending'},
                                        id='serial number'),
-                          pytest.param({'include-template': 'false'},
+                          pytest.param({'include-template': 'false', 'polling': 'false'},
                                        {'action': 'all',
                                         'cmd': '<commit-all><shared-policy><device-group><entry name="some_device"/>'
                                                '</device-group><include-template>no</include-template></shared-policy>'
@@ -1356,9 +1352,7 @@ class TestPanoramaPushToDeviceGroupCommand:
                                                            '<line>Commit job enqueued with jobid 19420</line></msg>'
                                                            '<job>19420</job></result></response>', status_code=200,
                                                       reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {'DeviceGroup': 'some_device',
-                                                                                  'JobID': '19420',
-                                                                                  'Status': 'Pending'}},
+                                       {'DeviceGroup': 'some_device', 'JobID': '19420', 'Status': 'Pending'},
                                        id='do not include template')
                           ])
 def test_panorama_push_to_device_group_command(mocker, args, expected_request_params, request_result,
@@ -1377,17 +1371,15 @@ def test_panorama_push_to_device_group_command(mocker, args, expected_request_pa
     import requests
     from Panorama import panorama_push_to_device_group_command
 
-    return_results_mock = mocker.patch.object(Panorama, 'return_results')
     request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
     Panorama.DEVICE_GROUP = 'some_device'
     Panorama.API_KEY = 'thisisabogusAPIKEY!'
-    panorama_push_to_device_group_command(args)
+    result = panorama_push_to_device_group_command(args)
 
     called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
     assert called_request_params == expected_request_params
 
-    demisto_result_got = return_results_mock.call_args.args[0]['EntryContext']
-    assert demisto_result_got == expected_demisto_result
+    assert result.outputs == expected_demisto_result
 
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',

@@ -897,7 +897,6 @@ def panorama_push_to_device_group_command(args: dict):
     if not DEVICE_GROUP:
         raise Exception("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
-    demisto.info(f'{args.get("push_job_id")=}')
     description = args.get('description')
 
     if push_job_id := args.get('push_job_id'):
@@ -921,14 +920,14 @@ def panorama_push_to_device_group_command(args: dict):
     else:
         result = panorama_push_to_device_group(args)
         job_id = result.get('response', {}).get('result', {}).get('job', '')
-        demisto.info(f'{job_id=}')
         if job_id:
             context_output = {
                 'DeviceGroup': DEVICE_GROUP,
                 'JobID': job_id,
-                'Status': 'Pending',
-                'Description': description
+                'Status': 'Pending'
             }
+            if description:
+                context_output['Description'] = description
             continue_to_poll = True
             push_output = CommandResults(  # type: ignore[assignment]
                 outputs_prefix='Panorama.Push',
@@ -944,10 +943,9 @@ def panorama_push_to_device_group_command(args: dict):
                 'push_job_id': job_id,
                 'polling': argToBoolean(args.get('polling', False)),
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
-                'timeout': arg_to_number(args.get('timeout', 120))
+                'timeout': arg_to_number(args.get('timeout', 120)),
+                'description': description
             }
-
-        demisto.info(f'{args_for_next_run=}')
 
         return PollResult(
             response=push_output,
@@ -957,29 +955,6 @@ def panorama_push_to_device_group_command(args: dict):
                 readable_output=f'Waiting for Job-ID {job_id} to finish push changes to device-group {DEVICE_GROUP}...'
             )
         )
-
-    # if 'result' in result['response']:
-    #     # commit has been given a jobid
-    #     push_output = {
-    #         'DeviceGroup': DEVICE_GROUP,
-    #         'JobID': result['response']['result']['job'],
-    #         'Status': 'Pending'
-    #     }
-    #     return_results({
-    #         'Type': entryTypes['note'],
-    #         'ContentsFormat': formats['json'],
-    #         'Contents': result,
-    #         'ReadableContentsFormat': formats['markdown'],
-    #         'HumanReadable': tableToMarkdown('Push to Device Group:', push_output, ['JobID', 'Status'],
-    #                                          removeNull=True),
-    #         'EntryContext': {
-    #             "Panorama.Push(val.JobID == obj.JobID)": push_output
-    #         }
-    #     })
-    # else:
-    #     # no changes to commit
-    #     return_results(result['response']['msg']['line'])
-
 
 
 def panorama_push_to_template_command(args: dict):
@@ -11166,7 +11141,7 @@ def main():
             panorama_commit_status_command(args)
 
         elif command == 'panorama-push-to-device-group' or command == 'pan-os-push-to-device-group':
-            panorama_push_to_device_group_command(args)
+            return_results(panorama_push_to_device_group_command(args))
         elif command == 'pan-os-push-to-template':
             panorama_push_to_template_command(args)
         elif command == 'pan-os-push-to-template-stack':
