@@ -325,11 +325,11 @@ List existing policy dictionaries.
 
 #### Context Output
 
-| **Path**   | **Type** | **Description**    |
-| ------- | -------- | ----------- |
-| SkyhighSecurity.dictionaries.ID           | Number   | The ID for the dictionary.   |
-| SkyhighSecurity.dictionaries.LastModified | String   | The date the dictionary was last modified. |
-| SkyhighSecurity.dictionaries.Name    | String   | The name of the dictionary.     |
+| **Path**                                  | **Type** | **Description**    |
+|-------------------------------------------| -------- | ----------- |
+| SkyhighSecurity.Dictionaries.ID           | Number   | The ID for the dictionary.   |
+| SkyhighSecurity.Dictionaries.LastModified | String   | The date the dictionary was last modified. |
+| SkyhighSecurity.Dictionaries.Name         | String   | The name of the dictionary.     |
 
 #### Command example
 
