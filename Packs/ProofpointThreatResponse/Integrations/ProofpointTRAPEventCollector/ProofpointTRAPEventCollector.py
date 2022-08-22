@@ -1,7 +1,6 @@
 from datetime import date, timedelta
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from typing import Dict, Any, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -19,7 +18,7 @@ class Client(BaseClient):
         """Perform an API request to get incidents from ProofPoint.
 
         Args:
-            params(dict): The params of the request
+            query_params(dict): The params of the request
 
         Returns:
             list. The incidents returned from the API call
@@ -214,7 +213,7 @@ def get_incidents_batch_by_time_request(client, params):
     incidents_list = []  # type:list
 
     fetch_delta = params.get('fetch_delta', '6 hours')
-    fetch_limit = int(params.get('fetch_limit', '50'))
+    fetch_limit = int(params.get('fetch_limit', '100'))
     last_fetched_id = int(params.get('last_fetched_id', '0'))
 
     current_time = datetime.now()
@@ -275,8 +274,6 @@ def fetch_incidents_command(client, first_fetch, last_run, fetch_limit, fetch_de
     for state in incidents_states:
         if not last_fetch.get(state):
             last_fetch[state] = first_fetch
-
-    for state in incidents_states:
         if not last_fetched_id.get(state):
             last_fetched_id[state] = '0'
 
@@ -290,31 +287,24 @@ def fetch_incidents_command(client, first_fetch, last_run, fetch_limit, fetch_de
             'fetch_limit': fetch_limit
         }
         id = last_fetched_id[state]
-        incidents_list = get_incidents_batch_by_time_request(client, request_params)
-        for incident in incidents_list:
-            id = incident.get('id')
-            inc = {
-                'name': 'ProofPoint_TRAP - ID {}'.format(id),
-                'rawJSON': json.dumps(incident),
-                'occurred': incident['created_at']
-            }
-            incidents.append(inc)
+        incidents = get_incidents_batch_by_time_request(client, request_params)
 
         if incidents:
+            id = incidents[-1].get('id')
             last_fetch_time = incidents[-1]['occurred']
             last_fetch[state] = \
                 (datetime.strptime(last_fetch_time, TIME_FORMAT) - timedelta(minutes=1)).isoformat().split('.')[0] + 'Z'
             last_fetched_id[state] = id
 
-    demisto.debug("End of current fetch function with last_fetch {} and last_fetched_id {}".format(str(last_fetch), str(
-        last_fetched_id)))
+    demisto.debug(f"End of current fetch function with last_fetch {str(last_fetch)} and last_fetched_id"
+                  f" {str(last_fetched_id)}")
 
     last_run = {
         'last_fetch': last_fetch,
         'last_fetched_incident_id': last_fetched_id
     }
 
-    demisto.info('extracted {} incidents'.format(len(incidents)))
+    demisto.info(f'extracted {len(incidents)} incidents')
 
     return incidents, last_run
 
@@ -344,7 +334,7 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
 
     # How many time before the first fetch to retrieve incidents
-    first_fetch, _ = parse_date_range(params.get('first_fetch', '12 hours') or '12 hours',
+    first_fetch, _ = parse_date_range(params.get('first_fetch', '3 days') or '3 days',
                                       date_format=TIME_FORMAT)
     fetch_limit = params.get('fetch_limit', '100')
     fetch_delta = params.get('fetch_delta', '6 hours')

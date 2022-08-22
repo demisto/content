@@ -1,6 +1,6 @@
 category: Email Gateway
 commonfields:
-  id: ProofpointTRAPEventCollector
+  id: ProofpointTRAPEventCollector_TESTING_1
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -22,10 +22,11 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: First fetch timestamp
+- additionalinfo: The time range for the initial data fetch. If timeout errors occur, consider changing this value.
+  defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
-  defaultvalue: 3 days ago
   required: false
 - defaultvalue: '100'
   display: Fetch limit - maximum number of incidents per fetch
@@ -41,6 +42,10 @@ configuration:
   type: 0
 - display: Fetch incidents with specific event sources. Can be a list of comma separated values.
   name: event_sources
+  required: false
+  type: 0
+- display: Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma separated values.
+  name: abuse_disposition
   required: false
   type: 0
 - display: Fetch incident with specific states.
@@ -70,8 +75,8 @@ configuration:
   required: false
   type: 0
 description: Use the Proofpoint Threat Response integration to orchestrate and automate incident response.
-display: Proofpoint TRAP Event Collector (Beta)
-name: ProofpointTRAPEventCollector
+display: Proofpoint TRAP Event Collector TESTING 1(Beta)
+name: ProofpointTRAPEventCollector_TESTING_1
 script:
   commands:
   - arguments:
