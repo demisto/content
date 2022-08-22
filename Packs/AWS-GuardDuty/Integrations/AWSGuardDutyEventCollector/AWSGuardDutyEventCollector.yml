@@ -90,10 +90,10 @@ script:
     description: Manual command to fetch events and display them.
     execution: false
     name: aws-gd-get-events
-  dockerimage: demisto/boto3:2.0.0.24033
+  dockerimage: devtesting/boto3py3:1.1.0.1661157277
   isfetchevents: true
   runonce: false
-  subtype: python2
+  subtype: python3
 marketplaces:
 - marketplacev2
 tests:

@@ -1,10 +1,9 @@
-from datetime import datetime, date
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from SiemApiModule import *  # noqa: E402
 from AWSApiModule import *  # noqa: E402
-from AWSGuardDuty import gd_severity_mapping, validate_params
+
 import urllib3.util
-import boto3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -13,27 +12,25 @@ SERVICE = 'guardduty'
 
 
 class AWSGuardDutyGetEvents(IntegrationGetEvents):
-    client
-    collect_from
-    last_run_time
 
     def __init__(self, client, options, collect_from):
-        super().__init__(client=client, options=options)
+        super().__init__(options=options)
+        self.aws_client = client
         self.collect_from = collect_from if collect_from else 0
         self.last_run_time = collect_from if collect_from else 0
 
     @staticmethod
-    def get_last_run(events) -> dict:
+    def get_last_run(events):
         return {'from': events[-1]['updatedAt']}
 
     def call(self):
         try:
             events = []
-            response = self.client.list_detectors()
+            response = self.aws_client.list_detectors()
             detector_ids = response['DetectorIds']
 
             for detector_id in detector_ids:
-                list_findings = self.client.list_findings(
+                list_findings = self.aws_client.list_findings(
                     DetectorId=detector_id, FindingCriteria={
                         'Criterion': {
                             'service.archived': {'Eq': ['false', 'false']},
@@ -46,7 +43,7 @@ class AWSGuardDutyGetEvents(IntegrationGetEvents):
                     }
                 )
 
-                get_findings = self.client.get_findings(DetectorId=detector_id, FindingIds=list_findings['FindingIds'])
+                get_findings = self.aws_client.get_findings(DetectorId=detector_id, FindingIds=list_findings['FindingIds'])
 
                 for finding in get_findings['Findings']:
                     # event = parse_event_from_finding(finding)
@@ -60,30 +57,31 @@ class AWSGuardDutyGetEvents(IntegrationGetEvents):
             return events
 
         except Exception as e:
-            return raise_error(e)
+            raise e
 
     def _iter_events(self):
         # self.client.prepare_request()
         response = self.call()
-        events = response.json()
+        events = response
         # events.sort(key=lambda k: k.get('updatedAt'))
 
         if not events:
-            return []
+            yield None
 
-        while True:
-            yield events
+        else:
+            while True:
+                yield events
 
-            last = events[-1]
-            self.last_run_time = last['updatedAt']
-            # self.client.prepare_request()
-            response = self.call()
+                last = events[-1]
+                self.last_run_time = last['updatedAt']
+                # self.client.prepare_request()
+                response = self.call()
 
-            events = response.json()  # TODO: check this, it is fishy
-            # events.sort(key=lambda k: k.get('updatedAt'))
+                events = response  # TODO: check this, it is fishy
+                # events.sort(key=lambda k: k.get('updatedAt'))
 
-            if not events:
-                break
+                if not events:
+                    break
 
 
 def main():
@@ -122,14 +120,14 @@ def main():
             get_events.run()
             return_results('ok')
 
-        elif command in ('aws-guard-duty-get-events', 'fetch-events'):
+        elif command in ('aws-gd-get-events', 'fetch-events'):
             events = get_events.run()
 
             if command == 'fetch-events':
                 send_events_to_xsiam(events, 'AWSGuardDuty', params.get('product'))
                 demisto.setLastRun(AWSGuardDutyGetEvents.get_last_run(events))
 
-            elif command == 'aws-guard-duty-get-events':
+            elif command == 'aws-gd-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('AWSGuardDuty Logs', events, headerTransform=pascalToSpace),
                     outputs_prefix='AWSGuardDuty.Logs',
