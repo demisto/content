@@ -1,0 +1,49 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: JoeSecurityV2
+  version: -1
+configuration:
+  - name: url
+    display: Your server URL
+    required: true
+    defaultvalue: https://jbxcloud.joesecurity.org/api
+    type: 0
+  - displaypassword: API Key
+    name: credentials
+    type: 9
+    required: true
+    hiddenusername: true
+  - name: insecure
+    display: Trust any certificate (not secure)
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: proxy
+    display: Use system proxy settings
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+description: Access the full set of possibilities the JoeSandbox Cloud provides
+  via RESTful Web API v2.
+display: Joe Security v2
+name: JoeSecurityV2
+script:
+  commands:
+    - name: joe-is-online
+      description: Check if the Joe Sandbox analysis back end is online or in
+        maintenance mode.
+      deprecated: false
+      arguments: []
+      outputs: []
+  isfetch: false
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: devdemisto/joe-security:1.0.0.33070
+  feed: false
+fromversion: 6.8.0
+tests:
+  - No tests (auto formatted)
