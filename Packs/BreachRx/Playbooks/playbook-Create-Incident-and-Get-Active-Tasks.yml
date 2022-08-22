@@ -116,3 +116,5 @@ outputs:
 - contextPath: BreachRx.Incident.Actions
   description: The Actions on a BreachRx privacy Incident.
   type: string
+tests:
+- No tests (auto formatted)

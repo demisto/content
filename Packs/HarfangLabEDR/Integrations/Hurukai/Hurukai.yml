@@ -137,7 +137,7 @@ script:
       description: HarfangLab job action
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent uniqueB identifier as provided by the HarfangLab EDR Manager
       required: true
     - name: filename
       description: Path of the file to download
