@@ -187,7 +187,7 @@ For more information on LDAP filters, see the [LDAP documentation](https://ldap.
 | size-limit        | The maximum number of records to return. Default is 50. | Optional | 
 | time-limit        | The maximum time to pull records (in seconds). | Optional | 
 | context-output    | Whether to output the search results to the context. Possible values are: yes, no. Default is yes. | Optional | 
-| page-size         | The page size to query. The limit value will be ignored. | Optional | 
+| page-size         | The page size to query. The size-limit value will be ignored. | Optional | 
 | page-cookie       | An opaque string received in a paged search, used for requesting subsequent entries. | Optional | 
 
 
