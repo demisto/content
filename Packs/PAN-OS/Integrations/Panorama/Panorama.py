@@ -2655,8 +2655,14 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
     return dbot_score
 
 
-def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list,
-                                      additional_malicious: list, target: Optional[str] = None):
+def panorama_get_url_category_command(
+    url_cmd: str,
+    url: str,
+    additional_suspicious: list,
+    additional_malicious: list,
+    reliability: str,
+    target: Optional[str] = None
+):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -2692,7 +2698,8 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
                 indicator=url,
                 indicator_type=DBotScoreType.URL,
                 integration_name='PAN-OS',
-                score=max_url_dbot_score
+                score=max_url_dbot_score,
+                reliability=reliability
             )
             url_obj = Common.URL(
                 url=url,
@@ -2712,7 +2719,8 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
                 indicator=url,
                 indicator_type=DBotScoreType.URL,
                 integration_name='PAN-OS',
-                score=score
+                score=score,
+                reliability=reliability
             )
             url_obj = Common.URL(
                 url=url,
@@ -8082,6 +8090,8 @@ class Topology:
         :param device: Either Panorama or Firewall Pandevice instance
         """
         if isinstance(device, Panorama):
+            serial_number_or_hostname = device.serial if device.serial else device.hostname
+
             # Check if HA is active and if so, what the system state is.
             panorama_ha_state_result = run_op_command(device, "show high-availability state")
             enabled = panorama_ha_state_result.find("./result/enabled")
@@ -8091,7 +8101,7 @@ class Topology:
                     state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
                     if "active" in state:
                         # TODO: Work out how to get the Panorama peer serial..
-                        self.ha_active_devices[device.serial] = "peer serial not implemented here.."
+                        self.ha_active_devices[serial_number_or_hostname] = "peer serial not implemented here.."
                         self.get_all_child_firewalls(device)
                         return
                 else:
@@ -8100,8 +8110,8 @@ class Topology:
                 self.get_all_child_firewalls(device)
 
             # This is a bit of a hack - if no ha, treat it as active
-            self.ha_active_devices[device.serial] = "STANDALONE"
-            self.panorama_objects[device.serial] = device
+            self.ha_active_devices[serial_number_or_hostname] = "STANDALONE"
+            self.panorama_objects[serial_number_or_hostname] = device
 
             return
 
@@ -8149,7 +8159,12 @@ class Topology:
         # This means we don't need to refresh the state.
         for device in self.all(filter_str):
             if self.ha_active_devices:
-                if device.serial in self.ha_active_devices:
+                # Handle case of no SN or hostname
+                serial_or_hostname = device.serial
+                if not serial_or_hostname:
+                    serial_or_hostname = device.hostname
+
+                if serial_or_hostname in self.ha_active_devices:
                     yield device
             else:
                 status = device.refresh_ha_active()
@@ -9374,6 +9389,7 @@ class ObjectGetter:
         "SecurityProfileGroup": SecurityProfileGroup,
         "SecurityRule": SecurityRule,
         "NatRule": NatRule,
+        "LogForwardingProfile": LogForwardingProfile,
     }
 
     @staticmethod
@@ -11195,6 +11211,7 @@ def main():
         params = demisto.params()
         additional_malicious = argToList(params.get('additional_malicious'))
         additional_suspicious = argToList(params.get('additional_suspicious'))
+        reliability = params.get('integrationReliability')
         initialize_instance(args=args, params=params)
         command = demisto.command()
         LOG(f'Command being called is: {command}')
@@ -11297,27 +11314,42 @@ def main():
         # URL Filtering capabilities
         elif command == 'url':
             if USE_URL_FILTERING:  # default is false
-                panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
-                                                  additional_suspicious=additional_suspicious,
-                                                  additional_malicious=additional_malicious)
+                panorama_get_url_category_command(
+                    url_cmd='url',
+                    url=args.get('url'),
+                    additional_suspicious=additional_suspicious,
+                    additional_malicious=additional_malicious,
+                    reliability=reliability
+                )
             # do not error out
 
         elif command == 'panorama-get-url-category' or command == 'pan-os-get-url-category':
-            panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
-                                              additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious,
-                                              target=args.get('target'),
-                                              )
+            panorama_get_url_category_command(
+                url_cmd='url',
+                url=args.get('url'),
+                additional_suspicious=additional_suspicious,
+                additional_malicious=additional_malicious,
+                target=args.get('target'),
+                reliability=reliability
+            )
 
         elif command == 'panorama-get-url-category-from-cloud' or command == 'pan-os-get-url-category-from-cloud':
-            panorama_get_url_category_command(url_cmd='url-info-cloud', url=args.get('url'),
-                                              additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious)
+            panorama_get_url_category_command(
+                url_cmd='url-info-cloud',
+                url=args.get('url'),
+                additional_suspicious=additional_suspicious,
+                additional_malicious=additional_malicious,
+                reliability=reliability
+            )
 
         elif command == 'panorama-get-url-category-from-host' or command == 'pan-os-get-url-category-from-host':
-            panorama_get_url_category_command(url_cmd='url-info-host', url=args.get('url'),
-                                              additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious)
+            panorama_get_url_category_command(
+                url_cmd='url-info-host',
+                url=args.get('url'),
+                additional_suspicious=additional_suspicious,
+                additional_malicious=additional_malicious,
+                reliability=reliability
+            )
 
         # URL Filter
         elif command == 'panorama-get-url-filter' or command == 'pan-os-get-url-filter':
