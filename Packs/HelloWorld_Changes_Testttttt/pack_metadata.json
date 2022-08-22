@@ -1,0 +1,21 @@
+{
+    "name": "HelloWorld_changes_Testttttt",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "XSOAR",
+    "url": "",
+    "email": "",
+    "created": "2022-08-22T14:54:38Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "ShacharKidor"
+    ]
+}
