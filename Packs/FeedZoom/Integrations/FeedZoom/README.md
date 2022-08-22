@@ -8,7 +8,7 @@ This pack aims to address this issue by automating the collection of endpoint da
 
 ## Note regarding Fetch Interval Time Parameter
 
-Be aware, the default value of this parameter is 240 minutes, setting more frequent fetch interval may cause errors from the vendor.
+The default value of this parameter is 240 minutes, setting more frequent fetch interval may cause errors from the vendor.
 
 ## Zoom Network Settings
 For information about Zoom network settings, see the (Zoom documentation)[https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom].

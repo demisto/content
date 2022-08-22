@@ -95,7 +95,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
         Outputs.
     """
     client.build_iterator()
-    return "ok", {}, {}
+    return "ok"
 
 
 def fetch_indicators(client: Client, feed_tags: List = [], tlp_color: Optional[str] = None,
@@ -197,7 +197,7 @@ def main():
             str, Callable[[Client, Dict[str, str], Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]
         ] = {"test-module": test_module, "zoom-get-indicators": get_indicators_command}
         if command in commands:
-            return_results(*commands.get(command)(client, demisto.params(), demisto.args()))
+            return_results(commands.get(command)(client, demisto.params(), demisto.args()))
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, demisto.params())
