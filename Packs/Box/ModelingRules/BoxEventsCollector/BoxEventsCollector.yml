@@ -2,3 +2,4 @@ name: BoxEventCollector
 id: BoxEventCollector
 fromversion: 6.0.0
 rules: ''
+schema: ''

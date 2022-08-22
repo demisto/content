@@ -29,5 +29,9 @@
     ],
     "githubUser": [
         "mikedgibson"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

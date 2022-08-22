@@ -134,6 +134,18 @@
                             }
                         ]
                     }
+                },
+                "dbotMirrorDirection": {
+                	"simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                	"simple": "detection_id"
+                },
+                "dbotMirrorInstance": {
+                	"simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
                 }
             }
         },
@@ -245,7 +257,19 @@
 							}
 						]
 					}
-				}
+				},
+                "dbotMirrorDirection": {
+                	"simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                	"simple": "incident_id"
+                },
+                "dbotMirrorInstance": {
+                	"simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
+                }
             }
         },
         "Malware": {

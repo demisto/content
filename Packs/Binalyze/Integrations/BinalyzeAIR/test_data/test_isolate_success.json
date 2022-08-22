@@ -1,0 +1,12 @@
+{
+    "success": true,
+    "result": [
+        {
+            "_id": "26aeb2db-9fd0-467c-a3ba-b74c675ef0c8",
+            "name": "Isolation 003",
+            "organizationId": 0
+        }
+    ],
+    "statusCode": 200,
+    "errors": []
+}

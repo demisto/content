@@ -1475,19 +1475,18 @@ def handle_fetch_results(
     """
     incidents = []
     if pulled_msg_ids and max_publish_time:
-        if last_run_time <= max_publish_time:
-            # Create incidents
-            for msg in pulled_msgs:
-                incident = message_to_incident(msg)
-                incidents.append(incident)
-            # ACK messages if relevant
-            if ack_incidents:
-                client.ack_messages(sub_name, acknowledges)
-            # Recreate last run to return with new values
-            last_run = {
-                LAST_RUN_TIME_KEY: max_publish_time,
-                LAST_RUN_FETCHED_KEY: list(pulled_msg_ids),
-            }
+        # Create incidents
+        for msg in pulled_msgs:
+            incident = message_to_incident(msg)
+            incidents.append(incident)
+        # ACK messages if relevant
+        if ack_incidents:
+            client.ack_messages(sub_name, acknowledges)
+        # Recreate last run to return with new values
+        last_run = {
+            LAST_RUN_TIME_KEY: max_publish_time,
+            LAST_RUN_FETCHED_KEY: list(pulled_msg_ids),
+        }
     # We didn't manage to pull any unique messages, so we're trying to increment micro seconds - not relevant for ack
     elif not ack_incidents:
         last_run_time_dt = dateparser.parse(
