@@ -11,6 +11,8 @@ from datetime import datetime, timedelta
 urllib3.disable_warnings()
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
+VENDOR = "atlassian"
+PRODUCT = "jira"
 
 
 class Method(str, Enum):
@@ -188,7 +190,7 @@ def main():
 
     elif command in ('fetch-events', 'jira-get-events'):
         events = get_events.run(int(demisto_params.get('max_fetch', 1000)))
-        send_events_to_xsiam(events, 'atlassian', 'jira')
+        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         if events:
             demisto.setLastRun(get_events.set_next_run(events[0]))
