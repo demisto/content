@@ -16,7 +16,7 @@ DEFAULT_PAGE_NUMBER = '1'
 DEFAULT_LIMIT = '50'
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 REQUEST_BASE_TIMEOUT = 20
-GRANT_BY_CONNECTION = {'Device': DEVICE_CODE, 'Client Credentials': CLIENT_CREDENTIALS}
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
 
 
 class DataExplorerClient:
@@ -24,8 +24,9 @@ class DataExplorerClient:
         Azure Data Explorer API Client.
     """
 
-    def __init__(self, cluster_url: str, client_id: str, client_activity_prefix: str, verify: bool, proxy: bool,
-                 connection_type: str, tenant_id: str, enc_key: str):
+    def __init__(self, cluster_url: str, client_id: str, client_activity_prefix: str, verify: bool,
+                 proxy: bool, connection_type: str, tenant_id: str = None, enc_key: str = None,
+                 auth_code: str = None, redirect_uri: str = None):
 
         if '@' in client_id:  # for use in test-playbook
             client_id, refresh_token = client_id.split('@')
@@ -38,25 +39,24 @@ class DataExplorerClient:
                 "Cluster URL parameter must contain "
                 "'https://' as prefix (e.g. https://help.kusto.windows.net).")
 
-        token_retrieval_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Client' not in \
-                                                                                                     connection_type \
-            else None
         self.cluster_url = cluster_url
         self.host = cluster_url.split("https://")[1]
-        self.scope = f'{cluster_url}/user_impersonation offline_access user.read' if 'Client' not in connection_type \
+        self.scope = f'{cluster_url}/user_impersonation offline_access user.read' if 'Authorization' not in connection_type \
             else 'https://management.azure.com/.default'
         self.client_activity_prefix = client_activity_prefix
         client_args = assign_params(
             self_deployed=True,
             auth_id=client_id,
-            token_retrieval_url=token_retrieval_url,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             grant_type=GRANT_BY_CONNECTION[connection_type],
             base_url=cluster_url,
             verify=verify,
             proxy=proxy,
             scope=self.scope,
             tenant_id=tenant_id,
-            enc_key=enc_key
+            enc_key=enc_key,
+            auth_code=auth_code,
+            redirect_uri=redirect_uri
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.connection_type = connection_type
@@ -561,13 +561,15 @@ def test_module(client: DataExplorerClient) -> str:
     """
     # This  should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
-    if 'Client' not in client.connection_type:
+    if 'Authorization' not in client.connection_type:
         raise DemistoException(
-            "Test module is available for Client Credentials only, for other authentication types use the "
-            "azure-data-explorer-auth-test command")
+            "Please enable the integration and run `!azure-data-explorer-auth-start`"
+            "and `!azure-data-explorer-auth-complete` to log in."
+            "You can validate the connection by running `!azure-data-explorer-auth-test`\n"
+            "For more details press the (?) button.")
 
-    test_connection(client)
-    return "ok"
+    else:
+        raise DemistoException("Test module in unavilable for Authorization Code mode")
 
 
 def main() -> None:
@@ -583,7 +585,9 @@ def main() -> None:
     proxy = params.get('proxy', False)
     enc_key = (params.get('credentials', {})).get('password')
     tenant_id = params.get('tenant_id')
-    connection_type = params.get('authentication_type', 'Device')
+    connection_type = params.get('authentication_type', 'Device Code')
+    auth_code = (params.get('auth_code', {})).get('password')
+    redirect_uri = params.get('redirect_uri')
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -591,8 +595,8 @@ def main() -> None:
     try:
         requests.packages.urllib3.disable_warnings()
         client: DataExplorerClient = DataExplorerClient(cluster_url, client_id, client_activity_prefix,
-                                                        verify_certificate,
-                                                        proxy, connection_type, tenant_id, enc_key)
+                                                        verify_certificate, proxy, connection_type,
+                                                        tenant_id, enc_key, auth_code, redirect_uri)
 
         commands = {
             'azure-data-explorer-search-query-execute': search_query_execute_command,

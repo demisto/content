@@ -27,38 +27,52 @@ configuration:
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
-    defaultvalue: "true"
+    defaultvalue: "false"
     type: 8
     additionalinfo: null
   - name: proxy
     display: Use system proxy settings
     required: false
-    defaultvalue: "true"
+    defaultvalue: "false"
     type: 8
     additionalinfo: null
   - name: authentication_type
     display: Authentication Type
     required: false
-    defaultvalue: Device
+    defaultvalue: Device Code
     type: 15
-    additionalinfo: Type of authentication - could be Client Credentials
-      Authorization Flow (recommended) or Device Flow
+    additionalinfo: Type of authentication - could be Authorization Code
+      Flow (recommended) or Device Code Flow
     options:
-      - Device
-      - Client Credentials
+      - Device Code
+      - Authorization Code
   - name: tenant_id
-    display: Tenant ID (for Client Credentials mode)
+    display: Tenant ID (for Authorization Code mode)
     required: false
     defaultvalue: null
     type: 0
     additionalinfo: ""
   - name: credentials
-    display: Client Secret (for Client Credentials mode)
+    display: Client Secret (for Authorization Code mode)
     required: false
     defaultvalue: null
     type: 9
     additionalinfo: ""
-    displaypassword: Client Secret (for Client Credentials mode)
+    displaypassword: Client Secret (for Authorization Code mode)
+    hiddenusername: true
+  - name: redirect_uri
+    display: Application redirect URI (for Authorization Code mode)
+    required: false
+    defaultvalue:
+    type: 0
+    additionalinfo: ""
+  - name: auth_code
+    display: Authorization code
+    required: false
+    defaultvalue:
+    type: 9
+    additionalinfo: for Authorization Code mode - received from the authorization step. see Detailed Instructions (?) section
+    displaypassword: Authorization code
     hiddenusername: true
 description: Use the Azure Data Explorer integration to collect and analyze data
   inside Azure Data Explorer clusters, and to manage search queries.
