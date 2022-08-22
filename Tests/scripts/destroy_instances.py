@@ -23,8 +23,9 @@ def main():
         logging.info(f'Downloading server log from {env.get("Role", "Unknown role")}')
         ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
                      '"sudo chmod -R 755 /var/log/demisto"'
+        tar_string = 'tar -czvf /tmp/server_logs.tar.gz /var/log/demisto'
         scp_string = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ' \
-                     '{}@{}:/var/log/demisto/server.log {} || echo "WARN: Failed downloading server.log"'
+                     '{}@{}:/tmp/server_logs.tar.gz {} || echo "WARN: Failed downloading server.log"'
 
         try:
             logging.debug(f'Changing permissions of folder /var/log/demisto on server {env["InstanceDNS"]}')
@@ -35,13 +36,20 @@ def main():
             logging.exception(f'Failed changing permissions of folder /var/log/demisto on server {env["InstanceDNS"]}')
 
         try:
+            logging.debug('creating logs.tar.gz on server')
+            subprocess.check_output(tar_string, shell=True)
+
+        except subprocess.CalledProcessError:
+            logging.exception(f'Failed creating server log tar on server {env["InstanceDNS"]}')
+
+        try:
             logging.debug(f'Downloading server logs from server {env["InstanceDNS"]}')
             server_ip = env["InstanceDNS"].split('.')[0]
             subprocess.check_output(
                 scp_string.format(
                     env["SSHuser"],
                     env["InstanceDNS"],
-                    "{}/server_{}_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''), server_ip)),
+                    f"{circle_aritfact}/server_{env['Role'].replace(' ', '')}_{server_ip}_logs.tar.gz"),
                 shell=True)
 
         except subprocess.CalledProcessError:
