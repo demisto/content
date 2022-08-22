@@ -1655,7 +1655,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         print_debug_msg(f'No events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP}.')
         time.sleep(FAILURE_SLEEP)
     else:
-        print_debug_msg(f'No events were fetched for offense {offense_id}.\n'
+        print_debug_msg(f'No events were fetched for offense {offense_id}. '
                         f'If mirroring is enabled, it will be queried again in mirroring.')
         is_success = False
     mirroring_events_message = update_events_mirror_message(mirror_options=MIRROR_OFFENSE_AND_EVENTS,
