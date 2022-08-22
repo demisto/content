@@ -77,25 +77,29 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime], max_fetch
     """
     Fetches events from the KnowBe4_KMSAT queue.
     """
-    query_params = last_run if last_run else {'page': 0}
-    query_params['per_page'] = 100
-    events: List[Dict] = []
-    under_max_fetch = True
-    page = 0
-    #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
-    while under_max_fetch:
-        response = client.get_events_request(params=query_params)
-        if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
-            break
-        fetched_events = response.json().get('data') or []
-        demisto.info(f'fetched events length: ({len(fetched_events)})')
-        demisto.debug(f'fetched events: ({fetched_events})')
-        events.extend(fetched_events)
-        page = response.get('meta').get('current_page')
-        query_params['page'] = page + 1
-        if max_fetch:
-            under_max_fetch = len(events) < max_fetch
+    if last_run:
+        query_params = last_run if last_run else {'page': 0}
+        query_params['per_page'] = 100
+        events: List[Dict] = []
+        under_max_fetch = True
+        page = 0
+        #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
+        while under_max_fetch:
+            response = client.get_events_request(params=query_params)
+            if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
+                break
+            fetched_events = response.json().get('data') or []
+            demisto.info(f'fetched events length: ({len(fetched_events)})')
+            demisto.debug(f'fetched events: ({fetched_events})')
+            events.extend(fetched_events)
+            page = response.get('meta').get('current_page')
+            query_params['page'] = page + 1
+            if max_fetch:
+                under_max_fetch = len(events) < max_fetch
 
+        
+    else:
+        first_fetch_time = p
     new_last_run: dict[str, int] = {'page': page + 1} if page else {'page': 0}
     demisto.info(f'Done fetching {len(events)} events, Setting new_last_run = {new_last_run}.')
     return events, new_last_run
