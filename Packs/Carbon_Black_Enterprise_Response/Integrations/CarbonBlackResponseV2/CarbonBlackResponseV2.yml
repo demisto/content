@@ -1104,6 +1104,33 @@ script:
     execution: false
     name: cb-edr-watchlist-update
   - arguments:
+    - default: true
+      description: The watchlist ID
+      name: id
+      required: true
+    - default: false
+      description: Action type specified for the watchlist. Options for action_type are syslog, email and alert.
+      name: action_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - syslog
+      - email
+      - alert
+    - default: false
+      description: Whether the watchlist is enabled or not.
+      name: enabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    deprecated: false
+    description: |-
+      Updates a Watchlist action that is specified using ID.
+    execution: false
+    name: cb-edr-watchlist-update-action
+  - arguments:
     - default: false
       description: Name of the watchlist
       isArray: false
@@ -1241,7 +1268,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a list of banned hashes
+    description: |-
+      Returns a list of banned hashes
     execution: false
     name: cb-edr-binary-bans-list
     outputs:
@@ -1297,28 +1325,28 @@ script:
       name: alert_ids
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: "The requested status to \n"
       isArray: false
       name: status
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - Resolved
       - Unresolved
       - In Progress
       - False Positive
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: Setting is_ignored to True for an Alert carries through to the threat report that generated the Alert. Any further hits on IOCs contained within that report will no longer trigger an Alert.
       isArray: false
       name: set_ignored
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - default: false
       description: Advanced query string. Accepts the same data as the search box on the Process Search page. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf. If not provided, at least one other search field must be provided.
       isArray: false
@@ -1332,18 +1360,18 @@ script:
     execution: false
     name: cb-edr-alert-update
   - arguments:
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: Alert status to filter by
       isArray: false
       name: status
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - Unresolved
       - In Progress
       - Resolved
       - False Positive
-      required: false
-      secret: false
     - default: false
       description: Alert username to filter by
       isArray: false
@@ -1401,19 +1429,22 @@ script:
       description: A list of strings, each representing a token as parsed by the query parser.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.username
-      description: The user assosicated with the alert.
+      description: |-
+        The user assosicated with the alert.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.alert_type
       description: The type of the alert.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.sensor_criticality
-      description: The criticality of the sensor.
+      description: |-
+        The criticality of the sensor.
       type: Number
     - contextPath: CarbonBlackEDR.Alert.Results.modload_count
       description: The count of modules loaded.
       type: Number
     - contextPath: CarbonBlackEDR.Alert.Results.report_score
-      description: The score of the report.
+      description: |-
+        The score of the report.
       type: Number
     - contextPath: CarbonBlackEDR.Alert.Results.watchlist_id
       description: The id of the watchlist.
@@ -1440,19 +1471,23 @@ script:
       description: The confience of the resource.
       type: Number
     - contextPath: CarbonBlackEDR.Alert.Results.ioc_attr
-      description: The resource attributes.
+      description: |-
+        The resource attributes.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.alert_severity
-      description: The severity of the alert.
+      description: |-
+        The severity of the alert.
       type: Number
     - contextPath: CarbonBlackEDR.Alert.Results.crossproc_count
-      description: The count of cross process events launched by this process.
+      description: |-
+        The count of cross process events launched by this process.
       type: Number
     - contextPath: CarbonBlackEDR.Alert.Results.group
       description: The sensor group id this sensor is assigned to.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.hostname
-      description: The hostname assisicated with the alert.
+      description: |-
+        The hostname assisicated with the alert.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.filemod_count
       description: The count of file modifications in this process.
@@ -1478,7 +1513,8 @@ script:
       description: The description of the alert.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.process_name
-      description: The name of the process.
+      description: |-
+        The name of the process.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.process_unique_id
       description: The unique_id of the targeted process.
@@ -1487,10 +1523,12 @@ script:
       description: The id of the process.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.link
-      description: A link to the report.
+      description: |-
+        A link to the report.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results._version_
-      description: The version of the alert.
+      description: |-
+        The version of the alert.
       type: Number
     - contextPath: CarbonBlackEDR.Alert.Results.regmod_count
       description: The count of registry modifications in this process.
@@ -1499,7 +1537,8 @@ script:
       description: The md5 of the process.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.segment_id
-      description: The segment id of the process.
+      description: |-
+        The segment id of the process.
       type: Date
     - contextPath: CarbonBlackEDR.Alert.Results.total_hosts
       description: The number of total host.
@@ -1687,11 +1726,13 @@ script:
       name: md5
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: Digital signature status
       isArray: false
       name: digital_signature
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - Signed
       - Unsigned
@@ -1701,8 +1742,6 @@ script:
       - Invalid Chain
       - Untrusted Root
       - Explicit Distrust
-      required: false
-      secret: false
     - default: false
       description: If signed and present, the publisher name.
       isArray: false

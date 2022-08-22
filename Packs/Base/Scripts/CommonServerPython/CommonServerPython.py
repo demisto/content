@@ -7174,6 +7174,24 @@ class ExecutionMetrics(object):
             self.metrics = CommandResults(execution_metrics=self._metrics)
 
 
+def append_metrics(execution_metrics, results):
+    """
+    Returns a 'CommandResults' list appended with metrics.
+
+    :type execution_metrics: ``ExecutionMetrics``
+    :param execution_metrics: Metrics object to be added to CommandResults list(optional).
+
+    :type results: ``list``
+    :param results: 'CommandResults' list to append metrics to (required).
+
+    :return: results appended with the metrics if the server version is supported.
+    :rtype: ``list``
+    """
+    if execution_metrics.metrics is not None and execution_metrics.is_supported():
+        results.append(execution_metrics.metrics)
+    return results
+
+
 class CommandRunner:
     """
     Class for executing multiple commands and save the results of each command.
@@ -8425,9 +8443,6 @@ if 'requests' in sys.modules:
                 The request codes to accept as OK, for example: (200, 201, 204). If you specify
                 "None", will use self._ok_codes.
 
-            :return: Depends on the resp_type parameter
-            :rtype: ``dict`` or ``str`` or ``requests.Response``
-
             :type retries: ``int``
             :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
 
@@ -8462,13 +8477,15 @@ if 'requests' in sys.modules:
                 been exhausted.
 
             :type error_handler ``callable``
-            :param error_handler: Given an error entery, the error handler outputs the
+            :param error_handler: Given an error entry, the error handler outputs the
                 new formatted error message.
 
             :type empty_valid_codes: ``list``
             :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
                 can vary)
 
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
             try:
                 # Replace params if supplied

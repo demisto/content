@@ -1495,7 +1495,10 @@ def test_get_url_category__url_length_gt_1278(mocker):
     return_results_mock = mocker.patch.object(Panorama, 'return_results')
 
     # run
-    panorama_get_url_category_command(url_cmd='url', url='test_url', additional_suspicious=[], additional_malicious=[])
+    panorama_get_url_category_command(
+        url_cmd='url', url='test_url', additional_suspicious=[],
+        additional_malicious=[], reliability='B - Usually reliable'
+    )
 
     # validate
     assert 'URL Node can be at most 1278 characters.' == return_results_mock.call_args[0][0][1].readable_output
@@ -1534,7 +1537,10 @@ def test_get_url_category_multiple_categories_for_url(mocker):
     return_results_mock = mocker.patch.object(Panorama, 'return_results')
 
     # run
-    panorama_get_url_category_command(url_cmd='url', url='test_url', additional_suspicious=[], additional_malicious=[])
+    panorama_get_url_category_command(
+        url_cmd='url', url='test_url', additional_suspicious=[],
+        additional_malicious=[], reliability='B - Usually reliable'
+    )
 
     # validate
     for i in range(3):
