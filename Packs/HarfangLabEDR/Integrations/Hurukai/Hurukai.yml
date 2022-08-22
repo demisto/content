@@ -292,7 +292,7 @@ script:
       name: search_in_path
     - description: size of the file associated to the 'hash' parameters (DEPRECATED, rather use the 'filesize' parameter). If known, it will speed up the search process.
       name: hash_filesize
-    - description: size of the file to search (can be used when searching a file from a hash or from a filename). If known, it will speed up the search process.
+    - description: size of the file to search in bytes (can be used when searching a file from a hash or from a filename). If known, it will speed up the search process.
       name: filesize
     - description: regex to search in registry (key or value)
       name: registry
