@@ -6,7 +6,8 @@ import e2e_tests_utils
 def test_e2e_demisto_sdk_flow_playbook(tmpdir, insecure: bool = False):
     # Importing TestSuite classes from Demisto-SDK
     e2e_tests_utils.cli(f'mkdir {tmpdir}/git')
-    e2e_tests_utils.git_clone_demisto_sdk(destination_folder=f'{tmpdir}/git/demisto-sdk', sdk_git_branch='testsuite-playbook')
+#     e2e_tests_utils.git_clone_demisto_sdk(destination_folder=f'{tmpdir}/git/demisto-sdk', sdk_git_branch='testsuite-playbook')
+    e2e_tests_utils.git_clone_demisto_sdk(destination_folder=f'{tmpdir}/git/demisto-sdk')
 
     from TestSuite.playbook import Playbook
     from TestSuite.repo import Repo
