@@ -9,13 +9,13 @@ configuration:
   name: client_id
   required: true
   type: 0
-- additionalinfo: Organizaion name
+- additionalinfo: Organization name
   display: Organization
   name: organization
   required: true
   type: 0
   defaultvalue:
-- additionalinfo: Default is 50. Maximum is 200.
+- additionalinfo: Maximum is 200.
   defaultvalue: '50'
   display: Maximum incidents for one fetch.
   name: max_fetch
@@ -69,7 +69,7 @@ configuration:
   required: false
   defaultvalue: Device Code
   type: 15
-  additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
+  additionalinfo: Type of authentication - could be Authorization Code flow (recommended) or Device Code flow.
   options:
   - Authorization Code
   - Device Code
@@ -98,13 +98,13 @@ configuration:
   required: false
   defaultvalue:
   type: 9
-  additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
+  additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section.
   displaypassword: Authorization code
   hiddenusername: true
 description: >-
   Manage Git repositories in Azure DevOps Services. Integration capabilities
   include retrieving, creating, and updating pull requests. Run pipelines and
-  retrieve git information.
+  retrieve Git information.
 display: AzureDevOps
 name: AzureDevOps
 defaultmapperin: Azure DevOps Incoming Mapper
