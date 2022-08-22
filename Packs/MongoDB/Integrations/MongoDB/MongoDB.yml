@@ -255,7 +255,7 @@ script:
     - contextPath: MongoDB.Entry.collection
       description: The collection of which the entry belongs to.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.31193
+  dockerimage: demisto/py3-tools:1.0.0.32758
   feed: false
   isfetch: false
   longRunning: false
