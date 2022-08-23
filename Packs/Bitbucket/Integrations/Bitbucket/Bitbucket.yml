@@ -1,0 +1,69 @@
+category: Utilities
+commonfields:
+  id: Bitbucket
+  version: -1
+configuration:
+  - name: url
+    display: Your server URL
+    required: true
+    defaultvalue: https://example.com/
+    type: 0
+    additionalinfo: null
+  - name: credentials
+    display: null
+    required: true
+    defaultvalue: null
+    type: 9
+    additionalinfo: The API Key to use for connection
+    displaypassword: API Key
+    hiddenusername: true
+  - name: insecure
+    display: Trust any certificate (not secure)
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: proxy
+    display: Use system proxy settings
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: Name
+    display: Parameter Name
+    required: false
+    defaultvalue: null
+    type: 0
+    additionalinfo: ""
+description: "[Enter a comprehensive, yet concise, description of what the
+  integration does, what use cases it is designed for, etc.]"
+display: Bitbucket
+name: Bitbucket
+script:
+  commands:
+    - arguments:
+        - default: false
+          description: "[Enter a description of the argument, including any important
+            information users need to know, for example, default values.]"
+          isArray: false
+          name: dummy
+          required: true
+          secret: false
+      deprecated: false
+      description: "[Enter a description of the command, including any important
+        information users need to know, for example required permissions.]"
+      execution: false
+      name: baseintegration-dummy
+      outputs:
+        - contextPath: BaseIntegration.Output
+          description: "[Enter a description of the data returned in this output.]"
+          type: String
+  isfetch: false
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.5.31797
+fromversion: 6.5.0
+tests:
+  - No tests (auto formatted)
