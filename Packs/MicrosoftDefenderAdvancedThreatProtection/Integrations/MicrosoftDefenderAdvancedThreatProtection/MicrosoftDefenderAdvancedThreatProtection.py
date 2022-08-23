@@ -4831,6 +4831,8 @@ def main():  # pragma: no cover
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
     is_gcc = params.get('is_gcc', False)
+    auth_code = params.get('auth_code', {}).get('password', ''),
+    redirect_uri = params.get('redirect_uri', ''),
 
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
@@ -4841,6 +4843,15 @@ def main():  # pragma: no cover
         raise Exception('Authentication ID must be provided.')
     if not tenant_id:
         raise Exception('Tenant ID must be provided.')
+    if auth_code and redirect_uri:
+        if not self_deployed:
+            raise Exception()
+    if (auth_code and not redirect_uri) or (redirect_uri and not auth_code):
+            raise Exception()
+    if auth_code and redirect_uri and auth_id and tenant_id and enc_key and self_deployed:
+        auth_type = AUTHORIZATION_CODE
+    else:
+        auth_type = CLIENT_CREDENTIALS
 
     command = demisto.command()
     args = demisto.args()
@@ -4851,7 +4862,7 @@ def main():  # pragma: no cover
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc,
+            is_gcc=is_gcc, auth_code=auth_code, redirect_uri=redirect_uri
         )
         if command == 'test-module':
             test_module(client)
