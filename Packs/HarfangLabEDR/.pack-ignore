@@ -2,13 +2,10 @@
 ignore=IN126
 [known_words]
 HarfangLab
-harfanglab
 filesize
 eventlog
 eventid
-harfanglab-telemetry-eventlog
-harfanglab-endpoint-search
-harfanglab-telemetry-processes
+eventlog
 pipelist
 prefetchlist
 runkeylist
@@ -27,5 +24,4 @@ hives
 evtx
 logs
 filesystem
-all
 downloadfile
