@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Dict, List, Tuple, Any, Callable, Optional
+from typing import Dict, List, Callable, Optional, Union
 
 import urllib3
 
@@ -194,7 +194,7 @@ def main():
         client = Client(base_url=ZOOM_DOCS_IP_RANGES_URL, verify=insecure, proxy=proxy)
 
         commands: Dict[
-            str, Callable[[Client, Dict[str, str], Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]
+            str, Callable[[Client, Dict[str, str], Dict[str, str]], Union[str, CommandResults]]
         ] = {"test-module": test_module, "zoom-get-indicators": get_indicators_command}
         if command in commands:
             return_results(commands[command](client, demisto.params(), demisto.args()))
