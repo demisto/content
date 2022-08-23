@@ -19,7 +19,7 @@ from exceptions import (DeprecatedPackException, InvalidTestException,
                         NothingToCollectException, NotUnderPackException,
                         PrivateTestException, SkippedPackException,
                         SkippedTestException, TestMissingFromIdSetException,
-                        UnsupportedPackException)
+                        NonXsoarSupportedPackException)
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
@@ -94,7 +94,16 @@ class CollectionResult:
         try:
             self._validate_args(pack, test, reason, conf, id_set, is_sanity)  # raises if invalid
 
-        except (InvalidTestException, SkippedPackException, DeprecatedPackException, UnsupportedPackException) as e:
+        except NonXsoarSupportedPackException:
+            if test:
+                logger.info(f'{pack} support level != XSOAR, not collecting {test}')
+                test = None
+
+        except (
+                InvalidTestException,
+                SkippedPackException,
+                DeprecatedPackException,
+        ) as e:
             logger.warning(str(e))
             return
 
