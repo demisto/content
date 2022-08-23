@@ -5315,7 +5315,8 @@
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
-        "Elasticsearch_v2_test-v8": "CRTX-61980"
+        "Elasticsearch_v2_test-v8": "CRTX-61980",
+        "Carbon Black Enterprise Protection V2 Test": "No credentials"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
