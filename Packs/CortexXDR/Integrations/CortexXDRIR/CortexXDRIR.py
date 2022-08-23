@@ -1,10 +1,11 @@
 import hashlib
 import secrets
 import string
+from itertools import zip_longest
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-from itertools import zip_longest
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1456,6 +1457,7 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-get-contributing-event':
             return_results(get_contributing_event_command(client, args))
+            print("3")
 
         elif command == 'xdr-replace-featured-field':
             return_results(replace_featured_field_command(client, args))

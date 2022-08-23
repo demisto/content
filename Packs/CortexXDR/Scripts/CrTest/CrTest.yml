@@ -1,0 +1,19 @@
+commonfields:
+  id: cr-test
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+enabled: true
+name: cr-test
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
