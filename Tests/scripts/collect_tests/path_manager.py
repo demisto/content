@@ -1,8 +1,10 @@
 import logging
+import os
 from os import getenv
 from pathlib import Path
 from typing import Iterable, Union
 
+import git.exc
 from git import Repo
 
 _SANITY_FILES_FOR_GLOB = (
@@ -26,7 +28,12 @@ class PathManager:
 
     def __init__(self, content_path: Path):
         self.content_path = content_path
-        self.content_repo = Repo(content_path)
+        try:
+            self.content_repo = Repo(content_path)
+        except git.exc.InvalidGitRepositoryError:
+            if not os.getenv('UNIT_TESTING'):
+                raise
+            self.content_repo = None
         logging.debug(f'PathManager uses {self.content_path.resolve()=}, {PathManager.ARTIFACTS_PATH.resolve()=}')
 
         self.packs_path = self.content_path / 'Packs'

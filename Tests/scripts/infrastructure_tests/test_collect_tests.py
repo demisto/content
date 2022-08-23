@@ -1,17 +1,20 @@
+import os
 from pathlib import Path
 from typing import Any, Callable, Iterable, Optional
 
-import collect_tests
 import pytest
-# importing Machine,FileType from collect_tests (rather than utils) to compare class member values
-from collect_tests import (BranchTestCollector, FileType, Machine,
-                           XSIAMNightlyTestCollector,
-                           XSOARNightlyTestCollector)
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 
+from Tests.scripts.collect_tests import collect_tests
+# importing Machine,FileType from collect_tests (rather than utils) to compare class member values
+from Tests.scripts.collect_tests.collect_tests import (
+    BranchTestCollector, FileType, Machine, XSIAMNightlyTestCollector,
+    XSOARNightlyTestCollector)
 from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.utils import PackManager
+
+os.environ['UNIT_TESTING'] = 'True'
 
 """
 Test Collection Unit-Test cases
@@ -20,7 +23,7 @@ Test Collection Unit-Test cases
 - `A` has a single pack with an integration and two test playbooks.
 - `B` has a single pack, with only test playbooks. (they should be collected)
 - `C` has a pack supported by both marketplaces, and one only for marketplacev2 and one only for XSOAR.
-- `D` has a single pack with from_version == to_version == 6.5, for testing the version range.
+- `D` has a single pack with from_version == to_version == 6.8, for testing the version range.
 - `E` has a single pack with a script tested using myTestPlaybook, and a Playbook used in myOtherTestPlaybook.
 - `F` has a single pack with a script set up as `no tests`, and a conf where myTestPlaybook is set as the script's test.
 - `G` has objects that trigger collection of the pack (without tests).
@@ -60,7 +63,7 @@ class CollectTestsMocker:
         return str(self.path_manager.content_path)
 
 
-TEST_DATA = Path('test_data')
+TEST_DATA = Path('tests_data/collect_tests')
 
 
 class MockerCases:
@@ -307,12 +310,14 @@ def test_only_collect_pack_args():
     comparing the test_only_collect_packs arguments (ONLY_INSTALL_PACK_FILE_TYPES) match constants.ONLY_COLLECT_PACK_TYPES
     Any change there will require a change here.
     """
-    from constants import ONLY_INSTALL_PACK_FILE_TYPES
+    from Tests.scripts.collect_tests.constants import \
+        ONLY_INSTALL_PACK_FILE_TYPES
     assert ONLY_COLLECT_PACK_TYPES == ONLY_INSTALL_PACK_FILE_TYPES
 
 
 def test_only_collect_and_ignore_lists_are_disjoint():
-    from constants import IGNORED_FILE_TYPES, ONLY_INSTALL_PACK_FILE_TYPES
+    from Tests.scripts.collect_tests.constants import (
+        IGNORED_FILE_TYPES, ONLY_INSTALL_PACK_FILE_TYPES)
     assert ONLY_INSTALL_PACK_FILE_TYPES.isdisjoint(IGNORED_FILE_TYPES)
 
 
@@ -325,7 +330,7 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
     """
     # test mockers
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
-    mocker.patch('collect_tests.find_type', return_value=file_type)
+    mocker.patch('Tests.scripts.collect_tests.collect_tests.find_type', return_value=file_type)
 
     # noinspection PyTypeChecker
     _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,
