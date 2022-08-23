@@ -484,6 +484,13 @@ script:
       name: visitor_phone
       required: false
       secret: false
+    - default: false
+      description: Maximum number of items to return in the range of 1 – 1000. Default
+        is 25.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get a list of active sessions.
     execution: false
