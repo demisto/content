@@ -795,7 +795,6 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         # We are using Common.DBotScore as macros to simplify
         # the mapping.
 
-        score = 0
         reputation = int(ip_data.get('score', 0))
         if reputation == 0:
             score = Common.DBotScore.NONE  # unknown

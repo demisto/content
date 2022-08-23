@@ -55,6 +55,8 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 import json
 import io
 
+import pytest
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -546,3 +548,42 @@ def test_fetch_incidents(requests_mock):
             'severity': 2,  # medium, this is XSOAR severity (already converted)
         }
     ]
+
+
+def test_invalid_ip():
+    """
+    Tests the ip reputation command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate ip reputation API response,
+              loaded from a local JSON file.
+            - An IP address to check.
+
+        When:
+            - Running the 'ip_reputation_command'.
+
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from HelloWorld import Client, ip_reputation_command
+    from CommonServerPython import Common, DBotScoreReliability
+
+    ip_to_check = '1.1.1'  # an invalid ip
+
+    client = Client(
+        base_url='http://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authorization': 'Bearer some_api_key'
+        }
+    )
+
+    args = {
+        'ip': ip_to_check,
+        'threshold': 65,
+    }
+
+    with pytest.raises((Exception, ValueError)) as e:
+        ip_reputation_command(client, args, 65, DBotScoreReliability.C)
+
+    assert e.value.args[0] == f'IP "{ip_to_check}" is not valid'
