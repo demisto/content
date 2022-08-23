@@ -8,9 +8,9 @@ configuration:
   hidden: false
   name: auth_mode
   options:
-  - legacy
   - client credentials
-  - code flow
+  - legacy
+  - device code flow
   required: true
   type: 15
 - display: Server URL (e.g., https://example.net)
@@ -21,8 +21,7 @@ configuration:
   name: token
   required: false
   type: 4
-- additionalinfo: The API key to use to connect (for Client Credentials & code flow mode).
-  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
+- additionalinfo: The API key to use to connect (for Client Credentials & device code flow mode).
   display: Application ID
   name: app_id
   required: false
@@ -31,22 +30,12 @@ configuration:
   name: tenant_id
   required: false
   type: 0
-- display: Client Secret (for Client Credentials mode)
-  name: credentials
-  required: false
+- display: ""
+  displaypassword: Client Secret (for Client Credentials mode)
+  name: client_id
   type: 9
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates
-    & secrets" page of the app.
-  display: Certificate Thumbprint
-  name: certificate_thumbprint
   required: false
-  type: 4
-- additionalinfo: Used for certificate authentication. The private key of the registered
-    certificate.
-  display: Private Key
-  name: private_key
-  required: false
-  type: 14
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -136,7 +125,7 @@ script:
     execution: false
     name: microsoft-cas-auth-complete
   - deprecated: false
-    description: Run this command if you need to rerun the authentication process.
+    description: Run this command if you need to re-run the authentication process.
       (for device-code mode)
     execution: false
     name: microsoft-cas-auth-reset

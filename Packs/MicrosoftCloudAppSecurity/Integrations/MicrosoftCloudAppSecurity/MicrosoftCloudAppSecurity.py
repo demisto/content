@@ -102,8 +102,7 @@ class LegacyClient(BaseClient):
 class Client:
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str, auth_mode: str, tenant_id: str = None,
-                 enc_key: str = None, certificate_thumbprint: Optional[str] = None,
-                 private_key: Optional[str] = None, headers: Optional[dict] = {}):
+                 enc_key: str = None, headers: Optional[dict] = {}):
 
         if auth_mode == 'legacy':
             self.ms_client = LegacyClient(
@@ -134,13 +133,11 @@ class Client:
                 grant_type=CLIENT_CREDENTIALS if auth_mode == 'client credentials' else DEVICE_CODE,
 
                 # used for device code flow
-                resource='https://api.security.microsoft.com' if auth_mode == 'code flow' else None,
-                token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if auth_mode == 'code flow' else None,
+                resource='https://api.security.microsoft.com' if auth_mode == 'device code flow' else None,
+                token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if auth_mode == 'device code flow' else None,
                 # used for client credentials flow
                 tenant_id=tenant_id,
-                enc_key=enc_key,
-                certificate_thumbprint=certificate_thumbprint,
-                private_key=private_key,
+                enc_key=enc_key
             )
             self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
@@ -247,24 +244,8 @@ def reset_auth() -> CommandResults:
 
 @logger
 def test_connection(client: Client) -> CommandResults:
-    test_context_for_token(client)
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
-
-
-def test_context_for_token(client: Client) -> None:
-    """test_context_for_token
-    Checks if the user acquired token via the authentication process.
-    Args:
-    Returns:
-
-    """
-    if client.client_credentials:
-        return
-    if not (get_integration_context().get('access_token') or get_integration_context().get('current_refresh_token')):
-        raise DemistoException(
-            "This integration does not have a test module. Please run !microsoft-cas-auth-auth-start and "
-            "!microsoft-cas-auth-auth-complete and check the connection using !microsoft-cas-auth-auth-test")
 
 
 def args_to_filter(arguments: dict):
@@ -396,17 +377,22 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter:
     return request_data
 
 
-def test_module(client: Client, is_fetch: bool, custom_filter: Optional[str]):
+def test_module(client: Client, auth_mode: str, is_fetch: bool, custom_filter: Optional[str]):
     try:
-        client.list_alerts(url_suffix='/alerts/', request_data={})
-        if is_fetch:
-            client.list_incidents(filters={}, limit=1)
-            if custom_filter:
-                try:
-                    json.loads(custom_filter)
-                except ValueError:
-                    raise DemistoException('Custom Filter Error: Your custom filter format is incorrect, '
-                                           'please try again.')
+        if auth_mode == "device code flow":
+            raise DemistoException(
+                "To test the device code flow Please run !microsoft-cas-auth-start and "
+                "!microsoft-cas-auth-complete and check the connection using !microsoft-cas-auth-test")
+        else:
+            client.list_alerts(url_suffix='/alerts/', request_data={})
+            if is_fetch:
+                client.list_incidents(filters={}, limit=1)
+                if custom_filter:
+                    try:
+                        json.loads(custom_filter)
+                    except ValueError:
+                        raise DemistoException('Custom Filter Error: Your custom filter format is incorrect, '
+                                               'please try again.')
     except Exception as e:
         if 'No connection' in str(e):
             return 'Connection Error: The URL you entered is probably incorrect, please try again.'
@@ -904,11 +890,9 @@ def main():  # pragma: no cover
     tenant_id = params.get('tenant_id')
     auth_mode = params.get('auth_mode', 'legacy')
     enc_key = (params.get('credentials') or {}).get('password')
-    private_key = params.get('private_key')
 
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    certificate_thumbprint = params.get('certificate_thumbprint')
 
     token = params.get('token')
     base_url = f'{params.get("url")}/api/v1'
@@ -923,7 +907,7 @@ def main():  # pragma: no cover
 
     try:
         if not app_id and not token:
-            raise Exception('Application ID must be provided.')
+            raise Exception('Application ID or Token must be provided.')
 
         client = Client(
             app_id=app_id,
@@ -933,15 +917,13 @@ def main():  # pragma: no cover
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_mode=auth_mode,
-            certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key,
             headers={'Authorization': f'Token {token}'}
         )
 
         LOG(f'Command being called is {command}')
 
         if command == 'test-module':
-            result = test_module(client, params.get('isFetch'), params.get('custom_filter'))
+            result = test_module(client, auth_mode, params.get('isFetch'), params.get('custom_filter'))
             return_results(result)
 
         elif command == 'fetch-incidents':
