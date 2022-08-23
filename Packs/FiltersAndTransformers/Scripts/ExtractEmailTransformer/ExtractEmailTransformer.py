@@ -6,7 +6,7 @@ def main():
     try:
         list_results = []
         for val in argToList(demisto.args().get('value')):
-            list_results.extend(list(re.findall(emailRegex, val)))
+            list_results.extend(re.findall(emailRegex, (val or '').lower()))
         return_results(list_results)
     except Exception as error:
         return_error(str(error), error)
