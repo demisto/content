@@ -257,7 +257,12 @@ prepare-testing-bucket-mpv2:
       fi
 
     - |
+      TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL_1="https://localhost:$TUNNEL_PORT"
+      echo "DEMISTO_BASE_URL_1: $DEMISTO_BASE_URL_1"
+ 
       export DEMISTO_BASE_URL="https://localhost:$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].TunnelPort')"
+      echo "DEMISTO_BASE_URL: $DEMISTO_BASE_URL"
       echo "Server URL: $DEMISTO_BASE_URL"
       python3 -m pytest Tests/integration_tests/ || EXIT_CODE=$?
 
