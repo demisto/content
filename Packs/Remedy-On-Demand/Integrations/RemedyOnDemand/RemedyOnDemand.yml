@@ -35,11 +35,6 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 script:
   script: ''
   type: javascript
