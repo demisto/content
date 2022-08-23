@@ -124,11 +124,9 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
     url = BASE_URL + api_endpoint
     # 2 types of auth, user and non user, mostly user is needed
     if user_auth:
-        demisto.info("in if statement")
         headers = headers or generate_user_auth_headers(api_endpoint)
 
     else:
-        demisto.info("in else statement")
         # This type of auth is only supported for basic commands: login/discover/refresh-token
         is_user_auth = False
         auth = base64.b64encode((EMAIL_ADDRESS + ':' + PASSWORD).encode("utf-8")).decode()
@@ -2718,9 +2716,9 @@ def search_message_command(args):
 
     tracked_emails = response.get('data')[0].get('trackedEmails')
 
-    to_transformer = JsonTransformer(func=lambda to_data: ', '.join([to.get('emailAddress') for to in to_data]))
-    from_env_transformer = JsonTransformer(func=lambda env: env.get('emailAddress'))
-    from_hdr_transformer = JsonTransformer(func=lambda hdr: hdr.get('displayableName'))
+    to_transformer = JsonTransformer(func=lambda to_data: ', '.join([to.get('emailAddress', '') for to in to_data]))
+    from_env_transformer = JsonTransformer(func=lambda env: env.get('emailAddress', ''))
+    from_hdr_transformer = JsonTransformer(func=lambda hdr: hdr.get('displayableName', ''))
     table_json_transformer = {'to': to_transformer,
                               'fromEnv': from_env_transformer,
                               'fromHdr': from_hdr_transformer
