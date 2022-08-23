@@ -61,6 +61,9 @@ class VersionRange:
 
         return self
 
+    def __eq__(self, other):
+        return (self.min_version, self.max_version) == (other.min_version, other.max_version)
+
     @property
     def is_default(self):
         """

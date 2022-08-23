@@ -1,4 +1,5 @@
 import os
+from packaging.version import Version
 from pathlib import Path
 from typing import Any, Callable, Iterable, Optional
 
@@ -12,7 +13,7 @@ from Tests.scripts.collect_tests.collect_tests import (
     XSOARNightlyTestCollector)
 from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES
 from Tests.scripts.collect_tests.path_manager import PathManager
-from Tests.scripts.collect_tests.utils import PackManager
+from Tests.scripts.collect_tests.utils import PackManager, VersionRange
 
 os.environ['UNIT_TESTING'] = 'True'
 
@@ -349,3 +350,16 @@ def test_invalid_content_item(mocker, monkeypatch):
     _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,
           expected_tests=(), expected_packs=(), expected_machines=None,
           collector_class_args=XSOAR_BRANCH_ARGS)
+
+
+def test_version_range():
+    _6_0_0 = Version('6.0.0')
+    _6_5_0 = Version('6.5.0')
+    _6_8_0 = Version('6.8.0')
+
+    assert VersionRange(_6_0_0, _6_5_0) | VersionRange(_6_8_0, _6_8_0) == VersionRange(_6_0_0, _6_8_0)
+    assert VersionRange(_6_0_0, _6_8_0) | VersionRange(_6_8_0, _6_8_0) == VersionRange(_6_0_0, _6_8_0)
+    assert VersionRange(_6_0_0, _6_8_0) | VersionRange(_6_5_0, _6_8_0) == VersionRange(_6_0_0, _6_8_0)
+    assert VersionRange(_6_0_0, _6_0_0) | VersionRange(_6_8_0, _6_8_0) == VersionRange(_6_0_0, _6_8_0)
+    assert VersionRange(_6_5_0, _6_5_0) | VersionRange(_6_0_0, _6_8_0) == VersionRange(_6_0_0, _6_8_0)
+
