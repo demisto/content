@@ -38,7 +38,7 @@ def main():
 
         try:
             logging.debug('creating logs.tar.gz on server')
-            subprocess.check_output(ssh_tar_string, shell=True)
+            subprocess.check_output(ssh_tar_string.format(env["SSHuser"], env["InstanceDNS"]), shell=True)
 
         except subprocess.CalledProcessError:
             logging.exception(f'Failed creating server log tar on server {env["InstanceDNS"]}')
