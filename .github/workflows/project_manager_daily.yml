@@ -2,6 +2,9 @@ name: Manage Contribution Board - Daily
 on:
   schedule:
     - cron:  '0 0 * * *'
+permissions:
+  contents: read
+
 jobs:
   manage_project_board:
     runs-on: ubuntu-latest

@@ -1,0 +1,50 @@
+commonfields:
+  id: NetwitnessSACreateIncident
+  version: -1
+name: NetwitnessSACreateIncident
+script: ''
+type: python
+subtype: python2
+tags:
+- RSA NetWitness Security Analytics
+comment: Create an incident inside NetWitness SA from a set of NetWitness events.
+system: true
+args:
+- name: alertSummary
+  required: true
+  description: '[string] Short summary of the alert which will be attached to incident'
+- name: severity
+  description: '[optional string] Default set to "50". '
+- name: name
+  required: true
+  description: '[string] The name of the incident.'
+- name: assigned
+  description: '[optional string] Set assignee login name if assignee has changed. You can execute nw-get-available-assignees to get the list of users. Example: demisto123'
+- name: eventList
+  required: true
+  description: List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use nw-get-events
+- name: deviceId
+  required: true
+  description: The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command nw-get-components
+- name: priority
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+  description: Priority of the incident
+- name: summary
+  description: Summary of the incident
+- name: incidentManagementId
+  description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
+scripttarget: 0
+dependson:
+  must:
+  - netwitness-im-create-incident
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.27799
+tests:
+- No tests (auto formatted)

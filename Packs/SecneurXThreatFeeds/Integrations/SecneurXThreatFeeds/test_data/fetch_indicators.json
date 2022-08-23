@@ -1,0 +1,272 @@
+[
+    {
+        "value": "autodiscover.wall-meer.com",
+        "type": "Domain",
+        "rawJson": {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--ac842719-47c2-4fcb-8938-b905c0eed69e",
+            "created": "2022-06-27T05:26:39.337Z",
+            "modified": "2022-06-27T05:26:39.337Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[domain-name:value = 'autodiscover.wall-meer.com']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2022-06-27T05:26:39.337Z",
+            "confidence": 45
+        },
+        "fields": {
+            "firstseenbysource": "2022-06-27T05:26:39Z",
+            "indicatoridentification": "indicator--ac842719-47c2-4fcb-8938-b905c0eed69e",
+            "verdict": "Malicious",
+            "tags": [],
+            "modified": "2022-06-27T05:26:39Z",
+            "reportedby": "SecneurX ThreatFeeds"
+        }
+    },
+    {
+        "value": "78535.cc",
+        "type": "Domain",
+        "rawJson": {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--d0b89592-215b-4fbe-99ad-28e95efb7ea7",
+            "created": "2022-06-27T05:26:36.253Z",
+            "modified": "2022-06-27T05:26:36.253Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[domain-name:value = '78535.cc']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2022-06-27T05:26:36.253Z",
+            "confidence": 45
+        },
+        "fields": {
+            "firstseenbysource": "2022-06-27T05:26:36Z",
+            "indicatoridentification": "indicator--d0b89592-215b-4fbe-99ad-28e95efb7ea7",
+            "verdict": "Malicious",
+            "tags": [],
+            "modified": "2022-06-27T05:26:36Z",
+            "reportedby": "SecneurX ThreatFeeds"
+        }
+    },
+    {
+        "value": "email.wall-meer.com",
+        "type": "Domain",
+        "rawJson": {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--fca75372-4ef8-4d41-a233-839cb22e903c",
+            "created": "2022-06-27T05:26:19.444Z",
+            "modified": "2022-06-27T05:26:19.444Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[domain-name:value = 'email.wall-meer.com']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2022-06-27T05:26:19.444Z",
+            "confidence": 45
+        },
+        "fields": {
+            "firstseenbysource": "2022-06-27T05:26:19Z",
+            "indicatoridentification": "indicator--fca75372-4ef8-4d41-a233-839cb22e903c",
+            "verdict": "Malicious",
+            "tags": [],
+            "modified": "2022-06-27T05:26:19Z",
+            "reportedby": "SecneurX ThreatFeeds"
+        }
+    },
+    {
+        "value": "xvode.com",
+        "type": "Domain",
+        "rawJson": {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--7819b630-cbe6-432a-9d88-8b994968c957",
+            "created": "2022-06-27T05:26:17.321Z",
+            "modified": "2022-06-27T05:26:17.321Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[domain-name:value = 'xvode.com']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2022-06-27T05:26:17.321Z",
+            "confidence": 45
+        },
+        "fields": {
+            "firstseenbysource": "2022-06-27T05:26:17Z",
+            "indicatoridentification": "indicator--7819b630-cbe6-432a-9d88-8b994968c957",
+            "verdict": "Malicious",
+            "tags": [],
+            "modified": "2022-06-27T05:26:17Z",
+            "reportedby": "SecneurX ThreatFeeds"
+        }
+    },
+    {
+        "value": "jckbcnews.id",
+        "type": "Domain",
+        "rawJson": {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--5554fe9d-2dae-4cf2-b0d2-6f1e19c9f075",
+            "created": "2022-06-27T05:25:58.788Z",
+            "modified": "2022-06-27T05:25:58.788Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[domain-name:value = 'jckbcnews.id']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2022-06-27T05:25:58.788Z",
+            "confidence": 45
+        },
+        "fields": {
+            "firstseenbysource": "2022-06-27T05:25:58Z",
+            "indicatoridentification": "indicator--5554fe9d-2dae-4cf2-b0d2-6f1e19c9f075",
+            "verdict": "Malicious",
+            "tags": [],
+            "modified": "2022-06-27T05:25:58Z",
+            "reportedby": "SecneurX ThreatFeeds"
+        }
+    },
+    {
+        "value": "vieillirsanssouffrir.com",
+        "type": "Domain",
+        "rawJson": {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--371cf8aa-9a83-4db4-ab1f-c470f7025de2",
+            "created": "2022-06-27T05:25:54.341Z",
+            "modified": "2022-06-27T05:25:54.341Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[domain-name:value = 'vieillirsanssouffrir.com']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2022-06-27T05:25:54.341Z",
+            "confidence": 45
+        },
+        "fields": {
+            "firstseenbysource": "2022-06-27T05:25:54Z",
+            "indicatoridentification": "indicator--371cf8aa-9a83-4db4-ab1f-c470f7025de2",
+            "verdict": "Malicious",
+            "tags": [],
+            "modified": "2022-06-27T05:25:54Z",
+            "reportedby": "SecneurX ThreatFeeds"
+        }
+    },
+    {
+        "value": "mail2.wacanan.com",
+        "type": "Domain",
+        "rawJson": {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--5fb83d55-319c-47ad-bb27-195703bf0552",
+            "created": "2022-06-27T05:25:51.156Z",
+            "modified": "2022-06-27T05:25:51.156Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[domain-name:value = 'mail2.wacanan.com']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2022-06-27T05:25:51.156Z",
+            "confidence": 45
+        },
+        "fields": {
+            "firstseenbysource": "2022-06-27T05:25:51Z",
+            "indicatoridentification": "indicator--5fb83d55-319c-47ad-bb27-195703bf0552",
+            "verdict": "Malicious",
+            "tags": [],
+            "modified": "2022-06-27T05:25:51Z",
+            "reportedby": "SecneurX ThreatFeeds"
+        }
+    },
+    {
+        "value": "jacksondoughtie.com",
+        "type": "Domain",
+        "rawJson": {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--77e02a45-056d-4e93-8a19-3f4fb60d9cf1",
+            "created": "2022-06-27T05:25:38.254Z",
+            "modified": "2022-06-27T05:25:38.254Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[domain-name:value = 'jacksondoughtie.com']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2022-06-27T05:25:38.254Z",
+            "confidence": 45
+        },
+        "fields": {
+            "firstseenbysource": "2022-06-27T05:25:38Z",
+            "indicatoridentification": "indicator--77e02a45-056d-4e93-8a19-3f4fb60d9cf1",
+            "verdict": "Malicious",
+            "tags": [],
+            "modified": "2022-06-27T05:25:38Z",
+            "reportedby": "SecneurX ThreatFeeds"
+        }
+    },
+    {
+        "value": "mailgate.wall-meer.com",
+        "type": "Domain",
+        "rawJson": {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--a85818c7-deda-4dfc-b182-8b91788a4910",
+            "created": "2022-06-27T05:25:19.871Z",
+            "modified": "2022-06-27T05:25:19.871Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[domain-name:value = 'mailgate.wall-meer.com']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2022-06-27T05:25:19.871Z",
+            "confidence": 45
+        },
+        "fields": {
+            "firstseenbysource": "2022-06-27T05:25:19Z",
+            "indicatoridentification": "indicator--a85818c7-deda-4dfc-b182-8b91788a4910",
+            "verdict": "Malicious",
+            "tags": [],
+            "modified": "2022-06-27T05:25:19Z",
+            "reportedby": "SecneurX ThreatFeeds"
+        }
+    },
+    {
+        "value": "http: //lutanedukasi.co.id/wp-includes/maxlin.exe",
+        "type": "URL",
+        "rawJson": {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--2550a3cc-14f1-44cf-8117-8d20b6b86947",
+            "created": "2022-06-27T05:24:56.856Z",
+            "modified": "2022-06-27T05:24:56.856Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value = 'http: //lutanedukasi.co.id/wp-includes/maxlin.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2022-06-27T05:24:56.856Z",
+            "confidence": 45
+        },
+        "fields": {
+            "firstseenbysource": "2022-06-27T05:24:56Z",
+            "indicatoridentification": "indicator--2550a3cc-14f1-44cf-8117-8d20b6b86947",
+            "verdict": "Malicious",
+            "tags": [],
+            "modified": "2022-06-27T05:24:56Z",
+            "reportedby": "SecneurX Threat Feeds"
+        }
+    }
+]
