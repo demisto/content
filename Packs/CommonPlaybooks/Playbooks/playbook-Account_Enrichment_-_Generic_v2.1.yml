@@ -32,8 +32,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -850,
-          "y": -210
+          "x": -1080,
+          "y": -200
         }
       }
     note: false
@@ -60,7 +60,6 @@ tasks:
       - "3"
       "yes":
       - "28"
-      - "48"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -73,8 +72,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -850,
-          "y": -77
+          "x": -1080,
+          "y": -67
         }
       }
     note: false
@@ -100,8 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -850,
-          "y": 750
+          "x": -1080,
+          "y": 760
         }
       }
     note: false
@@ -158,7 +157,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -210,
+          "x": 350,
           "y": 385
         }
       }
@@ -196,7 +195,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -210,
+          "x": 350,
           "y": 580
         }
       }
@@ -226,7 +225,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -610,
+          "x": -50,
           "y": 255
         }
       }
@@ -256,7 +255,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
+          "x": 770,
           "y": 255
         }
       }
@@ -286,7 +285,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -210,
+          "x": 350,
           "y": 255
         }
       }
@@ -324,7 +323,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -610,
+          "x": -50,
           "y": 385
         }
       }
@@ -362,7 +361,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
+          "x": 770,
           "y": 385
         }
       }
@@ -392,12 +391,13 @@ tasks:
       - "11"
       - "32"
       - "42"
+      - "48"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -610,
-          "y": 100
+          "x": -650,
+          "y": 110
         }
       }
     note: false
@@ -433,7 +433,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -610,
+          "x": -50,
           "y": 580
         }
       }
@@ -471,7 +471,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
+          "x": 770,
           "y": 580
         }
       }
@@ -501,7 +501,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 630,
+          "x": 1190,
           "y": 255
         }
       }
@@ -539,7 +539,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 630,
+          "x": 1190,
           "y": 385
         }
       }
@@ -577,7 +577,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 630,
+          "x": 1190,
           "y": 580
         }
       }
@@ -590,12 +590,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 249971c6-05f7-4868-83f0-e2d5f34d8561
+    taskid: ced5695a-76e7-4f6a-81b8-598925a8ea9d
     type: title
     task:
-      id: 249971c6-05f7-4868-83f0-e2d5f34d8561
+      id: ced5695a-76e7-4f6a-81b8-598925a8ea9d
       version: -1
-      name: AWS IAM
+      name: AWS
       type: title
       iscommand: false
       brand: ""
@@ -607,7 +607,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
+          "x": 1610,
           "y": 255
         }
       }
@@ -620,12 +620,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 01bd1c1e-7e87-4cd3-89ae-121faca9c844
+    taskid: 0f630de1-9988-461a-883a-6113d3dd6d2a
     type: condition
     task:
-      id: 01bd1c1e-7e87-4cd3-89ae-121faca9c844
+      id: 0f630de1-9988-461a-883a-6113d3dd6d2a
       version: -1
-      name: Is AWS IAM Integration Enabled?
+      name: Is AWS Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -645,7 +645,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
+          "x": 1610,
           "y": 385
         }
       }
@@ -658,12 +658,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: bd387b13-e10e-47d0-8aa3-17b6e24c9fd5
+    taskid: 697ac84d-be50-4169-8d2f-412dbecb1a67
     type: regular
     task:
-      id: bd387b13-e10e-47d0-8aa3-17b6e24c9fd5
+      id: 697ac84d-be50-4169-8d2f-412dbecb1a67
       version: -1
-      name: Get User info from AWS IAM
+      name: Get User info from AWS
       description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
       script: '|||aws-iam-get-user'
       type: regular
@@ -682,7 +682,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
+          "x": 1610,
           "y": 580
         }
       }
@@ -734,8 +734,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1080,
-          "y": 575
+          "x": -450,
+          "y": 580
         }
       }
     note: false
@@ -752,9 +752,9 @@ tasks:
     task:
       id: a1004805-611b-4840-8c65-c6a65e12fe1a
       version: -1
-      name: Is there a domain?
+      name: Is there a domain
+      description: Is there a domain
       type: condition
-      description: Is domain provided by the playbook inputs?
       iscommand: false
       brand: ""
     nexttasks:
@@ -774,8 +774,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1080,
-          "y": 215
+          "x": -650,
+          "y": 385
         }
       }
     note: false
@@ -817,8 +817,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1350,
-          "y": 385
+          "x": -850,
+          "y": 580
         }
       }
     note: false
@@ -830,12 +830,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 7484067d-e328-424c-885f-121fcb81d9c3
+    taskid: 4f4d3e42-0ec6-4b22-89b2-0b275eedc3c5
     type: title
     task:
-      id: 7484067d-e328-424c-885f-121fcb81d9c3
+      id: 4f4d3e42-0ec6-4b22-89b2-0b275eedc3c5
       version: -1
-      name: An account was provided
+      name: IAM
       type: title
       iscommand: false
       brand: ""
@@ -847,8 +847,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1080,
-          "y": 100
+          "x": -650,
+          "y": 255
         }
       }
     note: false
@@ -861,14 +861,21 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "1_28_yes": 0.23
+      "18_3_#default#": 0.1,
+      "1_28_yes": 0.23,
+      "1_3_#default#": 0.14,
+      "20_3_#default#": 0.1,
+      "33_3_#default#": 0.1,
+      "43_3_#default#": 0.1,
+      "46_47_#default#": 0.67,
+      "4_3_#default#": 0.1
     },
     "paper": {
       "dimensions": {
         "height": 1025,
-        "width": 2780,
-        "x": -1350,
-        "y": -210
+        "width": 3070,
+        "x": -1080,
+        "y": -200
       }
     }
   }
@@ -888,7 +895,7 @@ inputs:
   required: false
   description: |-
     Optional - This input is needed for the IAM-get-user command (used in the Account Enrichment - IAM playbook). Please provide the domain name that the user is related to.
-    Example: @demisto.com
+    Example: @xsoar.com
   playbookInputQuery:
 outputs:
 - contextPath: Account
@@ -903,13 +910,13 @@ outputs:
 - contextPath: ActiveDirectory.Users.memberOf
   description: Groups the user is a member of.
 - contextPath: IAM
-  description: Generic IAM output
+  description: IAM returened object.
   type: unknown
 - contextPath: IdentityIQ.Identity
   description: Identity asset from IdentityIQ
   type: unknown
 - contextPath: PingOne.Account
-  description: Account in PingID
+  description: Account in PingOne.
   type: unknown
 - contextPath: ActiveDirectory.Users.manager
   description: The manager of the user.
@@ -952,7 +959,7 @@ outputs:
 - contextPath: IdentityIQ.Identity.capabilities
   description: Array of string representations of the IdentityIQ capabilities assigned to this identity.
 - contextPath: IdentityIQ.Identity.name
-  description: The returned object name.
+  description: IdentityIQ account name.
   type: unknown
 - contextPath: IdentityIQ.Identity.name.formatted
   description: The display name of the identity.
@@ -961,7 +968,7 @@ outputs:
 - contextPath: IdentityIQ.Identity.name.givenName
   description: The first name of the identity.
 - contextPath: IdentityIQ.Identity.manager
-  description: User's manager.
+  description: IdentityIQ account's manager
   type: unknown
 - contextPath: IdentityIQ.Identity.manager.userName
   description: The IdentityIQ username (primary id) of the identities manager.
@@ -1008,7 +1015,7 @@ outputs:
 - contextPath: ActiveDirectory.Users.name
   description: The user common name.
 - contextPath: ActiveDirectory.Users.userAccountControlFields
-  description: The user account control fields.
+  description: The user account Active Directory control fields.
   type: unknown
 - contextPath: ActiveDirectory.Users.userAccountControlFields.SCRIPT
   description: Whether the login script is run. Works for *Windows Server 2012 R2*.
@@ -1057,13 +1064,13 @@ outputs:
 - contextPath: ActiveDirectory.Users.userAccountControlFields.SERVER_TRUST_ACCOUNT
   description: Whether this is a computer account for a domain controller that is a member of this domain. Works for *Windows Server 2012 R2*.
 - contextPath: IAM.Vendor
-  description: IAM Vendor
+  description: IAM Vendor that returns the response.
   type: unknown
 - contextPath: IAM.Vendor.action
   description: The command name.
 - contextPath: IAM.UserProfile
   description: The user profile.
 tests:
-- Account Enrichment - Generic v2.1 - Test
+- No tests (auto formatted)
 contentitemexportablefields:
   contentitemfields: {}

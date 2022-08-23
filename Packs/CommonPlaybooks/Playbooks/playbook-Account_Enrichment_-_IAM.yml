@@ -1,0 +1,204 @@
+id: 'Account Enrichment - IAM'
+version: -1
+name: 'Account Enrichment - IAM'
+description: |
+  This playbook aims to retrieve user information from various vendors using the 'iam-get-user'.
+
+  Current Supported Integrations:
+  - Active Directory
+  - AWS ILM
+  - Clarizen IAM
+  - Oracle IAM
+  - ExceedLMS IAM
+  - OKTA IAM
+  - SAP-IAM
+  - Atlassian IAM
+  - Envoy IAM
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6dc28368-259a-4c24-88ee-bf2fc7a6dc65
+    type: start
+    task:
+      id: 6dc28368-259a-4c24-88ee-bf2fc7a6dc65
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3820,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6c105b6e-983c-4791-8a6f-d239f5ffab27
+    type: regular
+    task:
+      id: 6c105b6e-983c-4791-8a6f-d239f5ffab27
+      version: -1
+      name: IAM Get User
+      description: Retrieves a single user resource.
+      script: '|||iam-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      user-profile:
+        simple: '{"username":"${inputs.Username}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -4100,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 78f18ad0-7c8b-4470-893f-65c5768cbad6
+    type: condition
+    task:
+      id: 78f18ad0-7c8b-4470-893f-65c5768cbad6
+      version: -1
+      name: Check if the username is specified
+      description: Check if the username is specifiedץ
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Username
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": -3820,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: a86e5774-dbda-49f8-8a5c-c34a89bbc0b9
+    type: title
+    task:
+      id: a86e5774-dbda-49f8-8a5c-c34a89bbc0b9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3820,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_17_#default#": 0.22
+    },
+    "paper": {
+      "dimensions": {
+        "height": 545,
+        "width": 660,
+        "x": -4100,
+        "y": -280
+      }
+    }
+  }
+inputs:
+- key: Username
+  value: {}
+  required: false
+  description: Specify the useranme
+  playbookInputQuery:
+outputs:
+- contextPath: IAM.Vendor.action
+  description: The command name.
+- contextPath: IAM.Vendor.username
+  description: The employee username in the app.
+- contextPath: IAM.Vendor.success
+  description: If true, the command was executed successfully.
+- contextPath: IAM.Vendor.instanceName
+  description: The integration instance name.
+- contextPath: IAM.Vendor.id
+  description: The employee user ID in the app.
+- contextPath: IAM.Vendor.errorMessage
+  description: The reason the API failed.
+- contextPath: IAM.Vendor.errorCode
+  description: The HTTP error response code.
+- contextPath: IAM.Vendor.email
+  description: The employee email address.
+- contextPath: IAM.Vendor.details
+  description: Tells the user if the API was successful, otherwise provides error information.
+- contextPath: IAM.Vendor.brand
+  description: The integration name.
+- contextPath: IAM.Vendor.active
+  description: If true the employee status is active.
+- contextPath: IAM.Vendor
+  description: IAM Vendor that returns the response.
+  type: unknown
+- contextPath: IAM.UserProfile
+  description: The user profile.
+- contextPath: IAM
+  description: IAM returened object.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
