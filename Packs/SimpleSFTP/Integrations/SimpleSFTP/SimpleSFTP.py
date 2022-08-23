@@ -40,7 +40,7 @@ def main():
                 'ContentsFormat': formats['text'],
                 'Contents': res,
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('', res, ["Directory Files"]),
+                'HumanReadable': tableToMarkdown('##The directory files:', res, ["Directory Files"]),
                 'EntryContext': {"SFTP.ListDir": res}
             }
             demisto.results(entry)
