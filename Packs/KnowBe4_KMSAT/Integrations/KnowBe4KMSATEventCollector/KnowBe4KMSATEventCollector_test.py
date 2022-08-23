@@ -1,4 +1,5 @@
 import datetime
+import pytest
 import json
 import io
 from KnowBe4KMSATEventCollector import Client
@@ -30,29 +31,66 @@ def test_test_module(requests_mock):
     )
     assert test_module(Client(base_url=BASE_URL)) == 'ok'
 
+# def test_fetch_events(requests_mock):
+#     """
+#     Given:
+#         - fetch-events call
+#     When:
+#         - Calling fetch events:
+#                 1. without marking, but with first_fetch
+#                 2. only marking from last_run
+#     Then:
+#         - Make sure 3 events returned.
+#         - Verify the new lastRun is calculated correctly.
+#     """
+#     from KnowBe4KMSATEventCollector import fetch_events
 
-def test_fetch_events(requests_mock):
+#     last_run = {'page': '0'}
+#     requests_mock.get(
+#         f'{BASE_URL}/logs',
+#         json=MOCK_ENTRY
+#     )
+
+#     events, new_last_run = fetch_events(Client(base_url=BASE_URL), last_run=last_run,
+#                                         first_fetch_time=datetime.strptime("2020-01-01", "%Y-%m-%d"), max_fetch=2000)
+#     assert len(events) == 3
+#     assert events[0].get('id') == "786a515c-1cbd-4a8c-a94a-61ad877c893c"
+#     assert new_last_run['page'] == 2
+
+
+@pytest.mark.parametrize('last_run, fetched_events, expected_filtered_list_size, expected_filtered_list_elements', [
+    (),
+])
+def test_eliminate_duplicated_events(last_run, fetched_events, expected_filtered_list_size, expected_filtered_list_elements):
     """
-    Given:
-        - fetch-events call
-    When:
-        - Calling fetch events:
-                1. without marking, but with first_fetch
-                2. only marking from last_run
-    Then:
-        - Make sure 3 events returned.
-        - Verify the new lastRun is calculated correctly.
+    Given
+    - A list of fetched events and a last_run date
+
+    When
+    - Running eliminate_duplicated_events helper function.
+
+    Then
+    - Validate that all the events with the earlier than last_run 'occurred_time' are filtered out.
     """
-    from KnowBe4KMSATEventCollector import fetch_events
+    from KnowBe4KMSATEventCollector import eliminate_duplicated_events
+    filtered_events_list = eliminate_duplicated_events(fetched_events, last_run)
+    assert len(filtered_events_list) == expected_filtered_list_size
+    for event in filtered_events_list:
+        assert event in expected_filtered_list_elements
 
-    last_run = {'page': '0'}
-    requests_mock.get(
-        f'{BASE_URL}/logs',
-        json=MOCK_ENTRY
-    )
+@pytest.mark.parametrize('last_run, events, expected_results', [
+    (),
+])
+def test_check_if_last_run_reached(last_run, events, expected_results):
+    """
+    Given
+    - A list of fetched events and a last_run date
 
-    events, new_last_run = fetch_events(Client(base_url=BASE_URL), last_run=last_run,
-                                        first_fetch_time=datetime.strptime("2020-01-01", "%Y-%m-%d"), max_fetch=2000)
-    assert len(events) == 3
-    assert events[0].get('id') == "786a515c-1cbd-4a8c-a94a-61ad877c893c"
-    assert new_last_run['page'] == 2
+    When
+    - Running check_if_last_run_reached helper function.
+
+    Then
+    - Validate that the answer returend from the function is correct.
+    """
+    from KnowBe4KMSATEventCollector import check_if_last_run_reached
+    assert check_if_last_run_reached(last_run, events[0]) == expected_results
