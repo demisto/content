@@ -1,3 +1,5 @@
+deprecated: true
+description: Deprecated. Use Check Point Threat Emulation (SandBlast) instead.
 commonfields:
   id: Check Point Sandblast
   version: -1
