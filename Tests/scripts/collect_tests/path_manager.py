@@ -3,8 +3,7 @@ import os
 from pathlib import Path
 from typing import Iterable, Union
 
-import git.exc
-from git import Repo
+from git import Repo, InvalidGitRepositoryError
 
 _SANITY_FILES_FOR_GLOB = (
     # if any of the files under this list (or descendants) is changed, and no other files are changed,
@@ -29,10 +28,10 @@ class PathManager:
         self.content_path = content_path
         try:
             self.content_repo = Repo(content_path)
-        except git.exc.InvalidGitRepositoryError:
+        except InvalidGitRepositoryError:
             if not os.getenv('UNIT_TESTING'):
                 raise
-            self.content_repo = None
+            self.content_repo = None  # type: ignore[assignment]
         logging.debug(f'PathManager uses {self.content_path.resolve()=}, {PathManager.ARTIFACTS_PATH.resolve()=}')
 
         self.packs_path = self.content_path / 'Packs'
