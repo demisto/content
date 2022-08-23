@@ -1832,9 +1832,9 @@ def scan_url_command(client: Client, args: dict) -> CommandResults:
     1 API Call
     """
     url = args['url']
-    raw_response = ''
-    data = {}
-    context = {}
+    raw_response: Dict[str, Any] = {}
+    data: Dict[str, Any] = {}
+    context: Dict[str, Any] = {}
     headers = ['id', 'url']
 
     try:
