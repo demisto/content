@@ -1,6 +1,6 @@
 {
     "name": "Bitbucket",
-    "description": ".",
+    "description": "Pack for handling Bitbucket operations",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
