@@ -583,3 +583,25 @@ def test_invalid_ip():
         ip_reputation_command(client, args, 65, DBotScoreReliability.C)
 
     assert e.value.args[0] == f'IP "{ip_to_check}" is not valid'
+
+
+@pytest.mark.parametrize('domain_date, expected_parsed_date', [
+    ('1997-09-15 04:00:00', '1997-09-15T04:00:00.000Z'),
+    (['1997-09-15 04:00:00'], '1997-09-15T04:00:00.000Z')
+])
+def test_parse_domain_date(domain_date, expected_parsed_date):
+    """
+        Given:
+            1. A string of a date.
+            2. A list including a string of a date.
+
+        When:
+            - Running the 'parse_domain_date' function.
+
+        Then:
+            - Verify that the dates were parsed to ISO8601 format correctly.
+    """
+
+    from HelloWorld import parse_domain_date
+
+    assert parse_domain_date(domain_date) == expected_parsed_date

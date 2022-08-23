@@ -472,7 +472,7 @@ def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y
 
     Args:
         domain_date (str/list): a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
-        date_format (int): The format date to which the function will convert the given dat.
+        date_format (int): The format date to which the function will convert the given date.
 
     Returns:
         str: Parsed time, default in ISO8601 format.
