@@ -1,4 +1,3 @@
-from datetime import date, timedelta
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
@@ -291,7 +290,7 @@ def fetch_incidents_command(client, first_fetch, last_run, fetch_limit, fetch_de
 
         if incidents:
             id = incidents[-1].get('id')
-            last_fetch_time = incidents[-1]['occurred']
+            last_fetch_time = incidents[-1]['created_at']
             last_fetch[state] = \
                 (datetime.strptime(last_fetch_time, TIME_FORMAT) - timedelta(minutes=1)).isoformat().split('.')[0] + 'Z'
             last_fetched_id[state] = id
