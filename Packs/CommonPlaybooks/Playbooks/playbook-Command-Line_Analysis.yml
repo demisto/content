@@ -101,7 +101,7 @@ tasks:
             args:
               item:
                 value:
-                  simple: ExtractedIndicators.file
+                  simple: ExtractedIndicators.File
                 iscontext: true
       retry-count:
         simple: "3"

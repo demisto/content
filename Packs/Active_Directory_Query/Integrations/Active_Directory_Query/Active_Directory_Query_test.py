@@ -590,3 +590,22 @@ def test_search_with_paging_bug(mocker):
     with patch('logging.Logger.info'):
         Active_Directory_Query.search_group_members('dc', 1)
         assert len(demisto.results.call_args[0][0]['Contents']) == 3
+
+
+def test_password_not_expire_missing_username(mocker):
+    """
+     Given:
+        A demisto args object with missing username and a valid value.
+    When:
+        running set_password_not_expire command.
+    Then:
+        Verify that a a missing username exception is raised.
+
+    """
+    from Active_Directory_Query import set_password_not_expire
+    mocker.patch.object(demisto, 'args', return_value={'username': None, 'value': True})
+    default_base_dn = {}
+
+    with pytest.raises(Exception) as err:
+        set_password_not_expire(default_base_dn)
+    assert err.value.args[0] == 'Missing argument - You must specify a username (sAMAccountName).'

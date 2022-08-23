@@ -75,7 +75,7 @@ tasks:
       tags:
       - comments
       - work_notes
-      script: '|||panorama-create-rule'
+      script: '|||pan-os-create-rule'
       type: regular
       iscommand: true
       brand: ""

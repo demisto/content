@@ -23,7 +23,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics
 
 try:
     from StringIO import StringIO
@@ -670,6 +670,7 @@ class TestTableToMarkdown:
         assert 'header_2' not in table
         assert headers == ['header_1', 'header_2']
 
+    # Test fails locally because expected time is in UTC
     @staticmethod
     def test_date_fields_param():
         """
@@ -8052,6 +8053,41 @@ class TestSendEventsToXSIAMTest:
 
         demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_events})
 
+    @pytest.mark.parametrize('error_msg', [None, {'error': 'error'}, ''])
+    def test_send_events_to_xsiam_error_handling(self, mocker, requests_mock, error_msg):
+        """
+        Given:
+            case a: response type containing None
+            case b: response type containing json
+            case c: response type containing empty string
+
+        When:
+            calling the send_events_to_xsiam function
+
+        Then:
+            DemistoException is raised with the correct error message on each case.
+        """
+        if not IS_PY3:
+            return
+
+        if isinstance(error_msg, dict):
+            requests_mock.post(
+                'https://api-url/logs/v1/xsiam', json=error_msg, status_code=401, reason='Unauthorized[401]'
+            )
+            error_msg = 'Unauthorized[401]'
+        else:
+            requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=401)
+            error_msg = '\n'
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'error')
+
+        events = self.test_data['json_events']['events']
+        with pytest.raises(
+            DemistoException,
+            match=re.escape('Error sending new events into XSIAM. \n' + error_msg),
+        ):
+            send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
 
 class TestIsMetricsSupportedByServer:
     @classmethod
@@ -8061,7 +8097,7 @@ class TestIsMetricsSupportedByServer:
 
     def test_metrics_supported(self, mocker):
         """
-        Given: An XSOAR server running version 7.0.0
+        Given: An XSOAR server running version 6.8.0
         When: Testing that a server supports ExecutionMetrics
         Then: Assert that is_supported reports True
         """
@@ -8070,7 +8106,7 @@ class TestIsMetricsSupportedByServer:
             demisto,
             'demistoVersion',
             return_value={
-                'version': '7.0.0',
+                'version': '6.8.0',
                 'buildNumber': '50000'
             }
         )
@@ -8194,3 +8230,21 @@ def test_is_scheduled_command_retry(mocker):
 
     # The run should not be considered a scheduled command
     assert is_scheduled_command_retry() is False
+
+
+def test_append_metrics(mocker):
+    """
+
+    Given: CommandResults list and Execution_metrics object to be added to the list.
+    When: Metrics need to be added after reputation commands ran.
+    Then: Metrics added as the last object of the list.
+
+    """
+    mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
+    metrics = ExecutionMetrics()
+    results = []
+    metrics.success += 1
+
+    results = CommonServerPython.append_metrics(metrics, results)
+    assert len(results) == 1
+

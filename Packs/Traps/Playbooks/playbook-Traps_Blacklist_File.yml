@@ -2,8 +2,9 @@ id: Traps Blacklist File
 version: -1
 name: Traps Blacklist File
 hidden: true
+deprecated: true
 fromversion: 5.0.0
-description: This playbook accepts a file SHA256 and adds it to a block list using Traps integration.
+description: Deprecated. Use CortexXDR instead.
 starttaskid: "0"
 tasks:
   "0":

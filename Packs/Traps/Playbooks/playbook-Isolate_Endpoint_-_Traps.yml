@@ -3,7 +3,8 @@ version: -1
 fromversion: 5.0.0
 name: Traps Isolate Endpoint
 hidden: true
-description: This playbook accepts an endpoint ID from Traps integration and performs isolation on this endpoint.
+deprecated: true
+description: Deprecated. Use CortexXDR instead.
 starttaskid: "0"
 tasks:
   "0":

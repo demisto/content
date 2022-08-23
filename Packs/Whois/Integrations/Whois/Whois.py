@@ -7143,14 +7143,14 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
 
     if rfc3490:
         if sys.version_info < (3, 0):
-            domain = encode(domain if type(domain) is unicode else decode(domain, "utf8"), "idna")
+            domain = encode(domain if type(domain) is str else decode(domain, "utf8"), "idna")
         else:
             domain = encode(domain, "idna").decode("ascii")
 
     if len(previous) == 0 and server == "":
         # Root query
         is_exception = False
-        for exception, exc_serv in exceptions.items():
+        for exception, exc_serv in list(exceptions.items()):
             if domain.endswith(exception):
                 is_exception = True
                 target_server = exc_serv
@@ -7227,7 +7227,7 @@ def get_root_server(domain):
         if domain.endswith(dble):
             ext = dble
 
-    if ext in tlds.keys():
+    if ext in list(tlds.keys()):
         entry = tlds[ext]
         try:
             host = entry["host"]
@@ -7322,7 +7322,7 @@ def precompile_regexes(source, flags=0):
 
 def preprocess_regex(regex):
     # Fix for #2; prevents a ridiculous amount of varying size permutations.
-    regex = re.sub(r"\\s\*\(\?P<([^>]+)>\.\+\)", r"\s*(?P<\1>\S.*)", regex)
+    regex = re.sub(r"\\s\*\(\?P<([^>]+)>\.\+\)", r"\\s*(?P<\1>\\S.*)", regex)
     # Experimental fix for #18; removes unnecessary variable-size whitespace
     # matching, since we're stripping results anyway.
     regex = re.sub(r"\[ \]\*\(\?P<([^>]+)>\.\*\)", r"(?P<\1>.*)", regex)
@@ -7670,7 +7670,7 @@ nic_contact_references["billing"] = precompile_regexes(nic_contact_references["b
 if sys.version_info < (3, 0):
     def is_string(data):
         """Test for string with support for python 2."""
-        return isinstance(data, basestring)
+        return isinstance(data, str)
 else:
     def is_string(data):
         """Test for string with support for python 3."""
@@ -7684,7 +7684,7 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
     raw_data = [segment.replace("\r", "") for segment in raw_data]  # Carriage returns are the devil
 
     for segment in raw_data:
-        for rule_key, rule_regexes in grammar['_data'].items():  # type: ignore
+        for rule_key, rule_regexes in list(grammar['_data'].items()):  # type: ignore
             if (rule_key in data) == False:
                 for line in segment.splitlines():
                     for regex in rule_regexes:
@@ -7766,13 +7766,14 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
         if match is not None:
             chunk = match.group(1)
             for match in re.findall("\s+?(.+)\n", chunk):
-                match = match.split()[0]  # type: ignore
-                # Prevent nameserver aliases from being picked up.
-                if not match.startswith("[") and not match.endswith("]"):  # type: ignore
-                    try:
-                        data["nameservers"].append(match.strip())  # type: ignore
-                    except KeyError as e:
-                        data["nameservers"] = [match.strip()]  # type: ignore
+                if match.strip():  # type: ignore
+                    match = match.split()[0]  # type: ignore
+                    # Prevent nameserver aliases from being picked up.
+                    if not match.startswith("[") and not match.endswith("]"):  # type: ignore
+                        try:
+                            data["nameservers"].append(match.strip())  # type: ignore
+                        except KeyError as e:
+                            data["nameservers"] = [match.strip()]  # type: ignore
         # The .ie WHOIS server puts ambiguous status information in an unhelpful order
         match = re.search('ren-status:\s*(.+)', segment)
         if match is not None:
@@ -7886,7 +7887,7 @@ def normalize_data(data, normalized):
                     normalize_name(item, abbreviation_threshold=threshold, length_threshold=1, ignore_nic=ignore_nic)
                     for item in data[key]]
 
-    for contact_type, contact in data['contacts'].items():
+    for contact_type, contact in list(data['contacts'].items()):
         if contact is not None:
             if 'country' in contact and contact['country'] in countries:
                 contact['country'] = countries[contact['country']]
@@ -8056,7 +8057,7 @@ def parse_dates(dates):
                     hour = 0
                     minute = 0
                     second = 0
-                    demisto.debug(e.message)
+                    demisto.debug(e)
         try:
             if year > 0:
                 try:
@@ -8347,7 +8348,7 @@ def create_outputs(whois_result, domain, reliability, query=None):
         if 'registrant' in contacts and contacts['registrant'] is not None:
             md['Registrant'] = contacts['registrant']
             standard_ec['Registrant'] = contacts['registrant'].copy()
-            for key, val in contacts['registrant'].items():
+            for key, val in list(contacts['registrant'].items()):
                 standard_ec['Registrant'][key.capitalize()] = val
             ec['Registrant'] = contacts['registrant']
             if 'organization' in contacts['registrant']:
@@ -8356,7 +8357,7 @@ def create_outputs(whois_result, domain, reliability, query=None):
             md['Administrator'] = contacts['admin']
             ec['Administrator'] = contacts['admin']
             standard_ec['Admin'] = contacts['admin'].copy()
-            for key, val in contacts['admin'].items():
+            for key, val in list(contacts['admin'].items()):
                 standard_ec['Admin'][key.capitalize()] = val
             standard_ec['WHOIS']['Admin'] = contacts['admin']
         if 'tech' in contacts and contacts['tech'] is not None:
@@ -8421,7 +8422,7 @@ def domain_command(reliability):
 
 
 def get_whois_ip(ip):
-    from urllib2 import build_opener, ProxyHandler
+    from urllib.request import build_opener, ProxyHandler
     from ipwhois import IPWhois
     proxy_opener = None
     if demisto.params().get('proxy'):
@@ -8539,6 +8540,7 @@ def main():
     reliability = demisto.params().get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
 
+    org_socket = None
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
@@ -8566,5 +8568,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

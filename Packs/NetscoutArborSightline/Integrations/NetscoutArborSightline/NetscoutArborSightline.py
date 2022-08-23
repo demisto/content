@@ -5,7 +5,6 @@ from CommonServerUserPython import *  # noqa
 
 from copy import deepcopy
 import requests
-import traceback
 from typing import Dict, Tuple
 from datetime import timezone
 
@@ -775,7 +774,6 @@ def main() -> None:
             return_results(result)
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

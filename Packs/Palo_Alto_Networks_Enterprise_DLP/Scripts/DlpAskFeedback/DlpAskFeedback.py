@@ -56,6 +56,94 @@ def create_blocks(message: str, entitlement: str, reply: str) -> list:
     return blocks
 
 
+def send_slack_message(entitlement, task, user_id, message):
+    lifetime = '1 day'
+    expiry_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
+    if expiry_date:
+        expiry = datetime.strftime(expiry_date, DATE_FORMAT)
+
+    entitlement_string = f'{entitlement}@{demisto.investigation().get("id")}'
+    if task:
+        entitlement_string += f'|{task}'
+
+    send_notification_args = {
+        'ignoreAddURL': 'true',
+        'using-brand': 'SlackV3'
+    }
+
+    reply = "Thank you for your response."
+    blocks = json.dumps(create_blocks(message, entitlement_string, reply))
+    send_notification_args['blocks'] = json.dumps({
+        'blocks': blocks,
+        'entitlement': entitlement_string,
+        'reply': reply,
+        'expiry': expiry,
+        'default_response': 'NoResponse'
+    })
+
+    if user_id:
+        send_notification_args['to'] = user_id
+        demisto.results(demisto.executeCommand('send-notification', send_notification_args))
+    else:
+        raise Exception('A user must be provided.')
+
+
+def send_ms_teams_message(entitlement, task, user_id, message):
+    investigation_id: str = demisto.investigation()['id']
+
+    adaptive_card: dict = {
+        'contentType': 'application/vnd.microsoft.card.adaptive',
+        'content': {
+            '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
+            'version': '1.0',
+            'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
+            'body': [
+                {
+                    'type': 'TextBlock',
+                    'text': message,
+                    'wrap': True
+                }
+            ],
+            'actions': [
+                {
+                    'type': 'Action.Submit',
+                    'title': 'Yes',
+                    'data': {
+                        'response': 'Yes',
+                        'entitlement': entitlement,
+                        'investigation_id': investigation_id,
+                        'task_id': task
+                    }
+                },
+                {
+                    'type': 'Action.Submit',
+                    'title': 'No',
+                    'data': {
+                        'response': 'No',
+                        'entitlement': entitlement,
+                        'investigation_id': investigation_id,
+                        'task_id': task
+                    }
+                }
+            ]
+        }
+    }
+
+    command_arguments: dict = {
+        'adaptive_card': json.dumps(adaptive_card),
+        'using-brand': 'Microsoft Teams'
+    }
+
+    if user_id:
+        command_arguments['team_member'] = user_id
+        demisto.results(demisto.executeCommand('send-notification', command_arguments))
+    else:
+        raise Exception('A user must be provided.')
+
+
 def main():
     args = demisto.args()
     res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(args, 'persistent'),
@@ -72,6 +160,9 @@ def main():
     user_display_name = args.get('user_display_name')
     question_type = args.get('question_type')
     include_violation_detail = args.get('include_violation_detail')
+    task = args.get('task')
+    user_id = demisto.get(args, 'user_id')
+    messenger = args.get('messenger')
 
     message = ''
     if include_violation_detail == 'True':
@@ -96,39 +187,11 @@ def main():
     else:
         message += 'Please confirm if this file contains sensitive information:'
 
-    lifetime = '1 day'
-    expiry_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
-    if expiry_date:
-        expiry = datetime.strftime(expiry_date, DATE_FORMAT)
-
-    entitlement_string = f'{entitlement}@{demisto.investigation().get("id")}'
-    if demisto.get(args, 'task'):
-        entitlement_string += f'|{demisto.get(args, "task")}'
-
-    send_notification_args = {
-        'ignoreAddURL': 'true',
-        'using-brand': 'SlackV3'
-    }
-
-    reply = "Thank you for your response."
-    blocks = json.dumps(create_blocks(message, entitlement_string, reply))
-    send_notification_args['blocks'] = json.dumps({
-        'blocks': blocks,
-        'entitlement': entitlement_string,
-        'reply': reply,
-        'expiry': expiry,
-        'default_response': 'NoResponse'
-    })
-
-    to = demisto.get(args, 'user_id')
-
-    if to:
-        send_notification_args['to'] = to
-    else:
-        return_error('A user must be provided.')
-
     try:
-        demisto.results(demisto.executeCommand('send-notification', send_notification_args))
+        if messenger.upper() == 'SLACK':
+            send_slack_message(entitlement, task, user_id, message)
+        else:
+            send_ms_teams_message(entitlement, task, user_id, message)
     except ValueError as e:
         if 'Unsupported Command' in str(e):
             return_error(

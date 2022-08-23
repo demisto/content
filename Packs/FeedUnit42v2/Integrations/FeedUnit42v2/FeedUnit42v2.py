@@ -722,7 +722,6 @@ def main():
             return_results(get_indicators_command(client, args, feed_tags, tlp_color))
 
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(err))
 
 

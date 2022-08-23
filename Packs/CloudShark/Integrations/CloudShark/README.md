@@ -135,7 +135,7 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
 <h5>Human Readable Output</h5>
 <p>
 <p>
-[Open Capture in CloudShark]($CLOUDSHARK_URL/captures/5277a3a64076)
+Open Capture in CloudShark
 </p>
 </p>
 

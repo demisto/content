@@ -1,7 +1,6 @@
 from CommonServerPython import *
 from typing import Callable, Union
 import time
-import traceback
 from urllib.parse import quote, unquote
 
 seconds = time.time()
@@ -360,7 +359,6 @@ def main():
     except DeletionFailed as e:
         result, deletion_failure_reason = 'Failed', f'Failed deleting email: {str(e)}'
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute DeleteEmail. Error: {str(e)}')
 
     finally:

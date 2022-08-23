@@ -34,3 +34,9 @@ ignore=IM111
 
 [file:MinIO_image.png]
 ignore=IM111
+
+[file:classifier-Github_v1.json]
+ignore=BA101
+
+[file:Packs/DevSecOps/Integrations/LGTM/README.md]
+ignore=RM112

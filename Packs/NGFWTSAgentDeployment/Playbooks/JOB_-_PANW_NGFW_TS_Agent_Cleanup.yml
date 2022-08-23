@@ -56,7 +56,7 @@ tasks:
       id: 3943b0f0-ca0d-49dc-8940-304037f1208e
       iscommand: true
       name: Get List of TS agents
-      script: '|||panorama'
+      script: '|||pan-os'
       type: regular
       version: -1
     taskid: 3943b0f0-ca0d-49dc-8940-304037f1208e

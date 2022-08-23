@@ -68,7 +68,7 @@ tasks:
       PollingCommandName:
         simple: harfanglab-job-info
       Timeout:
-        simple: '10'
+        simple: '60'
       dt:
         simple: Harfanglab.Job.Info(val.Status !== 'finished').ID
     separatecontext: true
