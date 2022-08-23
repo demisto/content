@@ -1,5 +1,5 @@
 Provides data enrichment for domains.
-This integration was integrated and tested with version xx of Whois
+This integration was integrated and tested with version 1.0 of Whois
 
 ## Configure Whois on Cortex XSOAR
 
