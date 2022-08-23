@@ -87,7 +87,7 @@ class Client(BaseClient):
         return result
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def test_module(client: Client, *_) -> str:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -140,7 +140,7 @@ def fetch_indicators(client: Client, feed_tags: List = [], tlp_color: Optional[s
 
 def get_indicators_command(
         client: Client, params: Dict[str, str], args: Dict[str, str]
-) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
@@ -151,7 +151,7 @@ def get_indicators_command(
     """
     feed_tags = argToList(params.get("feedTags", ""))
     tlp_color = params.get('tlp_color')
-    limit = arg_to_number(args.get('limit', '10'))
+    limit = arg_to_number(args.get('limit')) or 10
     indicators = fetch_indicators(client, feed_tags, tlp_color, limit)
 
     if indicators:
@@ -197,7 +197,7 @@ def main():
             str, Callable[[Client, Dict[str, str], Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]
         ] = {"test-module": test_module, "zoom-get-indicators": get_indicators_command}
         if command in commands:
-            return_results(commands.get(command)(client, demisto.params(), demisto.args()))
+            return_results(commands[command](client, demisto.params(), demisto.args()))
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, demisto.params())

@@ -18,15 +18,15 @@ configuration:
   display: Firewall rules for certificate validation
   name: zoom_clients_certificate_validation
   options:
-    - crl3.digicert.com
-    - crl4.digicert.com
-    - ocsp.digicert.com
-    - certificates.godaddy.com
-    - crl.godaddy.com
-    - ocsp.godaddy.com
-    - certificates.starfieldtech.com
-    - crl.starfieldtech.com
-    - ocsp.starfieldtech.com
+  - crl3.digicert.com
+  - crl4.digicert.com
+  - ocsp.digicert.com
+  - certificates.godaddy.com
+  - crl.godaddy.com
+  - ocsp.godaddy.com
+  - certificates.starfieldtech.com
+  - crl.starfieldtech.com
+  - ocsp.starfieldtech.com
   required: false
   type: 16
 - additionalinfo: All Zoom Clients. User's web browser
@@ -34,8 +34,8 @@ configuration:
   display: Firewall rules for Zoom website
   name: zoom_clients_user_browser
   options:
-    - '*.zoom.us'
-    - '*.cloudfront.net'
+  - '*.zoom.us'
+  - '*.cloudfront.net'
   required: false
   type: 16
 - display: Indicator Reputation
@@ -48,8 +48,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
 - display: Source Reliability
   name: feedReliability
   defaultvalue: A - Completely reliable
@@ -104,9 +103,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -125,7 +122,9 @@ script:
       description: The maximum number of results to return. The default value is 10.
       defaultValue: "10"
     description: Gets indicators from the feed.
-  dockerimage: demisto/btfl-soup:1.0.1.24037
+  dockerimage: demisto/btfl-soup:1.0.1.32260
   feed: true
   runonce: false
   subtype: python3
+tests:
+- No tests (auto formatted)
