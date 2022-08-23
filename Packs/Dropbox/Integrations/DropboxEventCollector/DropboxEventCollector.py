@@ -9,6 +9,8 @@ from SiemApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+VENDOR = "dropbox"
+PRODUCT = "dropbox"
 
 
 class DropboxEventsRequestConfig(IntegrationHTTPRequest):
@@ -163,8 +165,7 @@ def main(command: str, demisto_params: dict):
             events = get_events.run()
 
             if command == 'fetch-events' or argToBoolean(demisto_params.get('should_push_events')):
-                send_events_to_xsiam(events, vendor=demisto_params.get('vendor', 'dropbox'),
-                                     product=demisto_params.get('product', 'dropbox'))
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
                 if events:
                     last_run = get_events.get_last_run(events[-1])
