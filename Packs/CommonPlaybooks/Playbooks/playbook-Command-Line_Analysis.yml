@@ -1560,8 +1560,8 @@ outputs:
 - contextPath: commandline.original
   description: The original command line
   type: unknown
-- contextPath: commandline
-  description: The encoded command line
+- contextPath: commandline.decoded
+  description: The decoded command line
   type: unknown
 - contextPath: CommandlineVerdict
   description: The command line verdict
