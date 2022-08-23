@@ -3,7 +3,8 @@ import io
 import json
 import pytest
 from requests.auth import _basic_auth_str
-from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list, MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V20
+from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list, MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V20, \
+    create_query
 import demistomock as demisto
 
 HEADERS = {
@@ -528,3 +529,20 @@ def test_taxii21_with_taxii20_header(mocker, taxii2_server_v21, header: str):
     with APP.test_client() as test_client:
         response = test_client.get('/taxii2/', headers=HEADERS | {'Accept': header})
         assert response.status_code == 406
+
+
+@pytest.mark.parametrize('query,types,expected_response', (
+    ('my custom query', [], 'my custom query'),
+    ('my custom query', ['file'], '(my custom query) and (type:"File")'),
+    ('my custom query', ['file', 'domain'], '(my custom query) and (type:"File" or type:"domain")'),
+))
+def test_create_query(query: str, types: list[str], expected_response: str):
+    """
+        Given
+            a query and types to match
+        When
+            calling create_query
+        Then
+            Validate that right query is returned.
+    """
+    assert create_query(query, types) == expected_response
