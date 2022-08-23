@@ -70,7 +70,7 @@ def resolve_type(file_path: str) -> Optional[FileType]:
         FileType. Conf.json and Metadata files.
     """
     # if conf.json file
-    # TODO: remove if when demisto-sdk 1.7.3 is released
+    # TODO: remove when demisto-sdk 1.7.3 is released
     if checked_type(file_path, [content_constant_paths.CONF_PATH.relative_to(get_content_path()).as_posix()
                                 if IS_UP_TO_DATE else constants.CONF_PATH]):
         return FileType.CONF_JSON
