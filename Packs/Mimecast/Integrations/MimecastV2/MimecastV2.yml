@@ -658,6 +658,27 @@ script:
       name: subject
       required: false
       secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - name: page
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: page_size
+      description: Number of results per page to display.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: Get a list of messages for a given user. This is archive search command.
     name: mimecast-list-messages
@@ -801,6 +822,20 @@ script:
       name: limit
       required: false
       secret: false
+    - name: page
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: page_size
+      description: Number of results per page to display.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: Returns URL protect logs for a Mimecast customer account. Default value of scanResult as malicious
     name: mimecast-get-url-logs
