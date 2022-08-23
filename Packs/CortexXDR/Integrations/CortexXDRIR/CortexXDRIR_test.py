@@ -587,6 +587,7 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
     assert response.mirrored_object == expected_modified_incident
     assert response.entries == []
 
+
 @pytest.mark.parametrize(argnames='incident_status', argvalues=XDR_RESOLVED_STATUS_TO_XSOAR.keys())
 def test_get_remote_data_command_should_close_issue(requests_mock, mocker, incident_status):
     """
@@ -629,7 +630,6 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker, incid
     del expected_modified_incident['creation_time']
     expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
         expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
-
 
     expected_closing_entry = {
         'Type': 1,
