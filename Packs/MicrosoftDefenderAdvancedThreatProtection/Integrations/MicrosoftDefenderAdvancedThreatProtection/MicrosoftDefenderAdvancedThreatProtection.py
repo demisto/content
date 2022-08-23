@@ -1110,11 +1110,12 @@ class MsClient:
                  is_gcc: bool, grant_type: str, redirect_uri: str,
                  certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
-            # todo: scope
+            # todo: scope, token_retrival?
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
             scope=Scopes.security_center_apt_service, certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key, grant_type=grant_type, redirect_uri=redirect_uri, )
+            private_key=private_key, grant_type=grant_type, redirect_uri=redirect_uri,
+        )
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
