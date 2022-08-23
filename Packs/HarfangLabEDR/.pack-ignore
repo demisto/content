@@ -3,7 +3,6 @@ ignore=IN126
 [known_words]
 HarfangLab
 filesize
-eventlog
 eventid
 eventlog
 pipelist
