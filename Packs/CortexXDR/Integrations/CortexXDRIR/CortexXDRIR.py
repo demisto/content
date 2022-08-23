@@ -745,7 +745,7 @@ def handle_incoming_closing_incident(incident_data):
             'Contents': {
                 'dbotIncidentClose': True,
                 'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': MIRROR_IN_CLOSE_REASON + f'\n{incident_data.get("resolve_comment","")}'
+                'closeNotes': f'{MIRROR_IN_CLOSE_REASON}\n{incident_data.get("resolve_comment","")}'
             },
             'ContentsFormat': EntryFormat.JSON
         }
