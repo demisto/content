@@ -79,12 +79,12 @@ def list_incidents_command(client, args):
     """ Retrieves incidents from ProofPoint API """
     limit = int(args.pop('limit'))
 
-    incidents_list = client.get_incidents_request(args)
+    raw_response = client.get_incidents_request(args)
 
-    incidents_list = incidents_list[:limit]
+    incidents_list = raw_response[:limit]
     human_readable = create_incidents_human_readable('List Incidents Results:', incidents_list)
 
-    return human_readable
+    return incidents_list, human_readable, raw_response
 
 
 def pass_sources_list_filter(incident, sources_list):
@@ -358,10 +358,13 @@ def main():  # pragma: no cover
         elif command in ('proofpoint-trap-get-events', 'fetch-events'):
 
             if command == 'proofpoint-trap-get-events':
-                events, results = list_incidents_command(client, args)
+                should_push_events = argToBoolean(args.pop('should_push_events'))
+                events, human_readable, raw_response = list_incidents_command(client, args)
+                results = CommandResults(raw_response=raw_response, readable_output=human_readable)
                 return_results(results)
 
             else:  # command == 'fetch-events':
+                should_push_events = True
                 last_run = demisto.getLastRun()
                 events, last_run = fetch_incidents_command(
                     client,
@@ -373,7 +376,7 @@ def main():  # pragma: no cover
                 )
                 demisto.setLastRun(last_run)
 
-            if argToBoolean(args.get('should_push_events', 'true')):
+            if should_push_events:
                 send_events_to_xsiam(
                     events,
                     params.get('vendor', 'trap'),
