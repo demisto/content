@@ -689,24 +689,30 @@ if __name__ == '__main__':
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
     logger.debug(f'parsed args:\n{args_string}')
+    branch_name = PATHS.content_repo.active_branch.name
 
     marketplace = MarketplaceVersions(args.marketplace)
+    nightly = args.nightly
+    service_account = args.service_account
 
     collector: TestCollector
 
     if args.changed_pack_path:
-        collector = BranchTestCollector('master', marketplace, args.service_account, args.changed_pack_path)
+        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path)
+
+    elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+        collector = UploadCollector(branch_name, marketplace, service_account)
+
     else:
-        match (args.nightly, marketplace):
+        match (nightly, marketplace):
             case False, _:  # not nightly
-                branch_name = PATHS.content_repo.active_branch.name
-                collector = BranchTestCollector(branch_name, marketplace, args.service_account)
+                collector = BranchTestCollector(branch_name, marketplace, service_account)
             case True, MarketplaceVersions.XSOAR:
                 collector = XSOARNightlyTestCollector()
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector()
             case _:
-                raise ValueError(f"unexpected values of (either) {marketplace=}, {args.nightly=}")
+                raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=}")
 
-    collected = collector.collect(run_nightly=args.nightly)
+    collected = collector.collect(run_nightly=nightly)
     output(collected)  # logs and writes to output files
