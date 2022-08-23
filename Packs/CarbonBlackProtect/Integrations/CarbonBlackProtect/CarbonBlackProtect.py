@@ -544,9 +544,8 @@ def update_computer(id, name, computer_tag, description, policy_id, automatic_po
     :param template: True if computer is a template
     :return: Result json of the request
     """
-    raw_computer = get_computer(id)
 
-    body_params = raw_computer
+    body_params = get_computer(id)
     body_params['id'] = id if id else body_params.get('id')
     body_params['name'] = name if name else body_params.get('name')
     body_params['computerTag'] = computer_tag if computer_tag else body_params.get('computerTag')
