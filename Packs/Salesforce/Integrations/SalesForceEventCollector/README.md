@@ -17,7 +17,6 @@ This integration was integrated and tested with Salesforce REST API V54.0.
     | Query to get Hourly Event Log Files | For more information visit the Query Hourly Event Log Files documentation https://developer.salesforce.com/docs/atlas.en-us.234.0.api_rest.meta/api_rest/event_log_file_hourly_query.htm | True |
     | How many log files to fetch |  | True |
     | First fetch time interval |  | False |
-    | The product corresponding to the integration that originated the events |  | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
 

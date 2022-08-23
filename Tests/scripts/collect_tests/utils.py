@@ -8,8 +8,9 @@ from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
 from exceptions import (BlankPackNameException, DeprecatedPackException,
                         NonDictException, NonexistentPackException,
+                        NonXsoarSupportedPackException,
                         NoTestsConfiguredException, NotUnderPackException,
-                        SkippedPackException, UnsupportedPackException)
+                        SkippedPackException)
 from logger import logger
 from packaging import version
 from packaging._structures import InfinityType, NegativeInfinityType
@@ -113,7 +114,7 @@ class DictBased:
 
     def __init__(self, dict_: dict):
         if not isinstance(dict_, dict):
-            raise ValueError('DictBased must be initialized with a dict')
+            raise NonDictException(None)
         self.content = dict_
         self.from_version: Version | NegativeInfinityType = self._calculate_from_version()
         self.to_version: Version | InfinityType = self._calculate_to_version()
@@ -179,7 +180,12 @@ class DictFileBased(DictBased):
                     body = json.load(file)
                 case '.yml':
                     body = yaml.load(file)
-        super().__init__(body)
+                case _:
+                    raise NonDictException(path)
+        try:
+            super().__init__(body)
+        except NonDictException:
+            raise NonDictException(path)
 
 
 class ContentItem(DictFileBased):
@@ -296,7 +302,7 @@ class PackManager:
         if not (support_level := self[pack].get('support')):
             raise ValueError(f'pack {pack} has no support level (`support`) field or value')
         if support_level.lower() != 'xsoar':
-            raise UnsupportedPackException(pack)
+            raise NonXsoarSupportedPackException(pack)
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:

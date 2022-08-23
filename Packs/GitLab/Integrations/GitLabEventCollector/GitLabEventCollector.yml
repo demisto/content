@@ -21,30 +21,19 @@ configuration:
   name: project_ids
   required: false
   type: 0
-- display: The product name corresponding to the integration that originated the events
-  name: product
-  required: false
-  defaultvalue: gitlab
-  type: 0
-- display: The vendor name corresponding to the integration that originated the events
-  name: vendor
-  required: false
-  defaultvalue: gitlab
-  type: 0
-- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
-    3 months, 1 year)
+- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
   name: after
-  type: 0
   required: true
   defaultvalue: 1 day
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: ''
 display: GitLab Event Collector
 name: GitLab Event Collector
@@ -59,14 +48,14 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
       required: true
     deprecated: false
     description: Manual command to fetch events and display them.
     execution: false
     name: gitlab-get-events
-  dockerimage: demisto/fastapi:1.0.0.29740
+  dockerimage: demisto/fastapi:1.0.0.32142
   runonce: false
   isfetchevents: true
   subtype: python3
