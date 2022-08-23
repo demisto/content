@@ -335,6 +335,7 @@ script:
     description: Searches Splunk for events.
     execution: false
     name: splunk-search
+    polling: true
     outputs:
     - contextPath: Splunk.Result
       description: The results of the Splunk search. The results are a JSON array,
@@ -857,6 +858,9 @@ script:
   isfetch: true
   longRunning: false
   longRunningPort: false
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python2
