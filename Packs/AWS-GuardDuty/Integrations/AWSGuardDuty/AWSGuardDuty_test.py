@@ -20,7 +20,7 @@ class Client:
         return RESPONSE
 
 
-def test_get_members():
+def test_get_members(mocker):
     """
     Given
     - get-members command
