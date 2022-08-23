@@ -1,6 +1,5 @@
 import logging
 import os
-from os import getenv
 from pathlib import Path
 from typing import Iterable, Union
 
@@ -24,7 +23,7 @@ class PathManager:
     """
     Used for getting paths of various files and folders during the test collection process.
     """
-    ARTIFACTS_PATH = Path(getenv('ARTIFACTS_FOLDER', './artifacts'))
+    ARTIFACTS_PATH = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
 
     def __init__(self, content_path: Path):
         self.content_path = content_path
