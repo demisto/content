@@ -166,10 +166,10 @@ demisto-sdk-nightly:run-end-to-end-tests:
   stage: run-instances
   script:
     - |
-      export DEMISTO_BASE_URL="https://localhost:$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].TunnelPort')"
+      TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL="https://localhost:$TUNNEL_PORT"
       echo "Server URL: $DEMISTO_BASE_URL"
-      python3 -m pytest Tests/integration_tests/ || EXIT_CODE=$?
-
+      python3 -m pytest Tests/integration_tests/
 
 demisto-sdk-nightly:fan-in:
   tags:
