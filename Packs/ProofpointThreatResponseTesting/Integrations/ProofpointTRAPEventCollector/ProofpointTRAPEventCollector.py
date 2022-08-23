@@ -6,7 +6,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 PRODUCT = 'proofpoint'
-VENDOR = 'trap'
+VENDOR = 'testing'
 
 
 class Client(BaseClient):
