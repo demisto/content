@@ -5,6 +5,8 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+PRODUCT = 'proofpoint'
+VENDOR = 'trap'
 
 
 class Client(BaseClient):
@@ -379,8 +381,8 @@ def main():  # pragma: no cover
             if should_push_events:
                 send_events_to_xsiam(
                     events,
-                    params.get('vendor', 'trap'),
-                    params.get('product', 'proofpoint')
+                    params.get(VENDOR),
+                    params.get(PRODUCT)
                 )
 
     # Log exceptions and return errors

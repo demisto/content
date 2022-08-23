@@ -64,16 +64,6 @@ configuration:
   name: post_url_id
   required: false
   type: 0
-- defaultvalue: proofpoint
-  display: The product name corresponding to the integration that originated the events
-  name: product
-  required: false
-  type: 0
-- defaultvalue: trap
-  display: The vendor name corresponding to the integration that originated the events
-  name: vendor
-  required: false
-  type: 0
 description: Use the Proofpoint Threat Response integration to orchestrate and automate incident response.
 display: Proofpoint TRAP Event Collector TESTING 1(Beta)
 name: ProofpointTRAPEventCollector_TESTING_1
