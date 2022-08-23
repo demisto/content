@@ -93,7 +93,7 @@
         },
         {
             "integrations": "AzureWAF",
-            "instance_names":["azure_waf_prod", "azure_waf_user_auth_instance"],
+            "instance_names":"azure_waf_user_auth_instance",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -3807,7 +3807,7 @@
         {
             "playbookID": "Azure SQL - Test",
             "fromversion": "5.0.0",
-            "instance_names": ["azure_sql_user_auth_instance", "azure_sql_device_code_instance"],
+            "instance_names": "azure_sql_device_code_instance",
             "integrations": [
                 "Azure SQL Management"
             ]
@@ -4251,7 +4251,7 @@
         {
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
-            "instance_names": ["aks_device_code_instance", "aks_user_auth_instance"],
+            "instance_names": "aks_device_code_instance",
             "integrations": [
                 "Azure Kubernetes Services"
             ]
