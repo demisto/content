@@ -1107,12 +1107,14 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
+                 is_gcc: bool, grant_type: str, redirect_uri: str,
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
+            # todo: scope
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
             scope=Scopes.security_center_apt_service, certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key)
+            private_key=private_key, grant_type=grant_type, redirect_uri=redirect_uri, )
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
@@ -4845,13 +4847,14 @@ def main():  # pragma: no cover
         raise Exception('Tenant ID must be provided.')
     if auth_code and redirect_uri:
         if not self_deployed:
-            raise Exception()
+            raise Exception('In order to use Authorization Code, set Self Deployed: True.')
     if (auth_code and not redirect_uri) or (redirect_uri and not auth_code):
-            raise Exception()
+            raise Exception('In order to use Authorization Code auth flow, you should set: '
+                            '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
     if auth_code and redirect_uri and auth_id and tenant_id and enc_key and self_deployed:
-        auth_type = AUTHORIZATION_CODE
+        grant_type = AUTHORIZATION_CODE
     else:
-        auth_type = CLIENT_CREDENTIALS
+        grant_type = CLIENT_CREDENTIALS
 
     command = demisto.command()
     args = demisto.args()
@@ -4862,7 +4865,7 @@ def main():  # pragma: no cover
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc, auth_code=auth_code, redirect_uri=redirect_uri
+            is_gcc=is_gcc, grant_type=grant_type, redirect_uri=redirect_uri
         )
         if command == 'test-module':
             test_module(client)
