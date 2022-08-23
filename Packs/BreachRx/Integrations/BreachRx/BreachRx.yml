@@ -1,0 +1,128 @@
+category: Case Management
+commonfields:
+  id: BreachRx
+  version: -1
+configuration:
+- defaultvalue: https://example.app.breachrx.io
+  display: Your BreachRx URL
+  name: url
+  required: true
+  type: 0
+- name: api_url
+  display: GraphQL API URL
+  required: true
+  defaultvalue: https://graphql.app.breachrx.io
+  type: 0
+- display: API Key
+  displaypassword: Secret Key
+  additionalinfo: The API credentials to use for connection
+  name: credentials
+  required: true
+  hiddenusername: false
+  type: 9
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: 'Automate your privacy Incident Response workflow through the BreachRx platform.'
+display: BreachRx
+name: BreachRx
+script:
+  commands:
+  - name: breachrx-incident-create
+    deprecated: false
+    description: 'Create a privacy Incident on the BreachRx platform.'
+    execution: false
+    arguments:
+    - name: incident_name
+      required: false
+      description: 'The name to use when creating the privacy Incident on the BreachRx platform.'
+    - name: description
+      required: false
+      description: 'A brief description to explain the privacy Incident on the BreachRx platform.'
+    outputs:
+    - contextPath: BreachRx.Incident.id
+      description: 'The ID of the privacy Incident on the BreachRx platform.'
+      type: string
+    - contextPath: BreachRx.Incident.name
+      description: 'The name of the privacy Incident on the BreachRx platform.'
+      type: string
+    - contextPath: BreachRx.Incident.description
+      description: 'The description of the privacy Incident on the BreachRx platform.'
+      type: string
+    - contextPath: BreachRx.Incident.identifier
+      description: 'The unique identifier of the privacy Incident on the BreachRx platform.'
+      type: string
+  - name: breachrx-incident-actions-get
+    description: 'Fetch all actions for a BreachRx privacy Incident.'
+    outputs:
+    - contextPath: BreachRx.Incident.Actions.id
+      description: 'The ID of an Action on a BreachRx privacy Incident.'
+      type: string
+    - contextPath: BreachRx.Incident.Actions.name
+      description: 'The name of an Action on a BreachRx privacy Incident.'
+      type: string
+    - contextPath: BreachRx.Incident.Actions.description
+      description: 'The description of an Action on a BreachRx privacy Incident.'
+      type: string
+    - contextPath: BreachRx.Incident.Actions.user.email
+      description: 'The email of the assigned user of an Action on a BreachRx privacy Incident, if that Action is assigned to a user (null otherwise).'
+      type: string
+    arguments:
+    - name: incident_name
+      required: false
+      description: The name of the BreachRx incident to associate with this incident.
+    - name: incident_identifier
+      required: false
+      description: 'The unique identifier of the BreachRx incident to associate with this incident.'
+  - name: breachrx-incident-import
+    description: 'Link a BreachRx privacy Incident with an XSOAR Incident.'
+    arguments:
+    - name: incident_name
+      required: false
+      description: The name of the BreachRx incident to associate with this incident.
+    - name: incident_identifier
+      required: false
+      description: 'The unique identifier of the BreachRx incident to associate with this incident.'
+    outputs:
+    - contextPath: BreachRx.Incident.id
+      description: 'The ID of the privacy Incident on the BreachRx platform.'
+      type: string
+    - contextPath: BreachRx.Incident.name
+      description: 'The name of the privacy Incident on the BreachRx platform.'
+      type: string
+    - contextPath: BreachRx.Incident.identifier
+      description: 'The unique identifier of the privacy Incident on the BreachRx platform.'
+      type: string
+  - name: breachrx-incident-get
+    description: 'Find a BreachRx privacy Incident on the connected BreachRx platform.'
+    arguments:
+    - name: incident_name
+      required: false
+      description: The name of the BreachRx incident to associate with this incident.
+    - name: incident_identifier
+      required: false
+      description: 'The unique identifier of the BreachRx incident to associate with this incident.'
+    outputs:
+    - contextPath: BreachRx.Incident.id
+      description: 'The ID of the privacy Incident on the BreachRx platform.'
+      type: string
+    - contextPath: BreachRx.Incident.name
+      description: 'The name of the privacy Incident on the BreachRx platform.'
+      type: string
+    - contextPath: BreachRx.Incident.identifier
+      description: 'The unique identifier of the privacy Incident on the BreachRx platform.'
+      type: string
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/graphql:1.0.0.32116
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
