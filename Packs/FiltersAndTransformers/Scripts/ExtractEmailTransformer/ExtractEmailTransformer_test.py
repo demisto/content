@@ -9,6 +9,7 @@ data_test_main = (
     ({'value': 'test1@test.com,foo?test2@test.com'}, ['test1@test.com', 'test2@test.com']),
 )
 
+
 @pytest.mark.parametrize('args, command_outputs', data_test_main)
 def test_main(args, command_outputs, mocker):
     mocker.patch.object(demisto, 'args', return_value=args)
