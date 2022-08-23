@@ -157,7 +157,7 @@ NIGHTLY_TESTS: tuple = (
      {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
 
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-     (Machine.V6_5, Machine.MASTER, Machine.NIGHTLY)),
+     (Machine.V6_8, Machine.MASTER, Machine.NIGHTLY)),
 
     (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
      None),
