@@ -569,7 +569,9 @@ def test_module(client: DataExplorerClient) -> str:
             "For more details press the (?) button.")
 
     else:
-        raise DemistoException("Test module in unavilable for Authorization Code mode")
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the"
+                        "!azure-data-explorer-auth-test command in order to test it")
 
 
 def main() -> None:

@@ -27,7 +27,7 @@ def load_mock_response(file_name: str) -> str:
 
 def mock_client():
     from AzureDataExplorer import DataExplorerClient
-    return DataExplorerClient(CLUSTER_URL, APPLICATION_ID, CLIENT_ACTIVITY_PREFIX, False, False)
+    return DataExplorerClient(CLUSTER_URL, APPLICATION_ID, CLIENT_ACTIVITY_PREFIX, False, False, "Device Code")
 
 
 def test_execute_search_query_command(requests_mock):
