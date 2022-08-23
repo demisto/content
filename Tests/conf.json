@@ -93,7 +93,7 @@
         },
         {
             "integrations": "AzureWAF",
-            "instance_names": "azure_waf_prod",
+            "instance_names":["azure_waf_prod", "azure_waf_user_auth_instance"],
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -3807,6 +3807,7 @@
         {
             "playbookID": "Azure SQL - Test",
             "fromversion": "5.0.0",
+            "instance_names": ["azure_sql_user_auth_instance", "azure_sql_device_code_instance"],
             "integrations": [
                 "Azure SQL Management"
             ]
@@ -4040,7 +4041,6 @@
                 "Microsoft Defender Advanced Threat Protection"
             ],
             "instance_names": [
-                "microsoft_defender_atp_dev",
                 "microsoft_defender_atp_dev_self_deployed"
             ]
         },
@@ -4251,6 +4251,7 @@
         {
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
+            "instance_names": ["aks_device_code_instance", "aks_user_auth_instance"],
             "integrations": [
                 "Azure Kubernetes Services"
             ]
@@ -5159,38 +5160,14 @@
             "fromversion": "6.1.0"
         },
         {
-            "integrations": "Alibaba Action Trail Event Collector",
-            "playbookID": "Alibaba Event Collector-test",
-            "fromversion": "6.8.0"
-        },
-        {
-            "integrations": "Salesforce Event Collector",
-            "playbookID": "Salesforce Event Collector-test",
-            "fromversion": "6.8.0"
-        },
-        {
             "playbookID": "playbook-BmcITSM-Test",
             "fromversion": "6.2.0",
             "integrations": "BmcITSM"
         },
         {
-            "integrations": [
-                "Github Event Collector"
-            ],
-            "playbookID": "Github Event Collector-test",
-            "fromversion": "6.8.0"
-        },
-        {
             "integrations": "CheckPointSandBlast",
             "playbookID": "playbook-CheckPointSandBlast_Test",
             "fromversion": "6.2.0"
-        },
-        {
-            "integrations": [
-                "Microsoft Defender for Cloud Apps Event Collector"
-            ],
-            "playbookID": "Microsoft Defender for Cloud Apps Event Collector-test",
-            "fromversion": "6.8.0"
         },
         {
             "integrations": "Arkime",
@@ -5313,7 +5290,6 @@
         "Tanium Threat Response Test": "Issue CRTX-58729",
         "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
-        "whois_test": "Issue 25648",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
         "GSuiteAdmin-Test": "Issue 34784",
@@ -5457,11 +5433,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated",
-        "Alibaba Action Trail Event Collector": "XSIAM integration",
-        "Salesforce Event Collector": "XSIAM integration",
-        "Github Event Collector": "XSIAM integration",
-        "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration"
+        "LogRhythm": "The integration is deprecated"
     },
     "nightly_integrations": [
         "Laline v2",
