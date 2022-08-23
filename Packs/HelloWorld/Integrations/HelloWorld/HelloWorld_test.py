@@ -601,7 +601,25 @@ def test_parse_domain_date(domain_date, expected_parsed_date):
         Then:
             - Verify that the dates were parsed to ISO8601 format correctly.
     """
-
     from HelloWorld import parse_domain_date
 
     assert parse_domain_date(domain_date) == expected_parsed_date
+
+
+@pytest.mark.parametrize('hello_world_severity, expected_xsoar_severity', [
+    ('Low', 1), ('Medium', 2), ('High', 3), ('Critical', 4)
+])
+def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severity):
+    """
+        Given:
+            - A string represent an HelloWorld severity.
+
+        When:
+            - Running the 'convert_to_demisto_severity' function.
+
+        Then:
+            - Verify that the severity was translated to an XSOAR severity correctly.
+    """
+    from HelloWorld import convert_to_demisto_severity
+
+    assert convert_to_demisto_severity(hello_world_severity) == expected_xsoar_severity
