@@ -552,21 +552,17 @@ def test_fetch_incidents(requests_mock):
 
 def test_invalid_ip():
     """
-    Tests the ip reputation command function.
-
         Given:
-            - requests_mock instance to generate the appropriate ip reputation API response,
-              loaded from a local JSON file.
-            - An IP address to check.
+            - An invalid IP address to check.
 
         When:
             - Running the 'ip_reputation_command'.
 
         Then:
-            - Checks the output of the command function with the expected output.
+            - Checks that the command raises a suitable error message (Invalid IP).
     """
     from HelloWorld import Client, ip_reputation_command
-    from CommonServerPython import Common, DBotScoreReliability
+    from CommonServerPython import DBotScoreReliability
 
     ip_to_check = '1.1.1'  # an invalid ip
 
