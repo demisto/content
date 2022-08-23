@@ -63,11 +63,6 @@ def get_actions_matcher(request):
 def set_up_mocker(m, found_incident=True):
     m.post(
         requests_mock.ANY,
-        additional_matcher=introspection_matcher,
-        json=util_load_json("test_data/introspection_response.json")
-    )
-    m.post(
-        requests_mock.ANY,
         additional_matcher=create_incident_matcher,
         json=util_load_json("test_data/create_incident.json")
     )

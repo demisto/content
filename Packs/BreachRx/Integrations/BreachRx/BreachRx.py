@@ -120,7 +120,7 @@ class BreachRxClient:
         )
 
         self.client = Client(
-            transport=transport, fetch_schema_from_transport=True
+            transport=transport, fetch_schema_from_transport=False
         )
 
     def get_incident_severities(self):
