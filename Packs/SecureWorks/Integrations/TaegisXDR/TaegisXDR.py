@@ -136,7 +136,7 @@ def create_investigation_command(client: Client, env: str, args=None):
     outputs = result["data"]["createInvestigation"]
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.Investigation",
         outputs_key_field="id",
         outputs=outputs,
         readable_output=readable_output,
@@ -185,7 +185,7 @@ def execute_playbook_command(client: Client, env: str, args=None):
     outputs = result["data"]["executePlaybookInstance"]
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.Execution",
         outputs_key_field="id",
         outputs=outputs,
         readable_output=readable_output,
@@ -299,7 +299,7 @@ def fetch_alerts_command(client: Client, env: str, args=None):
             readable_output += f"* [{alert['metadata']['title']}]({ENV_URLS[env]['xdr']}/alerts/{alert_id})\n"
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.Alerts",
         outputs_key_field="id",
         outputs=alerts,
         readable_output=readable_output,
@@ -466,7 +466,7 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
             readable_output += f"* [{alert['id']}]({ENV_URLS[env]['xdr']}/alerts/{alert['id']})\n"
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.InvestigationAlerts",
         outputs_key_field="id",
         outputs=alerts,
         readable_output=readable_output,
@@ -566,7 +566,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
 """
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.Investigations",
         outputs_key_field="id",
         outputs=outputs,
         readable_output=readable_output,
@@ -630,7 +630,7 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
         outputs = result["data"]["playbookExecution"]
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.PlaybookExecution",
         outputs_key_field="id",
         outputs=outputs,
         readable_output=readable_output,
@@ -675,7 +675,7 @@ def update_investigation_command(client: Client, env: str, args=None):
     outputs = result["data"]["updateInvestigation"]
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.InvestigationUpdate",
         outputs_key_field="id",
         outputs=outputs,
         readable_output=readable_output,
