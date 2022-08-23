@@ -22,7 +22,6 @@ tasks:
       '#none#':
       - "7"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -67,7 +66,6 @@ tasks:
         complex:
           root: inputs.Timeout
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -95,7 +93,6 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -138,7 +135,6 @@ tasks:
                 root: inputs.File
                 accessor: EntryID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -161,8 +157,7 @@ tasks:
       id: c0457082-3284-4133-8c2e-d955920d8f98
       version: -1
       name: Is ANY.RUN sandbox enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -178,7 +173,6 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -213,20 +207,19 @@ inputs:
       root: File
   required: false
   description: File object of the file to detonate. The File is taken from the context.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "20"
   required: false
   description: Duration for executing the polling (in seconds)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "1300"
   required: false
-  description: The duration after which to stop polling and to resume the playbook
-    (in seconds)
-  playbookInputQuery: null
+  description: The duration after which to stop polling and to resume the playbook (in seconds)
+  playbookInputQuery:
 outputs:
 - contextPath: ANYRUN.Task.AnalysisDate
   description: Date and time the analysis was executed.
@@ -435,3 +428,6 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
+tests:
+- Detonate File - ANYRUN - Test
+fromversion: 6.5.0

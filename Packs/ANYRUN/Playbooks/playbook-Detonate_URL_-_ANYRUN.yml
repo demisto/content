@@ -3,8 +3,9 @@ version: -1
 name: Detonate URL - ANYRUN
 description: |-
   Deprecated. Use Detonate URL - ANYRUN V2 instead..
-deprecated: true
+deprecated: false
 fromversion: 5.0.0
+toversion: 6.4.9
 starttaskid: "0"
 tasks:
   "0":

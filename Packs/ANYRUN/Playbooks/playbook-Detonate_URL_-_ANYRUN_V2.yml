@@ -21,7 +21,6 @@ tasks:
       '#none#':
       - "7"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -68,7 +67,6 @@ tasks:
         complex:
           root: inputs.Timeout
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -96,7 +94,6 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -138,7 +135,6 @@ tasks:
               complex:
                 root: inputs.URL
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -161,8 +157,7 @@ tasks:
       id: 23629298-bd44-498a-8d81-bb18c7da692f
       version: -1
       name: Is ANYRUN sandbox enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -178,7 +173,6 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -213,20 +207,19 @@ inputs:
       root: URL
   required: false
   description: URL to detonate.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "20"
   required: false
   description: Duration for executing the polling (in seconds)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "1300"
   required: false
-  description: The duration after which to stop polling and to resume the playbook
-    (in seconds)
-  playbookInputQuery: null
+  description: The duration after which to stop polling and to resume the playbook (in seconds)
+  playbookInputQuery:
 outputs:
 - contextPath: ANYRUN.Task.AnalysisDate
   description: Date and time the analysis was executed.
@@ -408,3 +401,6 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
+tests:
+- Detonate URL - ANYRUN - Test
+fromversion: 6.5.0
