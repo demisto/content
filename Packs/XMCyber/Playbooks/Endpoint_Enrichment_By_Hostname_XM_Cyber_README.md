@@ -1,6 +1,4 @@
-Enrich IP addresses using XM Cyber integration.
-- Resolve IP address to entity
-- Get entity information for IP addresses regarding impact on critical assets and complexity of compromise
+Enrich an endpoint by entityId using XM Cyber integration. Outputs include affected assets, affected entities, complexity of compromise, and more
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -15,37 +13,35 @@ This playbook does not use any sub-playbooks.
 * IsIntegrationAvailable
 
 ### Commands
-* ip
-* xmcyber-affected-entities-list
+* xmcyber-enrich-from-hostname
 * xmcyber-affected-critical-assets-list
+* xmcyber-affected-entities-list
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IP | The IP address to enrich. | IP.Address | Optional |
+| Hostname | The hostname of the endpoint to enrich. | Endpoint.Hostname | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| IP | The IP objects. | unknown |
-| DBotScore | Indicator, Score, Type and Vendor | unknown |
-| Endpoint | The endpoint's object. | unknown |
-| Endpoint.Hostname | The hostname to enrich. | string |
-| Endpoint.IP | A list of endpoint IP addresses. | string |
-| Endpoint.OS | OS of the device corresponding to the IP | string |
+| Endpoint | The endpoint object of the endpoint that was enriched. | unknown |
+| Endpoint.Hostname | The hostnames of the endpoints that were enriched. | string |
+| Endpoint.OS | The operating systems running on the endpoints that were enriched. | string |
+| Endpoint.IP | A list of the IP addresses of the endpoints. | string |
 | XMCyber.Entity.isAsset | Is Entity a Critical Asset | boolean |
 | XMCyber.Entity.affectedEntities | Number of unique entities at risk from this entity | number |
 | XMCyber.Entity.averageComplexity | Average complexity to compromise this entity | number |
 | XMCyber.Entity.criticalAssetsAtRisk | Number of unique critical assets at risk from this entity | number |
 | XMCyber.Entity.averageComplexityLevel | Level of the average complexity to compromise this entity | string |
-| XMCyber.Entity.type | Entity Type | string |
-| XMCyber.Entity.entitiesAtRiskList | Entities at risk from this entity | unknown |
+| XMCyber.Entity.id | XMCyber Entity ID | string |
 | XMCyber.Entity.criticalAssetsAtRiskList | Critical assets at risk from this entity | unknown |
+| XMCyber.Entity.entitiesAtRiskList | Entities at risk from this entity | unknown |
 
 ## Playbook Image
 ---
-![IP Enrichment - XM Cyber](https://github.com/matan-xmcyber/content/blob/master/docs/images/playbooks/IP_Enrichment_XM_Cyber.png)
+![Endpoint Enrichment By Hostname - XM Cyber](../doc_files/Endpoint_Enrichment_By_Hostname_-_XM_Cyber.png)
