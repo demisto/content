@@ -27,7 +27,11 @@ def get_events(aws_client, collect_from, collect_from_default, last_ids, severit
 
     # List all detectors
     while next_token != 'invalid':
-        response = aws_client.list_detectors(MaxResults=detectors_num, NextToken=next_token)
+        list_detectors_args = {'MaxResults': detectors_num}
+        if next_token:
+            list_detectors_args.update({'NextToken': next_token})
+
+        response = aws_client.list_detectors(**list_detectors_args)
         detector_ids += response.get('DetectorIds', [])
         next_token = response.get('NextToken', 'invalid')
 
@@ -37,20 +41,23 @@ def get_events(aws_client, collect_from, collect_from_default, last_ids, severit
         detector_events = []
         # List all finding ids
         while next_token != 'invalid' and len(events) + len(finding_ids) < limit:
-            list_findings = aws_client.list_findings(
-                DetectorId=detector_id, FindingCriteria={
+            list_finding_args = {
+                'DetectorId': detector_id,
+                'FindingCriteria': {
                     'Criterion': {
-                        'updatedAt': {'Gte': collect_from.get(detector_id, collect_from_default)},
+                        'updatedAt': {'Gte': date_to_timestamp(collect_from.get(detector_id, collect_from_default))},
                         'severity': {'Gte': GD_SEVERITY_DICT.get(severity, 1)}
                     }
                 },
-                SortCriteria={
-                    'attributeName': 'updatedAt',
-                    'orderBy': 'ASC'
+                'SortCriteria': {
+                    'AttributeName': 'updatedAt',
+                    'OrderBy': 'ASC'
                 },
-                MaxResults=limit,
-                NextToken=next_token
-            )
+                'MaxResults': limit
+            }
+            if next_token:
+                list_finding_args.update({'NextToken': next_token})
+            list_findings = aws_client.list_findings(**list_finding_args)
             finding_ids += list_findings.get('FindingIds', [])
             next_token = list_findings.get('NextToken', 'invalid')
 
