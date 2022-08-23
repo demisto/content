@@ -61,6 +61,7 @@ HEALTH_STATUS_TO_ENDPOINT_STATUS = {
     "Unknown": None,
 }
 
+SECURITY_GCC_RESOURCE = 'https://api-gcc-securitycenter.microsoft.us'
 SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
 SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
 SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH = 'https://api.securitycenter.microsoft.com/api/indicators/import'
@@ -1105,41 +1106,28 @@ class MsClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch, grant_type,
-                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
+                 alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
+                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id if tenant_id else 'organizations',
-            auth_id=auth_id,
-            enc_key=enc_key,
-            app_name=app_name,
-            base_url=base_url,
-            verify=verify,
-            proxy=proxy,
-            self_deployed=self_deployed,
-            scope='https://securitycenter.onmicrosoft.com/windowsatpservice/.default offline_access' if grant_type == DEVICE_CODE else Scopes.security_center_apt_service,
-
-            # used for device code flow
-            resource='https://api.securitycenter.microsoft.com' if grant_type == DEVICE_CODE else None,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if grant_type == DEVICE_CODE else '',
-
-            certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key,
-            grant_type=grant_type)
+            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
+            scope=Scopes.security_center_apt_service, certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key)
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
         self.max_alerts_to_fetch = max_fetch
+        self.is_gcc = is_gcc
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
             should_use_security_center (bool): whether to use the security center's scope and resource
         """
-        if kwargs['should_use_security_center']:
+        if kwargs.pop('should_use_security_center', None):
             kwargs['scope'] = Scopes.security_center_apt_service
-            kwargs['resource'] = SECURITY_CENTER_RESOURCE
+            kwargs['resource'] = {True: SECURITY_GCC_RESOURCE, False: SECURITY_CENTER_RESOURCE}[self.is_gcc]
         else:
             kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
-        kwargs.pop('should_use_security_center')
         return self.ms_client.http_request(*args, **kwargs)
 
     def offboard_machine(self, machine_id, comment):
@@ -4530,9 +4518,8 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     Args:
         args: the arguments required to the command being called, under cmd
         cmd: the command to schedule by after the current command
-        upload_function: the function that initiates the uploading to the API
         results_function: the function that retrieves the status of the previously initiated upload process
-        uploaded_item: the type of item being uploaded
+        client: a Microsoft Client object
 
     Returns:
 
@@ -4826,31 +4813,6 @@ def put_file_get_successful_action_results(client, res):
     )
 
 
-@logger
-def test_connection(client) -> CommandResults:  # pragma: no cover
-    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
-    return CommandResults(readable_output='✅ Success!')
-
-
-@logger
-def start_auth(client) -> CommandResults:  # pragma: no cover
-    result = client.ms_client.start_auth('!microsoft-atp-auth-complete')
-    return CommandResults(readable_output=result)
-
-
-@logger
-def complete_auth(client) -> CommandResults:   # pragma: no cover
-    client.ms_client.get_access_token()
-    return CommandResults(readable_output='✅ Authorization completed successfully.')
-
-
-@logger
-def reset_auth(client) -> CommandResults:  # pragma: no cover
-    set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!microsoft-atp-auth-start** and **!microsoft-atp-auth-complete**.')
-
-
 def main():  # pragma: no cover
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
@@ -4868,19 +4830,17 @@ def main():  # pragma: no cover
     max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
+    is_gcc = params.get('is_gcc', False)
 
-    grant_type = CLIENT_CREDENTIALS
-    if auth_id and self_deployed and not (enc_key and tenant_id):
-        grant_type = DEVICE_CODE
-
-    elif not self_deployed and not enc_key:
+    if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
     elif not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
-
     if not auth_id:
         raise Exception('Authentication ID must be provided.')
+    if not tenant_id:
+        raise Exception('Tenant ID must be provided.')
 
     command = demisto.command()
     args = demisto.args()
@@ -4891,14 +4851,9 @@ def main():  # pragma: no cover
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            grant_type=grant_type
+            is_gcc=is_gcc,
         )
         if command == 'test-module':
-            if grant_type == DEVICE_CODE:
-                return_error(
-                    'Please run `!microsoft-atp-auth-start` and `!microsoft-atp-auth-complete` to log in. '
-                    'You can validate the connection by running `!microsoft-atp-auth-test`\n '
-                    'For more details press the (?) button.')
             test_module(client)
 
         elif command == 'fetch-incidents':
@@ -5067,14 +5022,6 @@ def main():  # pragma: no cover
             return_results(get_machine_alerts_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
-        elif command == 'microsoft-atp-auth-start':
-            return_results(start_auth(client))
-        elif command == 'microsoft-atp-auth-complete':
-            return_results(complete_auth(client))
-        elif command == 'microsoft-atp-auth-reset':
-            return_results(reset_auth(client))
-        elif command == 'microsoft-atp-auth-test':
-            return_results(test_connection(client))
     except Exception as err:
         return_error(str(err))
 
