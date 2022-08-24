@@ -5,8 +5,8 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-PRODUCT = 'proofpoint'
-VENDOR = 'trap'
+PRODUCT = 'threat_response'
+VENDOR = 'proofpoint'
 
 
 class Client(BaseClient):

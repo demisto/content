@@ -1,6 +1,6 @@
 category: Email Gateway
 commonfields:
-  id: ProofpointTRAPEventCollector_TESTING_1
+  id: ProofpointThreatResponseEventCollector
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -65,8 +65,8 @@ configuration:
   required: false
   type: 0
 description: Use the Proofpoint Threat Response integration to orchestrate and automate incident response.
-display: Proofpoint TRAP Event Collector TESTING 1(Beta)
-name: ProofpointTRAPEventCollector_TESTING_1
+display: Proofpoint Threat Response Event Collector
+name: ProofpointThreatResponseEventCollector
 script:
   commands:
   - arguments:
