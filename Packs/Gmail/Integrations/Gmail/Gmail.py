@@ -1175,7 +1175,7 @@ def search_command(mailbox=None):
     has_attachments = args.get('has-attachments')
     has_attachments = None if has_attachments is None else bool(
         strtobool(has_attachments))
-    receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'true'))
+    receive_only_accounts = not argToBoolean(args.get('return-msg-content', 'false'))
 
     if max_results > 500:
         raise ValueError(
@@ -2201,7 +2201,7 @@ def main():
 
         else:
             if command == 'gmail-search-all-mailboxes':
-                receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'true'))
+                receive_only_accounts = not argToBoolean(demisto.args().get('return-msg-content', 'false'))
                 max_results = arg_to_number(demisto.args().get('max-results', 100))
                 demisto.results(cmd_func(receive_only_accounts, max_results))  # type: ignore
             if command == 'gmail-search':

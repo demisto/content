@@ -1289,7 +1289,7 @@ Inspecting these messages should allow you to determine what percent the search 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en" | Optional | 
+| query | Returns a list of mailboxes whose messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en" | Optional | 
 | max-results | Maximum number of results to return. Default is 100. Maximum is 500. Acceptable values are 1 to 500, inclusive. | Optional | 
 | fields | Enables partial responses to be retrieved in a comma separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse. | Optional | 
 | labels-ids | Only returns messages with labels that match all of the specified label IDs in a comma separated list. | Optional | 
@@ -1303,7 +1303,7 @@ Inspecting these messages should allow you to determine what percent the search 
 | after | Search for messages sent after a certain time period. For example, 2018/05/06 | Optional | 
 | before | Search for messages sent before a certain time period. For example, 2018/05/09 | Optional | 
 | has-attachments | Whether to search for messages sent with attachments. | Optional | 
-| show-only-mailboxes | Whether to return only mailboxes which contain the email. (Default: true) | Optional | 
+| return-msg-content | Whether to return the content of the messages as well. (Default: false) | Optional | 
 
 
 #### Context Output
@@ -1337,7 +1337,7 @@ Inspecting these messages should allow you to determine what percent the search 
 
 
 #### Command Example
-```!gmail-search-all-mailboxes after=2019/04/10 max-results=1 before=2021/04/15```
+```!gmail-search-all-mailboxes after=2019/04/10 max-results=1 before=2021/04/15 return-msg-content=true```
 
 #### Context Example
 ```
