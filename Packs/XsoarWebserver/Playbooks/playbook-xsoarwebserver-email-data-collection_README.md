@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![xsoar-email-data-collection](./Doc_files/xsoarwebserver-email-data-collection.png)
+![xsoar-email-data-collection](../Doc_files/xsoarwebserver-email-data-collection.png)
