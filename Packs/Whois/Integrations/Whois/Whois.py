@@ -7127,7 +7127,7 @@ dble_ext = dble_ext_str.split(",")
 
 
 def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=False, with_server_list=False,
-                  server_list=None, is_refer_server=False):
+                  server_list=None, is_refer_server=False, is_recursive=True):
     previous = previous or []
     server_list = server_list or []
     # Sometimes IANA simply won't give us the right root WHOIS server
@@ -7202,18 +7202,19 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
     if never_cut == False:
         new_list = [response] + previous
     server_list.append(target_server)
-    for line in [x.strip() for x in response.splitlines()]:
-        match = re.match("(refer|whois server|referral url|registrar whois(?: server)?):\s*([^\s]+\.[^\s]+)", line,
-                         re.IGNORECASE)
-        if match is not None:
-            referral_server = match.group(2)
-            if referral_server != server and "://" not in referral_server:  # We want to ignore anything non-WHOIS (eg. HTTP) for now.
-                # Referral to another WHOIS server...
-                try:
-                    return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
-                                         with_server_list=with_server_list, is_refer_server=True)
-                except Exception as msg:
-                    demisto.info("Failed for querying a referral server {} : {}".format(referral_server, msg))
+    if is_recursive:
+        for line in [x.strip() for x in response.splitlines()]:
+            match = re.match("(refer|whois server|referral url|registrar whois(?: server)?):\s*([^\s]+\.[^\s]+)", line,
+                             re.IGNORECASE)
+            if match is not None:
+                referral_server = match.group(2)
+                if referral_server != server and "://" not in referral_server: # We want to ignore anything non-WHOIS (eg. HTTP) for now.
+                    # Referral to another WHOIS server...
+                    try:
+                        return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
+                                             with_server_list=with_server_list, is_refer_server=True)
+                    except Exception as msg:
+                        demisto.info("Failed for querying a referral server {} : {}".format(referral_server, msg))
 
     if with_server_list:
         return new_list, server_list
@@ -7301,8 +7302,6 @@ def whois_request_get_response(socket, domain):
         d = buff.decode("latin-1")
 
     return d
-
-
 
 
 airports = {}  # type: dict
@@ -7966,7 +7965,7 @@ def normalize_name(value, abbreviation_threshold=4, length_threshold=8, lowercas
                     if len(words[0]) >= abbreviation_threshold and "." not in words[0]:
                         normalized_words.append(words[0].capitalize())
                     elif lowercase_domains and "." in words[0] and not words[0].endswith(".") and not words[
-                        0].startswith("."):
+                            0].startswith("."):
                         normalized_words.append(words[0].lower())
                     else:
                         # Probably an abbreviation or domain, leave it alone
@@ -7986,7 +7985,7 @@ def normalize_name(value, abbreviation_threshold=4, length_threshold=8, lowercas
                     if len(words[-1]) >= abbreviation_threshold and "." not in words[-1]:
                         normalized_words.append(words[-1].capitalize())
                     elif lowercase_domains and "." in words[-1] and not words[-1].endswith(".") and not words[
-                        -1].startswith("."):
+                            -1].startswith("."):
                         normalized_words.append(words[-1].lower())
                     else:
                         # Probably an abbreviation or domain, leave it alone
@@ -8227,7 +8226,7 @@ def parse_registrants(data, never_query_handles=True, handle_server=""):
                     elements.append(obj["lastname"])
                 obj["name"] = " ".join(elements)
             if 'country' in obj and 'city' in obj and (re.match("^R\.?O\.?C\.?$", obj["country"], re.IGNORECASE) or obj[
-                "country"].lower() == "republic of china") and obj["city"].lower() == "taiwan":
+                    "country"].lower() == "republic of china") and obj["city"].lower() == "taiwan":
                 # There's an edge case where some registrants append ", Republic of China" after "Taiwan", and this is mis-parsed
                 # as Taiwan being the city. This is meant to correct that.
                 obj["country"] = "%s, %s" % (obj["city"], obj["country"])
@@ -8265,10 +8264,10 @@ def parse_nic_contact(data):
     return handle_contacts
 
 
-def get_whois(domain, normalized=None):
+def get_whois(domain, normalized=None, is_recursive=True):
     if normalized is None:
         normalized = []
-    raw_data, server_list = get_whois_raw(domain, with_server_list=True)
+    raw_data, server_list = get_whois_raw(domain, with_server_list=True, is_recursive=is_recursive)
     return parse_raw_whois(raw_data, normalized=normalized, never_query_handles=False,
                            handle_server=server_list[-1])
 
@@ -8408,8 +8407,9 @@ def prepare_readable_ip_data(response):
 
 def domain_command(reliability):
     domains = demisto.args().get('domain', [])
+    is_recursive = argToBoolean(demisto.args().get('recursive'))
     for domain in argToList(domains):
-        whois_result = get_whois(domain)
+        whois_result = get_whois(domain, is_recursive=is_recursive)
         md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
         dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
         demisto.results({
@@ -8477,17 +8477,19 @@ def ip_command(ips, reliability):
 
 def whois_command(reliability):
     query = demisto.args().get('query')
-    domain = get_domain_from_query(query)
-    whois_result = get_whois(domain)
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
-    dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': str(whois_result),
-        'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-        'EntryContext': dbot_score,
-    })
+    is_recursive = argToBoolean(demisto.args().get('recursive'))
+    for query in argToList(query):
+        domain = get_domain_from_query(query)
+        whois_result = get_whois(domain, is_recursive=is_recursive)
+        md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
+        dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': str(whois_result),
+            'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
+            'EntryContext': dbot_score,
+        })
 
 
 def test_command():
