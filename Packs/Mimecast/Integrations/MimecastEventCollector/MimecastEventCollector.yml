@@ -22,8 +22,7 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
-    3 months, 1 year)
+- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
   name: after
   additionalinfo: This parameter is used only for the Audit logs configuration. SIEM logs are always set to "7 days ago". For additional information, review the pack README.
   type: 0
@@ -51,14 +50,14 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
       required: true
     deprecated: false
     description: Manual command to fetch events and display them.
     execution: false
     name: mimecast-get-events
-  dockerimage: demisto/fastapi:1.0.0.31317
+  dockerimage: demisto/fastapi:1.0.0.32142
   runonce: false
   isfetchevents: true
   subtype: python3

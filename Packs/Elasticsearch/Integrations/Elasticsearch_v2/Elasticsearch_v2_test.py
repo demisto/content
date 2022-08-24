@@ -4,7 +4,6 @@ import demistomock as demisto
 import importlib
 import Elasticsearch_v2
 import pytest
-from dateutil.parser import parse
 import requests
 import unittest
 from unittest import mock
@@ -579,7 +578,6 @@ MOC_ES7_SERVER_RESPONSE = {
     }
 }
 
-
 MOCK_PARAMS = [
     {
         'client_type': 'Elasticsearch',
@@ -662,7 +660,7 @@ def test_incident_creation_e6(params, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
     from Elasticsearch_v2 import results_to_incidents_datetime
-    last_fetch = parse('2019-08-29T14:44:00Z')
+    last_fetch = '2019-08-29T14:44:00Z'
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
@@ -678,7 +676,7 @@ def test_incident_creation_e7(params, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
     from Elasticsearch_v2 import results_to_incidents_datetime
-    last_fetch = parse('2019-08-27T17:59:00')
+    last_fetch = '2019-08-27T17:59:00'
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
@@ -862,3 +860,31 @@ class TestIncidentLabelMaker(unittest.TestCase):
 
         labels = incident_label_maker(sources)
         self.assertEqual(labels, expected_labels)
+
+
+@pytest.mark.parametrize('last_fetch, time_range_start, time_range_end, result',
+                         [('', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
+                          (946728000000, '', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
+                          ('', '', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'lt': 949406400000}}}),
+                          ])
+def test_get_time_range(last_fetch, time_range_start, time_range_end, result):
+    from Elasticsearch_v2 import get_time_range
+    assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field") == result
+
+
+def test_build_eql_body():
+    from Elasticsearch_v2 import build_eql_body
+    assert build_eql_body(None, None, None, None, None, None, None) == {}
+    assert build_eql_body("query", "fields", "size", "tiebreaker_field",
+                          "timestamp_field", "event_category_field", "filter") == {
+        "query": "query",
+        "fields": "fields",
+        "size": "size",
+        "tiebreaker_field": "tiebreaker_field",
+        "timestamp_field": "timestamp_field",
+        "event_category_field": "event_category_field",
+        "filter": "filter"
+    }
