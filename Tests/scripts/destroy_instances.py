@@ -23,8 +23,9 @@ def main():
         logging.info(f'Downloading server log from {env.get("Role", "Unknown role")}')
         ssh_chmod_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
                            '"sudo chmod -R 755 /var/log/demisto"'
+        # tar tends to misbehave when writing a file that is being written to, so we copy it to a temporary location
         ssh_tar_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
-                         '"tar -czvf /tmp/server_logs.tar.gz /var/log/demisto"'
+                         '"cp -r /var/log/demisto /tmp/log_copy && tar -czvf /tmp/server_logs.tar.gz /tmp/log_copy"'
         scp_string = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ' \
                      '{}@{}:/tmp/server_logs.tar.gz {} || echo "WARN: Failed downloading server.log"'
 
