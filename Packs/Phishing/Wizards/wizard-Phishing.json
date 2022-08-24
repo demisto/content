@@ -12,7 +12,7 @@
         "packs": [
           {
             "name": "EWS",
-            "display_name": "EWS Mail (Make sure you also install the EWS Mail Sender pack)"
+            "display_name": "Exchange Web Services - EWS (Make sure you also install the EWS Mail Sender pack)"
           },
           {
             "name": "Gmail",
@@ -20,7 +20,7 @@
           },
           {
             "name": "GmailSingleUser",
-            "display_name": "Gmail - Single User"
+            "display_name": "Gmail - Single User (limited functionalities)"
           },
           {
             "name": "MicrosoftGraphMail",
@@ -28,7 +28,7 @@
           },
           {
             "name": "MicrosoftGraphListener",
-            "display_name": "Microsoft Graph Mail - Single User"
+            "display_name": "Microsoft Graph Mail - Single User (limited functionalities)"
           }
         ]
       },
