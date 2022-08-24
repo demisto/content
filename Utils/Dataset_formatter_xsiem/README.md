@@ -11,12 +11,12 @@ Use ***pip install pandas***
 * Windows paths or any backslash '\' in json format columns will turn to double '\\' 
 
 ### Example to run the script 
-python dataset_formatter_xsiem.py -i 'Pulse_Secure - Pulse_Secure.csv'
+python dataset_formatter_xsiam.py -i 'Pulse_Secure - Pulse_Secure.csv'
 
 ### Script parameters 
-usage: dataset_formatter_xsiem.py [-h] [-i INPUT] [-o OUTPUT] [-v]
+usage: dataset_formatter_xsiam.py [-h] [-i INPUT] [-o OUTPUT] [-v]
 
-A Script to format csv/tsv files in order to upload to XSIEM. This script is a work in progress and does not give a complete solution. if found a dataset that does not upload after running the script plz DM.
+A Script to format csv/tsv files in order to upload to XSIAM. This script is a work in progress and does not give a complete solution. if found a dataset that does not upload after running the script plz DM.
 
 optional arguments:
 ##### -h, --help 
