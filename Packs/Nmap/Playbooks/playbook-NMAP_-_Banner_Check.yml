@@ -449,7 +449,7 @@ tasks:
                     regex:
                       iscontext: true
                       value:
-                        simple: inputs.regex
+                        simple: inputs.Regex
                     unpack_matches: {}
                   operator: RegexExtractAll
           operator: isExists
