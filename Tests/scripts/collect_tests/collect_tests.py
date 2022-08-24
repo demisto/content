@@ -95,14 +95,15 @@ class CollectionResult:
 
         except NonXsoarSupportedPackException:
             if test:
-                logger.info(f'{pack} support level != XSOAR, not collecting {test}')
+                logger.info(f'{pack} support level != XSOAR, not collecting {test}, pack will be installed')
                 test = None
 
-        except (
-                InvalidTestException,
-                SkippedPackException,
-                DeprecatedPackException,
-        ) as e:
+        except InvalidTestException as e:
+            suffix = f' (pack will be installed)' if pack else ''
+            logger.info(f'{str(e)}, not collecting {test}{suffix}')
+            test = None
+
+        except (SkippedPackException, DeprecatedPackException,) as e:
             logger.warning(str(e))
             return
 
