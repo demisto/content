@@ -290,8 +290,12 @@ ignore=IF100
 
 [file:incidentfield-Alert_Confidence.json]
 ignore=IF100
+
 [known_words]
 SysAid
+longText
+XSOAR
+mutex
 
 [file:classifier-Mail-listener.json]
 ignore=BA101

@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes": "The server URL is now an integration parameter, rather than being hard-coded into the integration."}

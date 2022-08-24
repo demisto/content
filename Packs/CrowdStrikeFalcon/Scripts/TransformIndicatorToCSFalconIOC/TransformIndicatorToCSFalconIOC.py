@@ -1,5 +1,4 @@
 from CommonServerPython import *
-import traceback
 
 # Feel free to change it hard-coded
 IOC_SOURCE = 'Cortex XSOAR'
@@ -109,7 +108,6 @@ def main():
         })
 
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute TransformIndicatorToCSFalconIOC. Error: {str(ex)}')
 
 

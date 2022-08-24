@@ -102,6 +102,7 @@ class Pack(object):
         self._partner_name = None  # initialized in enhance_pack_attributes function
         self._content_commit_hash = None  # initialized in enhance_pack_attributes function
         self._preview_only = None  # initialized in enhance_pack_attributes function
+        self._disable_monthly = None  # initialized in enhance_pack_attributes
         self._tags = None  # initialized in enhance_pack_attributes function
         self._categories = None  # initialized in enhance_pack_attributes function
         self._content_items = None  # initialized in collect_content_items function
@@ -660,7 +661,8 @@ class Pack(object):
                 Metadata.PARTNER_ID: self._partner_id,
                 Metadata.PARTNER_NAME: self._partner_name,
                 Metadata.CONTENT_COMMIT_HASH: self._content_commit_hash,
-                Metadata.PREVIEW_ONLY: self._preview_only
+                Metadata.PREVIEW_ONLY: self._preview_only,
+                Metadata.DISABLE_MONTHLY: self._disable_monthly,
             })
 
         return pack_metadata
@@ -708,10 +710,9 @@ class Pack(object):
 
         return dependencies_metadata_result, self._is_missing_dependencies
 
-    @staticmethod
-    def _get_updated_changelog_entry(changelog: dict, version: str, release_notes: str = None,
+    def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
                                      version_display_name: str = None, build_number_with_prefix: str = None,
-                                     released_time: str = None, pull_request_numbers=None):
+                                     released_time: str = None, pull_request_numbers=None, marketplace: str = 'xsoar'):
         """
         Args:
             changelog (dict): The changelog from the production bucket.
@@ -720,6 +721,7 @@ class Pack(object):
             version_display_name (str): The version display name to update the entry with.
             build_number_with_prefix(srt): the build number to modify the entry to, including the prefix R (if present).
             released_time: The released time to update the entry with.
+            marketplace (str): The marketplace to which the upload is made.
 
         """
         changelog_entry = changelog.get(version)
@@ -731,8 +733,8 @@ class Pack(object):
             build_number_with_prefix if build_number_with_prefix else \
             changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
-        changelog_entry[Changelog.RELEASE_NOTES] = release_notes if release_notes else changelog_entry[
-            Changelog.RELEASE_NOTES]
+        changelog_entry[Changelog.RELEASE_NOTES] = self.filter_release_notes_by_tags(
+            release_notes or changelog_entry[Changelog.RELEASE_NOTES], marketplace)
         changelog_entry[Changelog.DISPLAY_NAME] = f'{version_display_name} - {build_number_with_prefix}'
         changelog_entry[Changelog.RELEASED] = released_time if released_time else changelog_entry[Changelog.RELEASED]
         changelog_entry[Changelog.PULL_REQUEST_NUMBERS] = pull_request_numbers
@@ -740,7 +742,7 @@ class Pack(object):
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, modified_files_data=None,
                                 new_version=True, initial_release=False, pull_request_numbers=None,
-                                marketplace='xsoar'):
+                                marketplace='xsoar', id_set=None):
         """ Creates dictionary entry for changelog.
 
         Args:
@@ -756,6 +758,7 @@ class Pack(object):
 
         """
         modified_files_data = modified_files_data if modified_files_data else {}
+        id_set = id_set if id_set else {}
         entry_result = {}
 
         if new_version:
@@ -776,13 +779,13 @@ class Pack(object):
                             Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT),
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
-        if entry_result:
+        if entry_result and new_version:
             logging.info(f"Starting filtering entry for pack {self._pack_name} with version {version_display_name}")
             return self.filter_changelog_entries(
                 entry_result,
                 version_display_name,
                 modified_files_data,
-                marketplace
+                marketplace, id_set
             )
 
         return entry_result, False
@@ -1065,7 +1068,7 @@ class Pack(object):
         finally:
             return task_status, modified_rn_files_paths
 
-    def filter_modified_files_by_id_set(self, id_set: dict):
+    def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list):
         """
         Checks if the pack modification is relevant for the current marketplace.
 
@@ -1074,7 +1077,8 @@ class Pack(object):
         This check is done to identify changed items inside a pack that have both XSIAM and XSOAR entities.
 
         Args:
-            id_set: The current id set.
+            id_set (dict): The current id set.
+            modified_rn_files_paths (list): list of paths of the pack's modified release notes files.
 
         Returns:
             bool: whether the operation succeeded and changes are relevant for marketplace.
@@ -1096,7 +1100,9 @@ class Pack(object):
             if modified_entities:
                 modified_files_data[pack_folder] = modified_entities
 
-        if not self._modified_files or modified_files_data:
+        if not self._modified_files or modified_files_data or modified_rn_files_paths:
+            # The task status will be success if there are no modified files in the pack or if the modified files were found in
+            # the id-set or if there are modified old release notes files for items that are not being modified.
             task_status = True
 
         return task_status, modified_files_data
@@ -1491,7 +1497,7 @@ class Pack(object):
         return modified_rn_files
 
     def prepare_release_notes(self, index_folder_path, build_number, modified_rn_files_paths=None,
-                              modified_files_data=None, marketplace='xsoar'):
+                              modified_files_data=None, marketplace='xsoar', id_set=None):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1512,6 +1518,7 @@ class Pack(object):
 
         modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
         modified_files_data = modified_files_data if modified_files_data else {}
+        id_set = id_set if id_set else {}
 
         try:
             version_to_prs = self.get_version_to_pr_numbers(release_notes_dir)
@@ -1556,6 +1563,7 @@ class Pack(object):
                                 new_version=False,
                                 pull_request_numbers=prs_for_version,
                                 marketplace=marketplace,
+                                id_set=id_set,
                             )
 
                         else:
@@ -1568,6 +1576,7 @@ class Pack(object):
                                 new_version=True,
                                 pull_request_numbers=prs_for_version,
                                 marketplace=marketplace,
+                                id_set=id_set,
                             )
 
                         if version_changelog:
@@ -1582,7 +1591,7 @@ class Pack(object):
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
                                 updated_entry = self._get_updated_changelog_entry(
                                     changelog, version, release_notes=modified_release_notes_lines,
-                                    pull_request_numbers=all_relevant_pr_nums_for_unified)
+                                    pull_request_numbers=all_relevant_pr_nums_for_unified, marketplace=marketplace)
                                 changelog[version] = updated_entry
 
                 else:
@@ -1604,7 +1613,8 @@ class Pack(object):
                             modified_files_data=modified_files_data,
                             initial_release=True,
                             new_version=False,
-                            marketplace=marketplace)
+                            marketplace=marketplace,
+                            id_set=id_set)
 
                         if version_changelog:
                             changelog[first_key_in_changelog] = version_changelog
@@ -1629,7 +1639,8 @@ class Pack(object):
                     modified_files_data=modified_files_data,
                     new_version=True,
                     initial_release=True,
-                    marketplace=marketplace
+                    marketplace=marketplace,
+                    id_set=id_set
                 )
 
                 if version_changelog:
@@ -1656,7 +1667,7 @@ class Pack(object):
             return task_status, not_updated_build
 
     def filter_changelog_entries(self, changelog_entry: dict, version: str, modified_files_data: dict,
-                                 marketplace: str):
+                                 marketplace: str, id_set: dict):
         """
         Filters the changelog entries by the entities that are given from id-set.
         This is to avoid RN entries/changes/messages that are not relevant to the current marketplace.
@@ -1685,6 +1696,7 @@ class Pack(object):
 
         # Convert the RN entries to a Dict
         release_notes_dict = self.get_release_notes_dict(version, release_notes)
+        logging.debug(f"Release notes entries in dict - {release_notes_dict}")
 
         if self.release_notes_dont_contain_entities_sections(release_notes_str=release_notes,
                                                              release_notes_dict=release_notes_dict):
@@ -1693,18 +1705,49 @@ class Pack(object):
 
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
         filtered_release_notes = self.filter_release_notes_by_entities_display_name(filtered_release_notes_from_tags,
-                                                                                    modified_files_data)
+                                                                                    modified_files_data, id_set)
 
-        if modified_files_data and not filtered_release_notes:
-            logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
-                          f"marketplace")
-            return {}, True
+        # if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
+        #     # In case all release notes were filtered out, verify that it also makes sense - by checking that the
+        #     # modified files are actually relevant for the other marketplace.
+        #     logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
+        #                   f"marketplace")
+        #     return {}, True
 
         # Convert the RN dict to string
-        changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes).strip()
+
+        final_release_notes = construct_entities_block(filtered_release_notes).strip()
+        if not final_release_notes:
+            final_release_notes = f"Changes are not relevant for {'XSOAR' if marketplace == 'xsoar' else 'XSIAM'} marketplace."
+
+        changelog_entry[Changelog.RELEASE_NOTES] = final_release_notes
+        logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
 
-    def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data):
+    def are_all_changes_relevant_to_more_than_one_marketplace(self, modified_files_data):
+        """
+        Returns true if all the modified files are also relevant to another marketplace besides the current one
+         this upload is done for.
+
+        Args:
+            modified_files_data (dict): The modified files data that are given from id-set.
+
+        Return:
+            (bool) True, if all the files are relevant to more than one marketplace.
+                   False, if there is an item that is relevant only to the current marketplace.
+        """
+        modified_items = []
+
+        for entities_data in modified_files_data.values():
+            modified_items.extend([list(item.values())[0] for item in entities_data])
+
+        for item in modified_items:
+            if len(item['marketplaces']) == 1:
+                return False
+
+        return True
+
+    def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data, id_set):
         """
         Filters the RN entries by the modified files display names given from id-set.
 
@@ -1726,7 +1769,8 @@ class Pack(object):
 
             # Filters the RN entries by the entity display name
             display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
-            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header)
+            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header,
+                                                                                 pack_folder, id_set)
 
             if filtered_release_notes_entries:
                 filtered_release_notes[rn_header] = filtered_release_notes_entries
@@ -1734,7 +1778,7 @@ class Pack(object):
         return filtered_release_notes
 
     @staticmethod
-    def filter_entries_by_display_name(release_notes: dict, display_names: list, rn_header: str):
+    def filter_entries_by_display_name(release_notes: dict, display_names: list, rn_header: str, pack_folder: str, id_set: dict):
         """
         Filters the entries by display names and also handles special entities that their display name is not an header.
 
@@ -1749,7 +1793,11 @@ class Pack(object):
         filtered_entries: dict = {}
         for display_name, rn_entry in release_notes[rn_header].items():
 
-            if display_name != '[special_msg]' and display_name.replace("New: ", "") not in display_names:
+            logging.debug(f"Searching display name '{display_name}' in '{display_names}'.")
+            # TODO: The third condition should be removed after the refactoring. (Also the function)
+            if display_name != '[special_msg]' and display_name.replace("New: ", "") not in display_names \
+                    and not get_id_set_entity_by_display_name(display_name.replace("New: ", ""),
+                                                              pack_folder, id_set):
                 continue
 
             if display_name == '[special_msg]':
@@ -1818,12 +1866,12 @@ class Pack(object):
 
             start_tag, end_tag = TAGS_BY_MP[marketplace]
             if start_tag in release_notes and end_tag in release_notes and marketplace != upload_marketplace:
-                logging.debug(f"Filtering irrelevant release notes by tags {start_tag}-{end_tag} of marketplace "
+                logging.debug(f"Filtering irrelevant release notes by tags of marketplace "
                               f"{marketplace} for pack {self._pack_name} when uploading to marketplace "
                               f"{upload_marketplace}.")
                 return re.sub(fr'{start_tag}{TAGS_SECTION_PATTERN}{end_tag}[\n]*', '', release_notes)
             else:
-                logging.debug(f"Removing only the tags {start_tag}-{end_tag} since the RN entry is relevant "
+                logging.debug(f"Removing only the tags since the RN entry is relevant "
                               f"to marketplace {upload_marketplace}")
                 return release_notes.replace(f"{start_tag}", '').replace(f"{end_tag}", '')
 
@@ -1832,7 +1880,7 @@ class Pack(object):
 
         # Filters out for XSOAR tags
         release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, upload_marketplace)
-        logging.debug(f"RN result after filteing for pack {self._pack_name} in marketplace "
+        logging.debug(f"RN result after filtering for pack {self._pack_name} in marketplace "
                       f"{upload_marketplace}\n - {release_notes}")
 
         return release_notes
@@ -2185,7 +2233,9 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
-                            'dependency_packs': content_item.get('dependency_packs', {})
+                            'dependency_packs': content_item.get('dependency_packs', {}),
+                            'fromVersion': content_item.get('fromVersion', ''),
+                            'toVersion': content_item.get('toVersion', ''),
                         })
 
                     else:
@@ -2319,6 +2369,7 @@ class Pack(object):
                 self._partner_id = self.user_metadata.get(Metadata.PARTNER_ID, "")
                 self._partner_name = self.user_metadata.get(Metadata.PARTNER_NAME, "")
                 self._content_commit_hash = self.user_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
+                self._disable_monthly = self.user_metadata.get(Metadata.DISABLE_MONTHLY, False)
                 # Currently all content packs are legacy.
                 # Since premium packs cannot be legacy, we directly set this attribute to false.
                 self._legacy = False
@@ -3278,6 +3329,8 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
         successful_private_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
         images_data_dict = stage_data.get(BucketUploadFlow.IMAGES, {})
         return successful_packs_dict, failed_packs_dict, successful_private_packs_dict, images_data_dict
+
+    logging.debug(f'{packs_results_file_path} does not exist in artifacts')
     return {}, {}, {}, {}
 
 
@@ -3732,3 +3785,33 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
             if list(id_set_entity.values())[0]['file_path'] == str(entity_path):
                 return id_set_entity
     return {}
+
+
+def get_id_set_entity_by_display_name(display_name: str, pack_folder: str, id_set: dict):
+    """
+    Get the full entity dict from the id set of the entity given it's display name, if it does not exist in the id set
+    return None.
+
+    Args:
+        display_name: The display name of the entity (content item)
+        pack_folder: containing folder of that item
+        id_set: id set dict
+
+    Returns:
+        id set dict entity if exists, otherwise None
+    """
+    logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
+
+    if not id_set:
+        return None
+
+    for id_set_entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]:
+
+        if list(id_set_entity.values())[0]['display_name'] == display_name:
+            return id_set_entity
+
+    if pack_folder == PackFolders.CLASSIFIERS.value:  # For Classifiers, check also in Mappers
+        for id_set_entity in id_set['Mappers']:
+            if list(id_set_entity.values())[0]['display_name'] == display_name:
+                return id_set_entity
+    return None

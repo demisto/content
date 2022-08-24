@@ -2,7 +2,7 @@
     "defaultIncidentType": "TOPdesk Incident",
     "description": "Classifies TOPdesk's incidents",
     "feed": false,
-    "id": "TOPdesk Incident",
+    "id": "TOPdesk Incident Classifier",
     "keyTypeMap": {},
     "name": "TOPdesk Incident Classifier",
     "propagationLabels": [

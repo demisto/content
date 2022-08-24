@@ -21,7 +21,7 @@ def main() -> None:
         try:
             incident_details = json.loads(incident_details)
         except Exception:
-            demisto.log("Error while loading investigation data from incident details.")
+            demisto.debug("Error while loading investigation data from incident details.")
 
         sources_hr = ''
         sources = incident_details.get('Sources', {})

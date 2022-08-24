@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa: F401
 import math
 import os
 import shutil
-import traceback
 from distutils.version import LooseVersion
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
@@ -1658,7 +1657,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

@@ -392,23 +392,32 @@ tasks:
               complex:
                 root: modules
                 filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: SecurityAndCompliance
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
+                  - - operator: isEqualString
+                      left:
+                        value:
+                          simple: modules.brand
+                        iscontext: true
+                      right:
+                        value:
+                          simple: SecurityAndCompliance
+                  - - operator: isEqualString
+                      left:
+                        value:
+                          simple: modules.state
+                        iscontext: true
+                      right:
+                        value:
+                          simple: active
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SearchAndDeleteIntegration
+            iscontext: true
+          right:
+            value:
+              simple: EWS
     view: |-
       {
         "position": {
@@ -754,11 +763,6 @@ inputs:
   required: false
   description: Used only in O365. Text search string or a query that is formatted
     using the Keyword Query Language (KQL).
-  playbookInputQuery:
-- key: O365Description
-  value: {}
-  required: false
-  description: Used only in O365. Description of the compliance search.
   playbookInputQuery:
 - key: O365AllowNotFoundExchangeLocations
   value:
