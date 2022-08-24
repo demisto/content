@@ -42,9 +42,9 @@ class Client(BaseClient):
 
         """
         _, response = self.epo_help()
-        return response
+        return json.dumps(response)
 
-    def epo_help(self, command: str = None, prefix: str = None) -> Tuple[dict, str]:
+    def epo_help(self, command: str = None, prefix: str = None) -> Tuple[dict, dict]:
         """
 
         Args:
@@ -67,7 +67,7 @@ class Client(BaseClient):
                                           resp_type='text')
         return self._parse_response(epo_response)
 
-    def epo_get_latest_dat(self) -> Tuple[dict, str]:
+    def epo_get_latest_dat(self) -> Tuple[dict, dict]:
         """
         a direct call to specific url to get the version of the most updated dat file
         dat file is the McAfee A/V software definitions file.
@@ -83,7 +83,7 @@ class Client(BaseClient):
 
         return json_response, raw_response
 
-    def epo_get_current_dat(self) -> Tuple[dict, str]:
+    def epo_get_current_dat(self) -> Tuple[dict, dict]:
         """
         returns the currently installed dat file on the ePO system
         Returns(str):
@@ -98,7 +98,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def epo_command(self, command: str, params: dict, resp_type: str = 'json') -> Tuple[dict, str]:
+    def epo_command(self, command: str, params: dict, resp_type: str = 'json') -> Tuple[dict, dict]:
         """
         Runs any given command
         Args:
@@ -124,7 +124,7 @@ class Client(BaseClient):
                           abort_after_minutes: str = None,
                           stop_after_minutes: str = None,
                           randomization_interval: str = None
-                          ) -> Tuple[dict, str]:
+                          ) -> Tuple[dict, dict]:
 
         params = {
             'names': names,
@@ -187,7 +187,7 @@ class Client(BaseClient):
                 'Error getting DAT update task. It seems the task "VSEContentUpdateDemisto" is missing from the EPO '
                 'server. Please contact support for more details')
 
-    def update_repository(self, source_repo: str, target_branch: str) -> Tuple[dict, str]:
+    def update_repository(self, source_repo: str, target_branch: str) -> Tuple[dict, dict]:
         """
         Updating the local repository on the ePO from the public server.
         Returns:
@@ -241,7 +241,7 @@ class Client(BaseClient):
                 return entry['groupPath']
         return ''
 
-    def find_systems(self, group_id: int) -> Tuple[dict, str]:
+    def find_systems(self, group_id: int) -> Tuple[dict, dict]:
         """
         find all systems belongs to the given group Id
         Args:
@@ -261,7 +261,7 @@ class Client(BaseClient):
                                           timeout=self.timeout)
         return self._parse_response(raw_response)
 
-    def find_system(self, search_text: str) -> Tuple[dict, str]:
+    def find_system(self, search_text: str) -> Tuple[dict, dict]:
         """
         find system in the ePO Server system tree
         Args:
@@ -280,7 +280,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def wakeup_agent(self, names: str) -> Tuple[dict, str]:
+    def wakeup_agent(self, names: str) -> Tuple[dict, dict]:
         """
         wakeup agent for as system or list of systems
         Args:
@@ -303,7 +303,7 @@ class Client(BaseClient):
         # response = response.replace(r'\n', '\n')
         return self._parse_response(response)
 
-    def apply_tag(self, names: str, tag_name: str) -> Tuple[int, str]:
+    def apply_tag(self, names: str, tag_name: str) -> Tuple[int, dict]:
         """
         Apply the given tag name to machine(s) in names
         Args:
@@ -324,7 +324,7 @@ class Client(BaseClient):
                                       timeout=60)
         return self._parse_response(response)
 
-    def clear_tag(self, names: str, tag_name: str) -> Tuple[int, str]:
+    def clear_tag(self, names: str, tag_name: str) -> Tuple[int, dict]:
         """
         Clear the given tag name for machine(s) in names
         Args:
@@ -345,7 +345,7 @@ class Client(BaseClient):
                                       timeout=60)
         return self._parse_response(response)
 
-    def list_tag(self, search_text: str = None) -> Tuple[dict, str]:
+    def list_tag(self, search_text: str = None) -> Tuple[dict, dict]:
         """
         List tags available on ePO server
         Args:
@@ -364,7 +364,7 @@ class Client(BaseClient):
                                       timeout=60)
         return self._parse_response(response)
 
-    def get_table(self, table_name: str = None) -> Tuple[dict, str]:
+    def get_table(self, table_name: str = None) -> Tuple[dict, dict]:
         """
         Get tables from ePO server
         Args:
@@ -392,7 +392,7 @@ class Client(BaseClient):
                     order: str = None,
                     group: str = None,
                     join_tables: str = None,
-                    ) -> Tuple[dict, str]:
+                    ) -> Tuple[dict, dict]:
         """
         query tables from ePO server
         Args:
@@ -436,7 +436,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def get_version(self) -> Tuple[dict, str]:
+    def get_version(self) -> Tuple[dict, dict]:
         """
         Get ePO Software Version
         Returns:
@@ -450,7 +450,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def move_system(self, names: str, parent_group_id: int) -> Tuple[dict, str]:
+    def move_system(self, names: str, parent_group_id: int) -> Tuple[dict, dict]:
         """
            Moves systems to a specified destination group by name or ID as returned
         Args:
@@ -467,7 +467,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def find_client_task(self, search_text: str = None) -> Tuple[dict, str]:
+    def find_client_task(self, search_text: str = None) -> Tuple[dict, dict]:
         """
            find client task in the ePo system
         Args:
@@ -485,7 +485,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def find_policy(self, search_text: str = None) -> Tuple[dict, str]:
+    def find_policy(self, search_text: str = None) -> Tuple[dict, dict]:
         """
            find policy task in the ePo system
         Args:
@@ -504,7 +504,7 @@ class Client(BaseClient):
         return self._parse_response(response)
 
     def assign_policy_to_group(self, group_id: int, product_id: str, object_id: int,
-                               reset_inheritance: str = 'false') -> Tuple[int, str]:
+                               reset_inheritance: str = 'false') -> Tuple[int, dict]:
         """
            Assign policy to group of machines
         Args:
@@ -526,7 +526,7 @@ class Client(BaseClient):
         return self._parse_response(response)
 
     def assign_policy_to_system(self, names: str, product_id: str, type_id: int, object_id: int,
-                                reset_inheritance: str = 'false') -> Tuple[dict, str]:
+                                reset_inheritance: str = 'false') -> Tuple[dict, dict]:
         """
            Assign policy to system(s)
         Args:
@@ -548,7 +548,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def list_issue(self, issue_id: str = '') -> Tuple[dict, str]:
+    def list_issue(self, issue_id: str = '') -> Tuple[dict, dict]:
         """
         list issue in the system
         Args:
@@ -569,7 +569,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def delete_issue(self, issue_id: str) -> Tuple[dict, str]:
+    def delete_issue(self, issue_id: str) -> Tuple[dict, dict]:
         """
         delete issue in the system
         Args:
@@ -597,7 +597,7 @@ class Client(BaseClient):
                      issue_assignee_name: str = None,
                      issue_ticket_server_name: str = None,
                      issue_ticket_id: str = None,
-                     issue_properties: str = None) -> Tuple[dict, str]:
+                     issue_properties: str = None) -> Tuple[dict, dict]:
         """
         update an issue
         Args:
@@ -659,7 +659,7 @@ class Client(BaseClient):
                      issue_assignee_name: str = None,
                      issue_ticket_server_name: str = None,
                      issue_ticket_id: str = None,
-                     issue_properties: str = None) -> Tuple[dict, str]:
+                     issue_properties: str = None) -> Tuple[dict, dict]:
         """
         create an issue
         Args:
@@ -747,7 +747,7 @@ class Client(BaseClient):
                 json_response = json.loads(str(res['result']))
             except (TypeError, json.JSONDecodeError):
                 json_response = res['result']
-            return json_response, response
+            return json_response, json_response
         elif res['status'] == 'Error':
             raise DemistoException(f"Error occurred. Status: ({res['status']}) Code: ({res['code']}) Result: "
                                    f"{res['result']}")
@@ -1045,7 +1045,7 @@ def epo_update_client_dat_command(client: Client, args: Dict[str, Any]) -> Comma
        Returns:
            CommandResults
     """
-    names = args.get('systems', str)
+    names: str = args.get('systems', str)
     if names is None:
         raise ValueError('Must provide systems')
     client_task_id, client_product_id = client.get_client_task_id_by_name(search_text='VSEContentUpdateDemisto')
@@ -1242,11 +1242,12 @@ def epo_wakeup_agent_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
     names = args.get('names', str)
     response_json, response = client.wakeup_agent(names)
-    if response.find('No systems found') >= 0:
+    response_str = json.dumps(response)
+    if response_str.find('No systems found') >= 0:
         md = '#### No systems were found.'
     else:
         md = '#### ePO agents was awaken.\n'
-        pattern_match = re.search(r'completed:\s([-]*\d+)\\nfailed:\s([-]*\d+)\\nexpired:\s([-]*\d+)', response)
+        pattern_match = re.search(r'completed:\s([-]*\d+)\\nfailed:\s([-]*\d+)\\nexpired:\s([-]*\d+)', response_str)
         if pattern_match:
             md += '| Completed | Failed | Expired |\n'
             md += '|-|-|-|\n'
