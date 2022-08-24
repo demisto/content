@@ -7,12 +7,6 @@ display: Bitbucket
 fromversion: 6.5.0
 description: Pack for handling Bitbucket operations
 configuration:
-  - name: Name
-    display: Name
-    required: true
-    defaultvalue: null
-    type: 0
-    additionalinfo: ""
   - name: Workspace
     display: Workspace
     required: true
@@ -29,14 +23,9 @@ configuration:
     display: User Name
     required: true
     defaultvalue: null
-    type: 0
-    additionalinfo: null
-  - name: AppPassword
-    display: App Password
-    required: true
-    defaultvalue: null
     type: 9
     additionalinfo: <a href="https://developer.atlassian.com/cloud/bitbucket/rest/intro/#app-passwords" target="_blank">click to open a link to create the app password</a>
+    displaypassword: App Password
   - name: Repository
     display: Repository
     required: false
@@ -74,6 +63,26 @@ script:
         - contextPath: BaseIntegration.Output
           description: "[Enter a description of the data returned in this output.]"
           type: String
+    - name: bitbucket-project-list
+      arguments:
+        - name: project_key
+          required: false
+          description: Must be uppercase.
+          isArray: false
+        - name: limit
+          required: false
+          isArray: false
+          description: add a description.
+        - name: page
+          required: false
+          isArray: false
+        - name: page_size
+          required: false
+          isArray: false
+      output:
+        - contextPath: Bitbucket.Project
+          description: check
+          type: CommandResult
   isfetch: false
   runonce: false
   script: "-"

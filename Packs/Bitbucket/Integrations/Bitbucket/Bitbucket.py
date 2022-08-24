@@ -19,7 +19,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -33,30 +33,28 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
+    def __init__(self, workspace: str, server_url: str, auth: tuple, repository: str,
+                 proxy: bool = False, verify: bool = True):
+        self.repository = repository
+        self.workspace = workspace
+        super().__init__(base_url=server_url, auth=auth, proxy=proxy, verify=verify)
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
+    def test_module(self) -> str:
+        self._http_request(method='GET',
+                           url_suffix='core.help',
+                           params={},
+                           timeout=self.timeout,
+                           resp_type='text')
+        return "ok"
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
+    def bitbucket_project_list(self, url_suffix: str, params: dict) -> dict:
+        response = self._http_request(method='GET',
+                                      url_suffix=url_suffix,
+                                      params=params)
+        return response
 
 ''' HELPER FUNCTIONS '''
 
@@ -65,32 +63,8 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+#def test_module(client: Client) -> str:
+ #   return client.test_module()
 
 
 # TODO: REMOVE the following dummy command function
@@ -111,6 +85,44 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
+def project_list_command(client: Client, args) -> CommandResults:
+    params = {'size': args.get('limit', 50),
+              'page': args.get('page', 1),
+              'pagelen': args.get('page_size')}
+    project_key = args.get('project_key')
+    if not project_key:
+        url_suffix = f'/workspaces/{client.workspace}/projects/'
+        readable_name = f'List of the projects in {client.workspace}'
+    else:
+        project_key = project_key.upper()
+        url_suffix = f'/workspaces/{client.workspace}/projects/{project_key}'
+        readable_name = f'The information about project {project_key}'
+
+    result = client.bitbucket_project_list(url_suffix, params)
+
+    human_readable = []
+
+    for values in result.values():
+        if type(values) is list:
+            for v in values:
+                d = {'Key': v.get('key'),
+                     'Name': v.get('name'),
+                     'Description': v.get('description'),
+                     'IsPrivate': v.get('is_private')}
+                human_readable.append(d)
+
+    readable_output = tableToMarkdown(
+        name=readable_name,
+        t=human_readable,
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Bitbucket.Project',
+        raw_response=result
+    )
+
 ''' MAIN FUNCTION '''
 
 
@@ -121,42 +133,35 @@ def main() -> None:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
+    workspace = demisto.params().get('Workspace', "")
+    server_url = demisto.params().get('ServerUrl', "")
+    user_name = demisto.params().get('UserName', "").get('identifier', "")
+    app_password = demisto.params().get('UserName', "").get('password', "")
+    repository = demisto.params().get('Repository', "")
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
+    auth = (user_name, app_password)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
         client = Client(
-            base_url=base_url,
+            workspace=workspace,
+            server_url=server_url,
+            auth=auth,
+            proxy=proxy,
             verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            repository=repository)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = '' #test_module(client)
             return_results(result)
-
+        elif demisto.command() == 'bitbucket-project-list':
+            result = project_list_command(client, demisto.args())
+            return_results(result)
         # TODO: REMOVE the following dummy command case:
         elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
+            return_results(baseintegration_dummy_command(client, **demisto.args()))
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
