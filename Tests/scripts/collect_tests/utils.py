@@ -164,11 +164,9 @@ class DictFileBased(DictBased):
     def __init__(self, path: Path, is_infrastructure: bool = False):
         if not path.exists():
             raise FileNotFoundError(path)
-        try:
-            PackManager.relative_to_packs(path)
-        except NotUnderPackException:
-            if not is_infrastructure:
-                raise
+
+        if ('Packs' not in path.parts) and (not is_infrastructure):
+            raise NotUnderPackException(path)
 
         if path.suffix not in ('.json', '.yml'):
             raise NonDictException(path)
@@ -277,14 +275,11 @@ class PackManager:
     def is_test_skipped_in_pack_ignore(self, test_file_name: str, pack_id: str):
         return test_file_name in self._pack_id_to_skipped_test_playbooks[pack_id]
 
-    @staticmethod
-    def relative_to_packs(path: Path | str):
-        if isinstance(path, str):
-            path = Path(path)
-        parts = path.parts
-        if 'Packs' not in parts:
+    def relative_to_packs(self, path: Path | str):
+        try:
+            return path.absolute().relative_to(self.packs_path.absolute())
+        except ValueError:
             raise NotUnderPackException(path)
-        return Path(*path.parts[path.parts.index('Packs') + 1:])
 
     def validate_pack(self, pack: str) -> None:
         """raises InvalidPackException if the pack name is not valid."""

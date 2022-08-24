@@ -316,11 +316,11 @@ class BranchTestCollector(TestCollector):
                 raise ValueError(f'id field of {yml_path} cannot be empty')
         except FileNotFoundError:
             raise FileNotFoundError(
-                f'could not find yml matching {PackManager.relative_to_packs(content_item_path)}'
+                f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}'
             )
         if yml.id_ in self.conf.skipped_integrations:
             raise NothingToCollectException(yml.path, 'integration is skipped')
-        relative_yml_path = PackManager.relative_to_packs(yml_path)
+        relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
 
         match actual_content_type := find_yml_content_type(yml_path):
@@ -394,26 +394,16 @@ class BranchTestCollector(TestCollector):
         if not path.exists():
             raise FileNotFoundError(path)
 
+        if path in PATHS.files_to_ignore:
+            raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
+
+        if path in PATHS.files_triggering_sanity_tests:
+            self.trigger_sanity_tests = True
+            raise NothingToCollectException(path, 'not under a pack (triggering sanity tests)')
+
+        reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
         file_type = find_type(str(path))
-        logger.info(f'DEBUG:: {file_type} {str(path)}')
-        try:
-            reason_description = relative_path = PackManager.relative_to_packs(path)
-        except NotUnderPackException:
-            # infrastructure files are not collected
-            logger.info(f'DEBUG:: checking if {str(path)} is skipped')
-            if path in PATHS.files_to_ignore:
-                logger.info(f'DEBUG:: {str(path)} in files_to_ignore')
-                raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
 
-            if path in PATHS.files_triggering_sanity_tests:
-                logger.info(f'DEBUG:: {str(path)} in files_triggering_sanity_tests')
-                self.trigger_sanity_tests = True
-                raise NothingToCollectException(path, 'not under a pack (triggering sanity tests)')
-
-            logger.info(f'DEBUG:: {str(path)} is neither under files_to_ignore nor files_triggering_sanity_tests')
-            raise
-
-        logger.info(f'DEBUG:: {file_type=} {relative_path} not skipped')
         try:
             content_item = ContentItem(path)
         except NonDictException:
