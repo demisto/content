@@ -14,9 +14,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* xsoar-ws-setup-form-submission
-* getList
 * stopTimer
+* xsoar-ws-setup-form-submission
 * setIncident
 
 ## Playbook Inputs
@@ -24,8 +23,13 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| useremails | The emails to send the content to | Put the emails here | Optional |
+| useremails | Comma separated email addresses for sending the emails | Replace with user emails | Optional |
+| htmltemplate | The template for the data collection task supports a form with action marked as "$action1". The program as of now only supports one form with method post. | Paste the template here or select a list which contains the template | Optional |
 
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+---
+![xsoar-email-data-collection](../doc_files/xsoar-email-data-collection.png)

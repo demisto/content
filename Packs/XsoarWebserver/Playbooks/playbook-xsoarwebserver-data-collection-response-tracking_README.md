@@ -7,15 +7,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-This playbook does not use any integrations.
+* XSOARWebServer
 
 ### Scripts
 * xsoar-ws-parse-context
-* xsoar-ws-poll-status_v2
+* xsoar-ws-poll-status
 
 ### Commands
-* setIncident
 * xsoar-ws-get-action-status
+* setIncident
 
 ## Playbook Inputs
 ---
@@ -33,3 +33,7 @@ This playbook does not use any integrations.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | WSActionStatus(val.job_uuid==obj.job_uuid) | Merges the output to the main playbook | unknown |
+
+## Playbook Image
+---
+![xsoar-data-collection-response-tracking](../doc_files/xsoar-data-collection-response-tracking.png)

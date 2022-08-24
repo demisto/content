@@ -14,18 +14,23 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* setIncident
-* stopTimer
 * xsoar-ws-setup-simple-action
-* getList
+* stopTimer
+* setIncident
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| useremails | The emails to send the data collection links to. | configure the emails | Optional |
+| useremails | The emails to send the data collection links to. | Replace with comma separated user emails | Required |
+| htmltemplate | The template for the acknowledgement email is an HTML string with multiple hyper links with each hyper link has a place holder like "$action\{number\}" with number varying across number of actions | lists.AcknowledgementEmailHTML | Required |
+| useractions | Comma separated list of actions that get registered when the corresponding links are clicked. Make sure that your template has an equal number of placeholders | happy,angry | Required |
 
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+---
+![xsoarwebserver-email-acknowledgement](../doc_files/xsoarwebserver-email-acknowledgement.png)
