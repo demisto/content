@@ -2,6 +2,7 @@ import logging
 import os
 from pathlib import Path
 from typing import Iterable, Union
+from Tests.scripts.collect_tests.logger import logger
 
 from git import InvalidGitRepositoryError, Repo
 
@@ -16,6 +17,10 @@ _SANITY_FILES_FOR_GLOB = (
     'Tests/private_build',
     'Tests/scripts'
 )
+
+
+def log_files(title: str, files: Iterable[Union[str, Path]]):
+    logger.debug(f'{title}:' + '\n'.join(sorted(map(str, files))))
 
 
 class PathManager:
@@ -36,13 +41,18 @@ class PathManager:
 
         self.packs_path = self.content_path / 'Packs'
         self.files_triggering_sanity_tests = self._glob(_SANITY_FILES_FOR_GLOB)
+        log_files('files triggering sanity tests', self.files_triggering_sanity_tests)
 
-        non_packs_folders = tuple(filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))
         content_root_files = set(filter(lambda f: f.is_file(), self.content_path.iterdir()))
-        infrastructure_test_data = self._glob(('Tests/scripts/infrastructure_tests/tests_data',))
-        non_content = self._glob(non_packs_folders) | content_root_files
+        non_content_files = self._glob(filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))
+        non_content = non_content_files | content_root_files
+        log_files('non-content files (not collected)', non_content_files)
 
-        self.files_to_ignore = (infrastructure_test_data | non_content) - self.files_triggering_sanity_tests
+        infrastructure_test_data = self._glob(('Tests/scripts/infrastructure_tests/tests_data',))
+        log_files('infrastructure test data (not collected)', infrastructure_test_data)
+
+        self.files_to_ignore = (non_content | infrastructure_test_data) - self.files_triggering_sanity_tests
+        log_files('all ignored files', self.files_to_ignore)
 
         self.id_set_path = PathManager.ARTIFACTS_PATH / 'id_set.json'
         self.conf_path = PathManager.ARTIFACTS_PATH / 'conf.json'
