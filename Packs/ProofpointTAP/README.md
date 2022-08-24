@@ -11,8 +11,8 @@ In order to use the collector to collect events from the vendor,  to collect eve
 <br/>This pack includes XSIAM content.
 
 ### Collect Events from Proofpoint TAP (XSIAM)
+To define a collector for Proofpoint you'll need to configure it in XDR documentation can be found [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors).
 
-You can configure the vendor and product by replacing vendor_product_raw with proofpoint_tap_raw.
 </~XSIAM>
 
 ## What does this pack do?
