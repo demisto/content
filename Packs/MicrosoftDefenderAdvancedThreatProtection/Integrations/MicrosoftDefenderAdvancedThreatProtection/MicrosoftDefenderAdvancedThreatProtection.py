@@ -1115,7 +1115,7 @@ class MsClient:
             scope=Scopes.security_center_apt_service, certificate_thumbprint=certificate_thumbprint,
             private_key=private_key, grant_type=grant_type, redirect_uri=redirect_uri,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            auth_code=auth_code, resource=None if self_deployed else '',
+            auth_code=auth_code, resource=None,
         )
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
