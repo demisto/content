@@ -1084,7 +1084,10 @@ def parse_push_status_response(result: dict):
             device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
             status_warnings.extend([] if not device_warnings else device_warnings)
             device_errors = safeget(device, ["details", "msg", "errors", "line"])
-            status_errors.extend([] if not device_errors else device_errors)
+            if isinstance(device_errors, str) and device_errors:
+                status_errors.append(device_errors)
+            else:
+                status_errors.extend([] if not device_errors else device_errors)
     push_status_output["Warnings"] = status_warnings
     push_status_output["Errors"] = status_errors
 
