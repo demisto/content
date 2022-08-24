@@ -99,7 +99,7 @@ class CollectionResult:
                 test = None
 
         except InvalidTestException as e:
-            suffix = f' (pack will be installed)' if pack else ''
+            suffix = ' (pack will be installed)' if pack else ''
             logger.info(f'{str(e)}, not collecting {test}{suffix}')
             test = None
 
