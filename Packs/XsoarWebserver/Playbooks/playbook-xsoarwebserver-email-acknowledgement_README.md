@@ -33,4 +33,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![xsoarwebserver-email-acknowledgement](../doc_files/xsoarwebserver-email-acknowledgement.png)
+![xsoarwebserver-email-acknowledgement](./xsoarwebserver-email-acknowledgement.png)

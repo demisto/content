@@ -15,7 +15,7 @@ def parse_job_status():
             break
 
     if not complete:
-        scheduled_command = ScheduledCommand(command="xsoar-ws-poll-status_v2", next_run_in_seconds=next_run,
+        scheduled_command = ScheduledCommand(command="xsoar-ws-poll-status", next_run_in_seconds=next_run,
                                              args={'uuid': uuid, 'timebetweenruns': next_run, 'timeout': timeout},
                                              timeout_in_seconds=timeout)
         toreturn = CommandResults(outputs_prefix='WS-ActionStatus(val.job_uuid==obj.job_uuid)',
