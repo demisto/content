@@ -106,7 +106,7 @@ class Pack(object):
         self._tags = None  # initialized in enhance_pack_attributes function
         self._categories = None  # initialized in enhance_pack_attributes function
         self._content_items = None  # initialized in collect_content_items function
-        self._external_content_displays_map = None  # initialized in collect_content_items function
+        self._content_displays_map = None  # initialized in collect_content_items function
         self._search_rank = None  # initialized in enhance_pack_attributes function
         self._related_integration_images = None  # initialized in enhance_pack_attributes function
         self._use_cases = None  # initialized in enhance_pack_attributes function
@@ -1972,7 +1972,26 @@ class Pack(object):
                 PackFolders.WIZARDS.value: "wizard",
             }
 
-            xsiam_items_names_to_display_mapping = {
+            items_names_to_display_mapping = {
+                content_item_name_mapping[PackFolders.SCRIPTS.value]: "Automation",
+                content_item_name_mapping[PackFolders.PLAYBOOKS.value]: "Playbook",
+                content_item_name_mapping[PackFolders.INTEGRATIONS.value]: "Integration",
+                content_item_name_mapping[PackFolders.INCIDENT_FIELDS.value]: "Incident Field",
+                content_item_name_mapping[PackFolders.INCIDENT_TYPES.value]: "Incident Type",
+                content_item_name_mapping[PackFolders.DASHBOARDS.value]: "Dashboard",
+                content_item_name_mapping[PackFolders.INDICATOR_FIELDS.value]: "Indicator Field",
+                content_item_name_mapping[PackFolders.REPORTS.value]: "Report",
+                content_item_name_mapping[PackFolders.INDICATOR_TYPES.value]: "Reputation",
+                content_item_name_mapping[PackFolders.LAYOUTS.value]: "Layouts Container",
+                content_item_name_mapping[PackFolders.CLASSIFIERS.value]: "Classifier",
+                content_item_name_mapping[PackFolders.WIDGETS.value]: "Widget",
+                content_item_name_mapping[PackFolders.GENERIC_DEFINITIONS.value]: "Generic Definition",
+                content_item_name_mapping[PackFolders.GENERIC_FIELDS.value]: "Generic Field",
+                content_item_name_mapping[PackFolders.GENERIC_MODULES.value]: "Generic Module",
+                content_item_name_mapping[PackFolders.GENERIC_TYPES.value]: "Generic Type",
+                content_item_name_mapping[PackFolders.LISTS.value]: "List",
+                content_item_name_mapping[PackFolders.PREPROCESS_RULES.value]: "Pre Process Rule",
+                content_item_name_mapping[PackFolders.JOBS.value]: "Job",
                 content_item_name_mapping[PackFolders.PARSING_RULES.value]: "Parsing Rule",
                 content_item_name_mapping[PackFolders.MODELING_RULES.value]: "Modeling Rule",
                 content_item_name_mapping[PackFolders.CORRELATION_RULES.value]: "Correlation Rule",
@@ -2262,9 +2281,9 @@ class Pack(object):
             self._content_items = content_items_result
             
             display_getter = lambda items, display : f'{display}s' if len(items) > 1 else display
-            self._external_content_displays_map = {
+            self._content_displays_map = {
                 name: display_getter(content_items_result.get(name), display) 
-                for name, display in xsiam_items_names_to_display_mapping.items()
+                for name, display in items_names_to_display_mapping.items()
                 if content_items_result.get(name)
             }
 
