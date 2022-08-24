@@ -395,7 +395,7 @@ class BranchTestCollector(TestCollector):
             raise FileNotFoundError(path)
 
         file_type = find_type(str(path))
-        logger.info(f'DEBUG:: {file_type} {PackManager.relative_to_packs(path)}')
+        logger.info(f'DEBUG:: {file_type} {str(path)}')
         try:
             reason_description = relative_path = PackManager.relative_to_packs(path)
         except NotUnderPackException:
