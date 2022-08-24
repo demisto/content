@@ -1,5 +1,10 @@
 {
-    "detailsV2": {
+	"close": null,
+	"description": "",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -134,6 +139,7 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -147,6 +153,7 @@
 					{
 						"h": 2,
 						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -162,6 +169,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -178,6 +186,7 @@
 						"h": 2,
 						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -193,6 +202,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -208,6 +218,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -224,6 +235,7 @@
 						"h": 2,
 						"hideName": false,
 						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -239,6 +251,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 2,
@@ -303,6 +316,7 @@
 								"startCol": 1
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -347,6 +361,7 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -402,6 +417,15 @@
 								"startCol": 0
 							},
 							{
+								"endCol": 4,
+								"fieldId": "wizissueresolutionrecommendation",
+								"height": 106,
+								"id": "9bda8f20-23b8-11ed-b79f-a335dc38ea14",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
 								"dropEffect": "move",
 								"endCol": 4,
 								"fieldId": "wizresourceid",
@@ -433,9 +457,10 @@
 								"startCol": 2
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
+						"minW": 2,
 						"moved": false,
 						"name": "Investigation Data",
 						"static": false,
@@ -473,11 +498,22 @@
 			}
 		]
 	},
-    "group": "incident",
-    "id": "Wiz Layout",
-    "name": "Wiz Layout",
-    "system": false,
+	"edit": null,
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "Wiz Layout",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "Wiz Layout",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "6.0.0"
 }
