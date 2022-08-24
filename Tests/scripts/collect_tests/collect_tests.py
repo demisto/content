@@ -259,11 +259,17 @@ class TestCollector(ABC):
 
     def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str,
                       content_item_range: Optional[VersionRange] = None) -> CollectionResult:
+        pack = PACK_MANAGER[pack_name]
+
+        version_range = content_item_range \
+            if pack.version_range.is_default \
+            else (pack.version_range | content_item_range)
+
         return CollectionResult(
             test=None,
             pack=pack_name,
             reason=reason,
-            version_range=PACK_MANAGER[pack_name].version_range | content_item_range,
+            version_range=version_range,
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
@@ -424,6 +430,7 @@ class BranchTestCollector(TestCollector):
                 pack_name=find_pack_folder(path).name,
                 reason=CollectionReason.NON_CODE_FILE_CHANGED,
                 reason_description=reason_description,
+                content_item_range=content_item.version_range if content_item else None,
             )
 
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:

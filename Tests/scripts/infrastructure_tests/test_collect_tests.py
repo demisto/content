@@ -251,7 +251,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.K, (), (), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',)),
 
-     (MockerCases.L, ('myXSIAMOnlyPack',), None, (Machine.MASTER, Machine.V6_9), XSIAM_BRANCH_ARGS,
+     (MockerCases.L, None, ('myXSIAMOnlyPack',), (Machine.MASTER, Machine.V6_9), XSIAM_BRANCH_ARGS,
       ('Packs/myXSIAMOnlyPack/Wizards/harry.json',)),
      ))
 def test_branch(
