@@ -497,10 +497,17 @@ class BranchTestCollector(TestCollector):
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
         for line in diff.splitlines():
-            try:
-                git_status, file_path = line.split()
-            except ValueError:
-                raise ValueError(f'unexpected line format (expected `<modifier>\t<file>`, got {line}')
+            match len(parts := line.split()):
+                case 2:
+                    git_status, file_path = parts
+                case 3:
+                    git_status, _, file_path = parts  # R <old location> <new location>
+
+                    if git_status.startswith('R', 'C'):
+                        git_status = 'M'
+                case _:
+                    raise ValueError(f'unexpected line format (expected `<modifier>\t<file>`, got {line}')
+
             if git_status == 'D':  # git-deleted file
                 logger.warning(f'Found a file deleted from git {file_path}, '
                                f'skipping it as TestCollector cannot properly find the appropriate tests (by design)')
