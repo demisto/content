@@ -413,7 +413,7 @@ class BranchTestCollector(TestCollector):
             logger.info(f'DEBUG:: {str(path)} is neither under files_to_ignore nor files_triggering_sanity_tests')
             raise
 
-        logger.info(f'DEBUG:: {file_type.value=} {relative_path} not skipped')
+        logger.info(f'DEBUG:: {file_type=} {relative_path} not skipped')
         try:
             content_item = ContentItem(path)
         except NonDictException:
