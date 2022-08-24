@@ -644,9 +644,9 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: false
+      default: true
       description: Whether to return only mailboxes which contain the email. Default
-        is "False".
+        is "True".
       name: show-only-mailboxes
       predefined:
       - "false"

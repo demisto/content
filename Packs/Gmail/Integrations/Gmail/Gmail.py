@@ -1121,15 +1121,22 @@ def search_all_mailboxes(receive_only_accounts, max_results):
             for future in concurrent.futures.as_completed(futures):
                 accounts_counter += 1
                 entry, num_of_messages = future.result()
-                msg_counter += num_of_messages
                 entries.append(entry)
-                if msg_counter >= entry_print_goal or accounts_counter % 100 == 0:
-                    entry_print_goal = msg_counter + max_results
-                    demisto.info(
-                        'Still searching. Searched {} of total accounts, and found {} results so far'.format(
-                            accounts_counter,
-                            msg_counter),
-                    )
+                if receive_only_accounts:
+                    if accounts_counter % 100 == 0:
+                        demisto.info(
+                            'Still searching. Searched {} of total accounts'.format(
+                                accounts_counter),
+                        )
+                else:
+                    msg_counter += num_of_messages
+                    if msg_counter >= entry_print_goal or accounts_counter % 100 == 0:
+                        entry_print_goal = msg_counter + max_results
+                        demisto.info(
+                            'Still searching. Searched {} of total accounts, and found {} results so far'.format(
+                                accounts_counter,
+                                msg_counter),
+                        )
 
         if receive_only_accounts:
             entries = [mailboxes_to_entry(entries)]
@@ -1168,7 +1175,7 @@ def search_command(mailbox=None):
     has_attachments = args.get('has-attachments')
     has_attachments = None if has_attachments is None else bool(
         strtobool(has_attachments))
-    receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'false'))
+    receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'true'))
 
     if max_results > 500:
         raise ValueError(
@@ -1183,8 +1190,8 @@ def search_command(mailbox=None):
     # In case the user wants only account list without content.
     if receive_only_accounts:
         if mails:
-            return {'Mailbox': mailbox, 'q': q}, len(mails)
-        return {'Mailbox': None, 'q': q}, len(mails)
+            return {'Mailbox': mailbox, 'q': q}, 0
+        return {'Mailbox': None, 'q': q}, 0
 
     res = emails_to_entry('Search in {}:\nquery: "{}"'.format(mailbox, q), mails, 'full', mailbox)
     return res, len(mails)
@@ -2194,7 +2201,7 @@ def main():
 
         else:
             if command == 'gmail-search-all-mailboxes':
-                receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
+                receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'true'))
                 max_results = arg_to_number(demisto.args().get('max-results', 100))
                 demisto.results(cmd_func(receive_only_accounts, max_results))  # type: ignore
             if command == 'gmail-search':

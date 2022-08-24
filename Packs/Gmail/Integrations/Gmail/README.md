@@ -1303,7 +1303,7 @@ Inspecting these messages should allow you to determine what percent the search 
 | after | Search for messages sent after a certain time period. For example, 2018/05/06 | Optional | 
 | before | Search for messages sent before a certain time period. For example, 2018/05/09 | Optional | 
 | has-attachments | Whether to search for messages sent with attachments. | Optional | 
-| show-only-mailboxes | Whether to return only mailboxes which contain the email. (Default: false) | Optional | 
+| show-only-mailboxes | Whether to return only mailboxes which contain the email. (Default: true) | Optional | 
 
 
 #### Context Output
