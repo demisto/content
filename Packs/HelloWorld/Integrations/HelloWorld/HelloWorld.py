@@ -1388,7 +1388,7 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == 'ip':
-            default_threshold_ip = int(params.get('threshold_ip', '65'))
+            default_threshold_ip = arg_to_number(params.get('threshold_ip', '65'))
             return_results(ip_reputation_command(client, args, default_threshold_ip, reliability))
 
         elif command == 'domain':
