@@ -371,6 +371,31 @@ class EWSClient:
         message.account = account
         message.send_and_save()
 
+    def reply_mail(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments):
+        account = self.get_account()
+        item_to_reply_to = account.inbox.get(id=inReplyTo)  # pylint: disable=E1101
+        if isinstance(item_to_reply_to, ErrorItemNotFound):
+            raise Exception(item_to_reply_to)
+
+        subject = subject or item_to_reply_to.subject
+        message_body = HTMLBody(htmlBody) if htmlBody else body
+        reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
+                                              cc_recipients=cc,
+                                              bcc_recipients=bcc)
+        reply = reply.save(account.drafts)
+        m = account.inbox.get(id=reply.id)  # pylint: disable=E1101
+
+        for attachment in attachments:
+            if not attachment.get('cid'):
+                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
+            else:
+                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+                                                is_inline=True, content_id=attachment.get('cid'))
+            m.attach(new_attachment)
+        m.send()
+
+        return m
+
 
 class MarkAsJunk(EWSAccountService):
     """
@@ -1947,6 +1972,18 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
     return 'Mail sent successfully', {}, {}
 
 
+def reply_mail(client: EWSClient, to, inReplyTo, subject='', body="", bcc=None, cc=None, htmlBody=None,
+               attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None):
+    to = argToList(to)
+    cc = argToList(cc)
+    bcc = argToList(bcc)
+
+    # collect all types of attachments
+    attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
+    attachments.extend(collect_manual_attachments(manualAttachObj))
+    client.reply_mail(inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
+
+
 def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
     """
     Retrieve item as an eml
@@ -2355,6 +2392,7 @@ def sub_main():
             "ews-get-attachment": fetch_attachments_for_message,
             "ews-delete-attachment": delete_attachments_for_message,
             "ews-get-items-as-eml": get_item_as_eml,
+            "reply-mail": reply_mail,
         }
         # system commands:
         if command == "test-module":
