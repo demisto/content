@@ -503,10 +503,16 @@ class BranchTestCollector(TestCollector):
                 case 3:
                     git_status, _, file_path = parts  # R <old location> <new location>
 
-                    if git_status.startswith('R', 'C'):
+                    if git_status.startswith('R'):
+                        logger.debug(f'{git_status=} for {file_path=}, considering it as <M>odified')
                         git_status = 'M'
                 case _:
-                    raise ValueError(f'unexpected line format (expected `<modifier>\t<file>`, got {line}')
+                    raise ValueError(f'unexpected line format '
+                                     f'(expected `<modifier>\t<file>` or `<modifier>\t<old_location>\t<new_location>`'
+                                     f', got {line}')
+
+            if git_status not in {'A', 'M', 'D', }:
+                logger.warning(f'unexpected {git_status=}, considering it as <M>odified')
 
             if git_status == 'D':  # git-deleted file
                 logger.warning(f'Found a file deleted from git {file_path}, '
