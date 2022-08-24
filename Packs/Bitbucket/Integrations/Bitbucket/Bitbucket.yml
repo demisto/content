@@ -80,9 +80,9 @@ script:
           required: false
           isArray: false
       output:
-        - contextPath: Bitbucket.Project
-          description: check
-          type: CommandResult
+        - contextPath: Bitbucket.Project.values.updated_on
+          description: When the project was updated.
+          type: String
   isfetch: false
   runonce: false
   script: "-"

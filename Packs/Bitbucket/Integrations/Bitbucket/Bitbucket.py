@@ -103,7 +103,7 @@ def project_list_command(client: Client, args) -> CommandResults:
     human_readable = []
 
     for values in result.values():
-        if type(values) is list:
+        if isinstance(values, list):
             for v in values:
                 d = {'Key': v.get('key'),
                      'Name': v.get('name'),
@@ -120,6 +120,7 @@ def project_list_command(client: Client, args) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Project',
+        outputs=result,
         raw_response=result
     )
 
