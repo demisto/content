@@ -4,11 +4,10 @@ from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 
+from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                PackManager, find_pack_folder,
                                                to_tuple)
-
-from .logger import logger
 
 
 class IdSetItem(DictBased):

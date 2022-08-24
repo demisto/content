@@ -11,14 +11,12 @@ from packaging._structures import InfinityType, NegativeInfinityType
 from packaging.version import Version
 
 from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS
-
-from .exceptions import (BlankPackNameException, DeprecatedPackException,
-                         NonDictException, NonexistentPackException,
-                         NonXsoarSupportedPackException,
-                         NoTestsConfiguredException, NotUnderPackException,
-                         SkippedPackException)
-from .logger import logger
-from .path_manager import PathManager
+from Tests.scripts.collect_tests.exceptions import (
+    BlankPackNameException, DeprecatedPackException, NonDictException,
+    NonexistentPackException, NonXsoarSupportedPackException,
+    NoTestsConfiguredException, NotUnderPackException, SkippedPackException)
+from Tests.scripts.collect_tests.logger import logger
+from Tests.scripts.collect_tests.path_manager import PathManager
 
 
 def find_pack_folder(path: Path) -> Path:
