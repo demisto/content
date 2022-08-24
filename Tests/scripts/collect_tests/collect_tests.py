@@ -395,19 +395,25 @@ class BranchTestCollector(TestCollector):
             raise FileNotFoundError(path)
 
         file_type = find_type(str(path))
+        logger.info(f'DEBUG:: {file_type.value} {PackManager.relative_to_packs(path)}')
         try:
             reason_description = relative_path = PackManager.relative_to_packs(path)
         except NotUnderPackException:
             # infrastructure files are not collected
-
+            logger.info(f'DEBUG:: checking if {str(path)} is skipped')
             if path in PATHS.files_to_ignore:
+                logger.info(f'DEBUG:: {str(path)} in files_to_ignore')
                 raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
 
             if path in PATHS.files_triggering_sanity_tests:
+                logger.info(f'DEBUG:: {str(path)} in files_triggering_sanity_tests')
                 self.trigger_sanity_tests = True
                 raise NothingToCollectException(path, 'not under a pack (triggering sanity tests)')
+
+            logger.info(f'DEBUG:: {str(path)} is neither under files_to_ignore nor files_triggering_sanity_tests')
             raise
 
+        logger.info(f'DEBUG:: {file_type.value=} {relative_path} not skipped')
         try:
             content_item = ContentItem(path)
         except NonDictException:
