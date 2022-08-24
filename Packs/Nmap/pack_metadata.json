@@ -16,5 +16,14 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts"
     ]
 }
