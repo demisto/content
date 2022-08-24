@@ -37,8 +37,10 @@ class PathManager:
         self.packs_path = self.content_path / 'Packs'
         self.files_triggering_sanity_tests = self._glob(_SANITY_FILES_FOR_GLOB)
 
-        non_content_paths = tuple(filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))
-        self.files_to_ignore = self._glob(non_content_paths) - self.files_triggering_sanity_tests
+        non_packs_folders = tuple(filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))
+        content_root_files = set(filter(lambda f: f.is_file(), self.content_path.iterdir()))
+        self.files_to_ignore = \
+            self._glob(non_packs_folders) - self.files_triggering_sanity_tests - content_root_files
 
         self.id_set_path = PathManager.ARTIFACTS_PATH / 'id_set.json'
         self.conf_path = PathManager.ARTIFACTS_PATH / 'conf.json'

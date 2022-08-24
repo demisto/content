@@ -686,7 +686,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20220821')
+    logger.info('TestCollector v20220824')
     logger.info('CONTRIB_BRANCH=' + os.getenv('CONTRIB_BRANCH', ''))
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
