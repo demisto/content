@@ -563,7 +563,7 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
         fetch_incidents(
             client=client,
             max_results=1,
-            last_run=demisto.getLastRun(),
+            last_run={},
             first_fetch_time=first_fetch_time,
             alert_status=alert_status,
             min_severity=min_severity,
