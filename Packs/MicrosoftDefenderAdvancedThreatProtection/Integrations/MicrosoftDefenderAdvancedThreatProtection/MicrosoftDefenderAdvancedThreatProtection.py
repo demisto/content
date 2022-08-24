@@ -61,6 +61,7 @@ HEALTH_STATUS_TO_ENDPOINT_STATUS = {
     "Unknown": None,
 }
 
+SECURITY_GCC_RESOURCE = 'https://api-gcc-securitycenter.microsoft.us'
 SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
 SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
 SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH = 'https://api.securitycenter.microsoft.com/api/indicators/import'
@@ -1106,7 +1107,7 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
+                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
@@ -1116,17 +1117,17 @@ class MsClient:
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
         self.max_alerts_to_fetch = max_fetch
+        self.is_gcc = is_gcc
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
             should_use_security_center (bool): whether to use the security center's scope and resource
         """
-        if kwargs['should_use_security_center']:
+        if kwargs.pop('should_use_security_center', None):
             kwargs['scope'] = Scopes.security_center_apt_service
-            kwargs['resource'] = SECURITY_CENTER_RESOURCE
+            kwargs['resource'] = {True: SECURITY_GCC_RESOURCE, False: SECURITY_CENTER_RESOURCE}[self.is_gcc]
         else:
             kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
-        kwargs.pop('should_use_security_center')
         return self.ms_client.http_request(*args, **kwargs)
 
     def offboard_machine(self, machine_id, comment):
@@ -4529,9 +4530,8 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     Args:
         args: the arguments required to the command being called, under cmd
         cmd: the command to schedule by after the current command
-        upload_function: the function that initiates the uploading to the API
         results_function: the function that retrieves the status of the previously initiated upload process
-        uploaded_item: the type of item being uploaded
+        client: a Microsoft Client object
 
     Returns:
 
@@ -4842,6 +4842,7 @@ def main():  # pragma: no cover
     max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
+    is_gcc = params.get('is_gcc', False)
 
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
@@ -4861,7 +4862,8 @@ def main():  # pragma: no cover
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
-            max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key
+            max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+            is_gcc=is_gcc,
         )
         if command == 'test-module':
             test_module(client)
