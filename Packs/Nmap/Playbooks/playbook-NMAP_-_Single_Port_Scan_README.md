@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-This playbook does not use any integrations.
+* NMAP
 
 ### Scripts
 * Set
@@ -22,7 +22,7 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | RemoteIP | Remote IP address in incident/alert |  | Required |
 | RemotePort | Remote port number in incident/alert |  | Required |
-| NMAPOptions | options to be used for nmap scan \(we do "-p&amp;lt;RemotePort&amp;gt;" by default and recommend using "-Pn" to skip ping check\) |  | Optional |
+| NMAPOptions | options to be used for nmap scan \(we do "-p\<RemotePort\>" by default and recommend using "-Pn" to skip ping check\) |  | Optional |
 
 ## Playbook Outputs
 ---
