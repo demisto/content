@@ -111,11 +111,11 @@ class CollectionResult:
 
         if test:
             self.tests = {test}
-            logger.info(f'collected {test=}, {reason} ({reason_description})')
+            logger.info(f'collected {test=}, {reason=} ({reason_description}), {version_range=}')
 
         if pack:
             self.packs = {pack}
-            logger.info(f'collected {pack=}, {reason} ({reason_description})')
+            logger.info(f'collected {pack=}, {reason=} ({reason_description}), {version_range=}')
 
     @staticmethod
     def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
@@ -257,12 +257,13 @@ class TestCollector(ABC):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
-    def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str) -> CollectionResult:
+    def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str,
+                      content_item_range: Optional[VersionRange] = None) -> CollectionResult:
         return CollectionResult(
             test=None,
             pack=pack_name,
             reason=reason,
-            version_range=PACK_MANAGER[pack_name].version_range,
+            version_range=PACK_MANAGER[pack_name].version_range | content_item_range,
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,

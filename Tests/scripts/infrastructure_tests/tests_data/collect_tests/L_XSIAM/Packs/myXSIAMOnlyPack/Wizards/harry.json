@@ -1,0 +1,8 @@
+{
+  "fromversion": "6.9.0",
+  "toversion": "6.9.0",
+  "wizard": "yer a, harry",
+  "tests": [
+    "myTestPlaybook"
+  ]
+}
