@@ -344,7 +344,7 @@ class BranchTestCollector(TestCollector):
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
                     raise ValueError(
-                        f'integration id={yml.id_} is both '
+                        f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is both '
                         f'(1) missing from conf.json, and'
                         ' (2) does not explicitly state `tests: no tests`. '
                         'Please change one of these to allow test collection.'
