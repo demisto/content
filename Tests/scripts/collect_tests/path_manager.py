@@ -44,7 +44,8 @@ class PathManager:
         log_files('files triggering sanity tests', self.files_triggering_sanity_tests)
 
         content_root_files = set(filter(lambda f: f.is_file(), self.content_path.iterdir()))
-        non_content_files = self._glob(filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))
+        non_content_files = self._glob(
+            filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))  # type: ignore[union-attr]
         non_content = non_content_files | content_root_files
         log_files('non-content files (not collected)', non_content_files)
 
