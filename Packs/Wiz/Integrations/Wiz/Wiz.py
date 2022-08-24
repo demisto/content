@@ -26,9 +26,10 @@ def get_token():
     audience = ''
 
     # check Wiz portal location - commercial or gov
-    if 'auth.app.wiz.io' in AUTH_E or 'auth.gov.wiz.io' in AUTH_E or 'auth.test.wiz.io' in AUTH_E: # remove last bit
+    # remove last bit
+    if 'auth.app.wiz.io' in AUTH_E or 'auth.gov.wiz.io' in AUTH_E or 'auth.test.wiz.io' in AUTH_E:  # pragma: no cover
         audience = 'wiz-api'
-    elif 'auth.wiz.io' in AUTH_E or 'auth0.gov.wiz.io' in AUTH_E or 'auth0.test.wiz.io' in AUTH_E: # remove last bit
+    elif 'auth.wiz.io' in AUTH_E or 'auth0.gov.wiz.io' in AUTH_E or 'auth0.test.wiz.io' in AUTH_E:  # pragma: no cover
         audience = 'beyond-api'
     else:
         raise Exception('Not a valid authentication endpoint')
