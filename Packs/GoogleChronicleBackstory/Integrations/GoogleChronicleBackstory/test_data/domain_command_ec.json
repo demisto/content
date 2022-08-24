@@ -3,7 +3,8 @@
     "Indicator": "test.com",
     "Type": "domain",
     "Vendor": "Google Chronicle Backstory",
-    "Score": 3
+    "Score": 3,
+    "Reliability": "B - Usually reliable"
   },
   "Domain(val.Name && val.Name == obj.Name)": {
     "Name": "test.com",
@@ -33,12 +34,11 @@
       {
         "Address": [
           {
-            "Domain": "puknews.com",
-            "Port": ""
+            "Domain": "puknews.com"
           },
           {
             "IpAddress": "0.0.0.0",
-            "Port": ""
+            "Port": [44902,65178]
           }
         ],
         "Category": "BlockedObject",
