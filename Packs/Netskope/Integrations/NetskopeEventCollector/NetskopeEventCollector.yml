@@ -1,0 +1,88 @@
+category: Analytics & SIEM
+commonfields:
+  id: NetskopeEventCollector
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API token
+  hidden: false
+  hiddenusername: true
+  name: credentials
+  required: true
+  type: 9
+- additionalinfo: The API version to use (v1 or v2).
+  defaultvalue: v2
+  display: API Version
+  hidden: false
+  name: api_version
+  required: false
+  type: 15
+  options:
+    - v1
+    - v2
+- additionalinfo: 'For API version v1, the first fetch can only be: 60 Minutes, 24
+    Hours, 7 days, 30 days, 60 days and 90 days.'
+  defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events). For more information about event types see the help section.
+  defaultvalue: '1000'
+  display: Max Fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Netskope Event Collector integration.
+display: Netskope Event Collector
+name: NetskopeEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display the events.
+      isArray: false
+      name: should_push_events
+      predefined:
+        - 'true'
+        - 'false'
+      required: true
+    - default: false
+      description: The maximum number of alerts to return (maximum value - 10000).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns events extracted from SaaS traffic and or logs.
+    execution: false
+    name: netskope-get-events
+  dockerimage: demisto/python3:3.10.5.31928
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+  isfetchevents: true
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
