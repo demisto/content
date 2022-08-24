@@ -2345,7 +2345,7 @@ def test_gcc_resource(mocker, is_gcc: bool):
 @pytest.mark.parametrize('page_num, page_size, res',
                          [('5', '10600', {'$filter': 'filter', '$skip': '40000', '$top': '10000'}),
                           ('3', '50', {'$filter': 'filter', '$skip': '100', '$top': '50'}),
-                          (None, '3', {'$filter': 'filter', '$skip': '0', '$top': '3'})
+                          ('1', '3', {'$filter': 'filter', '$skip': '0', '$top': '3'})
                           ]
                          )
 def test_get_machines(mocker, page_num, page_size, res):
