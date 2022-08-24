@@ -79,7 +79,7 @@ def create_incidents_human_readable(human_readable_message, incidents_list):
 
 def list_incidents_command(client, args):
     """ Retrieves incidents from ProofPoint API """
-    limit = int(args.pop('limit'))
+    limit = arg_to_number(args.pop('limit'))
 
     raw_response = client.get_incidents_request(args)
 
@@ -265,7 +265,7 @@ def get_incidents_batch_by_time_request(client, params):
     return incidents_list_limit
 
 
-def fetch_incidents_command(client, first_fetch, last_run, fetch_limit, fetch_delta, incidents_states):
+def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta, incidents_states):
     """
         Fetches incidents from the ProofPoint API.
     """
@@ -368,7 +368,7 @@ def main():  # pragma: no cover
             else:  # command == 'fetch-events':
                 should_push_events = True
                 last_run = demisto.getLastRun()
-                events, last_run = fetch_incidents_command(
+                events, last_run = fetch_events_command(
                     client,
                     first_fetch,
                     last_run,

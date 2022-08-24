@@ -1,18 +1,26 @@
 {
-  "safenet_trusted_access_raw": {
+  "proofpoint_threat_response_raw": {
     "id": {
       "type": "string",
       "is_array": false
     },
-    "timeStamp": {
+    "created_at": {
       "type": "string",
       "is_array": false
     },
-    "context": {
+    "category": {
       "type": "string",
       "is_array": false
     },
-    "details": {
+    "severity": {
+      "type": "string",
+      "is_array": false
+    },
+    "users": {
+      "type": "string",
+      "is_array": false
+    },
+    "events": {
       "type": "string",
       "is_array": false
     }

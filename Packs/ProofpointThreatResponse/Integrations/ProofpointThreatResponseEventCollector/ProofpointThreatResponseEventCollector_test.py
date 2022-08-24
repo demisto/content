@@ -1,9 +1,9 @@
 import json
 from CommonServerPython import *
-from ProofpointTRAPEventCollector import fetch_incidents_command, TIME_FORMAT, Client
+from ProofpointThreatResponseEventCollector import fetch_events_command, TIME_FORMAT, Client
 
 
-def test_search_quarantine_command(mocker, requests_mock):
+def test_fetch_events_command(requests_mock):
     """
     Given:
     - Message ID, Recipient and Delivery Time (Email recived time)
@@ -23,8 +23,8 @@ def test_search_quarantine_command(mocker, requests_mock):
                     headers={},
                     proxy=False)
     first_fetch, _ = parse_date_range('3 days', date_format=TIME_FORMAT)
-    res = fetch_incidents_command(client=client, first_fetch=first_fetch, last_run={},
-                                  fetch_limit='100',
-                                  fetch_delta='6 hours',
-                                  incidents_states=['open'])
-    assert True
+    res = fetch_events_command(client=client, first_fetch=first_fetch, last_run={},
+                               fetch_limit='100',
+                               fetch_delta='6 hours',
+                               incidents_states=['open', 'new'])
+    assert res
