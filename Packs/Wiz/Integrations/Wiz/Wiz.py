@@ -161,6 +161,7 @@ def fetch_issues(max_fetch):
                 name
                 query
                 description
+                resolutionRecommendation
             }
             createdAt
             updatedAt
