@@ -375,7 +375,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xmcyberSecurityScore",
+                                "fieldId": "xmcybersecurityscore",
                                 "height": 53,
                                 "id": "1010b910-0b3f-11ed-8ea9-3545be33955a",
                                 "index": 1,
@@ -384,7 +384,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xmcyberSecurityScoreTrend",
+                                "fieldId": "xmcybersecurityscoretrend",
                                 "height": 53,
                                 "id": "125c2fb0-0b3f-11ed-8ea9-3545be33955a",
                                 "index": 2,
@@ -393,7 +393,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xmcyberSecurityScoreGrade",
+                                "fieldId": "xmcybersecurityscoregrade",
                                 "height": 22,
                                 "id": "15a39280-0b3f-11ed-8ea9-3545be33955a",
                                 "index": 3,
