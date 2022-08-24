@@ -16,22 +16,33 @@ HEADERS = dict()
 HEADERS["Content-Type"] = "application/json"
 TOKEN = None
 URL = ''
+AUTH_E = ''
 
 
 def get_token():
     """
     Retrieve the token using the credentials
     """
+    audience = ''
+
+    # check Wiz portal location - commercial or gov
+    if 'auth.app.wiz.io' in AUTH_E or 'auth.gov.wiz.io' in AUTH_E or 'auth.test.wiz.io' in AUTH_E: # remove last bit
+        audience = 'wiz-api'
+    elif 'auth.wiz.io' in AUTH_E or 'auth0.gov.wiz.io' in AUTH_E or 'auth0.test.wiz.io' in AUTH_E: # remove last bit
+        audience = 'beyond-api'
+    else:
+        raise Exception('Not a valid authentication endpoint')
+
     demisto_params = demisto.params()
     said = demisto_params.get('credentials').get('identifier')
     sasecret = demisto_params.get('credentials').get('password')
     auth_payload = parse.urlencode({
         'grant_type': 'client_credentials',
-        'audience': 'beyond-api',
+        'audience': audience,
         'client_id': said,
         'client_secret': sasecret
     })
-    response = requests.post("https://auth.wiz.io/oauth/token", headers=HEADERS_AUTH, data=auth_payload)
+    response = requests.post(AUTH_E, headers=HEADERS_AUTH, data=auth_payload)
 
     if response.status_code != requests.codes.ok:
         raise Exception('Error authenticating to Wiz [%d] - %s' % (response.status_code, response.text))
@@ -150,6 +161,7 @@ def fetch_issues(max_fetch):
                 name
                 query
                 description
+                resolutionRecommendation
             }
             createdAt
             updatedAt
@@ -1366,8 +1378,10 @@ def get_project_team(project_name):
 
 def main():
     global URL
+    global AUTH_E
     params = demisto.params()
     URL = params.get('api_endpoint')
+    AUTH_E = params.get('auth_endpoint')
     try:
         command = demisto.command()
         if command == 'test-module':
@@ -1496,6 +1510,106 @@ def main():
             resource = get_resource(resource_id=demisto.args()['resource_id'])
             command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", outputs=resource,
                                             raw_response=resource)
+            return_results(command_result)
+
+        elif command == 'wiz-reject-issue':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get('issue_id')
+            reject_reason = demisto_args.get('reject_reason')
+            reject_note = demisto_args.get('reject_note')
+            issue_response = reject_issue(
+                issue_id=issue_id,
+                reject_reason=reject_reason,
+                reject_note=reject_note
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-reopen-issue':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get('issue_id')
+            reopen_note = demisto_args.get('reopen_note')
+            issue_response = reopen_issue(
+                issue_id=issue_id,
+                reopen_note=reopen_note
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-issue-in-progress':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get('issue_id')
+            issue_response = issue_in_progress(
+                issue_id=issue_id
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-set-issue-note':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get('issue_id')
+            note = demisto_args.get('note')
+            issue_response = set_issue_note(
+                issue_id=issue_id,
+                note=note
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-clear-issue-note':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get('issue_id')
+            issue_response = clear_issue_note(
+                issue_id=issue_id
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-get-issue-evidence':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get('issue_id')
+            issue_response = get_issue_evidence(
+                issue_id=issue_id
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-set-issue-due-date':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get('issue_id')
+            due_at = demisto_args.get('due_at')
+            issue_response = set_issue_due_date(
+                issue_id=issue_id,
+                due_at=due_at
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-clear-issue-due-date':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get('issue_id')
+            issue_response = clear_issue_due_date(
+                issue_id=issue_id
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-rescan-machine-disk':
+            demisto_args = demisto.args()
+            vm_id = demisto_args.get('vm_id')
+            issue_response = rescan_machine_disk(
+                vm_id=vm_id
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-get-project-team':
+            demisto_args = demisto.args()
+            project_name = demisto_args.get('project_name')
+            projects_response = get_project_team(
+                project_name=project_name
+            )
+            command_result = CommandResults(readable_output=projects_response, raw_response=projects_response)
             return_results(command_result)
 
         elif command == 'wiz-reject-issue':
