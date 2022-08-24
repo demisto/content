@@ -89,6 +89,81 @@
                 "id": "XXX",
                 "threat_details": "Gen:Variant.Ulise.315566 (B)",
                 "scan_result": "INFECTED"
+            },
+            "1": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "2": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "3": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "4": {
+                "id": "XXX",
+                "threat_details": "WinGo/TrojanDownloader.Agent.BD trojan",
+                "scan_result": "INFECTED"
+            },
+            "5": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "6": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "7": {
+                "id": "XXX",
+                "threat_details": "Trojan.Donut.Win64.545",
+                "scan_result": "INFECTED"
+            },
+            "8": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "9": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "10": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "11": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "12": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "13": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "14": {
+                "id": "XXX",
+                "threat_details": "W64/Donut.B.gen!Eldorado",
+                "scan_result": "INFECTED"
+            },
+            "15": {
+                "id": "XXX",
+                "threat_details": "Trojan.Win64.Crypt",
+                "scan_result": "INFECTED"
             }
         },
         "magic_details": "PE32+ executable (DLL) (GUI) x86-64, for MS Windows",

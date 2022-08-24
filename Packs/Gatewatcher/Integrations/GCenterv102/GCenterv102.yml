@@ -196,6 +196,141 @@ script:
     - contextPath: GCenter.Alerts.List.malware.engines_report.0.scan_result
       description: Analysis Result
       type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.1.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.1.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.1.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.2.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.2.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.2.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.3.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.3.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.3.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.4.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.4.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.4.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.5.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.5.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.5.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.6.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.6.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.6.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.7.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.7.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.7.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.8.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.8.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.8.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.9.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.9.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.9.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.10.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.10.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.10.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.11.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.11.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.11.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.12.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.12.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.12.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.13.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.13.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.13.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.14.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.14.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.14.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.15.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.15.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.List.malware.engines_report.15.scan_result
+      description: Analysis Result
+      type: String
     - contextPath: GCenter.Alerts.List.malware.magic_details
       description: The File Magic
       type: String
@@ -402,6 +537,141 @@ script:
       description: The Threat Found By The Engine
       type: String
     - contextPath: GCenter.Alerts.Single.malware.engines_report.0.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.1.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.1.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.1.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.2.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.2.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.2.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.3.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.3.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.3.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.4.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.4.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.4.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.5.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.5.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.5.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.6.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.6.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.6.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.7.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.7.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.7.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.8.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.8.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.8.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.9.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.9.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.9.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.10.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.10.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.10.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.11.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.11.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.11.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.12.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.12.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.12.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.13.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.13.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.13.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.14.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.14.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.14.scan_result
+      description: Analysis Result
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.15.id
+      description: The Hash Pf The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.15.threat_details
+      description: The Threat Found By The Engine
+      type: String
+    - contextPath: GCenter.Alerts.Single.malware.engines_report.15.scan_result
       description: Analysis Result
       type: String
     - contextPath: GCenter.Alerts.Single.malware.magic_details
@@ -843,7 +1113,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
 fromversion: 6.2.0
 tests:
 - No tests

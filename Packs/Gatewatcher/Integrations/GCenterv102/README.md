@@ -92,6 +92,51 @@ There are no input arguments for this command.
 | GCenter.Alerts.List.malware.engines_report.0.id | String | The Hash Pf The Engine | 
 | GCenter.Alerts.List.malware.engines_report.0.threat_details | String | The Threat Found By The Engine | 
 | GCenter.Alerts.List.malware.engines_report.0.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.1.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.1.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.1.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.2.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.2.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.2.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.3.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.3.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.3.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.4.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.4.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.4.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.5.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.5.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.5.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.6.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.6.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.6.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.7.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.7.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.7.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.8.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.8.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.8.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.9.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.9.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.9.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.10.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.10.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.10.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.11.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.11.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.11.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.12.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.12.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.12.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.13.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.13.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.13.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.14.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.14.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.14.scan_result | String | Analysis Result | 
+| GCenter.Alerts.List.malware.engines_report.15.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.List.malware.engines_report.15.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.List.malware.engines_report.15.scan_result | String | Analysis Result | 
 | GCenter.Alerts.List.malware.magic_details | String | The File Magic | 
 | GCenter.Alerts.List.malware.total_found | String | The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines | 
 | GCenter.Alerts.List.sigflow.alert.action | String | Action | 
@@ -231,7 +276,7 @@ There are no input arguments for this command.
 >### Elasticsearch alerts list
 >|alert_type|app_proto|dest_geoip|dest_ip|dest_port|domain_name|flow_id|gcap|host|id|malware|matched_event|powershell|probability|proto|retrohunt|severity|sha256|shellcode|sigflow|src_geoip|src_ip|src_port|state|timestamp_analyzed|timestamp_detected|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| malware | http |  | 192.168.0.1 | 35168 | nzpzxcox.com | 1544096072809159 | test.domain.com | test.domain.com | 45e6ed3c-1082-4d33-9514-162748d7d41f | analyzed_clean: 11<br>analyzed_infected: 5<br>analyzed_suspicious: 0<br>analyzed_other: 0<br>analyzed_error: 0<br>code: 1<br>def_time: 2022-05-31T21:45:33Z<br>scan_time: 3785<br>threats_found: Infected : Gen:Variant.Ulise.315566 (B)<br>reporting_token: No GBOX<br>engines_report: {"0": {"id": "XXX", "threat_details": "Gen:Variant.Ulise.315566 (B)", "scan_result": "INFECTED"}}<br>magic_details: PE32+ executable (DLL) (GUI) x86-64, for MS Windows<br>total_found: 5/16 | 3d35e491-cfc8-4271-815b-ff018a036c7c | file_id: 06-08-2022T11:37:11_1348935773_gcap-dean.org<br>scores: {"proba_obfuscated": 0.2, "analysis": 241, "analysis_detailed": {}} | 0.55555555 | TCP | timestamp_package: 2022-06-06T22:00:01.632829+0000<br>ioc_creation_date: 2022-05-27T18:37:30+00:00<br>ioc_updated_date: 2022-06-06T21:05:12+00:00<br>description: 'test.domain.com' is a Suspicious Host.<br>ioc_type: Host<br>ioc_value: test.domain.com<br>matched_app_proto: http<br>matched_event_type: http<br>meta_data: {}<br>targeted_organizations: <br>targeted_platforms: <br>targeted_sectors: <br>threat_actor: <br>external_links: <br>relations: <br>campaigns: <br>categories: <br>families: <br>vulnerabilities: <br>ttp: <br>case_id: 1746d38d-58f3-4b43-b4ee-6f0b43527d49<br>ioc_id: 183abf8e-b0a5-4ed0-a93f-e5d7927648b8<br>risk: Suspicious<br>usage_mode: hunting<br>tlp: green | 1 | f16d19ac9697d9892b0f910601a61d041d64 | file_id: file_id<br>encodings: {'name': 'Bloxor', 'count': 2}<br>calls: {'call': 'ws2_32_recv', 'args': "{'sockfd': 'Socket_1-bind (4)', 'backlog': 19103712}", 'ret': '90137289', 'index': 0} | alert: {"action": "allowed", "signature_id": "202", "gid": "1", "category": "A Network Trojan was detected"}<br>packet: XXXXXXXXXXXXXXXXXX<br>in_iface: mon5<br>stream: 0<br>payload: XXXXXXXXXXXXXXXXXX<br>payload_printable: XXXXXXXXXXXXXXXXXX<br>extra_keys: {} |  | 192.168.0.2 | 80 | Infected | 2022-03-21T13:58:42.742Z | 2022-03-21T11:34:47.000Z | malcore |
+>| malware | http |  | 192.168.0.1 | 35168 | nzpzxcox.com | 1544096072809159 | test.domain.com | test.domain.com | 45e6ed3c-1082-4d33-9514-162748d7d41f | analyzed_clean: 11<br>analyzed_infected: 5<br>analyzed_suspicious: 0<br>analyzed_other: 0<br>analyzed_error: 0<br>code: 1<br>def_time: 2022-05-31T21:45:33Z<br>scan_time: 3785<br>threats_found: Infected : Gen:Variant.Ulise.315566 (B)<br>reporting_token: No GBOX<br>engines_report: {"0": {"id": "XXX", "threat_details": "Gen:Variant.Ulise.315566 (B)", "scan_result": "INFECTED"}, "1": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "2": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "3": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "4": {"id": "XXX", "threat_details": "WinGo/TrojanDownloader.Agent.BD trojan", "scan_result": "INFECTED"}, "5": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "6": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "7": {"id": "XXX", "threat_details": "Trojan.Donut.Win64.545", "scan_result": "INFECTED"}, "8": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "9": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "10": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "11": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "12": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "13": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "14": {"id": "XXX", "threat_details": "W64/Donut.B.gen!Eldorado", "scan_result": "INFECTED"}, "15": {"id": "XXX", "threat_details": "Trojan.Win64.Crypt", "scan_result": "INFECTED"}}<br>magic_details: PE32+ executable (DLL) (GUI) x86-64, for MS Windows<br>total_found: 5/16 | 3d35e491-cfc8-4271-815b-ff018a036c7c | file_id: 06-08-2022T11:37:11_1348935773_gcap-dean.org<br>scores: {"proba_obfuscated": 0.2, "analysis": 241, "analysis_detailed": {}} | 0.55555555 | TCP | timestamp_package: 2022-06-06T22:00:01.632829+0000<br>ioc_creation_date: 2022-05-27T18:37:30+00:00<br>ioc_updated_date: 2022-06-06T21:05:12+00:00<br>description: 'test.domain.com' is a Suspicious Host.<br>ioc_type: Host<br>ioc_value: test.domain.com<br>matched_app_proto: http<br>matched_event_type: http<br>meta_data: {}<br>targeted_organizations: <br>targeted_platforms: <br>targeted_sectors: <br>threat_actor: <br>external_links: <br>relations: <br>campaigns: <br>categories: <br>families: <br>vulnerabilities: <br>ttp: <br>case_id: 1746d38d-58f3-4b43-b4ee-6f0b43527d49<br>ioc_id: 183abf8e-b0a5-4ed0-a93f-e5d7927648b8<br>risk: Suspicious<br>usage_mode: hunting<br>tlp: green | 1 | f16d19ac9697d9892b0f910601a61d041d64 | file_id: file_id<br>encodings: {'name': 'Bloxor', 'count': 2}<br>calls: {'call': 'ws2_32_recv', 'args': "{'sockfd': 'Socket_1-bind (4)', 'backlog': 19103712}", 'ret': '90137289', 'index': 0} | alert: {"action": "allowed", "signature_id": "202", "gid": "1", "category": "A Network Trojan was detected"}<br>packet: XXXXXXXXXXXXXXXXXX<br>in_iface: mon5<br>stream: 0<br>payload: XXXXXXXXXXXXXXXXXX<br>payload_printable: XXXXXXXXXXXXXXXXXX<br>extra_keys: {} |  | 192.168.0.2 | 80 | Infected | 2022-03-21T13:58:42.742Z | 2022-03-21T11:34:47.000Z | malcore |
 
 ### gw-get-alert
 ***
@@ -308,6 +353,51 @@ Get an alert by it's uid
 | GCenter.Alerts.Single.malware.engines_report.0.id | String | The Hash Pf The Engine | 
 | GCenter.Alerts.Single.malware.engines_report.0.threat_details | String | The Threat Found By The Engine | 
 | GCenter.Alerts.Single.malware.engines_report.0.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.1.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.1.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.1.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.2.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.2.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.2.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.3.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.3.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.3.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.4.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.4.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.4.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.5.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.5.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.5.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.6.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.6.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.6.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.7.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.7.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.7.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.8.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.8.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.8.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.9.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.9.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.9.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.10.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.10.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.10.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.11.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.11.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.11.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.12.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.12.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.12.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.13.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.13.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.13.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.14.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.14.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.14.scan_result | String | Analysis Result | 
+| GCenter.Alerts.Single.malware.engines_report.15.id | String | The Hash Pf The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.15.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alerts.Single.malware.engines_report.15.scan_result | String | Analysis Result | 
 | GCenter.Alerts.Single.malware.magic_details | String | The File Magic | 
 | GCenter.Alerts.Single.malware.total_found | String | The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines | 
 | GCenter.Alerts.Single.sigflow.alert.action | String | Action | 
@@ -445,7 +535,7 @@ Get an alert by it's uid
 >### Elasticsearch alert entry
 >|alert_type|app_proto|dest_geoip|dest_ip|dest_port|domain_name|flow_id|gcap|host|id|malware|matched_event|powershell|probability|proto|retrohunt|severity|sha256|shellcode|sigflow|src_geoip|src_ip|src_port|state|timestamp_analyzed|timestamp_detected|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| malware | http |  | 192.168.0.1 | 35168 | nzpzxcox.com | 1544096072809159 | test.domain.com | test.domain.com | 45e6ed3c-1082-4d33-9514-162748d7d41f | analyzed_clean: 11<br>analyzed_infected: 5<br>analyzed_suspicious: 0<br>analyzed_other: 0<br>analyzed_error: 0<br>code: 1<br>def_time: 2022-05-31T21:45:33Z<br>scan_time: 3785<br>threats_found: Infected : Gen:Variant.Ulise.315566 (B)<br>reporting_token: No GBOX<br>engines_report: {"0": {"id": "XXX", "threat_details": "Gen:Variant.Ulise.315566 (B)", "scan_result": "INFECTED"}}<br>magic_details: PE32+ executable (DLL) (GUI) x86-64, for MS Windows<br>total_found: 5/16 | 3d35e491-cfc8-4271-815b-ff018a036c7c | file_id: 06-08-2022T11:37:11_1348935773_gcap-dean.org<br>scores: {"proba_obfuscated": 0.2, "analysis": 241, "analysis_detailed": {}} | 0.55555555 | TCP | timestamp_package: 2022-06-06T22:00:01.632829+0000<br>ioc_creation_date: 2022-05-27T18:37:30+00:00<br>ioc_updated_date: 2022-06-06T21:05:12+00:00<br>description: 'test.domain.com' is a Suspicious Host.<br>ioc_type: Host<br>ioc_value: test.domain.com<br>matched_app_proto: http<br>matched_event_type: http<br>meta_data: {}<br>targeted_organizations: <br>targeted_platforms: <br>targeted_sectors: <br>threat_actor: <br>external_links: <br>relations: <br>campaigns: <br>categories: <br>families: <br>vulnerabilities: <br>ttp: <br>case_id: 1746d38d-58f3-4b43-b4ee-6f0b43527d49<br>ioc_id: 183abf8e-b0a5-4ed0-a93f-e5d7927648b8<br>risk: Suspicious<br>usage_mode: hunting<br>tlp: green | 1 | f16d19ac9697d9892b0f910601a61d041d64 | file_id: file_id<br>encodings: {'name': 'Bloxor', 'count': 2}<br>calls: {'call': 'ws2_32_recv', 'args': "{'sockfd': 'Socket_1-bind (4)', 'backlog': 19103712}", 'ret': '90137289', 'index': 0} | alert: {"action": "allowed", "signature_id": "202", "gid": "1", "category": "A Network Trojan was detected"}<br>packet: XXXXXXXXXXXXXXXXXX<br>in_iface: mon5<br>stream: 0<br>payload: XXXXXXXXXXXXXXXXXX<br>payload_printable: XXXXXXXXXXXXXXXXXX<br>extra_keys: {} |  | 192.168.0.2 | 80 | Infected | 2022-03-21T13:58:42.742Z | 2022-03-21T11:34:47.000Z | malcore |
+>| malware | http |  | 192.168.0.1 | 35168 | nzpzxcox.com | 1544096072809159 | test.domain.com | test.domain.com | 45e6ed3c-1082-4d33-9514-162748d7d41f | analyzed_clean: 11<br>analyzed_infected: 5<br>analyzed_suspicious: 0<br>analyzed_other: 0<br>analyzed_error: 0<br>code: 1<br>def_time: 2022-05-31T21:45:33Z<br>scan_time: 3785<br>threats_found: Infected : Gen:Variant.Ulise.315566 (B)<br>reporting_token: No GBOX<br>engines_report: {"0": {"id": "XXX", "threat_details": "Gen:Variant.Ulise.315566 (B)", "scan_result": "INFECTED"}, "1": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "2": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "3": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "4": {"id": "XXX", "threat_details": "WinGo/TrojanDownloader.Agent.BD trojan", "scan_result": "INFECTED"}, "5": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "6": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "7": {"id": "XXX", "threat_details": "Trojan.Donut.Win64.545", "scan_result": "INFECTED"}, "8": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "9": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "10": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "11": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "12": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "13": {"id": "XXX", "threat_details": "", "scan_result": "CLEAN"}, "14": {"id": "XXX", "threat_details": "W64/Donut.B.gen!Eldorado", "scan_result": "INFECTED"}, "15": {"id": "XXX", "threat_details": "Trojan.Win64.Crypt", "scan_result": "INFECTED"}}<br>magic_details: PE32+ executable (DLL) (GUI) x86-64, for MS Windows<br>total_found: 5/16 | 3d35e491-cfc8-4271-815b-ff018a036c7c | file_id: 06-08-2022T11:37:11_1348935773_gcap-dean.org<br>scores: {"proba_obfuscated": 0.2, "analysis": 241, "analysis_detailed": {}} | 0.55555555 | TCP | timestamp_package: 2022-06-06T22:00:01.632829+0000<br>ioc_creation_date: 2022-05-27T18:37:30+00:00<br>ioc_updated_date: 2022-06-06T21:05:12+00:00<br>description: 'test.domain.com' is a Suspicious Host.<br>ioc_type: Host<br>ioc_value: test.domain.com<br>matched_app_proto: http<br>matched_event_type: http<br>meta_data: {}<br>targeted_organizations: <br>targeted_platforms: <br>targeted_sectors: <br>threat_actor: <br>external_links: <br>relations: <br>campaigns: <br>categories: <br>families: <br>vulnerabilities: <br>ttp: <br>case_id: 1746d38d-58f3-4b43-b4ee-6f0b43527d49<br>ioc_id: 183abf8e-b0a5-4ed0-a93f-e5d7927648b8<br>risk: Suspicious<br>usage_mode: hunting<br>tlp: green | 1 | f16d19ac9697d9892b0f910601a61d041d64 | file_id: file_id<br>encodings: {'name': 'Bloxor', 'count': 2}<br>calls: {'call': 'ws2_32_recv', 'args': "{'sockfd': 'Socket_1-bind (4)', 'backlog': 19103712}", 'ret': '90137289', 'index': 0} | alert: {"action": "allowed", "signature_id": "202", "gid": "1", "category": "A Network Trojan was detected"}<br>packet: XXXXXXXXXXXXXXXXXX<br>in_iface: mon5<br>stream: 0<br>payload: XXXXXXXXXXXXXXXXXX<br>payload_printable: XXXXXXXXXXXXXXXXXX<br>extra_keys: {} |  | 192.168.0.2 | 80 | Infected | 2022-03-21T13:58:42.742Z | 2022-03-21T11:34:47.000Z | malcore |
 
 ### gw-es-query
 ***
