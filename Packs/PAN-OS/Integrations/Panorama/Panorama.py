@@ -910,7 +910,7 @@ def panorama_push_to_device_group_command(args: dict):
             push_output['Description'] = description
 
         return PollResult(
-            response=CommandResults(  # this is what the response will be in case job has finished
+            response=CommandResults(
                 outputs_prefix='Panorama.Push',
                 outputs_key_field='JobID',
                 outputs=push_output,
@@ -937,14 +937,15 @@ def panorama_push_to_device_group_command(args: dict):
                 readable_output=tableToMarkdown('Push to Device Group:', context_output, removeNull=True)
             )
         else:
-            push_output = result.get('response', {}).get('msg') or 'There are no changes to push.' # type: ignore[assignment]
+            push_output = CommandResults(
+                readable_output=result.get('response', {}).get('msg') or 'There are no changes to push.'
+            )
             continue_to_poll = False
 
         args_for_next_run = {
                 'push_job_id': job_id,
                 'polling': argToBoolean(args.get('polling', False)),
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
-                'timeout': arg_to_number(args.get('timeout', 120)),
                 'description': description
             }
 
