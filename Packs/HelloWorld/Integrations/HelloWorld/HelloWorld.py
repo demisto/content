@@ -256,6 +256,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
+DEFAULT_INDICATORS_THRESHOLD = 65
 HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 ''' CLIENT CLASS '''
@@ -1388,11 +1389,12 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == 'ip':
-            default_threshold_ip = arg_to_number(params.get('threshold_ip', '65'))
+            default_threshold_ip = arg_to_number(params.get('threshold_ip', '65')) or DEFAULT_INDICATORS_THRESHOLD
             return_results(ip_reputation_command(client, args, default_threshold_ip, reliability))
 
         elif command == 'domain':
-            default_threshold_domain = int(params.get('threshold_domain', '65'))
+            default_threshold_domain = \
+                arg_to_number(params.get('threshold_domain', '65')) or DEFAULT_INDICATORS_THRESHOLD
             return_results(domain_reputation_command(client, args, default_threshold_domain, reliability))
 
         elif command == 'helloworld-say-hello':
