@@ -14,3 +14,5 @@ This integration was integrated and tested with version 1.0 of Cisco Umbrella Cl
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cisco-umbrella-cloud-security)
