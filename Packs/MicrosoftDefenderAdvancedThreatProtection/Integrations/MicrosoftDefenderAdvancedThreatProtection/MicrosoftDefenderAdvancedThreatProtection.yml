@@ -110,13 +110,11 @@ configuration:
   required: false
   type: 0
 - display: Authorization code
-  displaypassword: Authorization code
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed
     Instructions (?) section
-  hiddenusername: true
   name: auth_code
   required: false
-  type: 9
+  type: 4
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
 display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection

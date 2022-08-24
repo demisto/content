@@ -1107,14 +1107,15 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 is_gcc: bool, grant_type: str, redirect_uri: str,
+                 is_gcc: bool, grant_type: str, redirect_uri: str, auth_code: str,
                  certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
-            # todo: scope, token_retrival?
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
             scope=Scopes.security_center_apt_service, certificate_thumbprint=certificate_thumbprint,
             private_key=private_key, grant_type=grant_type, redirect_uri=redirect_uri,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            auth_code=auth_code, resource=None if self_deployed else '',
         )
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
@@ -4834,8 +4835,8 @@ def main():  # pragma: no cover
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
     is_gcc = params.get('is_gcc', False)
-    auth_code = params.get('auth_code', {}).get('password', ''),
-    redirect_uri = params.get('redirect_uri', ''),
+    auth_code = params.get('auth_code')
+    redirect_uri = params.get('redirect_uri', '')
 
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
@@ -4862,11 +4863,12 @@ def main():  # pragma: no cover
     LOG(f'command is {command}')
     try:
         client = MsClient(
-            base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
-            proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
+            base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME,
+            verify=use_ssl, proxy=proxy, self_deployed=self_deployed,
+            alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc, grant_type=grant_type, redirect_uri=redirect_uri
+            is_gcc=is_gcc, grant_type=grant_type, redirect_uri=redirect_uri, auth_code=auth_code,
         )
         if command == 'test-module':
             test_module(client)
