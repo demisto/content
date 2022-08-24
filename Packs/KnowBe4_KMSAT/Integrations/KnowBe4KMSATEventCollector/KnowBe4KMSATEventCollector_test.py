@@ -78,9 +78,13 @@ def test_eliminate_duplicated_events(last_run, fetched_events, expected_filtered
     for event in filtered_events_list:
         assert event in expected_filtered_list_elements
 
+
 @pytest.mark.parametrize('last_run, events, expected_results', [
-    (),
-])
+    ({'latest_event_time': datetime.datetime(2020, 5, 17, 10, 5, 3)},
+     [{'occurred_time': datetime.datetime(2020, 5, 17, 12, 3, 1)}, {'occurred_time': datetime.datetime(2020, 5, 17, 9, 3, 1)}],
+     True), ({'latest_event_time': datetime.datetime(2020, 5, 17, 10, 5, 3)},
+             [{'occurred_time': datetime.datetime(2020, 5, 17, 12, 3, 1)},
+              {'occurred_time': datetime.datetime(2020, 5, 17, 11, 3, 1)}], False)])
 def test_check_if_last_run_reached(last_run, events, expected_results):
     """
     Given
