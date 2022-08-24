@@ -242,8 +242,8 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.J, (), (), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',)),
 
-     # Integration is changed but its test playbook is skipped
-     (MockerCases.K, (), (), None, XSOAR_BRANCH_ARGS,
+     # Integration is changed but its test playbook is skipped - pack should be collected, test should not.
+     (MockerCases.K, (), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',))
      ))
 def test_branch(
