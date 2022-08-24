@@ -37,7 +37,9 @@ IMG_FORMATS = ['jpg', 'jpeg', 'png', 'gif']
 
 
 def handle_error_read_only(fun, path, exp):
-
+    """
+    Handling errors that can be encountered in `shutil.rmtree()` execution.
+    """
     demisto.debug(exp)
 
     # Checking if the file is Read-Only
