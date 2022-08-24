@@ -1,5 +1,16 @@
 ## MISP Feed Help
 
+MISP Feed integration allows you to ingest feeds into TIM via MISP instance.
+To ingest feeds via MISP, one must first hold a MISP instance and have the proper credentials.
+
+To ingest specific feeds (Bambenek Consulting Feed etc.) directly to TIM without any authorization, you can use one of our dedicated feed content packs available in the marketplace. 
+
+If you wishes to ingest feeds via a URL, you could use one of the following content packs:
+CSV Feed
+JSON Feed
+Plain Text Feed
+or RSS Feed.
+
 How to configure the MISP Feed integration
 - Use your MISP instance URL as 'https://x.x.x.x'.
 - You can find your API key in **Global Actions** >**My Profile** >**Auth key**>. Click the eye symbol to view your key.

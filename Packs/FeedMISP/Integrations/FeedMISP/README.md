@@ -1,5 +1,15 @@
 Indicators feed from MISP.
 This integration was integrated and tested with version 1.0 of MISP Feed.
+
+MISP Feed integration allows you to ingest feeds into TIM via MISP instance.
+To ingest feeds via MISP, one must first hold a MISP instance and have the proper credentials.
+
+To ingest specific feeds (Bambenek Consulting Feed, BruteForceBlocker Feed, etc.) directly to TIM without any authorization, the customer can use one of our dedicated feed content packs available in the marketplace. 
+If you wishes to ingest feeds via a URL, you could use one of the following content packs:
+CSV Feed
+JSON Feed
+Plain Text Feed
+or RSS Feed.
 ## Configure MISP Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
