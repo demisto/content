@@ -40,6 +40,11 @@ google-cloud-bigquery = {version = "^3.2.0", optional = true}
 
 [tool.poetry.dev-dependencies]
 
+[tool.black]
+line-length = 130
+target-version = ['py38', 'py39', 'py310']
+
+
 [tool.poetry.extras]
 build = ["google-cloud-bigquery"]
 
