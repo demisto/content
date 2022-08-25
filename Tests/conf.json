@@ -5446,7 +5446,7 @@
         "TruSTAR",
         "VulnDB"
     ],
-    "popular_integrations": [
+    "nightly_packs": [
         "Common Scripts",
         "Common Playbooks",
         "Rasterize",

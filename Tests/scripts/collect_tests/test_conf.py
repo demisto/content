@@ -23,6 +23,7 @@ class TestConf(DictFileBased):
         self.skipped_integrations: dict[str, str] = self['skipped_integrations']
         self.private_tests: set[str] = set(self['private_tests'])
         self.nightly_integrations: set[str] = set(self['nightly_integrations'])
+        self.nightly_packs: set[str] = set(self['nightly_packs'])
 
         self.classifier_to_test: dict[TestConfItem, str] = {
             test.classifier: test.playbook_id
@@ -32,6 +33,8 @@ class TestConf(DictFileBased):
             test.incoming_mapper: test.playbook_id
             for test in self.tests if test.incoming_mapper
         }
+
+        self.non_api_tests = [test.playbook_id for test in self.tests if test.non_api]
 
     def _calculate_integration_to_tests(self) -> dict[str, list[str]]:
         result = defaultdict(list)
@@ -45,6 +48,10 @@ class TestConfItem(DictBased):
     def __init__(self, dict_: dict):
         super().__init__(dict_)
         self.playbook_id: str = self['playbookID']
+
+    @property
+    def non_api(self):
+        return self.get('non_api', False, warn_if_missing=False)
 
     @property
     def integrations(self) -> tuple[str]:

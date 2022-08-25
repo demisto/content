@@ -155,8 +155,12 @@ class CollectionResult:
         if pack:
             PACK_MANAGER.validate_pack(pack)
 
-            if is_nightly and pack not in conf.nightly_integrations:
+        if is_nightly:
+            if pack and pack not in conf.nightly_packs:
                 raise NonNightlyPackInNightlyBuildException(pack)
+
+            elif test and not test in conf.non_api_tests:
+                raise ApiTestInNightlyBuildException(test)
 
     @staticmethod
     def __empty_result() -> 'CollectionResult':
