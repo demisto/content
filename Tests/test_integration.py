@@ -301,7 +301,7 @@ def __create_incident_with_playbook(client: DefaultApi,
     create_incident_request.name = name
 
     try:
-        logging.debug(f'Creating incident {name=}, {playbook_id=}')
+        logging.debug(f'Creating incident {name=}, {playbook_id=}, {integrations=}')
         response = client.create_incident(create_incident_request=create_incident_request)
 
         try:
@@ -473,6 +473,7 @@ def check_integration(client, server_url, demisto_user, demisto_pass, integratio
         is_byoi = integration.get('byoi', True)
         validate_test = integration.get('validate_test', False)
 
+        logging_module.info(f'Checking integration {integration_name=}, {integration_instance_name=}, {validate_test=}')
         if is_mock_run:
             configure_proxy_unsecure(integration_params)
 
