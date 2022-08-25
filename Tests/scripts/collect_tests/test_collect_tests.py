@@ -27,6 +27,7 @@ Test Collection Unit-Test cases
 - `H` has a single file, that is not a content item, and find_type is mocked to test ONLY_INSTALL_PACK.
 - `I` has a single pack with two test playbooks, one of which is ignored in .pack_ignore.
 - `J` has a single pack with two integrations, with mySkippedIntegration being skipped in conf.json.
+- `K` has a single pack with two integrations, with mySkippedIntegration's TPB skipped in conf.json.
 """
 
 
@@ -77,6 +78,7 @@ class MockerCases:
     H = CollectTestsMocker(TEST_DATA / 'H')
     I_xsoar = CollectTestsMocker(TEST_DATA / 'I_xsoar')
     J = CollectTestsMocker(TEST_DATA / 'J')
+    K = CollectTestsMocker(TEST_DATA / 'K')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -236,6 +238,10 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      # Skipped integration changes - should not be collected
      (MockerCases.J, (), (), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',)),
+
+     # Integration is changed but its test playbook is skipped
+     (MockerCases.K, (), (), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',))
      ))
 def test_branch(
         monkeypatch,
@@ -254,18 +260,20 @@ def test_branch(
 
 
 ONLY_COLLECT_PACK_TYPES = {
-    # see following test docstring
+    # see docstring of the test using this set
     FileType.RELEASE_NOTES_CONFIG,
     FileType.RELEASE_NOTES,
     FileType.IMAGE,
     FileType.DESCRIPTION,
     FileType.METADATA,
+    FileType.RELEASE_NOTES_CONFIG,
     FileType.INCIDENT_TYPE,
     FileType.INCIDENT_FIELD,
     FileType.INDICATOR_FIELD,
     FileType.LAYOUT,
     FileType.WIDGET,
     FileType.DASHBOARD,
+    FileType.REPORT,
     FileType.PARSING_RULE,
     FileType.MODELING_RULE,
     FileType.CORRELATION_RULE,
@@ -279,17 +287,33 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.PRE_PROCESS_RULES,
     FileType.JOB,
     FileType.CONNECTION,
+    FileType.RELEASE_NOTES_CONFIG,
     FileType.XSOAR_CONFIG,
+    FileType.AUTHOR_IMAGE,
+    FileType.CHANGELOG,
+    FileType.DOC_IMAGE,
+    FileType.BUILD_CONFIG_FILE,
+    FileType.WIZARD,
+    FileType.TRIGGER,
+    FileType.LISTS,
+    FileType.CONF_JSON,
+    FileType.MODELING_RULE_SCHEMA,
+    FileType.LAYOUTS_CONTAINER,
 }
 
 
 def test_only_collect_pack_args():
     """
-    comparing the test_only_collect_packs arguments (ONLY_COLLECT_PACK_TYPES) match constants.ONLY_COLLECT_PACK_TYPES
+    comparing the test_only_collect_packs arguments (ONLY_INSTALL_PACK_FILE_TYPES) match constants.ONLY_COLLECT_PACK_TYPES
     Any change there will require a change here.
     """
-    from constants import ONLY_INSTALL_PACK
-    assert ONLY_COLLECT_PACK_TYPES == ONLY_INSTALL_PACK
+    from constants import ONLY_INSTALL_PACK_FILE_TYPES
+    assert ONLY_COLLECT_PACK_TYPES == ONLY_INSTALL_PACK_FILE_TYPES
+
+
+def test_only_collect_and_ignore_lists_are_disjoint():
+    from constants import IGNORED_FILE_TYPES, ONLY_INSTALL_PACK_FILE_TYPES
+    assert ONLY_INSTALL_PACK_FILE_TYPES.isdisjoint(IGNORED_FILE_TYPES)
 
 
 @pytest.mark.parametrize('file_type', ONLY_COLLECT_PACK_TYPES)
@@ -310,16 +334,13 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
 
 def test_invalid_content_item(mocker, monkeypatch):
     """
-    given:  a changed file that  _get_changed_files can not identify
+    given:  a changed file that _get_changed_files is not designed to collect
     when:   collecting tests
-    then:   make sure an appropriate error is raised
+    then:   make sure nothing is collected, and no exception is raised
     """
     # test mockers
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
 
-    with pytest.raises(ValueError) as e:
-        # noinspection PyTypeChecker
-        _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,
-              expected_tests=(), expected_packs=('myPack',), expected_machines=None,
-              collector_class_args=XSOAR_BRANCH_ARGS)
-    assert 'Unexpected file_type=None' in str(e.value)
+    _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,
+          expected_tests=(), expected_packs=(), expected_machines=None,
+          collector_class_args=XSOAR_BRANCH_ARGS)
