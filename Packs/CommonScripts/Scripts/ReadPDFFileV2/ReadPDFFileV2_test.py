@@ -370,6 +370,7 @@ def test_handle_error_read_only(mocker):
     from ReadPDFFileV2 import handle_error_read_only
 
     os.chmod(f'{CWD}/test_for_read_only_file.pdf', S_IREAD)
+
     def fun(path):
         return path
     change_permition = mocker.patch('ReadPDFFileV2.os.chmod')
@@ -385,6 +386,7 @@ def test_handle_error_read_only_failed(mocker):
     from ReadPDFFileV2 import handle_error_read_only
 
     os.chmod(f'{CWD}/test_for_read_only_file.pdf', S_IWRITE)
+
     def fun(path):
         return path
     with pytest.raises(Exception) as e:
