@@ -24,12 +24,28 @@ def get_token():
     Retrieve the token using the credentials
     """
     audience = ''
+    # remove last bit:
+    modern_allowlist = [
+        "auth.app.wiz.io/oauth/token",
+        "https://auth.app.wiz.io/oauth/token",
+        "auth.gov.wiz.io/oauth/token",
+        "https://auth.gov.wiz.io/oauth/token",
+        "auth.test.wiz.io/oauth/token",
+        "https://auth.test.wiz.io/oauth/token"
+    ]
+    legacy_allowlist = [
+        "auth.wiz.io/oauth/token",
+        "https://auth.wiz.io/oauth/token",
+        "auth0.gov.wiz.io/oauth/token",
+        "https://auth0.gov.wiz.io/oauth/token",
+        "auth0.test.wiz.io/oauth/token",
+        "https://auth0.test.wiz.io/oauth/token"
+    ]
 
     # check Wiz portal location - commercial or gov
-    # remove last bit
-    if 'auth.app.wiz.io' in AUTH_E or 'auth.gov.wiz.io' in AUTH_E or 'auth.test.wiz.io' in AUTH_E:  # pragma: no cover
+    if AUTH_E in modern_allowlist:  # pragma: no cover
         audience = 'wiz-api'
-    elif 'auth.wiz.io' in AUTH_E or 'auth0.gov.wiz.io' in AUTH_E or 'auth0.test.wiz.io' in AUTH_E:  # pragma: no cover
+    elif AUTH_E in legacy_allowlist:  # pragma: no cover
         audience = 'beyond-api'
     else:
         raise Exception('Not a valid authentication endpoint')
