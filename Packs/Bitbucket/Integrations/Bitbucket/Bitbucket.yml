@@ -80,9 +80,90 @@ script:
           required: false
           isArray: false
       output:
-        - contextPath: Bitbucket.Project.values.updated_on
-          description: When the project was updated.
+        - contextPath: Bitbucket.Project.type
+          description: 'Client value type.'
           type: String
+        - contextPath: Bitbucket.Project.owner.display_name
+          description: 'Client Project owner name.'
+          type: String
+        - contextPath: Bitbucket.Project.owner.links.self.href
+          description: 'A link to the result json.'
+          type: String
+        - contextPath: Bitbucket.Project.owner.links.avatar.href
+          description: 'A link to the project owner photo.'
+          type: String
+        - contextPath: Bitbucket.Project.owner.links.html.href
+          description: 'A link to the project owner repositories.'
+          type: String
+        - contextPath: Bitbucket.Project.owner.type
+          description: 'The type of the project owner.'
+          type: String
+        - contextPath: Bitbucket.Project.owner.uuid
+          description: 'The project owner universal unique id.'
+          type: String
+        - contextPath: Bitbucket.Project.owner.account_id
+          description: 'The project owner account id.'
+          type: String
+        - contextPath: Bitbucket.Project.owner.nickname
+          description: 'The project owner nickname.'
+          type: String
+        - contextPath: Bitbucket.Project.workspace.type
+          description: 'The type of the workspace.'
+          type: String
+        - contextPath: Bitbucket.Project.workspace.uuid
+          description: 'The project workspace universal unique id.'
+          type: String
+        - contextPath: Bitbucket.Project.workspace.name
+          description: 'The name of the project workspace.'
+          type: String
+        - contextPath: Bitbucket.Project.workspace.slug
+          description: 'The slug of the project workspace.'
+          type: String
+        - contextPath: Bitbucket.Project.workspace.links.avatar.href
+          description: 'A link to the project workspace photo.'
+          type: String
+        - contextPath: Bitbucket.Project.workspace.links.html.href
+          description: 'A link to the project workspace repositories.'
+          type: String
+        - contextPath: Bitbucket.Project.workspace.links.self.href
+          description: 'A link to the result json.'
+          type: String
+        - contextPath: Bitbucket.Project.key
+          description: 'The project key.'
+          type: String
+        - contextPath: Bitbucket.Project.uuid
+          description: 'the project universal unique id.'
+          type: String
+        - contextPath: Bitbucket.Project.is_private
+          description: 'Is the project private or not.'
+          type: Boolean
+        - contextPath: Bitbucket.Project.name
+          description: 'The project name.'
+          type: String
+        - contextPath: Bitbucket.Project.description
+          description: 'The project description.'
+          type: String
+        - contextPath: Bitbucket.Project.links.self.href
+          description: 'A link to the result json.'
+          type: String
+        - contextPath: Bitbucket.Project.links.html.href
+          description: 'A link to the project repositories.'
+          type: String
+        - contextPath: Bitbucket.Project.links.repositories.href
+          description: 'A link to the project repositories.'
+          type: String
+        - contextPath: Bitbucket.Project.links.avatar.href
+          description: 'A link to the project photo.'
+          type: String
+        - contextPath: Bitbucket.Project.created_on
+          description: 'The date the project was created.'
+          type: String
+        - contextPath: Bitbucket.Project.updated_on
+          description: 'The date the project was updated.'
+          type: String
+        - contextPath: Bitbucket.Project.has_publicly_visible_repos
+          description: 'Does the project has a publicly visible repositories or not.'
+          type: Boolean
   isfetch: false
   runonce: false
   script: "-"
