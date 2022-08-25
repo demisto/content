@@ -14,9 +14,21 @@ HEADERS_AUTH = dict()
 HEADERS_AUTH["Content-Type"] = "application/x-www-form-urlencoded"
 HEADERS = dict()
 HEADERS["Content-Type"] = "application/json"
+
 TOKEN = None
 URL = ''
 AUTH_E = ''
+COGNITO_PREFIX = [
+    "auth.app",
+    "auth.gov",
+    "auth.test"
+]
+AUTH0_PREFIX = [
+    "auth",
+    "auth0.gov",
+    "auth0.test"
+]
+URL_SUFFIX = 'wiz.io/oauth/token'
 
 
 def set_authentication_endpoint(auth_endpoint):
@@ -29,33 +41,29 @@ def set_api_endpoint(api_endpoint):
     URL = api_endpoint
 
 
+def generate_auth_urls(prefix):
+    auth_url = f"{prefix}.{URL_SUFFIX}"
+    http_auth_url = f"https://{auth_url}"
+    return auth_url, http_auth_url
+
+
 def get_token():
     """
     Retrieve the token using the credentials
     """
     audience = ''
-    # remove last bit:
-    modern_allowlist = [  # pragma: no cover
-        "auth.app.wiz.io/oauth/token",
-        "https://auth.app.wiz.io/oauth/token",
-        "auth.gov.wiz.io/oauth/token",
-        "https://auth.gov.wiz.io/oauth/token",
-        "auth.test.wiz.io/oauth/token",
-        "https://auth.test.wiz.io/oauth/token"
-    ]
-    legacy_allowlist = [  # pragma: no cover
-        "auth.wiz.io/oauth/token",
-        "https://auth.wiz.io/oauth/token",
-        "auth0.gov.wiz.io/oauth/token",
-        "https://auth0.gov.wiz.io/oauth/token",
-        "auth0.test.wiz.io/oauth/token",
-        "https://auth0.test.wiz.io/oauth/token"
-    ]
+    cognito_list = []
+    for cognito_prefix in COGNITO_PREFIX:
+        cognito_list.extend(generate_auth_urls(cognito_prefix))
+
+    auth0_list = []
+    for auth0_prefix in AUTH0_PREFIX:
+        auth0_list.extend(generate_auth_urls(auth0_prefix))
 
     # check Wiz portal location - commercial or gov
-    if AUTH_E in modern_allowlist:
+    if AUTH_E in cognito_list:
         audience = 'wiz-api'
-    elif AUTH_E in legacy_allowlist:
+    elif AUTH_E in auth0_list:
         audience = 'beyond-api'
     else:
         raise Exception('Not a valid authentication endpoint')

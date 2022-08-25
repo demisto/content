@@ -733,17 +733,48 @@ def test_bad_get_token(capfd):
                 assert res == test_bad_token_response
 
 
+def test_token_url():
+    from Wiz import COGNITO_PREFIX, AUTH0_PREFIX, generate_auth_urls
+
+    cognito_allowlist = [
+        "auth.app.wiz.io/oauth/token",
+        "https://auth.app.wiz.io/oauth/token",
+        "auth.gov.wiz.io/oauth/token",
+        "https://auth.gov.wiz.io/oauth/token",
+        "auth.test.wiz.io/oauth/token",
+        "https://auth.test.wiz.io/oauth/token"
+    ]
+    auth0_allowlist = [
+        "auth.wiz.io/oauth/token",
+        "https://auth.wiz.io/oauth/token",
+        "auth0.gov.wiz.io/oauth/token",
+        "https://auth0.gov.wiz.io/oauth/token",
+        "auth0.test.wiz.io/oauth/token",
+        "https://auth0.test.wiz.io/oauth/token"
+    ]
+
+    cognito_list = []
+    for cognito_prefix in COGNITO_PREFIX:
+        cognito_list.extend(generate_auth_urls(cognito_prefix))
+    assert cognito_list.sort() == cognito_allowlist.sort()
+
+    auth0_list = []
+    for auth0_prefix in AUTH0_PREFIX:
+        auth0_list.extend(generate_auth_urls(auth0_prefix))
+    assert auth0_list.sort() == auth0_allowlist.sort()
+
+
 def test_good_token(capfd, mocker):
     with capfd.disabled():
         good_token = str(random.randint(1, 1000))
         mocker.patch('requests.post', return_value=mocked_requests_get({"access_token": good_token}, 200))
 
         from Wiz import get_token, set_authentication_endpoint
-        set_authentication_endpoint('auth.app.wiz.io')
+        set_authentication_endpoint('auth.app.wiz.io/oauth/token')
         res = get_token()
         assert res == good_token
 
-        set_authentication_endpoint('auth0.gov.wiz.io')
+        set_authentication_endpoint('auth.wiz.io/oauth/token')
         res = get_token()
         assert res == good_token
 
@@ -760,7 +791,7 @@ def test_token_no_access(capfd, mocker):
         mocker.patch('requests.post', return_value=mocked_requests_get({}, 200))
         try:
             from Wiz import get_token, set_authentication_endpoint
-            set_authentication_endpoint('auth.app.wiz.io')
+            set_authentication_endpoint('auth.app.wiz.io/oauth/token')
             get_token()
         except Exception as e:
             assert 'Could not retrieve token from Wiz' in str(e)
