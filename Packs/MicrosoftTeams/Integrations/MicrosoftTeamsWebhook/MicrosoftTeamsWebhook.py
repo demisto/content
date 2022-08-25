@@ -69,15 +69,22 @@ def main():
     """
     webhook = demisto.params().get('webhookurl')
     serverurls = demisto.demistoUrls()
-
-    if demisto.command() == 'test-module':
-        return_results(test_module(webhook))
-    elif demisto.command() == 'ms-teams-message':
-        message = demisto.args().get("message", "")
-        if demisto.args().get('team_webhook', False):
-            return_results(send_teams_message_command(demisto.args().get('team_webhook'), message, serverurls))
+    args = demisto.args()
+    command = demisto.command()
+    try:
+        if command == 'test-module':
+            return_results(test_module(webhook))
+        elif command == 'ms-teams-message':
+            message = args.get("message", "")
+            if args.get('team_webhook', False):
+                return_results(send_teams_message_command(args.get('team_webhook'), message, serverurls))
+            else:
+                return_results(send_teams_message_command(webhook, message, serverurls))
         else:
-            return_results(send_teams_message_command(webhook, message, serverurls))
+            raise NotImplementedError(f"command {command} is not implemented.")
+
+    except Exception as e:
+        return_error(str(e), error=traceback.format_exc())
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
