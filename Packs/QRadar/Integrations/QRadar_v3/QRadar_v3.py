@@ -2408,6 +2408,8 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
                                         int(offense_id),
                                         start_time,
                                         return_raw_response=True)
+        if response == QueryStatus.ERROR.value:
+            raise DemistoException(f'Could not create search for offense_id: {offense_id}')
     outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
     return CommandResults(
         readable_output=tableToMarkdown('Create Search', outputs),
