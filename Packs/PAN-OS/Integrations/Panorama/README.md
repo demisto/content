@@ -2513,7 +2513,7 @@ Returns a list of applications.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | predefined | Whether to list predefined applications or not. | Optional | 
-
+| device_group | The device group for which to return applications. | Optional |
 
 #### Context Output
 

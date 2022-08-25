@@ -5149,6 +5149,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: The device group for which to return applications.
+      name: device_group
+      required: false
     description: Returns a list of applications.
     name: pan-os-list-applications
     outputs:

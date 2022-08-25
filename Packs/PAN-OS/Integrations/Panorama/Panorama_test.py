@@ -11,7 +11,7 @@ from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 
-integration_params = {
+integration_firewall_params = {
     'port': '443',
     'vsys': 'vsys1',
     'server': 'https://1.1.1.1',
@@ -23,6 +23,12 @@ mock_demisto_args = {
     'vulnerability_profile': "mock_vuln_profile"
 }
 
+integration_panorama_params = {
+    'port': '443',
+    'device_group': 'Lab-Devices',
+    'server': 'https://1.1.1.1',
+    'key': 'thisisabogusAPIKEY!',
+}
 
 def load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -31,7 +37,7 @@ def load_json(path):
 
 @pytest.fixture(autouse=True)
 def set_params(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params)
+    mocker.patch.object(demisto, 'params', return_value=integration_firewall_params)
     mocker.patch.object(demisto, 'args', return_value=mock_demisto_args)
 
 
@@ -40,7 +46,7 @@ def patched_requests_mocker(requests_mock):
     """
     This function mocks various PANOS API responses so we can accurately test the instance
     """
-    base_url = "{}:{}/api/".format(integration_params['server'], integration_params['port'])
+    base_url = "{}:{}/api/".format(integration_firewall_params['server'], integration_firewall_params['port'])
     # Version information
     mock_version_xml = """
     <response status = "success">
@@ -52,7 +58,7 @@ def patched_requests_mocker(requests_mock):
         </result>
     </response>
     """
-    version_path = "{}{}{}".format(base_url, "?type=version&key=", integration_params['key'])
+    version_path = "{}{}{}".format(base_url, "?type=version&key=", integration_firewall_params['key'])
     requests_mock.get(version_path, text=mock_version_xml, status_code=200)
     mock_response_xml = """
     <response status="success" code="20">
@@ -837,29 +843,78 @@ class TestPcap:
             panorama_get_pcap_command({'pcapType': 'filter-pcap'})
 
 
-@pytest.mark.parametrize('panorama_version', [8, 9])
-def test_panorama_list_applications_command(mocker, panorama_version):
-    """
-    Given
-       - http response of the list of applications.
-       - panorama version 8 & 9.
+class TestPanoramaListApplicationsCommand:
 
-    When
-       - getting a list of all the applications in panorama 8/9.
+    @staticmethod
+    @pytest.mark.parametrize('panorama_version', [8, 9])
+    def test_panorama_list_applications_command(mocker, panorama_version):
+        """
+        Given
+           - http response of the list of applications.
+           - panorama version 8 & 9.
 
-    Then
-       - a valid context output is returned.
-    """
-    from Panorama import panorama_list_applications_command
-    mocker.patch('Panorama.http_request', return_value=load_json('test_data/list_applications_response.json'))
-    mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
-    res = mocker.patch('demistomock.results')
-    panorama_list_applications_command(predefined='false')
-    assert res.call_args.args[0]['Contents'] == {
-        '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure', 'category': 'networking',
-        'technology': 'client-server', 'description': 'test-playbook-application-do-not-delete', 'risk': '1'
-    }
+        When
+           - getting a list of all the applications in panorama 8/9.
 
+        Then
+           - a valid context output is returned.
+        """
+        from Panorama import panorama_list_applications_command
+
+        mocker.patch(
+            'Panorama.http_request', return_value=load_json('test_data/list_applications_response.json')
+        )
+        mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
+
+        res = mocker.patch('demistomock.results')
+        panorama_list_applications_command(predefined='false')
+
+        assert res.call_args.args[0]['Contents'] == {
+            '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure',
+            'category': 'networking',
+            'technology': 'client-server', 'description': 'test-playbook-application-do-not-delete', 'risk': '1'
+        }
+
+    @staticmethod
+    @pytest.mark.parametrize('panorama_version', [8, 9])
+    def test_panorama_list_applications_command_main_flow(mocker, panorama_version):
+        """
+        Given
+         - integrations parameters.
+         - pan-os-list-applications command arguments including device_group
+
+        When -
+            running the pan-os-list-applications command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(demisto, 'args', return_value={'predefined': 'false', 'device_group': 'new-device-group'})
+        mocker.patch.object(demisto, 'command', return_value='pan-os-list-applications')
+
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=load_json('test_data/list_applications_response.json')
+        )
+        mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
+        res = mocker.patch('demistomock.results')
+        main()
+
+        assert res.call_args.args[0]['Contents'] == {
+            '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure',
+            'category': 'networking',
+            'technology': 'client-server', 'description': 'test-playbook-application-do-not-delete', 'risk': '1'
+        }
+        # make sure that device group is getting overriden by the device-group from command arguments.
+        assert request_mock.call_args.kwargs['body'] == {
+            'type': 'config', 'action': 'get',
+            'key': 'thisisabogusAPIKEY!',
+            'xpath': "/config/devices/entry/device-group/entry[@name='new-device-group']/application/entry"
+        }
+        
 
 class TestPanoramaEditRuleCommand:
     EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}

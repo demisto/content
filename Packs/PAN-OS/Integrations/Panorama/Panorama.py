@@ -3775,12 +3775,13 @@ def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
         'action': 'get',
         'key': API_KEY
     }
-    if predefined:
+    if predefined:  # if predefined = true, no need for device group.
         if major_version < 9:
             raise Exception('Listing predefined applications is only available for PAN-OS 9.X and above versions.')
         else:
             params['xpath'] = '/config/predefined/application'
     else:
+        # if device-group was provided it will be set in initialize_instance function.
         params['xpath'] = XPATH_OBJECTS + "application/entry"
 
     result = http_request(
@@ -7571,8 +7572,8 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
     # determine a vsys or a device-group
     VSYS = params.get('vsys', '')
 
-    if args and args.get('device-group'):
-        DEVICE_GROUP = args.get('device-group')  # type: ignore[assignment]
+    if args and (device_group := (args.get('device-group') or args.get('device_group'))):
+        DEVICE_GROUP = device_group  # type: ignore[assignment]
     else:
         DEVICE_GROUP = params.get('device_group', None)  # type: ignore[arg-type]
 
