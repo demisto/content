@@ -3,9 +3,6 @@ In order to connect to the Azure Network Security Groups use one of the followin
 1. *Authorization Code Flow* (Recommended).
 2. *Device Code Flow*.
 
-1. *Authorization Code Flow* (Recommended).
-2. *Device Code Flow*.
-
 ### Authentication Using the Authorization Code Flow (recommended)
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
