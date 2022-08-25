@@ -1,7 +1,5 @@
 from CommonServerPython import *
 
-import traceback
-
 SECTIONS_TO_KEEP = ('Threat Hunting', 'Mitigation', 'Remediation', 'Eradication')
 
 HEADER_TRANSFORM = {'id': 'Task ID', 'name': 'Task Name', 'state': 'Task State', 'completedDate': 'Completion Time'}
@@ -107,7 +105,6 @@ def main():
             create_markdown_tasks()
         )
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute SetIRProceduresMarkdown. Error: {str(ex)}')
 
 

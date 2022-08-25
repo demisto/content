@@ -7,7 +7,8 @@ from TOPdesk import Client, INTEGRATION_NAME, MAX_API_PAGE_SIZE, \
     list_persons_command, list_operators_command, branches_command, get_incidents_list_command, \
     get_incidents_with_pagination, incident_do_command, incident_touch_command, attachment_upload_command, \
     escalation_reasons_command, deescalation_reasons_command, archiving_reasons_command, capitalize_for_outputs, \
-    list_attachments_command
+    list_attachments_command, list_actions_command, get_mapping_fields_command, get_remote_data_command, \
+    get_modified_remote_data_command, update_remote_system_command
 
 
 def util_load_json(path):
@@ -357,15 +358,15 @@ def test_incident_do_commands(client,
 
 
 @pytest.mark.parametrize('command_args, command_api_url, command_api_body', [
-    ({"id": "incident_id", "file": "some_entry_id", "invisivle_for_caller": "false"},
+    ({"id": "incident_id", "file": "some_entry_id", "invisible_for_caller": "false"},
      'https://test.com/api/incidents/id/incident_id/attachments',
-     {"invisivle_for_caller": "false"}),
+     {"invisible_for_caller": "false"}),
     ({"id": "incident_id", "file": "some_entry_id", "description": "some description"},
      'https://test.com/api/incidents/id/incident_id/attachments',
      {"description": "some description"}),
-    ({"id": "incident_id", "file": "some_entry_id", "description": "some description", "invisivle_for_caller": "false"},
+    ({"id": "incident_id", "file": "some_entry_id", "description": "some description", "invisible_for_caller": "false"},
      'https://test.com/api/incidents/id/incident_id/attachments',
-     {"description": "some description", "invisivle_for_caller": "false"}),
+     {"description": "some description", "invisible_for_caller": "false"}),
     ({"id": "incident_id", "file": "some_entry_id"},
      'https://test.com/api/incidents/id/incident_id/attachments',
      {})
@@ -378,7 +379,7 @@ def test_attachment_upload_command(client,
                                    command_api_body):
     """Unit test
     Given
-        - command args: id, file, description, invisivle_for_caller
+        - command args: id, file, description, invisible_for_caller
     When
         - running attachment_upload_command with the command args
     Then
@@ -432,7 +433,7 @@ def test_attachment_list_command(client,
                                  response_override):
     """Unit test
     Given
-        - command args: id, file, description, invisivle_for_caller
+        - command args: id, file, description, invisible_for_caller
     When
         - running attachment_upload_command with the command args
     Then
@@ -878,34 +879,40 @@ def test_unsupported_old_query_param(client, command_args):
 @pytest.mark.parametrize('topdesk_incidents_override, last_fetch_time, updated_fetch_time', [
     ([{  # Last fetch is before incident creation
         'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-02-10T06:32:36.303000+0000',
         'occurred': '2020-02-10T06:32:36Z',
         'will_be_fetched': True
     }], '2020-01-11T06:32:36.303000+0000', '2020-02-10T06:32:36.303000+0000'),
     ([{  # Last fetch is after one incident creation and before other.
         'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-01-10T06:32:36.303000+0000',
         'occurred': '2020-01-10T06:32:36Z',
         'will_be_fetched': False
     }, {
         'number': 'TEST-2',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-03-10T06:32:36.303000+0000',
         'occurred': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
     }], '2020-02-11T06:32:36.303000+0000', '2020-03-10T06:32:36.303000+0000'),
     ([{  # Last fetch is at incident creation
         'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-02-10T06:32:36.303+0000',
         'occurred': '2020-02-10T06:32:36Z',
         'will_be_fetched': False
     }], '2020-02-10T06:32:36.303000+0000', '2020-02-10T06:32:36.303000+0000'),
     ([{  # Same incident returned twice.
         'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-03-10T06:32:36.303000+0000',
         'occurred': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
     }, {
         'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
         'creationDate': '2020-03-10T06:32:36.303000+0000',
         'occurred': '2020-03-10T06:32:36Z',
         'will_be_fetched': False
@@ -924,15 +931,23 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
     """
     mock_topdesk_incident = util_load_json('test_data/topdesk_incident.json')
     mock_topdesk_response = []
+    mock_actions = util_load_json('test_data/topdesk_actions.json')
+    requests_mock.get(
+        'https://test.com/api/incidents/id/some-test-id-1/actions',
+        json=mock_actions)
+
     expected_incidents = []
     for incident_override in topdesk_incidents_override:
         response_incident = mock_topdesk_incident.copy()
         response_incident['number'] = incident_override['number']
         response_incident['creationDate'] = incident_override['creationDate']
+        response_incident['mirror_direction'] = None
+        response_incident['mirror_tags'] = ["comments", "ForTOPdesk", "work_notes"]
+        response_incident['mirror_instance'] = ""
         mock_topdesk_response.append(response_incident)
         if incident_override['will_be_fetched']:
             expected_incidents.append({
-                'name': f"TOPdesk incident {incident_override['number']}",
+                'name': f"{incident_override['briefDescription']}",
                 'details': json.dumps(response_incident),
                 'occurred': incident_override['occurred'],
                 'rawJSON': json.dumps(response_incident),
@@ -946,7 +961,9 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
     }
     last_fetch, incidents = fetch_incidents(client=client,
                                             last_run=last_run,
-                                            demisto_params={})
+                                            demisto_params={
+                                                'mirror_direction': 'both'
+                                            })
 
     assert len(incidents) == len(expected_incidents)
     for incident, expected_incident in zip(incidents, expected_incidents):
@@ -955,3 +972,96 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
         assert incident['occurred'] == expected_incident['occurred']
         assert incident['rawJSON'] == expected_incident['rawJSON']
     assert last_fetch == {'last_fetch': updated_fetch_time}
+
+
+def test_get_mapping_fields(client):
+    """
+    Given:
+        -  TOPdesk client
+        -  TOPdesk mapping fields
+    When
+        - running get_mapping_fields_command
+    Then
+        - the result fits the expected mapping.
+    """
+    # client = Client(base_url='https://server_url.com/', verify=False, auth=("username","password"))
+    res = get_mapping_fields_command(client)
+    expected_mapping = {
+        "TOPdesk Incident": {
+            'processingStatus': "",
+            'priority': "",
+            'urgency': "",
+            'impact': ""
+        }
+    }
+    assert expected_mapping == res.extract_mapping()
+
+
+@pytest.mark.parametrize('command_args', [
+    ({"incident_id": "some-id", "incident_number": None}),
+    ({"incident_id": None, "incident_number": "some-number"})
+])
+def test_incident_actions_list(client, requests_mock, command_args):
+    """
+    Given:
+        - TOPdesk client
+        - Arguments (incident_id, incident_number, limit)
+    When
+        - running list_actions_command
+    Then
+        - The result fits the expected mapping
+    """
+
+    mock_incident_actions = util_load_json('test_data/topdesk_actions.json')
+    if command_args['incident_id']:
+        requests_mock.get(
+            'https://test.com/api/incidents/id/some-id/actions',
+            json=mock_incident_actions)
+    elif command_args['incident_number']:
+        requests_mock.get(
+            'https://test.com/api/incidents/number/some-number/actions',
+            json=mock_incident_actions)
+
+    list_actions_command(client, command_args)
+    assert requests_mock.called
+
+
+@pytest.mark.parametrize('args', [
+    ({"id": "some-id", "lastUpdate": "2022-04-26T08:21:48.520Z"})
+])
+def test_get_remote_data_command(client, requests_mock, args):
+    """
+    Given:
+        - TOPdesk client
+        - Arguments (incident_id, last_update)
+    When
+        - running get_remote_command
+    Then
+        - The result fits the expected mapping
+    """
+    mock_incident = util_load_json('test_data/topdesk_incident.json')
+    mock_actions = util_load_json('test_data/topdesk_actions.json')
+    requests_mock.get(
+        'https://test.com/api/incidents/id/some-id',
+        json=mock_incident)
+    requests_mock.get(
+        'https://test.com/api/incidents/id/some-id/actions',
+        json=mock_actions)
+
+    get_remote_data_command(client, args, None)
+
+
+@pytest.mark.parametrize('args,params', [
+    ({"lastUpdate": "2022-04-26T08:21:48.520Z"}, {"max_fetch": 10}),
+    ({"lastUpdate": "2022-04-26T08:21:48.520Z"}, {"max_fetch": 1})
+])
+def test_get_modified_remote_data_command(client, requests_mock, args, params):
+    client.rest_api_new_query = True
+    get_modified_remote_data_command(client, args, params)
+
+
+@pytest.mark.parametrize('args,params', [
+    ({"remote_incident_id": "some-id"}, {"close_ticket": False})
+])
+def test_update_remote_system_command(client, args, params):
+    update_remote_system_command(client, args, params)

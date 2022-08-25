@@ -3,8 +3,8 @@ commonfields:
   id: Gmail
   version: -1
 configuration:
-- display: Email of user with admin privileges (the Password refers to the content
-    of the Service Account file)
+- display: Email of user with admin privileges
+  displaypassword: The content of the Service Account file
   name: adminEmail
   required: true
   type: 9

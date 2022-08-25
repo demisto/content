@@ -1,11 +1,17 @@
 args:
 - default: false
-  description: 'Integration name for which to check its instance name.'
+  description: Integration name for which to check its instance name.
   isArray: false
   name: integration_name
   required: true
   secret: false
-comment: 'Given an integration name, returns the instance name.'
+- auto: PREDEFINED
+  description: Whether to return a full list of instance names related to the given integation name.
+  name: return_all_instances
+  predefined:
+  - 'false'
+  - 'true'
+comment: Given an integration name, returns the instance name.
 commonfields:
   id: GetInstanceName
   version: -1
@@ -13,10 +19,10 @@ enabled: false
 name: GetInstanceName
 outputs:
 - contextPath: Instances.integrationName
-  description: 'Requested integration name.'
+  description: Requested integration name.
   type: String
 - contextPath: Instances.instanceName
-  description: 'Instance name for given integration.'
+  description: Instance name for given integration.
   type: String
 script: '-'
 system: false
@@ -25,7 +31,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.5.31928
 fromversion: 6.0.0
 tests:
 - No test

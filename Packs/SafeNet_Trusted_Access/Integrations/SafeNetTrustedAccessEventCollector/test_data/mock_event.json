@@ -1,0 +1,79 @@
+{
+  "page": {
+    "totalItems": 3,
+    "pageMarker": 11111111111,
+    "pageSize": 1000,
+    "totalPages": 1,
+    "items": [
+      {
+        "logVersion": "1.0",
+        "category": "AUDIT",
+        "timeStamp": "2022-01-01T01:01:01.001Z",
+        "id": "ID1",
+        "context": {
+          "tenantId": "TENANT_ID",
+          "originatingAddress": "1.1.1.1",
+          "principalId": "PRINCIPAL_ID",
+          "sessionId": "SESSION_ID",
+          "globalAccessId": "ACCESS_ID",
+          "applicationType": "TYPE",
+          "applicationName": "NAME",
+          "policyName": "POLICY"
+        },
+        "details": {
+          "type": "ACCESS_REQUEST",
+          "state": "Accepted",
+          "action": "auth"
+        }
+      },
+      {
+        "logVersion": "1.0",
+        "category": "AUDIT",
+        "timeStamp": "2022-01-01T01:01:01.001Z",
+        "id": "ID2",
+        "context": {
+          "tenantId": "TENANT_ID",
+          "originatingAddress": "1.1.1.1",
+          "principalId": "PRINCIPAL_ID",
+          "sessionId": "SESSION_ID",
+          "globalAccessId": "ACCESS_ID",
+          "applicationType": "TYPE",
+          "applicationName": "NAME",
+          "policyName": "POLICY"
+        },
+        "details": {
+          "type": "ACCESS_REQUEST",
+          "state": "Accepted",
+          "action": "auth"
+        }
+      },
+      {
+        "logVersion": "1.0",
+        "category": "AUDIT",
+        "timeStamp": "2022-01-01T01:01:01.001Z",
+        "id": "ID3",
+        "context": {
+          "tenantId": "TENANT_ID",
+          "originatingAddress": "1.1.1.1",
+          "principalId": "PRINCIPAL_ID",
+          "sessionId": "SESSION_ID",
+          "globalAccessId": "ACCESS_ID",
+          "applicationType": "TYPE",
+          "applicationName": "NAME",
+          "policyName": "POLICY"
+        },
+        "details": {
+          "type": "ACCESS_REQUEST",
+          "state": "Accepted",
+          "action": "auth"
+        }
+      }
+    ]
+  },
+  "links": {
+    "first": "some_link",
+    "self": "some_link",
+    "skip": "some_link"
+  },
+  "itemType": "LogEvent"
+}

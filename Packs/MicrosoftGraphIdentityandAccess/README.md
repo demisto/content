@@ -5,3 +5,8 @@ The **Azure Active Directory Identity And Access** integration enables you to:
 - Get all members in a role ID.
 - Add a user to a role.
 - Remove a user from a role.
+- Create an ip named location.
+- Update an ip named location.
+- Remove an ip named location.
+- Get an ip named location.
+- List an ip named location.

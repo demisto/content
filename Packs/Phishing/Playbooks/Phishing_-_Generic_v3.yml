@@ -1,5 +1,7 @@
 id: Phishing - Generic v3
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Phishing - Generic v3
 description: "This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.\nNote: Final remediation tasks are always decided by a human analyst. "
 starttaskid: '0'
@@ -402,6 +404,9 @@ tasks:
         complex:
           root: incident
           accessor: emailcc
+      EmailFileToExtract:
+        complex:
+          root: inputs.EmailFileToExtract
       EmailFormat:
         complex:
           root: incident
@@ -432,13 +437,6 @@ tasks:
       GetOriginalEmail:
         complex:
           root: inputs.GetOriginalEmail
-      UserID:
-        complex:
-          root: incident
-          accessor: reporteremailaddress
-      EmailFileToExtract:
-        complex:
-          root: inputs.EmailFileToExtract
       MessageID:
         complex:
           root: incident
@@ -447,6 +445,10 @@ tasks:
         complex:
           root: incident
           accessor: emailsubject
+      UserID:
+        complex:
+          root: incident
+          accessor: reporteremailaddress
     separatecontext: true
     view: |-
       {
@@ -564,6 +566,8 @@ tasks:
       SearchAndDeleteIntegration:
         complex:
           root: inputs.SearchAndDeleteIntegration
+      SearchThisWeek:
+        simple: 'true'
       Subject:
         complex:
           root: incident
@@ -572,8 +576,6 @@ tasks:
         complex:
           root: incident
           accessor: emailto
-      SearchThisWeek:
-        simple: 'true'
     separatecontext: true
     loop:
       iscommand: false
@@ -955,9 +957,9 @@ tasks:
       Email:
         complex:
           root: incident
+          accessor: reporteremailaddress
           transformers:
           - operator: uniq
-          accessor: reporteremailaddress
       InternalDomains:
         complex:
           root: inputs.InternalDomains
@@ -1367,8 +1369,8 @@ tasks:
       returnError:
         simple: 'false'
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -2213,10 +2215,10 @@ tasks:
       version: -1
       name: Predict Phishing URLs
       description: Predicts phishing URLs using a pre-trained model.
+      scriptName: DBotPredictURLPhishing
       type: regular
       iscommand: false
       brand: ''
-      scriptName: DBotPredictURLPhishing
     nexttasks:
       '#none#':
       - '84'
@@ -2326,8 +2328,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -70,
-          "y": -240
+          "x": 270,
+          "y": -250
         }
       }
     note: false
@@ -2353,7 +2355,7 @@ tasks:
       '#default#':
       - '11'
       yes:
-      - '85'
+      - '157'
     separatecontext: false
     conditions:
     - label: yes
@@ -2368,8 +2370,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -70,
-          "y": -105
+          "x": 270,
+          "y": -110
         }
       }
     note: false
@@ -2641,6 +2643,16 @@ tasks:
       yes:
       - '28'
     separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: reportedemailfrom
+            iscontext: true
     view: |-
       {
         "position": {
@@ -2655,16 +2667,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: reportedemailfrom
-            iscontext: true
   '153':
     id: '153'
     taskid: eedb7c86-a719-4416-8e7d-681765a63d60
@@ -2882,11 +2884,42 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  '157':
+    id: '157'
+    taskid: 3bf56b47-3c00-4cf3-8f45-d3e65976861e
+    type: title
+    task:
+      id: 3bf56b47-3c00-4cf3-8f45-d3e65976861e
+      version: -1
+      name: Reporter Address specified
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+      - '18'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "137_135_yes": 0.54,
-      "145_11_#default#": 0.15,
       "147_144_Manually": 0.52,
       "149_148_yes - phishing": 0.66,
       "149_27_#default#": 0.21,
@@ -3061,5 +3094,3 @@ tests:
 - Phishing v3 - Get Original Email + Search & Delete - Test
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 fromversion: 6.1.0
-contentitemexportablefields:
-  contentitemfields: {}

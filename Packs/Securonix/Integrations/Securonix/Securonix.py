@@ -1150,9 +1150,11 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
         for incident in incidents_items:
             incident_id = str(incident.get('incidentId', 0))
+            violator_id = str(incident.get('violatorId', 0))
             # check if incident was already fetched due to updating over lastUpdateDate
             if incident_id not in already_fetched:
-                incident_name = get_incident_name(incident, incident_id)  # Try to get incident reason as incident name
+                # Try to get incident reason as incident name
+                incident_name = get_incident_name(incident, incident_id, violator_id)
                 demisto_incidents.append({
                     'name': incident_name,
                     'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
@@ -1171,13 +1173,13 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
     return demisto_incidents
 
 
-def get_incident_name(incident: Dict, incident_id: str) -> str:
+def get_incident_name(incident: Dict, incident_id: str, violator_id: str) -> str:
     """Get the incident name by concatenating the incident reasons if possible
 
     Args:
         incident: incident details
         incident_id: the incident id
-
+        violator_id: the violator id
 
     Returns:
         incident name.
@@ -1186,13 +1188,16 @@ def get_incident_name(incident: Dict, incident_id: str) -> str:
     try:
         incident_reason = ''
         for reason in incident_reasons:
-            if reason.startswith('Policy: '):
-                incident_reason += f"{reason[8:]}, "
+            if isinstance(reason, str):
+                if reason.startswith('Threat Model: '):
+                    incident_reason += f"{reason[14:]}, "
+                if reason.startswith('Policy: '):
+                    incident_reason += f"{reason[8:]}, "
         if incident_reason:
             # Remove ", " last chars and concatenate with the incident ID
             incident_name = f"{incident_reason[:-2]}: {incident_id}"
         else:
-            incident_name = f"Securonix Incident: {incident_id}."
+            incident_name = f"Securonix Incident {incident_id}, Violator ID: {violator_id}"
     except ValueError:
         incident_name = f"Securonix Incident: {incident_id}."
 

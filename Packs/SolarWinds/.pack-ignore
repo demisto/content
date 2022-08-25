@@ -85,3 +85,6 @@ ignore=BA101
 
 [file:classifier-mapper-incoming-SolarWinds_Event.json]
 ignore=BA101
+
+[file:classifier-SolarWinds.json]
+ignore=BA101

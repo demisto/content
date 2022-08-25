@@ -64,7 +64,6 @@ def main():
             outputs.append({'CVE': queried_CVE,
                             'Coverage': findings[queried_CVE]})
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(str(e))
 
     return_results(CommandResults(readable_output=res,

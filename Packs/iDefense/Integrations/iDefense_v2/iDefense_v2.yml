@@ -35,9 +35,10 @@ configuration:
   name: use_proxy
   type: 8
   required: false
-description: ACTI provides intelligence regarding security threats and vulnerabilities.
-display: Accenture CTI
+description: Deprecated. Use Accenture CTI v2 instead.
+display: Accenture CTI (Deprecated)
 name: iDefense_v2
+deprecated: true
 script:
   commands:
   - name: ip

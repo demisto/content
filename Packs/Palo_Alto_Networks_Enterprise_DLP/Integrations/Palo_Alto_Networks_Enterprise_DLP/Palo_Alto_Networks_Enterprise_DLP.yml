@@ -5,14 +5,10 @@ commonfields:
 configuration:
 - additionalinfo: Access token generated in the Enterprise DLP UI
   display: Access Token
-  name: access_token
+  name: credentials
   required: true
-  type: 4
-- additionalinfo: Refresh token generated in the Enterprise DLP UI
-  display: Refresh Token
-  name: refresh_token
-  required: true
-  type: 4
+  type: 9
+  displaypassword: Refresh Token
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -23,8 +19,8 @@ configuration:
   type: 8
 - display: Long running instance
   name: longRunning
-  type: 8
   required: false
+  type: 8
 - display: DLP Regions
   name: dlp_regions
   type: 16
@@ -33,28 +29,24 @@ configuration:
   - US
   - EU
   - AP
-  defaultvalue: US,EU,AP
+  - UK
+  defaultvalue: US,EU,AP,UK
 - display: Data profiles to allow exemption
   name: dlp_exemptible_list
   type: 0
   required: false
-  additionalinfo: A comma-separated list of data profile names to request an exemption.
-    Use "*" to allow everything.
-- display: Slack Bot Message
+  additionalinfo: A comma-separated list of data profile names to request an exemption. Use "*" to allow everything.
+- display: Bot Message
   name: dlp_slack_message
   type: 12
   required: false
-  additionalinfo: The Slack message to send to the user to ask for feedback.
-  defaultvalue: 'Hi $user🔔, \n\n*We need your feedback* \nYour upload of *$file_name*
-    on *$app_name* was blocked due to company policy. This file contains sensitive
-    information which violates *$data_profile_name* policy. \n\n $snippets\n\n'
+  additionalinfo: The message to send to the user to ask for feedback.
+  defaultvalue: Hi $user🔔, \n\n*We need your feedback:* \n\nYour upload of *$file_name* on *$app_name* was blocked due to company policy. This file contains sensitive information which violates *$data_profile_name* policy. \n\n $snippets\n\n
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
-description: Palo Alto Networks Enterprise DLP discovers and protects company data
-  across every data channel and repository. Integrated Enterprise DLP enables data
-  protection and compliance everywhere without complexity.
+description: Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
 display: Palo Alto Networks Enterprise DLP
 name: Palo Alto Networks Enterprise DLP
 script:
@@ -101,6 +93,7 @@ script:
       - EXCEPTION_GRANTED
       - EXCEPTION_NOT_REQUESTED
       - OPERATIONAL_ERROR
+      - SEND_NOTIFICATION_FAILURE
       description: The user feedback
     - name: user_id
       required: true
@@ -111,6 +104,9 @@ script:
       description: The DLP report ID, needed only for granting exemptions.
     - name: dlp_channel
       description: The DLP channel, needed only for granting exemptions.
+    - name: error_details
+      required: false
+      description: Error details if status is SEND_NOTIFICATION_FAILURE
     outputs:
     - contextPath: DLP.IncidentUpdate.success
       description: Whether the update was successful.
@@ -128,8 +124,7 @@ script:
     - contextPath: DLP.exemption.eligible
       description: Whether the data profile is eligible for exemption.
       type: boolean
-    description: Determines whether exemption can be granted on incidents from a certain
-      data profile.
+    description: Determines whether exemption can be granted on incidents from a certain data profile.
   - name: pan-dlp-slack-message
     arguments:
     - name: user
@@ -154,9 +149,8 @@ script:
     description: Gets the Slack bot message to send to the user for gathering feedback.
   - name: pan-dlp-reset-last-run
     arguments: []
-    description: Resets the fetch incidents last run value, which resets the fetch
-      to its initial fetch state.
-  dockerimage: demisto/python3:3.10.4.28442
+    description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
+  dockerimage: demisto/python3:3.10.4.30607
   isFetchSamples: true
   longRunning: true
   runonce: false

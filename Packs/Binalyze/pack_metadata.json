@@ -1,0 +1,29 @@
+{
+    "name": "Binalyze AIR",
+    "description": "Collect over 150 different types of evidence under 10 minutes.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Binalyze Integration Team",
+    "url": "https://kb.binalyze.com/air/integrations/cortex-xsoar-integration",
+    "email": "support@binalyze.com",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [
+        "Forensics",
+        "Incident Handling",
+        "Incident Response"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "murat.alagoz@binalyze.com"
+    ],
+    "githubUser": [
+        "binalyze-murat"
+    ]
+}

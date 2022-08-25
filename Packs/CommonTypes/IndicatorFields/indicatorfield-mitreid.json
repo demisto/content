@@ -2,7 +2,7 @@
     "id": "indicator_mitreid",
     "version": -1,
     "modified": "2020-04-02T14:18:06.603407788Z",
-    "name": "MITRE ID",
+    "name": "Mitre ID",
     "ownerOnly": false,
     "placeholder": "",
     "description": "",
