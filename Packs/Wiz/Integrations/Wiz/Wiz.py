@@ -1,7 +1,6 @@
 import json
 from CommonServerPython import *
 import demistomock as demisto
-
 from urllib import parse
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -35,7 +34,10 @@ URL_SUFFIX = 'wiz.io/oauth/token'
 
 def set_authentication_endpoint(auth_endpoint):
     global AUTH_E
-    AUTH_E = auth_endpoint
+    if auth_endpoint == '':
+        AUTH_E = generate_auth_urls(AUTH_DEFAULT)[1]
+    else:
+        AUTH_E = auth_endpoint
 
 
 def set_api_endpoint(api_endpoint):
@@ -62,7 +64,7 @@ def get_token():
     for auth0_prefix in AUTH0_PREFIX:
         auth0_list.extend(generate_auth_urls(auth0_prefix))
 
-    # check Wiz portal location - commercial or gov
+    # check Wiz portal auth endpoint - Cognito or Auth0
     if AUTH_E in cognito_list:
         audience = 'wiz-api'
     elif AUTH_E in auth0_list:
@@ -1415,7 +1417,7 @@ def get_project_team(project_name):
 
 def main():
     params = demisto.params()
-    set_authentication_endpoint(params.get('auth_endpoint', generate_auth_urls(AUTH_DEFAULT)[1]))
+    set_authentication_endpoint(params.get('auth_endpoint'))
     set_api_endpoint(params.get('api_endpoint', ''))
     try:
         command = demisto.command()
