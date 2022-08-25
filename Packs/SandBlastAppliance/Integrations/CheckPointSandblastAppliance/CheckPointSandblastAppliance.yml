@@ -3,7 +3,7 @@ commonfields:
   id: Check Point Sandblast Appliance
   version: -1
 name: Check Point Sandblast Appliance
-display: Check Point Sandblast Appliance
+display: Check Point Sandblast Appliance (Deprecated)
 category: Forensics & Malware Analysis
 description: Deprecated. Use Check Point Threat Emulation (SandBlast) instead. Query, upload and download data using Check Point Sandblast on local
   gateway.
