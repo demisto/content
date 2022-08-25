@@ -54,30 +54,31 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
     # HELPER FUNCTIONS
-    def get_paged_results(self, url_suffix, results, limit=None, params=None) -> list:
-        response = self.get_list(url_suffix, params)
-        if url_suffix[-1] != '/':
-            results.append(response)
-            return results
+    def get_paged_results(self, response, results, limit=None, params=None) -> list:
         arr = response.get('values')
         i = len(arr)
         isNext = response.get('next', None)
-        page = params.get('page', None)
+        if not params:
+            page = None
+        else:
+            page = params.get('page', None)
         if limit:
             while limit > 0 and i > 0:
                 for value in arr:
                     results.append(value)
                     limit = limit - 1
                     i = i - 1
-            if limit > 0 and isNext and (not page or page > 1):
+            if limit > 0 and isNext and (not page or page == 1):
                 isNext = f'/workspaces{isNext.split("workspaces")[1]}'
-                self.get_paged_results(isNext, results, limit)
+                response = self.get_list(isNext)
+                self.get_paged_results(response, results, limit)
         else:
             for value in arr:
                 results.append(value)
-            if isNext and (not page or page > 1):
+            if isNext and (not page or page == 1):
                 isNext = f'/workspaces{isNext.split("workspaces")[1]}'
-                self.get_paged_results(isNext, results)
+                response = self.get_list(isNext)
+                self.get_paged_results(response, results)
         return results
 
 
@@ -119,7 +120,10 @@ def project_list_command(client: Client, args) -> CommandResults:
         project_key = project_key.upper()
         url_suffix = f'/workspaces/{client.workspace}/projects/{project_key}'
         readable_name = f'The information about project {project_key}'
-    results = client.get_paged_results(url_suffix, [], limit, params)
+
+    response = client.get_list(url_suffix, params)
+    if url_suffix[-1] == '/':
+        results = client.get_paged_results(response, [], limit, params)
 
     human_readable = []
 
@@ -142,6 +146,10 @@ def project_list_command(client: Client, args) -> CommandResults:
         outputs=results,
         raw_response=results
     )
+
+
+# def open_branch_list_command(client: Client, args):
+
 
 ''' MAIN FUNCTION '''
 
@@ -179,7 +187,9 @@ def main() -> None:
         elif demisto.command() == 'bitbucket-project-list':
             result = project_list_command(client, demisto.args())
             return_results(result)
-        
+        # elif demisto.command() == 'bitbucket-open-branch-list':
+         #   result = open_branch_list_command(client, demisto.args())
+          #  return_results(result)
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
