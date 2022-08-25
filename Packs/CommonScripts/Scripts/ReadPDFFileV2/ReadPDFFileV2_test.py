@@ -369,13 +369,14 @@ def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
 def test_handle_error_read_only(mocker):
     from ReadPDFFileV2 import handle_error_read_only
 
-    os.chmod(f'{CWD}/test_for_read_only_file.pdf', S_IREAD)
+    os.chmod(f'{CWD}/test_for_read_only_file.txt', S_IREAD)
+
     def fun(path):
         return path
     change_permition = mocker.patch('ReadPDFFileV2.os.chmod')
     handle_error_read_only(
         fun,
-        f'{CWD}/test_for_read_only_file.pdf',
+        f'{CWD}/test_for_read_only_file.txt',
         'The error is not due to a problem with write permissions to the file'
     )
     assert change_permition.call_count == 1
@@ -384,14 +385,15 @@ def test_handle_error_read_only(mocker):
 def test_handle_error_read_only_failed(mocker):
     from ReadPDFFileV2 import handle_error_read_only
 
-    os.chmod(f'{CWD}/test_for_read_only_file.pdf', S_IWRITE)
+    os.chmod(f'{CWD}/test_for_read_only_file.txt', S_IWRITE)
+
     def fun(path):
         return path
     with pytest.raises(Exception) as e:
         handle_error_read_only(
             fun,
-            f'{CWD}/test_for_read_only_file.pdf',
+            f'{CWD}/test_for_read_only_file.txt',
             'The error is not due to a problem with write permissions to the file'
         )
     assert str(e.value) == 'The error is not due to a problem with write permissions to the file'
-    os.chmod(f'{CWD}/test_for_read_only_file.pdf', S_IREAD)
+    os.chmod(f'{CWD}/test_for_read_only_file.txt', S_IREAD)
