@@ -1,6 +1,6 @@
 {
   "query_type": "IP_ADDRESS",
-  "records": [
+  "dhcp": [
       {
           "customer_id": "sen",
           "hostnames": [

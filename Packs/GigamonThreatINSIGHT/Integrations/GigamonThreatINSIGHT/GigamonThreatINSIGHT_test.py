@@ -28,9 +28,17 @@ Tests helpers
 
 def test_encode_args():
     from GigamonThreatINSIGHT import encodeArgsToURL
-    args = {'arg1': 'test1', 'arg2': 2}
-    url = encodeArgsToURL(args)
-    assert url == "?arg1=test1&arg2=2"
+
+    arg1 = getRandomString(12)
+    arg2 = random.randint(0, 9)
+    arg3 = getRandomString(12)
+    arg4 = getRandomString(12)
+    args = {'arg1': arg1, 'arg2': arg2, 'include': arg3 + ',' + arg4}
+
+    url = encodeArgsToURL(args, ['include'])
+
+    expected_url: str = "?arg1=" + arg1 + "&arg2=" + str(arg2) + "&include=" + arg3 + "&include=" + arg4
+    assert url == expected_url
 
 
 """
@@ -56,12 +64,13 @@ def test_test_module(requests_mock):
 
 
 def test_get_sensors(requests_mock):
-    from GigamonThreatINSIGHT import Client, SensorClient, commandGetSensors
+    from GigamonThreatINSIGHT import Client, SensorClient, commandGetSensors, encodeArgsToURL
     mock_response = util_load_json('test_data/sensors_results.json')
-    requests_mock.get('https://sensor.icebrg.io/v1/sensors', json=mock_response)
+    args = {"arg1": getRandomString(10)}
+    requests_mock.get('https://sensor.icebrg.io/v1/sensors' + encodeArgsToURL(args), json=mock_response)
 
     client: SensorClient = Client.getClient('Sensors', '')
-    response: CommandResults = commandGetSensors(client)
+    response: CommandResults = commandGetSensors(client, args)
 
     assert response.outputs_prefix == 'Insight.Sensors'
     assert response.outputs_key_field == 'sensors'
@@ -69,12 +78,13 @@ def test_get_sensors(requests_mock):
 
 
 def test_get_device_list(requests_mock):
-    from GigamonThreatINSIGHT import Client, SensorClient, commandGetDevices
+    from GigamonThreatINSIGHT import Client, SensorClient, commandGetDevices, encodeArgsToURL
     mock_response = util_load_json('test_data/device_list_result.json')
-    requests_mock.get('https://sensor.icebrg.io/v1/devices', json=mock_response)
+    args = {"arg1": getRandomString(10)}
+    requests_mock.get('https://sensor.icebrg.io/v1/devices' + encodeArgsToURL(args), json=mock_response)
 
     client: SensorClient = Client.getClient('Sensors', '')
-    response: CommandResults = commandGetDevices(client)
+    response: CommandResults = commandGetDevices(client, args)
 
     assert response.outputs_prefix == 'Insight.Devices'
     assert response.outputs_key_field == 'device_list'
@@ -146,15 +156,17 @@ def test_get_tasks(requests_mock):
 
 def test_create_task(requests_mock):
     from GigamonThreatINSIGHT import Client, SensorClient, commandCreateTask
-    requests_mock.post('https://sensor.icebrg.io/v1/pcaptasks', json="{'status': 200}")
+    mock_response = util_load_json('test_data/create_task_result.json')
+    requests_mock.post('https://sensor.icebrg.io/v1/pcaptasks', json=mock_response)
 
     client: SensorClient = Client.getClient('Sensors', '')
+    response: CommandResults = commandCreateTask(client, {'sensor_ids': 'test1,test2'})
 
+    assert response.readable_output == 'Task created successfully'
+
+    requests_mock.post('https://sensor.icebrg.io/v1/pcaptasks', json="{'status': 400}")
     with pytest.raises(Exception):
         commandCreateTask(client, {})
-
-    response: CommandResults = commandCreateTask(client, {'sensor_ids': 'test1,test2'})
-    assert response.readable_output == 'Task created successfully'
 
 
 """
@@ -246,29 +258,41 @@ def test_get_detection_events(requests_mock):
 
 def test_create_detection_rule(requests_mock):
     from GigamonThreatINSIGHT import Client, DetectionClient, commandCreateDetectionRule
-    requests_mock.post('https://detections.icebrg.io/v1/rules', json="{'status': 200}")
+    mock_response = util_load_json('test_data/create_detection_rule_result.json')
+    requests_mock.post('https://detections.icebrg.io/v1/rules', json=mock_response)
 
     client: DetectionClient = Client.getClient('Detections', '')
+    response: CommandResults = commandCreateDetectionRule(client, {'run_account_uuids': 'test1,test2', 'device_ip_fields': ''})
+
+    assert response.readable_output == 'Rule created successfully'
+
+    requests_mock.post('https://detections.icebrg.io/v1/rules', json="{'status': 400}")
 
     with pytest.raises(Exception):
         commandCreateDetectionRule(client, {})
 
-    response: CommandResults = commandCreateDetectionRule(client, {'run_account_uuids': 'test1,test2', 'device_ip_fields': ''})
-    assert response.readable_output == 'Rule created successfully'
-
 
 def test_resolve_detection(requests_mock):
     from GigamonThreatINSIGHT import Client, DetectionClient, commandResolveDetection
-    requests_mock.put('https://detections.icebrg.io/v1/detections/detection_uuid/resolve', json="{'status': 200}")
+    detection_uuid = getRandomString(10)
+
+    requests_mock.put(f'https://detections.icebrg.io/v1/detections/{detection_uuid}/resolve', json="")
 
     client: DetectionClient = Client.getClient('Detections', '')
 
-    with pytest.raises(Exception):
-        commandResolveDetection(client, {'resolution': 'resolution', 'resolution_comment': 'resolution_comment'})
-
-    response: CommandResults = commandResolveDetection(client, {'detection_uuid': 'detection_uuid', 'resolution': 'resolution',
+    response: CommandResults = commandResolveDetection(client, {'detection_uuid': detection_uuid,
+                                                                'resolution': 'true_positive_mitigated',
                                                                 'resolution_comment': 'resolution_comment'})
     assert response.readable_output == 'Detection resolved successfully'
+
+    with pytest.raises(Exception):
+        commandResolveDetection(client, {'resolution': 'true_positive_mitigated', 'resolution_comment': 'resolution_comment'})
+        commandResolveDetection(client, {'detection_uuid': detection_uuid, 'resolution_comment': 'resolution_comment'})
+
+    requests_mock.put(f'https://detections.icebrg.io/v1/detections/{detection_uuid}/resolve', json="{'status': 400}")
+    with pytest.raises(Exception):
+        commandResolveDetection(client, {'detection_uuid': detection_uuid, 'resolution': 'true_positive_mitigated',
+                                         'resolution_comment': 'resolution_comment'})
 
 
 """
@@ -299,7 +323,7 @@ def test_get_entity_pdns(requests_mock):
     requests_mock.get('https://entity.icebrg.io/v1/entity/' + entityId + '/pdns', json=mock_response)
 
     client: EntityClient = Client.getClient('Entity', '')
-    response: CommandResults = commandGetEntityPdns(client, entityId)
+    response: CommandResults = commandGetEntityPdns(client, {'entity': entityId})
 
     assert response.outputs_prefix == 'Insight.Entity.PDNS'
     assert response.outputs_key_field == 'passivedns'
@@ -314,10 +338,10 @@ def test_get_entity_dhcp(requests_mock):
     requests_mock.get('https://entity.icebrg.io/v1/entity/' + entityId + '/dhcp', json=mock_response)
 
     client: EntityClient = Client.getClient('Entity', '')
-    response: CommandResults = commandGetEntityDhcp(client, entityId)
+    response: CommandResults = commandGetEntityDhcp(client, {'entity': entityId})
 
     assert response.outputs_prefix == 'Insight.Entity.DHCP'
-    assert response.outputs_key_field == 'records'
+    assert response.outputs_key_field == 'dhcp'
     assert response.outputs == mock_response[response.outputs_key_field]
 
 
