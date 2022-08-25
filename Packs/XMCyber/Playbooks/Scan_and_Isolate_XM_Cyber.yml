@@ -83,7 +83,7 @@ tasks:
       version: -1
       name: Are critical assets at risk
       type: condition
-      description: Based on XM Cyber enrichment, is there at least one critical asset at risk from this entity 
+      description: Based on XM Cyber enrichment, is there at least one critical asset at risk from this entity
       iscommand: false
       brand: ""
     nexttasks:
@@ -308,13 +308,13 @@ tasks:
     message:
       to:
         simple: Analyst
-      subject: null
+      subject:
       body:
         simple: Isolate this endpoint?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -356,8 +356,8 @@ tasks:
     task:
       id: c2ea9077-c256-48f1-8c48-7a4c1535f70f
       version: -1
-      name: IP Enrichment - XM Cyber
-      playbookName: IP Enrichment - XM Cyber
+      name: Endpoint Enrichment By IP - XM Cyber
+      playbookName: Endpoint Enrichment By IP - XM Cyber
       description: Look up the IP in XM Cyber and add risk info
       type: playbook
       iscommand: false
@@ -385,8 +385,8 @@ tasks:
     task:
       id: 4f4bb6ba-6ecd-4c33-8f99-f24a02fbf0d2
       version: -1
-      name: Endpoint Enrichment - XM Cyber
-      playbookName: Endpoint Enrichment - XM Cyber
+      name: Endpoint Enrichment By Hostname - XM Cyber
+      playbookName: Endpoint Enrichment By Hostname - XM Cyber
       description: Look up the endpoint name and add risk info
       type: playbook
       iscommand: false
@@ -450,34 +450,13 @@ view: |-
       }
     }
   }
-inputs:
-- key: IP
-  value:
-    complex:
-      root: IP
-      accessor: Address
-      transformers:
-      - operator: uniq
-  required: false
-  description: The IP address to enrich.
-  playbookInputQuery: null
-- key: Hostname
-  value:
-    complex:
-      root: Endpoint
-      accessor: Hostname
-      transformers:
-      - operator: uniq
-  required: false
-  description: The hostname of the endpoint to enrich.
-  playbookInputQuery: null
-outputs: 
+inputs: []
+outputs:
 - contextPath: Traps.IsolateResult.Status
   description: The status of the isolation operation.
   type: string
 - contextPath: Nexpose.Scan.Status
-  description: The scan status. Valid values are aborted, unknown, running, finished,
-    stopped, error, paused, dispatched, integrating
+  description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating
   type: string
 - contextPath: Nexpose.Scan.Assets
   description: The number of assets found in the scan
@@ -495,4 +474,4 @@ outputs:
   description: Number of unique critical assets at risk from this entity
   type: number
 tests:
- -  No tests
+- No tests

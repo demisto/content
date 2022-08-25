@@ -59,6 +59,7 @@ For more details about the authentication used in this integration, see [Microso
     | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
     | First Fetch Timestamp | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
     | self-deployed | Use a self-deployed Azure Application. |  N/A |
+    | Using GCC | Whether a GCC edpoint is used. |  False |
 
 
 4. Click **Test** to validate the URLs, token, and connection.

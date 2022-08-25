@@ -1,20 +1,17 @@
-import json
 import shutil
 
 import demistomock as demisto  # noqa: F401
-import requests
 import urllib3
 from CommonServerPython import *  # noqa: F401
-
-urllib3.disable_warnings()
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-
 URL = "http://api.qrserver.com/"
+
+''' FUNCTION '''
 
 
 def read_qr_code(verify=True):
