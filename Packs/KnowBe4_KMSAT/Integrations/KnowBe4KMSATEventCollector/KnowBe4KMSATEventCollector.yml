@@ -25,6 +25,12 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- display: The maximum number of events per fetch.
+  additionalinfo: The maximum number of events to get. This number must be divisible by 100. Default is 100. In case this is empty, all available events will be fetched. This param is relevant for the kms-get-events command only.
+  defaultvalue: 100
+  name: max_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -49,20 +55,66 @@ display: 'KnowBe4 KMSAT Event Collector'
 name: KnowBe4 KMSAT Event Collector
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+  - deprecated: false
+    description: Manual command to fetch events and display them.
     execution: false
-    name: baseintegration-dummy
+    name: kms-get-events
+    arguments:
+      - name: occurred_date
+        description: Filter by Occurred Date (YYYY-MM-DD).
+      - name: risk_level
+        description: Filter by Risk Level by entering a value from -10 (low risk) to 10 (high risk).
+      - auto: PREDEFINED
+        defaultValue: 'False'
+        description: Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*
+        isArray: false
+        name: should_push_events
+        predefined:
+          - 'True'
+          - 'False'
+        required: true
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: KMSat.Event.id
+      description: Event id.
+      type: Number
+    - contextPath: KMSat.Event.user.email
+      description: The target mail for this event.
+      type: String
+    - contextPath: KMSat.Event.user.id
+      description: The id of the user the event is targeted to.
+      type: Number
+    # - contextPath: KMSat.Event.user.archived
+    #   description: 
+    #   type: Boolean
+    # - contextPath: KMSat.Event.external_id
+    #   description: 
+    #   type: String
+    - contextPath: KMSat.Event.source
+      description: The source of the event.
+      type: String
+    - contextPath: KMSat.Event.description
+      description: The event description.
+      type: String
+    - contextPath: KMSat.Event.occurred_date
+      description: The date the event occurred.
+      type: String
+    - contextPath: KMSat.Event.risk.level
+      description: The event's risk level.
+      type: Number
+    - contextPath: KMSat.Event.risk.factor
+      description: The event's risk factor.
+      type: Number
+    # - contextPath: KMSat.Event.risk.decay_mode
+    #   description: 
+    #   type: String
+    - contextPath: KMSat.Event.risk.expire_date
+      description: The event's expire date.
+      type: String
+    - contextPath: KMSat.Event.event_type.id
+      description: The id of the event type.
+      type: Number
+    - contextPath: KMSat.Event.event_type.name
+      description: The name of the event type.
       type: String
   isfetch: false
   runonce: false
