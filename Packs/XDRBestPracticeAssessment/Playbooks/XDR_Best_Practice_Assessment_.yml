@@ -1,11 +1,7 @@
-id: eedddaec-5758-4ed1-8271-b905fa41c193
-version: 47
-vcShouldKeepItemLegacyProdMachine: false
-name: 'XDR Best Practice Assessment '
-description: "This playbook covers an XDR Best Practice Assessment for existing XDR
-  deployments. It provides surveys for each domain of the assessment. \n\nThe assessment
-  covers the following domains: Configurations, Agent Management, Policy and Profiles,
-  Profile Extensions, Incident Management, and Incident Response. "
+id: 'XDR Best Practice Assessment'
+version: -1
+name: 'XDR Best Practice Assessment'
+description: "This playbook covers an XDR Best Practice Assessment for existing XDR deployments. It provides surveys for each domain of the assessment. \n\nThe assessment covers the following domains: Configurations, Agent Management, Policy and Profiles, Profile Extensions, Incident Management, and Incident Response. "
 starttaskid: "0"
 tasks:
   "0":
@@ -18,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -29,7 +26,6 @@ tasks:
       - "21"
       - "29"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -55,11 +51,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -85,11 +81,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -115,11 +111,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -145,11 +141,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -175,11 +171,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -205,11 +201,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -226,12 +222,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: a460d46a-d077-444a-8a3f-c307290da3a3
+    taskid: c4d9a7e3-38eb-48d5-8c4e-1d530c68be21
     type: collection
     task:
-      id: a460d46a-d077-444a-8a3f-c307290da3a3
+      id: c4d9a7e3-38eb-48d5-8c4e-1d530c68be21
       version: -1
       name: Configuration Survey
+      description: Configuration Survey for XDR BPA.
       type: collection
       iscommand: false
       brand: ""
@@ -239,7 +236,6 @@ tasks:
       '#none#':
       - "22"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -256,14 +252,12 @@ tasks:
       subject:
         simple: XDR Best Practice Assessment Questions - Configuration
       body:
-        simple: "Please answer the questions in the following survey as a part of
-          the manual information gathering step for your XDR Best Practice Assessment.
-          \n\n-Cortex XSOAR"
+        simple: "Please answer the questions in the following survey as a part of the manual information gathering step for your XDR Best Practice Assessment. \n\n-Cortex XSOAR"
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -275,9 +269,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: "How are General Settings used? \n\n1. Is Identity Analytics enabled?
-            \n2. Are notifications enabled? \n3. Is threat intel enabled? \n4. Is
-            Informative Behavioral Alerts enabled? "
+          simple: "How are General Settings used? \n\n1. Is Identity Analytics enabled? \n2. Are notifications enabled? \n3. Is threat intel enabled? \n4. Is Informative Behavioral Alerts enabled? "
         required: true
         gridcolumns: []
         defaultrows: []
@@ -291,8 +283,7 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: Are Broker VMs being utilized in this XDR environment? If so, please
-            list them below. If not, please write No.
+          simple: Are Broker VMs being utilized in this XDR environment? If so, please list them below. If not, please write No.
         required: true
         gridcolumns: []
         defaultrows: []
@@ -306,8 +297,7 @@ tasks:
       - id: "2"
         label: ""
         labelarg:
-          simple: Are any integrations being leveraged in this XDR environment? If
-            so, please list them here. If not, please write No.
+          simple: Are any integrations being leveraged in this XDR environment? If so, please list them here. If not, please write No.
         required: true
         gridcolumns: []
         defaultrows: []
@@ -321,8 +311,7 @@ tasks:
       - id: "3"
         label: ""
         labelarg:
-          simple: Are we using user roles in this XDR environment? If so, please list
-            them here. If not, please write No.
+          simple: Are we using user roles in this XDR environment? If so, please list them here. If not, please write No.
         required: true
         gridcolumns: []
         defaultrows: []
@@ -344,12 +333,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 38e79111-7166-459a-8131-3c358ed2a808
+    taskid: 3928ac74-ef60-4012-84ba-81ee347e06e1
     type: collection
     task:
-      id: 38e79111-7166-459a-8131-3c358ed2a808
+      id: 3928ac74-ef60-4012-84ba-81ee347e06e1
       version: -1
       name: Agent Management Survey
+      description: Agent Management Survey for XDR BPA.
       type: collection
       iscommand: false
       brand: ""
@@ -357,7 +347,6 @@ tasks:
       '#none#':
       - "23"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -374,14 +363,12 @@ tasks:
       subject:
         simple: XDR Best Practice Assessment Questions - Agent Management
       body:
-        simple: "Please answer the questions in the following survey as a part of
-          the manual information gathering step for your XDR Best Practice Assessment.
-          \n\n-Cortex XSOAR"
+        simple: "Please answer the questions in the following survey as a part of the manual information gathering step for your XDR Best Practice Assessment. \n\n-Cortex XSOAR"
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -393,8 +380,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Please share the general strategy used for deploying and updating
-            agents on endpoints. '
+          simple: 'Please share the general strategy used for deploying and updating agents on endpoints. '
         required: true
         gridcolumns: []
         defaultrows: []
@@ -408,8 +394,7 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: 'Are agent install packages properly maintained? Are installation
-            packages that are not in use deleted? '
+          simple: 'Are agent install packages properly maintained? Are installation packages that are not in use deleted? '
         required: false
         gridcolumns: []
         defaultrows: []
@@ -437,8 +422,7 @@ tasks:
       - id: "3"
         label: ""
         labelarg:
-          simple: Are agent groups in use? If so, please list them here. If not, please
-            write No.
+          simple: Are agent groups in use? If so, please list them here. If not, please write No.
         required: false
         gridcolumns: []
         defaultrows: []
@@ -488,12 +472,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 5e6faa9b-e70a-4130-8fd2-50967c1e7385
+    taskid: 792d4127-5c32-4284-8c54-aeeb66fea3e6
     type: collection
     task:
-      id: 5e6faa9b-e70a-4130-8fd2-50967c1e7385
+      id: 792d4127-5c32-4284-8c54-aeeb66fea3e6
       version: -1
       name: Policy and Profiles Survey
+      description: Policy and Profiles Survey for XDR BPA.
       type: collection
       iscommand: false
       brand: ""
@@ -501,7 +486,6 @@ tasks:
       '#none#':
       - "24"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -518,14 +502,12 @@ tasks:
       subject:
         simple: XDR Best Practice Assessment Questions - Policy and Profiles
       body:
-        simple: "Please answer the questions in the following survey as a part of
-          the manual information gathering step for your XDR Best Practice Assessment.
-          \n\n-Cortex XSOAR"
+        simple: "Please answer the questions in the following survey as a part of the manual information gathering step for your XDR Best Practice Assessment. \n\n-Cortex XSOAR"
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -629,12 +611,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 44ab0ef0-3552-4586-8151-fac521143383
+    taskid: c87ded40-4065-4b8f-8031-1ca4f7ac3329
     type: collection
     task:
-      id: 44ab0ef0-3552-4586-8151-fac521143383
+      id: c87ded40-4065-4b8f-8031-1ca4f7ac3329
       version: -1
       name: Profile Extensions Survey
+      description: Profile Extensions Survey for XDR BPA.
       type: collection
       iscommand: false
       brand: ""
@@ -642,7 +625,6 @@ tasks:
       '#none#':
       - "25"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -659,14 +641,12 @@ tasks:
       subject:
         simple: XDR Best Practice Assessment Questions - Profile Extensions
       body:
-        simple: "Please answer the questions in the following survey as a part of
-          the manual information gathering step for your XDR Best Practice Assessment.
-          \n\n-Cortex XSOAR"
+        simple: "Please answer the questions in the following survey as a part of the manual information gathering step for your XDR Best Practice Assessment. \n\n-Cortex XSOAR"
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -742,12 +722,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c209964e-4297-44f0-8eb7-f8869fe5afe2
+    taskid: 75e6daee-2234-4935-8985-d04458754b79
     type: collection
     task:
-      id: c209964e-4297-44f0-8eb7-f8869fe5afe2
+      id: 75e6daee-2234-4935-8985-d04458754b79
       version: -1
       name: Incident Management Survey
+      description: Incident Management Survey for XDR BPA.
       type: collection
       iscommand: false
       brand: ""
@@ -755,7 +736,6 @@ tasks:
       '#none#':
       - "26"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -772,14 +752,12 @@ tasks:
       subject:
         simple: XDR Best Practice Assessment Questions - Incident Management
       body:
-        simple: "Please answer the questions in the following survey as a part of
-          the manual information gathering step for your XDR Best Practice Assessment.
-          \n\n-Cortex XSOAR"
+        simple: "Please answer the questions in the following survey as a part of the manual information gathering step for your XDR Best Practice Assessment. \n\n-Cortex XSOAR"
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -855,12 +833,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 2841501c-10a0-4134-8194-313a1a87fabe
+    taskid: 1955bcbf-fc4b-4366-8d31-01b714105da8
     type: collection
     task:
-      id: 2841501c-10a0-4134-8194-313a1a87fabe
+      id: 1955bcbf-fc4b-4366-8d31-01b714105da8
       version: -1
       name: Incident Response Survey
+      description: Incident Response Survey for XDR BPA.
       type: collection
       iscommand: false
       brand: ""
@@ -868,7 +847,6 @@ tasks:
       '#none#':
       - "27"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -885,14 +863,12 @@ tasks:
       subject:
         simple: XDR Best Practice Assessment Questions - Incident Response
       body:
-        simple: "Please answer the questions in the following survey as a part of
-          the manual information gathering  step for your XDR Best Practice Assessment.
-          \n\n-Cortex XSOAR"
+        simple: "Please answer the questions in the following survey as a part of the manual information gathering  step for your XDR Best Practice Assessment. \n\n-Cortex XSOAR"
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -968,12 +944,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: ef043bbe-3810-45b1-8757-950ef98fd009
+    taskid: 8a1c7b70-c24d-43f7-8823-52d4fb4b5f6a
     type: collection
     task:
-      id: ef043bbe-3810-45b1-8757-950ef98fd009
+      id: 8a1c7b70-c24d-43f7-8823-52d4fb4b5f6a
       version: -1
       name: Reporting Survey
+      description: Reporting Survey for XDR BPA.
       type: collection
       iscommand: false
       brand: ""
@@ -981,7 +958,6 @@ tasks:
       '#none#':
       - "28"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -998,14 +974,12 @@ tasks:
       subject:
         simple: XDR Best Practice Assessment Questions - Reporting
       body:
-        simple: "Please answer the questions in the following survey as a part of
-          the manual information gathering step for your XDR Best Practice Assessment.
-          \n\n-Cortex XSOAR"
+        simple: "Please answer the questions in the following survey as a part of the manual information gathering step for your XDR Best Practice Assessment. \n\n-Cortex XSOAR"
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1062,11 +1036,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1107,7 +1081,6 @@ tasks:
       xdrbpaintegrations:
         simple: ${XDR Best Practice Assessment Configuration Survey.Answers.2}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1152,7 +1125,6 @@ tasks:
       xdrbpadeploymentstrategy:
         simple: ${Agent Management Survey.Answers.0}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1197,7 +1169,6 @@ tasks:
       xdrbparestrictionprofile:
         simple: ${Policy and Profiles.Answers.4}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1238,7 +1209,6 @@ tasks:
       xdrbpahostfirewall:
         simple: ${Profile Extensions Survey.Answers.2}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1279,7 +1249,6 @@ tasks:
       xdrbpaprocessexceptions:
         simple: ${Incident Management Survey.Answers.3}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1320,7 +1289,6 @@ tasks:
       xdrbparesponseoverview:
         simple: ${Incident Response Survey.Answers.0}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1357,7 +1325,6 @@ tasks:
       xdrbpareports:
         simple: ${Reporting Survey.Answers.1}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1389,7 +1356,6 @@ tasks:
       severity:
         simple: Informational
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1421,7 +1387,6 @@ tasks:
       closeReason:
         simple: Resolved
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1453,7 +1418,9 @@ inputs:
   value:
     simple: ${incident.owner}
   required: false
-  description: Input the email address of the individual who will be filling out the
-    survey. Default is the owner of the incident in XSOAR.
-  playbookInputQuery: null
+  description: Input the email address of the individual who will be filling out the survey. Default is the owner of the incident in XSOAR.
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
