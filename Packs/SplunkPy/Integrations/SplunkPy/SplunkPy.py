@@ -1347,7 +1347,7 @@ def update_remote_system_command(args, params, service, auth_token, mapper):
             demisto.debug('Sending update request to Splunk for notable {}, data: {}'.format(notable_id, changed_data))
             base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
             try:
-                session_key = service.token if not auth_token else None
+                session_key = get_auth_session_key(service) if not auth_token else None
                 response_info = update_notable_events(
                     baseurl=base_url, comment=changed_data['comment'], status=changed_data['status'],
                     urgency=changed_data['urgency'], owner=changed_data['owner'], eventIDs=[notable_id],
@@ -2561,6 +2561,13 @@ def get_kv_store_config(kv_store):
     return '\n'.join(readable)
 
 
+def get_auth_session_key(service):
+    """
+    Get the session key or token for POST request based on whether the Splunk basic auth are true or not
+    """
+    return service and service.basic and service._auth_headers[0][1] or service.token
+
+
 def extract_indicator(indicator_path, _dict_objects):
     indicators = []
     indicator_paths = indicator_path.split('.')
@@ -2626,7 +2633,6 @@ def main():
         connection_args['username'] = username
         connection_args['password'] = password
         connection_args['autologin'] = True
-        connection_args['basic'] = True
 
     if use_requests_handler:
         handle_proxy()
@@ -2669,7 +2675,8 @@ def main():
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service)
     elif command == 'splunk-notable-event-edit':
-        splunk_edit_notable_event_command(base_url, service and service.token, auth_token, demisto.args())
+        token = get_auth_session_key(service)
+        splunk_edit_notable_event_command(base_url, token, auth_token, demisto.args())
     elif command == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     elif command == 'splunk-job-status':
