@@ -1,5 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *
+
+
 job_uuid = demisto.args().get('uuid')
 emailsubject = demisto.args().get('emailsubject')
 attachIDs = demisto.args().get('attachIDs', '')

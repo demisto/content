@@ -4,6 +4,7 @@ from bottle import request, route, run
 import demistomock as demisto
 from CommonServerPython import *
 
+
 @route('/hello')
 def hello():
     return "Hello World!"
@@ -48,7 +49,7 @@ def process_form(uuid, linkuuid):
 
 
 @route('/processform/<uuid>/<linkuuid>/', method='GET')
-def process_form(uuid, linkuuid):
+def process_form_get(uuid, linkuuid):
     integration_context = get_integration_context()
     try:
         data = integration_context[uuid]
