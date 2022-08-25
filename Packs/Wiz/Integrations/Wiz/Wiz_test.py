@@ -15,6 +15,7 @@ integration_params = {
 
 TEST_TOKEN = '123456789'
 SIMILAR_COMMANDS = ['wiz-issue-in-progress', 'wiz-reopen-issue', 'wiz-reject-issue', 'wiz-get-issues',
+                    'wiz-get-resource',
                     'wiz-set-issue-note', 'wiz-clear-issue-note', 'wiz-get-issue-evidence', 'wiz-set-issue-due-date',
                     'wiz-clear-issue-due-date', 'wiz-rescan-machine-disk', 'wiz-get-project-team']
 
@@ -142,8 +143,12 @@ test_reject_issue_response = {
 
 
 @patch('Wiz.checkAPIerrors', return_value=test_reject_issue_response)
-def test_reject_issue(checkAPIerrors):
+def test_reject_issue(checkAPIerrors, capfd):
     from Wiz import reject_issue
+
+    with capfd.disabled():
+        res = reject_issue(None, 1, 2)
+        assert res == 'You should pass all of: Issue ID, rejection reason and note.'
 
     res = reject_issue('12345678-2222-3333-1111-ff5fa2ff7f78', 'WONT_FIX', 'blah_note')
     assert res == test_reject_issue_response
@@ -177,6 +182,36 @@ def test_reject_issue_failed(checkAPIerrors, capfd):
         assert res == ("Could not find Issue with ID 12345678-2222-3333-1111-ff5fa2ff7f78")
 
 
+@patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
+def test_reject_issue_exception(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import reject_issue
+        try:
+            reject_issue('12345678-2222-3333-1111-ff5fa2ff7f78', 'WONT_FIX', 'blah_note')
+        except DemistoException:
+            assert True
+
+
+@patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
+def test_get_issue_evidence_exception(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import get_issue_evidence
+        try:
+            get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+        except DemistoException:
+            assert True
+
+
+@patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
+def test_clear_issue_due_date_exception(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import clear_issue_due_date
+        try:
+            clear_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f78')
+        except DemistoException:
+            assert True
+
+
 test_reopen_issue_response = {
     "data": {
         "updateIssue": {
@@ -190,6 +225,56 @@ test_reopen_issue_response = {
         }
     }
 }
+
+
+@patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
+def test_reopen_issue_exception(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import reopen_issue
+        try:
+            reopen_issue('12345678-2222-3333-1111-ff5fa2ff7f78', 'blah_note')
+        except DemistoException:
+            assert True
+
+
+@patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
+def test_issue_in_progress_exception(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import issue_in_progress
+        try:
+            issue_in_progress('12345678-2222-3333-1111-ff5fa2ff7f78')
+        except DemistoException:
+            assert True
+
+
+@patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
+def test_set_issue_note_exception(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import set_issue_note
+        try:
+            set_issue_note('12345678-2222-3333-1111-ff5fa2ff7f78', 'blah_note')
+        except DemistoException:
+            assert True
+
+
+@patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
+def test_clear_issue_note_exception(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import clear_issue_note
+        try:
+            clear_issue_note('12345678-2222-3333-1111-ff5fa2ff7f78')
+        except DemistoException:
+            assert True
+
+
+@patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
+def test_set_issue_date_exception(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import set_issue_due_date
+        try:
+            set_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f78', '2022-01-20')
+        except DemistoException:
+            assert True
 
 
 @patch('Wiz.return_error', side_effect=Exception('no command'))
@@ -653,6 +738,33 @@ def test_set_issue_due_date_failed(checkAPIerrors, capfd):
 
         res = set_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f78', '01-20-2022')
         assert res == "The date format is the incorrect. It should be YYYY-MM-DD"
+
+
+@patch('Wiz.checkAPIerrors', return_value="errors blabla")
+def test_set_issue_due_date_error(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import set_issue_due_date
+
+        res = set_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f78', '2022-01-20')
+        assert "Could not find Issue with ID" in res
+
+
+@patch('Wiz.checkAPIerrors', return_value="errors blabla")
+def test_get_issue_evidence_error(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import get_issue_evidence
+
+        res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+        assert "Could not find Issue with ID" in res
+
+
+@patch('Wiz.checkAPIerrors', return_value="errors blabla")
+def test_clear_issue_due_date_error(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import clear_issue_due_date
+
+        res = clear_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f78')
+        assert "Could not find Issue with ID" in res
 
 
 test_clear_issue_due_data_response = {
