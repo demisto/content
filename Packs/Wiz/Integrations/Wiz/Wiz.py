@@ -18,6 +18,7 @@ HEADERS["Content-Type"] = "application/json"
 TOKEN = None
 URL = ''
 AUTH_E = ''
+AUTH_DEFAULT = "auth"  # NEED TO BE REMOVED AFTER THAT AUTH0 IS DEPRECATED
 COGNITO_PREFIX = [
     "auth.app",
     "auth.gov",
@@ -1413,7 +1414,7 @@ def get_project_team(project_name):
 
 def main():
     params = demisto.params()
-    set_authentication_endpoint(params.get('auth_endpoint', ''))
+    set_authentication_endpoint(params.get('auth_endpoint', AUTH_DEFAULT))
     set_api_endpoint(params.get('api_endpoint', ''))
     try:
         command = demisto.command()
