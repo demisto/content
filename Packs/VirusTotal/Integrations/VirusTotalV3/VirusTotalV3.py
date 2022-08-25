@@ -1854,7 +1854,7 @@ def scan_url_command(client: Client, args: dict) -> CommandResults:
             data = {'url': url, 'id': '', 'error': error['message']}
             headers.append('error')
         else:
-            raise ex
+            raise
 
     return CommandResults(
         readable_output=tableToMarkdown(
