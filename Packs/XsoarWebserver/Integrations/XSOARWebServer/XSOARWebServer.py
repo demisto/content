@@ -1,7 +1,8 @@
 import uuid
 from string import Template
 from bottle import request, route, run
-
+import demistomock as demisto
+from CommonServerPython import *
 
 @route('/hello')
 def hello():
