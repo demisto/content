@@ -36,6 +36,35 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 description: A threat intelligence and investigation platform for domain names, IP
   addresses, email addresses, name servers and so on.
 display: DomainTools Iris
@@ -1299,7 +1328,7 @@ script:
     - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
       description: The tracking code Google Analytics.
       type: Number
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: false
   longRunning: false
   longRunningPort: false

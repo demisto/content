@@ -421,6 +421,7 @@ Returns a list of all host sets known to your HX Series appliance.
 | FireEyeHX.HostSets.name | string | The name of the host set. | 
 | FireEyeHX.HostSets.type | string | The type of the host set \(static/dynamic/hidden\). | 
 | FireEyeHX.HostSets.url | string | The FireEye URL of the host set. | 
+| FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
 ```!fireeye-hx-get-host-set-information hostSetID=1001```
@@ -433,7 +434,8 @@ Returns a list of all host sets known to your HX Series appliance.
             "_revision": "20210308150955358783164361",
             "name": "Test",
             "type": "venn",
-            "url": "/hx/api/v3/host_sets/1001"
+            "url": "/hx/api/v3/host_sets/1001",
+            "deleted": false
         }
     }
 }
@@ -2211,15 +2213,14 @@ Deletes a Host Set policy.
 | hostSetId | The host set ID. | Required | 
 | policyId | The policy ID. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 #### Command example
 ```!fireeye-hx-delete-host-set-policy hostSetId=1005 policyId=YYYXXXYYY```
 #### Human Readable Output
-
 >Success
+
 
 ### fireeye-hx-delete-data-acquisition
 ***
@@ -2397,3 +2398,165 @@ There is no context output for this command.
 
 >Successfully deleted indicator 7f49e4c6-14d5-4b06-8d17-843fd17f79de from the Custom category
 
+### fireeye-hx-create-host-set-static
+***
+Creates static host set.
+
+
+#### Base Command
+
+`fireeye-hx-create-host-set-static`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_set_name | The host set name. | Required | 
+| hosts_ids | The hosts IDs to add to the host set. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.HostSets._id | String | The host set ID. | 
+| FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
+| FireEyeHX.HostSets.name | String | The host set name. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the database, the update will fail. | 
+| FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
+
+#### Command example
+```!fireeye-hx-create-host-set-static host_set_name=demisto_test hosts_ids=Hqb2ns3oui1fpzg0BxI1Ch```
+#### Human Readable Output
+
+>Static Host Set demisto_test with id 1001 was created successfully.
+### fireeye-hx-update-host-set-static
+***
+Updates a static host set.
+
+
+#### Base Command
+
+`fireeye-hx-update-host-set-static`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_set_id | The host set ID. | Required | 
+| host_set_name | The host set name. | Required | 
+| add_host_ids | The host sets IDs to add. | Optional | 
+| remove_host_ids | The host set IDs to remove. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.HostSets._id | String | The host set ID. | 
+| FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
+| FireEyeHX.HostSets.name | String | The host set name. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the database, the update will fail. | 
+| FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
+
+#### Command example
+```!fireeye-hx-update-host-set-static host_set_name=demisto_test host_set_id=1036 add_host_ids=GfLI00Q4zpidezw9I11rV6 remove_host_ids=Hqb2ns3oui1fpzg0BxI1Ch```
+#### Human Readable Output
+
+>Static Host Set demisto_test was updated successfully.
+### fireeye-hx-create-host-set-dynamic
+***
+Creates dynamic host set.
+
+
+#### Base Command
+
+`fireeye-hx-create-host-set-dynamic`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_set_name | The host set name. | Required | 
+| query | Free text query. Cannot be used with the other query arguments. | Optional | 
+| query_key | The query key. Must be provided with the query_value and query_operator. Possible values are: domain, product_name, patch_level, timezone, os_bitness, cloud_provider, app_version, hostname, server_time, gmt_offset_seconds, primary-ip_address, normalized_app_version, litmus_script_id, app_config_hash, platform. | Optional | 
+| query_value | The query value. Must be provided with the query_key and query_operator. | Optional | 
+| query_operator | The query operator. Must be provided with the query_key and query_value. Possible values are: eq, gt, lt, lte, gte, exists, cidr. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.HostSets._id | String | The host set ID. | 
+| FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
+| FireEyeHX.HostSets.name | String | The host set name. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the database, the update will fail. | 
+| FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
+
+#### Command example
+```!fireeye-hx-create-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit```
+```!fireeye-hx-update-host-set-dynamic host_set_name=MoreTestyay query=`{"key": "AgentVersion","value": "31.28.17","operator": "gte"}` ```
+#### Human Readable Output
+
+>Dynamic Host Set demisto_test with id 1068 was created successfully.
+### fireeye-hx-update-host-set-dynamic
+***
+Updates dynamic host set.
+
+
+#### Base Command
+
+`fireeye-hx-update-host-set-dynamic`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_set_name | The host set name. | Required | 
+| host_set_id | The host set ID. | Required | 
+| query | Free text query. Cannot be used with the other query arguments. | Optional | 
+| query_key | The query key. Must be provided with the query_value and query_operator. Possible values are: domain, product_name, patch_level, timezone, os_bitness, cloud_provider, app_version, hostname, server_time, gmt_offset_seconds, primary-ip_address, normalized_app_version, litmus_script_id, app_config_hash, platform. | Optional | 
+| query_value | The query value. Must be provided with the query_key and query_operator. | Optional | 
+| query_operator | The query operator. Must be provided with the query_value and query_key. Possible values are: eq, gt, lt, lte, gte, exists, cidr. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.HostSets._id | String | The host set ID. | 
+| FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
+| FireEyeHX.HostSets.name | String | The host set name. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the database, the update will fail. | 
+| FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
+
+#### Command example
+```!fireeye-hx-update-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit host_set_id=1061```
+```!fireeye-hx-update-host-set-dynamic host_set_name=MoreTestyay query=`{"key": "AgentVersion","value": "31.28.17","operator": "gte"}` host_set_id=1061```
+#### Human Readable Output
+
+>Dynamic Host Set Demisto_test was updated successfully.
+### fireeye-hx-delete-host-set
+***
+Deletes a host set.
+
+
+#### Base Command
+
+`fireeye-hx-delete-host-set`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_set_id | The host set ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.HostSets._id | String | The host set ID. | 
+| FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
+
+#### Command example
+```!fireeye-hx-delete-host-set host_set_id=1001```
+#### Human Readable Output
+
+>Host set 1001 was deleted successfully.

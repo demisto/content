@@ -124,7 +124,7 @@ script:
       description: A CSV list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.29461
+  dockerimage: demisto/py3ews:1.0.0.32820
 tests:
 - "EWS Mail Sender Test"
 - "EWS Mail Sender Test 2"

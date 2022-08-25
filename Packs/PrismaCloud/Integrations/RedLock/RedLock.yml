@@ -222,25 +222,37 @@ script:
       required: false
       secret: false
     - default: false
+      description: The number of alerts to return
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
       description: The policy compliance standard
       isArray: false
       name: policy-compliance-standard
       required: false
       secret: false
     - default: false
-      description: The cloud account
+      description: The cloud account ID.
+      isArray: false
+      name: cloud-account-id
+      required: false
+      secret: false
+    - default: false
+      description: The cloud account name.
       isArray: false
       name: cloud-account
       required: false
       secret: false
     - default: false
-      description: The cloud region
+      description: The cloud region name.
       isArray: false
       name: cloud-region
       required: false
       secret: false
     - default: false
-      description: The alert rule name
+      description: The alert rule name.
       isArray: false
       name: alert-rule-name
       required: false

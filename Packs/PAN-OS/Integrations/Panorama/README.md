@@ -370,7 +370,7 @@ Gets the pre-defined threats list from a Firewall or Panorama and stores as a JS
 
 ### pan-os-commit
 ***
-Commits a configuration to Palo Alto Firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push the configuration to the Firewalls. To push the configuration, run the panorama-push-to-device-group command.
+Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true", otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
 
 #### Base Command
@@ -380,46 +380,75 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | Commit description. | Optional |
-| admin_name | To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
-| force_commit | Force Commit. | Optional |
-| exclude_device_network_configuration | Partial commit while excluding device and network configuration. | Optional | 
-| exclude_shared_objects | Partial commit while excluding shared objects.| Optional |
+| description | The commit description. | Optional | 
+| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional | 
+| force_commit | Forces a commit. Possible values are: true, false. | Optional | 
+| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional | 
+| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional |
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
+
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Commit.JobID | number | Job ID to commit. | 
-| Panorama.Commit.Status | string | Commit status | 
+| Panorama.Commit.JobID | Number | The job ID to commit. | 
+| Panorama.Commit.Status | String | The commit status. | 
+| Panorama.Commit.Description | String | The commit description from the the command input. | 
 
+#### Command example with polling
+```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
+#### Human Readable Output
 
-#### Command Example
-```!pan-os-commit```
+>Waiting for commit "test" with job ID 12345 to finish...
+>### Commit Status:
+>|JobID|Status| Description
+>|---|---|---|
+>| 12345 | Success | test
 
 #### Context Example
 ```json
 {
     "Panorama": {
         "Commit": {
-            "JobID": "113198",
-            "Status": "Pending"
+            "JobID": "12345",
+            "Status": "Success",
+            "Description": "test"
         }
     }
 }
 ```
 
+#### Command example without polling
+```!pan-os-commit description=test```
+
 #### Human Readable Output
 
->### Commit:
->|JobID|Status|
->|---|---|
->| 113198 | Pending |
+>### Commit Status:
+>|JobID|Status| Description
+>|---|---|---|
+>| 12345 | Pending | test
+
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Commit": {
+            "JobID": "12345",
+            "Status": "Pending",
+            "Description": "test"
+        }
+    }
+}
+```
 
 
 ### pan-os-push-to-device-group
 ***
-Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.  
+Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID. Validates if a push has been successful if polling="true".
 
 
 #### Base Command
@@ -429,31 +458,92 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device-group | The device group for which to return addresses (Panorama instances). | Optional |
-| validate-only | Pre policy validation. | Optional. |
-| include-template | Whether to include template changes. | Optional. |
-| description | Push description. | Optional |
-| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional |
+| device-group | The device group to which to push (Panorama instances). | Optional | 
+| validate-only | Pre policy validation. Possible values are: true, false. Default is false. | Optional | 
+| include-template | Whether to include template changes. Possible values are: true, false. Default is true. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Push.DeviceGroup | String | Device group in which the policies were pushed. | 
-| Panorama.Push.JobID | Number | Job ID of the policies that were pushed. | 
-| Panorama.Push.Status | String | Push status. | 
+| Panorama.Push.DeviceGroup | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+| Panorama.Push.Details | String | The job ID details. | 
 
+#### Command example with polling=true
+```!pan-os-push-to-device-group description=test polling=true interval_in_seconds=5 timeout=60```
 
-#### Command Example
-```!pan-os-push-to-device-group ```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "Details": [
+                "commit succeeded with warnings",
+                "commit succeeded with warnings"
+            ],
+            "Errors": ,
+            "JobID": "31377",
+            "Status": "Completed",
+            "Warnings": [
+                "Interface loopback.645 has no zone configuration.",
+                "External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "Warning: No valid Antivirus content package exists",
+                "(Module: device)"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->### Push to Device Group Status:
->|JobID|Status|
->|---|---|
->| 113198 | Pending |
+>Waiting for Job-ID 31374 to finish push changes to device-group Lab-Devices..
+>### Push to Device Group status:
+>|JobID|Status|Details|Errors|Warnings|
+>|---|---|---|---|---|
+>| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
+
+#### Command example with polling=false
+```!pan-os-push-to-device-group description=test polling=false```
+
+#### Human Readable Output
+
+>### Push to Device Group status:
+>|JobID|Status|Description|
+>|---|---|---|
+>| 113198 | Pending | test |
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+          "JobID": "113198",
+          "Status": "Pending",
+          "Description": "test",
+          "DeviceGroup": "device group name"
+        }
+    }
+}
+```
 
 ### pan-os-list-addresses
 ***
@@ -2179,8 +2269,8 @@ Creates a policy rule.
 | tags | Rule tags to create. | Optional | 
 | category | A comma-separated list of URL categories. | Optional |
 | profile_setting | A profile setting group. | Optional | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2247,8 +2337,8 @@ Creates a custom block policy rule.
 | log_forwarding | Log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 | tags | Tags for which to use for the custom block policy rule. | Optional | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2299,8 +2389,8 @@ Changes the location of a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to move. | Required | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Required | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional | 
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Required | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional | 
 | pre_post | Rule location. Mandatory for Panorama instances. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 
@@ -2465,40 +2555,42 @@ Returns a list of applications.
 >|  | demisto_fw_app3 | 1 |  | ip-protocol | peer-to-peer | lala |
 
 
-### pan-os-commit-status
+### pan-os-commit
 ***
-Returns commit status for a configuration.
+Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwiese does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
 
 #### Base Command
 
-`pan-os-commit-status`
+`pan-os-commit`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Job ID to check. | Required | 
+| description | The commit description. | Optional | 
+| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional | 
+| force_commit | Forces a commit. Possible values are: true, false. | Optional | 
+| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional | 
+| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| commit_job_id | commit job ID to use in polling commands. (automatically filled by polling). | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Commit.JobID | number | Job ID of the configuration to be committed. | 
-| Panorama.Commit.Status | string | Commit status. | 
-| Panorama.Commit.Details | string | Job ID details. | 
-| Panorama.Commit.Warnings | String | Job ID warnings | 
+| Panorama.Commit.JobID | Number | The job ID to commit. | 
+| Panorama.Commit.Status | String | The commit status. | 
+| Panorama.Commit.Description | String | The commit description from the the command input. | 
 
-
-#### Command Example
-```!pan-os-commit-status job_id=948 ```
-
+#### Command example
+```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
 #### Human Readable Output
 
->### Commit Status:
->|JobID|Status|
->|---|---|
->| 948 | Pending |
+>Waiting for commit "test" with job ID 7304 to finish...
 
 ### pan-os-push-status
 ***
@@ -2512,29 +2604,59 @@ Returns the push status for a configuration.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Job ID to check. | Required | 
+| job_id | The job ID to check. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Push.DeviceGroup | string | Device group to which the policies were pushed. | 
-| Panorama.Push.JobID | number | Job ID of the configuration to be pushed. | 
-| Panorama.Push.Status | string | Push status. | 
-| Panorama.Push.Details | string | Job ID details. | 
-| Panorama.Push.Warnings | String | Job ID warnings | 
+| Panorama.Push.DeviceGroup | string | The device group to which the policies were pushed. | 
+| Panorama.Push.JobID | number | The job ID of the configuration to be pushed. | 
+| Panorama.Push.Status | string | The push status. | 
+| Panorama.Push.Details | string | The job ID details. | 
+| Panorama.Push.Warnings | String | The job ID warnings | 
 
-
-#### Command Example
-```!pan-os-push-status job_id=951 ```
+#### Command example
+```!pan-os-push-status job_id=31377```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "Details": [
+                "commit succeeded with warnings",
+                "commit succeeded with warnings"
+            ],
+            "Errors": ,
+            "JobID": "31377",
+            "Status": "Completed",
+            "Warnings": [
+                "Interface loopback.645 has no zone configuration.",
+                "External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "Warning: No valid Antivirus content package exists",
+                "(Module: device)"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->### Push to Device Group Status:
->|JobID|Status|Details|
->|---|---|---|
->| 951 | Completed | commit succeeded with warnings |
+>### Push to Device Group status:
+>|JobID|Status|Details|Errors|Warnings|
+>|---|---|---|---|---|
+>| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
+
 
 ### pan-os-get-pcap
 ***

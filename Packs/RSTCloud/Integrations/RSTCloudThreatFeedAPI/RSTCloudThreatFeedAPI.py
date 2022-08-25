@@ -433,7 +433,8 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
                     indicator=ip,
                     indicator_type=DBotScoreType.IP,
                     integration_name='RST Cloud',
-                    score=Common.DBotScore.NONE
+                    score=Common.DBotScore.NONE,
+                    reliability=demisto.params().get('integrationReliability')
                 )
                 markdown_item += f'IP: {ip} not found\n'
                 raw_results.append(parse_indicator_response(indicator, 'IP'))
@@ -451,7 +452,8 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
                 indicator_type=DBotScoreType.IP,
                 integration_name='RST Cloud',
                 score=calc_score,
-                malicious_description=indicator.get('description', '')
+                malicious_description=indicator.get('description', ''),
+                reliability=demisto.params().get('integrationReliability')
             )
 
             human_readable_score = ''
@@ -516,7 +518,8 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, li
                     indicator=domain,
                     indicator_type=DBotScoreType.DOMAIN,
                     integration_name='RST Cloud',
-                    score=Common.DBotScore.NONE
+                    score=Common.DBotScore.NONE,
+                    reliability=demisto.params().get('integrationReliability')
                 )
                 markdown_item += f'Domain: {domain} not found\n'
                 raw_results.append(parse_indicator_response(indicator, 'Domain'))
@@ -534,7 +537,8 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, li
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name='RST Cloud',
                 score=calc_score,
-                malicious_description=indicator.get('description', '')
+                malicious_description=indicator.get('description', ''),
+                reliability=demisto.params().get('integrationReliability')
             )
             human_readable_score = ''
             if calc_score == 3:
@@ -602,7 +606,8 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
                     indicator=url,
                     indicator_type=DBotScoreType.URL,
                     integration_name='RST Cloud',
-                    score=Common.DBotScore.NONE
+                    score=Common.DBotScore.NONE,
+                    reliability=demisto.params().get('integrationReliability')
                 )
                 markdown_item += f'URL: {url} not found\n'
                 raw_results.append(parse_indicator_response(indicator, 'URL'))
@@ -620,7 +625,8 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
                 indicator_type=DBotScoreType.URL,
                 integration_name='RST Cloud',
                 score=calc_score,
-                malicious_description=indicator.get('description', '')
+                malicious_description=indicator.get('description', ''),
+                reliability=demisto.params().get('integrationReliability')
             )
             result = RSTUrl(
                 url=indicator['ioc_value'],
@@ -687,7 +693,8 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list
                     indicator=hash,
                     indicator_type=DBotScoreType.FILE,
                     integration_name='RST Cloud',
-                    score=Common.DBotScore.NONE
+                    score=Common.DBotScore.NONE,
+                    reliability=demisto.params().get('integrationReliability')
                 )
                 markdown_item += f'Hash: {hash} not found\n'
                 raw_results.append(parse_indicator_response(indicator, 'File'))
@@ -710,7 +717,8 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list
                 indicator_type=DBotScoreType.FILE,
                 integration_name='RST Cloud',
                 score=calc_score,
-                malicious_description=indicator.get('description', '')
+                malicious_description=indicator.get('description', ''),
+                reliability=demisto.params().get('integrationReliability')
             )
             result = Common.File(
                 md5=indicator['md5'], sha1=indicator['sha1'], sha256=indicator['sha256'],
