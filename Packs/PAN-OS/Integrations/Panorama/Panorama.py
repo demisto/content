@@ -140,7 +140,6 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'music',
     'newly-registered-domain',
     'news',
-    'not-resolved',
     'nudity',
     'online-storage-and-backup',
     'parked',
@@ -173,6 +172,9 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'web-advertisements',
     'web-hosting',
     'web-based-email',
+    'high-risk',
+    'medium-risk',
+    'low-risk'
 }
 
 class PAN_OS_Not_Found(Exception):
@@ -656,32 +658,71 @@ def panorama_commit(args):
     return result
 
 
+@polling_function(
+    name=demisto.command(),  # should fit to both pan-os-commit and panorama-commit (deprecated)
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('timeout', 120))
+)
 def panorama_commit_command(args: dict):
     """
-    Commit and show message in the war room
+    Commit any configuration in PAN-OS
+    This function implements the 'pan-os-commit' command.
+    Supports polling as well.
     """
-    result = panorama_commit(args)
+    commit_description = args.get('description', '')
 
-    if 'result' in result['response']:
-        # commit has been given a jobid
+    if job_id := args.get('commit_job_id'):
+        commit_status = panorama_commit_status({'job_id': job_id}).get('response', {}).get('result', {})
+        job_result = commit_status.get('job', {}).get('result')
         commit_output = {
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending',
-            'Description': args.get('description')
+            'JobID': job_id,
+            'Description': commit_description,
+            'Status': 'Success' if job_result == 'OK' else 'Failure'
         }
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Commit:', commit_output, ['JobID', 'Status'], removeNull=True),
-            'EntryContext': {
-                "Panorama.Commit(val.JobID == obj.JobID)": commit_output
+        return PollResult(
+            response=CommandResults(  # this is what the response will be in case job has finished
+                    outputs_prefix='Panorama.Commit',
+                    outputs_key_field='JobID',
+                    outputs=commit_output,
+                    readable_output=tableToMarkdown('Commit Status:', commit_output, removeNull=True)
+                ),
+            continue_to_poll=commit_status.get('job', {}).get('status') != 'FIN',  # continue polling if job isn't done
+        )
+    else:  # either no polling is required or this is the first run
+        result = panorama_commit(args)
+        job_id = result.get('response', {}).get('result', {}).get('job', '')
+        if job_id:
+            context_output = {
+                'JobID': job_id,
+                'Description': commit_description,
+                'Status': 'Pending'
             }
-        })
-    else:
-        # no changes to commit
-        return_results(result['response']['msg'])
+            continue_to_poll = True
+            commit_output = CommandResults(  # type: ignore[assignment]
+                outputs_prefix='Panorama.Commit',
+                outputs_key_field='JobID',
+                outputs=context_output,
+                readable_output=tableToMarkdown('Commit Status:', context_output, removeNull=True)
+            )
+        else:  # nothing to commit in pan-os, hence even if polling=true, no reason to poll anymore.
+            commit_output = result.get('response', {}).get('msg') or 'There are no changes to commit.'  # type: ignore[assignment]
+            continue_to_poll = False
+
+        return PollResult(
+            response=commit_output,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run={
+                'commit_job_id': job_id,
+                'description': commit_description,
+                'polling': argToBoolean(args.get('polling')),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
+                'timeout': arg_to_number(args.get('timeout'))
+            },
+            partial_result=CommandResults(
+                readable_output=f'Waiting for commit "{commit_description}" with job ID {job_id} to finish...'
+                if commit_description else f'Waiting for commit job ID {job_id} to finish...'
+            )
+        )
 
 
 @logger
@@ -844,36 +885,78 @@ def panorama_push_to_template_stack(args: dict):
     return result
 
 
+@polling_function(
+    name='pan-os-push-to-device-group',
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('timeout', 120))
+)
 def panorama_push_to_device_group_command(args: dict):
     """
-    Push Panorama configuration and show message in warroom
+    Push Panorama configuration and show message in war-room
     """
-
     if not DEVICE_GROUP:
         raise Exception("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
-    result = panorama_push_to_device_group(args)
-    if 'result' in result['response']:
-        # commit has been given a jobid
-        push_output = {
-            'DeviceGroup': DEVICE_GROUP,
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending'
-        }
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Push to Device Group:', push_output, ['JobID', 'Status'],
-                                             removeNull=True),
-            'EntryContext': {
-                "Panorama.Push(val.JobID == obj.JobID)": push_output
-            }
-        })
+    description = args.get('description')
+
+    if push_job_id := args.get('push_job_id'):
+        result = panorama_push_status(job_id=push_job_id)
+
+        push_status = result.get('response', {}).get('result', {})
+
+        push_output = parse_push_status_response(result)
+        push_output['DeviceGroup'] = DEVICE_GROUP
+        if description:
+            push_output['Description'] = description
+
+        return PollResult(
+            response=CommandResults(
+                outputs_prefix='Panorama.Push',
+                outputs_key_field='JobID',
+                outputs=push_output,
+                readable_output=tableToMarkdown('Push to Device Group:', push_output, removeNull=True)
+            ),
+            continue_to_poll=push_status.get('job', {}).get('status') != 'FIN'  # continue polling if job isn't done
+        )
     else:
-        # no changes to commit
-        return_results(result['response']['msg']['line'])
+        result = panorama_push_to_device_group(args)
+        job_id = result.get('response', {}).get('result', {}).get('job', '')
+        if job_id:
+            context_output = {
+                'DeviceGroup': DEVICE_GROUP,
+                'JobID': job_id,
+                'Status': 'Pending'
+            }
+            if description:
+                context_output['Description'] = description
+            continue_to_poll = True
+            push_output = CommandResults(  # type: ignore[assignment]
+                outputs_prefix='Panorama.Push',
+                outputs_key_field='JobID',
+                outputs=context_output,
+                readable_output=tableToMarkdown('Push to Device Group:', context_output, removeNull=True)
+            )
+        else:
+            push_output = CommandResults(
+                readable_output=result.get('response', {}).get('msg') or 'There are no changes to push.'
+            )
+            continue_to_poll = False
+
+        args_for_next_run = {
+                'push_job_id': job_id,
+                'polling': argToBoolean(args.get('polling', False)),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
+                'description': description
+            }
+
+        return PollResult(
+            response=push_output,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run=args_for_next_run,
+            partial_result=CommandResults(
+                readable_output=f'Waiting for Job-ID {job_id} to finish push changes to device-group {DEVICE_GROUP}...'
+            )
+        )
 
 
 def panorama_push_to_template_command(args: dict):
@@ -936,6 +1019,7 @@ def panorama_push_to_template_stack_command(args: dict):
         # no changes to commit
         return_results(result['response']['msg']['line'])
 
+
 @logger
 def panorama_push_status(job_id: str, target: Optional[str] = None):
     params = {
@@ -968,13 +1052,7 @@ def safeget(dct: dict, keys: List[str]):
     return dct
 
 
-def panorama_push_status_command(args: dict):
-    """
-    Check jobID of push status
-    """
-    job_id = args.get('job_id')
-    target = args.get('target')
-    result = panorama_push_status(job_id, target)
+def parse_push_status_response(result: dict):
     job = result.get('response', {}).get('result', {}).get('job', {})
     if job.get('type', '') not in ('CommitAll', 'ValidateAll'):
         raise Exception('JobID given is not of a Push neither of a validate.')
@@ -1006,9 +1084,25 @@ def panorama_push_status_command(args: dict):
             device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
             status_warnings.extend([] if not device_warnings else device_warnings)
             device_errors = safeget(device, ["details", "msg", "errors", "line"])
-            status_errors.extend([] if not device_errors else device_errors)
+            if isinstance(device_errors, str) and device_errors:
+                status_errors.append(device_errors)
+            else:
+                status_errors.extend([] if not device_errors else device_errors)
     push_status_output["Warnings"] = status_warnings
     push_status_output["Errors"] = status_errors
+
+    return push_status_output
+
+
+def panorama_push_status_command(args: dict):
+    """
+    Check jobID of push status
+    """
+    job_id = args.get('job_id')
+    target = args.get('target')
+    result = panorama_push_status(job_id, target)
+
+    push_status_output = parse_push_status_response(result)
 
     return_results({
         'Type': entryTypes['note'],
@@ -2554,8 +2648,14 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
     return dbot_score
 
 
-def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list,
-                                      additional_malicious: list, target: Optional[str] = None):
+def panorama_get_url_category_command(
+    url_cmd: str,
+    url: str,
+    additional_suspicious: list,
+    additional_malicious: list,
+    reliability: str,
+    target: Optional[str] = None
+):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -2568,7 +2668,8 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
         err_readable_output = None
         try:
             categories = panorama_get_url_category(url_cmd, url, target)
-
+            max_url_dbot_score = 0
+            url_dbot_score_category = ''
             for category in categories:
                 if category in categories_dict:
                     categories_dict[category].append(url)
@@ -2579,24 +2680,30 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
                 context_urls = populate_url_filter_category_from_context(category)
                 categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-                score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
+                current_dbot_score = calculate_dbot_score(
+                    category.lower(), additional_suspicious, additional_malicious
+                )
+                if current_dbot_score > max_url_dbot_score:
+                    max_url_dbot_score = current_dbot_score
+                    url_dbot_score_category = category
 
-                dbot_score = Common.DBotScore(
-                    indicator=url,
-                    indicator_type=DBotScoreType.URL,
-                    integration_name='PAN-OS',
-                    score=score
-                )
-                url_obj = Common.URL(
-                    url=url,
-                    dbot_score=dbot_score,
-                    category=category
-                )
-                readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
-                command_results.append(CommandResults(
-                    indicator=url_obj,
-                    readable_output=readable_output
-                ))
+            dbot_score = Common.DBotScore(
+                indicator=url,
+                indicator_type=DBotScoreType.URL,
+                integration_name='PAN-OS',
+                score=max_url_dbot_score,
+                reliability=reliability
+            )
+            url_obj = Common.URL(
+                url=url,
+                dbot_score=dbot_score,
+                category=url_dbot_score_category
+            )
+            readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
+            command_results.append(CommandResults(
+                indicator=url_obj,
+                readable_output=readable_output
+            ))
         except InvalidUrlLengthException as e:
             score = 0
             category = None
@@ -2605,7 +2712,8 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
                 indicator=url,
                 indicator_type=DBotScoreType.URL,
                 integration_name='PAN-OS',
-                score=score
+                score=score,
+                reliability=reliability
             )
             url_obj = Common.URL(
                 url=url,
@@ -4388,15 +4496,13 @@ def panorama_query_traffic_logs_command(args: dict):
 
 
 @logger
-def panorama_get_traffic_logs(job_id: str, target: Optional[str] = None):
+def panorama_get_traffic_logs(job_id: str):
     params = {
         'action': 'get',
         'type': 'log',
         'job-id': job_id,
         'key': API_KEY
     }
-    if target:
-        params['target'] = target
     result = http_request(
         URL,
         'GET',
@@ -4840,9 +4946,8 @@ def prettify_logs(logs: Union[list, dict]):
 def panorama_get_logs_command(args: dict):
     ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
     job_ids = argToList(args.get('job_id'))
-    target = args.get('target', None)
     for job_id in job_ids:
-        result = panorama_get_traffic_logs(job_id, target)
+        result = panorama_get_traffic_logs(job_id)
         log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
         if isinstance(log_type_dt, list):
             log_type = log_type_dt[0]
@@ -7899,6 +8004,8 @@ class Topology:
         :param device: Either Panorama or Firewall Pandevice instance
         """
         if isinstance(device, Panorama):
+            serial_number_or_hostname = device.serial if device.serial else device.hostname
+
             # Check if HA is active and if so, what the system state is.
             panorama_ha_state_result = run_op_command(device, "show high-availability state")
             enabled = panorama_ha_state_result.find("./result/enabled")
@@ -7908,7 +8015,7 @@ class Topology:
                     state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
                     if "active" in state:
                         # TODO: Work out how to get the Panorama peer serial..
-                        self.ha_active_devices[device.serial] = "peer serial not implemented here.."
+                        self.ha_active_devices[serial_number_or_hostname] = "peer serial not implemented here.."
                         self.get_all_child_firewalls(device)
                         return
                 else:
@@ -7917,8 +8024,8 @@ class Topology:
                 self.get_all_child_firewalls(device)
 
             # This is a bit of a hack - if no ha, treat it as active
-            self.ha_active_devices[device.serial] = "STANDALONE"
-            self.panorama_objects[device.serial] = device
+            self.ha_active_devices[serial_number_or_hostname] = "STANDALONE"
+            self.panorama_objects[serial_number_or_hostname] = device
 
             return
 
@@ -7966,7 +8073,12 @@ class Topology:
         # This means we don't need to refresh the state.
         for device in self.all(filter_str):
             if self.ha_active_devices:
-                if device.serial in self.ha_active_devices:
+                # Handle case of no SN or hostname
+                serial_or_hostname = device.serial
+                if not serial_or_hostname:
+                    serial_or_hostname = device.hostname
+
+                if serial_or_hostname in self.ha_active_devices:
                     yield device
             else:
                 status = device.refresh_ha_active()
@@ -9191,6 +9303,7 @@ class ObjectGetter:
         "SecurityProfileGroup": SecurityProfileGroup,
         "SecurityRule": SecurityRule,
         "NatRule": NatRule,
+        "LogForwardingProfile": LogForwardingProfile,
     }
 
     @staticmethod
@@ -11012,6 +11125,7 @@ def main():
         params = demisto.params()
         additional_malicious = argToList(params.get('additional_malicious'))
         additional_suspicious = argToList(params.get('additional_suspicious'))
+        reliability = params.get('integrationReliability')
         initialize_instance(args=args, params=params)
         command = demisto.command()
         LOG(f'Command being called is: {command}')
@@ -11026,13 +11140,13 @@ def main():
             panorama_command(args)
 
         elif command == 'panorama-commit' or command == 'pan-os-commit':
-            panorama_commit_command(args)
+            return_results(panorama_commit_command(args))
 
         elif command == 'panorama-commit-status' or command == 'pan-os-commit-status':
             panorama_commit_status_command(args)
 
         elif command == 'panorama-push-to-device-group' or command == 'pan-os-push-to-device-group':
-            panorama_push_to_device_group_command(args)
+            return_results(panorama_push_to_device_group_command(args))
         elif command == 'pan-os-push-to-template':
             panorama_push_to_template_command(args)
         elif command == 'pan-os-push-to-template-stack':
@@ -11114,27 +11228,42 @@ def main():
         # URL Filtering capabilities
         elif command == 'url':
             if USE_URL_FILTERING:  # default is false
-                panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
-                                                  additional_suspicious=additional_suspicious,
-                                                  additional_malicious=additional_malicious)
+                panorama_get_url_category_command(
+                    url_cmd='url',
+                    url=args.get('url'),
+                    additional_suspicious=additional_suspicious,
+                    additional_malicious=additional_malicious,
+                    reliability=reliability
+                )
             # do not error out
 
         elif command == 'panorama-get-url-category' or command == 'pan-os-get-url-category':
-            panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
-                                              additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious,
-                                              target=args.get('target'),
-                                              )
+            panorama_get_url_category_command(
+                url_cmd='url',
+                url=args.get('url'),
+                additional_suspicious=additional_suspicious,
+                additional_malicious=additional_malicious,
+                target=args.get('target'),
+                reliability=reliability
+            )
 
         elif command == 'panorama-get-url-category-from-cloud' or command == 'pan-os-get-url-category-from-cloud':
-            panorama_get_url_category_command(url_cmd='url-info-cloud', url=args.get('url'),
-                                              additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious)
+            panorama_get_url_category_command(
+                url_cmd='url-info-cloud',
+                url=args.get('url'),
+                additional_suspicious=additional_suspicious,
+                additional_malicious=additional_malicious,
+                reliability=reliability
+            )
 
         elif command == 'panorama-get-url-category-from-host' or command == 'pan-os-get-url-category-from-host':
-            panorama_get_url_category_command(url_cmd='url-info-host', url=args.get('url'),
-                                              additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious)
+            panorama_get_url_category_command(
+                url_cmd='url-info-host',
+                url=args.get('url'),
+                additional_suspicious=additional_suspicious,
+                additional_malicious=additional_malicious,
+                reliability=reliability
+            )
 
         # URL Filter
         elif command == 'panorama-get-url-filter' or command == 'pan-os-get-url-filter':
@@ -11217,7 +11346,7 @@ def main():
             panorama_query_logs_command(args)
 
         elif command == 'panorama-check-logs-status' or command == 'pan-os-check-logs-status':
-            panorama_check_logs_status_command(args)
+            panorama_check_logs_status_command(args.get('job_id'))
 
         elif command == 'panorama-get-logs' or command == 'pan-os-get-logs':
             panorama_get_logs_command(args)

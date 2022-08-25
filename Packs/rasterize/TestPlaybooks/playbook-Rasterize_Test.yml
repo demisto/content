@@ -620,7 +620,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: image/jpeg
+                  simple: image/png
               ignorecase: true
             - operator: isEqualString
               left:

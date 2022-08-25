@@ -2225,6 +2225,7 @@ tasks:
                     right:
                       value:
                         simple: IncidentFiles.MD5
+                      iscontext: true
                 - - operator: isNotEmpty
                     left:
                       value:
