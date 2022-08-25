@@ -10,7 +10,7 @@
     "id": "incident_xsoarwebserveremailsendcounter",
     "isReadOnly": false,
     "locked": false,
-    "name": "xsoar-web-serveremailsendcounter",
+    "name": "Xsoar-web-server Email Send Counter",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
