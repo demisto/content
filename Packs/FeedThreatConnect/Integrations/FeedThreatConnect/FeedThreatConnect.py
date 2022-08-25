@@ -222,7 +222,7 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no 
             else:
                 break
 
-    return [parse_indicator(indicator) for indicator in indicators]
+    return indicators
 
 
 def get_indicators_command(client: Client):  # pragma: no cover
@@ -288,8 +288,10 @@ def main():  # pragma: no cover
     try:
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_groups_command(client)
+            demisto.info('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
             demisto.info(str(len(indicators)))
             for b in batch(indicators, batch_size=2000):
+                demisto.info('+++++++++++++++++++++++++++++++++++++++')
                 demisto.createIndicators(b)
         else:
             readable_output, outputs, raw_response = commands[command](client)
