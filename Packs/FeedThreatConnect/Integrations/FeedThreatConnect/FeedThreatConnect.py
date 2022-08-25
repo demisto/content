@@ -131,7 +131,7 @@ class Client(BaseClient):
                                       params=params,
                                       headers=headers)
         if parse_json:
-            return json.loads(response.text), response.status_code
+            return response.get('data'), response.get('status')
         return response
 
     def create_header(self, url_suffix: str, method: Method) -> dict:
@@ -159,10 +159,10 @@ def module_test_command(client: Client):
         dict: Operation entry context - Empty.
         dict: Operation raw response - Empty.
     """
-    url = '/api/v3/groups'
+    url = '/api/v3/groups?resultLimit=2'
     params = {'resultLimit': 2}
-    response, status_code = client.make_request(Method.GET, url, params=params)
-    if status_code == 200:
+    response, status = client.make_request(Method.GET, url, params=params)
+    if status == 'Success':
         return "ok", {}, {}
     else:
         return_error('Error from the API: ' + response.get('message',
@@ -215,8 +215,8 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no 
     url = f'/api/v3/groups'
     indicators = []
     while True:
-        response, status_code = client.make_request(Method.GET, url, params=params)
-        if status_code == 200:
+        response, status = client.make_request(Method.GET, url, params=params)
+        if status == 200:
             indicators.extend(response.get('data', {}))
             if 'next' in response:
                 url = response.get('next').replace(demisto.getParam('tc_api_path'), '')
@@ -249,8 +249,8 @@ def get_indicators_command(client: Client):  # pragma: no cover
         params['tql'] = owners
     url = f'/api/v3/indicators'
 
-    response, status_code = client.make_request(Method.GET, url, params=params)
-    if status_code == 200:
+    response, status = client.make_request(Method.GET, url, params=params)
+    if status == 200:
         readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
                                                t=[parse_indicator(indicator) for indicator in
                                                   response.get('data')])  # type: ignore # noqa
@@ -275,8 +275,8 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
     """
     url = '/api/v3/security/owners'
     params = {'resultLimit': 500}
-    response, status_code = client.make_request(Method.GET, url, params=params)
-    if status_code != 200:
+    response, status = client.make_request(Method.GET, url, params=params)
+    if status != 200:
         return_error('Error from the API: ' + response.get('message',
                                                            'An error has occurred if it persist please contact your '
                                                            'local help desk'))
