@@ -36,4 +36,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![xsoar-data-collection-response-tracking](../Doc_files/xsoarwebserver-data-collection-response-tracking.png)
+![xsoar-data-collection-response-tracking](../doc_files/xsoarwebserver-data-collection-response-tracking.png)
