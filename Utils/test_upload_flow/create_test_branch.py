@@ -1,5 +1,7 @@
 import argparse
 import shutil
+import time
+
 from git import GitCommandError, Repo, Head
 from pathlib import Path
 import subprocess
@@ -119,6 +121,42 @@ def add_pack_to_landing_page(pack_name: str):
 
 
 @add_changed_pack
+def create_failing_pack(integration: Path):
+    """
+    Modify a pack such that the upload fails on it - modifying a pack
+    without adding release notes and without bumping the version.
+    """
+    integration.open('a')
+    integration.write_text('\n#  CHANGE IN PACK\n')
+    return integration.parent.parent.parent
+
+
+def modify_pack(pack: Path, integration: str):
+    """
+    Modify a pack regularly, in order to check if all packs items are uploaded correctly
+    """
+    integration = pack / integration
+    integration.open('a')
+    integration.write_text('\n#  CHANGE IN PACK\n')
+    enhance_release_notes(pack)
+
+
+@add_changed_pack
+def modify_item_path(item: Path, new_name: str):
+    """
+    Modify item's path, in order to verify that the pack was uploaded again
+    """
+    parent = item.parent
+    item.rename(parent.joinpath(new_name))
+    return item.parent.parent.parent
+
+
+# create failing pack
+# modify a pack and verify no content items are removed between the two versions
+# modify path of file in pack and verify it is uploaded
+# modify only RNs
+
+@add_changed_pack
 def add_1_0_0_release_notes(pack: Path):
     release_note = pack / 'ReleaseNotes' / '1_0_0.md'
     release_note.write_text(f"""
@@ -154,13 +192,13 @@ if __name__ == "__main__":
     else:
         original_branch = repo.active_branch
     try:
-        new_branch_name = f"{original_branch}_upload_test_branch_{repo.active_branch.object.hexsha}"
+        new_branch_name = f"{original_branch}_upload_test_branch_{repo.active_branch.object.hexsha}_{time.time()}"
         content_path = Path(__file__).parent.parent.parent
         packs_path = content_path / 'Packs'
         branch = create_new_branch(repo, new_branch_name)
 
-        new_pack_path = create_new_pack()
-        add_dependency(packs_path / 'Armis', new_pack_path)
+        # new_pack_path = create_new_pack()
+        # add_dependency(packs_path / 'Armis', new_pack_path)
         enhance_release_notes(packs_path / 'ZeroFox')
         change_image(packs_path / 'Armis')
 
@@ -173,11 +211,20 @@ if __name__ == "__main__":
         update_pack_ignore(packs_path / 'MISP')
 
         add_pack_to_landing_page('Trello')
-
+        create_failing_pack(packs_path / 'Absolute/Integrations/Absolute/Absolute.py')
+        modify_pack(packs_path / 'Alexa', 'Integrations/Alexa/Alexa.py')
+        modify_item_path(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules.xif',
+                         'Alibaba.xif')
+        modify_item_path(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules.yml',
+                         'Alibaba.yml')
+        modify_item_path(packs_path /
+                         'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules_schema.json',
+                         'Alibaba_schema.json')
+        print(changed_packs)
         for p in changed_packs:
             repo.git.add(f"{p}/*")
 
-        repo.git.commit(m="Added Test file")
+        repo.git.commit(m="Added Test file", no_verify=True)
         repo.git.push('--set-upstream', 'https://code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
 
     except GitCommandError as e:
@@ -187,3 +234,4 @@ if __name__ == "__main__":
         repo.git.checkout(original_branch)
         if branch:
             repo.delete_head(branch, force=True)
+
