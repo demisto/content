@@ -134,10 +134,11 @@ class Client(BaseClient):
         response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type='json',
                                       params=params,
                                       headers=headers)
+
+        if get_next:
+            return response.get('data'), response.get('status'), response.get('next')
         if parse_json:
             return response.get('data'), response.get('status')
-        elif get_next:
-            return response.get('data'), response.get('status'), response.get('next')
         return response
 
     def create_header(self, url_suffix: str, method: Method) -> dict:
