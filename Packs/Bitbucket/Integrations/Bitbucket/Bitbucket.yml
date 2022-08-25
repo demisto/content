@@ -72,13 +72,15 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: add a description.
+          description: The max number of project.
         - name: page
           required: false
           isArray: false
+          description: The specific result page to display.
         - name: page_size
           required: false
           isArray: false
+          description: The number of projects in a result page.
       output:
         - contextPath: Bitbucket.Project.type
           description: 'Client value type.'

@@ -50,15 +50,37 @@ class Client(BaseClient):
         return "ok"
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
-    def bitbucket_project_list(self, url_suffix: str, params: dict) -> dict:
-        response = self._http_request(method='GET',
-                                      url_suffix=url_suffix,
-                                      params=params)
-        return response
+    def get_list(self, url_suffix, params=None) -> dict:
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-''' HELPER FUNCTIONS '''
+    # HELPER FUNCTIONS
+    def get_paged_results(self, url_suffix, results, limit=None, params=None) -> list:
+        response = self.get_list(url_suffix, params)
+        if url_suffix[-1] != '/':
+            results.append(response)
+            return results
+        arr = response.get('values')
+        i = len(arr)
+        isNext = response.get('next', None)
+        page = params.get('page', None)
+        if limit:
+            while limit > 0 and i > 0:
+                for value in arr:
+                    results.append(value)
+                    limit = limit - 1
+                    i = i - 1
+            if limit > 0 and isNext and (not page or page > 1):
+                isNext = f'/workspaces{isNext.split("workspaces")[1]}'
+                self.get_paged_results(isNext, results, limit)
+        else:
+            for value in arr:
+                results.append(value)
+            if isNext and (not page or page > 1):
+                isNext = f'/workspaces{isNext.split("workspaces")[1]}'
+                self.get_paged_results(isNext, results)
+        return results
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -86,10 +108,10 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def project_list_command(client: Client, args) -> CommandResults:
-    params = {'size': args.get('limit', 50),
-              'page': args.get('page', 1),
+    params = {'page': args.get('page', 1),
               'pagelen': args.get('page_size')}
     project_key = args.get('project_key')
+    limit = args.get('limit', None)
     if not project_key:
         url_suffix = f'/workspaces/{client.workspace}/projects/'
         readable_name = f'List of the projects in {client.workspace}'
@@ -97,19 +119,16 @@ def project_list_command(client: Client, args) -> CommandResults:
         project_key = project_key.upper()
         url_suffix = f'/workspaces/{client.workspace}/projects/{project_key}'
         readable_name = f'The information about project {project_key}'
-
-    result = client.bitbucket_project_list(url_suffix, params)
+    results = client.get_paged_results(url_suffix, [], limit, params)
 
     human_readable = []
 
-    for values in result.values():
-        if isinstance(values, list):
-            for v in values:
-                d = {'Key': v.get('key'),
-                     'Name': v.get('name'),
-                     'Description': v.get('description'),
-                     'IsPrivate': v.get('is_private')}
-                human_readable.append(d)
+    for value in results:
+        d = {'Key': value.get('key'),
+             'Name': value.get('name'),
+             'Description': value.get('description'),
+             'IsPrivate': value.get('is_private')}
+        human_readable.append(d)
 
     readable_output = tableToMarkdown(
         name=readable_name,
@@ -120,8 +139,8 @@ def project_list_command(client: Client, args) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Project',
-        outputs=result,
-        raw_response=result
+        outputs=results,
+        raw_response=results
     )
 
 ''' MAIN FUNCTION '''
@@ -160,9 +179,7 @@ def main() -> None:
         elif demisto.command() == 'bitbucket-project-list':
             result = project_list_command(client, demisto.args())
             return_results(result)
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, **demisto.args()))
+        
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
