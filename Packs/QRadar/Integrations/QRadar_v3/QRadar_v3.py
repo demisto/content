@@ -1873,11 +1873,12 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
             context_data.update({'samples': incident_batch_for_sample, LAST_FETCH_KEY: int(new_highest_id)})
 
         # if incident creation fails, it'll drop the data and try again in the next iteration
-        demisto.createIncidents(incidents)
-
         safely_update_context_data(context_data=context_data,
                                    version=ctx_version,
                                    should_update_last_fetch=True)
+
+        demisto.createIncidents(incidents)
+        print_debug_msg(f'Successfully Created {len(incidents)} incidents. Incidents created {[incident["name"] for incident in incidents]}')
 
 
 def long_running_execution_command(client: Client, params: Dict):
@@ -2407,6 +2408,9 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
                                         int(offense_id),
                                         start_time,
                                         return_raw_response=True)
+        if response == QueryStatus.ERROR.value:
+            raise DemistoException(f'Could not create search for offense_id: {offense_id}')
+
     outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
     return CommandResults(
         readable_output=tableToMarkdown('Create Search', outputs),
