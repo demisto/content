@@ -3,7 +3,7 @@ commonfields:
   id: Check Point Sandblast
   version: -1
 name: Check Point Sandblast
-display: Check Point Sandblast Cloud Services
+display: Check Point Sandblast Cloud Services (Deprecated)
 category: Forensics & Malware Analysis
 description: Deprecated. Use Check Point Threat Emulation (SandBlast) instead. Query, upload and download data using Check Point Sandblast on cloud.
 configuration:
