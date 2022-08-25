@@ -1,42 +1,24 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
-import json
-import io
+import pytest
+from jbxapi import *
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+def mock_client():
+    client = JoeSandbox(apiurl='https://test.com', apikey="mockkey")
+    return client
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+@pytest.mark.parametrize('result,excepted', [({'online': True}, 'online'), ({'online': False}, 'offline')])
+def test_is_online(mocker, result, excepted):
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
-
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
-
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+    Given:
+        - An app client object.
+    When:
+        - Is online method called.
+    Then:
+        - Ensure the human-readable correspond to the expcted server status.
+    """
+    from JoeSecurityV2 import is_online
+    client = mock_client()
+    mocker.patch.object(client, 'server_online', return_value=result)
+    response = is_online(client)
+    assert response.readable_output == f'Joe server is {excepted}'

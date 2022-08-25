@@ -3,47 +3,142 @@ commonfields:
   id: JoeSecurityV2
   version: -1
 configuration:
-  - name: url
-    display: Your server URL
-    required: true
-    defaultvalue: https://jbxcloud.joesecurity.org/api
-    type: 0
-  - displaypassword: API Key
-    name: credentials
-    type: 9
-    required: true
-    hiddenusername: true
-  - name: insecure
-    display: Trust any certificate (not secure)
-    required: false
-    defaultvalue: "true"
-    type: 8
-    additionalinfo: null
-  - name: proxy
-    display: Use system proxy settings
-    required: false
-    defaultvalue: "true"
-    type: 8
-    additionalinfo: null
-description: Access the full set of possibilities the JoeSandbox Cloud provides
-  via RESTful Web API v2.
+- name: url
+  display: Your server URL
+  required: true
+  defaultvalue: https://jbxcloud.joesecurity.org/api
+  type: 0
+- name: credentials
+  displaypassword: API Key
+  type: 9
+  required: true
+  hiddenusername: true
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  defaultvalue: "true"
+  type: 8
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: "true"
+  type: 8
+  additionalinfo:
+- name: Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+description: Access the full set of possibilities the JoeSandbox Cloud provides via RESTful Web API v2.
 display: Joe Security v2
 name: JoeSecurityV2
 script:
   commands:
-    - name: joe-is-online
-      description: Check if the Joe Sandbox analysis back end is online or in
-        maintenance mode.
-      deprecated: false
-      arguments: []
-      outputs: []
-  isfetch: false
-  runonce: false
-  script: "-"
+  - name: joe-is-online
+    description: Check if the Joe Sandbox analysis back end is online or in maintenance mode.
+    deprecated: false
+    arguments: []
+    outputs: []
+  - name: joe-list-analysis
+    description: List all analyses in descending order, starting with the most recent. Pagination is available by supplying page and page size arguments or by limit. (default 50)
+    deprecated: false
+    arguments:
+    - name: page
+      description: Page number to display.
+      isArray: false
+      required: false
+    - name: page_size
+      description: Determine how many entries to display on each page.
+      isArray: false
+      required: false
+    - name: limit
+      description: Limit the number of entries to display.
+      defaultValue: '50'
+      isArray: false
+      required: false
+    outputs:
+    - contextPath: Joe.Analysis.analysisid
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.classification
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.comments
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.detection
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.duration
+      description: ''
+      type: Number
+    - contextPath: Joe.Analysis.encrypted
+      description: ''
+      type: Boolean
+    - contextPath: Joe.Analysis.filename
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.md5
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.runs.detection
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.runs.error
+      description: ''
+      type: Unknown
+    - contextPath: Joe.Analysis.runs.score
+      description: ''
+      type: Number
+    - contextPath: Joe.Analysis.runs.sigma
+      description: ''
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.snort
+      description: ''
+      type: Boolean
+    - contextPath: Joe.Analysis.runs.system
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.runs.yara
+      description: ''
+      type: Boolean
+    - contextPath: Joe.Analysis.score
+      description: ''
+      type: Number
+    - contextPath: Joe.Analysis.scriptname
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.sha1
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.sha256
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.status
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.threatname
+      description: ''
+      type: String
+    - contextPath: Joe.Analysis.time
+      description: ''
+      type: Date
+    - contextPath: Joe.Analysis.webid
+      description: ''
+      type: String
   type: python
   subtype: python3
   dockerimage: devdemisto/joe-security:1.0.0.33070
-  feed: false
 fromversion: 6.8.0
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
