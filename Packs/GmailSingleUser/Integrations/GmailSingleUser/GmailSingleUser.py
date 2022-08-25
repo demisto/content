@@ -40,6 +40,7 @@ MAX_FETCH = int(params.get('fetch_limit') or 50)
 AUTH_CODE = params.get('code')
 
 CLIENT_ID = params.get('client_id') or "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"
+CLIENT_SECRET = params.get('client_secret')
 TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
 TOKEN_FORM_HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",
