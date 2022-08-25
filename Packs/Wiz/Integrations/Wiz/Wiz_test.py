@@ -738,19 +738,32 @@ def test_good_token(capfd, mocker):
         good_token = str(random.randint(1, 1000))
         mocker.patch('requests.post', return_value=mocked_requests_get({"access_token": good_token}, 200))
 
-        from Wiz import get_token
+        from Wiz import get_token, set_authentication_endpoint
+        set_authentication_endpoint('auth.app.wiz.io')
         res = get_token()
         assert res == good_token
+
+        set_authentication_endpoint('auth0.gov.wiz.io')
+        res = get_token()
+        assert res == good_token
+
+        set_authentication_endpoint('')
+        try:
+            from Wiz import get_token
+            get_token()
+        except Exception as e:
+            assert str(e) == 'Not a valid authentication endpoint'
 
 
 def test_token_no_access(capfd, mocker):
     with capfd.disabled():
         mocker.patch('requests.post', return_value=mocked_requests_get({}, 200))
         try:
-            from Wiz import get_token
+            from Wiz import get_token, set_authentication_endpoint
+            set_authentication_endpoint('auth.app.wiz.io')
             get_token()
         except Exception as e:
-            assert str(e) == 'Could not retrieve token from Wiz: None'
+            assert 'Could not retrieve token from Wiz' in str(e)
 
 
 def test_check_api_access(capfd, mocker):

@@ -19,6 +19,16 @@ URL = ''
 AUTH_E = ''
 
 
+def set_authentication_endpoint(auth_endpoint):
+    global AUTH_E
+    AUTH_E = auth_endpoint
+
+
+def set_api_endpoint(api_endpoint):
+    global URL
+    URL = api_endpoint
+
+
 def get_token():
     """
     Retrieve the token using the credentials
@@ -1376,11 +1386,10 @@ def get_project_team(project_name):
 
 
 def main():
-    global URL
-    global AUTH_E
     params = demisto.params()
-    URL = params.get('api_endpoint')
-    AUTH_E = params.get('auth_endpoint')
+    set_authentication_endpoint(params.get('auth_endpoint', ''))
+    set_api_endpoint(params.get('api_endpoint', ''))
+
     try:
         command = demisto.command()
         if command == 'test-module':
