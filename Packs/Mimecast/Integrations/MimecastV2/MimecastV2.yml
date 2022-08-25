@@ -13,33 +13,46 @@ configuration:
   required: true
   type: 0
 - display: User Email Address (Use for auto token refresh)
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Password
+- display: User Email Address (Use for auto token refresh)
   name: email
   required: false
   type: 0
+  hidden: true
 - display: Password
   name: password
   required: false
   type: 4
+  hidden: true
+- display: App Key
+  name: appKey_creds
+  required: false
+  type: 9
+  displaypassword: App Key
+  hiddenusername: true
 - display: App key
   name: appKey
   required: false
   type: 4
+  hidden: true
 - display: AccessKey
   name: accessKey
   required: false
   type: 0
+- display: Secret Key
+  name: secretKey_creds
+  required: false
+  type: 9
+  displaypassword: Secret Key
+  hiddenusername: true
 - display: SecretKey
   name: secretKey
   required: false
   type: 4
-- display: Trust any certificate (not secure)
-  name: new_insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
+  hidden: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -65,6 +78,14 @@ configuration:
   name: fetchDelta
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: new_insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
 display: Mimecast v2
 name: MimecastV2
@@ -167,11 +188,11 @@ script:
       name: body
     - description: Number of results per page to display.
       isArray: false
-      name: page_size
+      name: pageSize
       required: false
-      defaultValue: ""
-      predefined:
-    - description: This parameter is ignored, use the pagination parameters instead.
+      secret: false
+    - default: false
+      description: Sets the result to start returning results (default 0)
       isArray: false
       name: startRow
       required: false
@@ -702,7 +723,8 @@ script:
       description: The number of attachments on the message
       type: string
   - arguments:
-    - description: This parameter is ignored, use the 'limit' parameter instead.
+    - default: false
+      description: The number of results to request. Default is all
       isArray: false
       name: resultsNumber
       required: false
@@ -871,7 +893,8 @@ script:
       description: The action requested by the user.
       type: string
   - arguments:
-    - description: This parameter is ignored, use the 'limit' parameter instead.
+    - default: false
+      description: The number of results to request. Default is all
       isArray: false
       name: resultsNumber
       required: false
@@ -1721,14 +1744,14 @@ script:
       predefined:
       - ""
     - name: from_date
-      description: Api start parameter. Datetime format is ISO 8601.
+      description: Api start parameter. Datetime format is ISO 8601. e.g. 2022-07-11T14:49:18+0000.
       required: false
       isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: to_date
-      description: Api end parameter  Datetime format ISO 8601.
+      description: Api end parameter  Datetime format ISO 8601. e.g. 2022-07-11T14:49:18+0000.
       required: false
       isArray: false
       defaultValue: ""
@@ -1762,7 +1785,7 @@ script:
       defaultValue: ""
       predefined:
       - ""
-    - name: sender_IP
+    - name: sender_ip
       description: "Part of advancedTrackAndTraceOptions object : The source IP address of messages to track."
       required: false
       isArray: false
@@ -1838,7 +1861,7 @@ script:
       - ""
     - auto: PREDEFINED
       name: show_recipient_info
-      description: " Default value is true. When argument is true all data from recipientInfo object is presented at command response."
+      description: "When argument is true all data from recipientInfo object is presented at command response."
       required: false
       isArray: false
       defaultValue: "true"
@@ -1847,7 +1870,7 @@ script:
       - "false"
     - auto: PREDEFINED
       name: show_delivered_message
-      description: default value is false .When argument is true all data from deliveredMessage object is presented at command response.
+      description: When argument is true all data from deliveredMessage object is presented at command response.
       required: false
       isArray: false
       defaultValue: "false"
@@ -1856,7 +1879,7 @@ script:
       - "false"
     - auto: PREDEFINED
       name: show_retention_info
-      description: Default value is true.When argument is true all data from retentionInfo object  is presented at command response.
+      description: When argument is true all data from retentionInfo object  is presented at command response.
       required: false
       isArray: false
       defaultValue: "true"
@@ -1865,7 +1888,7 @@ script:
       - "false"
     - auto: PREDEFINED
       name: show_spam_info
-      description: Default value is true.When argument is true all spamInfo block is presented at command response.
+      description: When argument is true all spamInfo block is presented at command response.
       required: false
       isArray: false
       defaultValue: "true"
@@ -2158,7 +2181,7 @@ script:
     - contextPath: Mimecast.MessageInfo.status
       description: "Message status."
       type: String
-  - name: mimecast-list-hold-message
+  - name: mimecast-list-held-message
     description: Get information about held messages, including the reason, hold level, sender and recipients
     deprecated: false
     arguments:
@@ -2172,14 +2195,14 @@ script:
       - "true"
       - "false"
     - name: from_date
-      description: Datetime format ISO 8601
+      description: Datetime format ISO 8601. e.g. 2022-07-11T14:49:18+0000.
       required: false
       isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: to_date
-      description: Datetime format ISO 8601
+      description: Datetime format ISO 8601. e.g. 2022-07-11T14:49:18+0000.
       required: false
       isArray: false
       defaultValue: ""
@@ -2285,7 +2308,7 @@ script:
     - contextPath: Mimecast.HoldMessageSummary.policyInfo
       description: The name of the policy or definition that held a message.
       type: String
-  - name: mimecast-reject-hold-message
+  - name: mimecast-reject-held-message
     description: Reject a currently held message.
     deprecated: false
     arguments:
@@ -2323,7 +2346,7 @@ script:
       - "true"
       - "false"
     outputs: []
-  - name: mimecast-release-hold-message
+  - name: mimecast-release-held-message
     description: Release a currently held message.
     deprecated: false
     arguments:
@@ -2336,7 +2359,7 @@ script:
       - ""
     outputs: []
   - name: mimecast-search-processing-message
-    description: Return messages currently being processed by Mimecast.
+    description: Return messages currently being processed by Mimecast. Notice, most of the time, no results are returned.
     deprecated: false
     arguments:
     - auto: PREDEFINED
@@ -2349,14 +2372,14 @@ script:
       - asc
       - desc
     - name: from_date
-      description: Datetime format ISO 8601.
+      description: Datetime format ISO 8601. e.g. 2022-07-11T14:49:18+0000.
       required: false
       isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: to_date
-      description: Datetime format ISO 8601
+      description: Datetime format ISO 8601. e.g. 2022-07-11T14:49:18+0000.
       required: false
       isArray: false
       defaultValue: ""
@@ -2470,14 +2493,14 @@ script:
     deprecated: false
     arguments:
     - name: from_date
-      description: Datetime format ISO 8601.
+      description: Datetime format ISO 8601. e.g. 2022-07-11T14:49:18+0000.
       required: true
       isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: to_date
-      description: Datetime format ISO 8601.
+      description: Datetime format ISO 8601. e.g. 2022-07-11T14:49:18+0000.
       required: true
       isArray: false
       defaultValue: ""

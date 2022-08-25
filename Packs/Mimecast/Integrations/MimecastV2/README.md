@@ -1,8 +1,5 @@
 Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
 
-Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-mimecast-v2).
-
 ## Configure Mimecast v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -965,14 +962,14 @@ Retrieves detailed information about a specific message.
 | Mimecast.MessageInfo.spamInfo.spf.info | String |  | 
 | Mimecast.MessageInfo.status | String |  | 
 
-### mimecast-list-hold-message
+### mimecast-list-held-message
 ***
 Get information about held messages, including the reason, hold level, sender and recipients
 
 
 #### Base Command
 
-`mimecast-list-hold-message`
+`mimecast-list-held-message`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1008,14 +1005,14 @@ Get information about held messages, including the reason, hold level, sender an
 | Mimecast.HoldMessage.to.displayableName | String | The display name of the recipient. | 
 | Mimecast.HoldMessage.to.emailAddress | String | The email address of the recipient. | 
 
-### mimecast-hold-message-summary
+### mimecast-held-message-summary
 ***
 Get counts of currenlty held messages for each hold reason.
 
 
 #### Base Command
 
-`mimecast-hold-message-summary`
+`mimecast-held-message-summary`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1029,53 +1026,53 @@ Get counts of currenlty held messages for each hold reason.
 | Mimecast.HoldMessageSummary.numberOfItems | Number | 	The number of messages currently held for this reason. | 
 | Mimecast.HoldMessageSummary.policyInfo | String | The name of the policy or definition that held a message. | 
 
-### mimecast-reject-hold-message
+### mimecast-reject-held-message
 ***
 Reject a currently held message.
 
 
 #### Base Command
 
-`mimecast-reject-hold-message`
+`mimecast-reject-held-message`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ids | An array of Mimecast secure ids: Ids are extracted from command : mimecast-list-hold-message. Possible values are: . | Required | 
-| message | Rejection message to be returned to sender. Possible values are: . | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                  | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| ids | An array of Mimecast secure ids: Ids are extracted from command : mimecast-list-held-message. Possible values are: .                                                                                                             | Required | 
+| message | Rejection message to be returned to sender. Possible values are: .                                                                                                                                                               | Optional | 
 | reason_type | User can choose reason . Possible values are: MESSAGE CONTAINS UNDESIRABLE CONTENT,MESSAGE CONTAINS CONFIDENTIAL INFORMATION,REVIEWER DISAPPROVES OF CONTENT,, INAPPROPRIATE COMMUNICATIONMESSAGE GOES AGAINST EMAIL POLICIES, . | Optional | 
-| notify | User can choose if rejection notification is delivered. Possible values are: true, false. | Optional | 
+| notify | User can choose if rejection notification is delivered. Possible values are: true, false.                                                                                                                                        | Optional | 
 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!mimecast-reject-hold-message ids="1234" message="MESSAGE CONTAINS UNDESIRABLE CONTENT" reason_type="MESSAGE CONTAINS UNDESIRABLE CONTENT" notify="True"```
+```!mimecast-reject-emessage ids="1234" message="MESSAGE CONTAINS UNDESIRABLE CONTENT" reason_type="MESSAGE CONTAINS UNDESIRABLE CONTENT" notify="True"```
 #### Human Readable Output
 
 >Hold messages were rejected successfully
 
-### mimecast-release-hold-message
+### mimecast-release-held-message
 ***
 Release a currently held message.
 
 
 #### Base Command
 
-`mimecast-release-hold-message`
+`mimecast-release-held-message`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Mimecast secure id: id can be extracted from following command : mimecast-list-hold-message. Possible values are: . | Required | 
+| **Argument Name** | **Description**                                                                                                     | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------| --- |
+| id | Mimecast secure id: id can be extracted from following command : mimecast-list-held-message. Possible values are: . | Required | 
 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!mimecast-release-hold-message id="1234-test""```
+```!mimecast-release-held-message id="1234-test""```
 #### Human Readable Output
 
 >Hold message with id 1234_test was released successfully
@@ -1083,6 +1080,7 @@ There is no context output for this command.
 ### mimecast-search-processing-message
 ***
 Return messages currently being processed by Mimecast.
+Notice, most of the time, no results are returned.
 
 
 #### Base Command

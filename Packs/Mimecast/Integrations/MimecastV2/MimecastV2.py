@@ -15,16 +15,16 @@ from datetime import timedelta
 from urllib.error import HTTPError
 from typing import Dict, Tuple
 
-# Disable insecure warnings\
+# Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
 BASE_URL = demisto.params().get('baseUrl')
 ACCESS_KEY = demisto.params().get('accessKey')
-SECRET_KEY = demisto.params().get('secretKey')
+SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
 APP_ID = demisto.params().get('appId')
-APP_KEY = demisto.params().get('appKey')
+APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
 USE_SSL = None  # assigned in determine_ssl_usage
 PROXY = True if demisto.params().get('proxy') else False
 # Flags to control which type of incidents are being fetched
@@ -32,8 +32,8 @@ FETCH_URL = demisto.params().get('fetchURL')
 FETCH_ATTACHMENTS = demisto.params().get('fetchAttachments')
 FETCH_IMPERSONATIONS = demisto.params().get('fetchImpersonations')
 # Used to refresh token / discover available auth types / login
-EMAIL_ADDRESS = demisto.params().get('email')
-PASSWORD = demisto.params().get('password')
+EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
+PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 
 LOG("command is {}".format(demisto.command()))
@@ -147,7 +147,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             verify=USE_SSL,
             params=params,
             headers=headers,
-            data=json.dumps(payload)
+            json=payload
         )
 
         res.raise_for_status()
@@ -185,7 +185,7 @@ def search_message_request(args):
     to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None  # type: ignore
     message_id = args.get('message_id')
     advanced = {
-        'senderIP': args.get('sender_IP'),
+        'senderIP': args.get('sender_ip'),
         'to': args.get('to'),
         'from': args.get('from'),
         'subject': args.get('subject'),
@@ -237,7 +237,7 @@ def get_message_info_request(id):
                         payload=payload)
 
 
-def list_hold_messages_request(args):
+def list_held_messages_request(args):
     """
 
         Builds payload for the request of list hold messages command.
@@ -253,7 +253,7 @@ def list_hold_messages_request(args):
     to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None  # type: ignore
     value = args.get('value', '')
     field_name = args.get('field_name', '')
-    limit = arg_to_number(args.get('limit')) or 100
+    limit = arg_to_number(args.get('limit')) or 20
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     data = [
@@ -275,7 +275,7 @@ def list_hold_messages_request(args):
                                    page_size=page_size)
 
 
-def reject_hold_message_request(args):
+def reject_held_message_request(args):
     """
 
         Builds payload for the request of reject hold messages command.
@@ -304,7 +304,7 @@ def reject_hold_message_request(args):
                         payload=payload)
 
 
-def release_hold_message_request(id):
+def release_held_message_request(id):
     """
 
       Builds payload for the request of release hold messages command.
@@ -343,7 +343,7 @@ def search_processing_message_request(args):
     value = args.get('value')
     field_name = args.get('field_name')
     route = args.get('route')
-    limit = arg_to_number(args.get('limit')) or 100
+    limit = arg_to_number(args.get('limit')) or 20
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     data = [
@@ -470,6 +470,10 @@ def generate_user_auth_headers(api_endpoint):
 
 def parse_query_args(args):
     query_xml = default_query_xml
+    if args.get('pageSize'):
+        query_xml = query_xml.replace('page-size=\"25\"', 'page-size=\"' + args.get('pageSize') + '\"')
+    if args.get('startRow'):
+        query_xml = query_xml.replace('startrow=\"0\"', 'startrow=\"' + args.get('startRow') + '\"')
     if args.get('active') == 'true':
         query_xml = query_xml.replace('active=\"false\"', 'active=\"true\"')
     if args.get('body'):
@@ -513,13 +517,6 @@ def parse_query_args(args):
                                       '<docs select=\"' + args.get('attachmentType') + '\">')
 
     return query_xml
-
-
-def transform_headers_for_markdown(header: str, special_to_transform: Dict):
-    if header in special_to_transform.keys():
-        return special_to_transform.get(header)
-    else:
-        return header.capitalize()
 
 
 def build_recipient_info(recipient_info: Dict):
@@ -622,7 +619,7 @@ def transformer_get_value(value):
     return transformer
 
 
-def build_get_message_info_outputs(response: dict):
+def build_get_message_info_outputs(outputs: dict):
     """
 
     Args:
@@ -631,15 +628,14 @@ def build_get_message_info_outputs(response: dict):
     Returns: outputs dictionary without dynamic keys.
 
     """
-    data = response.get('data', [])
-    for info in data:
-        delivered_message = info.get('deliveredMessage', {})
-        result_emails = []
-        for email in delivered_message.keys():
-            info_for_mail = delivered_message.get(email)
-            info_for_mail.update({'mail_address': email})
-            result_emails.append(info_for_mail)
-        info.update({'deliveredMessage': result_emails})
+
+    delivered_message = outputs.get('deliveredMessage', {})
+    result_emails = []
+    for email in delivered_message.keys():
+        info_for_mail = delivered_message.get(email)
+        info_for_mail.update({'mail_address': email})
+        result_emails.append(info_for_mail)
+    outputs.update({'deliveredMessage': result_emails})
 
 
 def build_get_message_info_for_specific_id(id, show_recipient_info, show_delivered_message, show_retention_info,
@@ -658,6 +654,7 @@ def build_get_message_info_for_specific_id(id, show_recipient_info, show_deliver
 
     """
     total_markdown = ''
+    outputs = {}
 
     response = get_message_info_request(id)
 
@@ -674,19 +671,23 @@ def build_get_message_info_for_specific_id(id, show_recipient_info, show_deliver
     total_markdown += tableToMarkdown('Status', t={'Status': response_data.get('status', '')})
     if show_recipient_info:
         total_markdown += build_recipient_info(recipient_info)
+        outputs.update({'recipientInfo': recipient_info})
     if show_delivered_message:
         total_markdown += build_delivered_message(delivered_message, to_list)
+        outputs.update({'deliveredMessage': delivered_message})
     if show_retention_info:
         total_markdown += build_retention_info(retention_info)
+        outputs.update({'retentionInfo': retention_info})
     if show_spam_info:
         total_markdown += build_spam_info(spam_info)
+        outputs.update({'spamInfo': spam_info})
 
-    build_get_message_info_outputs(response)
+    build_get_message_info_outputs(outputs)
 
     return CommandResults(
         outputs_prefix='Mimecast.MessageInfo',
         readable_output=total_markdown,
-        outputs=response.get('data'),
+        outputs=outputs,
         raw_response=response
     )
 
@@ -705,7 +706,7 @@ def query():
     contents = []
     context = {}
     messages_context = []
-    limit = arg_to_number(demisto.args().get('limit')) or 100
+    limit = arg_to_number(demisto.args().get('limit')) or 20
     page = arg_to_number(demisto.args().get('page'))
     page_size = arg_to_number(demisto.args().get('page_size'))
 
@@ -817,7 +818,6 @@ def get_policy():
     title = 'Mimecast list blocked sender policies: \n These are the existing Blocked Sender Policies:'
     policy_id = demisto.args().get('policyID')
     if policy_id:
-        policy_id = policy_id
         title = 'Mimecast Get Policy'
 
     policies_list = get_policy_request(policy_id)
@@ -1015,7 +1015,7 @@ def set_empty_value_args_policy_update(policy_obj, option, policy_id):
      """
     empty_args_list = []
     # Add the empty arguments to empty args list
-    for arg, value in list(policy_obj.items()):
+    for arg, value in policy_obj.items():
         if value == '':
             empty_args_list.append(arg)
     if option == '':
@@ -1230,8 +1230,6 @@ def list_managed_url():
     managed_urls_context = []
     full_url_response = ''
     url = demisto.args().get('url')
-    if url:
-        url = url
 
     managed_urls = list_managed_url_request()
     for managed_url in managed_urls:
@@ -1299,8 +1297,6 @@ def create_managed_url():
     disable_user_awareness = demisto.args().get('disableUserAwareness')
     disable_log_click = demisto.args().get('disableLogClick')
     comment = demisto.args().get('comment')
-    if comment:
-        comment = comment
 
     url_req_obj = {
         'comment': comment,
@@ -1359,7 +1355,7 @@ def list_messages():
     messages_context = []
     search_params = {}
 
-    limit = arg_to_number(demisto.args().get('limit')) or 100
+    limit = arg_to_number(demisto.args().get('limit')) or 20
     page = arg_to_number(demisto.args().get('page'))
     page_size = arg_to_number(demisto.args().get('page_size'))
 
@@ -1432,7 +1428,7 @@ def get_url_logs():
     from_date = demisto.args().get('fromDate', '')
     to_date = demisto.args().get('toDate', '')
     scan_result = demisto.args().get('resultType', '')
-    limit = arg_to_number(demisto.args().get('limit')) or 100
+    limit = arg_to_number(demisto.args().get('limit')) or 20
     page = arg_to_number(demisto.args().get('page'))
     page_size = arg_to_number(demisto.args().get('page_size'))
 
@@ -1442,7 +1438,6 @@ def get_url_logs():
         search_params['to'] = to_date
     if scan_result:
         search_params['scanResult'] = scan_result
-    demisto.results('here')
     url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
                                           data=[search_params],
                                           response_param='clickLogs',
@@ -1498,7 +1493,7 @@ def get_attachment_logs():
     from_date = demisto.args().get('fromDate', '')
     to_date = demisto.args().get('toDate', '')
     result = demisto.args().get('resultType', '')
-    limit = arg_to_number(demisto.args().get('limit')) or 100
+    limit = arg_to_number(demisto.args().get('limit')) or arg_to_number(demisto.args().get('resultsNumber')) or 20
     page = arg_to_number(demisto.args().get('page'))
     page_size = arg_to_number(demisto.args().get('page_size'))
 
@@ -1567,9 +1562,9 @@ def get_impersonation_logs():
     query = demisto.args().get('query', '')
     identifiers = argToList(demisto.args().get('identifiers', ''))
     actions = argToList(demisto.args().get('actions', ''))
-    limit = arg_to_number(demisto.args().get('limit')) or 100
+    limit = arg_to_number(demisto.args().get('limit')) or arg_to_number(demisto.args().get('resultsNumber')) or 20
     page = arg_to_number(demisto.args().get('page'))
-    page_size = arg_to_number(demisto.args().get('page_size'))
+    page_size = arg_to_number(demisto.args().get('pageSize'))
 
     if from_date:
         search_params['from'] = from_date
@@ -2743,7 +2738,7 @@ def search_message_command(args):
     )
 
 
-def hold_message_summary_command():
+def held_message_summary_command():
     """
     Getting counts of currently held messages for each hold reason.
     Args:
@@ -2754,12 +2749,12 @@ def hold_message_summary_command():
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
-    summery_list = response.get('data')
+    summary_list = response.get('data')
 
     headers = {'policyInfo': 'Held Reason',
                'numberOfItems': 'Number Of Items'
                }
-    readable_output = tableToMarkdown('Message Summery', t=summery_list,
+    readable_output = tableToMarkdown('Message Summary', t=summary_list,
                                       headerTransform=lambda header: headers.get(header),
                                       removeNull=True)
 
@@ -2767,7 +2762,7 @@ def hold_message_summary_command():
         outputs_prefix='Mimecast.HoldMessageSummary',
         outputs_key_field='policyInfo',
         readable_output=readable_output,
-        outputs=summery_list,
+        outputs=summary_list,
         raw_response=response
     )
 
@@ -2794,14 +2789,14 @@ def get_message_info_command(args):
     return results
 
 
-def list_hold_messages_command(args):
+def list_held_messages_command(args):
     """
         Getting hold messages list.
         Args:
             args: input arguments for the command.
 
     """
-    response, _ = list_hold_messages_request(args)
+    response, _ = list_held_messages_request(args)
     from_transformer = JsonTransformer(func=transformer_get_value('emailAddress'))
     table_json_transformer = {'to': from_transformer,
                               'from': from_transformer,
@@ -2810,12 +2805,19 @@ def list_hold_messages_command(args):
     headers = {'from': 'From (Envelope)',
                'fromHeader': 'From (Header)',
                'policyInfo': 'Held Reason',
-               'dateReceived': 'Held Since'
+               'dateReceived': 'Held Since',
+               'hasAttachments': 'Has Attachments',
+               'reasonCode': 'Reason Code',
+               'reasonId': 'reason Id'
                }
     readable_output = tableToMarkdown('Hold Messages', t=response,
                                       headerTransform=lambda header: headers.get(
                                           header) if header in headers.keys() else header.capitalize(),
-                                      removeNull=True, json_transform_mapping=table_json_transformer)
+                                      removeNull=True, json_transform_mapping=table_json_transformer,
+                                      headers=['id', 'dateReceived', 'from', 'fromHeader', 'hasAttachments',
+                                               'policyInfo', 'dateReceived', 'reason', 'reasonCode', 'reasonId',
+                                               'route', 'size', 'subject', 'to'],
+                                      metadata=f'Showing page number {args.get("page", "1")}')
 
     return CommandResults(
         outputs_prefix='Mimecast.HoldMessage',
@@ -2826,7 +2828,7 @@ def list_hold_messages_command(args):
     )
 
 
-def reject_hold_message_command(args):
+def reject_held_message_command(args):
     """
 
     Rejecting hold messages.
@@ -2834,14 +2836,14 @@ def reject_hold_message_command(args):
         args: input arguments for the command.
 
     """
-    response = reject_hold_message_request(args)
+    response = reject_held_message_request(args)
     readable_output = ''
 
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     for message in response.get('data', []):
         if not message.get('reject', False):
-            readable_output += f'Hold message with id {message.get("id")} rejection failed.\n'
+            raise Exception(f'Hold message with id {message.get("id")} rejection failed.')
         else:
             readable_output += f'Hold message with id {message.get("id")} was rejected successfully.\n'
 
@@ -2851,7 +2853,7 @@ def reject_hold_message_command(args):
     )
 
 
-def release_hold_message_command(args):
+def release_held_message_command(args):
     """
 
         Rejecting hold messages.
@@ -2860,12 +2862,12 @@ def release_hold_message_command(args):
 
         """
     id = args.get('id')
-    response = release_hold_message_request(id)
+    response = release_held_message_request(id)
 
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     if not response.get('data', [])[0].get('release', False):
-        readable_output = 'Message release has failed.'
+        raise Exception('Message release has failed.')
     else:
         readable_output = f'Hold message with id {id} was released successfully'
 
@@ -3018,16 +3020,16 @@ def main():
             search_file_hash()
         elif demisto.command() == 'mimecast-search-message':
             return_results(search_message_command(args))
-        elif demisto.command() == 'mimecast-hold-message-summary':
-            return_results(hold_message_summary_command())
+        elif demisto.command() == 'mimecast-held-message-summary':
+            return_results(held_message_summary_command())
         elif demisto.command() == 'mimecast-get-message-info':
             return_results(get_message_info_command(args))
-        elif demisto.command() == 'mimecast-list-hold-message':
-            return_results(list_hold_messages_command(args))
-        elif demisto.command() == 'mimecast-reject-hold-message':
-            return_results(reject_hold_message_command(args))
-        elif demisto.command() == 'mimecast-release-hold-message':
-            return_results(release_hold_message_command(args))
+        elif demisto.command() == 'mimecast-list-held-message':
+            return_results(list_held_messages_command(args))
+        elif demisto.command() == 'mimecast-reject-held-message':
+            return_results(reject_held_message_command(args))
+        elif demisto.command() == 'mimecast-release-held-message':
+            return_results(release_held_message_command(args))
         elif demisto.command() == 'mimecast-search-processing-message':
             return_results(search_processing_message_command(args))
         elif demisto.command() == 'mimecast-list-email-queues':

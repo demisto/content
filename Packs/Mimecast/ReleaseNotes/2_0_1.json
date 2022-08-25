@@ -1,1 +1,0 @@
-{"breakingChanges":true,"breakingChangesNotes":"resultsNumber is not longer in use, it is ignored, use the 'limit', 'page' and 'page_size' parameters instead"}
