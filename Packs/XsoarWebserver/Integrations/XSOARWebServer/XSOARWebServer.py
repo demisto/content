@@ -86,7 +86,7 @@ def run_setup_simple_action():
         html_dict = {}
         link_uuid = str(uuid.uuid4())
         partial_link = f'{xsoar_external_url}/instance/execute/{integration_instance_name}/process/{entry_uuid}/{link_uuid}/'
-        partial_link_port = f'{xsoar_external_url}:{port}/instance/execute/{integration_instance_name}/process/{entry_uuid}/{link_uuid}/'
+        partial_link_port = f'{xsoar_external_url}:{port}/instance/execute/{integration_instance_name}/process/{entry_uuid}/{link_uuid}/' # pylint: disable=E501
         temp_link_tracker = {"response": "", "response_received": False, "emailaddress": email}
 
         for ind, action in enumerate(input_list):
@@ -122,7 +122,7 @@ def run_setup_post_action():
         html_dict = {}
         link_uuid = str(uuid.uuid4())
         partial_link = f'{xsoar_external_url}/instance/execute/{integration_instance_name}/processform/{entry_uuid}/{link_uuid}/'
-        partial_link_port = f'{xsoar_external_url}:{port}/instance/execute/{integration_instance_name}/processform/{entry_uuid}/{link_uuid}/'
+        partial_link_port = f'{xsoar_external_url}:{port}/instance/execute/{integration_instance_name}/processform/{entry_uuid}/{link_uuid}/' # pylint: disable=E501
 
         if xsoar_proxy == "true":
             action_url = partial_link
