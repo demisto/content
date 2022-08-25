@@ -211,7 +211,7 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no 
         tql = ''
         if fields:
             fields = fields.replace('&', '?', 1)  # type: ignore
-    url = f'/api/v3/groups{tql}{fields}&resultStart=0&resultLimit=500'
+    url = f'/api/v3/groups{tql}{fields}&resultStart=0&resultLimit=10'
     indicators = []
     while True:
         response, status, next = client.make_request(Method.GET, url, get_next=True)
@@ -288,6 +288,7 @@ def main():  # pragma: no cover
     try:
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_groups_command(client)
+            demisto.info(str(len(indicators)))
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
