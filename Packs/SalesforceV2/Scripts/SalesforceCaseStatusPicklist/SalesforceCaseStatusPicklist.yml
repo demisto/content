@@ -1,21 +1,23 @@
+comment: 'Retrieves and displays the case status values from Salesforce.'
 commonfields:
-  id: SplunkShowIdentity
+  id: SalesforceCaseStatusPicklist
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 dockerimage: demisto/python3:3.10.5.31928
 enabled: true
-name: SplunkShowIdentity
+name: SalesforceCaseStatusPicklist
 runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
 tags:
-- dynamic-section
+- python
+- salesforce
+- field-display
 type: python
-fromversion: 6.0.0
-comment: Automation to display identity objects from Splunk. 
+fromversion: 6.2.0
 tests:
-- SplunkShowEnrichment
+- No tests (auto formatted)

@@ -1,12 +1,14 @@
+comment: |
+  Populates the value of the Salesforce status field and displays it in a layout widget.
 commonfields:
-  id: SplunkShowIdentity
+  id: SalesforceCaseStatus
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 dockerimage: demisto/python3:3.10.5.31928
 enabled: true
-name: SplunkShowIdentity
+name: SalesforceCaseStatus
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -14,8 +16,9 @@ scripttarget: 0
 subtype: python3
 tags:
 - dynamic-section
+- python
+- salesforce
 type: python
-fromversion: 6.0.0
-comment: Automation to display identity objects from Splunk. 
+fromversion: 6.2.0
 tests:
-- SplunkShowEnrichment
+- No tests (auto formatted)
