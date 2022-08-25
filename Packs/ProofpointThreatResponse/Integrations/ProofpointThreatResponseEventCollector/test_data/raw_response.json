@@ -1,7 +1,6 @@
 [
   {
     "id": 1,
-    "type": "Malware",
     "summary": "Unsolicited Bulk Email",
     "description": "EvilScheme test message",
     "score": 4200,

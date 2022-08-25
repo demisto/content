@@ -8,11 +8,7 @@
       "type": "string",
       "is_array": false
     },
-    "category": {
-      "type": "string",
-      "is_array": false
-    },
-    "severity": {
+    "incident_field_values": {
       "type": "string",
       "is_array": false
     },
