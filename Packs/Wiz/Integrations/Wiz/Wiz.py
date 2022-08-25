@@ -1,5 +1,7 @@
 import json
 from CommonServerPython import *
+import demistomock as demisto
+
 from urllib import parse
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
