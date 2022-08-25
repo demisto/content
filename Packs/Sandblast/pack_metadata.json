@@ -1,6 +1,6 @@
 {
     "name": "Check Point Sandblast Cloud Services (Deprecated)",
-    "description": "Deprecated. Use Check Point Threat Emulation (SandBlast) instead. Query, upload and download data using Check Point Sandblast on cloud.",
+    "description": "Deprecated. Use Check Point Threat Emulation (SandBlast) instead.",
     "support": "xsoar",
     "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
