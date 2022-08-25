@@ -3062,35 +3062,3 @@ class TestCheckChangesRelevanceForMarketplace:
 
         assert status is True
         assert modified_files_data == expected_modified_files_data
-
-class TestXSIAMDisplays:
-     """ Test class for testing the XSIAM content item displays mapping"""
-
-     # @pytest.fixture(scope="class")
-     def dummy_pack(self):
-         """ dummy pack fixture
-         """
-         # dummy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
-         d_path = '/Users/ilappe/dev/demisto/content/Packs/MyXSIAMPack_content'
-         sample_pack = Pack(pack_name="Jira", pack_path=d_path)
-         # sample_pack.description = 'Sample description'
-         # sample_pack.current_version = '1.0.0'
-         # sample_pack._marketplaces = ['marketplacev2']
-         # sample_pack._modified_files = {
-         #     'Integrations': [
-         #         'Packs/pack_name/Integrations/integration_name/file',
-         #         'Packs/pack_name/Integrations/integration_name3/file'
-         #     ],
-         #     'Dashboards': [
-         #         "Packs/pack_name/Dashboards/dash_name2/file"
-         #     ],
-         #     'XSIAMDashboards': [
-         #         "Packs/pack_name/Dashboards/dash_name/file"
-         #     ]
-         # }
-         return sample_pack
-
-     def test_XSIAM(self):
-         p = self.dummy_pack()
-         p.collect_content_items()
-
