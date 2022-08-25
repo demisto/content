@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": 400,
+    "message": "generic::invalid_argument: version ID must be in format {rule_id} or {rule_id}@v_{version_timestamp.seconds}_{version_timestamp.nanos}",
+    "status": "INVALID_ARGUMENT"
+  }
+}
