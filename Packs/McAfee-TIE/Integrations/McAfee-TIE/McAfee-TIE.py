@@ -140,15 +140,15 @@ def trust_level_to_score(trust_level):
         return 0
 
 
-def get_thrust_level_and_score(reputations):
+def get_trust_level_and_score(reputations):
     trust_level = 101  # more than the highst possible trust level
     vendor = VENDOR_NAME
 
-    for rep in reputations:
-        rep_trust_level = rep.get('trustLevel', 0)
+    for reputation in reputations:
+        rep_trust_level = reputation.get('trustLevel', 0)
         if rep_trust_level != 0 and rep_trust_level < trust_level:
-            trust_level = rep.get('trustLevel')
-            vendor = get_provider(rep.get('providerId'))
+            trust_level = rep_trust_level
+            vendor = get_provider(reputation.get('providerId'))
 
     if trust_level == 101:
         # no trust_level found
@@ -169,84 +169,91 @@ def get_thrust_level_and_score(reputations):
     }
 
 
-def test():
+def test_module():
+    """Tests if there is a connection with DxlClient(which is used for connection with McAfee TIE, instead of the Client class)"""
     config = get_client_config()
     with DxlClient(config) as client:
         client.connect()
         client.disconnect()
+        return 'ok'
 
 
-def safe_get_file_reputation(tie_client, hash_param):
+def safe_get_file_reputation(tie_client, api_input):
     try:
-        res = tie_client.get_file_reputation(hash_param)
+        res = tie_client.get_file_reputation(api_input)
     except Exception as e:
+        print(str(e))
         demisto.info("McAfee failed to get file reputation with error: " + str(e))
         return None
     return res
 
 
-def file(hash_inputs):
-    hash_list = []
-
-    for hash_value in hash_inputs:
-        config = get_client_config()
-        with DxlClient(config) as client:
-            client.connect()
-            # Create the McAfee Threat Intelligence Exchange (TIE) client
-            tie_client = TieClient(client)
-
-            hash_type = get_hash_type(hash_value)
+def file(files_hash: List[str]) -> List[CommandResults]:
+    # TODO Ask Dor how to add Common.File and if there is documentation
+    command_results: List[CommandResults] = []
+    config = get_client_config()
+    with DxlClient(config) as client:
+        client.connect()
+        # Create the McAfee Threat Intelligence Exchange (TIE) client
+        tie_client = TieClient(client)
+        for file_hash in files_hash:
+            hash_type = get_hash_type(file_hash)
             hash_type_key = HASH_TYPE_KEYS.get(hash_type)
             if not hash_type_key:
-                return create_error_entry('file argument must be sha1(40 charecters) or sha256(64 charecters)'
-                                          ' or md5(32 charecters)')
+                raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
 
-            hash_param = {}
+            file: Dict[str, Any] = {}
             reputations = {}
-            context_file = {}
-            hash_param[hash_type_key] = hash_value
             hash_type_uppercase = hash_type.upper()
-            res = safe_get_file_reputation(tie_client, hash_param)
-            if not res:
-                dbot_score = [{'Indicator': hash_value, 'Type': 'hash', 'Vendor': VENDOR_NAME, 'Score': 0},
-                              {'Indicator': hash_value, 'Type': 'file', 'Vendor': VENDOR_NAME, 'Score': 0}]
-                context_file[hash_type_uppercase] = hash_value
-                context_file['TrustLevel'] = 0
-                context_file['Vendor'] = VENDOR_NAME
+            file[hash_type_uppercase] = file_hash
+            api_input = {hash_type_key: file_hash}
+            raw_result = safe_get_file_reputation(tie_client, api_input)
+            if not raw_result:
+                dbot_score = {'Indicator': file_hash,
+                              'Type': 'hash',
+                              'Vendor': VENDOR_NAME,
+                              'Score': 0,
+                              }
+                file['TrustLevel'] = 0
+                file['Vendor'] = VENDOR_NAME
             else:
-                reputations = res.values()
+                reputations = raw_result.values()
 
-                # create context
-                tl_score = get_thrust_level_and_score(reputations)
+                tl_score = get_trust_level_and_score(reputations)
+                trust_level = tl_score['trust_level']
+                vendor = tl_score['vendor']
+                score = tl_score['score']
 
-                context_file[hash_type_uppercase] = hash_value
-                context_file['TrustLevel'] = tl_score['trust_level']
-                context_file['Vendor'] = tl_score['vendor']
+                file['TrustLevel'] = trust_level
+                file['Vendor'] = vendor
 
-                dbot_score = [
-                    {'Indicator': hash_value, 'Type': 'hash', 'Vendor': tl_score['vendor'],
-                     'Score': tl_score['score'], 'Reliability': demisto.params().get('integrationReliability')
-                     },
-                    {'Indicator': hash_value, 'Type': 'file', 'Vendor': tl_score['vendor'],
-                     'Score': tl_score['score'], 'Reliability': demisto.params().get('integrationReliability')}]
-                if tl_score['score'] >= 2:
-                    context_file['Malicious'] = {
-                        'Vendor': tl_score['vendor'],
-                        'Score': tl_score['score'],
-                        'Description': 'Trust level is ' + str(tl_score['trust_level'])
-                    }
-            ec = {'DBotScore': dbot_score, outputPaths['file']: context_file}
+                dbot_score = {'Indicator': file_hash,
+                              'Type': 'hash',
+                              'Vendor': vendor,
+                              'Score': score,
+                              'Reliability': demisto.params().get('integrationReliability', 'C - Fairly reliable'),
+                              }
+                    
+                    # TODO Check if I need two entries for DBotScore
+                    # {'Indicator': file_hash, 'Type': 'file', 'Vendor': tl_score['vendor'],
+                    #     'Score': tl_score['score'], 'Reliability': demisto.params().get('integrationReliability')}
 
-        table = reputations_to_table(reputations)
-        hash_list.append({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': reputations,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('McAfee TIE Hash Reputations For %s:' % (hash_value,), table),
-            'EntryContext': ec
-        })
-    return hash_list
+                if score >= 2:
+                    file['Malicious'] = {'Vendor': vendor,
+                                         'Score': score,
+                                         'Description': 'Trust level is ' + str(tl_score['trust_level'])
+                                         }
+            entry_context = {'DBotScore': dbot_score, 'File': file}
+            table = reputations_to_table(reputations)
+            command_results.append(
+                CommandResults(readable_output=tableToMarkdown('McAfee TIE Hash Reputations For %s:' % (file_hash,), table),
+                               raw_response=raw_result,
+                               outputs_prefix='McAfee.TIE',
+                               outputs=entry_context,
+                               )
+            )
+           
+    return command_results
 
 
 def file_references(hash):
@@ -321,28 +328,39 @@ def set_file_reputation(hash, trust_level, filename, comment):
 
 
 def main():
+    command = demisto.command()
+    args = demisto.args()
     try:
-        args = demisto.args()
-        if demisto.command() == 'test-module':
-            test()
-            demisto.results('ok')
-        elif demisto.command() == 'file':
-            results = file(argToList(args.get('file')))
-            demisto.results(results)
-        elif demisto.command() == 'tie-file-references':
+        if command == 'test-module':
+            # This is the call made when clicking the integration Test button.
+            test_result = test_module()
+            return_results(test_result)
+
+        elif command == 'file':
+            args_to_list = argToList(args.get('file'))
+            results = file(args_to_list)
+            return_results(results)
+
+        elif command == 'tie-file-references':
             results = file_references(args.get('file'))
-            demisto.results(results)
-        elif demisto.command() == 'tie-set-file-reputation':
+            return_results(results)
+      
+        elif command == 'tie-set-file-reputation':
             results = set_file_reputation(
                 args.get('file'),
                 args.get('trust_level'),
                 args.get('filename'),
                 args.get('comment')
             )
-            demisto.results(results)
+            return_results(results)
+
+        else:
+            raise NotImplementedError(f'Command {command} is not supported.')
+
     except Exception as e:
-        validate_certificates_format()
-        return_error(str(e))
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {command} command.'
+                     f'\nError:\n{str(e)}')
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
