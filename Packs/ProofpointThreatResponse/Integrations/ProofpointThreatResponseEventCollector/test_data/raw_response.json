@@ -83,7 +83,6 @@
   },
   {
     "id": 2,
-    "type": "Reported-abuse",
     "summary": "Unsolicited Bulk Email",
     "description": "",
     "score": 5200,

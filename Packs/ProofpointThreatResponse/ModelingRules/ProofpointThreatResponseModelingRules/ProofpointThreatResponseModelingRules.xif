@@ -1,6 +1,6 @@
-[MODEL:model="Email", dataset="output_formatted_22"]
+[MODEL:model="Email", dataset="proofpoint_threat_response_raw"]
 alter XDM.Email.event_timestamp = created_at
-| alter XDM.Email.original_event_id = id
+| alter XDM.Email.original_event_id = to_string(id)
 | alter XDM.Email.Client.user.username = users
 | alter severity = arrayindex( regextract(incident_field_values , "\"name\"\:\"Severity\",\"value\"\:\"([^\"]+)\"") ,0)
 | alter XDM.Email.threat.severity = severity

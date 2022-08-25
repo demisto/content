@@ -1,7 +1,7 @@
 {
   "proofpoint_threat_response_raw": {
     "id": {
-      "type": "string",
+      "type": "int",
       "is_array": false
     },
     "created_at": {
