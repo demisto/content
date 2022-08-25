@@ -500,10 +500,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '28':
     id: '28'
-    taskid: d184b4df-ebe8-409a-8ff8-24e13ca369fd
+    taskid: ea1ca68f-f68f-4826-85c7-05044700fb60
     type: playbook
     task:
-      id: d184b4df-ebe8-409a-8ff8-24e13ca369fd
+      id: ea1ca68f-f68f-4826-85c7-05044700fb60
       version: -1
       name: Search And Delete Emails - Generic v2
       description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense'
@@ -527,7 +527,8 @@ tasks:
           - operator: ExtractEmailTransformer
       ? |
         O365AllowNotFoundExchangeLocations
-      : simple: 'false'
+      : complex:
+          root: inputs.O365AllowNotFoundSearchLocations
       O365DeleteType:
         complex:
           root: inputs.O365DeleteType
@@ -1014,7 +1015,7 @@ tasks:
     nexttasks:
       '#none#':
       - '52'
-      - '143'
+      - "160"
     separatecontext: true
     view: |-
       {
@@ -1328,69 +1329,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '87':
-    id: '87'
-    taskid: 6b6e7ab8-27f5-473f-89ce-d9888248907b
-    type: regular
-    task:
-      id: 6b6e7ab8-27f5-473f-89ce-d9888248907b
-      version: -1
-      name: Predict phishing type using pre-trained phishing model
-      description: Predicts the specific phishing mail type using a pre-trained machine learning model, and highlights the most important words used in the classification decision.
-      scriptName: DBotPredictPhishingWords
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '90'
-    scriptarguments:
-      emailBody:
-        complex:
-          root: Email
-          accessor: Text
-          transformers:
-          - operator: uniq
-      emailBodyHTML:
-        complex:
-          root: Email
-          accessor: HTML
-          transformers:
-          - operator: uniq
-      emailSubject:
-        complex:
-          root: Email
-          accessor: Subject
-          transformers:
-          - operator: uniq
-      modelName:
-        complex:
-          root: inputs.PhishingModelName
-      returnError:
-        simple: 'false'
-    reputationcalc: 1
-    separatecontext: false
-    continueonerror: true
-    view: |-
-      {
-        "position": {
-          "x": -1832.5,
-          "y": 1005
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   '88':
     id: '88'
-    taskid: e2d09ad3-b706-4289-80ca-1f767c16ca32
+    taskid: 4aba95f3-9211-425f-8151-73814bd402eb
     type: title
     task:
-      id: e2d09ad3-b706-4289-80ca-1f767c16ca32
+      id: 4aba95f3-9211-425f-8151-73814bd402eb
       version: -1
       name: Machine Learning
       type: title
@@ -1399,121 +1343,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '142'
-      - '143'
+      - "160"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -1522.5,
           "y": 615
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '89':
-    id: '89'
-    taskid: 069bf4dd-05ee-4472-8cb4-e4c9fab936e8
-    type: regular
-    task:
-      id: 069bf4dd-05ee-4472-8cb4-e4c9fab936e8
-      version: -1
-      name: Update incident with predictions
-      description: Updates incident fields with the machine learning phishing model predictions.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '84'
-    scriptarguments:
-      dbotprediction:
-        complex:
-          root: DBotPredictPhishingWords
-          accessor: Label
-          transformers:
-          - operator: uniq
-      dbotpredictionprobability:
-        complex:
-          root: DBotPredictPhishingWords
-          accessor: Probability
-          transformers:
-          - operator: uniq
-      dbottextsuggestionhighlighted:
-        complex:
-          root: DBotPredictPhishingWords
-          accessor: TextTokensHighlighted
-          transformers:
-          - operator: uniq
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1572.5,
-          "y": 1465
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '90':
-    id: '90'
-    taskid: b2f955f8-3b3f-4928-8b2d-f5e4a3759209
-    type: condition
-    task:
-      id: b2f955f8-3b3f-4928-8b2d-f5e4a3759209
-      version: -1
-      name: Did the model predict the phishing type?
-      description: Checks whether the model predicted the phishing type.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '84'
-      yes:
-      - '89'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: DBotPredictPhishingWords
-                accessor: Label
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: DBotPredictPhishingWords
-                accessor: Probability
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: DBotPredictPhishingWords
-                accessor: TextTokensHighlighted
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -1832.5,
-          "y": 1235
         }
       }
     note: false
@@ -2206,109 +2042,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '140':
-    id: '140'
-    taskid: 78d1a547-9649-462a-80d1-624848097907
-    type: regular
-    task:
-      id: 78d1a547-9649-462a-80d1-624848097907
-      version: -1
-      name: Predict Phishing URLs
-      description: Predicts phishing URLs using a pre-trained model.
-      scriptName: DBotPredictURLPhishing
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '84'
-    scriptarguments:
-      emailHTML:
-        complex:
-          root: incident
-          accessor: emailhtml
-      maxNumberOfURL:
-        complex:
-          root: inputs.DBotPredictURLPhishingURLsNumber
-      urls:
-        complex:
-          root: ExtractedURLsFromFiles
-    reputationcalc: 2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1230,
-          "y": 1235
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '142':
-    id: '142'
-    taskid: e2c45aa6-d41f-4aa2-8630-94dc9a5221c5
-    type: title
-    task:
-      id: e2c45aa6-d41f-4aa2-8630-94dc9a5221c5
-      version: -1
-      name: Predict Phishing Type
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '87'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1832.5,
-          "y": 795
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '143':
-    id: '143'
-    taskid: 53cc04e3-9865-4392-863c-6aeccf65ea09
-    type: title
-    task:
-      id: 53cc04e3-9865-4392-863c-6aeccf65ea09
-      version: -1
-      name: Predict Phishing URLs
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '156'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1230,
-          "y": 795
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   '144':
     id: '144'
     taskid: 485882a6-cb39-4b81-86ca-5bdbaae86c08
@@ -2846,44 +2579,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '156':
-    id: '156'
-    taskid: a82a5221-5d9f-41f2-8e58-37ced943a162
-    type: condition
-    task:
-      id: a82a5221-5d9f-41f2-8e58-37ced943a162
-      version: -1
-      name: Is the Rasterize integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      no:
-      - '84'
-      yes:
-      - '140'
-    scriptarguments:
-      brandname:
-        simple: Rasterize
-    results:
-    - brandInstances
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1230,
-          "y": 1005
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   '157':
     id: '157'
     taskid: 3bf56b47-3c00-4cf3-8f45-d3e65976861e
@@ -2915,6 +2610,66 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "160":
+    id: "160"
+    taskid: 7f27de98-0bd0-4123-8d0b-0ab4d9658f13
+    type: playbook
+    task:
+      id: 7f27de98-0bd0-4123-8d0b-0ab4d9658f13
+      version: -1
+      name: Phishing - Machine Learning Analysis
+      playbookName: Phishing - Machine Learning Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      DBotPredictURLPhishingURLsNumber:
+        complex:
+          root: inputs.DBotPredictURLPhishingURLsNumber
+      EmailHTML:
+        complex:
+          root: Email
+          accessor: HTML
+      EmailSubject:
+        complex:
+          root: Email
+          accessor: Subject
+      EmailText:
+        complex:
+          root: Email
+          accessor: Text
+      ExtractedURLsFromFiles:
+        complex:
+          root: ExtractedURLsFromFiles
+          transformers:
+          - operator: uniq
+      PhishingModelName:
+        complex:
+          root: inputs.PhishingModelName
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1522.5,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -2926,22 +2681,18 @@ view: |-
       "151_8_#default#": 0.11,
       "152_43_#default#": 0.17,
       "153_84_#default#": 0.18,
-      "156_140_yes": 0.42,
-      "156_84_no": 0.25,
       "15_31_#default#": 0.6,
       "33_149_yes": 0.18,
       "36_43_#default#": 0.2,
       "37_43_#default#": 0.12,
       "37_91_yes": 0.57,
-      "79_84_#default#": 0.21,
-      "90_84_#default#": 0.1,
-      "90_89_yes": 0.48
+      "79_84_#default#": 0.21
     },
     "paper": {
       "dimensions": {
         "height": 6140,
-        "width": 3172.5,
-        "x": -1832.5,
+        "width": 2862.5,
+        "x": -1522.5,
         "y": -710
       }
     }
@@ -3040,13 +2791,13 @@ inputs:
     A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).
   playbookInputQuery:
 - key: PhishingModelName
-  value:
-    simple: phishing_model
+  value: {}
   required: false
   description: Optional - the name of a pre-trained phishing model to predict phishing type using machine learning.
   playbookInputQuery:
 - key: GetOriginalEmail
-  value: {}
+  value:
+    simple: "True"
   required: false
   description: |-
     For forwarded emails. When "True", retrieves the original email in the thread.
@@ -3091,6 +2842,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
+- playbook-checkEmailAuthenticity-test
 - Phishing v3 - Get Original Email + Search & Delete - Test
-- Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 fromversion: 6.1.0
