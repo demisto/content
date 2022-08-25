@@ -5,6 +5,7 @@ import PyPDF2
 import subprocess
 import glob
 import os
+import stat
 import re
 import errno
 import shutil
@@ -33,6 +34,25 @@ except ValueError:
 EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
 # Documentation claims png is enough for pdftohtml, but through testing we found jpg can be generated as well
 IMG_FORMATS = ['jpg', 'jpeg', 'png', 'gif']
+
+
+def handle_error_read_only(fun, path, exp):
+    """
+    Handling errors that can be encountered in `shutil.rmtree()` execution.
+    """
+    demisto.debug(exp)
+
+    # Checking if the file is Read-Only
+    if not os.access(path, os.W_OK):
+        demisto.debug(f'The {path} file is read-only')
+        # Change the file permission to the writting
+        try:
+            os.chmod(path, stat.S_IWUSR)
+            fun(path)
+        except Exception as e:
+            raise ValueError(str(e))
+    else:
+        raise ValueError(str(exp))
 
 
 def mark_suspicious(suspicious_reason, entry_id):
@@ -516,7 +536,7 @@ def main():
     finally:
         os.chdir(ROOT_PATH)
         for folder in folders_to_remove:
-            shutil.rmtree(folder)
+            shutil.rmtree(folder, onerror=handle_error_read_only)
 
 
 # python2 uses __builtin__ python3 uses builtins
