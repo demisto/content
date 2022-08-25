@@ -547,29 +547,29 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     # Cortex XSOAR will print everything you return different than 'ok' as
     # an error
     try:
-        client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None,
-                             severity=None)
+        if params.get('isFetch'):  # Tests fetch incident:
+            alert_status = params.get('alert_status', None)
+            alert_type = params.get('alert_type', None)
+            min_severity = params.get('min_severity', None)
+
+            fetch_incidents(
+                client=client,
+                max_results=1,
+                last_run={},
+                first_fetch_time=first_fetch_time,
+                alert_status=alert_status,
+                min_severity=min_severity,
+                alert_type=alert_type
+            )
+        else:
+            client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None,
+                                 severity=None)
+
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
-
-    # Tests fetch incident:
-    if params.get('isFetch'):
-        alert_status = params.get('alert_status', None)
-        alert_type = params.get('alert_type', None)
-        min_severity = params.get('min_severity', None)
-
-        fetch_incidents(
-            client=client,
-            max_results=1,
-            last_run={},
-            first_fetch_time=first_fetch_time,
-            alert_status=alert_status,
-            min_severity=min_severity,
-            alert_type=alert_type
-        )
 
     return 'ok'
 
@@ -1389,12 +1389,12 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == 'ip':
-            default_threshold_ip = arg_to_number(params.get('threshold_ip', '65')) or DEFAULT_INDICATORS_THRESHOLD
+            default_threshold_ip = arg_to_number(params.get('threshold_ip')) or DEFAULT_INDICATORS_THRESHOLD
             return_results(ip_reputation_command(client, args, default_threshold_ip, reliability))
 
         elif command == 'domain':
             default_threshold_domain = \
-                arg_to_number(params.get('threshold_domain', '65')) or DEFAULT_INDICATORS_THRESHOLD
+                arg_to_number(params.get('threshold_domain')) or DEFAULT_INDICATORS_THRESHOLD
             return_results(domain_reputation_command(client, args, default_threshold_domain, reliability))
 
         elif command == 'helloworld-say-hello':
