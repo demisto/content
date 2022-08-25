@@ -54,6 +54,13 @@ def suppress_stdout():
     sys.stdout = original_stdout
 
 
+def set_fields_query(fields: list) -> str:
+    fields_str = ''
+    for field in fields:
+        fields_str += f'&fields={field}'
+    return fields_str
+
+
 def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) -> int:
     """ Calculate dbot score by ThreatConnect assess score (0-1000) to range of 0-3:
         1. feed dev docs:https://xsoar.pan.dev/docs/integrations/feeds
@@ -121,17 +128,16 @@ class Client(BaseClient):
         self.api_secret = api_secret
 
     def make_request(self, method: Method, url_suffix: str, payload: dict = {}, params: dict = {},
-                     parse_json=True):  # pragma: no cover  # noqa
+                     parse_json=True, get_next=False):  # pragma: no cover  # noqa
         headers = self.create_header(url_suffix, method)
 
-        # url = urljoin(self.base_url, url_suffix)
-        # response = requests.request(method=method, url=url, headers=headers, data=payload, params=params,
-        #                             verify=self.verify)
         response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type='json',
                                       params=params,
                                       headers=headers)
         if parse_json:
             return response.get('data'), response.get('status')
+        elif get_next:
+            return response.get('data'), response.get('status'), response.get('next')
         return response
 
     def create_header(self, url_suffix: str, method: Method) -> dict:
@@ -160,8 +166,7 @@ def module_test_command(client: Client):
         dict: Operation raw response - Empty.
     """
     url = '/api/v3/groups?resultLimit=2'
-    params = {'resultLimit': 2}
-    response, status = client.make_request(Method.GET, url, params=params)
+    response, status = client.make_request(Method.GET, url)
     if status == 'Success':
         return "ok", {}, {}
     else:
@@ -192,40 +197,29 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no 
     owners = f'AND ({create_or_query(demisto.getParam("owners"), "ownerName")}) '
     tags = f'AND ({create_or_query(demisto.getParam("tags"), "tags")}) '
     status = f'AND ({create_or_query(demisto.getParam("status"), "status")}) '
-    fields = argToList(demisto.getParam("fields"))
+    fields = set_fields_query(argToList(demisto.getParam("fields")))
     group_type = f'AND ({create_or_query(demisto.params().get("group_type", "Incident"), "typeName")}) '
-    first_fetch_time = demisto.getParam("first_fetch_time")
-    from_date = ''
-    if first_fetch_time:
-        first_fetch_time = dateparser.parse(demisto.getParam('first_fetch_time').strip()).strftime(
-            "%Y-%m-%d")  # type: ignore # noqa
-        from_date = f'AND (dateAdded > "{first_fetch_time}") '
-    page = 0
-    params = {'resultLimit': 500, 'resultStart': page}
-    tql = f'{owners if owners != "AND () " else ""}' \
-          f'{tags if tags != "AND () " else ""}' \
-          f'{group_type if group_type != "AND () " else ""}' \
-          f'{status if status != "AND () " else ""}' \
-          f'{from_date if from_date != "AND () " else ""}'.replace('AND', '', 1)  # replace the first preceding 'AND'
+
+    tql = f'{owners if owners != "AND () " else ""}{tags if tags != "AND () " else ""}' \
+          f'{group_type if group_type != "AND () " else ""}{status if status != "AND () " else ""}'.replace('AND', '',
+                                                                                                            1)
     if tql:
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
-        params['tql'] = tql
-    if fields:
-        params['fields'] = fields
-    url = f'/api/v3/groups'
+        tql = f'?tql={tql}'
+    else:
+        tql = ''
+        if fields:
+            fields = fields.replace('&', '?', 1)  # type: ignore
+    url = f'/api/v3/groups{tql}{fields}&resultStart=0&resultLimit=500'
     indicators = []
     while True:
-        response, status = client.make_request(Method.GET, url, params=params)
-        if status == 200:
-            indicators.extend(response.get('data', {}))
-            if 'next' in response:
-                url = response.get('next').replace(demisto.getParam('tc_api_path'), '')
+        response, status, next = client.make_request(Method.GET, url, get_next=True)
+        if status == 'Success':
+            indicators.extend(response)
+            if next:
+                url = next.replace(demisto.getParam('tc_api_path'), '')
             else:
                 break
-        else:
-            return_error('Error from the API: ' + response.get('message',
-                                                               'An error has occurred if it persist please contact '
-                                                               'your local help desk'))
 
     return [parse_indicator(indicator) for indicator in indicators]
 
@@ -241,25 +235,20 @@ def get_indicators_command(client: Client):  # pragma: no cover
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    params = {'resultLimit': int(demisto.args().get('limit', 50)), 'resultStart': int(demisto.args().get('offset', 0))}
+    limit = demisto.args().get('limit', '50')
+    offset = demisto.args().get('offset', '0')
     owners = demisto.getArg('owners') or demisto.getParam('owners')
     owners = create_or_query(owners, "ownerName")
     owners = urllib.parse.quote(owners.encode('utf8'))  # type: ignore
-    if owners:
-        params['tql'] = owners
-    url = f'/api/v3/indicators'
+    url = f'/api/v3/indicators?tql={owners}&resultStart={offset}&resultLimit={limit}'
 
-    response, status = client.make_request(Method.GET, url, params=params)
-    if status == 200:
+    response, status = client.make_request(Method.GET, url)
+    if status == 'Success':
         readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
                                                t=[parse_indicator(indicator) for indicator in
-                                                  response.get('data')])  # type: ignore # noqa
+                                                  response])  # type: ignore # noqa
 
-        return readable_output, {}, list(response.get('data'))
-    else:
-        return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your '
-                                                           'local help desk'))
+        return readable_output, {}, list(response)
 
 
 def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
@@ -273,24 +262,20 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    url = '/api/v3/security/owners'
-    params = {'resultLimit': 500}
-    response, status = client.make_request(Method.GET, url, params=params)
-    if status != 200:
-        return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your '
-                                                           'local help desk'))
-    raw_response = response.get('data')
-    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Owners",
-                                           t=list(raw_response))
+    url = '/api/v3/security/owners?resultLimit=500'
+    response, status = client.make_request(Method.GET, url)
 
-    return readable_output, {}, list(raw_response)
+    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Owners",
+                                           t=list(response))
+
+    return readable_output, {}, list(response)
 
 
 def main():  # pragma: no cover
     insecure = not demisto.getParam('insecure')
     proxy = not demisto.getParam('proxy')
-    client = Client(demisto.getParam('api_access_id'), demisto.getParam('api_secret_key').get('password'),
+    credentials = demisto.params().get('api_access_id')
+    client = Client(credentials.get('identifier'), credentials.get('password'),
                     demisto.getParam('tc_api_path'), verify=insecure, proxy=proxy)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')

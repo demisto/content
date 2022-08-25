@@ -8,17 +8,12 @@ configuration:
   name: tc_api_path
   required: true
   type: 1
-- additionalinfo: The API ID key
+- displaypassword: Secret key
+  additionalinfo: The API ID key
   display: Access ID
   name: api_access_id
   required: true
-  type: 0
-- additionalinfo: The secrete key for the API
-  name: api_secret_key
-  required: true
   type: 9
-  displaypassword: Secret key
-  hiddenusername: true
 - additionalinfo: A comma-separated list of tags to filter by.
   display: Tags to filter results by
   name: tags
