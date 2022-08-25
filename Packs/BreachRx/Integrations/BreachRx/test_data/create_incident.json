@@ -1,0 +1,20 @@
+{
+  "data": {
+    "createIncident": {
+      "id": 369,
+      "name": "a random incident to create",
+      "severity": {
+        "name": "Unknown"
+      },
+      "types": [
+        {
+          "type": {
+            "name": "Other"
+          }
+        }
+      ],
+      "description": "This is a description.",
+      "identifier": "JULIETT000369"
+    }
+  }
+}
