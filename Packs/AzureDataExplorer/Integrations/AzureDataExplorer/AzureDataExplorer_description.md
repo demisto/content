@@ -17,7 +17,7 @@ In order to connect to the Azure Data Explorer using either Cortex XSOAR Azure A
 ### Authentication Using the Device Code Flow
 
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
-to link Azure SQL Management with Cortex XSOAR.
+to link Azure Data Explorer with Cortex XSOAR.
 
 1. Fill in the required parameters.
 2. In the **Authentication Type** field, select the **Device Code** option.
