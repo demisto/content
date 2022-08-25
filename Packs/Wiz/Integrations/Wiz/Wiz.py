@@ -19,13 +19,23 @@ URL = ''
 AUTH_E = ''
 
 
+def set_authentication_endpoint(auth_endpoint):
+    global AUTH_E
+    AUTH_E = auth_endpoint
+
+
+def set_api_endpoint(api_endpoint):
+    global URL
+    URL = api_endpoint
+
+
 def get_token():
     """
     Retrieve the token using the credentials
     """
     audience = ''
     # remove last bit:
-    modern_allowlist = [
+    modern_allowlist = [  # pragma: no cover
         "auth.app.wiz.io/oauth/token",
         "https://auth.app.wiz.io/oauth/token",
         "auth.gov.wiz.io/oauth/token",
@@ -33,7 +43,7 @@ def get_token():
         "auth.test.wiz.io/oauth/token",
         "https://auth.test.wiz.io/oauth/token"
     ]
-    legacy_allowlist = [
+    legacy_allowlist = [  # pragma: no cover
         "auth.wiz.io/oauth/token",
         "https://auth.wiz.io/oauth/token",
         "auth0.gov.wiz.io/oauth/token",
@@ -43,9 +53,9 @@ def get_token():
     ]
 
     # check Wiz portal location - commercial or gov
-    if AUTH_E in modern_allowlist:  # pragma: no cover
+    if AUTH_E in modern_allowlist:
         audience = 'wiz-api'
-    elif AUTH_E in legacy_allowlist:  # pragma: no cover
+    elif AUTH_E in legacy_allowlist:
         audience = 'beyond-api'
     else:
         raise Exception('Not a valid authentication endpoint')
@@ -1394,11 +1404,9 @@ def get_project_team(project_name):
 
 
 def main():
-    global URL
-    global AUTH_E
     params = demisto.params()
-    URL = params.get('api_endpoint')
-    AUTH_E = params.get('auth_endpoint')
+    set_authentication_endpoint(params.get('auth_endpoint', ''))
+    set_api_endpoint(params.get('api_endpoint', ''))
     try:
         command = demisto.command()
         if command == 'test-module':
