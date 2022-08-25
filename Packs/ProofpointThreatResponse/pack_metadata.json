@@ -1,5 +1,5 @@
 {
-    "name": "Proofpoint Threat Response (Beta)",
+    "name": "Proofpoint Threat Response",
     "description": "Use the Proofpoint Threat Response integration to orchestrate and automate incident response.",
     "support": "xsoar",
     "currentVersion": "1.0.12",

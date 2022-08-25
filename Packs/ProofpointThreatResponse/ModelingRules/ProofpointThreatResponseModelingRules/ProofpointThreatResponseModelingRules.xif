@@ -1,7 +1,7 @@
 [MODEL:model="Email", dataset="proofpoint_threat_response_raw"]
 | alter XDM.Email.event_timestamp = created_at,
         XDM.Email.original_event_id = id,
-        XDM.Email.threat.category = category,
+        XDM.Email.threat.category = type,
         XDM.Email.threat.severity = severity,
         XDM.Email.sender = json_extract_scalar(events, "$.sender.email"),
         XDM.Email.recipients = json_extract_scalar(events, "$.recipient.email"),
