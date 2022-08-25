@@ -92,16 +92,13 @@ class Client(BaseClient):
 
     def getCaseFileById(self, caseNumber, caseFileId):
 
-        found = False
         case_files = self.getCaseFiles(None, caseNumber).get('fileInfo')
         for cf in case_files:
             if cf.get('id') == caseFileId:
-                found = True
                 response = requests.get(cf.get('url')).content
                 return fileResult(cf.get('fileName'), response)
 
-        if not found:
-            return f"Cannot find {caseFileId} in {caseNumber}"
+        raise Exception(f"Cannot find {caseFileId} in {caseNumber}")
 
     def getObjectTypes(self):
 
@@ -312,7 +309,7 @@ def searchToEntry(client, searchRecords):
     if len(get_org) > 0:
         condition = "ID IN ('" + "','".join(get_org) + "')"
         properties = ['ID', 'Name']
-        cases = client.queryObjects(properties, "Account", condition).get('records')
+        # cases = client.queryObjects(properties, "Account", condition).get('records')
         # entries.append(client.orgToEntry(cases, 'Account:', userMapping))
 
     if len(case_ids) > 0:
@@ -681,17 +678,14 @@ def get_case_file_by_id_command(client: Client, args: Dict[str, Any]) -> Command
 
 def describe_sobject_field_command(client: Client, args: Dict[str, Any]):
 
-    found = False
     response = client.sendRequestInSession('GET', 'sobjects/Case/describe/')
 
     if field_to_search := args.get('field'):
         fields = response.get('fields')
         for field in fields:
             if field.get('name') == field_to_search:
-                found = True
                 return field
 
-    if not found:
         raise Exception(f'The field: {field_to_search} cannot be found in the sobject.'
                         f' Perhaps wrong field name or object name.')
 
