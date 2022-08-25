@@ -3307,6 +3307,14 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": ["Feed Integration ID", "Demisto REST API"],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "instance_names": "zoom_feed_1",
+            "timeout": 2400
+        },
+        {
             "playbookID": "PCAP Analysis Test",
             "integrations": [
                 "ipinfo",

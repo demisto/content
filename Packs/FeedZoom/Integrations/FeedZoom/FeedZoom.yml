@@ -88,6 +88,7 @@ configuration:
   type: 1
   required: false
 - display: Feed Fetch Interval
+  additionalinfo: Setting more frequent fetch interval may cause errors from the vendor.
   name: feedFetchInterval
   defaultvalue: "240"
   type: 19
@@ -127,4 +128,5 @@ script:
   runonce: false
   subtype: python3
 tests:
-- No tests (auto formatted)
+- FeedZoom_Test
+- Fetch Indicators Test
