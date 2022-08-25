@@ -72,7 +72,7 @@ class SensorClient(Client):
     """Client that makes HTTP requests to the Sensor API
     """
 
-    def getSensors(self) -> Dict[str, Any]:
+    def getSensors(self, args: str = '') -> Dict[str, Any]:
         """ Calls the GET /sensors endpoint to retrieve the sensors
             :return JSON response from /sensors endpoint
             :rtype Dict[str, Any]
@@ -81,10 +81,10 @@ class SensorClient(Client):
 
         return self._http_request(
             method='GET',
-            url_suffix='sensors'
+            url_suffix='sensors' + args
         )
 
-    def getDevices(self) -> Dict[str, Any]:
+    def getDevices(self, args: str = '') -> Dict[str, Any]:
         """ Calls the GET /devices endpoint to retrieve the devices
             :return JSON response from /devices endpoint
             :rtype Dict[str, Any]
@@ -93,7 +93,7 @@ class SensorClient(Client):
 
         result = self._http_request(
             method='GET',
-            url_suffix='devices'
+            url_suffix='devices' + args
         )
 
         return result.get('devices')
@@ -110,14 +110,15 @@ class SensorClient(Client):
         if taskid != '':
             suffix += '/' + taskid
 
+        demisto.debug(f"URL SUFFIX= {suffix}")
         return self._http_request(
             method='GET',
             url_suffix=suffix
         )
 
-    def createTasks(self, sensor_ids=None) -> Dict[str, Any]:
+    def createTasks(self, data=None) -> Dict[str, Any]:
         """ Calls to the Sensors API to create a new PCAP task
-            :params sensor_ids sensors' id to be added to the task
+            :params data attributes to be added to the request's body
             :return JSON response from endpoint
             :rtype Dict[str, Any]
         """
@@ -126,7 +127,7 @@ class SensorClient(Client):
         return self._http_request(
             method='POST',
             url_suffix='pcaptasks',
-            data=sensor_ids
+            data=json.dumps(data)
         )
 
     def getTelemetry(self, telemetry: str, args: str) -> Dict[str, Any]:
@@ -163,7 +164,7 @@ class EntityClient(Client):
             url_suffix=entity + '/summary'
         )
 
-    def getEntityPdns(self, entity: str) -> Dict[str, Any]:
+    def getEntityPdns(self, entity: str, args: str) -> Dict[str, Any]:
         """ Calls the GET /{entity}/pdns endpoint to retrieve the
             entity's pdns
             :param str entity: the entity to retrieve the pdns from
@@ -174,10 +175,10 @@ class EntityClient(Client):
 
         return self._http_request(
             method='GET',
-            url_suffix=entity + "/pdns"
+            url_suffix=entity + "/pdns" + args
         )
 
-    def getEntityDhcp(self, entity: str) -> Dict[str, Any]:
+    def getEntityDhcp(self, entity: str, args: str) -> Dict[str, Any]:
         """ Calls the GET /{entity}/dhcp endpoint to retrieve the
             entity's summary
             :param str entity: the entity to retrieve the dhcp from
@@ -188,7 +189,7 @@ class EntityClient(Client):
 
         return self._http_request(
             method='GET',
-            url_suffix=entity + "/dhcp"
+            url_suffix=entity + "/dhcp" + args
         )
 
     def getEntityFile(self, entity: str) -> Dict[str, Any]:
@@ -289,7 +290,7 @@ class DetectionClient(Client):
 # Helper Methods
 
 
-def encodeArgsToURL(args):
+def encodeArgsToURL(args, multiple_values: List = []):
     """ Create the query string with the provided arguments
         :parm Dict[str, Any] args: Arguments to be included in the query string
         :return The querystring
@@ -297,13 +298,21 @@ def encodeArgsToURL(args):
     """
     url = ''
     first = True
+
     for arg in args:
-        this_arg = str(arg) + "=" + str(args[arg])
-        if first:
-            url = url + "?" + this_arg
-            first = False
+        values: List[Any] = []
+        if arg in multiple_values:
+            values.extend(args[arg].split(','))
         else:
-            url = url + "&" + this_arg
+            values.append(args[arg])
+
+        for value in values:
+            this_arg = str(arg) + "=" + str(value).strip()
+            if first:
+                url = url + "?" + this_arg
+                first = False
+            else:
+                url = url + "&" + this_arg
     return url
 
 
@@ -398,7 +407,7 @@ def commandTestModule(sensorClient: SensorClient):
     """ Test that the module is up and running.
     """
     try:
-        commandGetSensors(sensorClient)
+        commandGetSensors(sensorClient, {})
         return 'ok'
     except Exception as e:
         demisto.error(f'Module test failed: {e}')
@@ -408,12 +417,12 @@ def commandTestModule(sensorClient: SensorClient):
 # Sensors API commands
 
 
-def commandGetSensors(sensorClient: SensorClient):
+def commandGetSensors(sensorClient: SensorClient, args):
     """ Get a list of all sensors.
     """
     demisto.debug('CommandGetSensors has been called.')
 
-    result: Dict[str, Any] = sensorClient.getSensors()
+    result: Dict[str, Any] = sensorClient.getSensors(encodeArgsToURL(args, ['include']))
 
     prefix = 'Insight.Sensors'
     key = 'sensors'
@@ -434,12 +443,12 @@ def commandGetSensors(sensorClient: SensorClient):
     )
 
 
-def commandGetDevices(sensorClient: SensorClient):
+def commandGetDevices(sensorClient: SensorClient, args):
     """ Get the number of devices.
     """
     demisto.debug('CommandGetDevices has been called.')
 
-    result: Dict[str, Any] = sensorClient.getDevices()
+    result: Dict[str, Any] = sensorClient.getDevices(encodeArgsToURL(args))
 
     prefix = 'Insight.Devices'
     key = 'device_list'
@@ -492,15 +501,20 @@ def commandCreateTask(sensorClient: SensorClient, args):
     """
     demisto.debug('commandCreateTask has been called.')
 
-    sensor_ids = [args['sensor_ids']]
-    args.pop('sensor_ids')
+    sensor_ids = []
+    if 'sensor_ids' in args:
+        sensor_ids = args['sensor_ids'].split(',')
+        args.pop('sensor_ids')
+
     args['sensor_ids'] = sensor_ids
 
-    sensorClient.createTasks(args)
-
-    return CommandResults(
-        readable_output='Task created successfully'
-    )
+    result: Dict[str, Any] = sensorClient.createTasks(args)
+    if 'pcaptask' in result:
+        return CommandResults(
+            readable_output='Task created successfully'
+        )
+    else:
+        raise Exception(f"Task creation failed with: {result}")
 
 
 def commandGetEventsTelemetry(sensorClient: SensorClient, args):
@@ -610,18 +624,22 @@ def commandGetEntitySummary(entityClient: EntityClient, entity: str):
     )
 
 
-def commandGetEntityPdns(entityClient: EntityClient, entity: str):
+def commandGetEntityPdns(entityClient: EntityClient, args: Dict[str, Any]):
     """ Get passive DNS information about an IP or domain.
     """
     demisto.debug('commandGetEntityPdns has been called.')
 
-    result: Dict[str, Any] = entityClient.getEntityPdns(entity)
+    entity = args.pop('entity')
+    result: Dict[str, Any] = entityClient.getEntityPdns(entity, encodeArgsToURL(args, ['record_type', 'source', 'account_uuid']))
 
     prefix = 'Insight.Entity.PDNS'
     key = 'passivedns'
 
     if not result:
         raise Exception(f'We receive an invalid response from the server({result})')
+
+    if 'result_count' in result and result.get('result_count') == 0:
+        return "We could not find any result for Get Entity Pdns."
 
     if key not in result:
         raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
@@ -636,18 +654,22 @@ def commandGetEntityPdns(entityClient: EntityClient, entity: str):
     )
 
 
-def commandGetEntityDhcp(entityClient: EntityClient, entity: str):
+def commandGetEntityDhcp(entityClient: EntityClient, args: Dict[str, Any]):
     """ Get DHCP information about an IP address.
     """
     demisto.debug('commandGetEntityDhcp has been called.')
 
-    result: Dict[str, Any] = entityClient.getEntityDhcp(entity)
+    entity = args.pop('entity')
+    result: Dict[str, Any] = entityClient.getEntityDhcp(entity, encodeArgsToURL(args, ['account_uuid']))
 
     prefix = 'Insight.Entity.DHCP'
-    key = 'records'
+    key = 'dhcp'
 
     if not result:
         raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if 'result_count' in result and result.get('result_count') == 0:
+        return "We could not find any result for Get Entity Dhcp."
 
     if key not in result:
         raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
@@ -807,7 +829,7 @@ def commandGetDetections(detectionClient: DetectionClient, args):
     demisto.debug('commandGetDetections has been called.')
 
     result: Dict[str, Any] = detectionClient.getDetections(
-        encodeArgsToURL(args)
+        encodeArgsToURL(args, ['status', 'rule_uuid'])
     )
 
     # if there are more detections to be retrieved, pull the
@@ -918,11 +940,13 @@ def commandCreateDetectionRule(detectionClient: DetectionClient, args):
     args['run_account_uuids'] = run_accts
     args['device_ip_fields'] = dev_ip_fields
 
-    detectionClient.createDetectionRule(args)
-
-    return CommandResults(
-        readable_output='Rule created successfully'
-    )
+    result: Dict[str, Any] = detectionClient.createDetectionRule(args)
+    if 'rule' in result:
+        return CommandResults(
+            readable_output='Rule created successfully'
+        )
+    else:
+        raise Exception(f"Rule creation failed with: {result}")
 
 
 def commandResolveDetection(detectionClient: DetectionClient, args):
@@ -930,17 +954,21 @@ def commandResolveDetection(detectionClient: DetectionClient, args):
     """
     demisto.debug('commandResolveDetection has been called.')
 
-    detection_uuid = args['detection_uuid']
-    data = {
-        "resolution": args['resolution'],
-        "resolution_comment": args['resolution_comment']
-    }
+    if 'detection_uuid' not in args:
+        raise Exception("Detection cannot be resolved: No detection_uuid has been provided.")
 
-    detectionClient.resolveDetection(detection_uuid, data)
+    if 'resolution' not in args:
+        raise Exception("Detection cannot be resolved: No resolution has been provided.")
 
-    return CommandResults(
-        readable_output='Detection resolved successfully'
-    )
+    detection_uuid = args.pop('detection_uuid')
+    result = detectionClient.resolveDetection(detection_uuid, args)
+
+    if not result:
+        return CommandResults(
+            readable_output='Detection resolved successfully'
+        )
+    else:
+        raise Exception(f"Detection resolution failed with: {result}")
 
 
 def main():
@@ -995,16 +1023,37 @@ def main():
             )
 
         elif command == 'insight-get-sensors':
-            return_results(commandGetSensors(sensorClient))
+            return_results(commandGetSensors(sensorClient, args))
 
         elif command == 'insight-get-devices':
-            return_results(commandGetDevices(sensorClient))
+            return_results(commandGetDevices(sensorClient, args))
 
         elif command == 'insight-get-tasks':
             return_results(commandGetTasks(sensorClient, args))
 
         elif command == 'insight-create-task':
             return_results(commandCreateTask(sensorClient, args))
+
+        elif command == 'insight-get-telemetry-events':
+            return_results(
+                commandGetEventsTelemetry(
+                    sensorClient, encodeArgsToURL(args)
+                )
+            )
+
+        elif command == 'insight-get-telemetry-network':
+            return_results(
+                commandGetNetworkTelemetry(
+                    sensorClient, encodeArgsToURL(args)
+                )
+            )
+
+        elif command == 'insight-get-telemetry-packetstats':
+            return_results(
+                commandGetPacketstatsTelemetry(
+                    sensorClient, encodeArgsToURL(args)
+                )
+            )
 
         elif command == 'insight-get-detections':
             return_results(commandGetDetections(detectionClient, args))
@@ -1029,34 +1078,13 @@ def main():
             )
 
         elif command == 'insight-get-entity-pdns':
-            return_results(commandGetEntityPdns(entityClient, args['entity']))
+            return_results(commandGetEntityPdns(entityClient, args))
 
         elif command == 'insight-get-entity-dhcp':
-            return_results(commandGetEntityDhcp(entityClient, args['entity']))
+            return_results(commandGetEntityDhcp(entityClient, args))
 
         elif command == 'insight-get-entity-file':
             return_results(commandGetEntityFile(entityClient, args['hash']))
-
-        elif command == 'insight-get-telemetry-events':
-            return_results(
-                commandGetEventsTelemetry(
-                    sensorClient, encodeArgsToURL(args)
-                )
-            )
-
-        elif command == 'insight-get-telemetry-network':
-            return_results(
-                commandGetNetworkTelemetry(
-                    sensorClient, encodeArgsToURL(args)
-                )
-            )
-
-        elif command == 'insight-get-telemetry-packetstats':
-            return_results(
-                commandGetPacketstatsTelemetry(
-                    sensorClient, encodeArgsToURL(args)
-                )
-            )
 
     # catch exceptions
     except Exception as e:
