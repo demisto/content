@@ -8,7 +8,7 @@
     "editForm": false,
     "group": 0,
     "hidden": false,
-    "id": "incident_xsoar-web-serveremailusersla",
+    "id": "incident_xsoarwebserveremailusersla",
     "isReadOnly": true,
     "locked": false,
     "name": "xsoar-web-serverEmailUserSLA",
