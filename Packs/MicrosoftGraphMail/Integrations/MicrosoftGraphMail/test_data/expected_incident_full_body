@@ -67,6 +67,10 @@
             "value": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Only part of the email body, this is the full email body</div>\r\n</body>\r\n</html>\r\n"
         },
         {
+            "type": "Email/text",
+            "value": "Only part of the email body, this is the full email body"
+        },
+        {
             "type": "Email/BodyType",
             "value": "html"
         },
@@ -121,6 +125,7 @@
             }
         ],
         "Body": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Only part of the email body, this is the full email body</div>\r\n</body>\r\n</html>\r\n",
+        "text": "Only part of the email body, this is the full email body",
         "BodyType": "html",
         "Sender": "dummysender@works.com",
         "From": "dummysender@works.com",
