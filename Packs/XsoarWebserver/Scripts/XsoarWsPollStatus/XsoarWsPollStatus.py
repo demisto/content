@@ -1,3 +1,5 @@
+import demistomock as demisto
+from CommonServerPython import *
 uuid = demisto.args().get('uuid')
 next_run = int(demisto.args().get('timebetweenruns'))
 timeout = 259200
