@@ -1,5 +1,4 @@
 import json
-import demistomock as demisto
 from CommonServerPython import *
 from urllib import parse
 
@@ -1414,7 +1413,7 @@ def get_project_team(project_name):
 
 def main():
     params = demisto.params()
-    set_authentication_endpoint(params.get('auth_endpoint', ''))
+    set_authentication_endpoint(params.get('auth_endpoint', generate_auth_urls(AUTH_DEFAULT)[1]))
     set_api_endpoint(params.get('api_endpoint', ''))
     try:
         command = demisto.command()
