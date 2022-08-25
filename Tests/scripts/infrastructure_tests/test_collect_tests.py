@@ -95,7 +95,7 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
     that the result packs and tests are expected ones.
 
     :param case_mocker: with which to run the test
-    :param run_nightly: whether to ask, and check for, a nightly machine.
+    :param run_nightly: whether to ask for a nightly machine.
     :param collector_class: the collector class to test.
     :param expected_tests: the expected test names. (pass None to not check)
     :param expected_packs: the expected pack names. (pass None to not check)
@@ -132,7 +132,6 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
         assert set(collected.machines) == set(expected_machines)
 
     assert Machine.MASTER in collected.machines
-    assert (Machine.NIGHTLY in collected.machines) == run_nightly
 
     for test in collected.tests:
         print(f'collected test {test}')
@@ -157,7 +156,7 @@ NIGHTLY_TESTS: tuple = (
      {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
 
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-     (Machine.V6_5, Machine.MASTER, Machine.NIGHTLY)),
+     (Machine.V6_5, Machine.MASTER)),
 
     (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
      None),

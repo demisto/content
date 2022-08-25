@@ -245,7 +245,7 @@ class TestCollector(ABC):
 
         self._validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
         result += self._always_installed_packs
-        result.machines = Machine.get_suitable_machines(result.version_range, run_nightly)  # type:ignore[union-attr]
+        result.machines = Machine.get_suitable_machines(result.version_range)  # type:ignore[union-attr]
         return result
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):

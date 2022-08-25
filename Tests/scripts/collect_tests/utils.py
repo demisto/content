@@ -77,18 +77,16 @@ class Machine(Enum):
     V6_8 = Version('6.8')
     V6_9 = Version('6.9')
     MASTER = 'Master'
-    NIGHTLY = 'nightly'
 
     @staticmethod
     def numeric_machines() -> tuple['Machine', ...]:
         return tuple(machine for machine in Machine if isinstance(machine.value, Version))
 
     @staticmethod
-    def get_suitable_machines(version_range: Optional[VersionRange], run_nightly: bool) -> tuple['Machine', ...]:
+    def get_suitable_machines(version_range: Optional[VersionRange]) -> tuple['Machine', ...]:
         """
 
         :param version_range: range of versions. If None, all versions are returned.
-        :param run_nightly: whether a nightly machine is required
         :return: Master, as well as all Machine items matching the input.
         """
         result: list[Machine] = [Machine.MASTER]
@@ -97,9 +95,6 @@ class Machine(Enum):
             version_range = VersionRange(version.NegativeInfinity, version.Infinity)
 
         result.extend(machine for machine in Machine.numeric_machines() if machine.value in version_range)
-
-        if run_nightly:
-            result.append(Machine.NIGHTLY)
 
         return tuple(result)
 

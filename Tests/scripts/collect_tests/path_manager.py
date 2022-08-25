@@ -2,9 +2,10 @@ import logging
 import os
 from pathlib import Path
 from typing import Iterable, Union
-from Tests.scripts.collect_tests.logger import logger
 
 from git import InvalidGitRepositoryError, Repo
+
+from Tests.scripts.collect_tests.logger import logger
 
 _SANITY_FILES_FOR_GLOB = (
     # if any of the files under this list (or descendants) is changed, and no other files are changed,
