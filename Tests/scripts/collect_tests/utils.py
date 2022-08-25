@@ -277,7 +277,7 @@ class PackManager:
 
     def relative_to_packs(self, path: Path | str):
         try:
-            return path.absolute().relative_to(self.packs_path.absolute())
+            return Path(path).absolute().relative_to(self.packs_path.absolute())
         except ValueError:
             raise NotUnderPackException(path)
 
