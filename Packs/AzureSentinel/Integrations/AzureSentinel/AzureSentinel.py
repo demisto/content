@@ -885,13 +885,15 @@ def update_next_link_in_context(result: dict, outputs: dict):
         outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item
 
 
-def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int):
+def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int,
+                    fetch_via_ts: bool):
     """Fetching incidents.
     Args:
         first_fetch_time: The first fetch time.
         client: An AzureSentinelClient client.
         last_run: An dictionary of the last run.
         min_severity: A minimum severity of incidents to fetch.
+        fetch_via_ts: Fetch incidents using a query based on the timestamp.
 
     Returns:
         (tuple): 1. The LastRun object updated with the last run details.
@@ -904,31 +906,31 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
     last_incident_number = last_run.get('last_incident_number')
     demisto.debug(f"{last_fetch_time=}, {last_fetch_ids=}, {last_incident_number=}")
 
-    # if last_fetch_time is None or last_incident_number is None:
-    demisto.debug("handle via timestamp")
-    if last_fetch_time is None:
-        last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
-        latest_created_time = dateparser.parse(last_fetch_time_str)
-    else:
-        latest_created_time = dateparser.parse(last_fetch_time)
-    assert latest_created_time, f'Got empty latest_created_time. {last_fetch_time_str=} {last_fetch_time=}'
-    latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
-    command_args = {
-        'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
-        'orderby': 'properties/createdTimeUtc asc',
-    }
-    raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+    if last_fetch_time is None or last_incident_number is None or fetch_via_ts:
+        demisto.debug("handle via timestamp")
+        if last_fetch_time is None:
+            last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
+            latest_created_time = dateparser.parse(last_fetch_time_str)
+        else:
+            latest_created_time = dateparser.parse(last_fetch_time)
+        assert latest_created_time, f'Got empty latest_created_time. {last_fetch_time_str=} {last_fetch_time=}'
+        latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
+        command_args = {
+            'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
+            'orderby': 'properties/createdTimeUtc asc',
+        }
+        raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
-    # else:
-    #     demisto.debug("handle via id")
-    #     latest_created_time = dateparser.parse(last_fetch_time)
-    #     assert latest_created_time is not None, f"dateparser.parse(last_fetch_time):" \
-    #                                             f" {dateparser.parse(last_fetch_time)} couldnt be parsed"
-    #     command_args = {
-    #         'filter': f'properties/incidentNumber gt {last_incident_number}',
-    #         'orderby': 'properties/incidentNumber asc',
-    #     }
-    #     raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+    else:
+        demisto.debug("handle via id")
+        latest_created_time = dateparser.parse(last_fetch_time)
+        assert latest_created_time is not None, f"dateparser.parse(last_fetch_time):" \
+                                                f" {dateparser.parse(last_fetch_time)} couldnt be parsed"
+        command_args = {
+            'filter': f'properties/incidentNumber gt {last_incident_number}',
+            'orderby': 'properties/incidentNumber asc',
+        }
+        raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
     return process_incidents(raw_incidents, last_fetch_ids, min_severity,
                              latest_created_time, last_incident_number)  # type: ignore[attr-defined]
@@ -1414,6 +1416,7 @@ def main():
             # How much time before the first fetch to retrieve incidents
             first_fetch_time = params.get('fetch_time', '3 days').strip()
 
+            fetch_via_ts = params.get('fetch_via_ts', False)
             min_severity = severity_to_level(params.get('min_severity', 'Informational'))
 
             # Set and define the fetch incidents command to run after activated via integration settings.
@@ -1421,7 +1424,8 @@ def main():
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
-                min_severity=min_severity
+                min_severity=min_severity,
+                fetch_via_ts=fetch_via_ts
             )
 
             demisto.setLastRun(next_run)

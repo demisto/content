@@ -1291,12 +1291,13 @@ class TestHappyPath:
                     'last_fetch_ids': []}
         first_fetch_time = '3 days'
         minimum_severity = 0
+        fetch_via_ts = False
 
         mocker.patch('AzureSentinel.process_incidents', return_value=({}, []))
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENTS_OUTPUT)
 
         # run
-        fetch_incidents(client, last_run, first_fetch_time, minimum_severity)
+        fetch_incidents(client, last_run, first_fetch_time, minimum_severity, fetch_via_ts)
         call_args = client.http_request.call_args[1]
 
         # validate

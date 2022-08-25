@@ -48,6 +48,10 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: Fetch incidents based on a timestamp query.
+  name: fetch_via_ts
+  required: false
+  type: 8
 - defaultvalue: Informational
   display: The minimum severity of incidents to fetch
   name: min_severity

@@ -45,8 +45,9 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
     | Incident type | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
+    | Fetch incidents based on a timestamp query. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+5. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
