@@ -36,7 +36,7 @@ def process_form(uuid, linkuuid):
     try:
         data = integration_context[uuid]
         data["link_tracker"][linkuuid]["response_received"] = True
-        data["link_tracker"][linkuuid]["response"] = dict(request.forms.decode())
+        data["link_tracker"][linkuuid]["response"] = dict(request.forms.decode())  # pylint: disable=E1101
         integration_context[uuid] = data
         set_integration_context(integration_context)
         response_html = '''<html><body>
