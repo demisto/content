@@ -301,9 +301,16 @@ def __create_incident_with_playbook(client: DefaultApi,
     create_incident_request.name = name
 
     try:
+        logging.debug(f'Creating incident {name=}, {playbook_id=}')
         response = client.create_incident(create_incident_request=create_incident_request)
+
+        try:
+            logging.debug(f'got {response=}')
+        except:
+            logging.debug('could not log response')
+
     except ApiException:
-        logging_manager.exception(f'Failed to create incident with name {name} for playbook {playbook_id}')
+        logging_manager.exception(f'Failed to create incident with {name=} for {playbook_id=}')
 
     try:
         inc_id = response.id
