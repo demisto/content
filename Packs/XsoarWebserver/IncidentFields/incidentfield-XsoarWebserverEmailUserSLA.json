@@ -11,7 +11,7 @@
     "id": "incident_xsoarwebserveremailusersla",
     "isReadOnly": true,
     "locked": false,
-    "name": "xsoar-web-serverEmailUserSLA",
+    "name": "Xsoar-web-server Email User SLA",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
