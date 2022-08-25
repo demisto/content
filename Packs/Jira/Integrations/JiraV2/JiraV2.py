@@ -1265,6 +1265,7 @@ def update_remote_system_command(args):
         demisto.error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
     finally:
+        demisto.info('some comments')
         return remote_id
 
 
