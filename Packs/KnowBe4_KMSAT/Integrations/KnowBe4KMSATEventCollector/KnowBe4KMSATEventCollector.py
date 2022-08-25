@@ -143,33 +143,33 @@ def test_module(client: Client) -> str:
 def get_events_command(client: Client, args: Dict, max_fetch: Optional[int], vendor: str,
                        product: str) -> Union[str, CommandResults]:
     """
-    Fetches events from the saas-security queue and return them to the war-room.
+    Fetches events from the KnowBe4-KMSAT queue and return them to the war-room.
     in case should_push_events is set to True, they will be also sent to XSIAM.
     """
     should_push_events = argToBoolean(args.get('should_push_events'))
 
-    if events := fetch_events_from_saas_security(client=client, max_fetch=max_fetch):
+    if events := fetch_events_from_knowbe4_kmsat(client=client, max_fetch=max_fetch):
         if should_push_events:
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
         return CommandResults(
             readable_output=tableToMarkdown(
-                'SaaS Security Logs',
+                'KnowBe4 KMSAT Logs',
                 events,
-                headers=['log_type', 'item_type', 'item_name', 'timestamp', 'serial'],
+                # headers=['log_type', 'item_type', 'item_name', 'timestamp', 'serial'],
                 headerTransform=underscoreToCamelCase,
                 removeNull=True
             ),
             raw_response=events,
             outputs=events,
-            outputs_key_field=['timestamp', 'log_type', 'item_name', 'item_type'],
-            outputs_prefix='SaasSecurity.Event'
+            # outputs_key_field=['timestamp', 'log_type', 'item_name', 'item_type'],
+            outputs_prefix='KMSat.Event'
         )
     return 'No events were found.'
 
 
-def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = None) -> List[Dict]:
+def fetch_events_from_knowbe4_kmsat(client: Client, max_fetch: Optional[int] = None) -> List[Dict]:
     """
-    Fetches events from the saas-security queue.
+    Fetches events from the KnowBe4-KMSAT queue.
     """
     events: List[Dict] = []
     under_max_fetch = True
