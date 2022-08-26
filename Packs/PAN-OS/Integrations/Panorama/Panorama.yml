@@ -6251,6 +6251,9 @@ script:
       - virus
       - vulnerability
       - wildfire-analysis
+    - description: The device group for which to return security profiles.
+      name: device_group
+      required: false
     description: Gets information for the specified security profile.
     name: pan-os-get-security-profiles
     outputs:

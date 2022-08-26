@@ -4034,7 +4034,7 @@ Gets information for the specified security profile.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | security_profile | The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis". | Optional | 
-
+| device_group | The device group for which to return security profiles. | Optional |
 
 #### Context Output
 
