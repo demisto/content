@@ -952,6 +952,47 @@ def test_get_security_profiles_command_main_flow(mocker):
     }
 
 
+def test_apply_security_profiles_command_main_flow(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-apply-security-profile command arguments including device_group
+
+    When -
+        running the pan-os-apply-security-profile command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the device group gets overriden by the command arguments.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'device_group': 'new-device-group',
+            'profile_type': 'data-filtering',
+            'profile_name': 'test-profile',
+            'rule_name': 'rule-test'
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='pan-os-apply-security-profile')
+    request_mock = mocker.patch('Panorama.http_request')
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'set', 'type': 'config',
+        'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
+                 "/rule-test/security/rules/entry[@name='rule-test']/profile-setting/profiles/data-filtering",
+        'key': 'thisisabogusAPIKEY!', 'element': '<member>test-profile</member>'}
+    assert res.call_args.args[0] == 'The profile test-profile has been applied to the rule rule-test'
+
+
 class TestPanoramaEditRuleCommand:
     EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
 

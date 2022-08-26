@@ -6411,6 +6411,9 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
+    - description: The device group for which to apply security profiles.
+      name: device_group
+      required: false
     description: Applies a security profile to specific rules or rules with a specific tag.
     name: pan-os-apply-security-profile
   - arguments:

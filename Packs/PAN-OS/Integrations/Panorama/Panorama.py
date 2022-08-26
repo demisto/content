@@ -6383,7 +6383,12 @@ def apply_security_profile(xpath: str, profile_name: str) -> Dict:
     return result
 
 
-def apply_security_profile_command(profile_name: str, profile_type: str, rule_name: str, pre_post: str = None):
+def apply_security_profile_command(args):
+    profile_name = args.get('profile_name')
+    profile_type = args.get('profile_type')
+    rule_name = args.get('rule_name')
+    pre_post = args.get('rule_name')
+
     if DEVICE_GROUP:  # Panorama instance
         if not pre_post:
             raise Exception('Please provide the pre_post argument when applying profiles to rules in '
@@ -11443,7 +11448,7 @@ def main():
             get_security_profiles_command(args.get('security_profile'))
 
         elif command == 'panorama-apply-security-profile' or command == 'pan-os-apply-security-profile':
-            apply_security_profile_command(**args)
+            apply_security_profile_command(args)
 
         elif command == 'panorama-get-ssl-decryption-rules' or command == 'pan-os-get-ssl-decryption-rules':
             get_ssl_decryption_rules_command(**args)

@@ -4110,7 +4110,7 @@ Apply a security profile to specific rules or rules with a specific tag.
 | rule_name | The rule name to apply. | Required | 
 | profile_name | The profile name to apply to the rule. | Required | 
 | pre_post | The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
-
+| device_group | The device group for which to apply security profiles. | Optional |
 
 #### Context Output
 
