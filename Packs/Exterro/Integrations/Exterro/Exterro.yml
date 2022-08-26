@@ -1,0 +1,77 @@
+commonfields:
+  id: Exterro FTK
+  version: -1
+
+name: Exterro FTK
+display: Exterro FTK
+category: Forensics & Malware Analysis
+description: Use the Exterro FTK integration to protect against and provide additional visibility into phishing and other malicious email attacks.			
+
+configuration:
+- display: Web Protocol
+  name: PROTOCOL
+  defaultvalue: http
+  type: 0
+  required: true
+- display: Service URL (FQDN or IP Address.)
+  name: SERVER
+  defaultvalue: localhost
+  type: 0
+  required: true
+- display: Service Listening Port
+  name: PORT
+  defaultvalue: 4443
+  type: 0
+  required: true
+- display: "The API authentication key. http://support.accessdata.com/hc/en-us/articles/360053994573-Generating-API-Keys"
+  name: APIKEY
+  type: 4
+  required: true
+  additionalinfo: The API authentication key has the following format `00000000-abcd-1234-5678-000000000000`
+- display: "The path to the public certificate required to authenticate."
+  name: PUBLIC_CERT
+  type: 0
+  required: false
+  
+script:
+  commands:    
+  - name: exterro-ftk-trigger-workflow
+    arguments:
+    - name: Automation ID
+      required: true
+      type: number
+      description: The Id of the automation workflow.
+    - name: Case Name
+      required: false
+      description: The name of the case.
+    - name: Case IDs
+      required: false
+      description: Value of caseids.
+    - name: Evidence Path
+      required: false
+      description: The filepath of the evidence.
+    - name: Target IPs
+      required: false
+      description: Targetips for the collection
+    - name: SearchandTag Path
+      required: false
+      description: The filepath of the search and tag .
+    - name: Export Path
+      required: false
+      description: The path to export files.
+    outputs:
+    - contextPath: ExterroFTK.Workflow.Status
+      description: The Status of the of workflow trigger.
+      type: string
+    description: Returns a boolean value.
+
+  dockerimage: demisto/accessdata:1.1.0.32812
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+
+tests:
+- No test
+
+fromversion: 6.0.0
