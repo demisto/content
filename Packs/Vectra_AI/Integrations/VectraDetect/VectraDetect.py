@@ -1691,10 +1691,10 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'vectra-search-accounts':
             return_results(vectra_search_accounts_command(client, **kwargs))
-        elif command == 'vectra-search-detections':
-            return_results(vectra_search_detections_command(client, **kwargs))
         elif command == 'vectra-search-hosts':
             return_results(vectra_search_hosts_command(client, **kwargs))
+        elif command == 'vectra-search-detections':
+            return_results(vectra_search_detections_command(client, **kwargs))
 
         # ## Accounts centric commands
         elif command == 'vectra-account-describe':
