@@ -1,6 +1,5 @@
 import demistomock as demisto
 import os
-from stat import S_IREAD, S_IWRITE
 
 import pytest
 from ReadPDFFileV2 import ShellException
