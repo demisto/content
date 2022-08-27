@@ -1590,7 +1590,7 @@ Adds or removes sites to and from a custom URL category.
 | sites | A comma separated list of sites to add to the custom URL category. | Optional | 
 | action | Adds or removes sites or categories. Can be "add",or "remove". | Required | 
 | categories | A comma separated list of categories to add to the custom URL category. | Optional | 
-
+| device_group | The device group in which the URL category belongs to. | Optional |
 
 #### Context Output
 

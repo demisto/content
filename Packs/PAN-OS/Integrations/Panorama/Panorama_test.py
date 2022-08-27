@@ -1198,6 +1198,67 @@ def test_panorama_edit_address_group_command_main_flow(mocker):
     assert res.call_args.args[0]['HumanReadable'] == 'Address Group test was edited successfully.'
 
 
+@pytest.mark.parametrize(
+    'action, existing_url_categories_mock, category', [
+        (
+            'add',
+            {'list': {'member': []}},
+            'category1'
+        ),
+        (
+            'remove',
+            {'list': {'member': ['category2']}},
+            'category2'
+        )
+    ]
+)
+def test_panorama_edit_custom_url_category_command_main_flow(mocker, action, existing_url_categories_mock, category):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-edit-custom-url-category command arguments including device_group
+
+    When -
+        running the pan-os-edit-custom-url-category command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the device group gets overriden by the command arguments.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={'name': 'test', 'action': action, 'categories': ['category1'], 'device_group': 'new device group'}
+    )
+    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-custom-url-category')
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch('Panorama.panorama_get_custom_url_category', return_value=existing_url_categories_mock)
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    expected_body_request = {
+            'action': 'edit', 'type': 'config',
+            'xpath': "/config/devices/entry/device-group/entry[@name='new device group']/profiles/custom-url-category"
+                     "/entry[@name='test']",
+            'element': f"<entry name='test'><list><member>{category}<"
+                       f"/member></list><type>Category Match</type></entry>",
+            'key': 'thisisabogusAPIKEY!'
+        }
+
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['body'] == expected_body_request
+    assert res.call_args.args[0]['Contents'] == {
+        'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
+    }
+
 class MockedResponse:
     def __init__(self, text, status_code, reason='', headers=None):
         self.status_code = status_code

@@ -4348,6 +4348,9 @@ script:
     - description: A comma-separated list of categories to add to the custom URL category.
       isArray: true
       name: categories
+    - description: The device group in which the URL category belongs to.
+      name: device_group
+      required: false
     description: Adds or removes sites to and from a custom URL category.
     name: pan-os-edit-custom-url-category
     outputs:
