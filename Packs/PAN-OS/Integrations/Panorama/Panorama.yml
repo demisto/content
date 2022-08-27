@@ -3987,6 +3987,9 @@ script:
     - description: The tag of the address group to edit.
       isArray: true
       name: tags
+    - description: The device group in which the address group belongs to.
+      name: device_group
+      required: false
     description: Edits a static or dynamic address group.
     name: pan-os-edit-address-group
     outputs:

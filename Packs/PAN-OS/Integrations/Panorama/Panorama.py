@@ -1726,7 +1726,7 @@ def panorama_edit_address_group_command(args: dict):
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Address Group was edited successfully.',
+        'HumanReadable': f'Address Group {address_group_name} was edited successfully.',
         'EntryContext': {
             "Panorama.AddressGroups(val.Name == obj.Name)": address_group_output
         }

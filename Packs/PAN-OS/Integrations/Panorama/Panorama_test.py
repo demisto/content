@@ -1144,6 +1144,7 @@ class TestPanoramaEditRuleCommand:
         res = mocker.patch('demistomock.results')
         main()
 
+        # make sure that device group is getting overriden by the device-group from command arguments.
         assert request_mock.call_args.kwargs['body'] == {
             'type': 'config', 'action': 'edit', 'key': 'thisisabogusAPIKEY!',
             'element': '<disabled>no</disabled>',
@@ -1153,6 +1154,48 @@ class TestPanoramaEditRuleCommand:
         assert res.call_args.args[0]['Contents'] == {
             'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
         }
+
+
+def test_panorama_edit_address_group_command_main_flow(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-edit-address-group command arguments including device_group
+
+    When -
+        running the pan-os-edit-address-group command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the device group gets overriden by the command arguments.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={'name': 'test', 'description': 'test', 'match': '1.1.1.1', 'device_group': 'new device group'}
+    )
+    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-address-group')
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['body'] == {
+        'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!',
+        'xpath': "/config/devices/entry/device-group/entry[@name='new device group']"
+                 "/address-group/entry[@name='test']/description", 'element': '<description>test</description>'
+    }
+    assert res.call_args.args[0]['Contents'] == {
+        'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
+    }
+    assert res.call_args.args[0]['HumanReadable'] == 'Address Group test was edited successfully.'
 
 
 class MockedResponse:

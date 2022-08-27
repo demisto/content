@@ -1011,7 +1011,7 @@ Edits a static or dynamic address group.
 | element_to_remove | Element to remove from the list of the static address group. Only existing Address objects can be removed. | Optional | 
 | description | Address group new description. | Optional | 
 | tags | The tag of the Address group to edit. | Optional | 
-
+| device_group | The device group in which the address group belongs to. | Optional |
 
 #### Context Output
 
