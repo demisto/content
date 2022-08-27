@@ -5076,6 +5076,9 @@ script:
       - replace
       - add
       - remove
+    - description: The device group in which the rule belongs to.
+      name: device_group
+      required: false
     description: Edits a policy rule.
     name: pan-os-edit-rule
     outputs:

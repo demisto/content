@@ -2427,7 +2427,7 @@ Edits a policy rule.
 | element_value | The new value for the parameter. | Required | 
 | pre_post | Pre-rule or post-rule (Panorama instances). | Optional | 
 | behaviour | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
-
+| device_group | The device group in which the rule belongs to. | Optional |
 
 #### Context Output
 

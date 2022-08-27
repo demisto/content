@@ -1107,6 +1107,53 @@ class TestPanoramaEditRuleCommand:
         panorama_edit_rule_command(args)
         assert http_req_mocker.call_args.kwargs.get('body').get('element') == '<disabled>no</disabled>'
 
+    @staticmethod
+    def test_edit_rule_main_flow(mocker):
+        """
+        Given
+         - integrations parameters.
+         - pan-os-edit-rule command arguments including device_group.
+
+        When -
+            running the pan-os-edit-rule command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "disabled",
+                "element_value": "no",
+                "behaviour": "replace",
+                "pre_post": "pre-rulebase",
+                "device_group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        assert request_mock.call_args.kwargs['body'] == {
+            'type': 'config', 'action': 'edit', 'key': 'thisisabogusAPIKEY!',
+            'element': '<disabled>no</disabled>',
+            'xpath': "/config/devices/entry/device-group/entry[@name='new device group']/pre-rulebase"
+                     "/security/rules/entry[@name='test']/disabled"
+        }
+        assert res.call_args.args[0]['Contents'] == {
+            'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
+        }
+
 
 class MockedResponse:
     def __init__(self, text, status_code, reason='', headers=None):
