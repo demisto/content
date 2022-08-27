@@ -369,7 +369,7 @@ def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
 def test_handle_error_read_only(mocker):
     from ReadPDFFileV2 import handle_error_read_only
 
-    os.chmod(f'{CWD}/test_for_read_only_file.txt', S_IREAD)
+    mocker.patch('ReadPDFFileV2.os.access', return_value=False)
 
     def fun(path):
         return path
@@ -385,7 +385,7 @@ def test_handle_error_read_only(mocker):
 def test_handle_error_read_only_failed(mocker):
     from ReadPDFFileV2 import handle_error_read_only
 
-    os.chmod(f'{CWD}/test_for_read_only_file.txt', S_IWRITE)
+    mocker.patch('ReadPDFFileV2.os.access', return_value=True)
 
     def fun(path):
         return path
@@ -396,4 +396,3 @@ def test_handle_error_read_only_failed(mocker):
             'The error is not due to a problem with write permissions to the file'
         )
     assert str(e.value) == 'The error is not due to a problem with write permissions to the file'
-    os.chmod(f'{CWD}/test_for_read_only_file.txt', S_IREAD)
