@@ -1,4 +1,4 @@
-description: Sub-playbook that performs an Nmap scan and compares against a regular expression to determine a match. This could be used to look for OpenSSH versions or other OS information found in the banner.
+description: Sub-playbook that performs an Nmap scan and compares the results against a regular expression to determine a match. This could be used to look for OpenSSH versions or other OS information found in the banner.
 id: NMAP - Banner Check
 inputs:
 - description: Remote IP address in an incident/alert.
