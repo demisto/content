@@ -72,7 +72,7 @@ def main():
                                     )
                     else:
                         output = create_output(
-                            f"Error occurred while running script-JiraChangeTransition. expected a list as response "
+                            f"Error  occurred while running script-JiraChangeTransition. expected a list as response "
                             f"but got: {type(res)}. The response is: {res} "
                         )
                 else:
