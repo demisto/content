@@ -38,6 +38,7 @@ class Client(BaseClient):
                  proxy: bool = False, verify: bool = True):
         self.repository = repository
         self.workspace = workspace
+        self.serverUrl = server_url
         super().__init__(base_url=server_url, auth=auth, proxy=proxy, verify=verify)
 
 
@@ -50,8 +51,8 @@ class Client(BaseClient):
         return "ok"
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
-    def get_list(self, url_suffix, params=None) -> dict:
-        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+    def get_list(self, full_url, params=None) -> dict:
+        return self._http_request(method='GET', full_url=full_url, params=params)
 
     # HELPER FUNCTIONS
     def get_paged_results(self, response, results, limit=None, params=None) -> list:
@@ -69,14 +70,12 @@ class Client(BaseClient):
                     limit = limit - 1
                     i = i - 1
             if limit > 0 and isNext and (not page or page == 1):
-                isNext = f'/workspaces{isNext.split("workspaces")[1]}'
                 response = self.get_list(isNext)
                 self.get_paged_results(response, results, limit)
         else:
             for value in arr:
                 results.append(value)
             if isNext and (not page or page == 1):
-                isNext = f'/workspaces{isNext.split("workspaces")[1]}'
                 response = self.get_list(isNext)
                 self.get_paged_results(response, results)
         return results
@@ -114,15 +113,15 @@ def project_list_command(client: Client, args) -> CommandResults:
     project_key = args.get('project_key')
     limit = args.get('limit', None)
     if not project_key:
-        url_suffix = f'/workspaces/{client.workspace}/projects/'
+        full_url = f'{client.serverUrl}/workspaces/{client.workspace}/projects/'
         readable_name = f'List of the projects in {client.workspace}'
     else:
         project_key = project_key.upper()
-        url_suffix = f'/workspaces/{client.workspace}/projects/{project_key}'
+        full_url = f'{client.serverUrl}/workspaces/{client.workspace}/projects/{project_key}'
         readable_name = f'The information about project {project_key}'
 
-    response = client.get_list(url_suffix, params)
-    if url_suffix[-1] == '/':
+    response = client.get_list(full_url, params)
+    if full_url[-1] == '/':
         results = client.get_paged_results(response, [], limit, params)
 
     human_readable = []
