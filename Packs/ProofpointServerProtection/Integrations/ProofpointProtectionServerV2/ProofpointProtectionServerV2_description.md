@@ -12,7 +12,3 @@ The following are the required managed modules for this integration:
  - Quarantine
  
 The operations are accessed through port 10000.
-
-
-### Modification history
-Modified by Accenture to support getting, creating, modifying and deleting users
