@@ -1196,6 +1196,8 @@ def parse_incident_from_item(item, is_fetch):
         # handle item id
         if item.message_id:
             labels.append({'type': 'Email/MessageId', 'value': str(item.message_id)})
+            # fetch history
+            incident['dbotMirrorId'] = str(item.message_id)
 
         if item.item_id:
             labels.append({'type': 'Email/ID', 'value': item.item_id})
@@ -2105,7 +2107,7 @@ def sub_main():
             test_module()
         elif demisto.command() == 'fetch-incidents':
             incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
-            demisto.incidents(str_to_unicode(incidents))
+            demisto.incidents(str_to_unicode(incidents) or [])
         elif demisto.command() == 'ews-get-attachment':
             encode_and_submit_results(fetch_attachments_for_message(**args))
         elif demisto.command() == 'ews-delete-attachment':
