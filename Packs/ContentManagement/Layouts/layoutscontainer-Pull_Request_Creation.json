@@ -351,7 +351,7 @@
                 "type": ""
             },
             {
-                "description": "To create a new pull request - Upload the zip content pack to the **Pull Request Attachment** and set the **Pull Request Title** field. The other fields are optional.\nIf **CI/CD Branch** field is empty, the playbook will generate the branch name based on the branch name, for example: pack name is \"MyPack\" the branch name will be \"MyPack\".",
+                "description": "To create a new pull request - Upload the zip content pack to the **Pull Request Attachment** and set the **Pull Request Title** field. The other fields are optional.\nIf **CI/CD Branch** field is empty, the playbook will generate the branch name based on the pack name, for example: pack name is \"MyPack\" the branch name will be \"MyPack\".",
                 "fields": [
                     {
                         "fieldId": "incident_cicdpullrequestattachment",

@@ -1,6 +1,6 @@
-id: Pull Request Creation
+id: Pull Request Creation - Generic
 version: -1
-name: Pull Request Creation
+name: Pull Request Creation - Generic
 description: This playbook creates a pull request from the content zip file.
 starttaskid: "0"
 tasks:
@@ -172,7 +172,7 @@ tasks:
     task:
       id: a1acbbde-4042-4cde-8df2-bf117c4676b7
       version: -1
-      name: Send slack notification
+      name: Send notification
       description: Sends a message to a user, group, or channel.
       script: '|||send-notification'
       type: regular
