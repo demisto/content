@@ -7,8 +7,10 @@ XSOAR_SANITY_TEST_NAMES: tuple[str, ...] = (
     'Sanity Test - Playbook with Unmockable Whois Integration',
 )
 SANITY_TEST_TO_PACK: dict[str, str] = {
-    # Some sanity tests (rarely) require a pack
     'Sanity Test - Playbook with Unmockable Whois Integration': 'Whois',
+    'Sanity Test - Playbook with integration': 'HelloWorld',
+    'Sanity Test - Playbook with no integration': 'HelloWorld',
+    'Sanity Test - Playbook with mocked integration': 'HelloWorld',
 }
 
 DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
