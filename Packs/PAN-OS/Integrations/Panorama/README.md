@@ -1415,7 +1415,7 @@ Edit a service group.
 | services_to_add | Services to add to the service group. Only existing Services objects can be added. | Optional | 
 | services_to_remove | Services to remove from the service group. Only existing Services objects can be removed. | Optional | 
 | tags | Tag of the Service group to edit. | Optional | 
-
+| device_group | The device group in which the service group belongs to. | Optional |
 
 #### Context Output
 

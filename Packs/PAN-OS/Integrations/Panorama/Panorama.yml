@@ -4233,6 +4233,9 @@ script:
     - description: The tag of the service group to edit.
       isArray: true
       name: tags
+    - description: The device group in which the service group belongs to.
+      name: device_group
+      required: false
     description: Edits a service group.
     name: pan-os-edit-service-group
     outputs:
