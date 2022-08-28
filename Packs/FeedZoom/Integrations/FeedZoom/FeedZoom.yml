@@ -48,7 +48,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
 - display: Source Reliability
   name: feedReliability
   defaultvalue: A - Completely reliable
@@ -92,7 +92,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-  additionalinfo: Setting more frequent fetch interval may cause errors from the vendor.
+  additionalinfo: Setting a more frequent fetch interval may cause errors from the vendor.
 - display: Tags
   name: feedTags
   defaultvalue: ""
