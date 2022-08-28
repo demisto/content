@@ -43,11 +43,12 @@ class Client(BaseClient):
 
 
     def test_module(self) -> str:
-        self._http_request(method='GET',
-                           url_suffix='core.help',
-                           params={},
-                           timeout=self.timeout,
-                           resp_type='text')
+        repo = self.repository
+        if repo:
+            full_url = f'{self.serverUrl}/repositories/{self.workspace}/{repo}/refs/branches'
+        else:
+            full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/'
+        self.get_list(full_url)
         return "ok"
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
@@ -70,7 +71,7 @@ class Client(BaseClient):
                     limit = limit - 1
                 else:
                     break
-            if limit > 0 and isNext and (not page or page == 1):
+            if limit > 0 and isNext and not page:
                 response = self.get_list(isNext)
                 isNext = response.get('next', None)
                 arr = response.get('values')
@@ -84,8 +85,8 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-#def test_module(client: Client) -> str:
- #   return client.test_module()
+def test_module(client: Client) -> str:
+    return client.test_module()
 
 
 
@@ -112,7 +113,7 @@ def str_to_int(s):
 
 
 def project_list_command(client: Client, args) -> CommandResults:
-    params = {'page': args.get('page', 1),
+    params = {'page': args.get('page', None),
               'pagelen': args.get('page_size', None)}
     params = params_to_int(params)
     limit = args.get('limit', 50)
@@ -156,7 +157,7 @@ def project_list_command(client: Client, args) -> CommandResults:
     )
 
 
-def open_branch_list_command(client: Client, args):
+def open_branch_list_command(client: Client, args)-> CommandResults:
     params = {'page': args.get('page', 1),
               'pagelen': args.get('page_size', None)}
     params = params_to_int(params)
@@ -227,7 +228,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = '' #test_module(client)
+            result = test_module(client)
             return_results(result)
         elif demisto.command() == 'bitbucket-project-list':
             result = project_list_command(client, demisto.args())
