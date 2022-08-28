@@ -1545,6 +1545,8 @@ def create_search_with_retry(client: Client,
             print_debug_msg(f'Failed to create search for offense ID: {offense_id}. '
                             f'Retry number {i+1}/{max_retries}.')
             print_debug_msg(traceback.format_exc())
+        else:
+            return search_id
     print_debug_msg(f'Reached max retries for creating a search for offense: {offense_id}. Returning error.')
     return QueryStatus.ERROR.value
 
