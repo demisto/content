@@ -570,7 +570,7 @@ def test_module(client: DataExplorerClient) -> str:
 
     else:
         raise Exception("When using user auth flow configuration, "
-                        "Please enable the integration and run the"
+                        "Please enable the integration and run the "
                         "!azure-data-explorer-auth-test command in order to test it")
 
 
