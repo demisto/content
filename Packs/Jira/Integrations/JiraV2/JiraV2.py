@@ -1266,6 +1266,8 @@ def update_remote_system_command(args):
                       f"Error message: {str(e)}")
     finally:
         demisto.info('some comments')
+        demisto.info('some commentsm 1')
+        demisto.info('some comments 3')
         return remote_id
 
 
