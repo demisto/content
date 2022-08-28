@@ -6,6 +6,7 @@ from dxlclient.broker import Broker
 from dxltieclient import TieClient
 from dxltieclient.constants import HashType
 from datetime import datetime
+import tempfile
 
 VENDOR_NAME = 'McAfee Threat Intelligence Exchange'
 
@@ -172,6 +173,11 @@ def get_trust_level_and_score(reputations):
 def test_module():
     """Tests if there is a connection with DxlClient(which is used for connection with McAfee TIE, instead of the Client class)"""
     config = get_client_config()
+    with open(broker_ca_bundle, "r") as text_file:
+        with open('/Users/ayousef/Downloads/openDxlClientProvisioningPackage/brokercerts.crt', 'r') as temp:
+            val1 = text_file.read().replace('\n', '').replace('\r', '')
+            val2 = temp.read().replace('\n', '').replace('\r', '')
+            print(val1 == val2)
     with DxlClient(config) as client:
         client.connect()
         client.disconnect()
@@ -250,6 +256,7 @@ def file(files_hash: List[str]) -> List[CommandResults]:
                                raw_response=raw_result,
                                outputs_prefix='McAfee.TIE',
                                outputs=entry_context,
+                               indicator=
                                )
             )
            
@@ -331,6 +338,7 @@ def main():
     command = demisto.command()
     args = demisto.args()
     try:
+
         if command == 'test-module':
             # This is the call made when clicking the integration Test button.
             test_result = test_module()
