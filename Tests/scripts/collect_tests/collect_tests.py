@@ -348,12 +348,14 @@ class BranchTestCollector(TestCollector):
                     logger.debug(f'{yml.id_} explicitly states `tests: no tests`')
                     tests = ()
 
-                elif yml.id_ not in self.conf.integrations_to_tests:
+                elif yml.id_ not in self.conf.integrations_to_tests \
+                        and PACK_MANAGER.get_support_level(yml.pack_id) == 'xsoar':
                     raise ValueError(
-                        f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is both '
-                        f'(1) missing from conf.json, and'
-                        ' (2) does not explicitly state `tests: no tests`. '
-                        'Please change one of these to allow test collection.'
+                        f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is '
+                        f'(1) missing from conf.json, AND'
+                        ' (2) does not explicitly state `tests: no tests` AND'
+                        ' (3) has support level == xsoar. '
+                        'Please change at least one of these to allow test collection.'
                     )
                 else:
                     tests = tuple(self.conf.integrations_to_tests[yml.id_])

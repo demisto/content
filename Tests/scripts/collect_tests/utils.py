@@ -289,10 +289,14 @@ class PackManager:
         if pack not in self.pack_ids:
             logger.error(f'nonexistent pack {pack}')
             raise NonexistentPackException(pack)
-        if not (support_level := self[pack].get('support')):
+        if not (support_level := self.get_support_level(pack)):
             raise ValueError(f'pack {pack} has no support level (`support`) field or value')
         if support_level.lower() != 'xsoar':
             raise NonXsoarSupportedPackException(pack)
+
+    def get_support_level(self, pack: str) -> str:
+        if value := self[pack].get('support'):
+            return value.lower()
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
