@@ -1259,6 +1259,54 @@ def test_panorama_edit_custom_url_category_command_main_flow(mocker, action, exi
         'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
     }
 
+
+def test_panorama_edit_edl_command_main_flow(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-edit-edl command arguments including device_group
+
+    When -
+        running the pan-os-edit-edl command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the device group gets overriden by the command arguments.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'name': 'test', 'element_to_change': 'description',
+            'element_value': 'edl1', 'device_group': 'new device group'
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-edl')
+    mocker.patch('Panorama.panorama_get_edl', return_value={'type': {'test': 'test'}})
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['body'] == {
+        'action': 'edit',
+        'type': 'config',
+        'key': 'thisisabogusAPIKEY!',
+        'xpath': "/config/devices/entry/device-group/entry[@name='new device group']/external-list/ent"
+                 "ry[@name='test']/type/test/description",
+        'element': '<description>edl1</description>'
+    }
+    assert res.call_args.args[0]['Contents'] == {
+        'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
+    }
+
 class MockedResponse:
     def __init__(self, text, status_code, reason='', headers=None):
         self.status_code = status_code

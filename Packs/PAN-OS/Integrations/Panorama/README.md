@@ -2132,6 +2132,7 @@ Modifies an element of an external dynamic list.
 | name | Name of the external dynamic list to edit. | Required | 
 | element_to_change | The element to change (“url”, “recurring”, “certificate_profile”, “description”). | Required | 
 | element_value | The element value. | Required | 
+| device_group | The device group in which the EDL belongs to. | Optional |
 
 
 #### Context Output

@@ -4733,6 +4733,9 @@ script:
     - description: The element value.
       name: element_value
       required: true
+    - description: The device group in which the EDL belongs to.
+      name: device_group
+      required: false
     description: Modifies an element of an external dynamic list.
     name: pan-os-edit-edl
     outputs:
