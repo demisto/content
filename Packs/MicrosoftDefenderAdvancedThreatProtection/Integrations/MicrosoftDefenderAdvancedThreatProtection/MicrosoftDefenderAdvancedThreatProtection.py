@@ -1120,7 +1120,7 @@ class MsClient:
             verify=verify,
             proxy=proxy,
             # resource=AUTH_TYPES_DICT.get(auth_type, {}).get('resource'),  # disable-secrets-detection
-            scope = 'https://management.azure.com/.default' if auth_type == 'Authorization Code' else Scopes.security_center_apt_service,
+            scope=Scopes.security_center_apt_service,
             ok_codes=(200, 201, 202, 204),
             redirect_uri=redirect_uri,
             auth_code=auth_code,
