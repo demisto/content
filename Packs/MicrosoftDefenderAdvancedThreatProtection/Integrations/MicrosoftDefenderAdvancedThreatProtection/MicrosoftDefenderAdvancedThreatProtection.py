@@ -1107,12 +1107,30 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
+                 auth_type, redirect_uri, auth_code,
                  is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
-        self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
-            scope=Scopes.security_center_apt_service, certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key)
+        client_args = assign_params(
+            self_deployed=self_deployed,  # We always set the self_deployed key as True because when not using a self
+            # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+            # flow and most of the same arguments should be set, as we're !not! using OProxy.
+            auth_id=auth_id,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            grant_type=AUTHORIZATION_CODE  if auth_type == 'Authorization Code' else None,
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            # resource=AUTH_TYPES_DICT.get(auth_type, {}).get('resource'),  # disable-secrets-detection
+            scope = 'https://management.azure.com/.default' if auth_type == 'Authorization Code' else Scopes.security_center_apt_service,
+            ok_codes=(200, 201, 202, 204),
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
+            tenant_id=tenant_id,
+            app_name=app_name,
+            enc_key=enc_key, 
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
+        )
+        self.ms_client = MicrosoftClient(**client_args)
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
@@ -4842,7 +4860,10 @@ def main():  # pragma: no cover
     max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
-    is_gcc = params.get('is_gcc', False)
+    is_gcc = params.get('is_gcc', False),
+    auth_type = params.get('auth_type', 'Device Code')
+    auth_code = params.get('auth_code', {}).get('password', '')
+    redirect_uri = params.get('redirect_uri', '')
 
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
@@ -4863,7 +4884,7 @@ def main():  # pragma: no cover
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc,
+            is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri
         )
         if command == 'test-module':
             test_module(client)
