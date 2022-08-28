@@ -38,7 +38,7 @@ configuration:
     additionalinfo: null
   - name: authentication_type
     display: Authentication Type
-    required: false
+    required: true
     defaultvalue: Device Code
     type: 15
     additionalinfo: Type of authentication - could be Authorization Code
