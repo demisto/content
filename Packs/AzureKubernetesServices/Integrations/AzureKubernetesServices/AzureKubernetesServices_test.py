@@ -1,6 +1,6 @@
 import io
 import json
-
+import demistomock as demisto
 import pytest
 
 from AzureKubernetesServices import (API_VERSION, AKSClient,
@@ -14,7 +14,7 @@ resource_group_name = 'resource_group_name'
 @pytest.fixture()
 def client(mocker):
     mocker.patch('AzureKubernetesServices.MicrosoftClient.get_access_token', return_value='token')
-    return AKSClient(app_id, subscription_id, resource_group_name, False, False)
+    return AKSClient(app_id, subscription_id, resource_group_name, False, False, 'Device')
 
 
 def load_test_data(path):
@@ -90,3 +90,27 @@ def test_clusters_addon_update(client, requests_mock):
         }
     }
     assert result == 'The request to update the managed cluster was sent successfully.'
+
+
+@pytest.mark.parametrize('params, expected_results', [
+    ({'auth_type': 'Device Code'}, "When using device code flow configuration"),
+    ({'auth_type': 'Authorization Code'}, "When using user auth flow configuration")])
+def test_test_module_command(mocker, params, expected_results):
+    """
+        Given:
+            - Case 1: Integration params with 'Device' as auth_type.
+            - Case 2: Integration params with 'User Auth' as auth_type.
+        When:
+            - Calling test-module command.
+        Then
+            - Assert the right exception was thrown.
+            - Case 1: Should throw an exception related to Device-code-flow config and return True.
+            - Case 2: Should throw an exception related to User-Auth-flow config and return True.
+    """
+    from AzureKubernetesServices import test_module
+    import AzureKubernetesServices as aks
+    mocker.patch.object(aks, "test_connection", side_effect=Exception('mocked error'))
+    mocker.patch.object(demisto, 'params', return_value=params)
+    with pytest.raises(Exception) as e:
+        test_module(None)
+    assert expected_results in str(e.value)
