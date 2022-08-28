@@ -166,6 +166,7 @@ demisto-sdk-nightly:run-end-to-end-tests:
   needs: ["demisto-sdk-nightly:create-instance"]
   stage: run-instances
   script:
+    - !reference [.open-ssh-tunnel]
     - |
       TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
       export DEMISTO_BASE_URL="https://localhost:$TUNNEL_PORT"
