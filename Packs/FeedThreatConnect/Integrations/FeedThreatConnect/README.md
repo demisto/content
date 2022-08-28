@@ -1,5 +1,5 @@
 This integration fetches indicators from ThreatConnect.
-This integration was integrated and tested with version 3 of ThreatConnect Feed
+This integration was integrated and tested with version 3 of ThreatConnect Feed.
 
 ## ThreatConnect Feed HMAC credentials
 1. On the top navigation bar, hover the cursor over the Settings icon and select Org Settings from the dropdown menu.
@@ -26,15 +26,15 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | -- | --- | --- |
     | Base URL | The API URL. | True |
     | Access ID | The API ID key. | True |
-    | Secret key | The secrete key for the API. | True |
+    | Secret key | The secret key for the API. | True |
     | Tags to filter results by | A comma-separated list of tags to filter by. | False |
     | Owners | Comma-separated list of owners to fetch indicators from. | False |
     | Fetch indicators | | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
-    | Feed Fetch Interval | The time interval we send request to fet indicators. | False |
-    | Trust any certificate (not secure) | Weather or not to trust any certificate | False |
+    | Feed Fetch Interval | The time interval we send request to fetch indicators. | False |
+    | Trust any certificate (not secure) | Whether to trust any certificate. | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     | Tags | Supports CSV values. | False |
 
@@ -54,9 +54,9 @@ Gets indicators from ThreatConnect.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| owners | Comma-separated list of owners to fetch indicators from. (If not specified, will retrieve only indicators owned by account. If you supply this argument, it overwrites the "Owners" parameter.) | Optional | 
+| owners | Comma-separated list of owners to fetch indicators from. (If not specified, will retrieve only indicators owned by the account. If you supply this argument, it overwrites the "Owners" parameter.) | Optional | 
 | limit | The maximum number of indicators to retrieve. Default is 50. | Optional | 
-| offset | The index of the first indicator to fetch. Default is 0. Possible values are: . Default is 0. | Optional | 
+| offset | The index of the first indicator to fetch. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -76,7 +76,7 @@ There is no context output for this command.
 
 ### tc-get-owners
 ***
-Get available indicators owners.
+Gets available indicators owners.
 
 
 #### Base Command
