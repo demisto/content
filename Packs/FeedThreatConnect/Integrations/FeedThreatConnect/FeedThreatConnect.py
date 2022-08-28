@@ -200,7 +200,7 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
     status = f'AND ({create_or_query("status", demisto.getParam("status"))}) '
     fields = set_fields_query(argToList(demisto.getParam("fields")))
     last_run = demisto.getLastRun()
-    last_run = last_run.get('last_fetch')
+    last_run = last_run.get('from_date')
     demisto.info('last run get: ' + last_run)
     from_date = ''
     if last_run:
@@ -217,7 +217,6 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
     url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=200&sorting=dateAdded%20ASC'
     if '?' not in url:
         url = url.replace('&', '?', 1)  # type: ignore
-
     indicators = []
     while True:
         demisto.info('URL: ' + url)
