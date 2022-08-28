@@ -24,8 +24,8 @@ OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
 DOMAIN_ENRCH_FLG = 'true'  # when set to true, will try to enrich offense and assets with domain names
 RULES_ENRCH_FLG = 'true'  # when set to true, will try to enrich offense with rule names
-MAX_FETCH_EVENT_RETIRES = 3  # max iteration to try search the events of an offense
-SLEEP_FETCH_EVENT_RETIRES = 10  # sleep between iteration to try search the events of an offense
+MAX_FETCH_EVENT_RETRIES = 3  # max iteration to try search the events of an offense
+SLEEP_FETCH_EVENT_RETRIES = 10  # sleep between iteration to try search the events of an offense
 MAX_NUMBER_OF_OFFENSES_TO_CHECK_SEARCH = 5  # Number of offenses to check during mirroring if search was completed.
 DEFAULT_EVENTS_TIMEOUT = 30  # default timeout for the events enrichment in minutes
 PROFILING_DUMP_ROWS_LIMIT = 20
@@ -50,8 +50,8 @@ ADVANCED_PARAMETER_INT_NAMES = [
     'BATCH_SIZE',
     'OFF_ENRCH_LIMIT',
     'MAX_WORKERS',
-    'MAX_FETCH_EVENT_RETIRES',
-    'SLEEP_FETCH_EVENT_RETIRES',
+    'MAX_FETCH_EVENT_RETRIES',
+    'SLEEP_FETCH_EVENT_RETRIES',
     'DEFAULT_EVENTS_TIMEOUT',
     'PROFILING_DUMP_ROWS_LIMIT',
 ]
@@ -1639,7 +1639,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     events: List[dict] = []
     failure_message = ''
     is_success = True
-    for _ in range(MAX_FETCH_EVENT_RETIRES):
+    for _ in range(MAX_FETCH_EVENT_RETRIES):
         search_id = create_search_with_retry(client, fetch_mode, offense, events_columns,
                                              events_limit)
         if search_id == QueryStatus.ERROR.value:
@@ -1647,9 +1647,9 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         else:
             events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
         events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
-        print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
         offense['events_fetched'] = events_fetched
         if events:
+            print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
             offense['events'] = events
             break
         print_debug_msg(f'No events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds.')
