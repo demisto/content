@@ -1877,6 +1877,7 @@ Edit a URL filtering rule.
 | element_to_change | Element to change. | Required | 
 | element_value | Element value. Limited to one value. | Required | 
 | add_remove_element | Add or remove an element from the Allow List or Block List fields. Default is to 'add' the element_value to the list. | Optional | 
+| device_group | The device group in which the URL-filter belongs to. | Optional |
 
 
 #### Context Output
