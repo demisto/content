@@ -155,6 +155,16 @@ class Client(BaseClient):
 ######################
 
 
+def create_or_query(param_name: str, delimiter_str: str) -> str:
+    if not delimiter_str:
+        return ''
+    arr = delimiter_str.split(',')
+    query = ''
+    for item in arr:
+        query += f'{param_name}="{item}" OR '
+    return query[:len(query) - 3]
+
+
 def module_test_command(client: Client):  # pragma: no cover
     """ Test module - Get 4 indicators from ThreatConnect.
 
@@ -174,16 +184,6 @@ def module_test_command(client: Client):  # pragma: no cover
         return_error('Error from the API: ' + response.get('message',
                                                            'An error has occurred if it persist please contact your '
                                                            'local help desk'))
-
-
-def create_or_query(param_name: str, delimiter_str: str) -> str:
-    if not delimiter_str:
-        return ''
-    arr = delimiter_str.split(',')
-    query = ''
-    for item in arr:
-        query += f'{param_name}="{item}" OR '
-    return query[:len(query) - 3]
 
 
 def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no cover

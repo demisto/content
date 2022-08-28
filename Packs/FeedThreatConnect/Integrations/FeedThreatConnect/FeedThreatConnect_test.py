@@ -1,7 +1,6 @@
 import json
 
 import pytest
-import demistomock as demisto
 from FeedThreatConnect import create_or_query, parse_indicator
 
 
