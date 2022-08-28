@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: cdb0df22-41bd-47d6-8eff-f5febf3d4999
+    taskid: 5e4e4a8f-7beb-4747-83ad-e5cb91005f28
     type: regular
     task:
-      id: cdb0df22-41bd-47d6-8eff-f5febf3d4999
+      id: 5e4e4a8f-7beb-4747-83ad-e5cb91005f28
       version: -1
       name: Predict phishing type using custom trained phishing model
       description: Predicts the specific phishing mail type using a pre-trained machine learning model, and highlights the most important words used in the classification decision.
@@ -84,7 +84,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -197,10 +197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 27a5c788-0b69-41f1-85a0-756bdd106b8f
+    taskid: cdddceeb-fc75-4a43-8cce-e0d6eb1fde3b
     type: regular
     task:
-      id: 27a5c788-0b69-41f1-85a0-756bdd106b8f
+      id: cdddceeb-fc75-4a43-8cce-e0d6eb1fde3b
       version: -1
       name: Predict Phishing URLs
       description: Predicts phishing URLs using a pre-trained model.
@@ -212,6 +212,9 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      emailBody:
+        complex:
+          root: inputs.EmailText
       emailHTML:
         complex:
           root: incident
@@ -379,10 +382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: a26f649b-667d-4745-8030-0dd825be0a02
+    taskid: 948d42a3-3fd5-4592-8da5-3c02768ca950
     type: regular
     task:
-      id: a26f649b-667d-4745-8030-0dd825be0a02
+      id: 948d42a3-3fd5-4592-8da5-3c02768ca950
       version: -1
       name: Predict phishing type using pre-trained OOTB phishing model
       description: Predict phishing incidents using the out-of-the-box pre-trained model.
@@ -424,7 +427,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
