@@ -1,4 +1,4 @@
-[MODEL:model="Audit", dataset="tableau_raw"]
+[MODEL:model="Audit", dataset="tableau_log_raw"]
 alter logLevel= arrayindex( regextract(_raw_log, ":\s([^\s][A-Z]{1,8})\s"),0)
 |alter tokenPayload= arrayindex(regextract(_raw_log, "\(([^\)]*)\)"),0)
 |alter tokenPayloadNew= split(tokenPayload,",")
