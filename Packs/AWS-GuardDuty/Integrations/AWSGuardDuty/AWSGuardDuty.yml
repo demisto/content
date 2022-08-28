@@ -54,6 +54,9 @@ configuration:
   type: 0
 - display: Guard Duty Severity level
   name: gs_severity
+  additionalinfo: You can set the severity level of the findings to be fetched. "Low", "Medium", "High". 
+    For example, if you set the severity
+    level to "Medium", the integration will only fetch findings with severity level of Medium and higher.
   required: false
   type: 0
 - display: Trust any certificate (not secure)
