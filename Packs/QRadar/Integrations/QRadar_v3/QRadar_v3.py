@@ -1652,7 +1652,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         if events:
             offense['events'] = events
             break
-        print_debug_msg(f'No events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP}.')
+        print_debug_msg(f'No events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds.')
         time.sleep(FAILURE_SLEEP)
     else:
         print_debug_msg(f'No events were fetched for offense {offense_id}. '
