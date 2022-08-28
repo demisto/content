@@ -1,11 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 '''IMPORTS'''
-import re
 import json
-from datetime import datetime, date
+import re
+from datetime import date, datetime
+
 import urllib3.util
 
 # Disable insecure warnings
@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 
 def parse_tag_field(tags_str):
     tags = []
+    print("IN CONTENT MODULE")
     regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
     for f in tags_str.split(';'):
         match = regex.match(f)
