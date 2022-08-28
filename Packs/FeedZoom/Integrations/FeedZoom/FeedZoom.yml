@@ -87,11 +87,11 @@ configuration:
   defaultvalue: "20160"
   type: 1
   required: false
-- display: Feed Fetch Interval
+- defaultvalue: '240'
+  display: Feed Fetch Interval
   name: feedFetchInterval
-  defaultvalue: "240"
-  type: 19
   required: false
+  type: 19
   additionalinfo: Setting more frequent fetch interval may cause errors from the vendor.
 - display: Tags
   name: feedTags
