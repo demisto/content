@@ -753,7 +753,7 @@ class MsGraphClient:
         email_body = email.get('body', {}) or email.get('uniqueBody', {})
         email_content_as_html = email_body.get('content', '')
         parsed_email['Body'] = email_content_as_html
-        parsed_email['text'] = get_text_from_html(email_content_as_html)  # extract the text from the HTML.
+        parsed_email['Text'] = get_text_from_html(email_content_as_html)  # extract the text from the HTML.
         parsed_email['BodyType'] = email_body.get('contentType', '')
 
         parsed_email['Sender'] = MsGraphClient._get_recipient_address(email.get('sender', {}))
