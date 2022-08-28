@@ -17,4 +17,4 @@ Enable the "SafeBreach - Breach and Attack Simulation platform" integration with
 2. Create a Feed triggered job that will be triggered for SafeBreach indicators
 3. Assign the playbook for the job - "SafeBreach - Process Non-Behavioral Insights Feed"
 
-Watch a product demo at [https://safebreach.com/Cortex-XSOAR-Integration](https://safebreach.com/Cortex-XSOAR-Integration)
+Watch a product demo at [https://www.youtube.com/watch?v=Wb7q5Gbd2qo](https://www.youtube.com/watch?v=Wb7q5Gbd2qo)
