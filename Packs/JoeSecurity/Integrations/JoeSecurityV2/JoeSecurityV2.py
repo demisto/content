@@ -17,10 +17,22 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(JoeSandbox):
-    def __init__(self, apikey, base_url, accept_tac, verify_ssl,
-                 proxy, reliability):
+    def __init__(self, apikey: str = '', base_url: str = '', accept_tac: bool = True, verify_ssl: bool = True,
+                 proxy: bool = False, reliability: DBotScoreReliability = DBotScoreReliability.C):
         self.reliability = reliability
         super().__init__(apikey=apikey, apiurl=base_url, accept_tac=accept_tac, verify_ssl=verify_ssl, proxies=proxy)
+
+    def analysis_info_list(self, webids: List[str]) -> List[Dict[str, str]]:
+        """
+             A wrapper function supporting a list of webids to query.
+
+             Args:
+                webids: List(str): List of analysis webids to query.
+
+             Returns:
+                 List(Dict(str, str)): List of analysis info result.
+        """
+        return [self.analysis_info(webid=webid) for webid in webids]
 
 
 ''' HELPER FUNCTIONS '''
@@ -43,7 +55,9 @@ def pagination(args: Dict[str, str], results: Generator) -> List:
 
     # pagination is available only if supplied page and page size.
     if (page and not page_size) or (page_size and not page):
-        raise Exception("one of page or page_size arguments are missing")
+        raise Exception("one of the page or page_size arguments are missing")
+    if (page and page <= 0) or (page_size and page_size <= 0) or (limit < 0):
+        raise Exception("one of the arguments are not having a valid value")
 
     number_of_entries = page * page_size if page else limit
     try:
@@ -85,23 +99,39 @@ def build_analysis_hr(analysis: Dict[str, str]) -> Dict[str, str]:
     return hr_analysis
 
 
-def build_file_object(client: Client, analysis: Dict[str, str]) -> Common.File:
+def build_indicator_object(client: Client, analysis: Dict[str, str]) -> Common.Indicator:
     """
-         Helper function supporting the building of the human-readable output.
+         Helper function that create the Indicator object.
 
          Args:
             client (Client): The client class.
             analysis: Dict(str, str): Analysis result returned by the API.
 
          Returns:
-             Common.File: The file indicator class.
+             Common.Indicator: The indicator class.
+    """
+    if analysis.get('sha1'):
+        return build_file_object(client, analysis)
+    return build_url_object(client, analysis)
+
+
+def build_file_object(client: Client, analysis: Dict[str, str]) -> Common.File:
+    """
+         Helper function that create the File object.
+
+         Args:
+            client (Client): The client class.
+            analysis: Dict(str, str): Analysis result returned by the API.
+
+         Returns:
+             Common.File: The File indicator class.
     """
     file_name = analysis.get('filename')
     sha1 = analysis.get('sha1')
     sha256 = analysis.get('sha256')
     md5 = analysis.get('md5')
     tags = analysis.get('tags')
-    score, description = file_calculate_score(analysis.get('detection', ''))
+    score, description = indicator_calculate_score(analysis.get('detection', ''))
     dbot_score = Common.DBotScore(
         indicator=file_name,
         integration_name='JoeSecurityV2',
@@ -113,27 +143,48 @@ def build_file_object(client: Client, analysis: Dict[str, str]) -> Common.File:
     return Common.File(name=file_name, sha1=sha1, sha256=sha256, dbot_score=dbot_score, md5=md5, tags=tags)
 
 
-def file_calculate_score(detection: str = '') -> Tuple[int, str]:
-    # todo: change function descriptions (doc and returned value)
+def build_url_object(client: Client, analysis: Dict[str, str]) -> Common.URL:
     """
-         Calculate DBot Score for file.
+         Helper function that create the URL object.
 
          Args:
-            -
+            client (Client): The client class.
+            analysis: Dict(str, str): Analysis result returned by the API.
+
+         Returns:
+             Common.URL: The URL indicator class.
+    """
+    url = analysis.get('filename')
+    score, description = indicator_calculate_score(analysis.get('detection', ''))
+    dbot_score = Common.DBotScore(
+        indicator=url,
+        integration_name='JoeSecurityV2',
+        indicator_type=DBotScoreType.URL,
+        reliability=client.reliability,
+        score=score,
+        malicious_description=description
+    )
+    return Common.URL(url=url, dbot_score=dbot_score)
+
+
+def indicator_calculate_score(detection: str = '') -> Tuple[int, str]:
+    """
+         Calculate the DBot Score based on analysis detection.
+
+         Args:
+            detection (str): The analysis detection.
 
          Returns:
              dbot_score,description (tuple): The DBot Score and the description associated with it.
      """
     if 'malicious' in detection:
-        return Common.DBotScore.BAD, 'bad'
+        return Common.DBotScore.BAD, 'This indicator is malicious'
     elif 'suspicious' in detection:
-        return Common.DBotScore.SUSPICIOUS, 'suspicious'
+        return Common.DBotScore.SUSPICIOUS, ''
     elif 'clean' in detection:
-        return Common.DBotScore.GOOD, 'clean'
-    return Common.DBotScore.NONE, 'There is no result'
+        return Common.DBotScore.GOOD, ''
+    return Common.DBotScore.NONE, ''
 
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
 ''' COMMAND FUNCTIONS '''
 
@@ -182,19 +233,19 @@ def list_analysis(client: Client, args: Dict[str, str]) -> CommandResults:
          Returns:
              result (CommandResults): The CommandResults object.
     """
-    file_ls = []
+    indicator_ls = []
     hr_analysis_ls = []
-    headers = ['ID', 'SampleName', 'Status', 'Time', 'MD5', 'SHA1', 'SHA256', 'Systems', 'Result', 'Errors', 'Comments']
+    hr_headers = ['ID', 'SampleName', 'Status', 'Time', 'MD5', 'SHA1', 'SHA256', 'Systems', 'Result', 'Errors', 'Comments']
 
     filtered_pages = pagination(args, client.analysis_list_paged())
-    analysis_result_ls = [client.analysis_info(webid=entry.get('webid')) for entry in filtered_pages]
+    analysis_result_ls = client.analysis_info_list(webids=[entry.get('webid') for entry in filtered_pages])
     for analysis in analysis_result_ls:
         hr_analysis_ls.append(build_analysis_hr(analysis))
-        file_ls.append(build_file_object(client, analysis))
+        indicator_ls.append(build_indicator_object(client, analysis))
 
     return CommandResults(outputs=analysis_result_ls, outputs_prefix='Joe.Analysis',
-                          readable_output=tableToMarkdown('Analysis Result:', hr_analysis_ls, headers),
-                          indicators=file_ls
+                          readable_output=tableToMarkdown('Analysis Result:', hr_analysis_ls, hr_headers),
+                          indicators=indicator_ls
                           )
 
 
@@ -211,7 +262,7 @@ def main() -> None:
     base_url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
-    reliability = demisto.params().get('Reliability')
+    reliability = demisto.params().get('Reliability', DBotScoreReliability.C)
     command = demisto.command()
     args = demisto.args()
 
