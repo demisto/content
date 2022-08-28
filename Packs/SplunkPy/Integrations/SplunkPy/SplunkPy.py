@@ -907,9 +907,9 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
         if searchable_query:
             status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
             if status:
-                if "latest" not in searchable_query:
+                if "latest=" not in searchable_query:
                     searchable_query = "latest={} ".format(latest_offset) + searchable_query
-                if "earliest" not in searchable_query:
+                if "earliest=" not in searchable_query:
                     searchable_query = "earliest={} ".format(earliest_offset) + searchable_query
                 kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
                 query = build_search_query({"query": searchable_query})
@@ -2633,7 +2633,6 @@ def main():
         connection_args['username'] = username
         connection_args['password'] = password
         connection_args['autologin'] = True
-        connection_args['basic'] = True
 
     if use_requests_handler:
         handle_proxy()

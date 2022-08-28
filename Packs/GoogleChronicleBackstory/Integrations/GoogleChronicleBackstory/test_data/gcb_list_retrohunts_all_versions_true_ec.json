@@ -1,0 +1,59 @@
+{
+  "GoogleChronicleBackstory.RetroHunt(val.retrohuntId == obj.retrohuntId)": [
+    {
+      "eventEndTime": "2022-03-01T11:11:11Z",
+      "eventStartTime": "2021-01-01T01:01:01Z",
+      "progressPercentage": 100,
+      "retrohuntEndTime": "2022-06-02T20:18:26.491648Z",
+      "retrohuntId": "oh_5bd35824-4ad6-460a-82d0-da92c57440d0",
+      "retrohuntStartTime": "2022-06-02T20:02:50.305152Z",
+      "ruleId": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c8",
+      "state": "DONE",
+      "versionId": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c8@v_1654200042_836607000"
+    },
+    {
+      "eventEndTime": "2022-03-01T11:11:11Z",
+      "eventStartTime": "2021-01-01T01:01:01Z",
+      "progressPercentage": 100,
+      "retrohuntEndTime": "2022-06-02T20:13:46.580564Z",
+      "retrohuntId": "oh_420d0933-0be8-43f9-826f-193e4a7e6646",
+      "retrohuntStartTime": "2022-06-02T19:56:27.704578Z",
+      "ruleId": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c8",
+      "state": "DONE",
+      "versionId": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c8@v_1654177374_157823000"
+    },
+    {
+      "eventEndTime": "2022-06-01T11:00:00Z",
+      "eventStartTime": "2022-05-25T11:00:00Z",
+      "progressPercentage": 100,
+      "retrohuntEndTime": "2022-06-02T13:18:36.654953Z",
+      "retrohuntId": "oh_0cdbc57f-6c2b-4f8e-b7e2-e6d8ba939964",
+      "retrohuntStartTime": "2022-06-02T13:18:08.670963Z",
+      "ruleId": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c8",
+      "state": "DONE",
+      "versionId": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c8@v_1654175867_149439000"
+    },
+    {
+      "eventEndTime": "2022-06-02T13:00:00Z",
+      "eventStartTime": "2022-05-26T13:00:00Z",
+      "progressPercentage": 100,
+      "retrohuntEndTime": "2022-06-02T12:37:26.495177Z",
+      "retrohuntId": "oh_b24cc107-83ad-4a81-b00f-2811c681a3c7",
+      "retrohuntStartTime": "2022-06-02T12:37:05.654381Z",
+      "ruleId": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c8",
+      "state": "DONE",
+      "versionId": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c8@v_1654143964_046511000"
+    },
+    {
+      "eventEndTime": "2022-03-01T11:11:11Z",
+      "eventStartTime": "2021-01-01T01:01:01Z",
+      "progressPercentage": 100,
+      "retrohuntEndTime": "2022-06-02T09:49:36.505725Z",
+      "retrohuntId": "oh_ffd150e0-d752-493f-a097-39d1c529d8fa",
+      "retrohuntStartTime": "2022-06-02T09:20:58.872082Z",
+      "ruleId": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c8",
+      "state": "DONE",
+      "versionId": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c8@v_1654143964_046511000"
+    }
+  ]
+}
