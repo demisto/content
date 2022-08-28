@@ -85,6 +85,11 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
+- defaultvalue: 'false'
+  display: Using Microsoft GCC?
+  name: is_gcc
+  required: false
+  type: 8
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false
@@ -261,6 +266,18 @@ script:
       description: The machine's OS platform. Only a single platform can be added.
       isArray: false
       name: os_platform
+      required: false
+      secret: false
+    - default: false
+      description: Number of machines to return in a page - must be lower or equal to 10,000.
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: The page number to retrieve.
+      defaultValue: '1'
+      name: page_num
       required: false
       secret: false
     deprecated: false
@@ -3016,7 +3033,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The action to apply if the indicator is matched from within the targetProduct security tool. 
+      description: The action to apply if the indicator is matched from within the targetProduct security tool.
       isArray: false
       name: action
       predefined:
@@ -3784,7 +3801,7 @@ script:
       - Url
     - default: false
       auto: PREDEFINED
-      description: The action taken if the indicator is discovered in the organization. 
+      description: The action taken if the indicator is discovered in the organization.
       isArray: false
       name: action
       required: true
