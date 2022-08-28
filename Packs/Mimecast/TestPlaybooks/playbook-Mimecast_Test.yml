@@ -1725,9 +1725,9 @@ tasks:
     task:
       id: 6744ce68-3958-45a0-81d8-3bfa6a538aed
       version: -1
-      name: mimecast-list-hold-message
+      name: mimecast-list-held-message
       description: Get information about held messages, including the reason, hold level, sender and recipients
-      script: '|||mimecast-list-hold-message'
+      script: '|||mimecast-list-held-message'
       type: regular
       iscommand: true
       brand: ""
@@ -1765,9 +1765,9 @@ tasks:
     task:
       id: abfb2b46-da8a-4965-8d14-e490432be917
       version: -1
-      name: mimecast-hold-message-summery
+      name: mimecast-held-message-summary
       description: Get counts of currenlty held messages for each hold reason.
-      script: '|||mimecast-hold-message-summary'
+      script: '|||mimecast-held-message-summary'
       type: regular
       iscommand: true
       brand: ""
@@ -1796,7 +1796,7 @@ tasks:
     task:
       id: 9fc80720-887d-42a0-8dc0-ce57d4992f48
       version: -1
-      name: test mimecast-hold-message-summery
+      name: test mimecast-held-message-summary
       description: Get counts of currenlty held messages for each hold reason.
       type: condition
       iscommand: false
@@ -1834,9 +1834,9 @@ tasks:
     task:
       id: ba50bac7-49eb-4aea-8df8-eaec8d5d36ae
       version: -1
-      name: mimecast-reject-hold-message
+      name: mimecast-reject-held-message
       description: Reject a currently held message.
-      script: '|||mimecast-reject-hold-message'
+      script: '|||mimecast-reject-held-message'
       type: regular
       iscommand: true
       brand: ""
@@ -1874,9 +1874,9 @@ tasks:
     task:
       id: 8cdc7164-8a4a-43ec-8588-a3373fb4e8de
       version: -1
-      name: mimecast-release-hold-message
+      name: mimecast-release-held-message
       description: Release a currently held message.
-      script: '|||mimecast-release-hold-message'
+      script: '|||mimecast-release-held-message'
       type: regular
       iscommand: true
       brand: ""

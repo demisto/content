@@ -366,7 +366,7 @@ def test_search_message_command(mocker):
     assert response.outputs_key_field == 'id'
 
 
-def test_hold_message_summary_command(mocker):
+def test_held_message_summary_command(mocker):
     """
         When:
             - Running a hold message summary command to retrieve hold information messages.
@@ -378,24 +378,24 @@ def test_hold_message_summary_command(mocker):
     mock_response = util_load_json('test_data/hold_message_summary_response.json')
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
 
-    response = MimecastV2.hold_message_summary_command()
+    response = MimecastV2.held_message_summary_command()
 
     assert response.outputs == mock_response.get('data')
-    assert response.outputs_prefix == 'Mimecast.HoldMessageSummary'
+    assert response.outputs_prefix == 'Mimecast.HeldMessageSummary'
     assert response.outputs_key_field == 'policyInfo'
 
 
 MESSAGE_INFO_ARGS = [
     (
         {'ids': '12345, 1345',
-         'show_delivered_message': 'true'}, True),
+         'show_delivered_message': 'true'}, True, 1),
     ({'ids': '12345, 1345',
-      'show_delivered_message': 'false'}, False)
+      'show_delivered_message': 'false'}, False, 0)
 ]
 
 
-@pytest.mark.parametrize('args, delivered', MESSAGE_INFO_ARGS)
-def test_get_message_info_command(args, delivered, mocker, requests_mock):
+@pytest.mark.parametrize('args, delivered, delivered_message_len', MESSAGE_INFO_ARGS)
+def test_get_message_info_command(args, delivered, delivered_message_len, requests_mock):
     """
 
         Given:
@@ -414,12 +414,12 @@ def test_get_message_info_command(args, delivered, mocker, requests_mock):
 
     assert len(response) == 2
     assert ('test@test.com' in response[0].readable_output) == delivered
-    assert isinstance(response[0].outputs[0].get('deliveredMessage'), list)
-    assert len(response[0].outputs[0].get('deliveredMessage')) == 1
+    assert isinstance(response[0].outputs.get('deliveredMessage'), list)
+    assert len(response[0].outputs.get('deliveredMessage')) == delivered_message_len
     assert response[0].outputs_prefix == 'Mimecast.MessageInfo'
 
 
-def test_list_hold_messages_command(mocker):
+def test_list_held_messages_command(mocker):
     """
 
         When:
@@ -432,11 +432,11 @@ def test_list_hold_messages_command(mocker):
     mock_response = util_load_json('test_data/list_hold_messages_response.json')
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
     args = {'admin': 'true', 'limit': '10'}
-    response = MimecastV2.list_hold_messages_command(args)
+    response = MimecastV2.list_held_messages_command(args)
 
     assert len(response.outputs) == 10
     assert response.outputs == mock_response.get('data')
-    assert response.outputs_prefix == 'Mimecast.HoldMessage'
+    assert response.outputs_prefix == 'Mimecast.HeldMessage'
     assert response.outputs_key_field == 'id'
 
 
@@ -444,38 +444,37 @@ REJECT_HOLD_MESSAGE = [
     ({"meta": {
         "status": 200
     },
-        "data": [{
-            "id": "1234",
-                 "reject": True
-                 },
-                 {
+         "data": [{
+             "id": "1234",
+             "reject": True
+         },
+             {
                  "id": "1233",
                  "reject": True
-                 }
-                 ],
-        "fail": []
-    }, 'Hold message with id 1234 was rejected successfully.\n'
-        'Hold message with id 1233 was rejected successfully.\n'),
+             }
+         ],
+         "fail": []
+     }, 'Held message with id 1234 was rejected successfully.\n'
+        'Held message with id 1233 was rejected successfully.\n', False),
     ({"meta": {
         "status": 200
     },
-        "data": [
-        {
-            "id": "1234",
-            "reject": False
-        },
-        {
-            "id": "1233",
-            "reject": True
-        }
-    ],
-        "fail": []
-    }, 'Hold message with id 1234 rejection failed.\n'
-        'Hold message with id 1233 was rejected successfully.\n')]
+         "data": [
+             {
+                 "id": "1234",
+                 "reject": False
+             },
+             {
+                 "id": "1233",
+                 "reject": True
+             }
+         ],
+         "fail": []
+     }, '', True)]
 
 
-@pytest.mark.parametrize('mock_response, readable_output', REJECT_HOLD_MESSAGE)
-def test_reject_hold_message_command(mock_response, readable_output, mocker):
+@pytest.mark.parametrize('mock_response, readable_output, is_exception_raised', REJECT_HOLD_MESSAGE)
+def test_reject_held_message_command(mock_response, readable_output, is_exception_raised, mocker):
     """
 
         When:
@@ -488,38 +487,40 @@ def test_reject_hold_message_command(mock_response, readable_output, mocker):
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
     args = {'ids': '1234,1233', 'message': 'test', 'reason_type': 'MESSAGE CONTAINS UNDESIRABLE CONTENT',
             'notify': 'true'}
-    response = MimecastV2.reject_hold_message_command(args)
-
-    assert response.readable_output == readable_output
+    try:
+        response = MimecastV2.reject_held_message_command(args)
+        assert response.readable_output == readable_output
+    except Exception:
+        assert is_exception_raised
 
 
 RELEASE_HOLD_MESSAGE = [
     ({"meta": {
         "status": 200
     },
-        "data": [
-        {
-            "id": "1234",
-            "release": True
-        }
-    ],
-        "fail": []
-    }, 'Hold message with id 1234 was released successfully'),
+         "data": [
+             {
+                 "id": "1234",
+                 "release": True
+             }
+         ],
+         "fail": []
+     }, 'Held message with id 1234 was released successfully', False),
     ({"meta": {
         "status": 200
     },
-        "data": [
-        {
-            "id": "1234",
-            "release": False
-        }
-    ],
-        "fail": []
-    }, 'Message release has failed.')]
+         "data": [
+             {
+                 "id": "1234",
+                 "release": False
+             }
+         ],
+         "fail": []
+     }, 'Message release has failed.', True)]
 
 
-@pytest.mark.parametrize('mock_response, readable_output', RELEASE_HOLD_MESSAGE)
-def test_release_hold_message_command(mock_response, readable_output, mocker):
+@pytest.mark.parametrize('mock_response, readable_output, is_exception_raised', RELEASE_HOLD_MESSAGE)
+def test_release_held_message_command(mock_response, readable_output, is_exception_raised, mocker):
     """
 
         When:
@@ -531,8 +532,11 @@ def test_release_hold_message_command(mock_response, readable_output, mocker):
 
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
     args = {'id': '1234'}
-    response = MimecastV2.release_hold_message_command(args)
-    assert response.readable_output == readable_output
+    try:
+        response = MimecastV2.release_held_message_command(args)
+        assert response.readable_output == readable_output
+    except Exception:
+        assert is_exception_raised
 
 
 def test_search_processing_message_command(mocker):

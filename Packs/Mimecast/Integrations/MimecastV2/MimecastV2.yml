@@ -2249,63 +2249,63 @@ script:
       predefined:
       - ""
     outputs:
-    - contextPath: Mimecast.HoldMessage.dateReceived
+    - contextPath: Mimecast.HeldMessage.dateReceived
       description: The timestamp of the message transmission.
       type: Date
-    - contextPath: Mimecast.HoldMessage.from.displayableName
+    - contextPath: Mimecast.HeldMessage.from.displayableName
       description: The sender name.
       type: String
-    - contextPath: Mimecast.HoldMessage.from.emailAddress
+    - contextPath: Mimecast.HeldMessage.from.emailAddress
       description: The sender email.
       type: String
-    - contextPath: Mimecast.HoldMessage.fromHeader.displayableName
+    - contextPath: Mimecast.HeldMessage.fromHeader.displayableName
       description: The display name of the sender (From envelope).
       type: String
-    - contextPath: Mimecast.HoldMessage.fromHeader.emailAddress
+    - contextPath: Mimecast.HeldMessage.fromHeader.emailAddress
       description: The email address of the sender (From envelope).
       type: String
-    - contextPath: Mimecast.HoldMessage.hasAttachments
+    - contextPath: Mimecast.HeldMessage.hasAttachments
       description: Returns true if the message contains attachments. False indicates no attachments
       type: Boolean
-    - contextPath: Mimecast.HoldMessage.id
+    - contextPath: Mimecast.HeldMessage.id
       description: The Mimecast secure ID for a message.
       type: String
-    - contextPath: Mimecast.HoldMessage.policyInfo
+    - contextPath: Mimecast.HeldMessage.policyInfo
       description: Information or definition name triggering the message hold action.
       type: String
-    - contextPath: Mimecast.HoldMessage.reason
+    - contextPath: Mimecast.HeldMessage.reason
       description: The summary reason for holding the message.
       type: String
-    - contextPath: Mimecast.HoldMessage.reasonCode
+    - contextPath: Mimecast.HeldMessage.reasonCode
       description: Reason code for holding the message.
       type: String
-    - contextPath: Mimecast.HoldMessage.reasonId
+    - contextPath: Mimecast.HeldMessage.reasonId
       description: Mirrors the reason field, formatted without spaces. However, reasonCode should be used instead.
       type: String
-    - contextPath: Mimecast.HoldMessage.route
+    - contextPath: Mimecast.HeldMessage.route
       description: "Direction of message being held. Possible values are: INBOUND, OUTBOUND, INTERNAL, EXTERNAL."
       type: String
-    - contextPath: Mimecast.HoldMessage.size
+    - contextPath: Mimecast.HeldMessage.size
       description: The size of the message in bytes.
       type: Number
-    - contextPath: Mimecast.HoldMessage.subject
+    - contextPath: Mimecast.HeldMessage.subject
       description: The message subject.
       type: String
-    - contextPath: Mimecast.HoldMessage.to.displayableName
+    - contextPath: Mimecast.HeldMessage.to.displayableName
       description: The display name of the recipient.
       type: String
-    - contextPath: Mimecast.HoldMessage.to.emailAddress
+    - contextPath: Mimecast.HeldMessage.to.emailAddress
       description: The email address of the recipient.
       type: String
-  - name: mimecast-hold-message-summary
+  - name: mimecast-held-message-summary
     description: Get counts of currenlty held messages for each hold reason.
     deprecated: false
     arguments: []
     outputs:
-    - contextPath: Mimecast.HoldMessageSummary.numberOfItems
+    - contextPath: Mimecast.HeldMessageSummary.numberOfItems
       description: "\tThe number of messages currently held for this reason."
       type: Number
-    - contextPath: Mimecast.HoldMessageSummary.policyInfo
+    - contextPath: Mimecast.HeldMessageSummary.policyInfo
       description: The name of the policy or definition that held a message.
       type: String
   - name: mimecast-reject-held-message
@@ -2313,7 +2313,7 @@ script:
     deprecated: false
     arguments:
     - name: ids
-      description: "An array of Mimecast secure ids: Ids are extracted from command : mimecast-list-hold-message"
+      description: "An array of Mimecast secure ids: Ids are extracted from command : mimecast-list-held-message"
       required: true
       isArray: true
       defaultValue: ""
@@ -2351,7 +2351,7 @@ script:
     deprecated: false
     arguments:
     - name: id
-      description: "Mimecast secure id: id can be extracted from following command : mimecast-list-hold-message"
+      description: "Mimecast secure id: id can be extracted from following command : mimecast-list-held-message"
       required: true
       isArray: false
       defaultValue: ""

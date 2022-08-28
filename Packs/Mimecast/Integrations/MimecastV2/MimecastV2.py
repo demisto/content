@@ -2759,7 +2759,7 @@ def held_message_summary_command():
                                       removeNull=True)
 
     return CommandResults(
-        outputs_prefix='Mimecast.HoldMessageSummary',
+        outputs_prefix='Mimecast.HeldMessageSummary',
         outputs_key_field='policyInfo',
         readable_output=readable_output,
         outputs=summary_list,
@@ -2810,7 +2810,7 @@ def list_held_messages_command(args):
                'reasonCode': 'Reason Code',
                'reasonId': 'reason Id'
                }
-    readable_output = tableToMarkdown('Hold Messages', t=response,
+    readable_output = tableToMarkdown('Held Messages', t=response,
                                       headerTransform=lambda header: headers.get(
                                           header) if header in headers.keys() else header.capitalize(),
                                       removeNull=True, json_transform_mapping=table_json_transformer,
@@ -2820,7 +2820,7 @@ def list_held_messages_command(args):
                                       metadata=f'Showing page number {args.get("page", "1")}')
 
     return CommandResults(
-        outputs_prefix='Mimecast.HoldMessage',
+        outputs_prefix='Mimecast.HeldMessage',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=response,
@@ -2843,9 +2843,9 @@ def reject_held_message_command(args):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     for message in response.get('data', []):
         if not message.get('reject', False):
-            raise Exception(f'Hold message with id {message.get("id")} rejection failed.')
+            raise Exception(f'Held message with id {message.get("id")} rejection failed.')
         else:
-            readable_output += f'Hold message with id {message.get("id")} was rejected successfully.\n'
+            readable_output += f'Held message with id {message.get("id")} was rejected successfully.\n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -2869,7 +2869,7 @@ def release_held_message_command(args):
     if not response.get('data', [])[0].get('release', False):
         raise Exception('Message release has failed.')
     else:
-        readable_output = f'Hold message with id {id} was released successfully'
+        readable_output = f'Held message with id {id} was released successfully'
 
     return CommandResults(
         readable_output=readable_output,
