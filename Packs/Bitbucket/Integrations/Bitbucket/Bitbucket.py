@@ -115,11 +115,29 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
+def params_to_int(params):
+    page = params.get('page')
+    page_size = params.get('page_size')
+    if isinstance(page, str):
+        params['page'] = int(page)
+    if isinstance(page_size, str):
+        params['page_size'] = int(page_size)
+    return params
+
+def str_to_int(s):
+    if isinstance(s, str):
+        return int(s)
+    else:
+        return None
+
+
 def project_list_command(client: Client, args) -> CommandResults:
     params = {'page': args.get('page', 1),
-              'pagelen': args.get('page_size')}
+              'pagelen': args.get('page_size', None)}
+    params = params_to_int(params)
+    limit = args.get('limit', None)
+    limit = str_to_int(limit)
     project_key = args.get('project_key')
-    limit = int(args.get('limit', None))
     if not project_key:
         full_url = f'{client.serverUrl}/workspaces/{client.workspace}/projects/'
         readable_name = f'List of the projects in {client.workspace}'
@@ -155,8 +173,10 @@ def project_list_command(client: Client, args) -> CommandResults:
     )
 
 
-# def open_branch_list_command(client: Client, args):
-
+def open_branch_list_command(client: Client, args):
+    params = {'page': int(args.get('page', 1)),
+              'pagelen': int(args.get('page_size'))}
+    limit = int(args.get('limit', None))
 
 ''' MAIN FUNCTION '''
 
@@ -194,9 +214,9 @@ def main() -> None:
         elif demisto.command() == 'bitbucket-project-list':
             result = project_list_command(client, demisto.args())
             return_results(result)
-        # elif demisto.command() == 'bitbucket-open-branch-list':
-         #   result = open_branch_list_command(client, demisto.args())
-          #  return_results(result)
+        elif demisto.command() == 'bitbucket-open-branch-list':
+            result = open_branch_list_command(client, demisto.args())
+            return_results(result)
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
