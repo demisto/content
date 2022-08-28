@@ -15,6 +15,7 @@ import e2e_tests_utils
 # TODO Create a new git Content branch, and work with that branch. And the end: git checkout master, git reset hard
 # TODO Review Ido's doc and see if we missed anything.
 
+
 def test_e2e_demisto_sdk_flow_playbook(tmpdir, insecure: bool = False):
     # Importing TestSuite classes from Demisto-SDK
     e2e_tests_utils.cli(f'mkdir {tmpdir}/git')
@@ -49,7 +50,7 @@ def test_e2e_demisto_sdk_flow_playbook(tmpdir, insecure: bool = False):
     assert path.exists(f'{tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}_README.md')
 
     print(f'Formating playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
-    format_manager(input=f'{tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml',assume_yes=True)
+    format_manager(input=f'{tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml', assume_yes=True)
     print(f'Validating playbook {tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml')
     ValidateManager(file_path=f'{tmpdir}/Packs/{pack_name}_updated/Playbooks/{playbook_name}.yml').run_validation()
 
