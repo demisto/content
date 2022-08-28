@@ -6,18 +6,17 @@ from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
-from exceptions import (BlankPackNameException, DeprecatedPackException,
-                        NonDictException, NonexistentPackException,
-                        NonXsoarSupportedPackException,
-                        NoTestsConfiguredException, NotUnderPackException,
-                        SkippedPackException)
-from logger import logger
 from packaging import version
 from packaging._structures import InfinityType, NegativeInfinityType
 from packaging.version import Version
-from path_manager import PathManager
 
 from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS
+from Tests.scripts.collect_tests.exceptions import (
+    BlankPackNameException, DeprecatedPackException, NonDictException,
+    NonexistentPackException, NonXsoarSupportedPackException,
+    NoTestsConfiguredException, NotUnderPackException, SkippedPackException)
+from Tests.scripts.collect_tests.logger import logger
+from Tests.scripts.collect_tests.path_manager import PathManager
 
 
 def find_pack_folder(path: Path) -> Path:
@@ -76,19 +75,18 @@ class Machine(Enum):
     V6_5 = Version('6.5')
     V6_6 = Version('6.6')
     V6_8 = Version('6.8')
-    MASTER = 'master'
-    NIGHTLY = 'nightly'
+    V6_9 = Version('6.9')
+    MASTER = 'Master'
 
     @staticmethod
     def numeric_machines() -> tuple['Machine', ...]:
         return tuple(machine for machine in Machine if isinstance(machine.value, Version))
 
     @staticmethod
-    def get_suitable_machines(version_range: Optional[VersionRange], run_nightly: bool) -> tuple['Machine', ...]:
+    def get_suitable_machines(version_range: Optional[VersionRange]) -> tuple['Machine', ...]:
         """
 
         :param version_range: range of versions. If None, all versions are returned.
-        :param run_nightly: whether a nightly machine is required
         :return: Master, as well as all Machine items matching the input.
         """
         result: list[Machine] = [Machine.MASTER]
@@ -97,9 +95,6 @@ class Machine(Enum):
             version_range = VersionRange(version.NegativeInfinity, version.Infinity)
 
         result.extend(machine for machine in Machine.numeric_machines() if machine.value in version_range)
-
-        if run_nightly:
-            result.append(Machine.NIGHTLY)
 
         return tuple(result)
 
@@ -164,11 +159,9 @@ class DictFileBased(DictBased):
     def __init__(self, path: Path, is_infrastructure: bool = False):
         if not path.exists():
             raise FileNotFoundError(path)
-        try:
-            PackManager.relative_to_packs(path)
-        except NotUnderPackException:
-            if not is_infrastructure:
-                raise
+
+        if ('Packs' not in path.parts) and (not is_infrastructure):
+            raise NotUnderPackException(path)
 
         if path.suffix not in ('.json', '.yml'):
             raise NonDictException(path)
@@ -277,14 +270,11 @@ class PackManager:
     def is_test_skipped_in_pack_ignore(self, test_file_name: str, pack_id: str):
         return test_file_name in self._pack_id_to_skipped_test_playbooks[pack_id]
 
-    @staticmethod
-    def relative_to_packs(path: Path | str):
-        if isinstance(path, str):
-            path = Path(path)
-        parts = path.parts
-        if 'Packs' not in parts:
+    def relative_to_packs(self, path: Path | str):
+        try:
+            return Path(path).absolute().relative_to(self.packs_path.absolute())
+        except ValueError:
             raise NotUnderPackException(path)
-        return Path(*path.parts[path.parts.index('Packs') + 1:])
 
     def validate_pack(self, pack: str) -> None:
         """raises InvalidPackException if the pack name is not valid."""
