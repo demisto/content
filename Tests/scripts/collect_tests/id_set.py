@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
-from logger import logger
 
+from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                PackManager, find_pack_folder,
                                                to_tuple)
