@@ -12,7 +12,7 @@
         "packs": [
           {
             "name": "EWS",
-            "display_name": "Exchange Web Services - EWS (Make sure you also install the EWS Mail Sender pack)"
+            "display_name": "Exchange Web Services - EWS"
           },
           {
             "name": "Gmail",
@@ -29,16 +29,6 @@
           {
             "name": "MicrosoftGraphListener",
             "display_name": "Microsoft Graph Mail - Single User (limited functionalities)"
-          }
-        ]
-      },
-      {
-        "name": "Mail Sender",
-        "min_required": 0,
-        "packs": [
-          {
-            "name": "EWSMailSender",
-            "display_name": "EWS Mail Sender"
           }
         ]
       },
@@ -244,7 +234,7 @@
           "incident_type": "Phishing"
         },
         {
-          "priority": 4,
+          "priority": 2,
           "name": "EWSO365",
           "action": {
             "existing": "Update your current instance to work with the Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS v2-mapper'.",
@@ -264,7 +254,7 @@
           "incident_type": "Phishing"
         },
         {
-          "priority": 2,
+          "priority": 4,
           "name": "EWS v2",
           "action": {
             "existing": "Update your current instance to work with the new Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS - Incoming Mapper'.",
