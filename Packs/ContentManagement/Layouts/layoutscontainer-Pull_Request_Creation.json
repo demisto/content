@@ -203,7 +203,7 @@
                         "y": 2
                     },
                     {
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-field-changed-caseinfoid-6cfc7250-efdc-11ec-ad08-d9ee2c4fe212",
@@ -245,7 +245,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "cicdpullrequestcomment",
                                 "height": 44,
                                 "id": "71cacdd0-efdd-11ec-ad08-d9ee2c4fe212",
@@ -258,7 +258,7 @@
                                 "fieldId": "incident_cicdpullrequestreview",
                                 "height": 44,
                                 "id": "71cacdd0-efdd-11ec-ad08-d9ee2c4fe668",
-                                "index": 5,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -351,7 +351,7 @@
                 "type": ""
             },
             {
-                "description": "To create a new pull request - Upload the zip content pack to the **Pull Request Attachment** and set the **Pull Request Title** field. The other fields are optional",
+                "description": "To create a new pull request - Upload the zip content pack to the **Pull Request Attachment** and set the **Pull Request Title** field. The other fields are optional.\nIf **CI/CD Branch** field is empty, the playbook will generate the branch name based on the branch name, for example: pack name is \"MyPack\" the branch name will be \"MyPack\".",
                 "fields": [
                     {
                         "fieldId": "incident_cicdpullrequestattachment",

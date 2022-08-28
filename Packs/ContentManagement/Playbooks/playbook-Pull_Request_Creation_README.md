@@ -4,41 +4,33 @@ This playbook creates a pull request from the content zip file.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-This playbook does not use any sub-playbooks.
+* Pull Request Creation - Github
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* SuggestBranchName
-* Set
 * ReadFile
-* IsIntegrationAvailable
-* CommitFiles
+* Set
 * UnzipFile
+* IsIntegrationAvailable
+* PrintErrorEntry
 
 ### Commands
-* GitHub-list-branch-pull-requests
-* setIncident
-* GitHub-create-pull-request
-* GitHub-create-branch
 * send-notification
-* GitHub-request-review
-* closeInvestigation
-* GitHub-get-branch
 * getUsers
+* setIncident
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| SlackChannel | Name of the Slack channel to send the notifications. |  | Optional |
+| ChannelName | The channel to which to send notifications. |  | Optional |
+| PullRequestTemplate | Pull request description template. | ### Pull Request created in Cortex XSOAR<br/>**Created by:** {}<br/>**Pack:** {}<br/>**Branch:** {}<br/>**Link to incident in Cortex XSOAR:** {}<br/>{} <br/>--- | Required |
+| MainBranch | The name of the branch you want the changes pulled into, which must be an existing branch on the current repository. | master | Required |
+| GitIntegration | Which version control integration to use. | GitHub | Required |
 
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Pull Request Creation](../doc_files/Pull_Request_Creation.png)

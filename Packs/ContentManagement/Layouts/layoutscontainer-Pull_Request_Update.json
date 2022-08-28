@@ -63,7 +63,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -76,7 +75,6 @@
                     {
                         "h": 2,
                         "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -91,7 +89,6 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -153,7 +150,6 @@
                                 "startCol": 1
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -197,7 +193,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -208,7 +203,7 @@
                         "y": 2
                     },
                     {
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-6cfc7250-efdc-11ec-ad08-d9ee2c4fe212",
@@ -259,7 +254,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -348,7 +342,7 @@
                 "type": ""
             },
             {
-                "description": "To update existing pull request - Upload the zip content pack to the **Pull Request Attachment** and set the **Pull Request Branch** field.",
+                "description": "To update existing pull request - Upload the zip content pack to the **Pull Request Attachment** and set the **Pull Request Branch** or **CI/CD Branch** field with the pull request branch name.",
                 "fields": [
                     {
                         "fieldId": "incident_cicdpullrequestattachment",
