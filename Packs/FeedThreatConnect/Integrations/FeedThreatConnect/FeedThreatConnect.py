@@ -208,11 +208,12 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
         tql = f'?tql={tql}'
     else:
         tql = ''
-    url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=500'
+    url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=100'
     if '?' not in url:
         url = url.replace('&', '?', 1)  # type: ignore
     indicators = []
     while True:
+        demisto.info(url)
         response, status, next = client.make_request(Method.GET, url, get_next=True)
         if status == 'Success':
             indicators.extend(response)
