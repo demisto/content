@@ -1,4 +1,4 @@
-Subplaybook the performs and NMAP scan and compares against regular expression for match.  This could be used to look for OpenSSH versions or other OS information found from the banner.
+Sub-playbook that performs an Nmap scan and compares the results against a regular expression for a match.  This could be used to look for OpenSSH versions or other OS information found in the banner.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,32 +7,32 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* NMAP
+NMAP
 
 ### Scripts
-* Set
+Set
 
 ### Commands
-* nmap-scan
+nmap-scan
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RemoteIP | Remote IP address in incident/alert |  | Required |
+| RemoteIP | Remote IP address in an incident/alert. |  | Required |
 | RemotePort | Remote port number in incident/alert |  | Required |
-| Regex | regular expression to compare against banner for match |  | Required |
-| NMAPOptions | options to be used for nmap scan \(we do "--script=banner -p\<RemotePort\>" by default and recommend using "-Pn" to skip ping check\) |  | Optional |
+| Regex | Regular expression to compare against the banner for a match. |  | Required |
+| NMAPOptions | Options to be used for the Nmap scan. \(We do "--script=banner -p\<RemotePort\>" by default and recommend using "-Pn" to skip the ping check\.) |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| ScanResult | What was the result of the scan \(if done\) | unknown |
-| ScanDone | Was a scan actually performed \(based on subtypes\) | unknown |
-| NMAP.Scan | NMAP scan data | unknown |
+| ScanResult | The results of the scan \(if done\) | unknown |
+| ScanDone | Whether a scan was actually performed \(based on subtypes\). | unknown |
+| NMAP.Scan | Nmap scan data. | unknown |
 
 ## Playbook Image
 ---
