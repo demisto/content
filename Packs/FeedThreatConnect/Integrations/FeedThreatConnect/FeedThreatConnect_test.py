@@ -31,15 +31,5 @@ def test_parse_indicator():
         load_json_file(data_dir['indicators.json']))
 
 
-def test_parse_indicator_with_tlp(mocker, datadir):
-    from FeedThreatConnect import parse_indicator
-
-    expected_result = load_json_file(datadir['parsed_indicator.json'])
-    expected_result['fields']['trafficlightprotocol'] = 'AMBER'
-
-    mocker.patch.object(demisto, 'params', return_value={'tlp_color': 'AMBER'})
-    assert expected_result == parse_indicator(load_json_file(datadir['indicators.json']))
-
-
 def test_create_or_query():
-    assert create_or_query('1,2,3,4,5', 'test') == 'test="1" OR test="2" OR test="3" OR test="4" OR test="5" '
+    assert create_or_query('test', '1,2,3,4,5') == 'test="1" OR test="2" OR test="3" OR test="4" OR test="5" '

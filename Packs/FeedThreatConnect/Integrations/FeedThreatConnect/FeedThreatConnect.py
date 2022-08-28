@@ -155,7 +155,7 @@ class Client(BaseClient):
 ######################
 
 
-def module_test_command(client: Client):
+def module_test_command(client: Client):  # pragma: no cover
     """ Test module - Get 4 indicators from ThreatConnect.
 
     Args:
@@ -176,7 +176,7 @@ def module_test_command(client: Client):
                                                            'local help desk'))
 
 
-def create_or_query(delimiter_str: str, param_name: str) -> str:
+def create_or_query(param_name: str, delimiter_str: str) -> str:
     if not delimiter_str:
         return ''
     arr = delimiter_str.split(',')
@@ -186,7 +186,7 @@ def create_or_query(delimiter_str: str, param_name: str) -> str:
     return query[:len(query) - 3]
 
 
-def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no cover
+def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no cover
     """ Fetch indicators from ThreatConnect
 
     Args:
@@ -195,23 +195,22 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no 
     Returns:
         list: indicator to populate in demisto server.
     """
-    owners = f'AND ({create_or_query(demisto.getParam("owners"), "ownerName")}) '
-    tags = f'AND ({create_or_query(demisto.getParam("tags"), "tags")}) '
-    status = f'AND ({create_or_query(demisto.getParam("status"), "status")}) '
+    owners = f'AND ({create_or_query("ownerName", demisto.getParam("owners"))}) '
+    tags = f'AND ({create_or_query("tags", demisto.getParam("tags"))}) '
+    status = f'AND ({create_or_query("status", demisto.getParam("status"))}) '
     fields = set_fields_query(argToList(demisto.getParam("fields")))
-    group_type = f'AND ({create_or_query(demisto.params().get("group_type", "Incident"), "typeName")}) '
 
-    tql = f'{owners if owners != "AND () " else ""}{tags if tags != "AND () " else ""}' \
-          f'{group_type if group_type != "AND () " else ""}{status if status != "AND () " else ""}'.replace('AND', '',
-                                                                                                            1)
+    tql = f'{owners if owners != "AND () " else ""}' \
+          f'{tags if tags != "AND () " else ""}' \
+          f'{status if status != "AND () " else ""}'.replace('AND', '', 1)
     if tql:
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
         tql = f'?tql={tql}'
     else:
         tql = ''
-        if fields:
-            fields = fields.replace('&', '?', 1)  # type: ignore
-    url = f'/api/v3/groups{tql}{fields}&resultStart=0&resultLimit=10'
+    url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=500'
+    if '?' not in url:
+        url = url.replace('&', '?', 1)  # type: ignore
     indicators = []
     while True:
         response, status, next = client.make_request(Method.GET, url, get_next=True)
@@ -287,17 +286,15 @@ def main():  # pragma: no cover
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_groups_command(client)
-            demisto.info('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-            demisto.info(str(len(indicators)))
+            indicators = fetch_indicators_command(client)
+            indicators = [parse_indicator(indicator) for indicator in indicators]
             for b in batch(indicators, batch_size=2000):
-                demisto.info('+++++++++++++++++++++++++++++++++++++++')
                 demisto.createIndicators(b)
+
         else:
             readable_output, outputs, raw_response = commands[command](client)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        raise e
         return_error(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')
 
 
