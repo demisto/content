@@ -55,37 +55,28 @@ class Client(BaseClient):
         return self._http_request(method='GET', full_url=full_url, params=params)
 
     # HELPER FUNCTIONS
-    def get_paged_results(self, response, results, limit=None, params=None) -> list:
+    def get_paged_results(self, response, results, limit, params=None) -> list:
         arr = response.get('values')
         isNext = response.get('next', None)
         if not params:
             page = None
         else:
             page = params.get('page', None)
-        if limit:
-            while response:
-                for value in arr:
-                    if limit > 0:
-                        results.append(value)
-                        limit = limit - 1
-                    else:
-                        break
-                if limit > 0 and isNext and (not page or page == 1):
-                    response = self.get_list(isNext)
-                    isNext = response.get('next', None)
-                    arr = response.get('values')
-                else:
-                    response = None
-        else:
-            while response:
-                for value in arr:
+
+        while response:
+            for value in arr:
+                if limit > 0:
                     results.append(value)
-                if isNext and (not page or page == 1):
-                    response = self.get_list(isNext)
-                    isNext = response.get('next', None)
-                    arr = response.get('values')
+                    limit = limit - 1
                 else:
-                    response = None
+                    break
+            if limit > 0 and isNext and (not page or page == 1):
+                response = self.get_list(isNext)
+                isNext = response.get('next', None)
+                arr = response.get('values')
+            else:
+                response = None
+
         return results
 
 
@@ -97,21 +88,7 @@ class Client(BaseClient):
  #   return client.test_module()
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
@@ -124,9 +101,12 @@ def params_to_int(params):
         params['page_size'] = int(page_size)
     return params
 
+
 def str_to_int(s):
     if isinstance(s, str):
         return int(s)
+    if isinstance(s, int):
+        return s
     else:
         return None
 
@@ -135,7 +115,7 @@ def project_list_command(client: Client, args) -> CommandResults:
     params = {'page': args.get('page', 1),
               'pagelen': args.get('page_size', None)}
     params = params_to_int(params)
-    limit = args.get('limit', None)
+    limit = args.get('limit', 50)
     limit = str_to_int(limit)
     project_key = args.get('project_key')
     if not project_key:
@@ -146,9 +126,12 @@ def project_list_command(client: Client, args) -> CommandResults:
         full_url = f'{client.serverUrl}/workspaces/{client.workspace}/projects/{project_key}'
         readable_name = f'The information about project {project_key}'
 
+    results = []
     response = client.get_list(full_url, params)
     if full_url[-1] == '/':
-        results = client.get_paged_results(response, [], limit, params)
+        results = client.get_paged_results(response, results, limit, params)
+    else:
+        results.append(response)
 
     human_readable = []
 
@@ -174,9 +157,44 @@ def project_list_command(client: Client, args) -> CommandResults:
 
 
 def open_branch_list_command(client: Client, args):
-    params = {'page': int(args.get('page', 1)),
-              'pagelen': int(args.get('page_size'))}
-    limit = int(args.get('limit', None))
+    params = {'page': args.get('page', 1),
+              'pagelen': args.get('page_size', None)}
+    params = params_to_int(params)
+    limit = args.get('limit', 50)
+    limit = str_to_int(limit)
+    repo = args.get('repo', None)
+
+    if repo:
+        full_url = f'{client.serverUrl}/repositories/{client.workspace}/{repo}/refs/branches'
+    else:
+        if not client.repository:
+            raise Exception("Please provide a repository name")
+        full_url = f'{client.serverUrl}/repositories/{client.workspace}/{client.repository}/refs/branches'
+
+    response = client.get_list(full_url, params)
+    results = client.get_paged_results(response, [], limit, params)
+
+    human_readable = []
+
+    for value in results:
+        d = {'Name': value.get('name'),
+             'LastCommitHash': demisto.get(value, 'target.hash'),
+             'LastCommitCreatedBy': demisto.get(value, 'target.author.user.display_name'),
+             'LastCommitCreatedAt': demisto.get(value, 'target.date')}
+        human_readable.append(d)
+
+    readable_output = tableToMarkdown(
+        name='The list of open branches',
+        t=human_readable,
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Bitbucket.Branch',
+        outputs=results,
+        raw_response=results
+    )
 
 ''' MAIN FUNCTION '''
 

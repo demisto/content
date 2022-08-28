@@ -72,7 +72,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The max number of project.
+          description: The maximum number of project.
         - name: page
           required: false
           isArray: false
@@ -89,7 +89,7 @@ script:
           description: 'Client Project owner name.'
           type: String
         - contextPath: Bitbucket.Project.owner.links.self.href
-          description: 'A link to the result json.'
+          description: 'The link to a json with the information about the owner of the project.'
           type: String
         - contextPath: Bitbucket.Project.owner.links.avatar.href
           description: 'A link to the project owner photo.'
@@ -166,6 +166,142 @@ script:
         - contextPath: Bitbucket.Project.has_publicly_visible_repos
           description: 'Does the project has a publicly visible repositories or not.'
           type: Boolean
+    - name: bitbucket-open-branch-list
+      arguments:
+        - name: repo
+          required: false
+          description: the repository name or slug.
+          isArray: false
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of project.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display.
+        - name: page_size
+          required: false
+          isArray: false
+          description: The number of projects in a result page.
+      output:
+        - contextPath: Bitbucket.Branch.name
+          description: 'The branch name.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.type
+          description: 'The type of the last action in the branch'
+          type: String
+        - contextPath: Bitbucket.Branch.target.hash
+          description: 'The hash of the last action in the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.date
+          description: 'The creation date of the last action in the branch.'
+          type: Date
+        - contextPath: Bitbucket.Branch.target.author.type
+          description: 'The type of the author of the last action.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.raw
+          description: 'The raw information about the author of the last action.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.display_name
+          description: 'The display name of the author of the last action.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.links.self.href
+          description: 'The link to a json with the information about the author of the last action in the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.links.avatar.href
+          description: 'A link to the image of the author of the last action in the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.links.html.href
+          description: 'A link to the user repository'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.type
+          description: 'The type of the user who made the last action in the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.uuid
+          description: 'The unique user id of the user who made the last action in the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.account_id
+          description: 'The account id of the user who made the last action in the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.nickname
+          description: 'The nickname of the user who made the last action in the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.message
+          description: 'The message assigned to the last action in the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.links.self.href
+          description: 'A link'
+          type: String
+        - contextPath: Bitbucket.Branch.target.links.html.href
+          description: 'A link to the last action page.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.links.diff.href
+          description: 'A link'
+          type: String
+        - contextPath: Bitbucket.Branch.target.links.approve.href
+          description: 'A link'
+          type: String
+        - contextPath: Bitbucket.Branch.target.links.comments.href
+          description: 'A link to the comments about the action (?)'
+          type: String
+        - contextPath: Bitbucket.Branch.target.links.statuses.href
+          description: 'A link'
+          type: String
+        - contextPath: Bitbucket.Branch.target.links.patch.href
+          description: 'A link'
+          type: String
+        - contextPath: Bitbucket.Branch.target.parents.type
+          description: 'The type of the parent who created the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.parents.hash
+          description: 'The hash of the parent who created the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.parents.links.self.href
+          description: 'A link to the parents repository'
+          type: String
+        - contextPath: Bitbucket.Branch.target.parents.links.html.href
+          description: 'A link to the parent commit'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.type
+          description: 'The repository type.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.full_name
+          description: 'The full name of the repository.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.links.self.href
+          description: 'The api request to the repository'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.links.html.href
+          description: 'A link to the repository.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.links.avatar.href
+          description: 'A link to the repository image'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.name
+          description: 'The name of the repository'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.uuid
+          description: 'The repository unique id.'
+          type: String
+        - contextPath: Bitbucket.Branch.links.self.href
+          description: 'The api request to the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.links.commits.href
+          description: 'A link to api request to the commits of the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.links.html.href
+          description: 'A link to the commits in the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.type
+          description: 'The type of the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.merge_strategies
+          description: 'The merge strategy of the branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.default_merge_strategy
+          description: 'The default merge strategy in the branch.'
+          type: String
   isfetch: false
   runonce: false
   script: "-"
