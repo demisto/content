@@ -10,6 +10,8 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
+
 
 class Client(BaseClient):
     def __init__(self, base_url: str, use_ssl: bool, use_proxy: bool, token=None, cb_org_key=None):
@@ -1162,13 +1164,18 @@ def get_file_path_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
-    last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
+def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict, look_back: int) -> Tuple[List, Dict]:
+    last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time') or last_run.get('time')
+    last_run.update({'time': last_fetched_alert_create_time})
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
-    if not last_fetched_alert_create_time:
-        last_fetched_alert_create_time, _ = parse_date_range(fetch_time, date_format='%Y-%m-%dT%H:%M:%S.000Z')
-    latest_alert_create_date = last_fetched_alert_create_time
+    if not last_run.get('time'):
+        last_run.update({'time': parse_date_range(fetch_time, date_format=DATE_FORMAT)[0]})
+    # latest_alert_create_date = last_fetched_alert_create_time
     latest_alert_id = last_fetched_alert_id
+
+    fetch_start_time, fetch_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=fetch_time,
+                                                                look_back=look_back, date_format=DATE_FORMAT)
+    demisto.debug(f'{fetch_start_time=}, {fetch_end_time=}')
 
     incidents = []
 
@@ -1176,8 +1183,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         sort_field='first_event_time',
         sort_order='ASC',
         create_time=assign_params(
-            start=last_fetched_alert_create_time,
-            end=datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+            start=fetch_start_time,
+            end=datetime.now().strftime(DATE_FORMAT)
         ),
         limit=fetch_limit,
     )
@@ -1196,14 +1203,30 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        parsed_date = dateparser.parse(alert_create_date)
-        assert parsed_date is not None, f'failed parsing {alert_create_date}'
-        latest_alert_create_date = datetime.strftime(parsed_date + timedelta(seconds=1),
-                                                     '%Y-%m-%dT%H:%M:%S.000Z')
+        # parsed_date = dateparser.parse(alert_create_date)
+        # assert parsed_date is not None, f'failed parsing {alert_create_date}'
+        # latest_alert_create_date = datetime.strftime(parsed_date + timedelta(seconds=1),
+        #                                              DATE_FORMAT)
         latest_alert_id = alert_id
 
-    res = {'last_fetched_alert_create_time': latest_alert_create_date, 'last_fetched_alert_id': latest_alert_id}
-    return incidents, res
+    alerts_to_incident = filter_incidents_by_duplicates_and_limit(
+        incidents_res=alerts, last_run=last_run, fetch_limit=fetch_limit, id_field='id'
+    )
+
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=alerts_to_incident,
+        fetch_limit=fetch_limit,
+        start_fetch_time=fetch_start_time,
+        end_fetch_time=fetch_end_time,
+        look_back=look_back,
+        created_time_field='create_time',
+        id_field='id',
+        date_format=DATE_FORMAT,
+        increase_last_run_time=True
+    )
+    last_run.update({'last_fetched_alert_id': latest_alert_id})  ## change key name `last_fetched_alert_create_time` in last_run
+    return incidents, last_run
 
 
 def process_search_command(client: Client, args: Dict) -> CommandResults:
