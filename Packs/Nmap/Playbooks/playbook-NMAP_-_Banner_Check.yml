@@ -1,22 +1,22 @@
-description: Subplaybook the performs and NMAP scan and compares against regular expression for match.  This could be used to look for OpenSSH versions or other OS information found from the banner.
+description: Sub-playbook that performs an Nmap scan and compares against a regular expression to determine a match. This could be used to look for OpenSSH versions or other OS information found in the banner.
 id: NMAP - Banner Check
 inputs:
-- description: Remote IP address in incident/alert
+- description: Remote IP address in an incident/alert.
   key: RemoteIP
   playbookInputQuery:
   required: true
   value: {}
-- description: Remote port number in incident/alert
+- description: Remote port number in an incident/alert.
   key: RemotePort
   playbookInputQuery:
   required: true
   value: {}
-- description: regular expression to compare against banner for match
+- description: Regular expression to compare against the banner for a match.
   key: Regex
   playbookInputQuery:
   required: true
   value: {}
-- description: options to be used for nmap scan (we do "--script=banner -p<RemotePort>" by default and recommend using "-Pn" to skip ping check)
+- description: Options to be used for Nmap scan. (We do "--script=banner -p<RemotePort>" by default and recommend using "-Pn" to skip a ping check.)
   key: NMAPOptions
   playbookInputQuery:
   required: false
@@ -24,10 +24,10 @@ inputs:
 name: NMAP - Banner Check
 outputs:
 - contextPath: ScanResult
-  description: What was the result of the scan (if done)
+  description: The result of the scan (if done).
   type: unknown
 - contextPath: ScanDone
-  description: Was a scan actually performed (based on subtypes)
+  description: Whether a scan was actually performed (based on subtypes).
   type: unknown
 - contextPath: NMAP.Scan
   description: NMAP scan data
@@ -98,7 +98,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: NMAP scan on single port that pulls the banner as well using  "--script=banner -p<inputs.RemotePort>" options and allows addition of other options as well.
+      description: Nmap scan on a single port that pulls in the banner as well using  "--script=banner -p<inputs.RemotePort>" options and allows the addition of other options as well.
       id: 48643017-88b9-4fc9-8697-0b5e2ff4e624
       iscommand: true
       name: NMAP banner scan
@@ -134,7 +134,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sets ScanDone to False to be passed back to parent playbook to notify that no NMAP scan took place.
+      description: Sets ScanDone to False to be passed back to the parent playbook to notify that no Nmap scan took place.
       id: 4d8b6cdc-8fde-4c9a-8f70-1d4bf9f0d62e
       iscommand: false
       name: No scan done
@@ -222,7 +222,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if NMAP integration instance is configured to continue with scanning.
+      description: Determines if the NMAP integration instance is configured to continue with scanning.
       id: bf31adab-ce9b-4641-8800-5d90561bb437
       iscommand: false
       name: Is NMAP enabled?
