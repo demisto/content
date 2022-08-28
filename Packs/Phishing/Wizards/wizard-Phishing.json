@@ -297,14 +297,6 @@
           "description": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation."
         },
         {
-          "name": "EWS Mail Sender",
-          "action": {
-            "existing": "Only if you have chosen the 'EWS v2' integration - Configure 'EWS Mail Sender' to enable email notifications.",
-            "new": " Only if you have chosen the 'EWS v2' integration - Configure EWS Mail Sender to enable email notifications."
-          },
-          "description": "Only if you have chosen the 'EWS v2' integration - Configure EWS Mail Sender to enable email notifications."
-        },
-        {
           "name": "Active Directory Query v2",
           "action": {
             "existing": "Configure 'Active Directory Query v2' to open query your organizational Active Directory.",
