@@ -407,8 +407,7 @@ def main() -> None:
             'azure-nsg-auth-reset': reset_auth,
         }
         if command == 'test-module':
-            return_error("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."
-                         " For more details press the (?) button.")
+            return_results(test_module(client))
 
         if command == 'azure-nsg-auth-test':
             return_results(test_connection(client, params))
