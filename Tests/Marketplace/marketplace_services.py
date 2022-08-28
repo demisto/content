@@ -2000,7 +2000,7 @@ class Pack(object):
                 content_item_name_mapping[PackFolders.PARSING_RULES.value]: "Parsing Rule",
                 content_item_name_mapping[PackFolders.MODELING_RULES.value]: "Modeling Rule",
                 content_item_name_mapping[PackFolders.CORRELATION_RULES.value]: "Correlation Rule",
-                content_item_name_mapping[PackFolders.XSIAM_DASHBOARDS.value]:"XSIAM Dashboard",
+                content_item_name_mapping[PackFolders.XSIAM_DASHBOARDS.value]: "XSIAM Dashboard",
                 content_item_name_mapping[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
                 content_item_name_mapping[PackFolders.TRIGGERS.value]: "Trigger",
                 content_item_name_mapping[PackFolders.WIZARDS.value]: "Wizard",
@@ -2284,10 +2284,12 @@ class Pack(object):
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
             self._content_items = content_items_result
-            
-            display_getter = lambda items, display : f'{display}s' if len(items) > 1 else display
+
+            def display_getter(items, display):
+                return f'{display}s' if items and len(items) > 1 else display
+
             self._content_displays_map = {
-                name: display_getter(content_items_result.get(name), display) 
+                name: display_getter(content_items_result.get(name), display)
                 for name, display in items_names_to_display_mapping.items()
                 if content_items_result.get(name)
             }
