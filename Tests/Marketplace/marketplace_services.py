@@ -106,6 +106,7 @@ class Pack(object):
         self._tags = None  # initialized in enhance_pack_attributes function
         self._categories = None  # initialized in enhance_pack_attributes function
         self._content_items = None  # initialized in collect_content_items function
+        self._content_displays_map = None  # initialized in collect_content_items function
         self._search_rank = None  # initialized in enhance_pack_attributes function
         self._related_integration_images = None  # initialized in enhance_pack_attributes function
         self._use_cases = None  # initialized in enhance_pack_attributes function
@@ -646,6 +647,7 @@ class Pack(object):
             Metadata.TAGS: list(self._tags or []),
             Metadata.CATEGORIES: self._categories,
             Metadata.CONTENT_ITEMS: self._content_items,
+            Metadata.CONTENT_DISPLAYS: self._content_displays_map,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
             Metadata.USE_CASES: self._use_cases,
@@ -1975,6 +1977,35 @@ class Pack(object):
                 PackFolders.WIZARDS.value: "wizard",
             }
 
+            items_names_to_display_mapping = {
+                content_item_name_mapping[PackFolders.SCRIPTS.value]: "Automation",
+                content_item_name_mapping[PackFolders.PLAYBOOKS.value]: "Playbook",
+                content_item_name_mapping[PackFolders.INTEGRATIONS.value]: "Integration",
+                content_item_name_mapping[PackFolders.INCIDENT_FIELDS.value]: "Incident Field",
+                content_item_name_mapping[PackFolders.INCIDENT_TYPES.value]: "Incident Type",
+                content_item_name_mapping[PackFolders.DASHBOARDS.value]: "Dashboard",
+                content_item_name_mapping[PackFolders.INDICATOR_FIELDS.value]: "Indicator Field",
+                content_item_name_mapping[PackFolders.REPORTS.value]: "Report",
+                content_item_name_mapping[PackFolders.INDICATOR_TYPES.value]: "Reputation",
+                content_item_name_mapping[PackFolders.LAYOUTS.value]: "Layouts Container",
+                content_item_name_mapping[PackFolders.CLASSIFIERS.value]: "Classifier",
+                content_item_name_mapping[PackFolders.WIDGETS.value]: "Widget",
+                content_item_name_mapping[PackFolders.GENERIC_DEFINITIONS.value]: "Generic Definition",
+                content_item_name_mapping[PackFolders.GENERIC_FIELDS.value]: "Generic Field",
+                content_item_name_mapping[PackFolders.GENERIC_MODULES.value]: "Generic Module",
+                content_item_name_mapping[PackFolders.GENERIC_TYPES.value]: "Generic Type",
+                content_item_name_mapping[PackFolders.LISTS.value]: "List",
+                content_item_name_mapping[PackFolders.PREPROCESS_RULES.value]: "Pre Process Rule",
+                content_item_name_mapping[PackFolders.JOBS.value]: "Job",
+                content_item_name_mapping[PackFolders.PARSING_RULES.value]: "Parsing Rule",
+                content_item_name_mapping[PackFolders.MODELING_RULES.value]: "Modeling Rule",
+                content_item_name_mapping[PackFolders.CORRELATION_RULES.value]: "Correlation Rule",
+                content_item_name_mapping[PackFolders.XSIAM_DASHBOARDS.value]:"XSIAM Dashboard",
+                content_item_name_mapping[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
+                content_item_name_mapping[PackFolders.TRIGGERS.value]: "Trigger",
+                content_item_name_mapping[PackFolders.WIZARDS.value]: "Wizard",
+            }
+
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 current_directory = root.split(os.path.sep)[-1]
                 parent_directory = root.split(os.path.sep)[-2]
@@ -2253,6 +2284,13 @@ class Pack(object):
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
             self._content_items = content_items_result
+            
+            display_getter = lambda items, display : f'{display}s' if len(items) > 1 else display
+            self._content_displays_map = {
+                name: display_getter(content_items_result.get(name), display) 
+                for name, display in items_names_to_display_mapping.items()
+                if content_items_result.get(name)
+            }
 
             return task_status
 
