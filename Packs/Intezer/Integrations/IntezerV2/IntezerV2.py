@@ -1,8 +1,6 @@
 from collections import defaultdict
 from http import HTTPStatus
 from typing import Callable
-from typing import Dict
-from typing import List
 from typing import Tuple
 
 from intezer_sdk import consts
@@ -690,6 +688,10 @@ def main():
         intezer_base_url_param = demisto.getParam('AnalyzeBaseURL')
         use_ssl = not demisto.params().get('insecure', False)
         analyze_base_url = intezer_base_url_param or consts.BASE_URL
+
+        pack_version = get_pack_version()
+        if pack_version:
+            consts.USER_AGENT += f'/{pack_version}'
 
         intezer_api = IntezerApi(consts.API_VERSION, intezer_api_key, analyze_base_url, use_ssl)
 

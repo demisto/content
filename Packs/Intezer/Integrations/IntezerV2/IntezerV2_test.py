@@ -71,6 +71,7 @@ def test_analyze_by_hash_command_already_running(requests_mock):
     _setup_access_token(requests_mock)
     requests_mock.post(
         f'{full_url}/analyze-by-hash',
+        json={},
         status_code=HTTPStatus.CONFLICT
     )
 
@@ -194,6 +195,7 @@ def test_analyze_by_uploaded_file_command_analysis_already_running(requests_mock
     _setup_access_token(requests_mock)
     requests_mock.post(
         f'{full_url}/analyze',
+        json={},
         status_code=HTTPStatus.CONFLICT
     )
 
