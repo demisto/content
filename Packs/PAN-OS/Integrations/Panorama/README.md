@@ -448,7 +448,7 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 
 ### pan-os-push-to-device-group
 ***
-Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.  
+Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID. Validates if a push has been successful if polling="true".
 
 
 #### Base Command
@@ -458,31 +458,92 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device-group | The device group for which to return addresses (Panorama instances). | Optional |
-| validate-only | Pre policy validation. | Optional. |
-| include-template | Whether to include template changes. | Optional. |
-| description | Push description. | Optional |
-| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional |
+| device-group | The device group to which to push (Panorama instances). | Optional | 
+| validate-only | Pre policy validation. Possible values are: true, false. Default is false. | Optional | 
+| include-template | Whether to include template changes. Possible values are: true, false. Default is true. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Push.DeviceGroup | String | Device group in which the policies were pushed. | 
-| Panorama.Push.JobID | Number | Job ID of the policies that were pushed. | 
-| Panorama.Push.Status | String | Push status. | 
+| Panorama.Push.DeviceGroup | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+| Panorama.Push.Details | String | The job ID details. | 
 
+#### Command example with polling=true
+```!pan-os-push-to-device-group description=test polling=true interval_in_seconds=5 timeout=60```
 
-#### Command Example
-```!pan-os-push-to-device-group ```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "Details": [
+                "commit succeeded with warnings",
+                "commit succeeded with warnings"
+            ],
+            "Errors": ,
+            "JobID": "31377",
+            "Status": "Completed",
+            "Warnings": [
+                "Interface loopback.645 has no zone configuration.",
+                "External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "Warning: No valid Antivirus content package exists",
+                "(Module: device)"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->### Push to Device Group Status:
->|JobID|Status|
->|---|---|
->| 113198 | Pending |
+>Waiting for Job-ID 31374 to finish push changes to device-group Lab-Devices..
+>### Push to Device Group status:
+>|JobID|Status|Details|Errors|Warnings|
+>|---|---|---|---|---|
+>| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
+
+#### Command example with polling=false
+```!pan-os-push-to-device-group description=test polling=false```
+
+#### Human Readable Output
+
+>### Push to Device Group status:
+>|JobID|Status|Description|
+>|---|---|---|
+>| 113198 | Pending | test |
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+          "JobID": "113198",
+          "Status": "Pending",
+          "Description": "test",
+          "DeviceGroup": "device group name"
+        }
+    }
+}
+```
 
 ### pan-os-list-addresses
 ***
@@ -2543,29 +2604,59 @@ Returns the push status for a configuration.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Job ID to check. | Required | 
+| job_id | The job ID to check. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Push.DeviceGroup | string | Device group to which the policies were pushed. | 
-| Panorama.Push.JobID | number | Job ID of the configuration to be pushed. | 
-| Panorama.Push.Status | string | Push status. | 
-| Panorama.Push.Details | string | Job ID details. | 
-| Panorama.Push.Warnings | String | Job ID warnings | 
+| Panorama.Push.DeviceGroup | string | The device group to which the policies were pushed. | 
+| Panorama.Push.JobID | number | The job ID of the configuration to be pushed. | 
+| Panorama.Push.Status | string | The push status. | 
+| Panorama.Push.Details | string | The job ID details. | 
+| Panorama.Push.Warnings | String | The job ID warnings | 
 
-
-#### Command Example
-```!pan-os-push-status job_id=951 ```
+#### Command example
+```!pan-os-push-status job_id=31377```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "Details": [
+                "commit succeeded with warnings",
+                "commit succeeded with warnings"
+            ],
+            "Errors": ,
+            "JobID": "31377",
+            "Status": "Completed",
+            "Warnings": [
+                "Interface loopback.645 has no zone configuration.",
+                "External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "Warning: No valid Antivirus content package exists",
+                "(Module: device)"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->### Push to Device Group Status:
->|JobID|Status|Details|
->|---|---|---|
->| 951 | Completed | commit succeeded with warnings |
+>### Push to Device Group status:
+>|JobID|Status|Details|Errors|Warnings|
+>|---|---|---|---|---|
+>| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
+
 
 ### pan-os-get-pcap
 ***
