@@ -294,9 +294,8 @@ class PackManager:
         if support_level.lower() != 'xsoar':
             raise NonXsoarSupportedPackException(pack)
 
-    def get_support_level(self, pack: str) -> str:
-        if value := self[pack].get('support'):
-            return value.lower()
+    def get_support_level(self, pack: str) -> Optional[str]:
+        return self[pack].get('support', '').lower() or None
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
