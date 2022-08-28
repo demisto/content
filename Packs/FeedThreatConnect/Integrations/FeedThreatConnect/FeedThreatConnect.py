@@ -225,7 +225,6 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
             indicators.extend(response)
             # Limit the number of results to not get an error from the API
             if len(indicators) < 15000 and next:
-                break
                 url = next.replace(demisto.getParam('tc_api_path'), '')
             else:
                 break
