@@ -35,17 +35,15 @@ def test_test_module(requests_mock):
 
 @pytest.mark.parametrize('last_run, mock_item, expected_last_run, expected_fetched_events', [
     ({'latest_event_time': datetime.datetime(2022, 8, 6, 10, 5, 3)}, MOCK_ENTRY,
-     {'latest_event_time': datetime.datetime(2022, 8, 9, 10, 5, 13, 890)}, MOCK_ENTRY.get('data', []))])
+     {'latest_event_time': datetime.datetime(2022, 8, 9, 10, 5, 13, 890)}, MOCK_ENTRY.get('data', [])[0:-1])])
 def test_fetch_events(requests_mock, last_run, mock_item, expected_last_run, expected_fetched_events):
     """
     Given:
-        - fetch-events call
+        - last_run marker and a mock with 2 events that occurred after the last run and 1 that occurred before.
     When:
-        - Calling fetch events:
-                1. without marking, but with first_fetch
-                2. only marking from last_run
+        - Calling fetch events.
     Then:
-        - Make sure 3 events returned.
+        - Make sure 2 events returned.
         - Verify the new lastRun is calculated correctly.
     """
     from KnowBe4KMSATEventCollector import fetch_events
@@ -57,9 +55,7 @@ def test_fetch_events(requests_mock, last_run, mock_item, expected_last_run, exp
     events, new_last_run = fetch_events(Client(base_url=BASE_URL), last_run=last_run)
     expected_last_run == new_last_run
     assert events == expected_fetched_events
-    # assert len(events) == 3
-    # assert events[0].get('id') == "786a515c-1cbd-4a8c-a94a-61ad877c893c"
-    # assert new_last_run['page'] == 2
+    assert len(events) == 2
 
 
 @pytest.mark.parametrize('last_run, fetched_events, expected_filtered_list_size, expected_filtered_list_elements', [

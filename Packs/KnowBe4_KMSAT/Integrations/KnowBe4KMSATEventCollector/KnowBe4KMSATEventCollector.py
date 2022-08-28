@@ -102,17 +102,16 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime
         last_run: dict[str, date] = {'latest_event_time': first_fetch_time}
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
     while True:
-        response = client.get_events_request(params=query_params)
-        # if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
-        #     break
-        fetched_events = response.json().get('data') or []
+        response = client.get_events_request(params=query_params).json()
+        fetched_events = response.get('data') or []
         demisto.info(f'fetched events length: ({len(fetched_events)})')
         demisto.debug(f'fetched events: ({fetched_events})')
-        events.extend(eliminate_duplicated_events(fetched_events, last_run))
         is_last_run_reached = check_if_last_run_reached(last_run, fetched_events[-1])
         if not response.get('meta', {}).get('next_page') or is_last_run_reached:
+            events.extend(eliminate_duplicated_events(fetched_events, last_run))
             break
         else:
+            events.extend(fetched_events)
             query_params['page'] = response.get('meta', {}).get('next_page', 1)
     new_last_run: dict[str, date] = {'latest_event_time': events[0].get('occurred_date', datetime.now())}
     demisto.info(f'Done fetching {len(events)} events, Setting new_last_run = {new_last_run}.')
