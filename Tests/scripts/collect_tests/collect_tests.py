@@ -163,11 +163,11 @@ class CollectionResult:
                 raise
         
         if is_nightly:
+            if test and test in conf.non_api_tests:
+                return
+
             if pack and pack not in conf.nightly_packs:
                 raise NonNightlyPackInNightlyBuildException(pack)
-
-            elif test and not test in conf.non_api_tests:
-                raise ApiTestInNightlyBuildException(test)
 
     @staticmethod
     def __empty_result() -> 'CollectionResult':
