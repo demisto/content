@@ -4,7 +4,7 @@ This fact makes it very difficult for IT and Security teams to provide these ser
 
 One example of these providers is Zoom.
 
-This pack aims to address this issue by automating the collection of endpoint data in the form of an indicator feed. This will facilitate validation of the indicators before using them in enforcement points, for example firewalls, proxies, and more.
+This pack addresses this issue by automating the collection of endpoint data in the form of an indicator feed. This will facilitate validation of the indicators before using them in enforcement points, for example firewalls, proxies, and more.
 
 ## Zoom Network Settings
 For information about Zoom network settings, see the [Zoom documentation](https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom).
@@ -19,12 +19,12 @@ For information about Zoom network settings, see the [Zoom documentation](https:
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Fetch indicators |  | False |
-    | Firewall rules for certificate validation | Zoom clients for certificate validation | False |
-    | Firewall rules for Zoom website | All Zoom Clients. User's web browser | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    | Feed Fetch Interval | Setting more frequent fetch interval may cause errors from the vendor. | False |
+    | Firewall rules for certificate validation | Zoom clients for certificate validation. | False |
+    | Firewall rules for Zoom website | All Zoom Clients. User's web browser. | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+    | Feed Fetch Interval | Setting a more frequent fetch interval may cause errors from the vendor. | False |
     | Tags | Supports CSV values. | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     | Trust any certificate (not secure) |  | False |
@@ -46,7 +46,7 @@ Gets indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 10. Default is 10. | Optional | 
+| limit | The maximum number of results to return. Default is 10. | Optional | 
 
 
 #### Context Output
