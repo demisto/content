@@ -84,6 +84,7 @@ class MockerCases:
     J = CollectTestsMocker(TEST_DATA / 'J')
     K = CollectTestsMocker(TEST_DATA / 'K')
     L = CollectTestsMocker(TEST_DATA / 'L_XSIAM')
+    M = CollectTestsMocker(TEST_DATA / 'M')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -258,15 +259,24 @@ def test_branch(
         mocker,
         case_mocker,
         expected_tests: set[str],
-        expected_packs: tuple[str],
-        expected_machines: Optional[tuple[Machine]],
-        collector_class_args: tuple[str],
-        mocked_changed_files: tuple[str]
+        expected_packs: tuple[str, ...],
+        expected_machines: Optional[tuple[Machine, ...]],
+        collector_class_args: tuple[str, ...],
+        mocked_changed_files: tuple[str, ...]
 ):
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=mocked_changed_files)
     _test(monkeypatch, case_mocker, collector_class=BranchTestCollector,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_machines=expected_machines,
           collector_class_args=collector_class_args)
+
+
+def test_branch_non_xsoar_support_level(mocker, monkeypatch):
+    # # Integration with support level != xsoar - should raise an exception
+    mocker.patch.object(BranchTestCollector, '_get_changed_files',
+                        return_value=('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',))
+    with pytest.raises(ValueError) as e:
+        _test(monkeypatch, MockerCases.M, BranchTestCollector, (), (), (), XSOAR_BRANCH_ARGS)
+    assert 'is (1) missing from conf.json' in str(e.value)  # checking it's the right error
 
 
 ONLY_COLLECT_PACK_TYPES = {
@@ -289,7 +299,6 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
     FileType.XSIAM_REPORT,
-    FileType.REPORT,
     FileType.GENERIC_TYPE,
     FileType.GENERIC_FIELD,
     FileType.GENERIC_MODULE,
