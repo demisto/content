@@ -58,3 +58,7 @@ Packs/**/report_pytest.json
 **/.devcontainer
 !/.devcontainer
 
+# authentication files
+*.pem
+*.crt
+*.key
