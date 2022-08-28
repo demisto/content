@@ -87,7 +87,7 @@ class MockerCases:
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
 
 
-def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, collector_class: Callable,
+def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable,
           expected_tests: Iterable[str], expected_packs: Iterable[str], expected_machines: Optional[Iterable[Machine]],
           collector_class_args: tuple[Any, ...] = ()):
     """
@@ -95,7 +95,6 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
     that the result packs and tests are expected ones.
 
     :param case_mocker: with which to run the test
-    :param run_nightly: whether to ask for a nightly machine.
     :param collector_class: the collector class to test.
     :param expected_tests: the expected test names. (pass None to not check)
     :param expected_packs: the expected pack names. (pass None to not check)
@@ -106,7 +105,7 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, colle
     monkeypatch.chdir(case_mocker.path_manager.content_path)
     with case_mocker:
         collector = collector_class(*collector_class_args)
-        collected = collector.collect(run_nightly)
+        collected = collector.collect()
 
     if not any((expected_tests, expected_packs, expected_machines)):
         if not collected:
@@ -179,7 +178,7 @@ def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: 
     then:   make sure tests are collected from integration and id_set
     """
 
-    _test(monkeypatch, case_mocker=case_mocker, run_nightly=True, collector_class=collector_class,
+    _test(monkeypatch, case_mocker=case_mocker, collector_class=collector_class,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_machines=expected_machines)
 
 
@@ -189,8 +188,8 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
 
 @pytest.mark.parametrize(
     'case_mocker,expected_tests,expected_packs,expected_machines,collector_class_args,mocked_changed_files',
-    # Empty content folder: expecting xsoar sanity tests to be collected
-    ((MockerCases.empty, XSOAR_SANITY_TEST_NAMES, ('Whois',), None, XSOAR_BRANCH_ARGS,
+    # change in a sanity-collection-triggering file, expecting xsoar sanity tests to be collected
+    ((MockerCases.empty, XSOAR_SANITY_TEST_NAMES, ('Whois', 'HelloWorld'), None, XSOAR_BRANCH_ARGS,
       ('.gitlab/helper_functions.sh',)),
 
      # Empty content folder: expecting XSIAM collector to not collect anything
@@ -256,7 +255,7 @@ def test_branch(
         mocked_changed_files: tuple[str]
 ):
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=mocked_changed_files)
-    _test(monkeypatch, case_mocker, run_nightly=False, collector_class=BranchTestCollector,
+    _test(monkeypatch, case_mocker, collector_class=BranchTestCollector,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_machines=expected_machines,
           collector_class_args=collector_class_args)
 
@@ -332,7 +331,7 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
     mocker.patch('Tests.scripts.collect_tests.collect_tests.find_type', return_value=file_type)
 
     # noinspection PyTypeChecker
-    _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,
+    _test(monkeypatch, case_mocker=MockerCases.H, collector_class=BranchTestCollector,
           expected_tests=(), expected_packs=('myPack',), expected_machines=None, collector_class_args=XSOAR_BRANCH_ARGS)
 
 
@@ -345,6 +344,6 @@ def test_invalid_content_item(mocker, monkeypatch):
     # test mockers
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
 
-    _test(monkeypatch, case_mocker=MockerCases.H, run_nightly=False, collector_class=BranchTestCollector,
+    _test(monkeypatch, case_mocker=MockerCases.H, collector_class=BranchTestCollector,
           expected_tests=(), expected_packs=(), expected_machines=None,
           collector_class_args=XSOAR_BRANCH_ARGS)

@@ -231,7 +231,7 @@ class TestCollector(ABC):
         """
         pass
 
-    def collect(self, run_nightly: bool) -> Optional[CollectionResult]:
+    def collect(self) -> Optional[CollectionResult]:
         result: Optional[CollectionResult] = self._collect()
 
         if not result:
@@ -721,5 +721,5 @@ if __name__ == '__main__':
             case _:
                 raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=}")
 
-    collected = collector.collect(run_nightly=nightly)
+    collected = collector.collect()
     output(collected)  # logs and writes to output files
