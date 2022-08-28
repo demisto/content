@@ -3531,7 +3531,7 @@ def qradar_search_retrieve_events_command(
                           readable_output=f'Search ID: {search_id}',
                           outputs_prefix='QRadar.SearchEvents',
                           outputs_key_field='ID',
-                          outputs=search_command_results.outputs if search_command_results else None
+                          outputs=search_command_results.outputs if search_command_results else None,
                           )
 
 
