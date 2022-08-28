@@ -213,7 +213,6 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
         url = url.replace('&', '?', 1)  # type: ignore
     indicators = []
     while True:
-        demisto.info(url)
         response, status, next = client.make_request(Method.GET, url, get_next=True)
         if status == 'Success':
             indicators.extend(response)
