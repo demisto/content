@@ -14,6 +14,8 @@ args:
   required: true
 - description: Short description to add to the pull request text.
   name: comment
+- description: Pull request description template.
+  name: template
 comment: This script gets content files as input from the context, commits the files in the correct folder and creates the pull request text.
 commonfields:
   id: CommitFiles

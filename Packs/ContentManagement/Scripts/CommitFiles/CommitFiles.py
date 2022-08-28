@@ -185,6 +185,11 @@ def main():
         pack_name = demisto.getArg('pack')
         user = demisto.getArg('user')
         comment = demisto.getArg('comment')
+        template = demisto.getArg('template')
+
+        if not template:
+            template = PR_TEMPLATE
+
         if not comment:
             comment = ''
 
@@ -212,7 +217,7 @@ def main():
         incident_url = demisto.demistoUrls().get('investigation')
 
         # create the PR text
-        pr_body = PR_TEMPLATE.format(username, pack_name, branch_name, incident_url, comment)
+        pr_body = template.format(username, pack_name, branch_name, incident_url, comment)
         if new_files:
             pr_body = f'{pr_body}\n\n### New files\n- '
             pr_body = pr_body + '\n- '.join(new_files)
