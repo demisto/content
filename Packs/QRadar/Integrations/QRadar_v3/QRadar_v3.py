@@ -1878,7 +1878,8 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
                                    should_update_last_fetch=True)
 
         demisto.createIncidents(incidents)
-        print_debug_msg(f'Successfully Created {len(incidents)} incidents. Incidents created {[incident["name"] for incident in incidents]}')
+        print_debug_msg(
+            f'Successfully Created {len(incidents)} incidents. Incidents created {[incident["name"] for incident in incidents]}')
 
 
 def long_running_execution_command(client: Client, params: Dict):
@@ -2399,7 +2400,10 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
         raise DemistoException('Could not use both `query_expression` and `offense_id`.')
     # if this call fails, raise an error and stop command execution
     if query_expression or saved_search_id:
-        response = client.search_create(query_expression, saved_search_id)
+        try:
+            response = client.search_create(query_expression, saved_search_id)
+        except Exception:
+            raise DemistoException(f'Could not create search for offense_id: {offense_id}')
     else:
         response = create_events_search(client,
                                         fetch_mode,
@@ -3476,10 +3480,11 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     return GetModifiedRemoteDataResponse(list(new_modified_records_ids))
 
 
-def qradar_search_retrieve_events_command(client: Client,
-                                          params,
-                                          args,
-                                          ) -> CommandResults:  # pragma: no cover (tested in test-playbook)
+def qradar_search_retrieve_events_command(
+    client: Client,
+    params,
+    args,
+) -> CommandResults:  # pragma: no cover (tested in test-playbook)
     """A polling command to get events from QRadar offense
 
     Args:
@@ -3495,30 +3500,11 @@ def qradar_search_retrieve_events_command(client: Client,
     """
     interval_in_secs = int(args.get('interval_in_seconds', 30))
     search_id = args.get('search_id')
+    search_command_results = None
     if not search_id:
-        try:
-            search_command_results = qradar_search_create_command(client, params, args)
-            search_id = search_command_results.outputs[0].get('ID')  # type: ignore
-        except Exception as e:
-            raise DemistoException(f'The search was failed. Error: {e}')
-        polling_args = {
-            'search_id': search_id,
-            'interval_in_seconds': interval_in_secs,
-            **args
-        }
-        scheduled_command = ScheduledCommand(
-            command='qradar-search-retrieve-events',
-            next_run_in_seconds=interval_in_secs,
-            args=polling_args,
-            timeout_in_seconds=3600,
-        )
+        search_command_results = qradar_search_create_command(client, params, args)
+        search_id = search_command_results.outputs[0].get('ID')  # type: ignore
 
-        return CommandResults(scheduled_command=scheduled_command,
-                              readable_output=f'Search ID: {search_id}',
-                              outputs_prefix='QRadar.SearchEvents',
-                              outputs_key_field='ID',
-                              outputs=search_command_results.outputs
-                              )
     events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
     if status == QueryStatus.ERROR.value:
         raise DemistoException('Polling for events failed')
@@ -3541,7 +3527,12 @@ def qradar_search_retrieve_events_command(client: Client,
         next_run_in_seconds=interval_in_secs,
         args=polling_args,
     )
-    return CommandResults(scheduled_command=scheduled_command)
+    return CommandResults(scheduled_command=scheduled_command,
+                          readable_output=f'Search ID: {search_id}',
+                          outputs_prefix='QRadar.SearchEvents',
+                          outputs_key_field='ID',
+                          outputs=search_command_results.outputs if search_command_results else None
+                          )
 
 
 def migrate_integration_ctx(ctx: dict) -> dict:
