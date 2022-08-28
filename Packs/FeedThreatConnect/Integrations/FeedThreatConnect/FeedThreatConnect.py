@@ -201,10 +201,10 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
     fields = set_fields_query(argToList(demisto.getParam("fields")))
     last_run = demisto.getLastRun()
     last_run = last_run.get('last_fetch')
+    demisto.info('last run get: ' + last_run)
     from_date = ''
     if last_run:
         from_date = f'AND (dateAdded > "{last_run}") '
-        demisto.debug('last run set: ' + last_run)
     tql = f'{owners if owners != "AND () " else ""}' \
           f'{tags if tags != "AND () " else ""}' \
           f'{from_date if from_date != "AND () " else ""}' \
@@ -215,11 +215,12 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
     else:
         tql = ''
     url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=200&sorting=dateAdded%20ASC'
-    demisto.debug('URL: ' + url)
     if '?' not in url:
         url = url.replace('&', '?', 1)  # type: ignore
+
     indicators = []
     while True:
+        demisto.info('URL: ' + url)
         response, status, next = client.make_request(Method.GET, url, get_next=True)
         if status == 'Success':
             indicators.extend(response)
@@ -296,7 +297,7 @@ def main():  # pragma: no cover
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client)
             if indicators:
-                demisto.debug(str(indicators[-1].get('dateAdded')))
+                demisto.info('Last run set:' + str(indicators[-1].get('dateAdded')))
                 demisto.setLastRun({'from_date': indicators[-1].get('dateAdded')})
             indicators = [parse_indicator(indicator) for indicator in indicators]
             for b in batch(indicators, batch_size=2000):
