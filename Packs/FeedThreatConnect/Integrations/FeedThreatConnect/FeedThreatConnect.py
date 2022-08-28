@@ -199,16 +199,23 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
     tags = f'AND ({create_or_query("tags", demisto.getParam("tags"))}) '
     status = f'AND ({create_or_query("status", demisto.getParam("status"))}) '
     fields = set_fields_query(argToList(demisto.getParam("fields")))
-
+    last_run = demisto.getLastRun()
+    last_run = last_run.get('last_fetch')
+    from_date = ''
+    if last_run:
+        from_date = f'AND (dateAdded > "{last_run}") '
+        demisto.debug('last run set: ' + last_run)
     tql = f'{owners if owners != "AND () " else ""}' \
           f'{tags if tags != "AND () " else ""}' \
+          f'{from_date if from_date != "AND () " else ""}' \
           f'{status if status != "AND () " else ""}'.replace('AND', '', 1)
     if tql:
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
         tql = f'?tql={tql}'
     else:
         tql = ''
-    url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=100'
+    url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=200&sorting=dateAdded%20ASC'
+    demisto.debug('URL: ' + url)
     if '?' not in url:
         url = url.replace('&', '?', 1)  # type: ignore
     indicators = []
@@ -216,7 +223,9 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
         response, status, next = client.make_request(Method.GET, url, get_next=True)
         if status == 'Success':
             indicators.extend(response)
-            if next:
+            # Limit the number of results to not get an error from the API
+            if len(indicators) < 15000 and next:
+                break
                 url = next.replace(demisto.getParam('tc_api_path'), '')
             else:
                 break
@@ -287,6 +296,9 @@ def main():  # pragma: no cover
     try:
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client)
+            if indicators:
+                demisto.debug(str(indicators[-1].get('dateAdded')))
+                demisto.setLastRun({'from_date': indicators[-1].get('dateAdded')})
             indicators = [parse_indicator(indicator) for indicator in indicators]
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
