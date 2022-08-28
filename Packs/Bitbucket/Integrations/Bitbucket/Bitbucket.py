@@ -57,27 +57,35 @@ class Client(BaseClient):
     # HELPER FUNCTIONS
     def get_paged_results(self, response, results, limit=None, params=None) -> list:
         arr = response.get('values')
-        i = len(arr)
         isNext = response.get('next', None)
         if not params:
             page = None
         else:
             page = params.get('page', None)
         if limit:
-            while limit > 0 and i > 0:
+            while response:
+                for value in arr:
+                    if limit > 0:
+                        results.append(value)
+                        limit = limit - 1
+                    else:
+                        break
+                if limit > 0 and isNext and (not page or page == 1):
+                    response = self.get_list(isNext)
+                    isNext = response.get('next', None)
+                    arr = response.get('values')
+                else:
+                    response = None
+        else:
+            while response:
                 for value in arr:
                     results.append(value)
-                    limit = limit - 1
-                    i = i - 1
-            if limit > 0 and isNext and (not page or page == 1):
-                response = self.get_list(isNext)
-                self.get_paged_results(response, results, limit)
-        else:
-            for value in arr:
-                results.append(value)
-            if isNext and (not page or page == 1):
-                response = self.get_list(isNext)
-                self.get_paged_results(response, results)
+                if isNext and (not page or page == 1):
+                    response = self.get_list(isNext)
+                    isNext = response.get('next', None)
+                    arr = response.get('values')
+                else:
+                    response = None
         return results
 
 
@@ -111,7 +119,7 @@ def project_list_command(client: Client, args) -> CommandResults:
     params = {'page': args.get('page', 1),
               'pagelen': args.get('page_size')}
     project_key = args.get('project_key')
-    limit = args.get('limit', None)
+    limit = int(args.get('limit', None))
     if not project_key:
         full_url = f'{client.serverUrl}/workspaces/{client.workspace}/projects/'
         readable_name = f'List of the projects in {client.workspace}'
