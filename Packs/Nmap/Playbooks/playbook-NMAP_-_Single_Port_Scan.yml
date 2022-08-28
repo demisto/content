@@ -1,17 +1,17 @@
-description: Subplaybook that conducts a single port NMAP scan and returns results to the parent playbook.
+description: Sub-playbook that conducts a single port Nmap scan and returns the results to the parent playbook.
 id: NMAP - Single Port Scan
 inputs:
-- description: Remote IP address in incident/alert
+- description: Remote IP address in an incident/alert.
   key: RemoteIP
   playbookInputQuery:
   required: true
   value: {}
-- description: Remote port number in incident/alert
+- description: Remote port number in an incident/alert.
   key: RemotePort
   playbookInputQuery:
   required: true
   value: {}
-- description: options to be used for nmap scan (we do "-p<RemotePort>" by default and recommend using "-Pn" to skip ping check)
+- description: Options to be used for the Nmap scan. (We do "-p<RemotePort>" by default and recommend using "-Pn" to skip a ping check.)
   key: NMAPOptions
   playbookInputQuery:
   required: false
@@ -19,10 +19,10 @@ inputs:
 name: NMAP - Single Port Scan
 outputs:
 - contextPath: ScanResult
-  description: What was the result of the scan (if done)
+  description: The result of the scan (if done).
   type: unknown
 - contextPath: ScanDone
-  description: Was a scan actually performed (based on subtypes)
+  description: Whether a scan was actually performed (based on subtypes).
   type: unknown
 - contextPath: NMAP
   description: NMAP scan data
@@ -93,7 +93,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: NMAP scan on single port using -p<inputs.RemotePort> options and allows addition of other options as well.
+      description: Nmap scan on a single port using -p<inputs.RemotePort> options and allows the addition of other options as well.
       id: 9ab4b93e-038e-4298-8b74-adddcc062bf1
       iscommand: true
       name: NMAP port scan
@@ -129,7 +129,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sets ScanDone to False to be passed back to parent playbook to notify that no NMAP scan took place.
+      description: Sets ScanDone to False to be passed back to the parent playbook to notify that no Nmap scan took place.
       id: 9aab9e3d-80aa-4c26-81ca-0d8e79be3374
       iscommand: false
       name: No scan done
@@ -217,7 +217,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if NMAP integration instance is configured to continue with scanning.
+      description: Determines if the NMAP integration instance is configured to continue with scanning.
       id: ffe28617-8b50-41d3-86bf-c9c64380388d
       iscommand: false
       name: Is NMAP enabled?
@@ -252,7 +252,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sets ScanDone to True to be passed back to parent playbook to notify that a NMAP scan was attempted.
+      description: Sets ScanDone to True to be passed back to the parent playbook to notify that an Nmap scan was attempted.
       id: 25b081b6-9480-4e29-8b6f-ab2c69e1fa76
       iscommand: false
       name: Scan done
@@ -322,10 +322,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks the results of the scan to determine outcome to pass back to parent playbook.
+      description: Checks the results of the scan to determine the outcome to pass back to the parent playbook.
       id: 519d0e3f-0a82-4ef2-84e9-e3a502252bef
       iscommand: false
-      name: What is the result of scan?
+      name: What is the result of the scan?
       type: condition
       version: -1
     taskid: 519d0e3f-0a82-4ef2-84e9-e3a502252bef
@@ -357,7 +357,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sets ScanResult to Closed when the result of the NMAP scan is closed or host down.  This value is to be passed back to parent playbook to notify results of NMAP scan.
+      description: Sets ScanResult to Closed when the result of the Nma[] scan is closed or host down.  This value is passed back to the parent playbook to provide the results of the NMAP scan.
       id: 7326a7c1-8b32-4d6b-8a76-628d48cf18fd
       iscommand: false
       name: Closed scan result
@@ -393,7 +393,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sets ScanResult to Open when the result of the NMAP scan is open.  This value is to be passed back to parent playbook to notify results of NMAP scan.
+      description: Sets ScanResult to Open when the result of the Nmap scan is open. This value is passed back to the parent playbook to provide the results of the Nmap scan.
       id: 94b92dc7-cfd8-4f76-8f31-ad94792ecef6
       iscommand: false
       name: Open scan result
@@ -429,7 +429,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sets ScanResult to Undetermined when the result of the NMAP scan isn't  open/close/host down.  This includes filtered as it could mean differen things.  This value is to be passed back to parent playbook to notify results of NMAP scan.
+      description: Sets ScanResult to Undetermined when the result of the Nmap scan isn't open/close/host down. This includes filtered results as it could mean different things. This value is passed back to the parent playbook to provide results of the Nmap scan.
       id: 455bd83f-f2f4-4910-8100-6717625b7edb
       iscommand: false
       name: Undetermined scan result
