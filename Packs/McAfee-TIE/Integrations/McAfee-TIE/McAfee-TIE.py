@@ -336,9 +336,7 @@ def main():
             return_results(test_module())
 
         elif command == 'file':
-            args_to_list = argToList(args.get('file'))
-            results = file(args_to_list)
-            return_results(results)
+            return_results(file(argToList(args.get('file'))))
 
         elif command == 'tie-file-references':
             results = file_references(args.get('file'))
