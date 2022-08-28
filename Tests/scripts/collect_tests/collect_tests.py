@@ -98,14 +98,15 @@ class CollectionResult:
 
         except NonXsoarSupportedPackException:
             if test:
-                logger.info(f'{pack} support level != XSOAR, not collecting {test}')
+                logger.info(f'{pack} support level != XSOAR, not collecting {test}, pack will be installed')
                 test = None
 
-        except (
-                InvalidTestException,
-                SkippedPackException,
-                DeprecatedPackException,
-        ) as e:
+        except InvalidTestException as e:
+            suffix = ' (pack will be installed)' if pack else ''
+            logger.info(f'{str(e)}, not collecting {test}{suffix}')
+            test = None
+
+        except (SkippedPackException, DeprecatedPackException,) as e:
             logger.warning(str(e))
             return
 
@@ -153,8 +154,14 @@ class CollectionResult:
                 raise PrivateTestException(test)
 
         if pack:
-            PACK_MANAGER.validate_pack(pack)
-
+            try:
+                PACK_MANAGER.validate_pack(pack)
+            
+            except NonXsoarSupportedPackException:
+                if is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
+                    return
+                raise
+        
         if is_nightly:
             if pack and pack not in conf.nightly_packs:
                 raise NonNightlyPackInNightlyBuildException(pack)
