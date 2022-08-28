@@ -31,6 +31,7 @@ PROXY = True if demisto.params().get('proxy') else False
 FETCH_URL = demisto.params().get('fetchURL')
 FETCH_ATTACHMENTS = demisto.params().get('fetchAttachments')
 FETCH_IMPERSONATIONS = demisto.params().get('fetchImpersonations')
+FETCH_HELD_MESSAGES = demisto.params().get('fetchHeld')
 # Used to refresh token / discover available auth types / login
 EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
 PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
@@ -1706,6 +1707,24 @@ def fetch_incidents():
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
                 incidents.append(incident)
+    if FETCH_HELD_MESSAGES:
+        search_params = {
+            'start': last_fetch_date_time,
+            'admin': True
+        }
+        held_messages, _ = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
+                                                   data=[search_params])
+        for held_message in held_messages:
+            incident = held_to_incident(held_message)
+            temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+
+            # update last run
+            if temp_date > last_fetch:
+                last_fetch = temp_date + timedelta(seconds=1)
+
+            # avoid duplication due to weak time query
+            if temp_date > current_fetch:
+                incidents.append(incident)
 
     demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
     demisto.incidents(incidents)
@@ -1734,6 +1753,12 @@ def impersonation_to_incident(impersonation_log):
     incident['rawJSON'] = json.dumps(impersonation_log)
     return incident
 
+def held_to_incident(held_message):
+    incident = {}
+    incident['name'] = f'Mimecast held message: {held_message.get("subject")}'
+    incident['occurred'] = held_message.get('dateReceived').replace('+0000', 'Z')
+    incident['rawJSON'] = json.dumps(held_message)
+    return incident
 
 def discover():
     headers = []  # type: List[Any]
