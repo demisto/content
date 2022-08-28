@@ -1879,7 +1879,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
 
         demisto.createIncidents(incidents)
         print_debug_msg(
-            f'Successfully Created {len(incidents)} incidents. Incidents created {[incident["name"] for incident in incidents]}')
+            f'Successfully Created {len(incidents)} incidents. Incidents created: {[incident["name"] for incident in incidents]}')
 
 
 def long_running_execution_command(client: Client, params: Dict):
