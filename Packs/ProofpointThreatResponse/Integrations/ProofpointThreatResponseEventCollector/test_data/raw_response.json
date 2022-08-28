@@ -27,7 +27,7 @@
     },
     "incident_field_values": [
       {
-        "name": "Attack Vector",
+        "name": "Classification",
         "value": "Email"
       },
       {
@@ -121,6 +121,10 @@
       {
         "name": "Severity",
         "value": "Critical"
+      },
+      {
+        "name": "Classification",
+        "value": "Phishing"
       },
       {
         "value": "Reported Abuse"

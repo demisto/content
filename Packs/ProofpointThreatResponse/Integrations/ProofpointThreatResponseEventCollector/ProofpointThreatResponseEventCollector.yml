@@ -146,7 +146,6 @@ script:
   type: python
   isfetchevents: true
   dockerimage: demisto/python3:3.10.5.31928
-beta: true
 marketplaces:
 - marketplacev2
 fromversion: 6.8.0
