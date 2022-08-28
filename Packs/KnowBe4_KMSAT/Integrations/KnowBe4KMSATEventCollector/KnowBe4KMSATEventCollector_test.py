@@ -2,8 +2,8 @@ import datetime
 import pytest
 import json
 import io
+from CommonServerPython import CommandResults
 from KnowBe4KMSATEventCollector import Client
-from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -32,43 +32,42 @@ def test_test_module(requests_mock):
     )
     assert test_module(Client(base_url=BASE_URL)) == 'ok'
 
-# def test_fetch_events(requests_mock):
-#     """
-#     Given:
-#         - fetch-events call
-#     When:
-#         - Calling fetch events:
-#                 1. without marking, but with first_fetch
-#                 2. only marking from last_run
-#     Then:
-#         - Make sure 3 events returned.
-#         - Verify the new lastRun is calculated correctly.
-#     """
-#     from KnowBe4KMSATEventCollector import fetch_events
 
-#     last_run = {'page': '0'}
-#     requests_mock.get(
-#         f'{BASE_URL}/logs',
-#         json=MOCK_ENTRY
-#     )
+@pytest.mark.parametrize('last_run, mock_item, expected_last_run, expected_fetched_events', [
+    ({'latest_event_time': datetime.datetime(2022, 8, 6, 10, 5, 3)}, MOCK_ENTRY,
+     {'latest_event_time': datetime.datetime(2022, 8, 9, 10, 5, 13, 890)}, MOCK_ENTRY.get('data', []))])
+def test_fetch_events(requests_mock, last_run, mock_item, expected_last_run, expected_fetched_events):
+    """
+    Given:
+        - fetch-events call
+    When:
+        - Calling fetch events:
+                1. without marking, but with first_fetch
+                2. only marking from last_run
+    Then:
+        - Make sure 3 events returned.
+        - Verify the new lastRun is calculated correctly.
+    """
+    from KnowBe4KMSATEventCollector import fetch_events
 
-#     events, new_last_run = fetch_events(Client(base_url=BASE_URL), last_run=last_run,
-#                                         first_fetch_time=datetime.strptime("2020-01-01", "%Y-%m-%d"), max_fetch=2000)
-#     assert len(events) == 3
-#     assert events[0].get('id') == "786a515c-1cbd-4a8c-a94a-61ad877c893c"
-#     assert new_last_run['page'] == 2
+    requests_mock.get(
+        f'{BASE_URL}/events',
+        json=mock_item
+    )
+    events, new_last_run = fetch_events(Client(base_url=BASE_URL), last_run=last_run)
+    expected_last_run == new_last_run
+    assert events == expected_fetched_events
+    # assert len(events) == 3
+    # assert events[0].get('id') == "786a515c-1cbd-4a8c-a94a-61ad877c893c"
+    # assert new_last_run['page'] == 2
 
 
 @pytest.mark.parametrize('last_run, fetched_events, expected_filtered_list_size, expected_filtered_list_elements', [
     ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)},
-     [{'occurred_date': datetime.datetime(2022, 6, 17, 12, 3, 1)}], 1,
-     [{'occurred_date': datetime.datetime(2022, 6, 17, 12, 3, 1)}]),
-    ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)},
-     [{'occurred_date': datetime.datetime(2022, 4, 17, 12, 3, 1)}], 0,
-     []), ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)},
-           [{'occurred_date': datetime.datetime(2022, 6, 17, 12, 3, 1)},
-            {'occurred_date': datetime.datetime(2022, 4, 17, 12, 3, 1)}], 1,
-           [{'occurred_date': datetime.datetime(2022, 6, 17, 12, 3, 1)}]),
+     [{'occurred_date': "2022-08-09T10:05:13.890Z"}], 1, [{'occurred_date': "2022-08-09T10:05:13.890Z"}]),
+    ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)}, [{'occurred_date': "2022-03-09T10:05:13.890Z"}], 0, []),
+    ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)}, [{'occurred_date': "2022-08-09T10:05:13.890Z"},
+     {'occurred_date': "2022-03-09T10:05:13.890Z"}], 1, [{'occurred_date': "2022-08-09T10:05:13.890Z"}]),
 ])
 def test_eliminate_duplicated_events(last_run, fetched_events, expected_filtered_list_size, expected_filtered_list_elements):
     """
@@ -97,9 +96,9 @@ def test_eliminate_duplicated_events(last_run, fetched_events, expected_filtered
 
 @pytest.mark.parametrize('last_run, events, expected_results', [
     ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)},
-     [{'occurred_date': datetime.datetime(2022, 6, 17, 12, 3, 1)}], False),
+     [{'occurred_date': "2022-08-09T10:05:13.890Z"}], False),
     ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)},
-     [{'occurred_date': datetime.datetime(2022, 5, 16, 9, 3, 1)}], True)])
+     [{'occurred_date': "2022-03-09T10:05:13.890Z"}], True)])
 def test_check_if_last_run_reached(last_run, events, expected_results):
     """
     Given
@@ -119,19 +118,33 @@ def test_check_if_last_run_reached(last_run, events, expected_results):
     assert check_if_last_run_reached(last_run, events[0]) == expected_results
 
 
-@pytest.mark.parametrize('limit', [126, 1, 101, 235, -1, -100])
-def test_validate_limit(limit):
+@pytest.mark.parametrize('mock_item, expected_results, expected_length', [
+    (MOCK_ENTRY, MOCK_ENTRY.get('data', []), 3),
+    ({}, 'No events were found.', 21)])
+def test_get_events(requests_mock, mock_item, expected_results, expected_length):
     """
-    Given
-    - a limit parameter which is not divisible by 100/negative limit.
-
-    When
-    - executing the validate limit
-
-    Then
-    - make sure an exception is raised
+    Given:
+        - sta-get-events call
+    When:
+        - Running the command with since, until and marker parameters
+    Then:
+        - Make sure all of the events are returned as part of the CommandResult.
     """
-    from KnowBe4KMSATEventCollector import validate_limit
+    from KnowBe4KMSATEventCollector import get_events_command
 
-    with pytest.raises(DemistoException):
-        validate_limit(limit)
+    requests_mock.get(
+        f'{BASE_URL}/events',
+        json=mock_item
+    )
+    args = {
+        'should_push_events': False
+    }
+
+    results = get_events_command(Client(base_url=BASE_URL), args=args, vendor='', product='')
+
+    if type(results) == CommandResults:
+        assert results.outputs == expected_results
+        assert len(results.outputs) == expected_length
+    else:
+        assert results == expected_results
+        assert len(results) == expected_length

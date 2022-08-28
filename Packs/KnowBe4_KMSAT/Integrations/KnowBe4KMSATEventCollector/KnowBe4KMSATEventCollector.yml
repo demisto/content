@@ -18,17 +18,11 @@ configuration:
   hiddenusername: true
   type: 9
 - additionalinfo: The time range to consider for the initial data fetch. (<number>
-    <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 3 days.
-  defaultvalue: 3 days
+    <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 1 day.
+  defaultvalue: 1 day
   display: First fetch time interval
   hidden: false
   name: first_fetch
-  required: false
-  type: 0
-- display: The maximum number of events per fetch.
-  additionalinfo: The maximum number of events to get. This number must be divisible by 100. Default is 100. In case this is empty, all available events will be fetched. This param is relevant for the kms-get-events command only.
-  defaultvalue: 100
-  name: max_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -64,6 +58,10 @@ script:
         description: Filter by Occurred Date (YYYY-MM-DD).
       - name: risk_level
         description: Filter by Risk Level by entering a value from -10 (low risk) to 10 (high risk).
+      - name: per_page
+        description: How many results to bring per page (the max & default is 100).
+      - name: page
+        description: Which results page to bring.
       - auto: PREDEFINED
         defaultValue: 'False'
         description: Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*

@@ -57,54 +57,41 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def validate_limit(limit: Optional[int]):
-    """
-    Validate that the limit/max fetch is a number divisible by the MAX_EVENTS_PER_REQUEST (100) and that it is not
-    a negative number.
-    """
-    if limit:
-        if limit % MAX_EVENTS_PER_REQUEST != 0:
-            raise DemistoException(f'fetch limit parameter should be divisible by {MAX_EVENTS_PER_REQUEST}')
-
-        if limit <= 0:
-            raise DemistoException('fetch limit parameter cannot be negative number or zero')
-
-
-def eliminate_duplicated_events(fetched_events: list[dict], last_run: dict):
+def eliminate_duplicated_events(fetched_events: list[dict], last_run: dict[str, date]):
     """
     create a new list out of a given a list that include only events that occurred after that latest event from previous run.
 
     Args:
         fetched_events (list[dict]): the list of the fetched events.
-        last_run (date): the occurred time of the lastest event for previous run.
+        last_run (dict[str, date]): the occurred time of the lastest event for previous run.
 
     Returns:
         list: A list containing only events that occurred after the last run.
     """
     last_run_time = last_run.get('latest_event_time', datetime.now())
-    return [event for event in fetched_events if event.get('occurred_date', datetime.now()) > last_run_time]
+    return [event for event in fetched_events if parse_date_string(event.get('occurred_date')) > last_run_time]
 
 
-def check_if_last_run_reached(last_run: dict, earliest_fetched_event: dict[str, Any]):
+def check_if_last_run_reached(last_run: dict[str, date], earliest_fetched_event: dict[str, Any]):
     """
     Compare the latest event from previous fetch interval with the latest event in the page from the current fetch interval
     To check if the latest event was reached.
 
     Args:
         earliest_fetched_event (dict): the earliest event from the current fetch interval.
-        last_run (date): the occurred time of the lastest event for previous run.
+        last_run (dict[str, date]): the occurred time of the lastest event for previous run.
 
     Returns:
         list: A list containing only events that occurred after the last run.
     """
     last_run_time = last_run.get('latest_event_time', datetime.now())
-    return last_run_time >= earliest_fetched_event.get('occurred_date', datetime.now())
+    return last_run_time >= parse_date_string(earliest_fetched_event.get('occurred_date'))
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_events(client: Client, first_fetch_time: Optional[datetime],
+def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime.now(),
                  last_run: dict[str, date] = None) -> tuple[List[Dict], dict[str, date]]:
     """
     Fetches events from the KnowBe4_KMSAT queue.
@@ -112,7 +99,7 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime],
     query_params = {'page': 1, 'per_page': 100}
     events: List[Dict] = []
     if not last_run:
-        last_run = {}
+        last_run: dict[str, date] = {'latest_event_time': first_fetch_time}
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
     while True:
         response = client.get_events_request(params=query_params)
@@ -122,12 +109,12 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime],
         demisto.info(f'fetched events length: ({len(fetched_events)})')
         demisto.debug(f'fetched events: ({fetched_events})')
         events.extend(eliminate_duplicated_events(fetched_events, last_run))
-        is_last_run_reached = check_if_last_run_reached(last_run, events[-1])
+        is_last_run_reached = check_if_last_run_reached(last_run, fetched_events[-1])
         if not response.get('meta', {}).get('next_page') or is_last_run_reached:
             break
         else:
             query_params['page'] = response.get('meta', {}).get('next_page', 1)
-    new_last_run: dict[str, date] = {'latest_event_time': events[0].get('occurred_date')}
+    new_last_run: dict[str, date] = {'latest_event_time': events[0].get('occurred_date', datetime.now())}
     demisto.info(f'Done fetching {len(events)} events, Setting new_last_run = {new_last_run}.')
     return events, new_last_run
 
@@ -140,15 +127,18 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events_command(client: Client, args: Dict, max_fetch: Optional[int], vendor: str,
-                       product: str) -> Union[str, CommandResults]:
+def get_events_command(client: Client, args: Dict, vendor: str, product: str) -> Union[str, CommandResults]:
     """
     Fetches events from the KnowBe4-KMSAT queue and return them to the war-room.
     in case should_push_events is set to True, they will be also sent to XSIAM.
     """
     should_push_events = argToBoolean(args.get('should_push_events'))
-
-    if events := fetch_events_from_knowbe4_kmsat(client=client, max_fetch=max_fetch):
+    params = {'per_page': 100}
+    args.pop('should_push_events')
+    params.update(args)
+    response = client.get_events_request(params)
+    events: List[Dict] = response.json().get('data') or []
+    if events:
         if should_push_events:
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
         return CommandResults(
@@ -167,28 +157,6 @@ def get_events_command(client: Client, args: Dict, max_fetch: Optional[int], ven
     return 'No events were found.'
 
 
-def fetch_events_from_knowbe4_kmsat(client: Client, max_fetch: Optional[int] = None) -> List[Dict]:
-    """
-    Fetches events from the KnowBe4-KMSAT queue.
-    """
-    events: List[Dict] = []
-    under_max_fetch = True
-
-    #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
-    while under_max_fetch:
-        response = client.get_events_request()
-        if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
-            break
-        fetched_events = response.json().get('events') or []
-        demisto.info(f'fetched events length: ({len(fetched_events)})')
-        demisto.debug(f'fetched events: ({fetched_events})')
-        events.extend(fetched_events)
-        if max_fetch:
-            under_max_fetch = len(events) < max_fetch
-
-    return events
-
-
 ''' MAIN FUNCTION '''
 
 
@@ -202,9 +170,7 @@ def main() -> None:
     base_url: str = params['url'].rstrip('/')
     api_key = params.get('credentials', {}).get('password')
     verify_certificate = not params.get('insecure', False)
-    first_fetch_time = arg_to_datetime(params.get('first_fetch', '3 days'))
-    max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch'))
-    validate_limit(max_fetch)
+    first_fetch_time = arg_to_datetime(params.get('first_fetch', '1 day'))
     proxy = demisto.params().get('proxy', False)
     vendor, product = params.get('vendor'), params.get('product')
     headers = {'Authorization': f'Bearer {api_key}'}
@@ -230,7 +196,7 @@ def main() -> None:
             demisto.setLastRun(last_run)
         elif command == 'kms-get-events':
             return_results(get_events_command(
-                client=client, args=args, max_fetch=max_fetch, vendor=vendor, product=product)
+                client=client, args=args, vendor=vendor, product=product)
             )
         else:
             raise ValueError(f'Command {command} is not implemented in this integration')
