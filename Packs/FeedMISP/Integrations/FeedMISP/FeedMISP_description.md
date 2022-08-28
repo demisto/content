@@ -5,7 +5,7 @@ To ingest feeds via MISP, one must first configure a MISP instance and have the 
 
 To ingest specific feeds (Bambenek Consulting Feed, etc.) directly to TIM without any authorization, you can use one of our dedicated feed content packs available in Marketplace. 
 
-If you wishes to ingest feeds via a URL, you can use one of the following content packs:
+To ingest feeds via a URL, you can use one of the following content packs:
 - CSV Feed
 - JSON Feed
 - Plain Text Feed
