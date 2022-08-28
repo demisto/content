@@ -21,7 +21,7 @@ RAW_TEST = [
       "Proofpoint TAP"
     ],
     "users": [
-      "nbadguy"
+      "darya1"
     ],
     "assignee": "Unassigned",
     "team": "Unassigned",
@@ -103,26 +103,8 @@ RAW_TEST = [
       "Abuse Mailbox 1",
       "Proofpoint TAP"
     ],
-    "users": ['Darya'],
+    "users": ["darya2"],
     "assignee": "Unassigned",
-    "team": "Unassigned",
-    "hosts": {
-      "attacker": [
-        "54.214.13.31",
-        "http://tapdemo.evilscheme.org/files/313532373837353631342e3137.pdf"
-      ],
-      "cnc": [
-        "54.214.13.31"
-      ],
-      "url": [
-        "http://tapdemo.evilscheme.org/files/313532373837353631342e3137.pdf",
-        "https://urldefense.proofpoint.com/v2/url?"
-      ],
-      "forensics": [
-        "http://tapdemo.evilscheme.org/files/313532373837353631342e3137.pdf",
-        "tapdemo.evilscheme.org"
-      ]
-    },
     "incident_field_values": [
       {
         "name": "Attack Vector",
