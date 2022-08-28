@@ -151,7 +151,13 @@ class CollectionResult:
                 raise PrivateTestException(test)
 
         if pack:
-            PACK_MANAGER.validate_pack(pack)
+            try:
+                PACK_MANAGER.validate_pack(pack)
+
+            except NonXsoarSupportedPackException:
+                if is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
+                    return
+                raise
 
     @staticmethod
     def __empty_result() -> 'CollectionResult':
