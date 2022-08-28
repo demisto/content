@@ -10,7 +10,7 @@ configuration:
   name: url
   type: 0
   required: true
-- displaypassword:  API key
+- displaypassword: API key
   name: api_key
   hiddenusername: true
   type: 9
@@ -20,21 +20,11 @@ configuration:
   type: 0
   defaultvalue: 1000
   required: true
-- display: The vendor corresponding to the integration that originated the events
-  name: vendor
-  type: 0
-  defaultvalue: okta
-  required: false
-- display: The product corresponding to the integration that originated the events
-  name: product
-  type: 0
-  defaultvalue: okta
-  required: false
 - display: First fetch from API time
   name: after
   type: 15
-  required: true
   defaultvalue: 1 day
+  required: true
   options:
   - 1 minute
   - 1 hour
@@ -46,8 +36,8 @@ configuration:
   - 1 year
 - display: Trust any certificate (not secure)
   name: verify
-  defaultvalue: "true"
   type: 8
+  defaultvalue: "true"
   required: false
 - display: Use system proxy settings
   name: proxy
@@ -64,14 +54,14 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
       required: true
     deprecated: false
     description: Manual command to fetch events and display them.
     execution: false
     name: okta-get-events
-  dockerimage: demisto/fastapi:1.0.0.29740
+  dockerimage: demisto/fastapi:1.0.0.32142
   runonce: false
   isfetchevents: true
   subtype: python3
