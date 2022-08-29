@@ -208,8 +208,8 @@ def main():
             if content_file.content_type in ('script', 'integration'):
                 # split automation file to yml and script files
                 content_files = split_yml_file(content_file)
-                for file in content_files:
-                    commit_content_item(branch_name, file)
+                for file_to_commit in content_files:
+                    commit_content_item(branch_name, file_to_commit)
 
             else:
                 commit_content_item(branch_name, content_file)
