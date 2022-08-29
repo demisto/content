@@ -30,6 +30,7 @@ integration_panorama_params = {
     'key': 'thisisabogusAPIKEY!',
 }
 
+
 def load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
