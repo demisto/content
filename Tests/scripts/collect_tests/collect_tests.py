@@ -355,16 +355,21 @@ class BranchTestCollector(TestCollector):
                     logger.debug(f'{yml.id_} explicitly states `tests: no tests`')
                     tests = ()
 
-                elif yml.id_ not in self.conf.integrations_to_tests \
-                        and PACK_MANAGER.get_support_level(yml.pack_id) == 'xsoar':
-                    raise ValueError(
-                        f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is '
-                        f'(1) missing from conf.json, AND'
-                        ' (2) does not explicitly state `tests: no tests` AND'
-                        ' (3) has support level == xsoar. '
-                        'Please change at least one of these to allow test collection.'
-                    )
+                elif yml.id_ not in self.conf.integrations_to_tests:
+                    if PACK_MANAGER.get_support_level(yml.pack_id) == 'xsoar':
+                        raise ValueError(
+                            f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is '
+                            f'(1) missing from conf.json, AND'
+                            ' (2) does not explicitly state `tests: no tests` AND'
+                            ' (3) has support level == xsoar. '
+                            'Please change at least one of these to allow test collection.'
+                        )
+                    else:
+                        logger.info(f'{yml.id_} has tests configured, but support level != xsoar. '
+                                    f'The {yml.pack_id} pack will be installed, but no tests will be collected.')
+                        tests = ()
                 else:
+                    # integration to test mapping available, and support level == xsoar (so - we run the tests)
                     tests = tuple(self.conf.integrations_to_tests[yml.id_])
                 reason = CollectionReason.INTEGRATION_CHANGED
 
@@ -390,7 +395,7 @@ class BranchTestCollector(TestCollector):
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
         # creating an object for each, as CollectedTests require #packs==#tests
         if tests:
-            result = CollectionResult.union(tuple(
+            return CollectionResult.union(tuple(
                 CollectionResult(
                     test=test,
                     pack=yml.pack_id,
@@ -400,10 +405,8 @@ class BranchTestCollector(TestCollector):
                     conf=self.conf,
                     id_set=self.id_set
                 ) for test in tests))
-        if result:
-            return result
         else:
-            raise NothingToCollectException(yml.path, 'no tests were found')
+            return self._collect_pack(yml.pack_id, reason, 'collecting pack only', yml.version_range)
 
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         if not path.exists():
