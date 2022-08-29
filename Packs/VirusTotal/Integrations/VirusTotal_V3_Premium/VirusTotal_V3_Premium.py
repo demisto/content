@@ -572,6 +572,17 @@ class Client(BaseClient):
             f'users/{id_}/overall_quotas'
         )
 
+    def get_ip_report(self, ip: str) -> dict:
+        """Retrieve information about an IP address.
+
+        See Also:
+            https://developers.virustotal.com/v3.0/reference#ip-info
+        """
+        return self._http_request(
+            'GET',
+            f'ip_addresses/{ip}'
+        )
+
 
 def test_module(client: Client, params: dict) -> str:
     """Tests API connectivity and authentication'
@@ -1044,6 +1055,30 @@ def search_file(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_ip_report(client: Client, args: dict) -> CommandResults:
+    """Retrieve information about an IP address"""
+    ip = args['ip']
+    raw_response = client.get_ip_report(ip)
+    data = raw_response['data']
+    attributes = data['attributes']
+    readable_output = {
+        'Address': data['id'],
+        'whois': attributes['whois'],
+        'as_owner': attributes['as_owner'],
+        'last_analysis_stats': "\n".join([f"{key}: {str(value)}" for key, value in attributes['last_analysis_stats'].items()]),
+        'last_analysis_results': "\n".join([f"{key}: {value['result']}" for key, value in attributes['last_analysis_results'].items()])
+    }
+    return CommandResults(
+        f'{INTEGRATION_ENTRY_CONTEXT}.IP',
+        readable_output=tableToMarkdown(
+            'IP address report data: More data can be found in the Context.',
+            readable_output
+        ),
+        outputs=data,
+        raw_response=raw_response
+    )
+
+
 def main():
     """main function, parses params and runs command functions
     """
@@ -1104,6 +1139,8 @@ def main():
                 results = get_retrohunt_job_matching_files(client, args)
             elif command == f'{COMMAND_PREFIX}-quota-limits-list':
                 results = get_quota_limits(client, args)
+            elif command == f'{COMMAND_PREFIX}-get-ip-report':
+                results = get_ip_report(client, args)
             else:
                 raise NotImplementedError(f'Command "{command}" is not implemented')
             return_results(results)
