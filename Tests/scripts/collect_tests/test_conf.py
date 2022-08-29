@@ -11,7 +11,7 @@ class TestConf(DictFileBased):
     def __init__(self, conf_path: Path):
         super().__init__(conf_path, is_infrastructure=True)
         self.tests = tuple(TestConfItem(value) for value in self['tests'])
-        self.test_ids = {test.playbook_id for test in self.tests}
+        self.test_id_to_test = {test.playbook_id: test for test in self.tests}
 
         self.tests_to_integrations: dict[str, tuple[str]] = {
             test.playbook_id: test.integrations for test in self.tests if test.integrations
