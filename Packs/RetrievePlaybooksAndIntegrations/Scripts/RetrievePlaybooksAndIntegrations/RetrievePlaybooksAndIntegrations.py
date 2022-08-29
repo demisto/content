@@ -37,30 +37,33 @@ def get_tasks_list(tasks):
     return tasks_list
 
 
-def append_to_playbooks_and_integrations(playbook_name, brands):
+def append_to_playbooks_and_integrations(playbooks, integrations, playbook_name, brands):
     if playbook_name not in playbooks:
         playbooks.append(playbook_name)
     for b in brands:
         if b and b != 'Builtin' and b not in integrations:
             integrations.append(b)
+    return playbooks, integrations
 
 
-def get_subplaybook_tasks(task):
+def get_subplaybook_tasks(playbooks, integrations, task):
     # recursively go through all subplaybook tasks and append to playbooks and integrations
-
     subplaybook_json = perform_rest_call('get', f"playbook/{task['task']['playbookId']}")
-    append_to_playbooks_and_integrations(subplaybook_json['name'], subplaybook_json['brands'])
+    playbooks, integrations = append_to_playbooks_and_integrations(playbooks, integrations, subplaybook_json['name'], subplaybook_json['brands'])
     tasks = get_tasks_list(subplaybook_json['tasks'])
     for t in tasks:
         if t['type'] == 'playbook' and t['task'].get('playbookId'):
             # playbookId does not exist if the playbook the task references is missing
-            get_subplaybook_tasks(t)
+            playbooks, integrations = get_subplaybook_tasks(playbooks, integrations, t)
+    return playbooks, integrations
 
 
 ''' COMMAND FUNCTION '''
 
 
 def retrieve_playbooks_and_integrations(args: Dict[str, Any]) -> CommandResults:
+    playbooks = []
+    integrations = []
     query = f'''name:"{args['playbook_name']}"'''
     body = {
         'query': query
@@ -69,12 +72,12 @@ def retrieve_playbooks_and_integrations(args: Dict[str, Any]) -> CommandResults:
     for playbook_json in playbooks_json['playbooks']:
         if playbook_json['name'] == args['playbook_name']:
             break
-    append_to_playbooks_and_integrations(playbook_json['name'], playbook_json['brands'])
+    playbooks, integrations = append_to_playbooks_and_integrations(playbooks, integrations, playbook_json['name'], playbook_json['brands'])
 
     tasks = get_tasks_list(playbook_json['tasks'])
     for task in tasks:
         if task['type'] == 'playbook':
-            get_subplaybook_tasks(task)
+            playbooks, integrations = get_subplaybook_tasks(playbooks, integrations, task)
 
     outputs = {
         'Playbooks': playbooks,
@@ -93,10 +96,6 @@ def retrieve_playbooks_and_integrations(args: Dict[str, Any]) -> CommandResults:
 
 
 def main():
-    global playbooks
-    playbooks = []
-    global integrations
-    integrations = []
     try:
         return_results(retrieve_playbooks_and_integrations(demisto.args()))
     except Exception as ex:
