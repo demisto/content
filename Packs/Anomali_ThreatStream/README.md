@@ -8,7 +8,6 @@
 - Returns an HTML file with a description of the threat model.
 - Returns a list of indicators associated with the specified model.
 - Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
-- Returns the current status of the report submitted to the sandbox.
 - Returns a report of a file or URL submitted to the sandbox.
 - Returns filtered indicators or intelligence from ThreatStream.
 - Adds tags to intelligence to filter for related entities.
