@@ -13,6 +13,7 @@ This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
 """
+import json
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -41,16 +42,7 @@ class Client(BaseClient):
         self.serverUrl = server_url
         super().__init__(base_url=server_url, auth=auth, proxy=proxy, verify=verify)
 
-    def test_module(self) -> str:
-        full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/'
-        try:
-            self.get_project_list_request(limit=1, full_url=full_url)
-            return "ok"
-        except:
-            raise Exception('There was a problem in the authentication.')
-
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
 
     def get_project_list_request(self, project_key: str, limit: int, params:Dict) -> list:
         if not project_key:
@@ -59,15 +51,23 @@ class Client(BaseClient):
             project_key = project_key.upper()
             full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/{project_key}'
 
+        try:
+            response = self._http_request(method='GET', full_url=full_url, params=params)
+        except Exception as e:
+            s = e.message
+            m_arr = s.split('\n')
+            m_json = json.loads(m_arr[1])
+            message = m_json.get('error').get('message')
+            raise Exception(message)
+
         results = []
-        response = self._http_request(method='GET', full_url=full_url, params=params)
+
         if full_url[-1] != '/':
             results.append(response)
             return results
         else:
             results = self.check_pagination(response, limit, params)
         return results
-
 
     def get_open_branch_list_request(self, repo: str, limit: int, params: Dict) -> list:
         if repo:
@@ -125,7 +125,12 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    return client.test_module()
+    params = {'pagelen': 1}
+    try:
+        client.get_project_list_request(None, 1, params)
+        return "ok"
+    except:
+        raise Exception('There was a problem in the authentication process.')
 
 
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
