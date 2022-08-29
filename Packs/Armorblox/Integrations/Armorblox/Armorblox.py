@@ -120,7 +120,6 @@ def get_remediation_action(client, incident_id):
     contxt['incident_id'] = incident_id
     contxt['remediation_actions'] = remediation_actions
     return CommandResults(outputs_prefix='Armorblox.Threat', outputs=contxt)
-    return remediation_actions
 
 
 def fetch_incidents_command(client):
