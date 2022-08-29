@@ -269,7 +269,8 @@ class TestCollector(ABC):
                     self._collect_test_dependency(
                         dependency=integration,
                         test_id=test_id,
-                        pack_id=self.id_set.id_to_integration[integration].pack_id)
+                        pack_id=self.id_set.id_to_integration[integration].pack_id
+                    )
                 )
 
             for script in test_object.scripts:
@@ -277,7 +278,8 @@ class TestCollector(ABC):
                     self._collect_test_dependency(
                         dependency=script,
                         test_id=test_id,
-                        pack_id=self.id_set.id_to_script[script].pack_id)
+                        pack_id=self.id_set.id_to_script[script].pack_id
+                    )
                 )
 
         return CollectionResult.union(tuple(result))
