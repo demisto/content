@@ -104,7 +104,7 @@ create-instances:
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
-    - demisto-sdk create-content-artifacts-v2 -p $ARTIFACTS_FOLDER --marketplace "xsoar"
+    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "xsoar"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
     # - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
     # - echo $successful_feature_branch_build
@@ -177,7 +177,7 @@ prepare-testing-bucket-mpv2:
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
-    - demisto-sdk create-content-artifacts-v2 -p $ARTIFACTS_FOLDER --marketplace "xsoar"
+    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "xsoar"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
 
     # - section_start "Create Content Artifacts and Update Conf" --collapsed
