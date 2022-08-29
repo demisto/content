@@ -1753,12 +1753,14 @@ def impersonation_to_incident(impersonation_log):
     incident['rawJSON'] = json.dumps(impersonation_log)
     return incident
 
+
 def held_to_incident(held_message):
     incident = {}
     incident['name'] = f'Mimecast held message: {held_message.get("subject")}'
     incident['occurred'] = held_message.get('dateReceived').replace('+0000', 'Z')
     incident['rawJSON'] = json.dumps(held_message)
     return incident
+
 
 def discover():
     headers = []  # type: List[Any]

@@ -289,6 +289,11 @@ Create a managed URL on Mimecast
 ### mimecast-list-messages
 ***
 Get a list of messages for a given user. This is archive search command.
+Required Permissions
+The following permissions are required for this command.
+
+- Mimecast administrator with at least one of the following permissions: Archive/Search/Read.
+- or Mimecast user with delegate permissions to address or user.
 
 
 #### Base Command
@@ -296,13 +301,30 @@ Get a list of messages for a given user. This is archive search command.
 `mimecast-list-messages`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                  | **Required** |
+|------------------|--------------------------------------------------|--------------|
+ | mailbox          | The email address to return the message list for | Optional     |
+| startTime        | The start date of messages to return, in the following format, 2015-11-16T14:49:18+0000. Default is the last calendar month   |Optional|
+| endTime          | The end date of messages to return, in the following format, 2015-11-16T14:49:18+0000. Default is the end of the current day      |Optional|
+| view	            |  The message list type, must be one of: inbox or sent, default is inbox	                                                |Optional|
+| subject	                 |     Filter by message subject	             | Optional|
+| limit | The maximum number of results to return. Default is 100. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.Message.Subject | string | Message Subject | 
+| Mimecast.Message.ID	 | string | Message ID | 
+| Mimecast.Message.Size	 | number | The size of the message in bytes | 
+| Mimecast.Message.RecievedDate	 | date | The date the message was received | 
+| Mimecast.Message.From	 | string | The mail Sender | 
+| Mimecast.Message.AttachmentCount	 | string | The number of attachments on the message | 
+
 ### mimecast-get-attachment-logs
 ***
 Returns Attachment Protect logs for a Mimecast customer account
@@ -320,8 +342,8 @@ Returns Attachment Protect logs for a Mimecast customer account
 | toDate | End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request. | Optional | 
 | resultType | Filters logs by scan result, default is malicious. Possible values are: safe, malicious, timeout, error, unsafe, all. Default is malicious. | Optional | 
 | limit | The maximum number of results to return. Default is 100. | Optional | 
-| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: . | Optional | 
-| page_size | Number of results per page to display. Possible values are: . | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
 
 
 #### Context Output
@@ -349,11 +371,30 @@ Returns URL protect logs for a Mimecast customer account. Default value of scanR
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
+| resultsNumber | The number of results to request. Default is all | Optional | 
+| fromDate | Start date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is the start of the current day. | Optional | 
+| toDate | End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request. | Optional | 
+| resultType | Filters logs by scan result, default is all	 | Optional | 
+| limit | The maximum number of results to return. Default is 100. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.UrlLog.Category	 | string | The category of the URL clicked | 
+| Mimecast.UrlLog.UserAddress	 | string | The email address of the user who clicked the link | 
+| Mimecast.UrlLog.URL	 | string | The url clicked | 
+| Mimecast.UrlLog.Awareness	 | string | The action taken by the user if user awareness was applied | 
+| Mimecast.UrlLog.AdminOverride	 | string | The action defined by the administrator for the URL | 
+| Mimecast.UrlLog.Date	 | date | The date that the URL was clicked | 
+| Mimecast.UrlLog.Result	 | string | The result of the URL scan | 
+| Mimecast.UrlLog.Action	 | string | The action that was taken for the click | 
+| Mimecast.UrlLog.Route		 | string | The route of the original email containing the attachment, either: inbound, outbound, internal, or external | 
+| Mimecast.UrlLog. userOverride	 | string | The action requested by the user. | 
+
 ### mimecast-get-impersonation-logs
 ***
 Returns Impersonation Protect logs for a Mimecast customer account
@@ -429,9 +470,7 @@ discover authentication types that are supported for your account and which base
 `mimecast-discover`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -451,13 +490,12 @@ Refresh access key validity
 `mimecast-refresh-token`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
+
 ### mimecast-login
 ***
 Login to generate Access Key and  Secret Key
@@ -468,8 +506,8 @@ Login to generate Access Key and  Secret Key
 `mimecast-login`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
+
 
 
 #### Context Output
@@ -478,7 +516,12 @@ There is no context output for this command.
 ### mimecast-get-message
 ***
 Get the contents or metadata of a given message. This is archive search command.
+### Required Permissions
 
+The following permissions are required for this command.
+
+- Mimecast administrator with at least one of the following permissions: Archive/Search Content View.
+- or Mimecast user with delegate permissions to address or user.
 
 #### Base Command
 
@@ -487,14 +530,51 @@ Get the contents or metadata of a given message. This is archive search command.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
+| messageID | Message ID	 | Required | 
+| context |  Defines which copy of the message part to return, must be one of: "delievered" the copy that has been processed by the Mimecast MTA with policies such as URL rewriting applied, OR "received" - the copy of the message that Mimecast originally received. (Only relevant for part argument = message or all) | Required | 
+| type | The message type to return. (Only relevant for part argument = message or all) | Optional | 
+| part | Define what message part to return - download message, get metadata or both. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path**                               | **Type** | **Description** |
+|----------------------------------------| --- | --- |
+| Mimecast.Message.ID	                   | string | Message ID | 
+| Mimecast.Message.Subject	              | string | The message subject. | 
+| Mimecast.Message.HeaderDate	           | date | The date of the message as defined in the message headers. | 
+| Mimecast.Message.Size	                 | number | The message size. | 
+| Mimecast.Message.From	                 | string | Sender of the message as defined in the message header. | 
+| Mimecast.Message.To.EmailAddress	      | string | Recipient of the message. | 
+| Mimecast.Message.ReplyTo	              | string | The value of the Reply-To header. | 
+| Mimecast.Message.CC.EmailAddress	      | string | Each CC recipient of the message. | 
+| Mimecast.Message.EnvelopeFrom	         | string | Sender of the message as defined in the message envelope. | 
+| Mimecast.Message.Headers.Name	         | string | Header's name. | 
+| Mimecast.Message.Headers.Values	       | string | Header's value. | 
+| Mimecast.Message.Attachments.FileName	 | string | Message attachment's file name. | 
+| Mimecast.Message.Attachments.SHA256	   | string | Message attachment's SHA256. | 
+| Mimecast.Message.Attachments.ID	       | string | Message attachment's ID. | 
+| Mimecast.Message.Attachments.Size	     | number | Message attachment's file size. | 
+| Mimecast.Message.Processed	            | date | The date the message was processed by Mimecast in ISO 8601 format. | 
+| Mimecast.Message.HasHtmlBody	          | boolean | If the message has an HTML body part. | 
+| File.Size	                             | number | File Size | 
+| File.SHA1	                             | string | SHA1 hash of the file | 
+| File.SHA256	                           | string | SHA256 hash of the file | 
+| File.Name	                             | string | The sample name | 
+| File.SSDeep	                           | string | SSDeep hash of the file | 
+| File.EntryID		                         | string | War-Room Entry ID of the file | 
+| File.Info		                            | string | Basic information of the file | 
+| File.Type		                            | string | File type e.g. "PE" | 
+| File.MD5			                            | string | MD5 hash of the file | 
+
 ### mimecast-download-attachments
 ***
 Download attachments from a specified message. This is archive search command.
+
+####Required Permissions
+The following permissions are required for this command.
+
+- Mimecast administrator with at least one of the following permissions: Archive/Search Content View.
+- or Mimecast user with delegate permissions to address or user.
 
 
 #### Base Command
@@ -504,11 +584,23 @@ Download attachments from a specified message. This is archive search command.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| attachmentID	 | The Mimecast ID of the message attachment to return. (Can be retrieved from mimecast-get-message)	 | Required |
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path**                               | **Type** | **Description** |
+|----------------------------------------| --- | --- |
+| File.Size	                             | number | File Size | 
+| File.SHA1	                             | string | SHA1 hash of the file | 
+| File.SHA256	                           | string | SHA256 hash of the file | 
+| File.Name	                             | string | The sample name | 
+| File.SSDeep	                           | string | SSDeep hash of the file | 
+| File.EntryID		                         | string | War-Room Entry ID of the file | 
+| File.Info		                            | string | Basic information of the file | 
+| File.Type		                            | string | File type e.g. "PE" | 
+| File.MD5			                            | string | MD5 hash of the file | 
+
 ### mimecast-find-groups
 ***
 Returns the list of groups according to the specified query.
@@ -988,22 +1080,22 @@ Get information about held messages, including the reason, hold level, sender an
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mimecast.HoldMessage.dateReceived | Date | The timestamp of the message transmission. | 
-| Mimecast.HoldMessage.from.displayableName | String | The sender name. | 
-| Mimecast.HoldMessage.from.emailAddress | String | The sender email. | 
-| Mimecast.HoldMessage.fromHeader.displayableName | String | The display name of the sender \(From envelope\). | 
-| Mimecast.HoldMessage.fromHeader.emailAddress | String | The email address of the sender \(From envelope\). | 
-| Mimecast.HoldMessage.hasAttachments | Boolean | Returns true if the message contains attachments. False indicates no attachments | 
-| Mimecast.HoldMessage.id | String | The Mimecast secure ID for a message. | 
-| Mimecast.HoldMessage.policyInfo | String | Information or definition name triggering the message hold action. | 
-| Mimecast.HoldMessage.reason | String | The summary reason for holding the message. | 
-| Mimecast.HoldMessage.reasonCode | String | Reason code for holding the message. | 
-| Mimecast.HoldMessage.reasonId | String | Mirrors the reason field, formatted without spaces. However, reasonCode should be used instead. | 
-| Mimecast.HoldMessage.route | String | Direction of message being held. Possible values are: INBOUND, OUTBOUND, INTERNAL, EXTERNAL. | 
-| Mimecast.HoldMessage.size | Number | The size of the message in bytes. | 
-| Mimecast.HoldMessage.subject | String | The message subject. | 
-| Mimecast.HoldMessage.to.displayableName | String | The display name of the recipient. | 
-| Mimecast.HoldMessage.to.emailAddress | String | The email address of the recipient. | 
+| Mimecast.HeldMessage.dateReceived | Date | The timestamp of the message transmission. | 
+| Mimecast.HeldMessage.from.displayableName | String | The sender name. | 
+| Mimecast.HeldMessage.from.emailAddress | String | The sender email. | 
+| Mimecast.HeldMessage.fromHeader.displayableName | String | The display name of the sender \(From envelope\). | 
+| Mimecast.HeldMessage.fromHeader.emailAddress | String | The email address of the sender \(From envelope\). | 
+| Mimecast.HeldMessage.hasAttachments | Boolean | Returns true if the message contains attachments. False indicates no attachments | 
+| Mimecast.HeldMessage.id | String | The Mimecast secure ID for a message. | 
+| Mimecast.HeldMessage.policyInfo | String | Information or definition name triggering the message hold action. | 
+| Mimecast.HeldMessage.reason | String | The summary reason for holding the message. | 
+| Mimecast.HeldMessage.reasonCode | String | Reason code for holding the message. | 
+| Mimecast.HeldMessage.reasonId | String | Mirrors the reason field, formatted without spaces. However, reasonCode should be used instead. | 
+| Mimecast.HeldMessage.route | String | Direction of message being held. Possible values are: INBOUND, OUTBOUND, INTERNAL, EXTERNAL. | 
+| Mimecast.HeldMessage.size | Number | The size of the message in bytes. | 
+| Mimecast.HeldMessage.subject | String | The message subject. | 
+| Mimecast.HeldMessage.to.displayableName | String | The display name of the recipient. | 
+| Mimecast.HeldMessage.to.emailAddress | String | The email address of the recipient. | 
 
 ### mimecast-held-message-summary
 ***
@@ -1023,8 +1115,8 @@ Get counts of currenlty held messages for each hold reason.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mimecast.HoldMessageSummary.numberOfItems | Number | 	The number of messages currently held for this reason. | 
-| Mimecast.HoldMessageSummary.policyInfo | String | The name of the policy or definition that held a message. | 
+| Mimecast.HeldMessageSummary.numberOfItems | Number | 	The number of messages currently held for this reason. | 
+| Mimecast.HeldMessageSummary.policyInfo | String | The name of the policy or definition that held a message. | 
 
 ### mimecast-reject-held-message
 ***
@@ -1051,7 +1143,7 @@ There is no context output for this command.
 ```!mimecast-reject-emessage ids="1234" message="MESSAGE CONTAINS UNDESIRABLE CONTENT" reason_type="MESSAGE CONTAINS UNDESIRABLE CONTENT" notify="True"```
 #### Human Readable Output
 
->Hold messages were rejected successfully
+>Held messages were rejected successfully
 
 ### mimecast-release-held-message
 ***
@@ -1075,7 +1167,7 @@ There is no context output for this command.
 ```!mimecast-release-held-message id="1234-test""```
 #### Human Readable Output
 
->Hold message with id 1234_test was released successfully
+>Held message with id 1234_test was released successfully
 
 ### mimecast-search-processing-message
 ***
