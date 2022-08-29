@@ -8,7 +8,6 @@ This integration based on:
 """
 
 
-import traceback
 from socket import error
 from typing import Any, Callable, Dict, List
 
@@ -674,7 +673,6 @@ def main() -> None:
         demisto.results(commands[command](client, **demisto.args()))
     # Log exceptions and return errors
     except DemistoException as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

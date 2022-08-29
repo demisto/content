@@ -344,7 +344,6 @@ def create_incident_labels(parsed_msg, headers):
 
 
 def mailboxes_to_entry(mailboxes):
-
     query = "Query: {}".format(mailboxes[0].get('q') if mailboxes else '')
     result = [{"Mailbox": user['Mailbox']} for user in mailboxes if user.get('Mailbox')]
 
@@ -1109,13 +1108,26 @@ def search_all_mailboxes(receive_only_accounts):
         }
 
         result = service.users().list(**command_args).execute()
+        users_count = len(result['users'])
         users_next_page_token = result.get('nextPageToken')
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
+            accounts_counter = 0
             futures = []
+            entries = []
             for user in result['users']:
                 futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
-            entries = [future.result() for future in concurrent.futures.as_completed(futures)]
+            for future in concurrent.futures.as_completed(futures):
+                accounts_counter += 1
+                entries.append(future.result())
+                if accounts_counter % 100 == 0:
+                    demisto.info(
+                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
+                            int((accounts_counter / users_count) * 100),
+                            accounts_counter,
+                            users_count,
+                            len(entries)),
+                    )
 
         if receive_only_accounts:
             entries = [mailboxes_to_entry(entries)]

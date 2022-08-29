@@ -1,4 +1,4 @@
-###This Pack includes XSIAM content.
+### This Pack includes XSIAM content.
 
 In order to use the collector to collect events from Microsoft Exchange server, you would need to use XDRC (XDR Collector) - Please use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
 <br/>Copy and paste the bellow yaml in the "Filebeat Configuration File" section (inside the relevant profile under the "XDR Collectors Profiles"). This configuration will collect the data into a dataset named `msft_exchange_raw`.

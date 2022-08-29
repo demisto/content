@@ -1,0 +1,19 @@
+{
+    "has_more": false,
+    "total": 1,
+    "items": [
+        {
+            "x_inthreat_short_display": "eicar@sekoia.io",
+            "modified": "2020-11-04T00:27:15.9801Z",
+            "spec_version": "2.1",
+            "created": "2020-11-04T00:27:15.9801Z",
+            "type": "email-addr",
+            "x_inthreat_sources_refs": [
+                "identity--357447d7-9229-4ce1-b7fa-f1b83587048e"
+            ],
+            "x_inthreat_tags": [],
+            "value": "eicar@sekoia.io",
+            "id": "email-addr--cd6440d1-725c-5eb9-bff0-5e62c65ee263"
+        }
+    ]
+}

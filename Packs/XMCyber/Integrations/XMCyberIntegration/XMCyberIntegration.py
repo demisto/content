@@ -660,7 +660,8 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
                 indicator_type=DBotScoreType.IP,
                 integration_name='XMCyber',
                 score=Common.DBotScore.NONE,
-                malicious_description='No entity found with this IP'
+                malicious_description='No entity found with this IP',
+                reliability=demisto.params().get('integrationReliability')
             )
             ip_standard_context = Common.IP(
                 ip=ip,
@@ -682,7 +683,9 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
                 indicator_type=DBotScoreType.IP,
                 integration_name='XMCyber',
                 score=score,
-                malicious_description=f'{ip} is reported to risk {criticalAssetsAtRisk} ("{reputation}") critical assets'
+                malicious_description=f'{ip} is reported to risk {criticalAssetsAtRisk}'
+                                      f' ("{reputation}") critical assets',
+                reliability=demisto.params().get('integrationReliability')
             )
             readable_output += pretty_print_entity(entity_data)
             xm_data_list.append(entity_data)

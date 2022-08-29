@@ -27,8 +27,7 @@ class Client(AbxBaseClient):
     """
 
     def get_incidents(self, orderBy='ASC', pageSize=None, pageToken=None, first_fetch=None):
-        request_params = {}
-        request_params['orderBy'] = orderBy
+        request_params = {'orderBy': orderBy}
 
         if pageToken == -1 and first_fetch:
             request_params['timeFilter'] = first_fetch
@@ -132,12 +131,13 @@ def fetch_incidents_command(client):
     if 'start_time' not in last_run.keys():
         pageToken = -1
         response, next_page_token = client.get_incidents(pageSize=1, pageToken=pageToken, first_fetch=FIRST_FETCH)
-        start_time = response[0]['date']
-        start_time = dateparser.parse(start_time)
-        message_ids = get_incident_message_ids(client, response[0]['id'])
-        response[0]['message_ids'] = message_ids
-        curr_incident = {'rawJSON': json.dumps(response[0]), 'details': json.dumps(response[0])}
-        incidents.append(curr_incident)
+        if response:
+            start_time = response[0]['date']
+            start_time = dateparser.parse(start_time)
+            message_ids = get_incident_message_ids(client, response[0]['id'])
+            response[0]['message_ids'] = message_ids
+            curr_incident = {'rawJSON': json.dumps(response[0]), 'details': json.dumps(response[0])}
+            incidents.append(curr_incident)
 
     if last_run and 'pageToken' in last_run.keys():
         pageToken = last_run.get('pageToken')
@@ -147,7 +147,7 @@ def fetch_incidents_command(client):
 
     start_time = start_time.timestamp()
     incidents_data, pageToken = get_incidents_list(client, pageToken=pageToken, first_fetch=FIRST_FETCH)
-    last_time = start_time
+    last_time = int(start_time)
 
     for incident in incidents_data:
         dt = incident['date']
@@ -166,6 +166,7 @@ def fetch_incidents_command(client):
 
 def main():
     ''' EXECUTION '''
+    demisto.info(f'Command being called is {demisto.command()}')
     try:
 
         client = Client(
