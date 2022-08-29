@@ -1107,15 +1107,14 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 is_gcc: bool, auth_type: str, redirect_uri: str, auth_code: str,
-                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
-
+                 auth_type, redirect_uri, auth_code,
+                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         client_args = assign_params(
             self_deployed=self_deployed,
             auth_id=auth_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if
-            auth_type == AUTHORIZATION_CODE else None,
-            grant_type=auth_type,
+            auth_type == 'Authorization Code' else None,
+            grant_type=AUTHORIZATION_CODE if auth_type == 'Authorization Code' else None,
             base_url=base_url,
             verify=verify,
             proxy=proxy,
@@ -4860,8 +4859,9 @@ def main():  # pragma: no cover
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
     is_gcc = params.get('is_gcc', False)
-    auth_code = params.get('auth_code', {}).get('password')
-    redirect_uri = params.get('redirect_uri')
+    auth_type = params.get('auth_type', 'Client Credentials')
+    auth_code = params.get('auth_code', {}).get('password', '')
+    redirect_uri = params.get('redirect_uri', '')
 
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
@@ -4876,24 +4876,19 @@ def main():  # pragma: no cover
         if not self_deployed:
             raise Exception('In order to use Authorization Code, set Self Deployed: True.')
     if (auth_code and not redirect_uri) or (redirect_uri and not auth_code):
-            raise Exception('In order to use Authorization Code auth flow, you should set: '
-                            '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
-    if auth_code and redirect_uri and auth_id and tenant_id and enc_key and self_deployed:
-        auth_type = AUTHORIZATION_CODE
-    else:
-        auth_type = CLIENT_CREDENTIALS
+        raise Exception('In order to use Authorization Code auth flow, you should set: '
+                        '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
 
     command = demisto.command()
     args = demisto.args()
     LOG(f'command is {command}')
     try:
         client = MsClient(
-            base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME,
-            verify=use_ssl, proxy=proxy, self_deployed=self_deployed,
-            alert_severities_to_fetch=alert_severities_to_fetch,
+            base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
+            proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc, auth_type=auth_type, redirect_uri=redirect_uri, auth_code=auth_code,
+            is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri
         )
         if command == 'test-module':
             test_module(client)
