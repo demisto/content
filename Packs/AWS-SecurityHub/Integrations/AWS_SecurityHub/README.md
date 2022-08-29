@@ -40,6 +40,14 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 4. Click __Test__ to validate the URLs, token, and connection.
 
 
+## Known Limitations
+---
+The following throttling limits apply to using Security Hub API operations:
+* GetFindings - RateLimit of 3 requests per second, and a BurstLimit of 6 requests per second.
+* UpdateFindings - RateLimit of 1 request per second, and a BurstLimit of 5 requests per second.
+* All other operations - RateLimit of 10 request per second, and a BurstLimit of 30 requests per second.
+
+
 ## Commands
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
