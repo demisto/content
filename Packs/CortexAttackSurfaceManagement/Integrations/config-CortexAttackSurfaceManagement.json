@@ -1,0 +1,1440 @@
+{
+    "name": "Cortex Attack Surface Management",
+    "display_name": "Cortex Attack Surface Management",
+    "description": "Integration to pull asset and other ASM related information",
+    "category": "Utilities",
+    "command_prefix": "asm",
+    "docker_image": "demisto/python3:3.10.5.33323",
+    "url": "",
+    "base_url_path": "",
+    "auth": {
+        "type": "apikey",
+        "apikey": [
+            {
+                "key": "format",
+                "value": "f'{params[\"api_key\"]}'",
+                "type": "string"
+            },
+            {
+                "key": "in",
+                "value": "header",
+                "type": "string"
+            },
+            {
+                "key": "key",
+                "value": "Authorization",
+                "type": "string"
+            }
+        ]
+    },
+    "context_path": "ASM",
+    "code_type": "python",
+    "code_subtype": "python3",
+    "is_fetch": false,
+    "fix_code": true,
+    "commands": [
+        {
+            "name": "getexternalservices",
+            "url_path": "public_api/v1/assets/get_external_services/",
+            "http_method": "POST",
+            "description": "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)",
+            "context_path": "GetExternalServices",
+            "root_object": "",
+            "headers": [
+                {
+                    "Content-Type": "application/json"
+                },
+                {
+                    "x-xdr-auth-id": "{{XSIAM_AUTH_ID}}"
+                }
+            ],
+            "unique_key": "",
+            "body_format": {
+                "request_data": {
+                    "filters": [
+                        {
+                            "field": "{field}",
+                            "operator": "{operator}",
+                            "value": "{value}"
+                        }
+                    ]
+                }
+            },
+            "upload_file": false,
+            "returns_file": false,
+            "returns_entry_file": false,
+            "arguments": [
+                {
+                    "name": "field",
+                    "description": "",
+                    "required": false,
+                    "is_array": false,
+                    "default_value": "",
+                    "predefined_values": [],
+                    "ref": null,
+                    "type_": null,
+                    "in_": "body",
+                    "in_object": [
+                        "request_data",
+                        "filters"
+                    ]
+                },
+                {
+                    "name": "operator",
+                    "description": "",
+                    "required": false,
+                    "is_array": false,
+                    "default_value": "",
+                    "predefined_values": [],
+                    "ref": null,
+                    "type_": null,
+                    "in_": "body",
+                    "in_object": [
+                        "request_data",
+                        "filters"
+                    ]
+                },
+                {
+                    "name": "value",
+                    "description": "",
+                    "required": false,
+                    "is_array": false,
+                    "default_value": "",
+                    "predefined_values": [],
+                    "ref": null,
+                    "type_": null,
+                    "in_": "body",
+                    "in_object": [
+                        "request_data",
+                        "filters"
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "total_count",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "result_count",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "external_services.service_id",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_services.service_name",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_services.service_type",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_services.ip_address",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_services.externally_detected_providers",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_services.is_active",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_services.first_observed",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "external_services.last_observed",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "external_services.port",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "external_services.protocol",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_services.inactive_classifications",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_services.discovery_type",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_services.business_units",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_services.externally_inferred_vulnerability_score",
+                    "description": "",
+                    "type_": "Unknown"
+                }
+            ]
+        },
+        {
+            "name": "getexternalservice",
+            "url_path": "public_api/v1/assets/get_external_service",
+            "http_method": "POST",
+            "description": "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)",
+            "context_path": "GetExternalService",
+            "root_object": "",
+            "headers": [
+                {
+                    "Content-Type": "application/json"
+                },
+                {
+                    "x-xdr-auth-id": "{{XSIAM_AUTH_ID}}"
+                }
+            ],
+            "unique_key": "",
+            "body_format": {
+                "request_data": {
+                    "service_id_list": "{service_id_list}"
+                }
+            },
+            "upload_file": false,
+            "returns_file": false,
+            "returns_entry_file": false,
+            "arguments": [
+                {
+                    "name": "service_id_list",
+                    "description": "",
+                    "required": false,
+                    "is_array": false,
+                    "default_value": "",
+                    "predefined_values": [],
+                    "ref": null,
+                    "type_": null,
+                    "in_": "body",
+                    "in_object": [
+                        "request_data"
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "details.service_id",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.service_name",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.service_type",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.ip_address",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.externally_detected_providers",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.is_active",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.first_observed",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.last_observed",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.port",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "details.protocol",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.inactive_classifications",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.discovery_type",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.business_units",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.externally_inferred_vulnerability_score",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.serviceKey",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.serviceKeyType",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.businessUnits.name",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.providerDetails.name",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.providerDetails.firstObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.providerDetails.lastObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.certificates.certificate.issuer",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.issuerAlternativeNames",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.issuerCountry",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.issuerEmail",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.issuerLocality",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.issuerName",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.issuerOrg",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.formattedIssuerOrg",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.issuerOrgUnit",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.issuerState",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.publicKey",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.publicKeyAlgorithm",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.publicKeyRsaExponent",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "details.details.certificates.certificate.signatureAlgorithm",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.subject",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.subjectAlternativeNames",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.subjectCountry",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.subjectEmail",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.subjectLocality",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.subjectName",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.subjectOrg",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.subjectOrgUnit",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.subjectState",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificates.certificate.serialNumber",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.validNotBefore",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.certificates.certificate.validNotAfter",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.certificates.certificate.version",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.publicKeyBits",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "details.details.certificates.certificate.publicKeyModulus",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.publicKeySpki",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.sha1Fingerprint",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.sha256Fingerprint",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.certificate.md5Fingerprint",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.activityStatus",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificates.lastObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.certificates.firstObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.ips.ip",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "details.details.ips.protocol",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.ips.provider",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.ips.geolocation.latitude",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "details.details.ips.geolocation.longitude",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "details.details.ips.geolocation.countryCode",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.ips.geolocation.city",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.ips.geolocation.regionCode",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.ips.geolocation.timeZone",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.ips.activityStatus",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.ips.lastObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.ips.firstObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.classifications.name",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.classifications.activityStatus",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.classifications.values.jsonValue",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.classifications.values.firstObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.classifications.values.lastObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.classifications.firstObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.classifications.lastObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.tlsVersions.tlsVersion",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.tlsVersions.cipherSuite",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.tlsVersions.firstObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.tlsVersions.lastObserved",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.tlsVersions.activityStatus",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.enrichedObservationSource",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.ip_ranges.35.227.6.150.IP_RANGE_ID",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.ip_ranges.35.227.6.150.FIRST_IP",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.ip_ranges.35.227.6.150.LAST_IP",
+                    "description": "",
+                    "type_": "String"
+                }
+            ]
+        },
+        {
+            "name": "getexternalipaddressranges",
+            "url_path": "public_api/v1/assets/get_external_ip_address_ranges/",
+            "http_method": "POST",
+            "description": "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)",
+            "context_path": "GetExternalIpAddressRanges",
+            "root_object": "",
+            "headers": [
+                {
+                    "Content-Type": "application/json"
+                },
+                {
+                    "x-xdr-auth-id": "{{XSIAM_AUTH_ID}}"
+                },
+                {
+                    "accept": "application/json"
+                }
+            ],
+            "unique_key": "",
+            "body_format": {
+                "request_data": {}
+            },
+            "upload_file": false,
+            "returns_file": false,
+            "returns_entry_file": false,
+            "arguments": [],
+            "outputs": [
+                {
+                    "name": "total_count",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "result_count",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "external_ip_address_ranges.range_id",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_ip_address_ranges.first_ip",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_ip_address_ranges.last_ip",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_ip_address_ranges.ips_count",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "external_ip_address_ranges.active_responsive_ips_count",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "external_ip_address_ranges.date_added",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "external_ip_address_ranges.business_units",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "external_ip_address_ranges.organization_handles",
+                    "description": "",
+                    "type_": "String"
+                }
+            ]
+        },
+        {
+            "name": "getexternalipaddressrange",
+            "url_path": "public_api/v1/assets/get_external_ip_address_range/",
+            "http_method": "POST",
+            "description": "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)",
+            "context_path": "GetExternalIpAddressRange",
+            "root_object": "",
+            "headers": [
+                {
+                    "Content-Type": "application/json"
+                },
+                {
+                    "x-xdr-auth-id": "{{XSIAM_AUTH_ID}}"
+                },
+                {
+                    "accept": "application/json"
+                }
+            ],
+            "unique_key": "",
+            "body_format": {
+                "request_data": {
+                    "range_id_list": "{range_id_list}"
+                }
+            },
+            "upload_file": false,
+            "returns_file": false,
+            "returns_entry_file": false,
+            "arguments": [
+                {
+                    "name": "range_id_list",
+                    "description": "",
+                    "required": false,
+                    "is_array": false,
+                    "default_value": "",
+                    "predefined_values": [],
+                    "ref": null,
+                    "type_": null,
+                    "in_": "body",
+                    "in_object": [
+                        "request_data"
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "details.range_id",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.first_ip",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.last_ip",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.ips_count",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "details.active_responsive_ips_count",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "details.date_added",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.business_units",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.organization_handles",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.handle",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.firstIp",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.lastIp",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.name",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.whoIsServer",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.lastChanged",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.handle",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.dateAdded",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.address",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.email",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.phone",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.org",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.formattedName",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.kind",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.roles",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.lastChanged",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.firstRegistered",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.networkRecords.organizationRecords.remarks",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.networkRecords.remarks",
+                    "description": "",
+                    "type_": "String"
+                }
+            ]
+        },
+        {
+            "name": "getassetsinternetexposure",
+            "url_path": "public_api/v1/assets/get_assets_internet_exposure/",
+            "http_method": "POST",
+            "description": "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)",
+            "context_path": "GetAssetsInternetExposure",
+            "root_object": "",
+            "headers": [
+                {
+                    "Content-Type": "application/json"
+                },
+                {
+                    "x-xdr-auth-id": "{{XSIAM_AUTH_ID}}"
+                },
+                {
+                    "accept": "application/json"
+                }
+            ],
+            "unique_key": "",
+            "body_format": {
+                "request_data": {}
+            },
+            "upload_file": false,
+            "returns_file": false,
+            "returns_entry_file": false,
+            "arguments": [],
+            "outputs": [
+                {
+                    "name": "total_count",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "result_count",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "assets_internet_exposure.asm_ids",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.name",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.asset_type",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.cloud_provider",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "assets_internet_exposure.region",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "assets_internet_exposure.business_units",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.iot_model",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "assets_internet_exposure.iot_category",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "assets_internet_exposure.iot_profile",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "assets_internet_exposure.sensor",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.last_observed",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "assets_internet_exposure.first_observed",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "assets_internet_exposure.has_active_externally_services",
+                    "description": "",
+                    "type_": "Boolean"
+                },
+                {
+                    "name": "assets_internet_exposure.has_xdr_agent",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.certificate_classifications",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.certificate_issuer",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.certificate_algorithm",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.cloud_id",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "assets_internet_exposure.domain_resolves",
+                    "description": "",
+                    "type_": "Boolean"
+                },
+                {
+                    "name": "assets_internet_exposure.operation_system",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "assets_internet_exposure.asm_va_score",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "assets_internet_exposure.agent_id",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "assets_internet_exposure.externally_detected_providers",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.service_type",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.externally_inferred_cves",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "assets_internet_exposure.ips",
+                    "description": "",
+                    "type_": "String"
+                }
+            ]
+        },
+        {
+            "name": "getassetinternetexposure",
+            "url_path": "public_api/v1/assets/get_asset_internet_exposure/",
+            "http_method": "POST",
+            "description": "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)",
+            "context_path": "GetAssetInternetExposure",
+            "root_object": "",
+            "headers": [
+                {
+                    "Content-Type": "application/json"
+                },
+                {
+                    "x-xdr-auth-id": "{{XSIAM_AUTH_ID}}"
+                },
+                {
+                    "accept": "application/json"
+                }
+            ],
+            "unique_key": "",
+            "body_format": {
+                "request_data": {
+                    "asm_id_list": "{asm_id_list}"
+                }
+            },
+            "upload_file": false,
+            "returns_file": false,
+            "returns_entry_file": false,
+            "arguments": [
+                {
+                    "name": "asm_id_list",
+                    "description": "",
+                    "required": false,
+                    "is_array": false,
+                    "default_value": "",
+                    "predefined_values": [],
+                    "ref": null,
+                    "type_": null,
+                    "in_": "body",
+                    "in_object": [
+                        "request_data"
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "details.asm_ids",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.name",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.type",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.last_observed",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.first_observed",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.created",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.business_units",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.domain",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.certificate_issuer",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.certificate_algorithm",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.certificate_classifications",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.resolves",
+                    "description": "",
+                    "type_": "Boolean"
+                },
+                {
+                    "name": "details.details.domain",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.topLevelAssetMapperDomain",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.domainAssetType",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.isPaidLevelDomain",
+                    "description": "",
+                    "type_": "Boolean"
+                },
+                {
+                    "name": "details.details.domainDetails",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.dnsZone",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.latestSampledIp",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.subdomainMetadata",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.businessUnits.name",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.issuer",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.issuerAlternativeNames",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.issuerCountry",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.issuerEmail",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificateDetails.issuerLocality",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificateDetails.issuerName",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.issuerOrg",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.formattedIssuerOrg",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.issuerOrgUnit",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificateDetails.issuerState",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificateDetails.publicKey",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.publicKeyAlgorithm",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.publicKeyRsaExponent",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "details.details.certificateDetails.signatureAlgorithm",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.subject",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.subjectAlternativeNames",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.subjectCountry",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.subjectEmail",
+                    "description": "",
+                    "type_": "Unknown"
+                },
+                {
+                    "name": "details.details.certificateDetails.subjectLocality",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.subjectName",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.subjectOrg",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.subjectOrgUnit",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.subjectState",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.serialNumber",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.validNotBefore",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.certificateDetails.validNotAfter",
+                    "description": "",
+                    "type_": "Date"
+                },
+                {
+                    "name": "details.details.certificateDetails.version",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.publicKeyBits",
+                    "description": "",
+                    "type_": "Number"
+                },
+                {
+                    "name": "details.details.certificateDetails.publicKeyModulus",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.publicKeySpki",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.sha1Fingerprint",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.sha256Fingerprint",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.details.certificateDetails.md5Fingerprint",
+                    "description": "",
+                    "type_": "String"
+                },
+                {
+                    "name": "details.externally_inferred_vulnerability_score",
+                    "description": "",
+                    "type_": "Unknown"
+                }
+            ]
+        }
+    ],
+    "params": [
+        {
+            "name": "url",
+            "display": "Server URL",
+            "defaultvalue": "https://www.example.com",
+            "type_": "STRING",
+            "required": true
+        },
+        {
+            "name": "proxy",
+            "display": "Use system proxy",
+            "defaultvalue": "false",
+            "type_": "BOOLEAN",
+            "required": false
+        },
+        {
+            "name": "insecure",
+            "display": "Trust any certificate",
+            "defaultvalue": "false",
+            "type_": "BOOLEAN",
+            "required": false
+        },
+        {
+            "name": "api_key",
+            "display": "API Key",
+            "defaultvalue": "",
+            "type_": "ENCRYPTED",
+            "required": true
+        }
+    ]
+}
