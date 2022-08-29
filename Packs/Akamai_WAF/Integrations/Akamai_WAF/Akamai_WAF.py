@@ -195,10 +195,12 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
-        payload = '{\"certificatesAndTrustChains\":[{\"certificate\":\"' + Keyfactor_Certificate + '\",' \
-            ' \"keyAlgorithm\":\"RSA\",' \
-            '\"trustChain\":\"' + Keyfactor_TrustChain + '\"}]}'
-
+        payload = {
+            'certificatesAndTrustChains': [{
+                'certificate': Keyfactor_Certificate,
+                'keyAlgorithm': 'RSA',
+                'trustChain': Keyfactor_TrustChain,
+        }]}
         headers = {
             "Accept": "application/vnd.akamai.cps.change-id.v1+json",
             "Content-Type": "application/vnd.akamai.cps.certificate-and-trust-chain.v2+json",
