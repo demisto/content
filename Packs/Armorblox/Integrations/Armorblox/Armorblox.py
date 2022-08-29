@@ -132,12 +132,13 @@ def fetch_incidents_command(client):
     if 'start_time' not in last_run.keys():
         pageToken = -1
         response, next_page_token = client.get_incidents(pageSize=1, pageToken=pageToken, first_fetch=FIRST_FETCH)
-        start_time = response[0]['date']
-        start_time = dateparser.parse(start_time)
-        message_ids = get_incident_message_ids(client, response[0]['id'])
-        response[0]['message_ids'] = message_ids
-        curr_incident = {'rawJSON': json.dumps(response[0]), 'details': json.dumps(response[0])}
-        incidents.append(curr_incident)
+        if response:
+            start_time = response[0]['date']
+            start_time = dateparser.parse(start_time)
+            message_ids = get_incident_message_ids(client, response[0]['id'])
+            response[0]['message_ids'] = message_ids
+            curr_incident = {'rawJSON': json.dumps(response[0]), 'details': json.dumps(response[0])}
+            incidents.append(curr_incident)
 
     if last_run and 'pageToken' in last_run.keys():
         pageToken = last_run.get('pageToken')
@@ -147,7 +148,7 @@ def fetch_incidents_command(client):
 
     start_time = start_time.timestamp()
     incidents_data, pageToken = get_incidents_list(client, pageToken=pageToken, first_fetch=FIRST_FETCH)
-    last_time = int(start_time)
+    last_time = start_time
 
     for incident in incidents_data:
         dt = incident['date']
@@ -155,7 +156,7 @@ def fetch_incidents_command(client):
         assert parsed_date is not None, f'failed parsing {dt}'
         dt = int(parsed_date.timestamp())
         # Update last run and add incident if the incident is newer than last fetch
-        if dt > start_time:
+        if dt > int(start_time):
             curr_incident = {'rawJSON': json.dumps(incident), 'details': json.dumps(incident)}
             last_time = dt
             incidents.append(curr_incident)
