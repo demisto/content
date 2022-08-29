@@ -1124,7 +1124,7 @@ class MsClient:
             auth_code=auth_code,
             tenant_id=tenant_id,
             app_name=app_name,
-            enc_key=enc_key, 
+            enc_key=enc_key,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key
         )
@@ -4876,8 +4876,8 @@ def main():  # pragma: no cover
         if not self_deployed:
             raise Exception('In order to use Authorization Code, set Self Deployed: True.')
     if (auth_code and not redirect_uri) or (redirect_uri and not auth_code):
-            raise Exception('In order to use Authorization Code auth flow, you should set: '
-                            '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
+        raise Exception('In order to use Authorization Code auth flow, you should set: '
+                        '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
 
     command = demisto.command()
     args = demisto.args()
