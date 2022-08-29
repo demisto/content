@@ -362,13 +362,17 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
     except Exception as e:
         raise Exception('The other_fields argument is not a valid json. ' + str(e))
 
-    for field_name, field_value in other_fields_json.items():
+    for field_path, field_value in other_fields_json.items():
+        field_split = field_path.split(".")
+        old_value = dict_safe_get(dict_object=incident, keys=field_split, default_return_value="Not found")
+        if old_value == "Not found":
+            raise Exception('The other_fields argument is invalid. Check the name of the field whether it is the right path')
         changes.append(
             {
-                'field': {'name': field_name},
+                'field': {'name': field_split[-1]},
                 # The format should be {type: value}.
                 # Because the type is not returned from the API we take the type from the new value.
-                'old_value': {list(field_value.keys())[0]: incident[field_name]},
+                'old_value': {list(field_value.keys())[0]: old_value},
                 'new_value': field_value
             }
         )

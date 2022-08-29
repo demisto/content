@@ -507,6 +507,8 @@ class FeedIndicatorType(object):
     Registry = "Registry Key"
     SSDeep = "ssdeep"
     URL = "URL"
+    AS = "ASN"
+    MUTEX = "Mutex"
 
     @staticmethod
     def is_valid_type(_type):
@@ -524,7 +526,9 @@ class FeedIndicatorType(object):
             FeedIndicatorType.IPv6CIDR,
             FeedIndicatorType.Registry,
             FeedIndicatorType.SSDeep,
-            FeedIndicatorType.URL
+            FeedIndicatorType.URL,
+            FeedIndicatorType.AS,
+            FeedIndicatorType.MUTEX
         )
 
     @staticmethod
@@ -8443,9 +8447,6 @@ if 'requests' in sys.modules:
                 The request codes to accept as OK, for example: (200, 201, 204). If you specify
                 "None", will use self._ok_codes.
 
-            :return: Depends on the resp_type parameter
-            :rtype: ``dict`` or ``str`` or ``requests.Response``
-
             :type retries: ``int``
             :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
 
@@ -8480,13 +8481,15 @@ if 'requests' in sys.modules:
                 been exhausted.
 
             :type error_handler ``callable``
-            :param error_handler: Given an error entery, the error handler outputs the
+            :param error_handler: Given an error entry, the error handler outputs the
                 new formatted error message.
 
             :type empty_valid_codes: ``list``
             :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
                 can vary)
 
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
             try:
                 # Replace params if supplied
