@@ -2153,7 +2153,7 @@ script:
       name: ip
     - description: The endpoint hostname.
       name: hostname
-    - default: true
+    - default: false
       description: ''
       isArray: true
       name: endpoint
