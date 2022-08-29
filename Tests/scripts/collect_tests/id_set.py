@@ -62,6 +62,7 @@ class IdSetItem(DictBased):
 
         except NotUnderPackException:
             if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
+                logger.warning(f'{path=} is not under a pack, but it is OK')
                 return None
             else:
                 raise
