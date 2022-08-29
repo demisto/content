@@ -1,8 +1,8 @@
-id: Account Enrichment - Generic v2.2
+id: Account Enrichment - Generic v2.1
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Account Enrichment - Generic v2.2
+name: Account Enrichment - Generic v2.1
 description: |-
   Enrich accounts using one or more integrations.
   Supported integrations:
