@@ -170,8 +170,8 @@
         "endTime": "2018-06-01T18:17:44.001Z",
         "status": "successful",
         "recipientType": "Search",
-        "recipient": "someone@company.com",
-        "messageId": "<123456@tapdemo.evilscheme.org>",
+        "recipient": "some_email",
+        "messageId": "<email>",
         "isRead": "true",
         "wasUndone": "true",
         "details": "Success"
