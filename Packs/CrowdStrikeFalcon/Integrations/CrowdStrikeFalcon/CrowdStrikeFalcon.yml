@@ -2154,9 +2154,6 @@ script:
     - description: The endpoint hostname.
       name: hostname
     - default: false
-      description: ''
-      isArray: true
-      name: endpoint
       required: true
       secret: false
     description: Returns information about an endpoint.
