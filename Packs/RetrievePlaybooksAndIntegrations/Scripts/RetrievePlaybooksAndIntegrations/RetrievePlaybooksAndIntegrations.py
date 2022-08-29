@@ -50,7 +50,7 @@ def get_subplaybook_tasks(playbooks, integrations, task):
     # recursively go through all subplaybook tasks and append to playbooks and integrations
     subplaybook_json = perform_rest_call('get', f"playbook/{task['task']['playbookId']}")
     playbooks, integrations = append_to_playbooks_and_integrations(
-        playbooks, integrations,subplaybook_json['name'], subplaybook_json['brands'])
+        playbooks, integrations, subplaybook_json['name'], subplaybook_json['brands'])
     tasks = get_tasks_list(subplaybook_json['tasks'])
     for t in tasks:
         if t['type'] == 'playbook' and t['task'].get('playbookId'):
