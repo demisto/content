@@ -16,7 +16,6 @@ configuration:
 - additionalinfo: The API credentials
   displaypassword: Secret key
   name: api_secret_key
-  hiddenusername: true
   type: 9
   required: true
 - display: Default Organization
