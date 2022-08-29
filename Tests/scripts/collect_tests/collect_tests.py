@@ -317,7 +317,7 @@ class BranchTestCollector(TestCollector):
 
         return CollectionResult.union(tuple(result))
 
-    def _collect_yml(self, content_item_path: Path) -> CollectionResult:
+    def _collect_yml(self, content_item_path: Path) -> Optional[CollectionResult]:
         """
         collecting a yaml-based content item (including py-based, whose names match a yaml based one)
         """
