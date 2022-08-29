@@ -329,10 +329,6 @@ def test_get_entity_pdns(requests_mock):
     assert response.outputs_key_field == 'passivedns'
     assert response.outputs == mock_response[response.outputs_key_field]
 
-    badRecordType = getRandomString(10)
-    with pytest.raises(Exception):
-        commandGetEntityPdns(client, {'entity': entityId, 'record_type': badRecordType})
-
 
 def test_get_entity_dhcp(requests_mock):
     from GigamonThreatINSIGHT import Client, EntityClient, commandGetEntityDhcp

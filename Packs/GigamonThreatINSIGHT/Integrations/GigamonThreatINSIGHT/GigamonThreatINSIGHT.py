@@ -206,9 +206,6 @@ class EntityClient(Client):
             url_suffix=entity + "/file"
         )
 
-    def getAllowedRecord_Types(self) -> List[str]:
-        return ['a', 'aaaa', 'cname', 'mx', 'ns']
-
 
 class DetectionClient(Client):
     """ Client that makes HTTP requests to the Detections API
@@ -632,12 +629,6 @@ def commandGetEntityPdns(entityClient: EntityClient, args: Dict[str, Any]):
     """
     demisto.debug('commandGetEntityPdns has been called.')
 
-    record_type = args['record_type'].lower() if 'record_type' in args else ''
-    allowedRecordTypes = entityClient.getAllowedRecord_Types()
-    if record_type and record_type not in entityClient.getAllowedRecord_Types():
-        raise Exception(
-            f'The provided record_type [{record_type}[] is not allowed. Allowed types are: {allowedRecordTypes}.')
-
     entity = args.pop('entity')
     result: Dict[str, Any] = entityClient.getEntityPdns(entity, encodeArgsToURL(args, ['record_type', 'source', 'account_uuid']))
 
@@ -882,7 +873,7 @@ def commandGetDetectionRules(detectionClient: DetectionClient, args):
     demisto.debug('CommandGetDetectionRules has been called.')
 
     result: Dict[str, Any] = detectionClient.getDetectionRules(
-        encodeArgsToURL(args, ['confidence', 'category', 'attack_id'])
+        encodeArgsToURL(args, ['confidence', 'severity', 'category'])
     )
 
     prefix = 'Insight.Rules'
