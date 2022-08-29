@@ -1252,13 +1252,13 @@ def test_panorama_edit_custom_url_category_command_main_flow(mocker, action, exi
     main()
 
     expected_body_request = {
-            'action': 'edit', 'type': 'config',
-            'xpath': "/config/devices/entry/device-group/entry[@name='new device group']/profiles/custom-url-category"
-                     "/entry[@name='test']",
-            'element': f"<entry name='test'><list><member>{category}<"
-                       f"/member></list><type>Category Match</type></entry>",
-            'key': 'thisisabogusAPIKEY!'
-        }
+        'action': 'edit', 'type': 'config',
+        'xpath': "/config/devices/entry/device-group/entry[@name='new device group']/profiles/custom-url-category"
+                 "/entry[@name='test']",
+        'element': f"<entry name='test'><list><member>{category}<"
+                   f"/member></list><type>Category Match</type></entry>",
+        'key': 'thisisabogusAPIKEY!'
+    }
 
     # make sure that device group is getting overriden by the device-group from command arguments.
     assert request_mock.call_args.kwargs['body'] == expected_body_request
