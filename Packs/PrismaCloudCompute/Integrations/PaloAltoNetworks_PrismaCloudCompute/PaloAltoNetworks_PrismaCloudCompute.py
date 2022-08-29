@@ -1502,57 +1502,49 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
     limit, offset = parse_limit_and_offset_values(limit=args.pop("limit", "50"), offset=args.pop("offset", "0"))
     cves = argToList(arg=args.get("cve", []))
 
-    impacted_images, impacted_hosts, context_output = [], [], []
+    context_output, raw_response = [], []
+    final_impacted_resources = {"images": [], "registryImages": [], "hosts": [], "functions": []}
     for cve in cves:
         # api does not support offset/limit
         if cve_impacted_resources := client.get_impacted_resources(cve=cve):
-            if "riskTree" in cve_impacted_resources and cve_impacted_resources.get("riskTree") is not None:
-                cve_impacted_resources["riskTree"] = dict(
-                    filter_api_response(
-                        api_response=list(cve_impacted_resources.get("riskTree", {}).items()),  # type: ignore[arg-type]
+            raw_response.append(cve_impacted_resources)
+            for resources in ["images", "registryImages", "hosts", "functions"]:
+                if resources in cve_impacted_resources and cve_impacted_resources.get(resources) is not None:
+                    cve_impacted_resources[resources] = filter_api_response(
+                        api_response=cve_impacted_resources[resources],  # type: ignore[arg-type]
                         limit=limit,
                         offset=offset
                     )
-                )
 
-                for image_details in cve_impacted_resources.get("riskTree", {}).values():
-                    for image in image_details:
-                        image_table_details = {
-                            "Cve": cve,
-                            "Image": image.get("image"),
-                            "Container": image.get("container"),
-                            "Host": image.get("host"),
-                            "Namespace": image.get("namespace")
-                        }
-                        if image_table_details not in impacted_images:
-                            impacted_images.append(image_table_details)
-
-            if "hosts" in cve_impacted_resources:
-                cve_impacted_resources["hosts"] = filter_api_response(
-                    api_response=cve_impacted_resources.get("hosts"), limit=limit, offset=offset
-                )
-
-                for host in cve_impacted_resources.get("hosts", []):
-                    host_table_details = {"Cve": cve, "Hostname": host}
-                    if host_table_details not in impacted_hosts:
-                        impacted_hosts.append(host_table_details)
+                    for resource in cve_impacted_resources.get(resources):
+                        for _container in resource.get("containers"):
+                            container_table_details = {
+                                "Cve": cve,
+                                "Image": _container.get("image"),
+                                "Container": _container.get("container"),
+                                "Host": _container.get("host"),
+                                "Namespace": _container.get("namespace")
+                            }
+                            if container_table_details not in final_impacted_resources.get(resources):
+                                final_impacted_resources.get(resources).append(container_table_details)
 
             context_output.append(cve_impacted_resources)
 
     if context_output:
-        impacted_images_table = tableToMarkdown(
-            name="Impacted Images",
-            t=impacted_images,
-            headers=["Cve", "Image", "Container", "Host", "Namespace"],
-            removeNull=True
-        )
-        impacted_hosts_table = tableToMarkdown(
-            name="Impacted Hosts",
-            t=impacted_hosts,
-            headers=["Cve", "Hostname"],
-            removeNull=True
-        )
-        table = impacted_images_table + impacted_hosts_table
+        impacted_resources_tables = []
+        mapping_resources_to_names = {"images": "Impacted Images",
+                                      "registryImages": "Impacted Registry Images",
+                                      "hosts": "Impacted Hosts",
+                                      "functions": "Impacted Functions"
+                                      }
+        for resources in ["images", "registryImages", "hosts", "functions"]:
+            impacted_resources_tables.append(tableToMarkdown(
+                name=mapping_resources_to_names.get(resources),
+                t=final_impacted_resources.get(resources),
+                headers=["Cve", "Image", "Container", "Host", "Namespace"],
+                removeNull=True)
+            )
+        table = ''.join(impacted_resources_tables)
     else:
         context_output, table = [], "No results found."
 
@@ -1561,6 +1553,7 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
         outputs_key_field="_id",
         outputs=context_output if context_output else None,
         readable_output=table,
+        raw_response=raw_response
     )
 
 
