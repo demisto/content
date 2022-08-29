@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -55,7 +55,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -85,7 +85,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -112,7 +112,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -125,7 +125,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -136,14 +136,53 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: cd5a40f2-a412-4e4f-8e7c-aafc5825aff0
+  "5":
+    id: "5"
+    taskid: 594b4697-3fe6-4576-8512-a03cfcd38d35
+    type: regular
+    task:
+      id: 594b4697-3fe6-4576-8512-a03cfcd38d35
+      version: -1
+      name: Login with an unauthorized user
+      description: Try to log in to XSOAR with an unauthorized user (a user that doesn't exist in Active Directory), to make sure that the log-in fails.
+      script: '|||ad-authenticate-and-roles'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "7"
+      '#none#':
+      - "8"
+    scriptarguments:
+      password:
+        simple: "1234"
+      username:
+        simple: Demisto\NotAnADUser
+    separatecontext: false
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 25309ebc-b793-4d1a-8ef2-8d73b7636de5
     type: title
     task:
-      id: cd5a40f2-a412-4e4f-8e7c-aafc5825aff0
+      id: 25309ebc-b793-4d1a-8ef2-8d73b7636de5
       version: -1
-      name: Success
+      name: Success (Log in Error Occurred)
       type: title
       iscommand: false
       brand: ""
@@ -153,7 +192,38 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 770
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: da8d8e63-68e8-44de-8010-4a6f62b6e32d
+    type: regular
+    task:
+      id: da8d8e63-68e8-44de-8010-4a6f62b6e32d
+      version: -1
+      name: Error
+      description: "If the playbook has stopped here, that means that an unauthorized user (a user that doesn't exist in the LDAP server) was able to log in to the XSOAR server.\nFor unauthorized users, the command 'ad-authenticate-and-roles' (which was called in the previous task) should raise a suitable exception (error message - 'LDAP Authentication - user not found')."
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: 'An unauthorized user was able to connect to XSOAR.'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -168,8 +238,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 785,
-        "width": 380,
+        "height": 940,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -178,4 +248,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: ''
+description: "Execute the 'ad-groups' command to connect the LDAP server and make sure that the query works and returns entries. Verifies that an unauthorized user (a user that doesn't exist in the LDAP server) can't log in to XSOAR."
