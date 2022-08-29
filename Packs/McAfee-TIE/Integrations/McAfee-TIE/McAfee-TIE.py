@@ -7,6 +7,7 @@ from dxltieclient import TieClient
 from dxltieclient.constants import HashType
 from datetime import datetime
 import tempfile
+from typing import NamedTuple
 
 VENDOR_NAME = 'McAfee Threat Intelligence Exchange'
 
@@ -35,6 +36,12 @@ POVIDER = {
     '7': 'Web Gateway (MWG)'
 }
 
+DXLConfigFiles = NamedTuple('DXLConfigFiles', [('broker_ca_bundle', str),
+                                               ('cert_file', str),
+                                               ('private_key', str),
+                                               ('broker_urls', list[str]),
+                                               ])
+
 
 def validate_certificates_format():
     if '-----BEGIN PRIVATE KEY-----' not in demisto.params()['private_key']:
@@ -61,12 +68,12 @@ def create_error_entry(contents):
     return {'ContentsFormat': formats['text'], 'Type': entryTypes['error'], 'Contents': contents}
 
 
-def get_client_config():
+def get_client_config(dxl_config_files: DXLConfigFiles):
     config = DxlClientConfig(
-        broker_ca_bundle=broker_ca_bundle,
-        cert_file=cert_file,
-        private_key=private_key,
-        brokers=[Broker.parse(url) for url in broker_urls]
+        broker_ca_bundle=dxl_config_files.broker_ca_bundle,
+        cert_file=dxl_config_files.cert_file,
+        private_key=dxl_config_files.private_key,
+        brokers=[Broker.parse(url) for url in dxl_config_files.broker_urls]
     )
 
     config.connect_retries = 1
@@ -129,13 +136,17 @@ def references_to_table(references):
 
 def trust_level_to_score(trust_level):
     if (trust_level >= 70):
-        return 1
+        # return 1
+        return Common.DBotScore.GOOD
     elif (trust_level == 30):
-        return 2
+        # return 2
+        return Common.DBotScore.SUSPICIOUS
     elif (trust_level == 0 or trust_level == 50):
-        return 0
+        # return 0
+        return Common.DBotScore.NONE
     elif (trust_level < 30):
-        return 3
+        # return 3
+        return Common.DBotScore.BAD
     else:
         # Shouldn't reach here, as the API doesn't support 31-69 values except for 50)
         return 0
@@ -170,14 +181,10 @@ def get_trust_level_and_score(reputations):
     }
 
 
-def test_module():
+def test_module(dxl_config_files: DXLConfigFiles):
     """Tests if there is a connection with DxlClient(which is used for connection with McAfee TIE, instead of the Client class)"""
-    config = get_client_config()
-    with open(broker_ca_bundle, "r") as text_file:
-        with open('/Users/ayousef/Downloads/openDxlClientProvisioningPackage/brokercerts.crt', 'r') as temp:
-            val1 = text_file.read().replace('\n', '').replace('\r', '')
-            val2 = temp.read().replace('\n', '').replace('\r', '')
-            print(val1 == val2)
+    #print('Hello')
+    config = get_client_config(dxl_config_files)
     with DxlClient(config) as client:
         client.connect()
         client.disconnect()
@@ -194,27 +201,45 @@ def safe_get_file_reputation(tie_client, api_input):
     return res
 
 
-def file(files_hash: List[str]) -> List[CommandResults]:
-    # TODO Ask Dor how to add Common.File and if there is documentation
+def file(hashes: List[str], dxl_config_files: DXLConfigFiles) -> List[CommandResults]:
     command_results: List[CommandResults] = []
-    config = get_client_config()
+    config = get_client_config(dxl_config_files)
+    # TODO Make sure if you need to use the following function
+    dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(demisto.params().get('integrationReliability',
+                                                                                                     'C - Fairly reliable'))
     with DxlClient(config) as client:
         client.connect()
         # Create the McAfee Threat Intelligence Exchange (TIE) client
         tie_client = TieClient(client)
-        for file_hash in files_hash:
+        for file_hash in hashes:
             hash_type = get_hash_type(file_hash)
             hash_type_key = HASH_TYPE_KEYS.get(hash_type)
             if not hash_type_key:
                 raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
 
+            # Use the following to output data using the old way to Context Data
             file: Dict[str, Any] = {}
+            dbot_score: Dict[str, Any] = {}
+
+            # Use the following to output data according to the new way
+            dbot_score_instance: Common.DBotScore
+            file_instance: Common.File
+
             reputations = {}
             hash_type_uppercase = hash_type.upper()
             file[hash_type_uppercase] = file_hash
             api_input = {hash_type_key: file_hash}
             raw_result = safe_get_file_reputation(tie_client, api_input)
             if not raw_result:
+                dbot_score_instance = Common.DBotScore(indicator=file_hash,
+                                                       indicator_type=DBotScoreType.FILE,
+                                                       reliability=dbot_reliability,
+                                                       integration_name=VENDOR_NAME,
+                                                       score=Common.DBotScore.NONE,
+                                                       )
+               
+                file_instance = Common.File(dbot_score=dbot_score_instance)
+
                 dbot_score = {'Indicator': file_hash,
                               'Type': 'hash',
                               'Vendor': VENDOR_NAME,
@@ -230,8 +255,13 @@ def file(files_hash: List[str]) -> List[CommandResults]:
                 vendor = tl_score['vendor']
                 score = tl_score['score']
 
-                file['TrustLevel'] = trust_level
-                file['Vendor'] = vendor
+                dbot_score_instance = Common.DBotScore(indicator=file_hash,
+                                                       indicator_type=DBotScoreType.FILE,
+                                                       reliability=dbot_reliability,
+                                                       integration_name=VENDOR_NAME,
+                                                       score=score,
+                                                       )
+                file_instance = Common.File(dbot_score=dbot_score_instance)
 
                 dbot_score = {'Indicator': file_hash,
                               'Type': 'hash',
@@ -239,7 +269,8 @@ def file(files_hash: List[str]) -> List[CommandResults]:
                               'Score': score,
                               'Reliability': demisto.params().get('integrationReliability', 'C - Fairly reliable'),
                               }
-                    
+                file['TrustLevel'] = trust_level
+                file['Vendor'] = vendor
                     # TODO Check if I need two entries for DBotScore
                     # {'Indicator': file_hash, 'Type': 'file', 'Vendor': tl_score['vendor'],
                     #     'Score': tl_score['score'], 'Reliability': demisto.params().get('integrationReliability')}
@@ -249,6 +280,14 @@ def file(files_hash: List[str]) -> List[CommandResults]:
                                          'Score': score,
                                          'Description': 'Trust level is ' + str(tl_score['trust_level'])
                                          }
+                    dbot_score_instance.malicious_description = f"Trust level is {str(tl_score['trust_level'])}"
+            if(hash_type_key == HashType.MD5):
+                file_instance.md5 = file_hash
+            elif(hash_type_key == HashType.SHA1):
+                file_instance.sha1 = file_hash
+            elif(hash_type_key == HashType.SHA256):
+                file_instance.sha256 = file_hash
+
             entry_context = {'DBotScore': dbot_score, 'File': file}
             table = reputations_to_table(reputations)
             command_results.append(
@@ -256,10 +295,9 @@ def file(files_hash: List[str]) -> List[CommandResults]:
                                raw_response=raw_result,
                                outputs_prefix='McAfee.TIE',
                                outputs=entry_context,
-                               indicator=
+                               indicator=file_instance,
                                )
             )
-           
     return command_results
 
 
@@ -283,7 +321,7 @@ def file_references(hash):
 
         table = references_to_table(references)
 
-        # creaet context
+        # create context
         context_file = {}
         hash_type_uppercase = hash_type.upper()
 
@@ -334,17 +372,39 @@ def set_file_reputation(hash, trust_level, filename, comment):
             return create_error_entry(str(ex))
 
 
-def main():
+def set_up():
+
+    with tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as broker_certs_file,\
+         tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as client_cert_file,\
+         tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.key') as private_key_file:
+
+        broker_certs_file.write(demisto.params()['broker_ca_bundle'])
+        broker_certs_file.seek(0)
+
+        client_cert_file.write(demisto.params()['cert_file'])
+        client_cert_file.seek(0)
+
+        private_key_file.write(demisto.params()['private_key'])
+        private_key_file.seek(0)
+
+        dxl_config_files = DXLConfigFiles(broker_ca_bundle=broker_certs_file.name,
+                                          cert_file=client_cert_file.name,
+                                          private_key=private_key_file.name,
+                                          broker_urls=demisto.params()['broker_urls'].split(','))
+        main(dxl_config_files)
+
+
+def main(dxl_config_files: DXLConfigFiles):
     command = demisto.command()
     args = demisto.args()
     try:
 
         if command == 'test-module':
             # This is the call made when clicking the integration Test button.
-            return_results(test_module())
+            return_results(test_module(dxl_config_files))
 
         elif command == 'file':
-            return_results(file(argToList(args.get('file'))))
+            return_results(file(argToList(args.get('file')), dxl_config_files))
 
         elif command == 'tie-file-references':
             results = file_references(args.get('file'))
@@ -369,18 +429,20 @@ def main():
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
-    broker_ca_bundle = './brokercerts.crt'
-    with open(broker_ca_bundle, "w") as text_file:
-        text_file.write(demisto.params()['broker_ca_bundle'])
+    
+    set_up()
+    # broker_ca_bundle = './brokercerts.crt'
+    # with open(broker_ca_bundle, "w") as text_file:
+    #     text_file.write(demisto.params()['broker_ca_bundle'])
 
-    cert_file = './cert_file.crt'
-    with open(cert_file, "w") as text_file:
-        text_file.write(demisto.params()['cert_file'])
+    # cert_file = './cert_file.crt'
+    # with open(cert_file, "w") as text_file:
+    #     text_file.write(demisto.params()['cert_file'])
 
-    private_key = './private_key.key'
-    with open(private_key, "w") as text_file:
-        text_file.write(demisto.params()['private_key'])
+    # private_key = './private_key.key'
+    # with open(private_key, "w") as text_file:
+    #     text_file.write(demisto.params()['private_key'])
 
-    broker_urls = demisto.params()['broker_urls'].split(',')
+    # broker_urls = demisto.params()['broker_urls'].split(',')
 
-    main()
+    # main()
