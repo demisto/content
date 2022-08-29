@@ -1,4 +1,4 @@
-Retrieves all Playbook (and Sub-Playbook) Names and Integrations for a provided Playbook Name
+Retrieves all Playbook (and Sub-Playbook) names and Integrations for a provided Playbook name
 
 ## Script Data
 ---
@@ -19,5 +19,5 @@ Retrieves all Playbook (and Sub-Playbook) Names and Integrations for a provided 
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| RetrievePlaybooksAndIntegrations.Playbooks |  | Unknown |
-| RetrievePlaybooksAndIntegrations.Integrations |  | Unknown |
+| RetrievePlaybooksAndIntegrations.Playbooks | Names of all Playbook and Sub-Playbook used | Unknown |
+| RetrievePlaybooksAndIntegrations.Integrations | Names of all Integrations used | Unknown |
