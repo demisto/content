@@ -9,33 +9,33 @@
             "spyware":{
                "entry":[
                   {
-                     "@name":"omer_spyware99",
+                     "@name":"spyware1",
                      "botnet-domains":{
                         "lists":{
                            "entry":[
                               {
-                                 "@name":"default-paloalto-dns",
+                                 "@name":"list1",
                                  "packet-capture":"disable",
                                  "action":{
                                     "sinkhole":"None"
                                  }
                               },
                               {
-                                 "@name":"default-paloalto-cloud",
+                                 "@name":"list2",
                                  "packet-capture":"disable",
                                  "action":{
                                     "allow":"None"
                                  }
                               },
                               {
-                                 "@name":"omer_EDL",
+                                 "@name":"list3",
                                  "packet-capture":"single-packet",
                                  "action":{
                                     "allow":"None"
                                  }
                               },
                               {
-                                 "@name":"Ben_EDL",
+                                 "@name":"list4",
                                  "packet-capture":"disable",
                                  "action":{
                                     "allow":"None"
@@ -51,11 +51,11 @@
                      "description":"this is a desc"
                   },
                   {
-                     "@name":"Test_antiSpyWare",
+                     "@name":"spyware2",
                      "botnet-domains":{
                         "lists":{
                            "entry":{
-                              "@name":"Test_EDL",
+                              "@name":"list1",
                               "packet-capture":"single-packet",
                               "action":{
                                  "allow":"None"
@@ -68,13 +68,12 @@
             },
             "custom-url-category":{
                "entry":{
-                  "@name":"pano_inst_custom_dont_delete",
+                  "@name":"custom-url-category-1",
                   "description":"test-playbook-url-category-do-not-delete",
                   "list":{
                      "member":[
-                        "c.com",
-                        "888.com",
-                        "999.com"
+                        "test1.com",
+                        "test2.com"
                      ]
                   },
                   "type":"URL List"
