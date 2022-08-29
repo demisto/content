@@ -32,6 +32,8 @@ Test Collection Unit-Test cases
 - `J` has a single pack with two integrations, with mySkippedIntegration being skipped in conf.json.
 - `K` has a single pack with two integrations, with mySkippedIntegration's TPB skipped in conf.json.
 - `L` has a single pack with a Wizard content item.
+- `M1` has a pack with support level == xsoar, and tests missing from conf.json -- should raise an error.
+- `M2` has a pack with support level != xsoar, and tests missing from conf.json -- should collect pack but not tests.
 """
 
 
@@ -84,7 +86,8 @@ class MockerCases:
     J = CollectTestsMocker(TEST_DATA / 'J')
     K = CollectTestsMocker(TEST_DATA / 'K')
     L = CollectTestsMocker(TEST_DATA / 'L_XSIAM')
-    M = CollectTestsMocker(TEST_DATA / 'M')
+    M1 = CollectTestsMocker(TEST_DATA / 'M1')
+    M2 = CollectTestsMocker(TEST_DATA / 'M2')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -250,8 +253,12 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.K, (), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',)),
 
+     # Testing version ranges
      (MockerCases.L, None, ('myXSIAMOnlyPack',), (Machine.MASTER, Machine.V6_9), XSIAM_BRANCH_ARGS,
       ('Packs/myXSIAMOnlyPack/Wizards/harry.json',)),
+
+     (MockerCases.M2, None, ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
      ))
 def test_branch(
@@ -275,7 +282,7 @@ def test_branch_non_xsoar_support_level(mocker, monkeypatch):
     mocker.patch.object(BranchTestCollector, '_get_changed_files',
                         return_value=('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',))
     with pytest.raises(ValueError) as e:
-        _test(monkeypatch, MockerCases.M, BranchTestCollector, (), (), (), XSOAR_BRANCH_ARGS)
+        _test(monkeypatch, MockerCases.M1, BranchTestCollector, (), (), (), XSOAR_BRANCH_ARGS)
     assert 'is (1) missing from conf.json' in str(e.value)  # checking it's the right error
 
 
