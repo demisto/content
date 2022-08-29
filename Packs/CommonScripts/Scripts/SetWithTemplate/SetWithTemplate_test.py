@@ -1,6 +1,5 @@
 import demistomock as demisto
 from SetWithTemplate import main
-from unittest import mock
 import json
 
 
@@ -18,7 +17,7 @@ class SideEffectExecuteCommand:
 
                 if val is None:
                     val = demisto.get(self.__obj, name)
-            except:
+            except Exception:
                 pass
 
         if val is None:
@@ -39,7 +38,7 @@ class TestSetWithTemplate:
             val = obj.get(dt)
             if val is not None:
                 return val
-    
+
         if dt.startswith('.'):
             key = dt[1:]
             return demisto.get(obj, key) if key else obj
@@ -63,4 +62,3 @@ class TestSetWithTemplate:
             results = demisto.results.call_args[0][0]
             entry_context = results.get('EntryContext')
             assert json.dumps(entry_context) == json.dumps(t['entry_context'])
-

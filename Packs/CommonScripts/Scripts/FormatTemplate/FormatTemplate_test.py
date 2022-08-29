@@ -1,6 +1,5 @@
 import demistomock as demisto
 from FormatTemplate import main
-from unittest import mock
 import json
 
 
@@ -21,4 +20,3 @@ class TestFormatTemplate:
             assert demisto.results.call_count == 1
             results = demisto.results.call_args[0][0]
             assert json.dumps(results) == json.dumps(t['results'])
-
