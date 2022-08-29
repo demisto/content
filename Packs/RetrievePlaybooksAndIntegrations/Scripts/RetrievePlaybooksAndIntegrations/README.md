@@ -19,5 +19,5 @@ Retrieves all Playbook (and Sub-Playbook) names and Integrations for a provided 
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| RetrievePlaybooksAndIntegrations.Playbooks | Names of all Playbook and Sub-Playbook used | Unknown |
+| RetrievePlaybooksAndIntegrations.Playbooks | Names of all Playbooks and Sub-Playbooks used | Unknown |
 | RetrievePlaybooksAndIntegrations.Integrations | Names of all Integrations used | Unknown |
