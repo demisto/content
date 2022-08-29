@@ -1114,7 +1114,7 @@ class MsClient:
             self_deployed=self_deployed,
             auth_id=auth_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=AUTHORIZATION_CODE if auth_type == 'Authorization Code' else None,
+            grant_type=auth_type,
             base_url=base_url,
             verify=verify,
             proxy=proxy,
