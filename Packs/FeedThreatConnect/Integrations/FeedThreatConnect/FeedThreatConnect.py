@@ -201,7 +201,7 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
     fields = set_fields_query(argToList(demisto.getParam("fields")))
     last_run = demisto.getLastRun()
     last_run = last_run.get('from_date')
-    demisto.info('last run get: ' + last_run)
+    demisto.debug('last run get: ' + str(last_run))
     from_date = ''
     if last_run:
         from_date = f'AND (dateAdded > "{last_run}") '
@@ -219,7 +219,7 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
         url = url.replace('&', '?', 1)  # type: ignore
     indicators = []
     while True:
-        demisto.info('URL: ' + url)
+        demisto.debug('URL: ' + url)
         response, status, next = client.make_request(Method.GET, url, get_next=True)
         if status == 'Success':
             indicators.extend(response)
@@ -282,11 +282,12 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
 def main():  # pragma: no cover
     insecure = not demisto.getParam('insecure')
     proxy = not demisto.getParam('proxy')
-    credentials = demisto.params().get('api_access_id')
-    client = Client(credentials.get('identifier'), credentials.get('password'),
+    credentials = demisto.params().get('api_access_id', {})
+    secret_key = credentials.get('password') or demisto.params().get('api_secret_key', {}).get('password')
+    client = Client(credentials.get('identifier'), secret_key,
                     demisto.getParam('tc_api_path'), verify=insecure, proxy=proxy)
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': module_test_command,
         f'{INTEGRATION_COMMAND_NAME}-get-indicators': get_indicators_command,
