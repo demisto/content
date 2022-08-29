@@ -14,7 +14,7 @@ from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     ALWAYS_INSTALLED_PACKS, DEFAULT_MARKETPLACE_WHEN_MISSING,
     DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, ONLY_INSTALL_PACK_FILE_TYPES,
-    SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
+    SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, InvalidTestException, NonDictException,
     NonXsoarSupportedPackException, NoTestsConfiguredException,
@@ -112,11 +112,11 @@ class CollectionResult:
 
         if test:
             self.tests = {test}
-            logger.info(f'collected {test=}, {reason} ({reason_description})')
+            logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
             self.packs = {pack}
-            logger.info(f'collected {pack=}, {reason} ({reason_description})')
+            logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
     def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
@@ -271,12 +271,19 @@ class TestCollector(ABC):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
-    def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str) -> CollectionResult:
+    def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str,
+                      content_item_range: Optional[VersionRange] = None) -> CollectionResult:
+        pack = PACK_MANAGER[pack_name]
+
+        version_range = content_item_range \
+            if pack.version_range.is_default \
+            else (pack.version_range | content_item_range)
+
         return CollectionResult(
             test=None,
             pack=pack_name,
             reason=reason,
-            version_range=PACK_MANAGER[pack_name].version_range,
+            version_range=version_range,
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
@@ -320,11 +327,10 @@ class BranchTestCollector(TestCollector):
 
         return CollectionResult.union(tuple(result))
 
-    def _collect_yml(self, content_item_path: Path) -> CollectionResult:
+    def _collect_yml(self, content_item_path: Path) -> Optional[CollectionResult]:
         """
         collecting a yaml-based content item (including py-based, whose names match a yaml based one)
         """
-        result: Optional[CollectionResult] = None
         yml_path = content_item_path.with_suffix('.yml') if content_item_path.suffix != '.yml' else content_item_path
         try:
             yml = ContentItem(yml_path)
@@ -359,13 +365,20 @@ class BranchTestCollector(TestCollector):
                     tests = ()
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
-                    raise ValueError(
-                        f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is both '
-                        f'(1) missing from conf.json, and'
-                        ' (2) does not explicitly state `tests: no tests`. '
-                        'Please change one of these to allow test collection.'
-                    )
+                    if PACK_MANAGER.get_support_level(yml.pack_id) == 'xsoar':
+                        raise ValueError(
+                            f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is '
+                            f'(1) missing from conf.json, AND'
+                            ' (2) does not explicitly state `tests: no tests` AND'
+                            ' (3) has support level == xsoar. '
+                            'Please change at least one of these to allow test collection.'
+                        )
+                    else:
+                        logger.info(f'{yml.id_} has tests configured, but support level != xsoar. '
+                                    f'The {yml.pack_id} pack will be installed, but no tests will be collected.')
+                        tests = ()
                 else:
+                    # integration to test mapping available, and support level == xsoar (so - we run the tests)
                     tests = tuple(self.conf.integrations_to_tests[yml.id_])
                 reason = CollectionReason.INTEGRATION_CHANGED
 
@@ -391,7 +404,7 @@ class BranchTestCollector(TestCollector):
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
         # creating an object for each, as CollectedTests require #packs==#tests
         if tests:
-            result = CollectionResult.union(tuple(
+            return CollectionResult.union(tuple(
                 CollectionResult(
                     test=test,
                     pack=yml.pack_id,
@@ -402,10 +415,8 @@ class BranchTestCollector(TestCollector):
                     id_set=self.id_set,
                     is_nightly=False,
                 ) for test in tests))
-        if result:
-            return result
         else:
-            raise NothingToCollectException(yml.path, 'no tests were found')
+            return self._collect_pack(yml.pack_id, reason, 'collecting pack only', yml.version_range)
 
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         if not path.exists():
@@ -434,6 +445,7 @@ class BranchTestCollector(TestCollector):
                 pack_name=find_pack_folder(path).name,
                 reason=CollectionReason.NON_CODE_FILE_CHANGED,
                 reason_description=reason_description,
+                content_item_range=content_item.version_range if content_item else None
             )
 
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
@@ -651,7 +663,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     )
 
                 except NotUnderPackException:
-                    if path.name in SKIPPED_CONTENT_ITEMS:
+                    if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
                         logger.info(f'skipping unsupported content item: {str(path)}, not under a pack')
                         continue
         return CollectionResult.union(tuple(result))
