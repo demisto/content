@@ -1,10 +1,7 @@
 id: 'Exterro FTK: Initiate Memory Dump Collection'
 version: -1
 name: 'Exterro FTK: Initiate Memory Dump Collection'
-description: Upon detection of increased network traffic, use an automated Cortex
-  XSOAR playbook and FTK Connect to initiate collection of a covert memory dump. Once
-  the memory dump is collected, you can proceed with the investigation and recovery
-  of saved passwords, open network connections, or recover an entire webpage.
+description: Upon detection of increased network traffic, use an automated Cortex XSOAR playbook and FTK Connect to initiate collection of a covert memory dump. Once the memory dump is collected, you can proceed with the investigation and recovery of saved passwords, open network connections, or recover an entire webpage.
 starttaskid: "0"
 tasks:
   "0":
