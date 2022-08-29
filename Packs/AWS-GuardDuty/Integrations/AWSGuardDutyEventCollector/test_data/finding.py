@@ -41,7 +41,7 @@ FINDING = {
                         }
                     ],
                     "PublicDnsName": "GeneratedFindingPublicDNSName",
-                    "PublicIp": "1.3.3.7",
+                    "PublicIp": "10.0.0.1",
                     "SecurityGroups": [
                         {
                             "GroupId": "GeneratedFindingSecurityId",
@@ -157,7 +157,7 @@ FINDING = {
                         "Lat": 0,
                         "Lon": 0
                     },
-                    "IpAddressV4": "1.3.3.7",
+                    "IpAddressV4": "10.0.0.1",
                     "Organization": {
                         "Asn": "-1",
                         "AsnOrg": "GeneratedFindingASNOrg",
