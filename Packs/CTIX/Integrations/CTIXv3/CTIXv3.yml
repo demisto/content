@@ -1141,7 +1141,7 @@ script:
       description: Timestamp till when the indicator was valid
       type: number
     description: Lookup to get threat data
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   subtype: python3
 
