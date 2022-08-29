@@ -1,5 +1,69 @@
-This README contains the full documentation for your integration.
+Allows you to push and pull your external data to and from the KnowBe4 console.
 
-You auto-generate this README file from your integration YML file using the `demisto-sdk generate-docs` command.
+## Configure KnowBe4 KMSAT Event Collector on Cortex XSOAR
 
-For more information see the [integration documentation](https://xsoar.pan.dev/docs/integrations/integration-docs).
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for KnowBe4 KMSAT Event Collector.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Your server URL |  | True |
+    | API Key | The API Key to use for connection - for more information about how to generate API-Key please refer to https://support.knowbe4.com/hc/en-us/articles/360024863474-User-Event-API| True |
+    | First fetch time interval | The time range to consider for the initial data fetch. \(&amp;lt;number&amp;gt; &amp;lt;unit&amp;gt;, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years\). Default is 1 day. | False |
+    | Events Fetch Interval | The Fetch interval, it's recommended to set it to 5 hours as there're not much events for this api and there's a 10 call daily-limit for basic api key. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | The vendor corresponding to the integration that produced the events. |  |  |
+    | The product corresponding to the integration that produced the events. |  | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+**Important Notes**
+The API-Key has a daily limit of 10 calls per seat.
+Therefore, the default and adviced **Events Fetch Interval** is 5 hours and 
+**First fetch time interval** is 1 day.
+
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### kms-get-events
+***
+Manual command to fetch events and display them.
+
+
+#### Base Command
+
+`kms-get-events`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| occurred_date | Filter by Occurred Date (YYYY-MM-DD). | Optional | 
+| risk_level | Filter by Risk Level by entering a value from -10 (low risk) to 10 (high risk). | Optional | 
+| per_page | How many results to bring per page (the max &amp; default is 100). | Optional | 
+| page | Which results page to bring. | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*. Possible values are: True, False. Default is False. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| KMSat.Event.id | Number | Event id. | 
+| KMSat.Event.user.email | String | The target mail for this event. | 
+| KMSat.Event.user.id | Number | The id of the user the event is targeted to. | 
+| KMSat.Event.user.archived | Boolean | Whether the user is archived or not. | 
+| KMSat.Event.external_id | String | The event's external id. | 
+| KMSat.Event.source | String | The source of the event. | 
+| KMSat.Event.description | String | The event description. | 
+| KMSat.Event.occurred_date | String | The date the event occurred. | 
+| KMSat.Event.risk.level | Number | The event's risk level. | 
+| KMSat.Event.risk.factor | Number | The event's risk factor. | 
+| KMSat.Event.risk.expire_date | String | The event's expire date. | 
+| KMSat.Event.risk.decay_mode | String | The risk's decay mode. | 
+| KMSat.Event.event_type.id | Number | The id of the event type. | 
+| KMSat.Event.event_type.name | String | The name of the event type. | 
+
+#### Command example
+```!kms-get-events should_push_events=false"```

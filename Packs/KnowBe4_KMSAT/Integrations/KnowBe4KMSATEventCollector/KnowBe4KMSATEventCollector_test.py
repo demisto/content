@@ -34,8 +34,8 @@ def test_test_module(requests_mock):
 
 
 @pytest.mark.parametrize('last_run, mock_item, expected_last_run, expected_fetched_events', [
-    ({'latest_event_time': datetime.datetime(2022, 8, 6, 10, 5, 3)}, MOCK_ENTRY,
-     {'latest_event_time': datetime.datetime(2022, 8, 9, 10, 5, 13, 890)}, MOCK_ENTRY.get('data', [])[0:-1])])
+    ({'latest_event_time': "2022-08-05T10:05:03.000Z"}, MOCK_ENTRY,
+     {'latest_event_time': "2022-08-09T10:05:13.890Z"}, MOCK_ENTRY.get('data', [])[0:-1])])
 def test_fetch_events(requests_mock, last_run, mock_item, expected_last_run, expected_fetched_events):
     """
     Given:

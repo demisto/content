@@ -110,9 +110,9 @@ script:
     - contextPath: KMSat.Event.risk.factor
       description: The event's risk factor.
       type: Number
-    # - contextPath: KMSat.Event.risk.decay_mode
-    #   description: 
-    #   type: String
+    - contextPath: KMSat.Event.risk.decay_mode
+      description: The risk's decay mode.
+      type: String
     - contextPath: KMSat.Event.risk.expire_date
       description: The event's expire date.
       type: String
