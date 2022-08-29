@@ -2,7 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *  # noqa: E402
 
+from typing import Tuple
+
 import urllib3.util
+import boto3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -17,35 +20,77 @@ GD_SEVERITY_DICT = {
 }
 
 
-def get_events(aws_client, collect_from, collect_from_default, last_ids, severity, limit=MAX_RESULTS, detectors_num=MAX_RESULTS):
+def convert_events_with_datetime_to_str(events: list) -> list:
+    for event in events:
+        if event.get('Resource'):
+            resource = event.get('Resource', {})
+            service = event.get('Service', {})
+            if resource.get('S3BucketDetails'):
+                s3bucket_details = resource.get('S3BucketDetails')
+                if s3bucket_details and type(s3bucket_details) == list:
+                    for s3buckt_detail in s3bucket_details:
+                        if type(s3buckt_detail.get('CreatedAt')) == datetime:
+                            s3buckt_detail['CreatedAt'] = s3buckt_detail['CreatedAt'].__str__()
+            if type(resource.get('EksClusterDetails', {}).get('CreatedAt')) == datetime:
+                resource['EksClusterDetails']['CreatedAt'] = resource['EksClusterDetails']['CreatedAt'].__str__()
+            if type(resource.get('EcsClusterDetails', {}).get('TaskDetails', {}).get('TaskCreatedAt')) == datetime:
+                resource['EcsClusterDetails']['TaskDetails']['TaskCreatedAt'] = \
+                    resource['EcsClusterDetails']['TaskDetails']['TaskCreatedAt'].__str__()
+            if type(resource.get('EcsClusterDetails', {}).get('TaskDetails', {}).get('StartedAt')) == datetime:
+                resource['EcsClusterDetails']['TaskDetails']['StartedAt'] = \
+                    resource['EcsClusterDetails']['TaskDetails']['StartedAt'].__str__()
+            if type(service.get('EbsVolumeScanDetails', {}).get('ScanStartedAt')) == datetime:
+                service['EbsVolumeScanDetails']['ScanStartedAt'] = \
+                    service['EbsVolumeScanDetails']['ScanStartedAt'].__str__()
+            if type(service.get('EbsVolumeScanDetails', {}).get('ScanCompletedAt')) == datetime:
+                service['EbsVolumeScanDetails']['ScanCompletedAt'] = \
+                    service['EbsVolumeScanDetails']['ScanCompletedAt'].__str__()
 
-    events = []
-    detector_ids = []
-    next_token = None
+    return events
+
+
+def get_events(aws_client: boto3.client, collect_from: dict, collect_from_default: Optional[datetime], last_ids: dict,
+               severity: str, limit: int = MAX_RESULTS, detectors_num: int = MAX_RESULTS,
+               max_ids_per_req: int = MAX_IDS_PER_REQ) -> Tuple[list, dict, dict]:
+
+    events: list = []
+    detector_ids: list = []
+    next_token = 'starting_token'
     new_last_ids = last_ids.copy()
     new_collect_from = collect_from.copy()
 
+    demisto.info(f"AWSGuardDutyEventCollector Starting get_events. collect_from is {collect_from}, "
+                 f"collect_from_default is {collect_from_default}, last_ids are {last_ids}")
+
     # List all detectors
-    while next_token != 'invalid':
-        list_detectors_args = {'MaxResults': detectors_num}
-        if next_token:
+    while next_token:
+        list_detectors_args: dict = {'MaxResults': detectors_num}
+        if next_token != 'starting_token':
             list_detectors_args.update({'NextToken': next_token})
 
         response = aws_client.list_detectors(**list_detectors_args)
         detector_ids += response.get('DetectorIds', [])
-        next_token = response.get('NextToken', 'invalid')
+        next_token = response.get('NextToken')
+
+    demisto.info(f"AWSGuardDutyEventCollector - Found detector ids: {detector_ids}")
 
     for detector_id in detector_ids:
-        next_token = None
-        finding_ids = []
-        detector_events = []
+        demisto.info(f"AWSGuardDutyEventCollector - Getting finding ids for detector id {detector_id}. "
+                     f"Collecting from {collect_from.get(detector_id, collect_from_default)}")
+        next_token = 'starting_token'
+        finding_ids: list = []
+        detector_events: list = []
+        updated_at = parse_date_string(collect_from.get(detector_id)) if collect_from.get(
+            detector_id) else collect_from_default
         # List all finding ids
-        while next_token != 'invalid' and len(events) + len(finding_ids) < limit:
+        while next_token and len(events) + len(finding_ids) < limit:
+            demisto.info(f"AWSGuardDutyEventCollector - Getting more finding ids with next_token: {next_token} "
+                         f"and updated_at {updated_at}")
             list_finding_args = {
                 'DetectorId': detector_id,
                 'FindingCriteria': {
                     'Criterion': {
-                        'updatedAt': {'Gte': date_to_timestamp(collect_from.get(detector_id, collect_from_default))},
+                        'updatedAt': {'Gte': date_to_timestamp(updated_at)},
                         'severity': {'Gte': GD_SEVERITY_DICT.get(severity, 1)}
                     }
                 },
@@ -53,32 +98,47 @@ def get_events(aws_client, collect_from, collect_from_default, last_ids, severit
                     'AttributeName': 'updatedAt',
                     'OrderBy': 'ASC'
                 },
-                'MaxResults': limit
+                'MaxResults': min(limit - (len(events) + len(set(finding_ids))), MAX_RESULTS)
             }
-            if next_token:
+            if next_token != 'starting_token':
                 list_finding_args.update({'NextToken': next_token})
             list_findings = aws_client.list_findings(**list_finding_args)
             finding_ids += list_findings.get('FindingIds', [])
-            next_token = list_findings.get('NextToken', 'invalid')
+            next_token = list_findings.get('NextToken')
 
             # Handle duplicates and findings updated at the same time.
             if last_ids.get(detector_id) and last_ids.get(detector_id) in finding_ids:
+                demisto.info(f"AWSGuardDutyEventCollector - Cutting finding_ids {finding_ids} "
+                             f"for detector {detector_id} and last_id {last_ids.get(detector_id)}.")
                 finding_ids = finding_ids[finding_ids.index(last_ids.get(detector_id)) + 1:]
+                demisto.info(
+                    f"AWSGuardDutyEventCollector - New finding_ids {finding_ids} after cut "
+                    f"for detector {detector_id} and last_id {last_ids.get(detector_id)}.")
 
+        # Handle duplicates in response while preserving order
+        finding_ids_unique = list(dict.fromkeys(finding_ids))
+        demisto.info(f"Detector id {detector_id} unique finding ids found: {finding_ids_unique}")
         # Get all relevant findings
-        chunked_finding_ids = [finding_ids[i: i + MAX_IDS_PER_REQ] for i in range(0, len(finding_ids), MAX_IDS_PER_REQ)]
+        chunked_finding_ids = [finding_ids_unique[i: i + max_ids_per_req] for i in range(0, len(finding_ids_unique),
+                                                                                         max_ids_per_req)]
         for chunk_of_finding_ids in chunked_finding_ids:
+            demisto.info(f"Getting chunk of finding ids {chunk_of_finding_ids}")
             findings_response = aws_client.get_findings(DetectorId=detector_id, FindingIds=chunk_of_finding_ids)
             detector_events += findings_response.get('Findings', [])
 
+        demisto.info(f"AWSGuardDutyEventCollector - Detector id {detector_id} "
+                     f"findings found ({len(detector_events)}): {detector_events}")
         events += detector_events
+        demisto.info(f"AWSGuardDutyEventCollector - Number of events is {len(events)}")
 
         if finding_ids:
             new_last_ids[detector_id] = finding_ids[-1]
 
         if detector_events:
-            new_collect_from[detector_id] = detector_events[-1].get('updatedAt')
+            new_collect_from[detector_id] = detector_events[-1].get('UpdatedAt', detector_events[-1].get('CreatedAt'))
 
+    demisto.info(f"AWSGuardDutyEventCollector - Total number of events is {len(events)}")
+    events = convert_events_with_datetime_to_str(events)
     return events, new_last_ids, new_collect_from
 
 
@@ -121,18 +181,19 @@ def main():
             return_results('ok')
 
         if command in ('aws-gd-get-events', 'fetch-events'):
-            events = []
+            events: list = []
             if command == 'aws-gd-get-events':
 
                 collect_from = arg_to_datetime(demisto.args().get('collect_from', params.get('first_fetch')))
                 severity = demisto.args().get('severity', aws_gd_severity)
-                command_limit = demisto.args().get('limit', limit)
-                events, new_last_ids, new_collect_from = get_events(aws_client=client,
-                                                                    collect_from={},
-                                                                    collect_from_default=collect_from,
-                                                                    last_ids={},
-                                                                    severity=severity,
-                                                                    limit=command_limit)
+                command_limit = arg_to_number(demisto.args().get('limit', limit))
+                events, new_last_ids, new_collect_from = get_events(
+                    aws_client=client,
+                    collect_from={},
+                    collect_from_default=collect_from,
+                    last_ids={},
+                    severity=severity,
+                    limit=command_limit if command_limit else MAX_RESULTS)
 
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('AWSGuardDuty Logs', events, headerTransform=pascalToSpace),
@@ -145,23 +206,26 @@ def main():
 
             if command == 'fetch-events':
                 last_run = demisto.getLastRun()
-                collect_from = last_run.get('collect_from', {})
+                collect_from_dict = last_run.get('collect_from', {})
                 last_ids = last_run.get('last_ids', {})
 
-                events, new_last_ids, new_collect_from = get_events(aws_client=client,
-                                                                    collect_from=collect_from,
-                                                                    collect_from_default=first_fetch,
-                                                                    last_ids=last_ids,
-                                                                    severity=aws_gd_severity,
-                                                                    limit=limit)
+                events, new_last_ids, new_collect_from_dict = get_events(aws_client=client,
+                                                                         collect_from=collect_from_dict,
+                                                                         collect_from_default=first_fetch,
+                                                                         last_ids=last_ids,
+                                                                         severity=aws_gd_severity,
+                                                                         limit=limit if limit else MAX_RESULTS)
 
                 demisto.setLastRun({
-                    'collect_from': new_collect_from,
+                    'collect_from': new_collect_from_dict,
                     'last_ids': new_last_ids
                 })
 
             if argToBoolean(demisto.args().get('should_push_events', 'true')):
                 send_events_to_xsiam(events, params.get('vendor', 'AWS'), params.get('product', 'GuardDuty'))
+
+        elif command != 'test-module':
+            raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command in AWSGuardDutyEventCollector.\nError:\n{str(e)}')
