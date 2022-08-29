@@ -2340,3 +2340,25 @@ def test_gcc_resource(mocker, is_gcc: bool):
     client.indicators_http_request('https://example.com', should_use_security_center=True)
     assert req.call_args[1]['resource'] == {True: SECURITY_GCC_RESOURCE,
                                             False: SECURITY_CENTER_RESOURCE}[is_gcc]
+
+
+@pytest.mark.parametrize('page_num, page_size, res',
+                         [('5', '10600', {'$filter': 'filter', '$skip': '40000', '$top': '10000'}),
+                          ('3', '50', {'$filter': 'filter', '$skip': '100', '$top': '50'}),
+                          ('1', '3', {'$filter': 'filter', '$skip': '0', '$top': '3'})
+                          ]
+                         )
+def test_get_machines(mocker, page_num, page_size, res):
+    """
+    Given:
+        - page_num, page_size, limit to the get_machines method
+
+    When:
+        - Before calling the API to get the machines
+
+    Then:
+        - verify that the page_num , page_size, limit are added to the params array correctly.
+    """
+    req = mocker.patch.object(client_mocker.ms_client, 'http_request', return_value='')
+    client_mocker.get_machines('filter', page_num=page_num, page_size=page_size)
+    assert res == req.call_args.kwargs.get('params')
