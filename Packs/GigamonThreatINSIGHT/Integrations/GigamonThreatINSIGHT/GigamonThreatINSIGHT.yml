@@ -98,8 +98,17 @@ script:
     - name: traffic_direction
       description: Filter devices that have been noted to only have a certain directionality of traffic ("external" vs "internal").
     - name: sort_by
-      description: 'Sort output by: "ip", "internal", "external".'
+      auto: PREDEFINED
+      predefined:
+      - ip_address
+      - internal
+      - external
+      description: 'Sort output by: "ip_address", "internal", "external".'
     - name: sort_direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
       description: Sort direction ("asc" vs "desc").
     outputs:
     - contextPath: Insight.Devices.date
@@ -312,12 +321,16 @@ script:
     - name: interval
       auto: PREDEFINED
       predefined:
-      - hour
       - day
+      - month_to_day
       description: 'The interval to filter by (day, month_to_day).'
     - name: latest_each_month
       description: "latest_each_month\tNo\tNo\tFilters out all but the latest day and month_to_date for each month."
     - name: sort_order
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
       description: 'Sorts by account code first, then timestamp. asc or desc. The default is desc.'
     - name: limit
       description: 'The maximum number of records to return, default: 100, max: 1000.'
@@ -409,7 +422,7 @@ script:
     arguments:    
     - name: entity
       required: true
-      description: IP or Domain to get passive DNS data for.
+      description: IP to get DHCP data for.
     - name: start_date
       description: The earliest date before which to exclude results. Day granularity, inclusive.
     - name: end_date
@@ -507,10 +520,22 @@ script:
       auto: PREDEFINED
       predefined:
       - rules
+      - indicators
       description: Include additional information in the response (rules).
     - name: sort_by
-      description: 'Sort output by: "ip", "internal", "external".'
+      auto: PREDEFINED
+      predefined:
+      - first_seen
+      - last_seen
+      - status
+      - device_ip
+      - indicator_count
+      description: 'Field to sort by (first_seen, last_seen, status, device_ip, indicator_count).'
     - name: sort_order
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
       description: Sort direction ("asc" vs "desc").
     - name: offset
       description: The number of records to skip past.
@@ -648,10 +673,15 @@ script:
     - name: sort_by
       auto: PREDEFINED
       predefined:
-      - ip
-      - internal
-      - external
-      description: 'Sort output by: "ip", "internal", "external".'
+      - created
+      - updated
+      - detections
+      - severity
+      - confidence
+      - category
+      - last_seen
+      - detections_muted
+      description: 'The field to sort by: created, updated, detections, severity, confidence, category, last_seen, detections_muted. Defaults to updated.'
     - name: sort_order
       auto: PREDEFINED
       predefined:

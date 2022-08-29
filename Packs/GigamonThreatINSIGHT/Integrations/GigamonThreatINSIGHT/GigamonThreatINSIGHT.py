@@ -206,6 +206,9 @@ class EntityClient(Client):
             url_suffix=entity + "/file"
         )
 
+    def getAllowedRecord_Types(self) -> List[str]:
+        return ['a', 'aaaa', 'cname', 'mx', 'ns']
+
 
 class DetectionClient(Client):
     """ Client that makes HTTP requests to the Detections API
@@ -629,6 +632,12 @@ def commandGetEntityPdns(entityClient: EntityClient, args: Dict[str, Any]):
     """
     demisto.debug('commandGetEntityPdns has been called.')
 
+    record_type = args['record_type'].lower() if 'record_type' in args else ''
+    allowedRecordTypes = entityClient.getAllowedRecord_Types()
+    if record_type and record_type not in entityClient.getAllowedRecord_Types():
+        raise Exception(
+            f'The provided record_type [{record_type}[] is not allowed. Allowed types are: {allowedRecordTypes}.')
+
     entity = args.pop('entity')
     result: Dict[str, Any] = entityClient.getEntityPdns(entity, encodeArgsToURL(args, ['record_type', 'source', 'account_uuid']))
 
@@ -639,13 +648,13 @@ def commandGetEntityPdns(entityClient: EntityClient, args: Dict[str, Any]):
         raise Exception(f'We receive an invalid response from the server({result})')
 
     if 'result_count' in result and result.get('result_count') == 0:
-        return "We could not find any result for Get Entity Pdns."
+        return "We could not find any result for Get Entity PDNS."
 
     if key not in result:
         raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
-        return "We could not find any result for Get Entity Pdns."
+        return "We could not find any result for Get Entity PDNS."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -669,13 +678,13 @@ def commandGetEntityDhcp(entityClient: EntityClient, args: Dict[str, Any]):
         raise Exception(f'We receive an invalid response from the server ({result})')
 
     if 'result_count' in result and result.get('result_count') == 0:
-        return "We could not find any result for Get Entity Dhcp."
+        return "We could not find any result for Get Entity DHCP."
 
     if key not in result:
         raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
 
     if not result.get(key):
-        return "We could not find any result for Get Entity Dhcp."
+        return "We could not find any result for Get Entity DHCP."
 
     return CommandResults(
         outputs_prefix=prefix,
@@ -829,7 +838,7 @@ def commandGetDetections(detectionClient: DetectionClient, args):
     demisto.debug('commandGetDetections has been called.')
 
     result: Dict[str, Any] = detectionClient.getDetections(
-        encodeArgsToURL(args, ['status', 'rule_uuid'])
+        encodeArgsToURL(args, ['include', 'status', 'rule_uuid'])
     )
 
     # if there are more detections to be retrieved, pull the
@@ -845,7 +854,7 @@ def commandGetDetections(detectionClient: DetectionClient, args):
     )
 
     # Include the rules if they need to be included
-    if 'include' in args and args['include'] == 'rules':
+    if 'include' in args and 'rules' in args['include'].split(','):
         result = addDetectionRules(result)
 
     prefix = 'Insight.Detections'
@@ -873,7 +882,7 @@ def commandGetDetectionRules(detectionClient: DetectionClient, args):
     demisto.debug('CommandGetDetectionRules has been called.')
 
     result: Dict[str, Any] = detectionClient.getDetectionRules(
-        encodeArgsToURL(args)
+        encodeArgsToURL(args, ['confidence', 'category', 'attack_id'])
     )
 
     prefix = 'Insight.Rules'
