@@ -1,12 +1,9 @@
-import typing
+from typing import Dict, Generator, Tuple
 
-import demistomock as demisto
+from jbxapi import *
+
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
-import requests
-from typing import Dict, Generator, Tuple
-from jbxapi import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -186,6 +183,32 @@ def indicator_calculate_score(detection: str = '') -> Tuple[int, str]:
     return Common.DBotScore.NONE, ''
 
 
+def build_analysis_command_result(client: Client, analyses: List[Dict[str, str]]) -> CommandResults:
+    """
+         Helper function parsing the analysis result object.
+
+         Args:
+            client (Client): The client class.
+            analyses: List[Dict(str, str)]: The analyses result returned by the API.
+
+         Returns:
+             result: (CommandResults) The parsed CommandResults object.
+    """
+    hr_headers = ['ID', 'SampleName', 'Status', 'Time', 'MD5', 'SHA1', 'SHA256', 'Systems', 'Result', 'Errors',
+                  'Comments']
+    indicator_ls = []
+    hr_analysis_ls = []
+
+    for analysis in analyses:
+        hr_analysis_ls.append(build_analysis_hr(analysis))
+        indicator_ls.append(build_indicator_object(client, analysis))
+
+    return CommandResults(outputs=analyses, outputs_prefix='Joe.Analysis',
+                          readable_output=tableToMarkdown('Analysis Result:', hr_analysis_ls, hr_headers),
+                          indicators=indicator_ls
+                          )
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -207,52 +230,80 @@ def test_module(client: Client) -> str:
         return 'ok'
 
 
-def is_online(client: Client) -> CommandResults:
+def is_online_command(client: Client) -> CommandResults:
     """
          Check if the Joe Sandbox analysis back end is online or in maintenance mode.
 
          Args:
-            client (JoeSandbox): The Joe Sandbox API Wrapper.
+            client: (Client) The client class.
 
          Returns:
-             result (CommandResults): The CommandResults object .
+             result: (CommandResults) The CommandResults object .
     """
     result = client.server_online()
     status = 'online' if result.get('online') else 'offline'
     return CommandResults(readable_output=f"Joe server is {status}")
 
 
-def list_analysis(client: Client, args: Dict[str, str]) -> CommandResults:
+def list_analysis_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
         List all analyses in descending order, starting with the most recent. The result may be sliced by page and page size or by limit. (default 50)
 
          Args:
-            client (Client): The client class.
-            args: Dict(str, str): commands arguments.
+            client: (Client) The client class.
+            args: (Dict(str, str)) The commands arguments.
 
          Returns:
-             result (CommandResults): The CommandResults object.
+             result: (CommandResults) The CommandResults object.
     """
-    indicator_ls = []
-    hr_analysis_ls = []
-    hr_headers = ['ID', 'SampleName', 'Status', 'Time', 'MD5', 'SHA1', 'SHA256', 'Systems', 'Result', 'Errors', 'Comments']
 
     filtered_pages = pagination(args, client.analysis_list_paged())
     analysis_result_ls = client.analysis_info_list(webids=[entry.get('webid') for entry in filtered_pages])
-    for analysis in analysis_result_ls:
-        hr_analysis_ls.append(build_analysis_hr(analysis))
-        indicator_ls.append(build_indicator_object(client, analysis))
+    return build_analysis_command_result(client, analysis_result_ls)
 
-    return CommandResults(outputs=analysis_result_ls, outputs_prefix='Joe.Analysis',
-                          readable_output=tableToMarkdown('Analysis Result:', hr_analysis_ls, hr_headers),
-                          indicators=indicator_ls
-                          )
+
+def download_report_command(client: Client, args: Dict[str, str]) -> Dict[str, Any]:
+    """
+        Download a resource belonging to a report. This can be the full report, dropped binaries, etc.
+
+         Args:
+            client: (Client) The client class.
+            args: (Dict(str, str)) The commands arguments.
+
+         Returns:
+             result: (Dict[str, Any]) The fileResult object.
+    """
+    web_id = args.get('webid')
+    report_type = args.get('type')
+
+    result = client.analysis_download(webid=web_id, type=report_type)[1]
+    info = client.analysis_info(webid=web_id)
+    return fileResult(f'{info.get("filename", web_id)}_report.{report_type}', result, EntryType.ENTRY_INFO_FILE)
+
+
+def search_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    """
+        Download a resource belonging to a report. This can be the full report, dropped binaries, etc.
+
+         Args:
+            client: (Client) The client class.
+            args: (Dict(str, str)) The commands arguments.
+
+         Returns:
+             result: (Dict[str, Any]) The fileResult object.
+    """
+    query = args.get('query')
+
+    result = client.analysis_search(query=query)
+    if result:
+        return build_analysis_command_result(client, result)
+    return CommandResults(readable_output='No Results were found.')
 
 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
@@ -274,9 +325,13 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'joe-is-online':
-            return_results(is_online(client))
+            return_results(is_online_command(client))
         elif command == 'joe-list-analysis':
-            return_results((list_analysis(client, args)))
+            return_results((list_analysis_command(client, args)))
+        elif command == 'joe-download-report':
+            demisto.results(download_report_command(client, args))
+        elif command == 'joe-search':
+            return_results(search_command(client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

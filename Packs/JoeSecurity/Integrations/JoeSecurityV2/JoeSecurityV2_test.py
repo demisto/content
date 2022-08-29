@@ -78,33 +78,33 @@ def test_pagination_failure(args, excepted):
 
 
 @pytest.mark.parametrize('result,excepted', [({'online': True}, 'online'), ({'online': False}, 'offline')])
-def test_is_online(mocker, result, excepted):
+def test_is_online_command(mocker, result, excepted):
     """
     Given:
         - An app client object.
     When:
         - Is online method has been called.
     Then:
-        - Ensure the human-readable correspond to the expcted server status.
+        - Ensure the human-readable corresponding to the expcted server status.
     """
-    from JoeSecurityV2 import is_online
+    from JoeSecurityV2 import is_online_command
 
     client = mock_client()
     mocker.patch.object(client, 'server_online', return_value=result)
-    response = is_online(client)
+    response = is_online_command(client)
     assert response.readable_output == f'Joe server is {excepted}'
 
 
-def test_list_analysis(mocker):
+def test_list_analysis_command(mocker):
     """
     Given:
         - An app client object.
     When:
         - list analysis method has been called.
     Then:
-        - Ensure the corresponded indicator were created with the right DBscore and verify the outputs as expected.
+        - Ensure the corresponding indicator were created with the right DBscore and verify the outputs as expected.
     """
-    from JoeSecurityV2 import list_analysis
+    from JoeSecurityV2 import list_analysis_command
 
     result = util_load_json('test_data/analysis_info_list.json')
     excepted = util_load_json('test_data/analysis.json')
@@ -114,7 +114,7 @@ def test_list_analysis(mocker):
     mocker.patch.object(client, 'analysis_info', return_value={})
     mocker.patch.object(client, 'analysis_info_list', return_value=result)
 
-    response = list_analysis(client, {})
+    response = list_analysis_command(client, {})
     for index, indicator in enumerate(response.indicators):
         assert indicator.dbot_score.indicator == excepted.get('DBotScore')[index].get('Indicator')
         assert indicator.dbot_score.score == excepted.get('DBotScore')[index].get('Score')
@@ -123,3 +123,41 @@ def test_list_analysis(mocker):
         else:
             assert indicator.url == excepted.get('URL').get('Data')
     assert response.outputs == excepted.get('Joe').get('Analysis')
+
+
+@pytest.mark.parametrize('file_name,file_type', [('test1', 'html'), ('test2', 'json'), ('test3', 'pcap')])
+def test_download_report_command(mocker, file_name, file_type):
+    """
+    Given:
+        - An app client object, file name and file type.
+    When:
+        - download report method has been called.
+    Then:
+        - Ensure the corresponding File has been created.
+    """
+    from JoeSecurityV2 import download_report_command
+
+    client = mock_client()
+
+    mocker.patch.object(client, 'analysis_download', return_value=('test_report', 'html_test_report'))
+    mocker.patch.object(client, 'analysis_info', return_value={'filename': file_name})
+    response = download_report_command(client, {'web_id': '1', 'type': file_type})
+    assert response.get('File') == f'{file_name}_report.{file_type}'
+
+
+def test_search_command(mocker):
+    """
+    Given:
+        - An app client object.
+    When:
+        - search method has been called.
+    Then:
+        - Ensure the corresponding readable output is returned.
+    """
+    from JoeSecurityV2 import search_command
+
+    client = mock_client()
+
+    mocker.patch.object(client, 'analysis_search', return_value=[])
+    response = search_command(client, {'query': 'test.com'})
+    assert response.readable_output == 'No Results were found.'
