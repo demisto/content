@@ -2,8 +2,9 @@ import pytest
 from contextlib import nullcontext as does_not_raise
 from datetime import datetime
 from unittest.mock import call
+from typing import Optional
 
-from AWSGuardDutyEventCollector import parse_date_string, date_to_timestamp, get_events
+from AWSGuardDutyEventCollector import get_events
 from test_data.finding import FINDING, MOST_GENERAL_FINDING, MOST_GENERAL_FINDING_STR
 
 
@@ -30,7 +31,9 @@ FINDINGS = {
 }
 
 
-def get_expected_list_finding_args(detector_id, updated_at_ts, gd_severity, max_results, next_token):
+def get_expected_list_finding_args(detector_id: str, updated_at_ts: int, gd_severity: int, max_results: Optional[int],
+                                   next_token: Optional[str]):
+    """Return arguments as expected in the AWSClient session list_finding function."""
     list_finding_args = {
         'DetectorId': detector_id,
         'FindingCriteria': {
@@ -51,6 +54,7 @@ def get_expected_list_finding_args(detector_id, updated_at_ts, gd_severity, max_
 
 
 def update_finding_id(finding, new_id, updated_at=None):
+    """Update finding with new id and updatedAt fields."""
     finding["Id"] = new_id
     if updated_at:
         finding["UpdatedAt"] = updated_at
@@ -58,6 +62,7 @@ def update_finding_id(finding, new_id, updated_at=None):
 
 
 class MockedBoto3Client:
+    """Mocked AWSClient session for easier expectation settings."""
     def list_detectors(self, **kwargs):
         pass
 
@@ -69,6 +74,7 @@ class MockedBoto3Client:
 
 
 def create_mocked_client(mocker, list_detectors_res, list_finding_ids_res, get_findings_res):
+    """Create mocked AWSClient session and set the side effects for all relevant functions."""
     mocked_client = MockedBoto3Client()
     list_detectors_mock = mocker.patch.object(MockedBoto3Client, 'list_detectors', side_effect=list_detectors_res)
     list_findings_mock = mocker.patch.object(MockedBoto3Client, 'list_findings', side_effect=list_finding_ids_res)
@@ -77,6 +83,18 @@ def create_mocked_client(mocker, list_detectors_res, list_finding_ids_res, get_f
 
 
 def test_test_module(mocker):
+    """
+    Given:
+        AWSClient session
+        list_detectors, list_finding_ids, get_finding_ids valid responses
+
+    When:
+        Running test-module command
+
+    Then:
+        assert no exception is being raised.
+        assert api calls are called exactly once.
+    """
     mocked_client, list_detectors_mock, list_findings_mock, get_findings_mock = create_mocked_client(
         mocker=mocker,
         list_detectors_res=[LIST_DETECTORS_RESPONSE],
@@ -177,6 +195,19 @@ def test_test_module(mocker):
                           ])
 def test_get_events_command(mocker, limit, severity, list_detectors_res, list_finding_ids_res, findings_res,
                             list_detectors_calls, list_findings_calls, get_findings_calls, expected_events):
+    """
+    Given:
+        AWSClient session
+        get_events input parameters (limit, severity, collect_from_default)
+        list_detectors, list_finding_ids, get_finding_ids various responses
+
+    When:
+        Running get-events command
+
+    Then:
+        assert events are returned as expected.
+        assert api calls are called as expected.
+    """
     mocked_client, list_detectors_mock, list_findings_mock, get_findings_mock = create_mocked_client(
         mocker=mocker,
         list_detectors_res=list_detectors_res,
@@ -225,6 +256,20 @@ def test_get_events_command(mocker, limit, severity, list_detectors_res, list_fi
 def test_get_events_with_chunked_finding_ids(mocker, list_detectors_res, list_finding_ids_res, findings_res,
                                              list_detectors_calls, list_findings_calls, get_findings_calls,
                                              expected_events):
+    """
+    Given:
+        AWSClient session
+        get_events input parameters (limit, severity, collect_from_default)
+        list_finding_ids response with 5 findings
+        max_ids_per_req is set to 2
+
+    When:
+        Running get_events function
+
+    Then:
+        assert events are returned as expected.
+        assert api calls are called as expected and findings are paginated.
+    """
     mocked_client, list_detectors_mock, list_findings_mock, get_findings_mock = create_mocked_client(
         mocker=mocker,
         list_detectors_res=list_detectors_res,
@@ -253,6 +298,18 @@ def test_get_events_with_chunked_finding_ids(mocker, list_detectors_res, list_fi
                                        id='datetime to str conversion in all available fields')
                           ])
 def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_finding_ids_res, findings_res):
+    """
+    Given:
+        AWSClient session
+        get_events input parameters
+        findings response with datetime fields in the most general way.
+
+    When:
+        Running get_events function
+
+    Then:
+        assert events are returned as expected, with strings in all the date fields.
+    """
     mocked_client, list_detectors_mock, list_findings_mock, get_findings_mock = create_mocked_client(
         mocker=mocker,
         list_detectors_res=list_detectors_res,
@@ -381,6 +438,20 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
 def test_fetch_events(mocker, collect_from, last_ids, list_detectors_res, list_finding_ids_res, findings_res,
                       list_detectors_calls, list_findings_calls, get_findings_calls,
                       expected_events, expected_new_collect_from, expected_new_last_ids):
+    """
+    Given:
+        AWSClient session
+        get_events various input parameters (collect_from, last_ids)
+        list_detectors, list_finding_ids, get_finding_ids various responses.
+
+    When:
+        Running get_events as part of fetch-events command.
+
+    Then:
+        assert events are returned as expected.
+        assert api calls are called as expected.
+        assert new_collect_from and new_last_ids are returned as expected.
+    """
     mocked_client, list_detectors_mock, list_findings_mock, get_findings_mock = create_mocked_client(
         mocker=mocker,
         list_detectors_res=list_detectors_res,
@@ -401,4 +472,3 @@ def test_fetch_events(mocker, collect_from, last_ids, list_detectors_res, list_f
     assert events == expected_events
     assert new_collect_from == expected_new_collect_from
     assert new_last_ids == expected_new_last_ids
-

@@ -21,6 +21,14 @@ GD_SEVERITY_DICT = {
 
 
 def convert_events_with_datetime_to_str(events: list) -> list:
+    """Convert datetime fields in events to string.
+
+    Args:
+        events (list): Events received from AWS python SDK with datetime in certain fields.
+
+    Returns:
+        events (list): Events with dates as strings only.
+    """
     for event in events:
         if event.get('Resource'):
             resource = event.get('Resource', {})
@@ -52,6 +60,24 @@ def convert_events_with_datetime_to_str(events: list) -> list:
 def get_events(aws_client: boto3.client, collect_from: dict, collect_from_default: Optional[datetime], last_ids: dict,
                severity: str, limit: int = MAX_RESULTS, detectors_num: int = MAX_RESULTS,
                max_ids_per_req: int = MAX_IDS_PER_REQ) -> Tuple[list, dict, dict]:
+    """Get events from AWSGuardDuty.
+
+    Args:
+        aws_client: AWSClient session to get events from.
+        collect_from: Dict of {detector_id: datestring to start collecting from}, used when fetching.
+        collect_from_default: datetime to start collecting from if detector id is not found in collect_from keys.
+        last_ids: Dict of {detector_id: last fetched id}, used to avoid duplicates.
+        severity: The minimum severity to start fetching from. (inclusive)
+        limit: The maximum number of events to fetch.
+        detectors_num: The maximum number of detectors to fetch.
+        max_ids_per_req: The maximum number of findings to get per API request.
+
+    Returns:
+        (events, new_last_ids, new_collect_from)
+        events (list): The events fetched.
+        new_last_ids (dict): The new last_ids dict, expected to receive as last_ids input in the next run.
+        new_collect_from (dict): The new collect_from dict, expected to receive as collect_from input in the next run.
+    """
 
     events: list = []
     detector_ids: list = []
