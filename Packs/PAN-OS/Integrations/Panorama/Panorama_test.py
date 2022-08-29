@@ -1212,8 +1212,110 @@ class TestPanoramaCommitCommand:
         assert command_result.outputs == {'JobID': '123', 'Description': description, 'Status': 'Success'}
 
 
+class TestPanoramaPushToDeviceGroupCommand:
+
+    @staticmethod
+    def create_mock_responses(push_to_devices_job_status_count):
+        mocked_responses = [  # panorama commit api response mock
+            MockedResponse(
+                text='<response status="success" code="19"><result><msg>''<line>Push job '
+                     'enqueued with jobid 123</line></msg>''<job>123</job></result></response>',
+                status_code=200,
+            )
+        ]
+
+        mocked_responses += [  # add a mocked response indicating that the job is still in progress
+            MockedResponse(
+                text='<response status="success"><result><job><tenq>2022/07/16 07:50:04</tenq><tdeq>07:50:04<'
+                     '/tdeq><id>123</id><user>app</user><type>CommitAll</type><status>ACT</status><queued>NO</queued>'
+                     '<stoppable>no</stoppable><result>PEND</result><tfin>Still Active</tfin><description></'
+                     'description><positionInQ>0</positionInQ><progress>69</progress><warnings></warnings>'
+                     '<details></details></job></result></response>',
+                status_code=200,
+            ) for _ in range(push_to_devices_job_status_count)
+        ]
+
+        with open('test_data/push_to_device_success.xml', 'r') as data_file:
+            mocked_responses += [
+                MockedResponse(
+                    text=data_file.read(),
+                    status_code=200
+                )
+            ]
+
+        return mocked_responses
+
+    @pytest.mark.parametrize(
+        'api_response_queue',
+        [
+            create_mock_responses(push_to_devices_job_status_count=1),
+            create_mock_responses(push_to_devices_job_status_count=3),
+            create_mock_responses(push_to_devices_job_status_count=5),
+            create_mock_responses(push_to_devices_job_status_count=8),
+            create_mock_responses(push_to_devices_job_status_count=10),
+
+        ]
+    )
+    def test_panorama_push_to_devices_command_with_polling(self, mocker, api_response_queue):
+        """
+        Given:
+            - pan-os-push-to-device-group command arguments
+            - a queue for api responses of the following:
+                1) first value in the queue is the panorama push to the device group api response
+                2) panorama job status api response which indicates job isn't done yet (different number each time)
+                3) last value in the queue is the panorama job status that indicates it has finished and succeeded
+
+        When:
+            - running pan-os-push-to-device-group with polling argument = True
+
+        Then:
+            - make sure that the panorama_push_to_device_group_command function querying for
+              the push job ID status until its done.
+            - make sure that eventually after polling the panorama_push_to_device_group_command,
+              that it returns the expected output.
+            - make sure readable output is printed out only once.
+            - make sure context output is returned only when polling is finished.
+        """
+        import requests
+        import Panorama
+        from Panorama import panorama_push_to_device_group_command
+        from CommonServerPython import ScheduledCommand
+        Panorama.DEVICE_GROUP = 'device-group'
+
+        args = {
+            'description': 'a simple push',
+            'polling': 'true'
+        }
+
+        Panorama.API_KEY = 'APIKEY'
+        mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+        mocker.patch.object(requests, 'request', side_effect=api_response_queue)
+
+        command_result = panorama_push_to_device_group_command(args)
+        description = args.get('description')
+
+        assert command_result.readable_output == f'Waiting for Job-ID 123 to finish ' \
+                                                 f'push changes to device-group {Panorama.DEVICE_GROUP}...'
+
+        polling_args = {
+            'push_job_id': '123', 'description': description, 'hide_polling_output': True, 'polling': True
+        }
+
+        command_result = panorama_push_to_device_group_command(polling_args)
+        while command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
+            assert not command_result.readable_output  # make sure that indication of polling is printed only once
+            assert not command_result.outputs  # make sure no context output is being returned to war-room during polling
+            command_result = panorama_push_to_device_group_command(polling_args)
+
+        assert command_result.outputs.get('JobID') == '123'
+        assert command_result.outputs.get('Status') == 'Completed'
+        assert command_result.outputs.get('Details')
+        assert command_result.outputs.get('Warnings')
+        assert command_result.outputs.get('Description') == 'a simple push'
+
+
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
-                         [pytest.param({},
+                         [pytest.param({'polling': 'false'},
                                        {'action': 'all',
                                         'cmd': '<commit-all><shared-policy><device-group><entry name="some_device"/>'
                                                '</device-group></shared-policy></commit-all>',
@@ -1223,11 +1325,9 @@ class TestPanoramaCommitCommand:
                                                            '<line>Commit job enqueued with jobid 19420</line></msg>'
                                                            '<job>19420</job></result></response>', status_code=200,
                                                       reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {'DeviceGroup': 'some_device',
-                                                                                  'JobID': '19420',
-                                                                                  'Status': 'Pending'}},
+                                       {'DeviceGroup': 'some_device', 'JobID': '19420', 'Status': 'Pending'},
                                        id='no args'),
-                          pytest.param({'serial_number': '1337'},
+                          pytest.param({'serial_number': '1337', 'polling': 'false'},
                                        {'action': 'all',
                                         'cmd': '<commit-all><shared-policy><device-group><entry name="some_device">'
                                                '<devices><entry name="1337"/></devices></entry></device-group>'
@@ -1238,11 +1338,9 @@ class TestPanoramaCommitCommand:
                                                            '<line>Commit job enqueued with jobid 19420</line></msg>'
                                                            '<job>19420</job></result></response>', status_code=200,
                                                       reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {'DeviceGroup': 'some_device',
-                                                                                  'JobID': '19420',
-                                                                                  'Status': 'Pending'}},
+                                       {'DeviceGroup': 'some_device', 'JobID': '19420', 'Status': 'Pending'},
                                        id='serial number'),
-                          pytest.param({'include-template': 'false'},
+                          pytest.param({'include-template': 'false', 'polling': 'false'},
                                        {'action': 'all',
                                         'cmd': '<commit-all><shared-policy><device-group><entry name="some_device"/>'
                                                '</device-group><include-template>no</include-template></shared-policy>'
@@ -1253,9 +1351,7 @@ class TestPanoramaCommitCommand:
                                                            '<line>Commit job enqueued with jobid 19420</line></msg>'
                                                            '<job>19420</job></result></response>', status_code=200,
                                                       reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {'DeviceGroup': 'some_device',
-                                                                                  'JobID': '19420',
-                                                                                  'Status': 'Pending'}},
+                                       {'DeviceGroup': 'some_device', 'JobID': '19420', 'Status': 'Pending'},
                                        id='do not include template')
                           ])
 def test_panorama_push_to_device_group_command(mocker, args, expected_request_params, request_result,
@@ -1274,17 +1370,15 @@ def test_panorama_push_to_device_group_command(mocker, args, expected_request_pa
     import requests
     from Panorama import panorama_push_to_device_group_command
 
-    return_results_mock = mocker.patch.object(Panorama, 'return_results')
     request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
     Panorama.DEVICE_GROUP = 'some_device'
     Panorama.API_KEY = 'thisisabogusAPIKEY!'
-    panorama_push_to_device_group_command(args)
+    result = panorama_push_to_device_group_command(args)
 
     called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
     assert called_request_params == expected_request_params
 
-    demisto_result_got = return_results_mock.call_args.args[0]['EntryContext']
-    assert demisto_result_got == expected_demisto_result
+    assert result.outputs == expected_demisto_result
 
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
@@ -1495,7 +1589,10 @@ def test_get_url_category__url_length_gt_1278(mocker):
     return_results_mock = mocker.patch.object(Panorama, 'return_results')
 
     # run
-    panorama_get_url_category_command(url_cmd='url', url='test_url', additional_suspicious=[], additional_malicious=[])
+    panorama_get_url_category_command(
+        url_cmd='url', url='test_url', additional_suspicious=[],
+        additional_malicious=[], reliability='B - Usually reliable'
+    )
 
     # validate
     assert 'URL Node can be at most 1278 characters.' == return_results_mock.call_args[0][0][1].readable_output
@@ -1534,7 +1631,10 @@ def test_get_url_category_multiple_categories_for_url(mocker):
     return_results_mock = mocker.patch.object(Panorama, 'return_results')
 
     # run
-    panorama_get_url_category_command(url_cmd='url', url='test_url', additional_suspicious=[], additional_malicious=[])
+    panorama_get_url_category_command(
+        url_cmd='url', url='test_url', additional_suspicious=[],
+        additional_malicious=[], reliability='B - Usually reliable'
+    )
 
     # validate
     for i in range(3):

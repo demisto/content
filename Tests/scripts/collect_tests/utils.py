@@ -6,16 +6,17 @@ from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
-from packaging._structures import NegativeInfinityType, InfinityType
-
-from exceptions import (DeprecatedPackException, BlankPackNameException,
-                        NonDictException, NonexistentPackException,
-                        NoTestsConfiguredException, NotUnderPackException,
-                        SkippedPackException, UnsupportedPackException)
-from logger import logger
 from packaging import version
+from packaging._structures import InfinityType, NegativeInfinityType
 from packaging.version import Version
-from path_manager import PathManager
+
+from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS
+from Tests.scripts.collect_tests.exceptions import (
+    BlankPackNameException, DeprecatedPackException, NonDictException,
+    NonexistentPackException, NonXsoarSupportedPackException,
+    NoTestsConfiguredException, NotUnderPackException, SkippedPackException)
+from Tests.scripts.collect_tests.logger import logger
+from Tests.scripts.collect_tests.path_manager import PathManager
 
 
 def find_pack_folder(path: Path) -> Path:
@@ -74,19 +75,18 @@ class Machine(Enum):
     V6_5 = Version('6.5')
     V6_6 = Version('6.6')
     V6_8 = Version('6.8')
-    MASTER = 'master'
-    NIGHTLY = 'nightly'
+    V6_9 = Version('6.9')
+    MASTER = 'Master'
 
     @staticmethod
     def numeric_machines() -> tuple['Machine', ...]:
         return tuple(machine for machine in Machine if isinstance(machine.value, Version))
 
     @staticmethod
-    def get_suitable_machines(version_range: Optional[VersionRange], run_nightly: bool) -> tuple['Machine', ...]:
+    def get_suitable_machines(version_range: Optional[VersionRange]) -> tuple['Machine', ...]:
         """
 
         :param version_range: range of versions. If None, all versions are returned.
-        :param run_nightly: whether a nightly machine is required
         :return: Master, as well as all Machine items matching the input.
         """
         result: list[Machine] = [Machine.MASTER]
@@ -95,9 +95,6 @@ class Machine(Enum):
             version_range = VersionRange(version.NegativeInfinity, version.Infinity)
 
         result.extend(machine for machine in Machine.numeric_machines() if machine.value in version_range)
-
-        if run_nightly:
-            result.append(Machine.NIGHTLY)
 
         return tuple(result)
 
@@ -112,7 +109,7 @@ class DictBased:
 
     def __init__(self, dict_: dict):
         if not isinstance(dict_, dict):
-            raise ValueError('DictBased must be initialized with a dict')
+            raise NonDictException(None)
         self.content = dict_
         self.from_version: Version | NegativeInfinityType = self._calculate_from_version()
         self.to_version: Version | InfinityType = self._calculate_to_version()
@@ -162,11 +159,9 @@ class DictFileBased(DictBased):
     def __init__(self, path: Path, is_infrastructure: bool = False):
         if not path.exists():
             raise FileNotFoundError(path)
-        try:
-            PackManager.relative_to_packs(path)
-        except NotUnderPackException:
-            if not is_infrastructure:
-                raise
+
+        if ('Packs' not in path.parts) and (not is_infrastructure):
+            raise NotUnderPackException(path)
 
         if path.suffix not in ('.json', '.yml'):
             raise NonDictException(path)
@@ -178,7 +173,12 @@ class DictFileBased(DictBased):
                     body = json.load(file)
                 case '.yml':
                     body = yaml.load(file)
-        super().__init__(body)
+                case _:
+                    raise NonDictException(path)
+        try:
+            super().__init__(body)
+        except NonDictException:
+            raise NonDictException(path)
 
 
 class ContentItem(DictFileBased):
@@ -190,6 +190,7 @@ class ContentItem(DictFileBased):
         super().__init__(path)
         self.pack_path = find_pack_folder(self.path)
         self.deprecated = self.get('deprecated', warn_if_missing=False)
+        self._tests = self.get('tests', default=(), warn_if_missing=False)
 
     @property
     def id_(self) -> Optional[str]:  # Optional as pack_metadata (for example) doesn't have this field
@@ -202,14 +203,16 @@ class ContentItem(DictFileBased):
 
     @property
     def tests(self) -> list[str]:
-        tests = self.get('tests', [], warn_if_missing=False)
-        if len(tests) == 1 and 'no tests' in tests[0].lower():
+        if self.explicitly_no_tests():
             raise NoTestsConfiguredException(self.id_ or str(self.path))
-        return tests
+        return self._tests
 
     @property
     def pack_id(self):
         return self.pack_path.name
+
+    def explicitly_no_tests(self) -> bool:
+        return len(self._tests) == 1 and 'no test' in self._tests[0].lower()
 
 
 def read_skipped_test_playbooks(pack_folder: Path) -> set[str]:
@@ -267,17 +270,16 @@ class PackManager:
     def is_test_skipped_in_pack_ignore(self, test_file_name: str, pack_id: str):
         return test_file_name in self._pack_id_to_skipped_test_playbooks[pack_id]
 
-    @staticmethod
-    def relative_to_packs(path: Path | str):
-        if isinstance(path, str):
-            path = Path(path)
-        parts = path.parts
-        if 'Packs' not in parts:
+    def relative_to_packs(self, path: Path | str):
+        try:
+            return Path(path).absolute().relative_to(self.packs_path.absolute())
+        except ValueError:
             raise NotUnderPackException(path)
-        return Path(*path.parts[path.parts.index('Packs') + 1:])
 
     def validate_pack(self, pack: str) -> None:
         """raises InvalidPackException if the pack name is not valid."""
+        if pack in ALWAYS_INSTALLED_PACKS:
+            return
         if not pack:
             raise BlankPackNameException(pack)
         if pack in PackManager.skipped_packs:
@@ -287,10 +289,13 @@ class PackManager:
         if pack not in self.pack_ids:
             logger.error(f'nonexistent pack {pack}')
             raise NonexistentPackException(pack)
-        if not (support_level := self[pack].get('support')):
+        if not (support_level := self.get_support_level(pack)):
             raise ValueError(f'pack {pack} has no support level (`support`) field or value')
         if support_level.lower() != 'xsoar':
-            raise UnsupportedPackException(pack)
+            raise NonXsoarSupportedPackException(pack)
+
+    def get_support_level(self, pack: str) -> Optional[str]:
+        return self[pack].get('support', '').lower() or None
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:

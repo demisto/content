@@ -292,7 +292,8 @@ def url_command():
         'Type': 'url',
         'Indicator': url,
         'Vendor': 'EclecticIQ',
-        'Score': score
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
     context = {
@@ -377,7 +378,8 @@ def file_command():
         'Type': 'file',
         'Indicator': file,
         'Vendor': 'EclecticIQ',
-        'Score': score
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
     context = {
@@ -460,7 +462,8 @@ def email_command():
         'Type': 'email',
         'Indicator': email,
         'Vendor': 'EclecticIQ',
-        'Score': score
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
     context = {
@@ -543,7 +546,8 @@ def domain_command():
         'Type': 'domain',
         'Indicator': domain,
         'Vendor': 'EclecticIQ',
-        'Score': score
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
     context = {
