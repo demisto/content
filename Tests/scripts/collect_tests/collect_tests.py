@@ -23,7 +23,7 @@ from Tests.scripts.collect_tests.exceptions import (
 from Tests.scripts.collect_tests.id_set import IdSet
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
-from Tests.scripts.collect_tests.test_conf import TestConf, TestConfItem
+from Tests.scripts.collect_tests.test_conf import TestConf
 from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                PackManager, VersionRange,
                                                find_pack_folder,
