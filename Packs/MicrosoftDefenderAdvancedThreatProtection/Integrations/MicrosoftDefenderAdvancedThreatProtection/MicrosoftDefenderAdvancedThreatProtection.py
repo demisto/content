@@ -1203,14 +1203,24 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def get_machines(self, filter_req):
+    def get_machines(self, filter_req, page_size='', page_num=''):
         """Retrieves a collection of Machines that have communicated with Microsoft Defender ATP cloud on the last 30 days.
 
         Returns:
             dict. Machine's info
         """
         cmd_url = '/machines'
-        params = {'$filter': filter_req} if filter_req else None
+        params = {'$filter': filter_req} if filter_req else {}
+
+        if page_size and page_num:
+            page_size = arg_to_number(page_size)
+            page_size = min(page_size, 10000)
+            page_num = arg_to_number(page_num)
+            page_num = 0 if not page_num else (page_num - 1)
+            skip = page_num * page_size
+            params['$skip'] = str(skip)
+            params['$top'] = str(page_size)
+
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def get_file_related_machines(self, file):
@@ -2146,6 +2156,8 @@ def get_machines_command(client: MsClient, args: dict):
     risk_score = args.get('risk_score', '')
     health_status = args.get('health_status', '')
     os_platform = args.get('os_platform', '')
+    page_num = args.get('page_num', '')
+    page_size = args.get('page_size', '')
 
     more_than_one_hostname = len(hostname) > 1
     more_than_one_ip = len(ip) > 1
@@ -2175,7 +2187,7 @@ def get_machines_command(client: MsClient, args: dict):
         filter_req = reformat_filter_with_list_arg(fields_to_filter_by, field_with_multiple_values)
     else:
         filter_req = reformat_filter(fields_to_filter_by)
-    machines_response = client.get_machines(filter_req)
+    machines_response = client.get_machines(filter_req, page_num=page_num, page_size=page_size)
     machines_list = get_machines_list(machines_response)
 
     entry_context = {
