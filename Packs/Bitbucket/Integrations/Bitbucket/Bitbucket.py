@@ -41,29 +41,71 @@ class Client(BaseClient):
         self.serverUrl = server_url
         super().__init__(base_url=server_url, auth=auth, proxy=proxy, verify=verify)
 
-
     def test_module(self) -> str:
         repo = self.repository
+        #response = client.get_project...
         if repo:
             full_url = f'{self.serverUrl}/repositories/{self.workspace}/{repo}/refs/branches'
         else:
             full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/'
-        self.get_list(full_url)
+        # TODO: update
         return "ok"
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
-    def get_list(self, full_url, params=None) -> dict:
-        return self._http_request(method='GET', full_url=full_url, params=params)
+
+    def get_project_list_request(self, project_key: str, limit: int, params:Dict) -> list:
+        if not project_key:
+            full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/'
+        else:
+            project_key = project_key.upper()
+            full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/{project_key}'
+
+        results = []
+        response = self._http_request(method='GET', full_url=full_url, params=params)
+        if full_url[-1] != '/':
+            results.append(response)
+            return results
+        else:
+            results = self.check_pagination(response, limit, params)
+        return results
+
+
+    def get_open_branch_list_request(self, repo: str, limit: int, params: Dict) -> list:
+        if repo:
+            full_url = f'{self.serverUrl}/repositories/{self.workspace}/{repo}/refs/branches'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            full_url = f'{self.serverUrl}/repositories/{self.workspace}/{self.repository}/refs/branches'
+
+        response = self._http_request(method='GET', full_url=full_url, params=params)
+        results = self.check_pagination(response, limit, params)
+        return results
 
     # HELPER FUNCTIONS
+
+    def check_pagination(self, response:Dict, limit: int, params: Dict):
+        arr = response.get('values')
+        results_number = len(arr)
+        isNext = response.get('next', None)
+        results = []
+        if limit < results_number:
+            for res in arr:
+                if limit > 0:
+                    results.append(res)
+                    limit = limit - 1
+                else:
+                    break
+        elif limit == results_number or params.get('page', None) or (not isNext):
+            results = arr
+        else:
+            results = self.get_paged_results(response, results, limit, params)
+        return results
+
+
     def get_paged_results(self, response, results, limit, params=None) -> list:
         arr = response.get('values')
         isNext = response.get('next', None)
-        if not params:
-            page = None
-        else:
-            page = params.get('page', None)
-
         while response:
             for value in arr:
                 if limit > 0:
@@ -71,15 +113,13 @@ class Client(BaseClient):
                     limit = limit - 1
                 else:
                     break
-            if limit > 0 and isNext and not page:
-                response = self.get_list(isNext)
+            if limit > 0 and isNext:
+                response = self._http_request(method='GET', full_url=isNext)
                 isNext = response.get('next', None)
                 arr = response.get('values')
             else:
                 response = None
-
         return results
-
 
 
 ''' COMMAND FUNCTIONS '''
@@ -89,50 +129,20 @@ def test_module(client: Client) -> str:
     return client.test_module()
 
 
-
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
-
-def params_to_int(params):
-    page = params.get('page')
-    page_size = params.get('page_size')
-    if isinstance(page, str):
-        params['page'] = int(page)
-    if isinstance(page_size, str):
-        params['page_size'] = int(page_size)
-    return params
-
-
-def str_to_int(s):
-    if isinstance(s, str):
-        return int(s)
-    if isinstance(s, int):
-        return s
-    else:
-        return None
-
-
 def project_list_command(client: Client, args) -> CommandResults:
-    params = {'page': args.get('page', None),
-              'pagelen': args.get('page_size', None)}
-    params = params_to_int(params)
-    limit = args.get('limit', 50)
-    limit = str_to_int(limit)
+    params = {'page': arg_to_number(args.get('page')),
+              'pagelen': arg_to_number(args.get('page_size', 50))}
+    limit = arg_to_number(args.get('limit', 50))
     project_key = args.get('project_key')
+
+    results = client.get_project_list_request(project_key, limit, params)
+
     if not project_key:
-        full_url = f'{client.serverUrl}/workspaces/{client.workspace}/projects/'
         readable_name = f'List of the projects in {client.workspace}'
     else:
-        project_key = project_key.upper()
-        full_url = f'{client.serverUrl}/workspaces/{client.workspace}/projects/{project_key}'
         readable_name = f'The information about project {project_key}'
-
-    results = []
-    response = client.get_list(full_url, params)
-    if full_url[-1] == '/':
-        results = client.get_paged_results(response, results, limit, params)
-    else:
-        results.append(response)
 
     human_readable = []
 
@@ -143,11 +153,13 @@ def project_list_command(client: Client, args) -> CommandResults:
              'IsPrivate': value.get('is_private')}
         human_readable.append(d)
 
+    headers = ['Key', 'Name', 'Description', 'IsPrivate']
+
     readable_output = tableToMarkdown(
         name=readable_name,
         t=human_readable,
         removeNull=True,
-        headerTransform=string_to_table_header
+        headers=headers
     )
     return CommandResults(
         readable_output=readable_output,
@@ -157,23 +169,13 @@ def project_list_command(client: Client, args) -> CommandResults:
     )
 
 
-def open_branch_list_command(client: Client, args)-> CommandResults:
-    params = {'page': args.get('page', 1),
-              'pagelen': args.get('page_size', None)}
-    params = params_to_int(params)
-    limit = args.get('limit', 50)
-    limit = str_to_int(limit)
+def open_branch_list_command(client: Client, args) -> CommandResults:
+    params = {'page': arg_to_number(args.get('page')),
+              'pagelen': arg_to_number(args.get('page_size', 50))}
+    limit = arg_to_number(args.get('limit', 50))
     repo = args.get('repo', None)
 
-    if repo:
-        full_url = f'{client.serverUrl}/repositories/{client.workspace}/{repo}/refs/branches'
-    else:
-        if not client.repository:
-            raise Exception("Please provide a repository name")
-        full_url = f'{client.serverUrl}/repositories/{client.workspace}/{client.repository}/refs/branches'
-
-    response = client.get_list(full_url, params)
-    results = client.get_paged_results(response, [], limit, params)
+    results = client.get_open_branch_list_request(repo, limit, params)
 
     human_readable = []
 
@@ -183,12 +185,12 @@ def open_branch_list_command(client: Client, args)-> CommandResults:
              'LastCommitCreatedBy': demisto.get(value, 'target.author.user.display_name'),
              'LastCommitCreatedAt': demisto.get(value, 'target.date')}
         human_readable.append(d)
-
+    headers = ['Name', 'LastCommitCreatedBy', 'LastCommitCreatedAt', 'LastCommitHash']
     readable_output = tableToMarkdown(
         name='The list of open branches',
         t=human_readable,
         removeNull=True,
-        headerTransform=string_to_table_header
+        headers=headers
     )
     return CommandResults(
         readable_output=readable_output,
@@ -196,6 +198,7 @@ def open_branch_list_command(client: Client, args)-> CommandResults:
         outputs=results,
         raw_response=results
     )
+
 
 ''' MAIN FUNCTION '''
 
@@ -236,6 +239,9 @@ def main() -> None:
         elif demisto.command() == 'bitbucket-open-branch-list':
             result = open_branch_list_command(client, demisto.args())
             return_results(result)
+        #elif demisto.command() == 'bitbucket-branch-get':
+         #   result = branch_get_command(client, demisto.args())
+          #  return_results(result)
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors

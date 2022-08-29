@@ -46,23 +46,6 @@ configuration:
     additionalinfo: null
 script:
   commands:
-    - arguments:
-        - default: false
-          description: "[Enter a description of the argument, including any important
-            information users need to know, for example, default values.]"
-          isArray: false
-          name: dummy
-          required: true
-          secret: false
-      deprecated: false
-      description: "[Enter a description of the command, including any important
-        information users need to know, for example required permissions.]"
-      execution: false
-      name: baseintegration-dummy
-      outputs:
-        - contextPath: BaseIntegration.Output
-          description: "[Enter a description of the data returned in this output.]"
-          type: String
     - name: bitbucket-project-list
       arguments:
         - name: project_key
@@ -230,27 +213,8 @@ script:
         - contextPath: Bitbucket.Branch.target.message
           description: 'The message assigned to the last action in the branch.'
           type: String
-        - contextPath: Bitbucket.Branch.target.links.self.href
-          description: 'A link'
-          type: String
-        - contextPath: Bitbucket.Branch.target.links.html.href
-          description: 'A link to the last action page.'
-          type: String
-        - contextPath: Bitbucket.Branch.target.links.diff.href
-          description: 'A link'
-          type: String
-        - contextPath: Bitbucket.Branch.target.links.approve.href
-          description: 'A link'
-          type: String
-        - contextPath: Bitbucket.Branch.target.links.comments.href
-          description: 'A link to the comments about the action (?)'
-          type: String
-        - contextPath: Bitbucket.Branch.target.links.statuses.href
-          description: 'A link'
-          type: String
-        - contextPath: Bitbucket.Branch.target.links.patch.href
-          description: 'A link'
-          type: String
+        - contextPath: Bitbucket.Branch.target.links
+
         - contextPath: Bitbucket.Branch.target.parents.type
           description: 'The type of the parent who created the branch.'
           type: String
