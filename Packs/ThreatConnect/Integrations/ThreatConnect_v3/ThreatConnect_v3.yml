@@ -12,7 +12,9 @@ configuration:
   name: accessId
   required: true
   type: 0
-- displaypassword:  Secret key
+  hidden: true
+- additionalinfo: The API credentials
+  displaypassword: Secret key
   name: api_secret_key
   hiddenusername: true
   type: 9
@@ -21,12 +23,12 @@ configuration:
   name: defaultOrg
   required: false
   type: 0
-- additionalinfo: Free text box to add comma-separated tags to filter by.
+- additionalinfo: Free text box to add comma-separated tags to filter the fetched incidents by.
   display: Tags
   name: tags
   required: false
   type: 0
-- additionalinfo: The group type to filter by.
+- additionalinfo: The group type to filter the fetched incidents by.
   display: Group Type
   name: group_type
   options:
@@ -35,7 +37,7 @@ configuration:
   defaultValue: Incident
   required: false
   type: 16
-- additionalinfo: The status to filter the results by.
+- additionalinfo: The status to filter the fetched incidents by(if not field will fetch all statuses).
   display: Status
   name: status
   options:

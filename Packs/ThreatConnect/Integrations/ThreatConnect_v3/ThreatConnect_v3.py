@@ -1632,8 +1632,11 @@ COMMANDS = {
 def main(params):  # pragma: no cover
     try:
         insecure = not params.get('insecure')
-        client = Client(params.get('accessId'), params.get('api_secret_key').get('password'), params.get('baseUrl'),
-                        insecure)
+        handle_proxy()
+        credentials = demisto.params().get('api_secret_key', {})
+        secret_key = credentials.get('password') or demisto.params().get('api_secret_key')
+        client = Client(credentials.get('identifier'), secret_key,
+                        demisto.getParam('tc_api_path'), verify=insecure)
         command = demisto.command()
         if command in COMMANDS.keys():
             COMMANDS[command](client)  # type: ignore
