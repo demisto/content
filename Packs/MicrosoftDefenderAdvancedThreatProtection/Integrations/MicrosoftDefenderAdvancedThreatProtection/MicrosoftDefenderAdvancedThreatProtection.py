@@ -4859,8 +4859,8 @@ def main():  # pragma: no cover
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
     is_gcc = params.get('is_gcc', False)
-    auth_code = params.get('auth_code', {}).get('password', '')
-    redirect_uri = params.get('redirect_uri', '')
+    auth_code = params.get('auth_code', {}).get('password')
+    redirect_uri = params.get('redirect_uri')
 
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
