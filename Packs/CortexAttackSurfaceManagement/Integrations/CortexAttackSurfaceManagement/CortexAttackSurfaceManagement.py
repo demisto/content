@@ -7,10 +7,10 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
     def getexternalservices_request(self, field, operator, value):
-        data = {"request_data": {"filters": [{"field": field, "operator": operator, "value": value}]}}
+        data = {"request_data": {}}
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        headers['x-xdr-auth-id'] = '{{XSIAM_AUTH_ID}}'
+        headers['x-xdr-auth-id'] = '2'
 
         response = self._http_request('POST', 'public_api/v1/assets/get_external_services/',
                                       json_data=data, headers=headers)
@@ -21,7 +21,7 @@ class Client(BaseClient):
         data = {"request_data": {"service_id_list": service_id_list}}
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        headers['x-xdr-auth-id'] = '{{XSIAM_AUTH_ID}}'
+        headers['x-xdr-auth-id'] = '2'
 
         response = self._http_request('POST', 'public_api/v1/assets/get_external_service',
                                       json_data=data, headers=headers)
@@ -31,7 +31,7 @@ class Client(BaseClient):
     def getexternalipaddressranges_request(self):
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        headers['x-xdr-auth-id'] = '{{XSIAM_AUTH_ID}}'
+        headers['x-xdr-auth-id'] = '2'
         headers['accept'] = 'application/json'
 
         response = self._http_request('POST', 'public_api/v1/assets/get_external_ip_address_ranges/', headers=headers)
@@ -42,7 +42,7 @@ class Client(BaseClient):
         data = {"request_data": {"range_id_list": range_id_list}}
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        headers['x-xdr-auth-id'] = '{{XSIAM_AUTH_ID}}'
+        headers['x-xdr-auth-id'] = '2'
         headers['accept'] = 'application/json'
 
         response = self._http_request(
@@ -53,7 +53,7 @@ class Client(BaseClient):
     def getassetsinternetexposure_request(self):
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        headers['x-xdr-auth-id'] = '{{XSIAM_AUTH_ID}}'
+        headers['x-xdr-auth-id'] = '2'
         headers['accept'] = 'application/json'
 
         response = self._http_request('POST', 'public_api/v1/assets/get_assets_internet_exposure/', headers=headers)
@@ -64,7 +64,7 @@ class Client(BaseClient):
         data = {"request_data": {"asm_id_list": asm_id_list}}
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        headers['x-xdr-auth-id'] = '{{XSIAM_AUTH_ID}}'
+        headers['x-xdr-auth-id'] = '2'
         headers['accept'] = 'application/json'
 
         response = self._http_request(
