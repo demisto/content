@@ -1,28 +1,30 @@
 id: Dome9
-version: -1
+version: 21
+vcShouldKeepItemLegacyProdMachine: false
 name: Dome9
+description: Dome9 TestPlayBook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1827378c-0162-428c-8b09-6e40e91eade5
+    taskid: f668b316-e6e2-4d1a-8fbc-48bc1c5a8aea
     type: start
     task:
-      id: 1827378c-0162-428c-8b09-6e40e91eade5
+      id: f668b316-e6e2-4d1a-8fbc-48bc1c5a8aea
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": 1230
         }
       }
     note: false
@@ -34,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 712fe9db-dff4-4311-890c-e1b8fb92dc62
+    taskid: eff2a453-15f2-4f7c-8058-96c5d77bc434
     type: regular
     task:
-      id: 712fe9db-dff4-4311-890c-e1b8fb92dc62
+      id: eff2a453-15f2-4f7c-8058-96c5d77bc434
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -46,16 +48,17 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 200
+          "y": 1360
         }
       }
     note: false
@@ -67,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 56360e5e-d97f-4729-8385-f03e7ea04a9e
+    taskid: fa533f4e-8aa2-444d-8db3-0dd8013db13f
     type: regular
     task:
-      id: 56360e5e-d97f-4729-8385-f03e7ea04a9e
+      id: fa533f4e-8aa2-444d-8db3-0dd8013db13f
       version: -1
       name: dome9-access-lease-list
       script: checkpointdome9|||dome9-access-lease-list
@@ -81,11 +84,12 @@ tasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 12600
         }
       }
     note: false
@@ -97,10 +101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7ca40a38-2ffd-46d8-82dd-f30f42c56ce4
+    taskid: ec5d2eb7-14a3-41f7-89dc-31b040583245
     type: condition
     task:
-      id: 7ca40a38-2ffd-46d8-82dd-f30f42c56ce4
+      id: ec5d2eb7-14a3-41f7-89dc-31b040583245
       version: -1
       name: Verify Outputs
       type: condition
@@ -108,7 +112,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -153,44 +157,12 @@ tasks:
             value:
               simple: CheckPointDome9.AccessLease.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 472e28f6-edfb-4e1d-8609-3e75d090b7fd
-    type: regular
-    task:
-      id: 472e28f6-edfb-4e1d-8609-3e75d090b7fd
-      version: -1
-      name: dome9-access-lease-delete
-      script: checkpointdome9|||dome9-access-lease-delete
-      type: regular
-      iscommand: true
-      brand: checkpointdome9
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      lease_id:
-        simple: 184513ac-a61e-4471-b11d-27aace262caf
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 800
+          "y": 12800
         }
       }
     note: false
@@ -202,10 +174,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 9bcd90a1-f880-48d3-8bee-fb5ce69b0b99
+    taskid: db7201fb-872f-403c-8936-b7ba4be945bf
     type: regular
     task:
-      id: 9bcd90a1-f880-48d3-8bee-fb5ce69b0b99
+      id: db7201fb-872f-403c-8936-b7ba4be945bf
       version: -1
       name: dome9-access-lease-invitation-list
       script: checkpointdome9|||dome9-access-lease-invitation-list
@@ -216,11 +188,12 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1000
+          "y": 13200
         }
       }
     note: false
@@ -232,10 +205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 1e898684-5953-49d4-8586-a060211d0ccf
+    taskid: 661461ee-858b-4291-8845-7db8b4ad7295
     type: condition
     task:
-      id: 1e898684-5953-49d4-8586-a060211d0ccf
+      id: 661461ee-858b-4291-8845-7db8b4ad7295
       version: -1
       name: Verify Outputs
       type: condition
@@ -243,7 +216,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+      - "62"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -268,44 +241,12 @@ tasks:
             value:
               simple: CheckPointDome9.AccessLease.Invitation.recipientName
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: fc503c9f-13ca-4a42-8434-ee64ac1d6755
-    type: regular
-    task:
-      id: fc503c9f-13ca-4a42-8434-ee64ac1d6755
-      version: -1
-      name: dome9-access-lease-invitation-delete
-      script: checkpointdome9|||dome9-access-lease-invitation-delete
-      type: regular
-      iscommand: true
-      brand: checkpointdome9
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      invitation_id:
-        simple: ac88b05f-aace-444d-a254-180fd6f58fd4
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1400
+          "y": 13400
         }
       }
     note: false
@@ -317,10 +258,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 88638f7b-5759-4069-8ff4-22e619a1d95f
+    taskid: 346e263e-f56e-4939-8ad7-501538811c48
     type: regular
     task:
-      id: 88638f7b-5759-4069-8ff4-22e619a1d95f
+      id: 346e263e-f56e-4939-8ad7-501538811c48
       version: -1
       name: dome9-findings-search
       script: checkpointdome9|||dome9-findings-search
@@ -331,6 +272,7 @@ tasks:
       '#none#':
       - "9"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -347,10 +289,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 0965e1cb-ac69-45de-877b-f324ec219913
+    taskid: e47d54d0-d75d-47b3-818e-4596e03ab549
     type: condition
     task:
-      id: 0965e1cb-ac69-45de-877b-f324ec219913
+      id: e47d54d0-d75d-47b3-818e-4596e03ab549
       version: -1
       name: Verify Outputs
       type: condition
@@ -366,35 +308,21 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CheckPointDome9.Findings.id
+              simple: CheckPointDome9.Finding.id
             iscontext: true
           right:
             value: {}
       - - operator: isNotEmpty
           left:
             value:
-              simple: CheckPointDome9.Findings.severity
+              simple: CheckPointDome9.Finding.severity
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: CheckPointDome9.Findings.region
+              simple: CheckPointDome9.Finding.region
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.Findings.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.Findings.action
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.Findings.alertType
-            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -411,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: d06e6997-0cc8-469c-8b98-112106697184
+    taskid: 00b88bea-0a3a-4599-8bbe-09d60869b2d0
     type: regular
     task:
-      id: d06e6997-0cc8-469c-8b98-112106697184
+      id: 00b88bea-0a3a-4599-8bbe-09d60869b2d0
       version: -1
       name: dome9-ip-list-create
       script: checkpointdome9|||dome9-ip-list-create
@@ -426,10 +354,11 @@ tasks:
       - "11"
     scriptarguments:
       description:
-        simple: description8899
+        simple: description123
       name:
-        simple: name8899
+        simple: name123
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -446,10 +375,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 20b41bc3-06ce-4813-89b7-6a6aa4d98140
+    taskid: ba81a2af-644d-458a-83f9-291b005b4162
     type: condition
     task:
-      id: 20b41bc3-06ce-4813-89b7-6a6aa4d98140
+      id: ba81a2af-644d-458a-83f9-291b005b4162
       version: -1
       name: Verify Outputs
       type: condition
@@ -479,6 +408,7 @@ tasks:
             value:
               simple: CheckPointDome9.IpList.description
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -495,10 +425,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: dfa74f5a-a7a9-4c48-8a2a-eb4edb471b6b
+    taskid: fd2c8b91-b0a2-4d69-821a-6b70c1462d78
     type: regular
     task:
-      id: dfa74f5a-a7a9-4c48-8a2a-eb4edb471b6b
+      id: fd2c8b91-b0a2-4d69-821a-6b70c1462d78
       version: -1
       name: dome9-ip-list-update
       script: checkpointdome9|||dome9-ip-list-update
@@ -511,13 +441,16 @@ tasks:
     scriptarguments:
       comment:
         simple: New
+      description:
+        simple: updated
       ip:
         simple: 10.0.9.9
       list_id:
-        simple: "131881"
+        simple: ${CheckPointDome9.IpList.id}
       update_mode:
         simple: add_new_items
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -534,20 +467,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 75b43ed3-f7cc-437c-8c2a-02a7016f0cc2
+    taskid: 776ff37f-206a-41ba-8aeb-1972c8d7ea8e
     type: regular
     task:
-      id: 75b43ed3-f7cc-437c-8c2a-02a7016f0cc2
+      id: 776ff37f-206a-41ba-8aeb-1972c8d7ea8e
       version: -1
       name: dome9-ip-list-get
       script: checkpointdome9|||dome9-ip-list-get
       type: regular
       iscommand: true
-      brand: ""
+      brand: checkpointdome9
     nexttasks:
       '#none#':
       - "14"
+    scriptarguments:
+      list_id:
+        simple: ${CheckPointDome9.IpList.id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -564,10 +501,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: db81c07c-9cfb-4fc8-8b6f-30836ecd1c6f
+    taskid: 8837e7e4-7b8b-4cde-8f8d-9e72aa1f1ece
     type: condition
     task:
-      id: db81c07c-9cfb-4fc8-8b6f-30836ecd1c6f
+      id: 8837e7e4-7b8b-4cde-8f8d-9e72aa1f1ece
       version: -1
       name: Verify Outputs
       type: condition
@@ -602,6 +539,7 @@ tasks:
             value:
               simple: CheckPointDome9.IpList.items
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -618,10 +556,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: addbd07b-8c92-4649-896f-6ba02cb225a1
+    taskid: ecc64cd8-7344-406b-8d5f-7a7b37a7c12f
     type: regular
     task:
-      id: addbd07b-8c92-4649-896f-6ba02cb225a1
+      id: ecc64cd8-7344-406b-8d5f-7a7b37a7c12f
       version: -1
       name: dome9-ip-list-delete
       script: checkpointdome9|||dome9-ip-list-delete
@@ -630,11 +568,12 @@ tasks:
       brand: checkpointdome9
     nexttasks:
       '#none#':
-      - "16"
+      - "18"
     scriptarguments:
       list_id:
-        simple: "130301"
+        simple: ${CheckPointDome9.IpList.id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -651,10 +590,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 936b5862-633f-4b1e-8f4e-e63cb107b7e1
+    taskid: 8a4d0511-5f95-4f38-8948-c7b68eb73ec8
     type: regular
     task:
-      id: 936b5862-633f-4b1e-8f4e-e63cb107b7e1
+      id: 8a4d0511-5f95-4f38-8948-c7b68eb73ec8
       version: -1
       name: dome9-ip-list-metadata-list
       script: checkpointdome9|||dome9-ip-list-metadata-list
@@ -665,11 +604,12 @@ tasks:
       '#none#':
       - "17"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3200
+          "y": 3610
         }
       }
     note: false
@@ -681,101 +621,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: e665beef-808c-430b-807f-da5e701c30e5
+    taskid: 5dd91dfe-608f-4846-8d2b-74c6b7931ec3
     type: condition
     task:
-      id: e665beef-808c-430b-807f-da5e701c30e5
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "18"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.IpList.Metadata.id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.IpList.Metadata.cidr
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.IpList.Metadata.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.IpList.Metadata.classificaiton
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 28873e4b-2f5a-4bde-85e9-5c1c4c6359eb
-    type: regular
-    task:
-      id: 28873e4b-2f5a-4bde-85e9-5c1c4c6359eb
-      version: -1
-      name: dome9-ip-list-metadata-create
-      script: checkpointdome9|||dome9-ip-list-metadata-create
-      type: regular
-      iscommand: true
-      brand: checkpointdome9
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      cidr:
-        simple: 187.0.0.5/32
-      classification:
-        simple: Dmz
-      name:
-        simple: new0408
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 8ff4a042-4ee3-4225-8f77-99371579db29
-    type: condition
-    task:
-      id: 8ff4a042-4ee3-4225-8f77-99371579db29
+      id: 5dd91dfe-608f-4846-8d2b-74c6b7931ec3
       version: -1
       name: Verify Outputs
       type: condition
@@ -803,6 +652,94 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
+              simple: CheckPointDome9.IpList.Metadata.classificaiton
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: a1739435-af97-4880-81d3-c2eb5dc5cdf9
+    type: regular
+    task:
+      id: a1739435-af97-4880-81d3-c2eb5dc5cdf9
+      version: -1
+      name: dome9-ip-list-metadata-create
+      script: checkpointdome9|||dome9-ip-list-metadata-create
+      type: regular
+      iscommand: true
+      brand: checkpointdome9
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      cidr:
+        simple: 232.182.10.5/32
+      classification:
+        simple: Dmz
+      name:
+        simple: TilTamar
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e47c340d-4193-4977-8972-21b5c727e849
+    type: condition
+    task:
+      id: e47c340d-4193-4977-8972-21b5c727e849
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CheckPointDome9.IpList.Metadata.cidr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
               simple: CheckPointDome9.IpList.Metadata.name
             iscontext: true
       - - operator: isNotEmpty
@@ -810,11 +747,12 @@ tasks:
             value:
               simple: CheckPointDome9.IpList.Metadata.classificaiton
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3800
+          "y": 3380
         }
       }
     note: false
@@ -826,10 +764,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 2b0a5ee1-7661-4fb1-88a4-ee2fd0d1703f
+    taskid: f6399d0e-abf7-4f61-8e92-51be9a7df35d
     type: regular
     task:
-      id: 2b0a5ee1-7661-4fb1-88a4-ee2fd0d1703f
+      id: f6399d0e-abf7-4f61-8e92-51be9a7df35d
       version: -1
       name: dome9-ip-list-metadata-update
       script: checkpointdome9|||dome9-ip-list-metadata-update
@@ -841,10 +779,11 @@ tasks:
       - "21"
     scriptarguments:
       classification:
-        simple: Unsafe
+        simple: InternalVpc
       list_metadata_id:
-        simple: 270301-196.88.6.3/32
+        simple: ${CheckPointDome9.IpList.Metadata.id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -861,10 +800,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 62b5fcfc-20b3-40d4-8e5f-4cff92a2dd3b
+    taskid: ed33a9be-7d4e-4f18-8d56-df9874a81a18
     type: condition
     task:
-      id: 62b5fcfc-20b3-40d4-8e5f-4cff92a2dd3b
+      id: ed33a9be-7d4e-4f18-8d56-df9874a81a18
       version: -1
       name: Verify Outputs
       type: condition
@@ -882,6 +821,8 @@ tasks:
             value:
               simple: CheckPointDome9.IpList.Metadata.id
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -890,13 +831,9 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CheckPointDome9.IpList.Metadata.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: CheckPointDome9.IpList.Metadata.classificaiton
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -913,10 +850,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: de83f0d1-b8b5-42cd-83ae-225e006c2f28
+    taskid: 5c0a2330-313a-44b1-8fb2-0d7b06ea3fea
     type: regular
     task:
-      id: de83f0d1-b8b5-42cd-83ae-225e006c2f28
+      id: 5c0a2330-313a-44b1-8fb2-0d7b06ea3fea
       version: -1
       name: dome9-ip-list-metadata-delete
       script: checkpointdome9|||dome9-ip-list-metadata-delete
@@ -925,15 +862,16 @@ tasks:
       brand: checkpointdome9
     nexttasks:
       '#none#':
-      - "23"
+      - "25"
     scriptarguments:
       account_id:
-        simple: "270301"
+        simple: ${CheckPointDome9.IpList.Metadata.id=val.split('-')[0]}
       address:
-        simple: 1.51.6.2
+        simple: ${CheckPointDome9.IpList.Metadata.cidr=val.split('/')[0]}
       mask:
-        simple: "32"
+        simple: ${CheckPointDome9.IpList.Metadata.cidr=val.split('/')[1]}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -950,10 +888,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: e4236992-db61-420e-8644-5bb535b261b8
+    taskid: 3c0ec3a7-7b2c-4aa9-8529-ed9267ebbac7
     type: regular
     task:
-      id: e4236992-db61-420e-8644-5bb535b261b8
+      id: 3c0ec3a7-7b2c-4aa9-8529-ed9267ebbac7
       version: -1
       name: dome9-compliance-remediation-get
       script: checkpointdome9|||dome9-compliance-remediation-get
@@ -964,11 +902,12 @@ tasks:
       '#none#':
       - "24"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4600
+          "y": 4800
         }
       }
     note: false
@@ -980,10 +919,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: d7c8eaa4-f639-4e4d-8477-8dee61dd993f
+    taskid: 522eff10-32fd-47cb-8dff-76ad8b70a2e1
     type: condition
     task:
-      id: d7c8eaa4-f639-4e4d-8477-8dee61dd993f
+      id: 522eff10-32fd-47cb-8dff-76ad8b70a2e1
       version: -1
       name: Verify Outputs
       type: condition
@@ -991,7 +930,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "25"
+      - "26"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1021,45 +960,7 @@ tasks:
             value:
               simple: CheckPointDome9.ComplianceRemediation.cloudBots
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: ac10e5a7-85f2-4b92-843f-8c164109a691
-    type: regular
-    task:
-      id: ac10e5a7-85f2-4b92-843f-8c164109a691
-      version: -1
-      name: dome9-compliance-remediation-create
-      script: checkpointdome9|||dome9-compliance-remediation-create
-      type: regular
-      iscommand: true
-      brand: checkpointdome9
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      cloudbots:
-        simple: cloudtrail_enable
-      comment:
-        simple: newComment
-      rule_logic_hash:
-        simple: aeW4uZDz3l+HqMQKXsPYkw
-      ruleset_id:
-        simple: "-41"
-    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1074,12 +975,52 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: 443ffa68-5c7e-4e2e-8621-2d5999c83fe4
+  "25":
+    id: "25"
+    taskid: d9722b52-7a93-40f6-8f9e-986f60e6c2e6
     type: regular
     task:
-      id: 443ffa68-5c7e-4e2e-8621-2d5999c83fe4
+      id: d9722b52-7a93-40f6-8f9e-986f60e6c2e6
+      version: -1
+      name: dome9-compliance-remediation-create
+      script: checkpointdome9|||dome9-compliance-remediation-create
+      type: regular
+      iscommand: true
+      brand: checkpointdome9
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      cloudbots:
+        simple: cloudtrail_enable
+      comment:
+        simple: TilTamarTilTilTamara
+      rule_logic_hash:
+        simple: aeW4uZDz3l+HqMQKXsPYkw
+      ruleset_id:
+        simple: "-41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 33ca3df3-018d-4cb9-8008-81303e62fee0
+    type: regular
+    task:
+      id: 33ca3df3-018d-4cb9-8008-81303e62fee0
       version: -1
       name: dome9-compliance-remediation-update
       script: checkpointdome9|||dome9-compliance-remediation-update
@@ -1101,6 +1042,7 @@ tasks:
       ruleset_id:
         simple: "-10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1117,10 +1059,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: c71227ee-4bda-46b2-8456-85d3cb51fa3f
+    taskid: ccbda5d7-7084-4870-8b82-a5824c33b37e
     type: regular
     task:
-      id: c71227ee-4bda-46b2-8456-85d3cb51fa3f
+      id: ccbda5d7-7084-4870-8b82-a5824c33b37e
       version: -1
       name: dome9-compliance-remediation-delete
       script: checkpointdome9|||dome9-compliance-remediation-delete
@@ -1132,8 +1074,9 @@ tasks:
       - "28"
     scriptarguments:
       remediation_id:
-        simple: e72a5b2a-713b-49c0-9887-a092303339dd
+        simple: ${CheckPointDome9.ComplianceRemediation.id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1150,10 +1093,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 4aeb5a88-ec55-4f61-80aa-4829f2ed0226
+    taskid: 83587ce0-7d1b-447f-8814-4dcc96d6f35c
     type: regular
     task:
-      id: 4aeb5a88-ec55-4f61-80aa-4829f2ed0226
+      id: 83587ce0-7d1b-447f-8814-4dcc96d6f35c
       version: -1
       name: dome9-compliance-ruleset-list
       script: checkpointdome9|||dome9-compliance-ruleset-list
@@ -1164,6 +1107,7 @@ tasks:
       '#none#':
       - "29"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1180,10 +1124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: d871dc0e-d457-41a5-8528-f86187d09be4
+    taskid: b1724ba8-ed86-44e1-8d46-54f0fac8a51c
     type: condition
     task:
-      id: d871dc0e-d457-41a5-8528-f86187d09be4
+      id: b1724ba8-ed86-44e1-8d46-54f0fac8a51c
       version: -1
       name: Verify Outputs
       type: condition
@@ -1216,6 +1160,7 @@ tasks:
             value:
               simple: CheckPointDome9.ComplianceRuleset.description
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1232,20 +1177,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: d265bba8-f4ad-4a5b-8595-5bb841dc84ca
+    taskid: 343f8f2f-c0c6-4bd2-8803-04364f44528f
     type: regular
     task:
-      id: d265bba8-f4ad-4a5b-8595-5bb841dc84ca
+      id: 343f8f2f-c0c6-4bd2-8803-04364f44528f
       version: -1
       name: dome9-compliance-ruleset-rule-list
       script: checkpointdome9|||dome9-compliance-ruleset-rule-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: checkpointdome9
     nexttasks:
       '#none#':
       - "31"
+    scriptarguments:
+      rule_id:
+        simple: ${CheckPointDome9.ComplianceRuleset.id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1262,10 +1211,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 3f8eae81-5c2f-4140-8018-2d539135c0d5
+    taskid: c036accb-49d6-4971-8df6-4ee8f7622088
     type: condition
     task:
-      id: 3f8eae81-5c2f-4140-8018-2d539135c0d5
+      id: c036accb-49d6-4971-8df6-4ee8f7622088
       version: -1
       name: Verify Outputs
       type: condition
@@ -1303,6 +1252,7 @@ tasks:
             value:
               simple: CheckPointDome9.ComplianceRuleset.Rule.description
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1319,10 +1269,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 4f2784f2-f6f4-4c8b-8118-2b6d788f1949
+    taskid: b37f550c-f348-4f4c-85ad-ee1f43c3a9aa
     type: regular
     task:
-      id: 4f2784f2-f6f4-4c8b-8118-2b6d788f1949
+      id: b37f550c-f348-4f4c-85ad-ee1f43c3a9aa
       version: -1
       name: dome9-security-group-instance-attach
       script: checkpointdome9|||dome9-security-group-instance-attach
@@ -1331,7 +1281,7 @@ tasks:
       brand: checkpointdome9
     nexttasks:
       '#none#':
-      - "33"
+      - "39"
     scriptarguments:
       instance_id:
         simple: i-0adef6e1787466a89
@@ -1340,6 +1290,7 @@ tasks:
       sg_id:
         simple: '18817113 '
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1356,10 +1307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: ec108798-396a-46af-81a9-3cfff9f6d3eb
+    taskid: 568ffd0b-0b1f-46d5-899e-28e657e7eb0b
     type: regular
     task:
-      id: ec108798-396a-46af-81a9-3cfff9f6d3eb
+      id: 568ffd0b-0b1f-46d5-899e-28e657e7eb0b
       version: -1
       name: dome9-security-group-service-delete
       script: checkpointdome9|||dome9-security-group-service-delete
@@ -1368,18 +1319,19 @@ tasks:
       brand: checkpointdome9
     nexttasks:
       '#none#':
-      - "34"
+      - "40"
     scriptarguments:
       service_id:
-        simple: 6-0-5656
+        simple: "3"
       sg_id:
-        simple: '18817113 '
+        simple: "18817113"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6600
+          "y": 7780
         }
       }
     note: false
@@ -1391,10 +1343,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 41ef5074-7ac5-4390-86f5-ea29a0f65353
+    taskid: 849cc9ca-fb00-4e6e-8cd3-ecac1304a288
     type: regular
     task:
-      id: 41ef5074-7ac5-4390-86f5-ea29a0f65353
+      id: 849cc9ca-fb00-4e6e-8cd3-ecac1304a288
       version: -1
       name: dome9-security-group-tags-update
       script: checkpointdome9|||dome9-security-group-tags-update
@@ -1403,7 +1355,7 @@ tasks:
       brand: checkpointdome9
     nexttasks:
       '#none#':
-      - "35"
+      - "33"
     scriptarguments:
       key:
         simple: k1
@@ -1412,11 +1364,12 @@ tasks:
       value:
         simple: v1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6800
+          "y": 7590
         }
       }
     note: false
@@ -1428,10 +1381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: a745f711-a112-4633-8f5d-a47650b2ae3a
+    taskid: db5a0a1a-62c5-41bd-8914-4ca6cfb38200
     type: regular
     task:
-      id: a745f711-a112-4633-8f5d-a47650b2ae3a
+      id: db5a0a1a-62c5-41bd-8914-4ca6cfb38200
       version: -1
       name: dome9-security-group-service-create
       script: checkpointdome9|||dome9-security-group-service-create
@@ -1442,6 +1395,8 @@ tasks:
       '#none#':
       - "36"
     scriptarguments:
+      name:
+        simple: aaa
       policy_type:
         simple: Inbound
       port:
@@ -1451,11 +1406,12 @@ tasks:
       sg_id:
         simple: "18817113"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7000
+          "y": 6780
         }
       }
     note: false
@@ -1467,10 +1423,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 207eb14c-6c1a-4fb1-8135-cd8cc96221f4
+    taskid: dc933f19-3e5f-4c2c-816f-917d6beb0df5
     type: condition
     task:
-      id: 207eb14c-6c1a-4fb1-8135-cd8cc96221f4
+      id: dc933f19-3e5f-4c2c-816f-917d6beb0df5
       version: -1
       name: Verify Outputs
       type: condition
@@ -1490,21 +1446,51 @@ tasks:
             iscontext: true
           right:
             value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.SecurityGroup.Service.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.SecurityGroup.Service.protocolType
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.SecurityGroup.Service.port
-            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 2fbe8165-5d73-4d41-83e8-0e27d55daf71
+    type: regular
+    task:
+      id: 2fbe8165-5d73-4d41-83e8-0e27d55daf71
+      version: -1
+      name: dome9-security-group-service-update
+      script: checkpointdome9|||dome9-security-group-service-update
+      type: regular
+      iscommand: true
+      brand: checkpointdome9
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      icmptype:
+        simple: EchoReply
+      policy_type:
+        simple: Inbound
+      port:
+        simple: "242"
+      protocol_type:
+        simple: GGP
+      service_name:
+        simple: aaa
+      sg_id:
+        simple: "18817113"
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1519,53 +1505,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: 88e1682c-4396-4e86-83a0-1b95f254414d
-    type: regular
-    task:
-      id: 88e1682c-4396-4e86-83a0-1b95f254414d
-      version: -1
-      name: dome9-security-group-service-update
-      script: checkpointdome9|||dome9-security-group-service-update
-      type: regular
-      iscommand: true
-      brand: checkpointdome9
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      policy_type:
-        simple: Inbound
-      port:
-        simple: "242"
-      protocol_type:
-        simple: ICMP
-      service_name:
-        simple: aaa
-      sg_id:
-        simple: "18817113"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 7400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 3948c15f-8b30-44a3-803e-8fb0a0ec777b
+    taskid: 4826a1b5-d480-4778-85e3-1cbc57ae4d27
     type: condition
     task:
-      id: 3948c15f-8b30-44a3-803e-8fb0a0ec777b
+      id: 4826a1b5-d480-4778-85e3-1cbc57ae4d27
       version: -1
       name: Verify Outputs
       type: condition
@@ -1573,7 +1518,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "39"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1585,26 +1530,12 @@ tasks:
             iscontext: true
           right:
             value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.SecurityGroup.Service.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.SecurityGroup.Service.protocolType
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.SecurityGroup.Service.port
-            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7600
+          "y": 7370
         }
       }
     note: false
@@ -1616,10 +1547,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 0f887850-d5bb-4ee8-8a28-216859472ef3
+    taskid: c1b258fb-7fe5-4856-8c38-7292ad5f6393
     type: regular
     task:
-      id: 0f887850-d5bb-4ee8-8a28-216859472ef3
+      id: c1b258fb-7fe5-4856-8c38-7292ad5f6393
       version: -1
       name: dome9-security-group-instance-detach
       script: checkpointdome9|||dome9-security-group-instance-detach
@@ -1628,7 +1559,7 @@ tasks:
       brand: checkpointdome9
     nexttasks:
       '#none#':
-      - "40"
+      - "35"
     scriptarguments:
       instance_id:
         simple: i-0adef6e1787466a89
@@ -1637,11 +1568,12 @@ tasks:
       sg_id:
         simple: "18817113"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7800
+          "y": 6590
         }
       }
     note: false
@@ -1653,10 +1585,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: a1d0dd55-3e5b-4c0f-81a1-2e5b2fdf2126
+    taskid: fe6fe2ac-9772-4978-8367-d3a62a0af47d
     type: regular
     task:
-      id: a1d0dd55-3e5b-4c0f-81a1-2e5b2fdf2126
+      id: fe6fe2ac-9772-4978-8367-d3a62a0af47d
       version: -1
       name: dome9-instance-list
       script: checkpointdome9|||dome9-instance-list
@@ -1667,6 +1599,7 @@ tasks:
       '#none#':
       - "41"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1683,10 +1616,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 4d571ebc-d3ee-4b81-84ea-cab03ff4fad1
+    taskid: d461ee77-6aae-42e0-86bd-215f3d565c0a
     type: condition
     task:
-      id: 4d571ebc-d3ee-4b81-84ea-cab03ff4fad1
+      id: d461ee77-6aae-42e0-86bd-215f3d565c0a
       version: -1
       name: Verify Outputs
       type: condition
@@ -1721,6 +1654,7 @@ tasks:
             value:
               simple: CheckPointDome9.Instance.name
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1737,10 +1671,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 2cdb1ee3-12d2-489b-81fa-3c37ec35477c
+    taskid: 828fa487-a2f0-490e-8ee3-f9ae42cd716b
     type: regular
     task:
-      id: 2cdb1ee3-12d2-489b-81fa-3c37ec35477c
+      id: 828fa487-a2f0-490e-8ee3-f9ae42cd716b
       version: -1
       name: dome9-security-group-protection-mode-update
       script: checkpointdome9|||dome9-security-group-protection-mode-update
@@ -1756,6 +1690,7 @@ tasks:
       sg_id:
         simple: "18817113"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1772,10 +1707,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: fa2b35a2-42ae-43c5-84f5-6c6863a7ea58
+    taskid: b719d94e-8286-4d45-81b7-a125a6b35a56
     type: regular
     task:
-      id: fa2b35a2-42ae-43c5-84f5-6c6863a7ea58
+      id: b719d94e-8286-4d45-81b7-a125a6b35a56
       version: -1
       name: dome9-cloud-accounts-list
       script: checkpointdome9|||dome9-cloud-accounts-list
@@ -1786,6 +1721,7 @@ tasks:
       '#none#':
       - "44"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1802,10 +1738,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 3838a2f9-d6c6-4418-8728-9a755e212dfe
+    taskid: 7ea651a3-420c-4056-816e-93a0952eedbf
     type: regular
     task:
-      id: 3838a2f9-d6c6-4418-8728-9a755e212dfe
+      id: 7ea651a3-420c-4056-816e-93a0952eedbf
       version: -1
       name: dome9-security-group-ip-list-details-get
       script: checkpointdome9|||dome9-security-group-ip-list-details-get
@@ -1816,6 +1752,7 @@ tasks:
       '#none#':
       - "45"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1832,10 +1769,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 7b203f2e-f024-4147-8bf0-7773ee145a38
+    taskid: fe43fb88-5c48-4ea9-804e-7f05648ab3f0
     type: condition
     task:
-      id: 7b203f2e-f024-4147-8bf0-7773ee145a38
+      id: fe43fb88-5c48-4ea9-804e-7f05648ab3f0
       version: -1
       name: Verify Outputs
       type: condition
@@ -1853,6 +1790,7 @@ tasks:
             value:
               simple: CheckPointDome9.SecurityGroup.security_group_id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1869,10 +1807,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: c4b969aa-0ac3-47b6-8f60-99ef75e2bcb7
+    taskid: 6687a612-ce7a-4c64-84a8-0025092f6950
     type: regular
     task:
-      id: c4b969aa-0ac3-47b6-8f60-99ef75e2bcb7
+      id: 6687a612-ce7a-4c64-84a8-0025092f6950
       version: -1
       name: dome9-security-group-list
       script: checkpointdome9|||dome9-security-group-list
@@ -1883,6 +1821,7 @@ tasks:
       '#none#':
       - "47"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1899,10 +1838,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 8172f32a-4af4-4466-8151-9bcf2cca1a12
+    taskid: 77d9b0ac-6bb0-47a9-8527-a7a641e20d39
     type: condition
     task:
-      id: 8172f32a-4af4-4466-8151-9bcf2cca1a12
+      id: 77d9b0ac-6bb0-47a9-8527-a7a641e20d39
       version: -1
       name: Verify Outputs
       type: condition
@@ -1920,6 +1859,7 @@ tasks:
             value:
               simple: CheckPointDome9.SecurityGroup.security_group_id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1936,10 +1876,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 74c14b24-a56d-49cf-850b-4dd5090edc25
+    taskid: bf85c18a-ca8a-445b-822b-d33448437eb5
     type: regular
     task:
-      id: 74c14b24-a56d-49cf-850b-4dd5090edc25
+      id: bf85c18a-ca8a-445b-822b-d33448437eb5
       version: -1
       name: dome9-global-search-get
       script: checkpointdome9|||dome9-global-search-get
@@ -1950,6 +1890,7 @@ tasks:
       '#none#':
       - "49"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1966,10 +1907,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 8bcd8c73-6b40-4ea6-8014-f3ab0bbe52e5
+    taskid: a9c4da7c-a3ec-4b4d-8f23-7b9975fad511
     type: condition
     task:
-      id: 8bcd8c73-6b40-4ea6-8014-f3ab0bbe52e5
+      id: a9c4da7c-a3ec-4b4d-8f23-7b9975fad511
       version: -1
       name: Verify Outputs
       type: condition
@@ -1987,16 +1928,7 @@ tasks:
             value:
               simple: CheckPointDome9.GlobalSearch.Alert.id
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.GlobalSearch.Alert.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.GlobalSearch.Alert.severity
-            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2013,10 +1945,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 2e78e52d-3450-44a8-8708-8b09baf405a7
+    taskid: 6e46c57d-ea40-4cc7-8fed-3bb88c75f252
     type: regular
     task:
-      id: 2e78e52d-3450-44a8-8708-8b09baf405a7
+      id: 6e46c57d-ea40-4cc7-8fed-3bb88c75f252
       version: -1
       name: dome9-cloud-trail-get
       script: checkpointdome9|||dome9-cloud-trail-get
@@ -2027,6 +1959,7 @@ tasks:
       '#none#':
       - "51"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2043,10 +1976,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: a8bdd60a-acfb-4ccc-8130-dd05fbdd58f8
+    taskid: e9c5a681-f3e1-4444-8d63-b8e186b9cd82
     type: condition
     task:
-      id: a8bdd60a-acfb-4ccc-8130-dd05fbdd58f8
+      id: e9c5a681-f3e1-4444-8d63-b8e186b9cd82
       version: -1
       name: Verify Outputs
       type: condition
@@ -2079,6 +2012,7 @@ tasks:
             value:
               simple: CheckPointDome9.CloudTrail.accountId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2095,10 +2029,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 8fd80610-5522-4a69-8227-8c64b5356f3a
+    taskid: eea14673-95fe-43ab-8e62-fe6ab1b70ee6
     type: regular
     task:
-      id: 8fd80610-5522-4a69-8227-8c64b5356f3a
+      id: eea14673-95fe-43ab-8e62-fe6ab1b70ee6
       version: -1
       name: dome9-organizational-unit-view-get
       script: checkpointdome9|||dome9-organizational-unit-view-get
@@ -2109,6 +2043,7 @@ tasks:
       '#none#':
       - "53"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2125,10 +2060,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 13bd01d8-e319-441c-8298-8a3c43f85876
+    taskid: b02d5568-8256-4c58-8f39-9640feb46d71
     type: condition
     task:
-      id: 13bd01d8-e319-441c-8298-8a3c43f85876
+      id: b02d5568-8256-4c58-8f39-9640feb46d71
       version: -1
       name: Verify Outputs
       type: condition
@@ -2144,11 +2079,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CheckPointDome9.OrganizationalUnitView.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: CheckPointDome9.OrganizationalUnitView.name
             iscontext: true
       - - operator: isNotEmpty
@@ -2156,11 +2086,7 @@ tasks:
             value:
               simple: CheckPointDome9.OrganizationalUnitView.path
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.OrganizationalUnitView.children
-            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2177,10 +2103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: b7277c84-ae36-4291-811d-436c0e16020e
+    taskid: 2d689cd5-8996-49e6-8254-ea445170fd46
     type: regular
     task:
-      id: b7277c84-ae36-4291-811d-436c0e16020e
+      id: 2d689cd5-8996-49e6-8254-ea445170fd46
       version: -1
       name: dome9-organizational-unit-flat-get
       script: checkpointdome9|||dome9-organizational-unit-flat-get
@@ -2189,8 +2115,9 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "55"
+      - "56"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2205,64 +2132,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
-    taskid: b0e60389-42ff-4ca9-8628-242768a607d0
-    type: condition
-    task:
-      id: b0e60389-42ff-4ca9-8628-242768a607d0
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "56"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.OrganizationalUnitFlat.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.OrganizationalUnitFlat.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.OrganizationalUnitFlat.path
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.OrganizationalUnitFlat.parentId
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 11000
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: f5f7119e-f09d-4d7e-8399-7aafd3efc897
+    taskid: 99b1d7b8-30f6-40a2-80ba-5829aee10e89
     type: regular
     task:
-      id: f5f7119e-f09d-4d7e-8399-7aafd3efc897
+      id: 99b1d7b8-30f6-40a2-80ba-5829aee10e89
       version: -1
       name: dome9-organizational-unit-get
       script: checkpointdome9|||dome9-organizational-unit-get
@@ -2273,6 +2148,7 @@ tasks:
       '#none#':
       - "57"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2289,10 +2165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 3d421efc-38d7-4335-8a52-2f03321f35bd
+    taskid: aa8b7690-4344-4e29-83b2-0b917ad9cb39
     type: condition
     task:
-      id: 3d421efc-38d7-4335-8a52-2f03321f35bd
+      id: aa8b7690-4344-4e29-83b2-0b917ad9cb39
       version: -1
       name: Verify Outputs
       type: condition
@@ -2308,23 +2184,9 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CheckPointDome9.OrganizationalUnit.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: CheckPointDome9.OrganizationalUnit.name
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.OrganizationalUnit.path
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.OrganizationalUnit.parentId
-            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2341,10 +2203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 70f7ebe6-bf00-4c72-8f81-bbcde1b5dc26
+    taskid: 79e4d7f9-27f1-42cf-81aa-e842b077157a
     type: regular
     task:
-      id: 70f7ebe6-bf00-4c72-8f81-bbcde1b5dc26
+      id: 79e4d7f9-27f1-42cf-81aa-e842b077157a
       version: -1
       name: dome9-findings-get
       script: checkpointdome9|||dome9-findings-get
@@ -2358,6 +2220,7 @@ tasks:
       finding_id:
         simple: fac67d9a-246a-42b9-8bfa-7fc02457da4d
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2374,10 +2237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 5c029b4f-3b14-48f4-81cd-7deb2610b8e8
+    taskid: 87fc7a9a-84f7-42d7-8648-842782f3ed3e
     type: condition
     task:
-      id: 5c029b4f-3b14-48f4-81cd-7deb2610b8e8
+      id: 87fc7a9a-84f7-42d7-8648-842782f3ed3e
       version: -1
       name: Verify Outputs
       type: condition
@@ -2427,6 +2290,7 @@ tasks:
             value:
               simple: CheckPointDome9.Finding.cloudAccountId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2443,10 +2307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 8702bd95-5351-45fb-862d-69a33dea40f2
+    taskid: 1775b67f-7bda-4747-8fec-f129410a0eb3
     type: regular
     task:
-      id: 8702bd95-5351-45fb-862d-69a33dea40f2
+      id: 1775b67f-7bda-4747-8fec-f129410a0eb3
       version: -1
       name: dome9-findings-bundle-get
       script: checkpointdome9|||dome9-findings-bundle-get
@@ -2455,13 +2319,14 @@ tasks:
       brand: checkpointdome9
     nexttasks:
       '#none#':
-      - "61"
+      - "2"
     scriptarguments:
       bundle_id:
         simple: "-10"
       rule_logic_hash:
         simple: aeW4uZDz3l+HqMQKXsPYkw
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2476,83 +2341,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "61":
-    id: "61"
-    taskid: 2d0b5d5f-b70a-4bfe-8ffc-0b8a96170888
-    type: condition
-    task:
-      id: 2d0b5d5f-b70a-4bfe-8ffc-0b8a96170888
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "62"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.FindingsBundle.id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.FindingsBundle.severity
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.FindingsBundle.remediation
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.FindingsBundle.accountId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CheckPointDome9.FindingsBundle.region
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 12200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 03a4306f-75c1-466b-8090-649c8d809e1e
+    taskid: 14556b2a-daf2-4708-8309-2fea7a965ce9
     type: title
     task:
-      id: 03a4306f-75c1-466b-8090-649c8d809e1e
+      id: 14556b2a-daf2-4708-8309-2fea7a965ce9
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 12400
+          "y": 13775
         }
       }
     note: false
@@ -2567,14 +2373,12 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 12415,
+        "height": 12610,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": 1230
       }
     }
   }
 inputs: []
 outputs: []
-fromversion: 6.2.0
-description: Dome9 TestPlayBook
