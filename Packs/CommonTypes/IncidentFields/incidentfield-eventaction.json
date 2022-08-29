@@ -17,8 +17,8 @@
   "Update",
   "Deactivate",
   "Reactivate",
-  "McAfee Skyhigh Security Alert",
-  "McAfee Skyhigh Security Threat"
+  "Skyhigh Security Alert",
+  "Skyhigh Security Threat"
  ],
  "useAsKpi": true,
  "locked": false,

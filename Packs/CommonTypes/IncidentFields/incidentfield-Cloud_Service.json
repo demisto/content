@@ -28,8 +28,8 @@
         "Trend Micro CAS Event",
         "CrowdStrike Falcon Detection",
         "CrowdStrike Falcon Incident",
-        "McAfee Skyhigh Security Alert",
-        "McAfee Skyhigh Security Threat"
+        "Skyhigh Security Alert",
+        "Skyhigh Security Threat"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,

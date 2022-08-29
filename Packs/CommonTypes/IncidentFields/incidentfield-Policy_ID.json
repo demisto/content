@@ -12,8 +12,8 @@
     "Symantec DLP Discover Incident",
     "Symantec DLP Endpoint Incident",
     "Symantec DLP Network Incident",
-    "McAfee Skyhigh Security Alert",
-    "McAfee Skyhigh Security Threat"
+    "Skyhigh Security Alert",
+    "Skyhigh Security Threat"
   ],
   "breachScript": "",
   "caseInsensitive": true,

@@ -7,8 +7,8 @@
     "CrowdStrike Falcon Incident",
     "Malware",
     "Microsoft Defender For Endpoint",
-    "McAfee Skyhigh Security Alert",
-    "McAfee Skyhigh Security Threat"
+    "Skyhigh Security Alert",
+    "Skyhigh Security Threat"
   ],
   "breachScript": "",
   "caseInsensitive": true,

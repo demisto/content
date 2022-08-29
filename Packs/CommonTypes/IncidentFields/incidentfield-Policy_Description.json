@@ -8,8 +8,8 @@
 		"AWS EC2 Instance Misconfiguration",
 		"Microsoft CAS Alert",
 		"Tripwire File Change",
-		"McAfee Skyhigh Security Alert",
-		"McAfee Skyhigh Security Threat"
+		"Skyhigh Security Alert",
+		"Skyhigh Security Threat"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
