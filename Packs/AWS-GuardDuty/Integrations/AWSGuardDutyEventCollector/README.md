@@ -1,4 +1,4 @@
-Amazon Web Services Guard Duty Service (gd) event collector integraion for XSIAM.
+Amazon Web Services Guard Duty Service (gd) event collector integration for XSIAM.
 This integration was integrated and tested with version xx of AWS - GuardDuty Event Collector
 
 ## Configure AWS - GuardDuty Event Collector on Cortex XSOAR

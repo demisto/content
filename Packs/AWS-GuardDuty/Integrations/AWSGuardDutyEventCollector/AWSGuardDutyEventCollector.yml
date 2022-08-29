@@ -74,7 +74,7 @@ configuration:
   type: 0
   defaultvalue: 'aws-guard-duty'
   required: true
-description: Amazon Web Services Guard Duty Service (gd) event collector integraion for XSIAM.
+description: Amazon Web Services Guard Duty Service (gd) event collector integration for XSIAM.
 display: AWS - GuardDuty Event Collector
 name: AWS - GuardDuty Event Collector
 script:
