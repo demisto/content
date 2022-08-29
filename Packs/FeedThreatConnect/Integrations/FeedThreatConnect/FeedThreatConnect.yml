@@ -11,12 +11,17 @@ configuration:
 - displaypassword: Secret key
   additionalinfo: The API ID key
   display: Access ID
-  name: api_access_id
+  name: api_credentials
   required: true
   type: 9
-- display: Secret Key
+- additionalinfo: API - Access ID
+  display: Access ID
+  name: api_access_id
+  type: 4
+  hidden: true
+- additionalinfo: API - Secret key
+  display: Secret key
   name: api_secret_key
-  required: false
   type: 4
   hidden: true
 - additionalinfo: A comma-separated list of tags to filter by.

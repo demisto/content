@@ -282,9 +282,10 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
 def main():  # pragma: no cover
     insecure = not demisto.getParam('insecure')
     proxy = not demisto.getParam('proxy')
-    credentials = demisto.params().get('api_access_id', {})
+    credentials = demisto.params().get('api_credentials', {})
+    access_id = credentials.get('identifier') or demisto.params().get('api_access_id')
     secret_key = credentials.get('password') or demisto.params().get('api_secret_key')
-    client = Client(credentials.get('identifier'), secret_key,
+    client = Client(access_id, secret_key,
                     demisto.getParam('tc_api_path'), verify=insecure, proxy=proxy)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
