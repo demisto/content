@@ -16,7 +16,8 @@ After authorizing the Demisto app, you will get an ID, Token, and Key, which sho
 2. In the **ID** field, enter your Client/Application ID. 
 3. In the **Key** field, enter your Client Secret.
 4. In the **Token** field, enter your Tenant ID .
-5. Mark **Use a self-deployed Azure Application** as true.
-6. In the **Application redirect URI** field, enter your Application redirect URI.
-7. In the **Authorization code** field, enter your Authorization code.
-8. Save the instance.
+5. In the **Authentication Type** field, select the **Authorization Code** option.
+6. Mark **Use a self-deployed Azure Application** as true.
+7. In the **Application redirect URI** field, enter your Application redirect URI.
+8. In the **Authorization code** field, enter your Authorization code.
+9. Save the instance.
