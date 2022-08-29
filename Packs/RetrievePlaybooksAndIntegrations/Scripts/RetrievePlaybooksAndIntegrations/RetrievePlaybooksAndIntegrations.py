@@ -60,7 +60,7 @@ def get_subplaybook_tasks(task):
 ''' COMMAND FUNCTION '''
 
 
-def _main(args: Dict[str, Any]) -> CommandResults:
+def retrieve_playbooks_and_integrations(args: Dict[str, Any]) -> CommandResults:
     query = f'''name:"{args['playbook_name']}"'''
     body = {
         'query': query
@@ -98,7 +98,7 @@ def main():
     global integrations
     integrations = []
     try:
-        return_results(_main(demisto.args()))
+        return_results(retrieve_playbooks_and_integrations(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute. Error: {str(ex)}')
