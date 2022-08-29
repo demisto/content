@@ -35,10 +35,10 @@ configuration:
   display: Authentication Type
   name: auth_type
   required: true
-  defaultvalue: Device Code
+  defaultvalue: Client Credentials
   options:
   - Authorization Code
-  - Device Code
+  - Client Credentials
   type: 15
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri

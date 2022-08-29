@@ -1114,12 +1114,12 @@ class MsClient:
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
             auth_id=auth_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=AUTHORIZATION_CODE  if auth_type == 'Authorization Code' else None,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if
+            auth_type == 'Authorization Code' else None,
+            grant_type=AUTHORIZATION_CODE if auth_type == 'Authorization Code' else None,
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            # resource=AUTH_TYPES_DICT.get(auth_type, {}).get('resource'),  # disable-secrets-detection
             scope=Scopes.security_center_apt_service,
             ok_codes=(200, 201, 202, 204),
             redirect_uri=redirect_uri,
@@ -4860,8 +4860,8 @@ def main():  # pragma: no cover
     max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
-    is_gcc = params.get('is_gcc', False),
-    auth_type = params.get('auth_type', 'Device Code')
+    is_gcc = params.get('is_gcc', False)
+    auth_type = params.get('auth_type', 'Client Credentials')
     auth_code = params.get('auth_code', {}).get('password', '')
     redirect_uri = params.get('redirect_uri', '')
 
@@ -4874,6 +4874,12 @@ def main():  # pragma: no cover
         raise Exception('Authentication ID must be provided.')
     if not tenant_id:
         raise Exception('Tenant ID must be provided.')
+    if auth_code and redirect_uri:
+        if not self_deployed:
+            raise Exception('In order to use Authorization Code, set Self Deployed: True.')
+    if (auth_code and not redirect_uri) or (redirect_uri and not auth_code):
+            raise Exception('In order to use Authorization Code auth flow, you should set: '
+                            '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
 
     command = demisto.command()
     args = demisto.args()
