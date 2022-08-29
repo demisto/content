@@ -2,7 +2,7 @@ args:
 - description: Name of Playbook
   name: playbook_name
   required: true
-comment: Retrieves all Playbook (and Sub-Playbook) Names and Integrations for a provided Playbook Name
+comment: Retrieves all Playbook (and Sub-Playbook) Names and Integrations for a provided Playbook name
 commonfields:
   id: RetrievePlaybooksAndIntegrations
   version: -1
@@ -14,7 +14,9 @@ enabled: true
 name: RetrievePlaybooksAndIntegrations
 outputs:
 - contextPath: RetrievePlaybooksAndIntegrations.Playbooks
+  description: Names of all Playbooks and Sub-Playbooks used
 - contextPath: RetrievePlaybooksAndIntegrations.Integrations
+  description: Names of all Integrations used
 runas: DBotWeakRole
 runonce: false
 script: ''
