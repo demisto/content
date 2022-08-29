@@ -9,32 +9,30 @@ configuration:
   name: client_id
   required: true
   type: 0
-- additionalinfo: Organizaion name
+- additionalinfo: Organization name
   display: Organization
   name: organization
   required: true
   type: 0
-- additionalinfo: Default is 50. Maximum is 200.
+  defaultvalue:
+- additionalinfo: Maximum is 200.
   defaultvalue: '50'
   display: Maximum incidents for one fetch.
-  hidden: false
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This
-    argument is mandatory for Fetch functionality.
+- additionalinfo: The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This argument is mandatory for Fetch functionality.
   display: Pull-request project name
-  hidden: false
   name: project
   required: false
   type: 0
-- additionalinfo: The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument
-    is mandatory for Fetch functionality.
+  defaultvalue:
+- additionalinfo: The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality.
   display: Pull-request repository name
-  hidden: false
   name: repository
   required: false
   type: 0
+  defaultvalue:
 - display: Incident type
   name: incidentType
   required: false
@@ -45,26 +43,69 @@ configuration:
   type: 8
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  hidden: false
   name: first_fetch
   required: false
   type: 0
+  additionalinfo:
 - display: Outgoing mirroring
   name: is_mirroring
   required: false
   type: 8
+  defaultvalue: "false"
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  defaultvalue: "false"
+  additionalinfo:
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-description: |-
-  Manage Git repositories in Azure DevOps Services. Integration capabilities include retrieving, creating, and updating pull requests. Run pipelines and retrieve git information.
-  ** Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
-display: AzureDevOps (Beta)
+  defaultvalue: "false"
+  additionalinfo:
+- name: auth_type
+  display: Authentication Type
+  required: true
+  defaultvalue: Device Code
+  type: 15
+  additionalinfo: Type of authentication - could be Authorization Code flow (recommended) or Device Code flow.
+  options:
+  - Authorization Code
+  - Device Code
+- name: tenant_id
+  display: Tenant ID (for user-auth mode)
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: ""
+- name: credentials
+  display: Client Secret (for user-auth mode)
+  required: false
+  defaultvalue:
+  type: 9
+  additionalinfo: ""
+  displaypassword: Client Secret (for user-auth mode)
+  hiddenusername: true
+- name: redirect_uri
+  display: Application redirect URI (for user-auth mode)
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: ""
+- name: auth_code
+  display: Authorization code
+  required: false
+  defaultvalue:
+  type: 9
+  additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section.
+  displaypassword: Authorization code
+  hiddenusername: true
+description: >-
+  Manage Git repositories in Azure DevOps Services. Integration capabilities
+  include retrieving, creating, and updating pull requests. Run pipelines and
+  retrieve Git information.
+display: AzureDevOps
 name: AzureDevOps
 defaultmapperin: Azure DevOps Incoming Mapper
 defaultmapperout: Azure DevOps Outgoing Mapper
@@ -74,26 +115,32 @@ script:
     description: Tests the connectivity to Azure.
     execution: false
     name: azure-devops-auth-test
+    arguments: []
+    outputs: []
   - deprecated: false
-    description: Run this command to start the authorization process and follow the
-      instructions in the command results.
+    description: Run this command to start the authorization process and follow the instructions in the command results.
     execution: false
     name: azure-devops-auth-start
+    arguments: []
+    outputs: []
   - deprecated: false
-    description: Run this command to complete the authorization process. Should be
-      used after running the azure-devops-auth-start command.
+    description: Run this command to complete the authorization process. Should be used after running the azure-devops-auth-start command.
     execution: false
     name: azure-devops-auth-complete
+    arguments: []
+    outputs: []
   - deprecated: false
-    description: Run this command if you need to rerun the authentication
-      process for some reason,.
+    description: Run this command if you need to rerun the authentication process for some reason,.
     execution: false
     name: azure-devops-auth-reset
+    arguments: []
+    outputs: []
   - deprecated: false
-    description: Get mapping fields from remote incident. Please note that this method
-      will not update the current incident. It's here for debugging purposes.
+    description: Get mapping fields from remote incident. Please note that this method will not update the current incident. It's here for debugging purposes.
     execution: false
     name: get-mapping-fields
+    arguments: []
+    outputs: []
   - arguments:
     - default: false
       description: The name of the project.
@@ -126,8 +173,7 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Indicates how long to wait between command execution (in seconds)
-        when 'polling' argument is true. Minimum value is 10 seconds.
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds.
       isArray: false
       name: interval
       required: false
@@ -140,17 +186,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the pipeline run to retrieve when polling argument is
-        'True'. Intended for use by the Polling process and does not need to be provided
-        by the user.
+      description: The ID of the pipeline run to retrieve when polling argument is 'True'. Intended for use by the Polling process and does not need to be provided by the user.
       isArray: false
       name: run_id
       required: false
       secret: false
     deprecated: false
-    description: Run a pipeline. A DevOps pipeline is a set of automated processes
-      and tools that allows both developers and operations professionals to work cohesively
-      to build and deploy code to a production environment.
+    description: Run a pipeline. A DevOps pipeline is a set of automated processes and tools that allows both developers and operations professionals to work cohesively to build and deploy code to a production environment.
     execution: false
     polling: true
     name: azure-devops-pipeline-run
@@ -177,8 +219,7 @@ script:
       description: The name of the run.
       type: String
     - contextPath: AzureDevOps.PipelineRun.result
-      description: The result of the pipeline running. If the run is in progress,
-        the default value is 'unknown'.
+      description: The result of the pipeline running. If the run is in progress, the default value is 'unknown'.
       type: String
   - arguments:
     - default: false
@@ -189,9 +230,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of account license. Possible values: "express", "stakeholder", "advanced", "earlyAdopter", and "professional".
-        More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#accountlicensetype
-        .'
+      description: 'The type of account license. Possible values: "express", "stakeholder", "advanced", "earlyAdopter", and "professional". More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#accountlicensetype .'
       isArray: false
       name: account_license_type
       predefined:
@@ -204,9 +243,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The project group type. Possible values: "projectReader", "projectContributor", "projectAdministrator", and "projectStakeholder". More information
-        can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#grouptype
-        .'
+      description: 'The project group type. Possible values: "projectReader", "projectContributor", "projectAdministrator", and "projectStakeholder". More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#grouptype .'
       isArray: false
       name: group_type
       predefined:
@@ -241,6 +278,7 @@ script:
     description: Remove the user from all project memberships.
     execution: false
     name: azure-devops-user-remove
+    outputs: []
   - arguments:
     - default: false
       description: The name or ID of the project.
@@ -341,15 +379,13 @@ script:
       description: Whether the pull request is a draft / WIP.
       type: Boolean
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
-      description: The ID of the commit at the head of the source branch at the time
-        of the last pull request merge.
+      description: The ID of the commit at the head of the source branch at the time of the last pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.url
       description: The REST URL for this resource.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
-      description: The ID of the commit at the head of the target branch at the time
-        of the last pull request merge.
+      description: The ID of the commit at the head of the target branch at the time of the last pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.url
       description: The REST URL for this resource.
@@ -397,8 +433,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Update a pull request. At least one of the following arguments must be provided: title, description,
-      or status.'
+    description: 'Update a pull request. At least one of the following arguments must be provided: title, description, or status.'
     execution: false
     name: azure-devops-pull-request-update
     outputs:
@@ -454,15 +489,13 @@ script:
       description: Whether the pull request is a draft / WIP.
       type: Boolean
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
-      description: The ID of the commit at the head of the source branch at the time
-        of the last pull request merge.
+      description: The ID of the commit at the head of the source branch at the time of the last pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.url
       description: The REST URL for this resource.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
-      description: The ID of the commit at the head of the target branch at the time
-        of the last pull request merge.
+      description: The ID of the commit at the head of the target branch at the time of the last pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.url
       description: The REST URL for this resource.
@@ -548,15 +581,13 @@ script:
       description: Whether the pull request is a draft / WIP.
       type: Boolean
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
-      description: The ID of the commit at the head of the source branch at the time
-        of the last pull request merge.
+      description: The ID of the commit at the head of the source branch at the time of the last pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.url
       description: The REST URL for this resource.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
-      description: The ID of the commit at the head of the target branch at the time
-        of the last pull request merge.
+      description: The ID of the commit at the head of the target branch at the time of the last pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.url
       description: The REST URL for this resource.
@@ -577,8 +608,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve all projects in the organization that the authenticated
-      user has access to.
+    description: Retrieve all projects in the organization that the authenticated user has access to.
     execution: false
     name: azure-devops-project-list
     outputs:
@@ -643,9 +673,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Users or organization query prefix. For example, if you want to
-        retrieve information about the user 'Tom', you can enter the value of this argument
-        as 'Tom'.
+      description: Users or organization query prefix. For example, if you want to retrieve information about the user 'Tom', you can enter the value of this argument as 'Tom'.
       isArray: false
       name: query
       required: true
@@ -754,15 +782,13 @@ script:
       description: Whether the pull request is a draft / WIP.
       type: Boolean
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
-      description: The ID of the commit at the head of the source branch at the time
-        of the last pull request merge.
+      description: The ID of the commit at the head of the source branch at the time of the last pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.url
       description: The REST URL for the merge source commit.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
-      description: The ID of the commit at the head of the target branch at the time
-        of the last pull request merge.
+      description: The ID of the commit at the head of the target branch at the time of the last pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.url
       description: The REST URL for the merge target commit.
@@ -793,14 +819,13 @@ script:
       isArray: false
       name: scheduled
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
       required: false
       secret: false
     - default: false
       defaultValue: '30'
-      description: Indicates how long to wait between command execution (in seconds)
-        when 'polling' argument is true. Minimum value is 10 seconds.
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds.
       isArray: false
       name: interval
       required: false
@@ -840,8 +865,7 @@ script:
       description: The name of the run.
       type: String
     - contextPath: AzureDevOps.PipelineRun.result
-      description: The result of the pipeline running. If the run is in progress,
-        the default value is 'unknown'.
+      description: The result of the pipeline running. If the run is in progress, the default value is 'unknown'.
       type: String
   - arguments:
     - default: false
@@ -871,8 +895,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieve pipeline runs list. The command retrieves up to the top
-      10000 runs for a particular pipeline.
+    description: Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for a particular pipeline.
     execution: false
     name: azure-devops-pipeline-run-list
     outputs:
@@ -898,8 +921,7 @@ script:
       description: The name of the run.
       type: String
     - contextPath: AzureDevOps.PipelineRun.result
-      description: The result of the pipeline running. If the run is in progress,
-        the default value is 'unknown'.
+      description: The result of the pipeline running. If the run is in progress, the default value is 'unknown'.
       type: String
   - arguments:
     - default: false
@@ -995,6 +1017,6 @@ script:
   subtype: python3
   type: python
 fromversion: 6.0.0
-beta: true
+beta: false
 tests:
 - playbook-AzureDevOps-Test
