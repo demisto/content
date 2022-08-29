@@ -60,6 +60,8 @@ For more details about the authentication used in this integration, see [Microso
     | First Fetch Timestamp | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
     | self-deployed | Use a self-deployed Azure Application. |  N/A |
     | Using GCC | Whether a GCC edpoint is used. |  False |
+    | Authorization code | for user-auth mode - received from the authorization step. | False |
+    | Application redirect URI | the redirect URI entered in the Azure portal | False |
 
 
 4. Click **Test** to validate the URLs, token, and connection.
