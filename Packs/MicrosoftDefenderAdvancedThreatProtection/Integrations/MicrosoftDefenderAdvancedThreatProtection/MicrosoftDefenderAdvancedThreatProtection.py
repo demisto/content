@@ -1107,16 +1107,28 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 is_gcc: bool, grant_type: str, redirect_uri: str, auth_code: str,
+                 is_gcc: bool, auth_type: str, redirect_uri: str, auth_code: str,
                  certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
-        self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
-            scope=Scopes.security_center_apt_service, certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key, grant_type=grant_type, redirect_uri=redirect_uri,
+
+        client_args = assign_params(
+            self_deployed=self_deployed,
+            auth_id=auth_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            auth_code=auth_code, resource=None,
+            grant_type=AUTHORIZATION_CODE if auth_type == 'Authorization Code' else None,
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            scope=Scopes.security_center_apt_service,
+            ok_codes=(200, 201, 202, 204),
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
+            tenant_id=tenant_id,
+            app_name=app_name,
+            enc_key=enc_key,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
         )
+        self.ms_client = MicrosoftClient(**client_args)
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
@@ -4835,7 +4847,7 @@ def main():  # pragma: no cover
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
     is_gcc = params.get('is_gcc', False)
-    auth_code = params.get('auth_code')
+    auth_code = params.get('auth_code', {}).get('password', '')
     redirect_uri = params.get('redirect_uri', '')
 
     if not self_deployed and not enc_key:
@@ -4854,9 +4866,9 @@ def main():  # pragma: no cover
             raise Exception('In order to use Authorization Code auth flow, you should set: '
                             '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
     if auth_code and redirect_uri and auth_id and tenant_id and enc_key and self_deployed:
-        grant_type = AUTHORIZATION_CODE
+        auth_type = AUTHORIZATION_CODE
     else:
-        grant_type = CLIENT_CREDENTIALS
+        auth_type = CLIENT_CREDENTIALS
 
     command = demisto.command()
     args = demisto.args()
@@ -4868,7 +4880,7 @@ def main():  # pragma: no cover
             alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc, grant_type=grant_type, redirect_uri=redirect_uri, auth_code=auth_code,
+            is_gcc=is_gcc, auth_type=auth_type, redirect_uri=redirect_uri, auth_code=auth_code,
         )
         if command == 'test-module':
             test_module(client)
