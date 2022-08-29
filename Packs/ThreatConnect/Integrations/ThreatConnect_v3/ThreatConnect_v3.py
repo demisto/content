@@ -490,8 +490,9 @@ def fetch_incidents(client: Client) -> None:  # pragma: no cover
 
 
 def tc_fetch_incidents_command(client: Client) -> None:  # pragma: no cover
+    id = demisto.args().get('incidentId')
     response, status_code = list_groups(client, group_type='Incident', include_tags='true', include_attributes='true',
-                                        return_raw=True)
+                                        return_raw=True, group_id=id)
     if status_code != 200:
         return_error('Error from the API: ' + response.get('message',
                                                            'An error has occurred if it persist please contact your '
@@ -812,7 +813,8 @@ def tc_get_indicators_by_tag_command(client: Client) -> None:  # pragma: no cove
 
 
 def tc_get_indicator_command(client: Client) -> None:  # pragma: no cover
-    response, status_code = tc_get_indicators_command(client, return_raw=True)
+    indicator = demisto.args().get('indicator')
+    response, status_code = tc_get_indicators_command(client, return_raw=True, indicator_id=indicator)
     ec, indicators = create_context(response.get('data'), include_dbot_score=True)
     include_attributes = response.get('data')[0].get('attributes')
     include_observations = response.get('data')[0].get('observations')
@@ -1344,10 +1346,11 @@ def add_group_attribute(client: Client):  # pragma: no cover
 
 def add_group_security_label(client: Client):  # pragma: no cover
     group_id = demisto.args().get('group_id')
-    tc_update_group(client, raw_data=True, mode='appends', group_id=group_id)
     args = demisto.args()
+    security_label_name = args.get("security_label_name")
+    tc_update_group(client, raw_data=True, mode='appends', group_id=group_id, security_labels=security_label_name)
     demisto.results(
-        f'The security label {args.get("security_label")} was added successfully to the group {group_id}')
+        f'The security label {security_label_name} was added successfully to the group {group_id}')
 
 
 def associate_group_to_group(client: Client):  # pragma: no cover

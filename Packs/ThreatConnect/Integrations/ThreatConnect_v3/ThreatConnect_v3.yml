@@ -509,7 +509,7 @@ script:
   - arguments:
     - default: true
       description: The ID of the indicator by which to search.
-      name: id
+      name: indicator
       required: true
     description: Retrieves information about an indicator.
     name: tc-get-indicator
@@ -917,7 +917,7 @@ script:
   - arguments:
     - default: true
       description: The fetched incidents filtered by ID.
-      name: id
+      name: incidentId
     - description: The fetched incidents filtered by owner.
       name: owner
     - description: The page to take the results from.
@@ -1766,7 +1766,7 @@ script:
       required: true
     - auto: PREDEFINED
       description: The security label applied to the document. 
-      name: security_label
+      name: security_label_name
       predefined:
       - TLP:RED
       - TLP:GREEN
