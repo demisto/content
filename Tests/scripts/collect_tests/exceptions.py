@@ -35,9 +35,13 @@ class SkippedPackException(UnsupportedPackException):
         super().__init__(pack_name, 'Pack is skipped')
 
 
-class NonNightlyPackInNightlyBuildException(SkippedPackException):
+class NonNightlyPackInNightlyBuildException(Exception):
     def __init__(self, pack_name: str):
-        super().__init__(pack_name, 'This is a nightly build, and the pack is not in the list of nightly packs')
+        self.message = f'Skipping tests for pack {pack_name}: ' \
+                       f'This is a nightly build, and the pack is not in the list of nightly packs'
+
+    def __str__(self):
+        return self.message
 
 
 class NonDictException(Exception):

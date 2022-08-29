@@ -106,6 +106,11 @@ class CollectionResult:
             logger.info(f'{str(e)}, not collecting {test}{suffix}')
             test = None
 
+        except NonNightlyPackInNightlyBuildException as e:
+            test_suffix = f', not collecting {test}' if test else ''
+            logger.info(f'{str(e)}{test_suffix} (pack will be installed)')
+            test = None
+
         except (SkippedPackException, DeprecatedPackException,) as e:
             logger.warning(str(e))
             return
