@@ -1,741 +1,754 @@
+category: Utilities
 commonfields:
   id: Cortex Attack Surface Management
   version: -1
-name: Cortex Attack Surface Management
-display: Cortex Attack Surface Management
-category: Utilities
-description: Integration to pull asset and other ASM related information
 configuration:
-- name: url
+- defaultvalue: https://www.example.com
   display: Server URL
-  defaultvalue: https://www.example.com
+  name: url
+  required: true
   type: 0
-  required: true
-- name: proxy
+- defaultvalue: "false"
   display: Use system proxy
-  defaultvalue: 'false'
-  type: 8
+  name: proxy
   required: false
-- name: insecure
+  type: 8
+- defaultvalue: "false"
   display: Trust any certificate
-  defaultvalue: 'false'
-  type: 8
+  name: insecure
   required: false
-- name: api_key
-  display: API Key
-  defaultvalue: ''
-  type: 4
+  type: 8
+- display: API Key
+  name: api_key
   required: true
+  type: 4
+description: Integration to pull asset and other ASM related information
+display: Cortex Attack Surface Management
+name: Cortex Attack Surface Management
 script:
-  script: ''
-  type: python
-  subtype: python3
-  dockerimage: demisto/python3:3.10.5.33323
-  isfetch: false
   commands:
-  - name: asm-getexternalservices
-    description: "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)"
-    arguments:
+  - arguments:
     - name: field
-      description: ''
-      required: false
-      isArray: false
     - name: operator
-      description: ''
-      required: false
-      isArray: false
     - name: value
-      description: ''
-      required: false
-      isArray: false
+    description: |-
+      Create or update incident according to JSON structure.
+      To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+      To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
+
+      Use the 'createInvestigation\: True' to start the investigation process automatically. (by running a playbook based on incident type.)
+    name: asm-getexternalservices
     outputs:
-    - type: Number
-      contextPath: ASM.GetExternalServices.total_count
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalServices.result_count
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalServices.external_services.service_id
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalServices.external_services.service_name
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalServices.external_services.service_type
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalServices.external_services.ip_address
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalServices.external_services.externally_detected_providers
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalServices.external_services.is_active
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalServices.external_services.first_observed
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalServices.external_services.last_observed
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalServices.external_services.port
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalServices.external_services.protocol
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalServices.external_services.inactive_classifications
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalServices.external_services.discovery_type
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalServices.external_services.business_units
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalServices.external_services.externally_inferred_vulnerability_score
-      description: ''
-  - name: asm-getexternalservice
-    description: "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)"
-    arguments:
+    - contextPath: ASM.GetExternalServices.total_count
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalServices.result_count
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalServices.external_services.service_id
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalServices.external_services.service_name
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalServices.external_services.service_type
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalServices.external_services.ip_address
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalServices.external_services.externally_detected_providers
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalServices.external_services.is_active
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalServices.external_services.first_observed
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalServices.external_services.last_observed
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalServices.external_services.port
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalServices.external_services.protocol
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalServices.external_services.inactive_classifications
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalServices.external_services.discovery_type
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalServices.external_services.business_units
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalServices.external_services.externally_inferred_vulnerability_score
+      description: ""
+      type: Unknown
+  - arguments:
     - name: service_id_list
-      description: ''
-      required: false
-      isArray: false
+    description: |-
+      Create or update incident according to JSON structure.
+      To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+      To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
+
+      Use the 'createInvestigation\: True' to start the investigation process automatically. (by running a playbook based on incident type.)
+    name: asm-getexternalservice
     outputs:
-    - type: String
-      contextPath: ASM.GetExternalService.details.service_id
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.service_name
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.service_type
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.ip_address
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.externally_detected_providers
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.is_active
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.first_observed
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.last_observed
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalService.details.port
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.protocol
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.inactive_classifications
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.discovery_type
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.business_units
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.externally_inferred_vulnerability_score
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.serviceKey
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.serviceKeyType
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.businessUnits.name
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.providerDetails.name
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.providerDetails.firstObserved
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.providerDetails.lastObserved
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuer
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerAlternativeNames
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerCountry
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerEmail
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerLocality
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerName
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerOrg
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.formattedIssuerOrg
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerOrgUnit
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerState
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKey
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKeyAlgorithm
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKeyRsaExponent
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.signatureAlgorithm
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.subject
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectAlternativeNames
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectCountry
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectEmail
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectLocality
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectName
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectOrg
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectOrgUnit
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectState
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.serialNumber
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.validNotBefore
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.validNotAfter
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.version
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKeyBits
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKeyModulus
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKeySpki
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.sha1Fingerprint
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.sha256Fingerprint
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.certificate.md5Fingerprint
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.certificates.activityStatus
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.certificates.lastObserved
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.certificates.firstObserved
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalService.details.details.ips.ip
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.ips.protocol
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.ips.provider
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalService.details.details.ips.geolocation.latitude
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalService.details.details.ips.geolocation.longitude
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.ips.geolocation.countryCode
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.ips.geolocation.city
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.ips.geolocation.regionCode
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalService.details.details.ips.geolocation.timeZone
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.ips.activityStatus
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.ips.lastObserved
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.ips.firstObserved
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.classifications.name
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.classifications.activityStatus
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.classifications.values.jsonValue
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.classifications.values.firstObserved
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.classifications.values.lastObserved
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.classifications.firstObserved
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.classifications.lastObserved
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.tlsVersions.tlsVersion
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.tlsVersions.cipherSuite
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.tlsVersions.firstObserved
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalService.details.details.tlsVersions.lastObserved
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.tlsVersions.activityStatus
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.enrichedObservationSource
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.ip_ranges.35.227.6.150.IP_RANGE_ID
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.ip_ranges.35.227.6.150.FIRST_IP
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalService.details.details.ip_ranges.35.227.6.150.LAST_IP
-      description: ''
-  - name: asm-getexternalipaddressranges
-    description: "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)"
+    - contextPath: ASM.GetExternalService.details.service_id
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.service_name
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.service_type
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.ip_address
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.externally_detected_providers
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.is_active
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.first_observed
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.last_observed
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.port
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalService.details.protocol
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.inactive_classifications
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.discovery_type
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.business_units
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.externally_inferred_vulnerability_score
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.serviceKey
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.serviceKeyType
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.businessUnits.name
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.providerDetails.name
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.providerDetails.firstObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.providerDetails.lastObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuer
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerAlternativeNames
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerCountry
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerEmail
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerLocality
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerName
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerOrg
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.formattedIssuerOrg
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerOrgUnit
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.issuerState
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKey
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKeyAlgorithm
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKeyRsaExponent
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.signatureAlgorithm
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.subject
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectAlternativeNames
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectCountry
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectEmail
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectLocality
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectName
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectOrg
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectOrgUnit
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.subjectState
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.serialNumber
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.validNotBefore
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.validNotAfter
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.version
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKeyBits
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKeyModulus
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.publicKeySpki
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.sha1Fingerprint
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.sha256Fingerprint
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.certificate.md5Fingerprint
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.activityStatus
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.certificates.lastObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.certificates.firstObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.ips.ip
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalService.details.details.ips.protocol
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.ips.provider
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.ips.geolocation.latitude
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalService.details.details.ips.geolocation.longitude
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalService.details.details.ips.geolocation.countryCode
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.ips.geolocation.city
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.ips.geolocation.regionCode
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.ips.geolocation.timeZone
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalService.details.details.ips.activityStatus
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.ips.lastObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.ips.firstObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.classifications.name
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.classifications.activityStatus
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.classifications.values.jsonValue
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.classifications.values.firstObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.classifications.values.lastObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.classifications.firstObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.classifications.lastObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.tlsVersions.tlsVersion
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.tlsVersions.cipherSuite
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.tlsVersions.firstObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.tlsVersions.lastObserved
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalService.details.details.tlsVersions.activityStatus
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.enrichedObservationSource
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.ip_ranges.35.227.6.150.IP_RANGE_ID
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.ip_ranges.35.227.6.150.FIRST_IP
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalService.details.details.ip_ranges.35.227.6.150.LAST_IP
+      description: ""
+      type: String
+  - arguments: []
+    description: |-
+      Create or update incident according to JSON structure.
+      To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+      To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
+
+      Use the 'createInvestigation\: True' to start the investigation process automatically. (by running a playbook based on incident type.)
+    name: asm-getexternalipaddressranges
     outputs:
-    - type: Number
-      contextPath: ASM.GetExternalIpAddressRanges.total_count
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalIpAddressRanges.result_count
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.range_id
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.first_ip
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.last_ip
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.ips_count
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.active_responsive_ips_count
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.date_added
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.business_units
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.organization_handles
-      description: ''
-  - name: asm-getexternalipaddressrange
-    description: "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)"
-    arguments:
+    - contextPath: ASM.GetExternalIpAddressRanges.total_count
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalIpAddressRanges.result_count
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.range_id
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.first_ip
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.last_ip
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.ips_count
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.active_responsive_ips_count
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.date_added
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.business_units
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRanges.external_ip_address_ranges.organization_handles
+      description: ""
+      type: String
+  - arguments:
     - name: range_id_list
-      description: ''
-      required: false
-      isArray: false
+    description: |-
+      Create or update incident according to JSON structure.
+      To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+      To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
+
+      Use the 'createInvestigation\: True' to start the investigation process automatically. (by running a playbook based on incident type.)
+    name: asm-getexternalipaddressrange
     outputs:
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.range_id
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.first_ip
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.last_ip
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalIpAddressRange.details.ips_count
-      description: ''
-    - type: Number
-      contextPath: ASM.GetExternalIpAddressRange.details.active_responsive_ips_count
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalIpAddressRange.details.date_added
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.business_units
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.organization_handles
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.handle
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.firstIp
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.lastIp
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.name
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.whoIsServer
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.lastChanged
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.handle
-      description: ''
-    - type: Date
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.dateAdded
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.address
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.email
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.phone
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.org
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.formattedName
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.kind
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.roles
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.lastChanged
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.firstRegistered
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.remarks
-      description: ''
-    - type: String
-      contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.remarks
-      description: ''
-  - name: asm-getassetsinternetexposure
-    description: "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)"
+    - contextPath: ASM.GetExternalIpAddressRange.details.range_id
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.first_ip
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.last_ip
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.ips_count
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalIpAddressRange.details.active_responsive_ips_count
+      description: ""
+      type: Number
+    - contextPath: ASM.GetExternalIpAddressRange.details.date_added
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalIpAddressRange.details.business_units
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.organization_handles
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.handle
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.firstIp
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.lastIp
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.name
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.whoIsServer
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.lastChanged
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.handle
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.dateAdded
+      description: ""
+      type: Date
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.address
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.email
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.phone
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.org
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.formattedName
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.kind
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.roles
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.lastChanged
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.firstRegistered
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.remarks
+      description: ""
+      type: String
+    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.remarks
+      description: ""
+      type: String
+  - arguments: []
+    description: |-
+      Create or update incident according to JSON structure.
+      To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+      To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
+
+      Use the 'createInvestigation\: True' to start the investigation process automatically. (by running a playbook based on incident type.)
+    name: asm-getassetsinternetexposure
     outputs:
-    - type: Number
-      contextPath: ASM.GetAssetsInternetExposure.total_count
-      description: ''
-    - type: Number
-      contextPath: ASM.GetAssetsInternetExposure.result_count
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.asm_ids
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.name
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.asset_type
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.cloud_provider
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.region
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.business_units
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.iot_model
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.iot_category
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.iot_profile
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.sensor
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.last_observed
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.first_observed
-      description: ''
-    - type: Boolean
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.has_active_externally_services
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.has_xdr_agent
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.certificate_classifications
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.certificate_issuer
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.certificate_algorithm
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.cloud_id
-      description: ''
-    - type: Boolean
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.domain_resolves
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.operation_system
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.asm_va_score
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.agent_id
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.externally_detected_providers
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.service_type
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.externally_inferred_cves
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.ips
-      description: ''
-  - name: asm-getassetinternetexposure
-    description: "Create or update incident according to JSON structure.\nTo update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip\nTo get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update\n\nUse the 'createInvestigation\\: True' to start the investigation process automatically. (by running a playbook based on incident type.)"
-    arguments:
+    - contextPath: ASM.GetAssetsInternetExposure.total_count
+      description: ""
+      type: Number
+    - contextPath: ASM.GetAssetsInternetExposure.result_count
+      description: ""
+      type: Number
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.asm_ids
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.name
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.asset_type
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.cloud_provider
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.region
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.business_units
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.iot_model
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.iot_category
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.iot_profile
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.sensor
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.last_observed
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.first_observed
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.has_active_externally_services
+      description: ""
+      type: Boolean
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.has_xdr_agent
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.certificate_classifications
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.certificate_issuer
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.certificate_algorithm
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.cloud_id
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.domain_resolves
+      description: ""
+      type: Boolean
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.operation_system
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.asm_va_score
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.agent_id
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.externally_detected_providers
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.service_type
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.externally_inferred_cves
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.ips
+      description: ""
+      type: String
+  - arguments:
     - name: asm_id_list
-      description: ''
-      required: false
-      isArray: false
+    description: |-
+      Create or update incident according to JSON structure.
+      To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+      To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
+
+      Use the 'createInvestigation\: True' to start the investigation process automatically. (by running a playbook based on incident type.)
+    name: asm-getassetinternetexposure
     outputs:
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.asm_ids
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.name
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.type
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.last_observed
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.first_observed
-      description: ''
-    - type: Date
-      contextPath: ASM.GetAssetInternetExposure.details.created
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.business_units
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.domain
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.certificate_issuer
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.certificate_algorithm
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.certificate_classifications
-      description: ''
-    - type: Boolean
-      contextPath: ASM.GetAssetInternetExposure.details.resolves
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.domain
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.topLevelAssetMapperDomain
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.domainAssetType
-      description: ''
-    - type: Boolean
-      contextPath: ASM.GetAssetInternetExposure.details.details.isPaidLevelDomain
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.domainDetails
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.dnsZone
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.latestSampledIp
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.subdomainMetadata
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.businessUnits.name
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuer
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerAlternativeNames
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerCountry
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerEmail
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerLocality
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerName
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerOrg
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.formattedIssuerOrg
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerOrgUnit
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerState
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKey
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyAlgorithm
-      description: ''
-    - type: Number
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyRsaExponent
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.signatureAlgorithm
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subject
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectAlternativeNames
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectCountry
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectEmail
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectLocality
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectName
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectOrg
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectOrgUnit
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectState
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.serialNumber
-      description: ''
-    - type: Date
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.validNotBefore
-      description: ''
-    - type: Date
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.validNotAfter
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.version
-      description: ''
-    - type: Number
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyBits
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyModulus
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeySpki
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.sha1Fingerprint
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.sha256Fingerprint
-      description: ''
-    - type: String
-      contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.md5Fingerprint
-      description: ''
-    - type: Unknown
-      contextPath: ASM.GetAssetInternetExposure.details.externally_inferred_vulnerability_score
-      description: ''
+    - contextPath: ASM.GetAssetInternetExposure.details.asm_ids
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.name
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.type
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.last_observed
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.first_observed
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.created
+      description: ""
+      type: Date
+    - contextPath: ASM.GetAssetInternetExposure.details.business_units
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.domain
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.certificate_issuer
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.certificate_algorithm
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.certificate_classifications
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.resolves
+      description: ""
+      type: Boolean
+    - contextPath: ASM.GetAssetInternetExposure.details.details.domain
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.topLevelAssetMapperDomain
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.domainAssetType
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.isPaidLevelDomain
+      description: ""
+      type: Boolean
+    - contextPath: ASM.GetAssetInternetExposure.details.details.domainDetails
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.dnsZone
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.latestSampledIp
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.subdomainMetadata
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.businessUnits.name
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuer
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerAlternativeNames
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerCountry
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerEmail
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerLocality
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerName
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerOrg
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.formattedIssuerOrg
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerOrgUnit
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerState
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKey
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyAlgorithm
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyRsaExponent
+      description: ""
+      type: Number
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.signatureAlgorithm
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subject
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectAlternativeNames
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectCountry
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectEmail
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectLocality
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectName
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectOrg
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectOrgUnit
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectState
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.serialNumber
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.validNotBefore
+      description: ""
+      type: Date
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.validNotAfter
+      description: ""
+      type: Date
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.version
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyBits
+      description: ""
+      type: Number
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyModulus
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeySpki
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.sha1Fingerprint
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.sha256Fingerprint
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.md5Fingerprint
+      description: ""
+      type: String
+    - contextPath: ASM.GetAssetInternetExposure.details.externally_inferred_vulnerability_score
+      description: ""
+      type: Unknown
+  dockerimage: demisto/python3:3.10.5.33323
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
