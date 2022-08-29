@@ -35,7 +35,7 @@ class TestConf(DictFileBased):
         self.tests = tuple(TestConfItem(value) for value in self['tests'])
         self.test_id_to_test = {test.playbook_id: test for test in self.tests}
 
-        self.tests_to_integrations: dict[str, tuple[str]] = {
+        self.tests_to_integrations: dict[str, tuple[str, ...]] = {
             test.playbook_id: test.integrations for test in self.tests if test.integrations
         }
         self.integrations_to_tests: dict[str, list[str]] = self._calculate_integration_to_tests()
