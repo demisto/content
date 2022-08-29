@@ -62,8 +62,8 @@ def get_subplaybook_tasks(playbooks, integrations, task):
 
 
 def retrieve_playbooks_and_integrations(args: Dict[str, Any]) -> CommandResults:
-    playbooks = []
-    integrations = []
+    playbooks: List[str] = []
+    integrations: List[str] = []
     query = f'''name:"{args['playbook_name']}"'''
     body = {
         'query': query
