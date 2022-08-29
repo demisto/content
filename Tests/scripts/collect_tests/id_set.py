@@ -119,9 +119,8 @@ class IdSet(DictFileBased):
                     result[id_] = item
         return result
 
-    @staticmethod
-    def _calculate_pack_path(path: Optional[Path]) -> Optional[Path]:
-        if not path:
+    def _calculate_pack_path(self) -> Optional[Path]:
+        if not (path := self.path):
             return
 
         try:
