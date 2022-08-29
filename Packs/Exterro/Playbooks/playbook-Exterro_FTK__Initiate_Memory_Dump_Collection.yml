@@ -1,16 +1,18 @@
 id: 'Exterro FTK: Initiate Memory Dump Collection'
 version: -1
 name: 'Exterro FTK: Initiate Memory Dump Collection'
-description: |-
-  Upon detection of increased network traffic, use an automated Cortex XSOAR playbook and FTK Connect to initiate collection of a covert memory dump. Once the memory dump is collected, you can proceed with the investigation and recovery of saved passwords, open network connections, or recover an entire webpage.
+description: Upon detection of increased network traffic, use an automated Cortex
+  XSOAR playbook and FTK Connect to initiate collection of a covert memory dump. Once
+  the memory dump is collected, you can proceed with the investigation and recovery
+  of saved passwords, open network connections, or recover an entire webpage.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 040f168f-e91b-4319-8ccf-fc8ff3f325e0
+    taskid: 5cb504fd-1281-405d-8380-38f71ceec9dc
     type: start
     task:
-      id: 040f168f-e91b-4319-8ccf-fc8ff3f325e0
+      id: 5cb504fd-1281-405d-8380-38f71ceec9dc
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +36,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 4cb04f3c-5cfc-439d-82c9-a392e23dbf67
+    taskid: cba089e4-7716-4996-837d-dd8d7f9fce9c
     type: regular
     task:
-      id: 4cb04f3c-5cfc-439d-82c9-a392e23dbf67
+      id: cba089e4-7716-4996-837d-dd8d7f9fce9c
       version: -1
       name: exterro-ftk-trigger-workflow
       description: Returns a boolean value.
@@ -48,9 +50,6 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      Automation ID:
-        simple: "189"
     separatecontext: false
     view: |-
       {
@@ -66,10 +65,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 51a8dc65-bc1f-419e-8c4b-f44c1c090cba
+    taskid: 0d5294aa-19bb-40b5-8b9a-3e7b3dda8274
     type: title
     task:
-      id: 51a8dc65-bc1f-419e-8c4b-f44c1c090cba
+      id: 0d5294aa-19bb-40b5-8b9a-3e7b3dda8274
       version: -1
       name: Done
       type: title
@@ -103,6 +102,4 @@ view: |-
   }
 inputs: []
 outputs: []
-tests:
-- No tests (auto formatted)
-fromversion: 5.5.0
+fromversion: 1.0.0

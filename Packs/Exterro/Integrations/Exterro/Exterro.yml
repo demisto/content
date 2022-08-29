@@ -5,8 +5,7 @@ commonfields:
 name: Exterro FTK
 display: Exterro FTK
 category: Forensics & Malware Analysis
-description: Use the Exterro FTK integration to protect against and provide additional visibility into phishing and other malicious email attacks.			
-
+description: Use the Exterro FTK integration to protect against and provide additional visibility into phishing and other malicious email attacks.
 configuration:
 - display: Web Protocol
   name: PROTOCOL
