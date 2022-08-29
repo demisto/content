@@ -439,10 +439,10 @@ def get_group_associated_groups(client: Client) -> Any:  # pragma: no cover
         'TC.Group.AssociatedGroup(val.GroupID && val.GroupID === obj.GroupID)': contents
     }
 
-    return_results(
-        tableToMarkdown('ThreatConnect Associated Groups', contents, headers, removeNull=True),
-        context,
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('ThreatConnect Associated Groups', contents, headers, removeNull=True),
+        outputs=context,
+        raw_response=response
     )
 
 
@@ -566,10 +566,10 @@ def tc_get_events(client: Client) -> None:  # pragma: no cover
         'TC.Event(val.ID && val.ID === obj.ID)': content
     }
 
-    return_results(
-        tableToMarkdown('ThreatConnect Events', content, headers, removeNull=True),
-        context,
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('ThreatConnect Events', content, headers, removeNull=True),
+        outputs=context,
+        raw_response=response
     )
 
 
@@ -735,10 +735,10 @@ def list_groups(client: Client, group_id: str = '', from_date: str = '', tag: st
         'TC.Groups(val.ID && val.ID === obj.ID)': content
     }
 
-    return_results(
-        tableToMarkdown(f'ThreatConnect Groups', content, headers, removeNull=True),
-        context,
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('ThreatConnect Groups', content, headers, removeNull=True),
+        outputs=context,
+        raw_response=response
     )
 
 
@@ -793,10 +793,10 @@ def tc_get_indicator_types(client: Client) -> None:  # pragma: no cover
     context = {
         'TC.IndicatorType(val.Name && val.Name === obj.Name)': content
     }
-    return_results(
-        tableToMarkdown('ThreatConnect indicator types', content, headers, removeNull=True),
-        context,
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('ThreatConnect indicator types', content, headers, removeNull=True),
+        outputs=context,
+        raw_response=response
     )
 
 
@@ -944,9 +944,11 @@ def create_document_group(client: Client) -> None:  # pragma: no cover
     context = {
         'TC.Group(val.ID && val.ID === obj.ID)': content
     }
-    return_results(tableToMarkdown('ThreatConnect document group was created successfully', content, removeNull=True),
-                   context,
-                   response.get('data'))
+    return CommandResults(
+        readable_output=tableToMarkdown('ThreatConnect document group was created successfully', content,
+                                        removeNull=True),
+        outputs=context,
+        raw_response=response.get('data'))
 
 
 def tc_create_threat_command(client: Client) -> None:  # pragma: no cover
@@ -985,12 +987,13 @@ def tc_create_campaign_command(client: Client) -> None:  # pragma: no cover
         'Tag': demisto.args().get('tags'),
         'SecurityLabel': demisto.args().get('securityLabel'),
     }
+    human = f'Campaign {demisto.args().get("name")} was created Successfully with id: {response.get("data").get("id")}'
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Campaign {demisto.args().get("name")} was created Successfully with id: {response.get("data").get("id")}',
+        'HumanReadable': human,
         # type: ignore # noqa
         'EntryContext': {
             'TC.Campaign(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
@@ -1343,12 +1346,12 @@ def add_group_attribute(client: Client):  # pragma: no cover
         'TC.Group(val.ID && val.ID === obj.ID)': contents
     }
 
-    return_results(
-        tableToMarkdown('The attribute was added successfully to group {}'.format(group_id), contents,
-                        headers,
-                        removeNull=True),
-        context,
-        attribute
+    return CommandResults(
+        readable_output=tableToMarkdown('The attribute was added successfully to group {}'.format(group_id), contents,
+                                        headers,
+                                        removeNull=True),
+        outputs=context,
+        raw_response=attribute
     )
 
 
@@ -1378,9 +1381,10 @@ def associate_group_to_group(client: Client):  # pragma: no cover
     context = {
         'TC.Group.AssociatedGroup(val.GroupID && val.GroupID === obj.GroupID)': context_entries
     }
-    return_results('The group {} was associated successfully.'.format(args.get('associated_group_id')),
-                   context,
-                   updated_group[0].get('data'))
+    return CommandResults(
+        readable_output='The group {} was associated successfully.'.format(args.get('associated_group_id')),
+        outputs=context,
+        raw_response=updated_group[0].get('data'))
 
 
 def associate_indicator_to_group(client: Client):  # pragma: no cover
@@ -1399,9 +1403,10 @@ def associate_indicator_to_group(client: Client):  # pragma: no cover
     context = {
         'TC.Indicator(val.Indicator && val.Indicator === obj.Indicator)': context_entries
     }
-    return_results('The indicator {} was associated successfully.'.format(associated_indicator_id),
-                   context,
-                   updated_group[0].get('data'))
+    return CommandResults(
+        readable_output='The indicator {} was associated successfully.'.format(associated_indicator_id),
+        outputs=context,
+        raw_response=updated_group[0].get('data'))
 
 
 def get_group(client: Client) -> None:  # pragma: no cover
@@ -1429,10 +1434,10 @@ def get_group(client: Client) -> None:  # pragma: no cover
         'TC.Group(val.ID && val.ID === obj.ID)': contents
     }
 
-    return_results(
-        tableToMarkdown('ThreatConnect Group information', contents, removeNull=True),
-        context,
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('ThreatConnect Group information', contents, removeNull=True),
+        outputs=context,
+        raw_response=response
     )
 
 
@@ -1463,10 +1468,10 @@ def get_groups(client: Client) -> None:  # pragma: no cover
         'TC.Group(val.ID && val.ID === obj.ID)': contents
     }
 
-    return_results(
-        tableToMarkdown('ThreatConnect groups', contents, headers, removeNull=True),
-        context,
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('ThreatConnect groups', contents, headers, removeNull=True),
+        outputs=context,
+        raw_response=response
     )
 
 
@@ -1497,10 +1502,10 @@ def get_group_tags(client: Client) -> None:  # pragma: no cover
         'TC.Group.Tag(val.GroupID && val.GroupID === obj.GroupID && val.Name && val.Name === obj.Name)': context_entries
     }
 
-    return_results(
-        tableToMarkdown('ThreatConnect Group Tags', contents, removeNull=True),
-        context,
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('ThreatConnect Group Tags', contents, removeNull=True),
+        outputs=context,
+        raw_response=response
     )
 
 
@@ -1537,10 +1542,10 @@ def get_group_indicators(client: Client) -> None:  # pragma: no cover
         'obj.IndicatorID)': contents
     }
 
-    return_results(
-        tableToMarkdown('ThreatConnect Group Indicators', contents, removeNull=True),
-        context,
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('ThreatConnect Group Indicators', contents, removeNull=True),
+        outputs=context,
+        raw_response=response
     )
 
 
@@ -1573,10 +1578,10 @@ def get_group_attributes(client: Client) -> None:  # pragma: no cover
         ' obj.AttributeID)': contents
     }
 
-    return_results(
-        tableToMarkdown('ThreatConnect Group Attributes', contents, headers, removeNull=True),
-        context,
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('ThreatConnect Group Attributes', contents, headers, removeNull=True),
+        outputs=context,
+        raw_response=response
     )
 
 
@@ -1606,9 +1611,9 @@ def get_group_security_labels(client: Client) -> None:  # pragma: no cover
         'obj.Name)': contents
     }
 
-    return_results(
-        tableToMarkdown('ThreatConnect Group Security Labels', contents, headers, removeNull=True),
-        context
+    return CommandResults(
+        readable_output=tableToMarkdown('ThreatConnect Group Security Labels', contents, headers, removeNull=True),
+        outputs=context
     )
 
 
