@@ -1113,7 +1113,8 @@ class MsClient:
         client_args = assign_params(
             self_deployed=self_deployed,
             auth_id=auth_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if
+            auth_type == AUTHORIZATION_CODE else None,
             grant_type=auth_type,
             base_url=base_url,
             verify=verify,
