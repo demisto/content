@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from Tests.scripts.collect_tests.constants import SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK
-from Tests.scripts.collect_tests.exceptions import NotUnderPackException
+from Tests.scripts.collect_tests.collect_tests import NotUnderPackException
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 
 from Tests.scripts.collect_tests.logger import logger
