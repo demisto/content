@@ -449,8 +449,9 @@ REJECT_HOLD_MESSAGE = [
                 {"id": "1233",
                  "reject": True
                  }],
-         "fail": []}, 'Held message with id 1234 was rejected successfully.\n'
-                    'Held message with id 1233 was rejected successfully.\n', False),
+        "fail": []},
+        'Held message with id 1234 was rejected successfully.\n'
+        'Held message with id 1233 was rejected successfully.\n', False),
     ({"meta": {
         "status": 200
     }, "data": [{"id": "1234",
@@ -459,8 +460,8 @@ REJECT_HOLD_MESSAGE = [
                 {"id": "1233",
                  "reject": True
                  }],
-         "fail": []
-     }, '', True)]
+        "fail": []
+    }, '', True)]
 
 
 @pytest.mark.parametrize('mock_response, readable_output, is_exception_raised', REJECT_HOLD_MESSAGE)
@@ -488,25 +489,25 @@ RELEASE_HOLD_MESSAGE = [
     ({"meta": {
         "status": 200
     },
-         "data": [
-             {
-                 "id": "1234",
-                 "release": True
-             }
-         ],
-         "fail": []
-     }, 'Held message with id 1234 was released successfully', False),
+        "data": [
+        {
+            "id": "1234",
+            "release": True
+        }
+    ],
+        "fail": []
+    }, 'Held message with id 1234 was released successfully', False),
     ({"meta": {
         "status": 200
     },
-         "data": [
-             {
-                 "id": "1234",
-                 "release": False
-             }
-         ],
-         "fail": []
-     }, 'Message release has failed.', True)]
+        "data": [
+        {
+            "id": "1234",
+            "release": False
+        }
+    ],
+        "fail": []
+    }, 'Message release has failed.', True)]
 
 
 @pytest.mark.parametrize('mock_response, readable_output, is_exception_raised', RELEASE_HOLD_MESSAGE)
