@@ -76,7 +76,8 @@ def get_incidents_list(client, pageToken, first_fetch):
     """
     Hits the Armorblox API and returns the list of fetched incidents.
     """
-    results, next_page_token = client.get_incidents(pageSize=MAX_INCIDENTS_TO_FETCH, pageToken=pageToken, first_fetch=first_fetch)
+    results, next_page_token = client.get_incidents(pageSize=MAX_INCIDENTS_TO_FETCH, pageToken=pageToken,
+                                                    first_fetch=first_fetch)
     # For each incident, get the details and extract the message_id
     for result in results:
         result['message_ids'] = get_incident_message_ids(client, result["id"])
@@ -119,6 +120,7 @@ def get_remediation_action(client, incident_id):
     contxt['incident_id'] = incident_id
     contxt['remediation_actions'] = remediation_actions
     return CommandResults(outputs_prefix='Armorblox.Threat', outputs=contxt)
+    return remediation_actions
 
 
 def fetch_incidents_command(client):
@@ -131,13 +133,12 @@ def fetch_incidents_command(client):
     if 'start_time' not in last_run.keys():
         pageToken = -1
         response, next_page_token = client.get_incidents(pageSize=1, pageToken=pageToken, first_fetch=FIRST_FETCH)
-        if response:
-            start_time = response[0]['date']
-            start_time = dateparser.parse(start_time)
-            message_ids = get_incident_message_ids(client, response[0]['id'])
-            response[0]['message_ids'] = message_ids
-            curr_incident = {'rawJSON': json.dumps(response[0]), 'details': json.dumps(response[0])}
-            incidents.append(curr_incident)
+        start_time = response[0]['date']
+        start_time = dateparser.parse(start_time)
+        message_ids = get_incident_message_ids(client, response[0]['id'])
+        response[0]['message_ids'] = message_ids
+        curr_incident = {'rawJSON': json.dumps(response[0]), 'details': json.dumps(response[0])}
+        incidents.append(curr_incident)
 
     if last_run and 'pageToken' in last_run.keys():
         pageToken = last_run.get('pageToken')
