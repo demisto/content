@@ -1771,6 +1771,12 @@ script:
     description: Retrieve user's API usage.
     execution: false
     name: vt-private-quota-limits-list
+    - arguments:
+      description: IP Address
+      name: ip
+      required: true
+    name: vt-private-get-ip-report
+    description: Retrieve IP address report.
   isfetch: true
   runonce: false
   script: '-'
