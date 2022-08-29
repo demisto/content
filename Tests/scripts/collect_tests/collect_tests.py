@@ -284,7 +284,7 @@ class TestCollector(ABC):
 
         return CollectionResult.union(tuple(result))
 
-    def _collect_test_dependency(self, dependency: str, test_id: str, pack_id: str):
+    def _collect_test_dependency(self, dependency: str, test_id: str, pack_id: str) -> CollectionResult:
         return (
             CollectionResult(
                 test=None, pack=pack_id, reason=CollectionReason.PACK_TEST_DEPENDS_ON,
