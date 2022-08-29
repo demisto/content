@@ -13,7 +13,7 @@ configuration:
   type: 0
   hidden: true
 - additionalinfo: The API credentials
-  display: Client ID
+  display: Access ID
   displaypassword: Secret key
   name: api_secret_key
   type: 9
@@ -23,12 +23,12 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Free text box to add comma-separated tags to filter the fetched incidents by.
-  display: Tags
+  display: Tags filter for the fetch
   name: tags
   required: false
   type: 0
 - additionalinfo: The group type to filter the fetched incidents by.
-  display: Group Type
+  display: Group Type filter for the fetch
   name: group_type
   options:
   - Incident
@@ -36,8 +36,8 @@ configuration:
   defaultValue: Incident
   required: false
   type: 16
-- additionalinfo: The status to filter the fetched incidents by(if not field will fetch all statuses).
-  display: Status
+- additionalinfo: The status to filter the fetched incidents by (if not field will fetch all statuses).
+  display: Status filter for the fetch
   name: status
   options:
   - Deleted
@@ -86,18 +86,21 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- defaultvalue: '3'
-  display: Rating Threshold for Malicious Indicators
+- additionalinfo: Rating Threshold for Malicious Indicators, it is necessary to calculate reputation.
+  defaultvalue: '3'
+  display: Rating Threshold for Malicious Indicators (needed for reputation calculation)
   name: rating
   required: false
   type: 0
-- defaultvalue: '50'
-  display: Confidence Threshold for Malicious Indicators
+- additionalinfo: Confidence Threshold for Malicious Indicators, it is necessary to calculate reputation.
+  defaultvalue: '50'
+  display: Confidence Threshold for Malicious Indicators (needed for reputation calculation)
   name: confidence
   required: false
   type: 0
-- defaultvalue: '7'
-  display: Indicator Reputation Freshness (in days)
+- additionalinfo: Indicator Reputation Freshness, it is necessary to calculate reputation.
+  defaultvalue: '7'
+  display: Indicator Reputation Freshness in days (needed for reputation calculation)
   name: freshness
   required: false
   type: 0

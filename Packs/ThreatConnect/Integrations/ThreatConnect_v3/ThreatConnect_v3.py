@@ -447,7 +447,7 @@ def get_group_associated_groups(client: Client) -> Any:  # pragma: no cover
 
 
 def test_integration(client: Client) -> None:  # pragma: no cover
-    url = '/api/v3/groups?Limit=1'
+    url = '/api/v3/groups?resultLimit=1'
     response, status_code = client.make_request(Method.GET, url)
     if status_code == 200:
         demisto.results('ok')
@@ -731,7 +731,7 @@ def list_groups(client: Client, group_id: str = '', from_date: str = '', tag: st
     }
 
     return_outputs(
-        tableToMarkdown(f'ThreatConnect {group_type} Groups', content, headers, removeNull=True),
+        tableToMarkdown(f'ThreatConnect Groups', content, headers, removeNull=True),
         context,
         response
     )
@@ -1634,9 +1634,9 @@ def main(params):  # pragma: no cover
         insecure = not params.get('insecure')
         handle_proxy()
         credentials = demisto.params().get('api_secret_key', {})
-        secret_key = credentials.get('password') or demisto.params().get('api_secret_key')
-        client = Client(credentials.get('identifier'), secret_key,
-                        demisto.getParam('tc_api_path'), verify=insecure)
+        access_id = credentials.get('identifier') or demisto.params().get('accessId')
+        client = Client(access_id, credentials.get('password'),
+                        demisto.getParam('baseUrl'), verify=insecure)
         command = demisto.command()
         if command in COMMANDS.keys():
             COMMANDS[command](client)  # type: ignore
