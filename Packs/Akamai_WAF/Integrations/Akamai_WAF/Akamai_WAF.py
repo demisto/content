@@ -209,7 +209,7 @@ class Client(BaseClient):
         return self._http_request(method='POST',
                                   url_suffix=f"{change_path}/input/update/{allowedInputTypeParam}",
                                   headers=headers,
-                                  data=payload
+                                  json_data=payload,
                                   )
 
     # Created by C.L.
