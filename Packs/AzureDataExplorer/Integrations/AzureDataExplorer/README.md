@@ -20,7 +20,6 @@ This integration was integrated and tested with version V1 of AzureDataExplorer.
     | Client Secret (for Authorization Code mode) |  | False |
     | Application redirect URI (for Authorization Code mode) |  | False |
     | Authorization code | for Authorization Code mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
-    | Authorization code |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
