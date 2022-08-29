@@ -1,3 +1,6 @@
+register_module_line('CrowdstrikeFalcon', 'start', __line__())
+
+''' IMPORTS '''
 import base64
 import email
 import hashlib
@@ -11,10 +14,6 @@ import requests
 from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 
-register_module_line('CrowdstrikeFalcon', 'start', __line__())
-
-
-''' IMPORTS '''
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
