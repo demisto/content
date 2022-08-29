@@ -26,22 +26,17 @@ configuration:
 - display: Secret Key
   name: secret_key
   required: false
-  type: 4
+  type: 9
 - display: Timeout
   name: timeout
-  additionalinfo: The time in seconds till a timeout exception is reached. You can
-    specify just the read timeout (for example 60) or also the connect timeout followed
-    after a comma (for example 60,10). If a connect timeout is not specified, a default
-    of 10 second will be used.
+  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
   required: false
   type: 0
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
-  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
-  Note: Increasing the number of retries will increase the execution time."
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   required: false
   type: 0
 - display: First fetch time interval
@@ -57,8 +52,8 @@ configuration:
 - display: Guard Duty Severity level
   name: gd_severity
   required: true
-  description: The minimum severity of the events to fetch. (inclusive).
-  predefined:
+  additionalinfo: The minimum severity of the events to fetch. (inclusive).
+  options:
     - 'Low'
     - 'Medium'
     - 'High'
@@ -93,8 +88,8 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: true
     - auto: PREDEFINED
       defaultValue: 'Low'
@@ -102,9 +97,9 @@ script:
       isArray: false
       name: severity
       predefined:
-        - 'Low'
-        - 'Medium'
-        - 'High'
+      - 'Low'
+      - 'Medium'
+      - 'High'
       required: true
     - default: false
       description: 'The date to start collecting the events from.'
@@ -120,7 +115,7 @@ script:
     description: Manual command to fetch events and display them.
     execution: false
     name: aws-gd-get-events
-  dockerimage: demisto/boto3py3:1.0.0.32608
+  dockerimage: demisto/boto3py3:1.0.0.33241
   isfetchevents: true
   runonce: false
   subtype: python3
