@@ -191,12 +191,12 @@ class Client(BaseClient):
         Returns:
             list. The incidents returned from the API call
         """
-        # raw_response = self._http_request(
-        #     method='GET',
-        #     url_suffix='api/incidents',
-        #     params=query_params,
-        # )
-        raw_response = RAW_TEST
+        raw_response = self._http_request(
+            method='GET',
+            url_suffix='api/incidents',
+            params=query_params,
+        )
+        # raw_response = RAW_TEST
         return raw_response
 
 
@@ -401,8 +401,8 @@ def get_incidents_batch_by_time_request(client, params):
     # while loop relevant for fetching old incidents
     while created_before < current_time and len(incidents_list) < fetch_limit:
         demisto.info(
-            f"Entered the batch loop , with fetch_limit {fetch_limit} and incidents list "
-            f"{[incident.get('id') for incident in incidents_list]} and incident length {len(incidents_list)} "
+            f"Entered the batch loop , with fetch_limit {fetch_limit} and events list "
+            f"{[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)} "
             f"with created_after {request_params['created_after']} and "
             f"created_before {request_params['created_before']}")
 
@@ -416,7 +416,7 @@ def get_incidents_batch_by_time_request(client, params):
         # updating params according to the new times
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
-        demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} incidents")
+        demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} events")
 
     # fetching the last batch when created_before is bigger then current time = fetching new incidents
     if len(incidents_list) < fetch_limit:
@@ -426,8 +426,8 @@ def get_incidents_batch_by_time_request(client, params):
         incidents_list.extend(new_incidents)
 
         demisto.info(
-            f"Finished the last batch, with fetch_limit {fetch_limit} and incidents list:"
-            f" {[incident.get('id') for incident in incidents_list]} and incident length {len(incidents_list)}")
+            f"Finished the last batch, with fetch_limit {fetch_limit} and events list:"
+            f" {[incident.get('id') for incident in incidents_list]} and events length {len(incidents_list)}")
 
     incidents_list_limit = incidents_list[:fetch_limit]
     return incidents_list_limit
@@ -473,7 +473,7 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
         'last_fetched_incident_id': last_fetched_id
     }
 
-    demisto.info(f'extracted {len(incidents)} incidents')
+    demisto.info(f'extracted {len(incidents)} events')
 
     return incidents, last_run
 
@@ -497,7 +497,7 @@ def main():  # pragma: no cover
     fetch_delta = params.get('fetch_delta', '6 hours')
     incidents_states = params.get('states')
 
-    demisto.debug('Command being called is {}'.format(command))
+    demisto.info(f'Command being called is {command}')
 
     try:
         headers = {
@@ -517,27 +517,15 @@ def main():  # pragma: no cover
 
             if command == 'proofpoint-trap-get-events':
                 should_push_events = argToBoolean(args.pop('should_push_events'))
-                # events, human_readable, raw_response = list_incidents_command(client, args)
-                # results = CommandResults(raw_response=raw_response, readable_output=human_readable)
-
-                prev_last_run = demisto.getLastRun()
-                events, last_run = fetch_events_command(
-                    client,
-                    first_fetch,
-                    prev_last_run,
-                    fetch_limit,
-                    fetch_delta,
-                    incidents_states,
-                )
-                demisto.setLastRun(last_run)
-                human_readable = f'{len(events)=}, {last_run=}, {prev_last_run=}'
-                results = CommandResults(raw_response=events, readable_output=human_readable)
-
+                events, human_readable, raw_response = list_incidents_command(client, args)
+                results = CommandResults(raw_response=raw_response, readable_output=human_readable)
                 return_results(results)
 
             else:  # command == 'fetch-events':
+                demisto.info(f"Starting Fetching events: {datetime.now()=}")
                 should_push_events = True
                 last_run = demisto.getLastRun()
+                demisto.info(f"Get prev last run: {last_run=}")
                 events, last_run = fetch_events_command(
                     client,
                     first_fetch,
@@ -547,6 +535,7 @@ def main():  # pragma: no cover
                     incidents_states,
                 )
                 demisto.setLastRun(last_run)
+                demisto.info(f"End Fetching events: {last_run=}")
 
             if should_push_events:
                 send_events_to_xsiam(
