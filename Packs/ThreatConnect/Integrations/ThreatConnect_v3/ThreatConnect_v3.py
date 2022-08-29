@@ -30,7 +30,7 @@ class Client:
         self.base_url = base_url
         self.verify = verify
 
-    def make_request(self, method: Method, url_suffix: str, payload: dict = {}, params: dict = {},
+    def make_request(self, method: Method, url_suffix: str, payload: dict = None, params: dict = None,
                      parse_json=True, content_type=None):  # pragma: no cover # noqa # type: ignore
         headers = self.create_header(url_suffix, method)
         if content_type:
@@ -229,7 +229,7 @@ def get_indicators(client: Client, args_type: str, type_name: str) -> None:  # p
     indicators = response.get('data')
 
     ec, indicators = create_context(indicators, include_dbot_score=True)
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': indicators,
@@ -284,7 +284,7 @@ def tc_delete_group_command(client: Client) -> Any:  # pragma: no cover
         success_text = f'{", ".join(success)} was deleted successfully.'
     if fail:
         fail_text = f'{", ".join(fail)} could not be deleted.'
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': f'{success_text} {fail_text}'
@@ -350,7 +350,7 @@ def tc_get_indicators_command(client: Client, confidence_threshold: str = '', ra
         return response, status_code
     indicators = response.get('data')
     ec, indicators = create_context(indicators, include_dbot_score=True)
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
@@ -377,7 +377,7 @@ def tc_get_owners_command(client: Client) -> Any:  # pragma: no cover
             'Name': owner['name']
         })
 
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': raw_owners,
@@ -398,7 +398,7 @@ def tc_get_indicator_owners(client: Client) -> Any:  # pragma: no cover
         if owners_raw['status'] == 'Success':
             if len(owners_raw['data']['owner']) > 0:
                 owners = owners_raw['data']['owner']
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': owners_raw,
@@ -439,7 +439,7 @@ def get_group_associated_groups(client: Client) -> Any:  # pragma: no cover
         'TC.Group.AssociatedGroup(val.GroupID && val.GroupID === obj.GroupID)': contents
     }
 
-    return_outputs(
+    return_results(
         tableToMarkdown('ThreatConnect Associated Groups', contents, headers, removeNull=True),
         context,
         response
@@ -450,7 +450,7 @@ def test_integration(client: Client) -> None:  # pragma: no cover
     url = '/api/v3/groups?resultLimit=1'
     response, status_code = client.make_request(Method.GET, url)
     if status_code == 200:
-        demisto.results('ok')
+        return_results('ok')
     else:
         return_error('Error from the API: ' + response.get('message',
                                                            'An error has occurred if it persist please contact your '
@@ -479,7 +479,8 @@ def fetch_incidents(client: Client) -> None:  # pragma: no cover
         last_run = f"{params.get('first_fetch_time') or '3 days'} ago"
         last_run = dateparser.parse(last_run)
 
-    response, status_code = list_groups(client, group_type=group_type[0], include_tags='true', include_attributes='true',
+    response, status_code = list_groups(client, group_type=group_type[0], include_tags='true',
+                                        include_attributes='true',
                                         return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run)
     if status_code != 200:
         return_error('Error from the API: ' + response.get('message',
@@ -490,6 +491,9 @@ def fetch_incidents(client: Client) -> None:  # pragma: no cover
 
 
 def tc_fetch_incidents_command(client: Client) -> None:  # pragma: no cover
+    '''
+    Command deprecated in v3 integration, replaced by list_groups
+    '''
     id = demisto.args().get('incidentId')
     response, status_code = list_groups(client, group_type='Incident', include_tags='true', include_attributes='true',
                                         return_raw=True, group_id=id)
@@ -499,7 +503,7 @@ def tc_fetch_incidents_command(client: Client) -> None:  # pragma: no cover
                                                            'local help desk'))
     groups = (response.get('data'))
 
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': groups,
@@ -525,7 +529,7 @@ def tc_get_incident_associate_indicators_command(client: Client) -> None:  # pra
         return_error('No incident groups were found for the given arguments')
     ec, indicators = create_context(groups[0].get('associatedIndicators', {}).get('data', []),
                                     include_dbot_score=True)
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': groups,
@@ -562,7 +566,7 @@ def tc_get_events(client: Client) -> None:  # pragma: no cover
         'TC.Event(val.ID && val.ID === obj.ID)': content
     }
 
-    return_outputs(
+    return_results(
         tableToMarkdown('ThreatConnect Events', content, headers, removeNull=True),
         context,
         response
@@ -608,7 +612,7 @@ def tc_create_event_command(client: Client) -> None:  # pragma: no cover
         'Status': response.get('data', {}).get('status'),
         'Type': response.get('data', {}).get('type'),
     }
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': json.dumps(response.get('data')),
@@ -731,7 +735,7 @@ def list_groups(client: Client, group_id: str = '', from_date: str = '', tag: st
         'TC.Groups(val.ID && val.ID === obj.ID)': content
     }
 
-    return_outputs(
+    return_results(
         tableToMarkdown(f'ThreatConnect Groups', content, headers, removeNull=True),
         context,
         response
@@ -755,7 +759,7 @@ def tc_get_tags_command(client: Client) -> None:  # pragma: no cover
                                                            'local help desk'))
     tags = [t['name'] for t in response.get('data')]
 
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': json.dumps(response),
@@ -789,7 +793,7 @@ def tc_get_indicator_types(client: Client) -> None:  # pragma: no cover
     context = {
         'TC.IndicatorType(val.Name && val.Name === obj.Name)': content
     }
-    return_outputs(
+    return_results(
         tableToMarkdown('ThreatConnect indicator types', content, headers, removeNull=True),
         context,
         response
@@ -800,7 +804,7 @@ def tc_get_indicators_by_tag_command(client: Client) -> None:  # pragma: no cove
     response, status_code = tc_get_indicators_command(client, return_raw=True)
     ec, indicators = create_context(response.get('data'), include_dbot_score=True)
 
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': indicators,
@@ -828,7 +832,7 @@ def tc_get_indicator_command(client: Client) -> None:  # pragma: no cover
         indicators = copy.deepcopy(ec)
         indicators = indicators['TC.Indicator(val.ID && val.ID === obj.ID)']
 
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
@@ -840,7 +844,7 @@ def tc_get_indicator_command(client: Client) -> None:  # pragma: no cover
     })
 
     if associated_groups:
-        demisto.results({
+        return_results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': associated_groups.get('data', []),
@@ -852,7 +856,7 @@ def tc_get_indicator_command(client: Client) -> None:  # pragma: no cover
         })
 
     if associated_indicators:
-        demisto.results({
+        return_results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': associated_indicators.get('data', []),
@@ -864,7 +868,7 @@ def tc_get_indicator_command(client: Client) -> None:  # pragma: no cover
         })
 
     if include_tags:
-        demisto.results({
+        return_results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': include_tags.get('data', []),
@@ -876,7 +880,7 @@ def tc_get_indicator_command(client: Client) -> None:  # pragma: no cover
         })
 
     if include_attributes:
-        demisto.results({
+        return_results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': include_attributes.get('data', []),
@@ -888,7 +892,7 @@ def tc_get_indicator_command(client: Client) -> None:  # pragma: no cover
         })
 
     if include_observations is not None:
-        demisto.results({
+        return_results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': include_observations,
@@ -909,7 +913,7 @@ def tc_delete_indicator_command(client: Client) -> None:  # pragma: no cover
         return_error('Error from the API: ' + response.get('message',
                                                            'An error has occurred if it persist please contact your '
                                                            'local help desk'))
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': 'Indicator {} removed Successfully'.format(indicator_id)
@@ -940,7 +944,7 @@ def create_document_group(client: Client) -> None:  # pragma: no cover
     context = {
         'TC.Group(val.ID && val.ID === obj.ID)': content
     }
-    return_outputs(tableToMarkdown('ThreatConnect document group was created successfully', content, removeNull=True),
+    return_results(tableToMarkdown('ThreatConnect document group was created successfully', content, removeNull=True),
                    context,
                    response.get('data'))
 
@@ -956,7 +960,7 @@ def tc_create_threat_command(client: Client) -> None:  # pragma: no cover
         'Tag': demisto.args().get('tags'),
         'SecurityLabel': demisto.args().get('securityLabel'),
     }
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
@@ -981,12 +985,13 @@ def tc_create_campaign_command(client: Client) -> None:  # pragma: no cover
         'Tag': demisto.args().get('tags'),
         'SecurityLabel': demisto.args().get('securityLabel'),
     }
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Campaign {demisto.args().get("name")} was created Successfully with id: {response.get("data").get("id")}',  # type: ignore # noqa
+        'HumanReadable': f'Campaign {demisto.args().get("name")} was created Successfully with id: {response.get("data").get("id")}',
+        # type: ignore # noqa
         'EntryContext': {
             'TC.Campaign(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
@@ -1009,7 +1014,7 @@ def tc_create_incident_command(client: Client) -> None:  # pragma: no cover
         'Tag': demisto.args().get('tags'),
         'SecurityLabel': demisto.args().get('securityLabel'),
     }
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
@@ -1119,7 +1124,7 @@ def tc_add_indicator_command(client: Client, rating: str = '0', indicator: str =
                                                            'An error has occurred if it persist please contact your '
                                                            'local help desk'))
     ec, indicators = create_context([response.get('data')])
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
@@ -1165,7 +1170,7 @@ def tc_update_indicator_command(client: Client, rating: str = None, indicator: s
         return response, status_code
     ec, indicators = create_context([response.get('data')])
 
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
@@ -1181,7 +1186,7 @@ def tc_tag_indicator_command(client: Client) -> None:  # pragma: no cover
     response, status_code = tc_update_indicator_command(client, mode='append', return_raw=True, tags=tags)
     ec, indicators = create_context([response.get('data')])
 
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
@@ -1201,7 +1206,7 @@ def tc_delete_indicator_tag_command(client: Client) -> None:  # pragma: no cover
                                                         indicator=indicator_id)
     ec, indicators = create_context([response.get('data')])
 
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
@@ -1222,7 +1227,7 @@ def tc_incident_associate_indicator_command(client: Client) -> None:  # pragma: 
                                             associated_indicator_id=indicator)
     ec, indicators = create_context([response.get('data')])
 
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
@@ -1286,7 +1291,7 @@ def tc_update_group(client: Client, attribute_value: str = '', attribute_type: s
         'Tag': demisto.args().get('tags'),
         'SecurityLabel': demisto.args().get('securityLabel'),
     }
-    demisto.results({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
@@ -1304,7 +1309,7 @@ def tc_download_report(client: Client):  # pragma: no cover
     url = f'/api/v3/groups/{group_id}/pdf'
     response = client.make_request(Method.GET, url, parse_json=False)
     file_entry = fileResult(filename=f'report_{group_id}.pdf', data=response.content, file_type=9)
-    demisto.results(file_entry)
+    return_results(file_entry)
 
 
 def download_document(client: Client):  # pragma: no cover
@@ -1313,10 +1318,13 @@ def download_document(client: Client):  # pragma: no cover
     response = client.make_request(Method.GET, url, parse_json=False)
 
     file_entry = fileResult(filename=f'document_{document_id}.txt', data=response.content)
-    demisto.results(file_entry)
+    return_results(file_entry)
 
 
 def add_group_attribute(client: Client):  # pragma: no cover
+    '''
+    Command deprecated in v3 integration, replaced by tc_update_group
+    '''
     group_id = demisto.args().get('group_id')
     response, status_code = tc_update_group(client, raw_data=True, group_id=group_id)
     headers = ['Type', 'Value', 'ID', 'DateAdded', 'LastModified']
@@ -1335,7 +1343,7 @@ def add_group_attribute(client: Client):  # pragma: no cover
         'TC.Group(val.ID && val.ID === obj.ID)': contents
     }
 
-    return_outputs(
+    return_results(
         tableToMarkdown('The attribute was added successfully to group {}'.format(group_id), contents,
                         headers,
                         removeNull=True),
@@ -1345,15 +1353,21 @@ def add_group_attribute(client: Client):  # pragma: no cover
 
 
 def add_group_security_label(client: Client):  # pragma: no cover
+    '''
+    Command deprecated in v3 integration, replaced by tc_update_group
+    '''
     group_id = demisto.args().get('group_id')
     args = demisto.args()
     security_label_name = args.get("security_label_name")
     tc_update_group(client, raw_data=True, mode='appends', group_id=group_id, security_labels=security_label_name)
-    demisto.results(
+    return_results(
         f'The security label {security_label_name} was added successfully to the group {group_id}')
 
 
 def associate_group_to_group(client: Client):  # pragma: no cover
+    '''
+    Command deprecated in v3 integration, replaced by tc_update_group
+    '''
     group_id = demisto.args().get('group_id')
     updated_group = tc_update_group(client, raw_data=True, group_id=group_id)
     args = demisto.args()
@@ -1364,12 +1378,15 @@ def associate_group_to_group(client: Client):  # pragma: no cover
     context = {
         'TC.Group.AssociatedGroup(val.GroupID && val.GroupID === obj.GroupID)': context_entries
     }
-    return_outputs('The group {} was associated successfully.'.format(args.get('associated_group_id')),
+    return_results('The group {} was associated successfully.'.format(args.get('associated_group_id')),
                    context,
                    updated_group[0].get('data'))
 
 
 def associate_indicator_to_group(client: Client):  # pragma: no cover
+    '''
+    Command deprecated in v3 integration, replaced by tc_update_group
+    '''
     group_id = demisto.args().get('group_id')
     associated_indicator_id = demisto.args().get('indicator')
     updated_group = tc_update_group(client, raw_data=True, group_id=group_id,
@@ -1382,12 +1399,15 @@ def associate_indicator_to_group(client: Client):  # pragma: no cover
     context = {
         'TC.Indicator(val.Indicator && val.Indicator === obj.Indicator)': context_entries
     }
-    return_outputs('The indicator {} was associated successfully.'.format(associated_indicator_id),
+    return_results('The indicator {} was associated successfully.'.format(associated_indicator_id),
                    context,
                    updated_group[0].get('data'))
 
 
 def get_group(client: Client) -> None:  # pragma: no cover
+    '''
+    Command deprecated in v3 integration, replaced by list_groups
+    '''
     group_id = demisto.args().get('group_id')
     response, status_code = list_groups(client, return_raw=True, group_id=group_id)
     if status_code != 200:
@@ -1409,7 +1429,7 @@ def get_group(client: Client) -> None:  # pragma: no cover
         'TC.Group(val.ID && val.ID === obj.ID)': contents
     }
 
-    return_outputs(
+    return_results(
         tableToMarkdown('ThreatConnect Group information', contents, removeNull=True),
         context,
         response
@@ -1417,6 +1437,9 @@ def get_group(client: Client) -> None:  # pragma: no cover
 
 
 def get_groups(client: Client) -> None:  # pragma: no cover
+    '''
+    Command deprecated in v3 integration, replaced by list_groups
+    '''
     response, status_code = list_groups(client, return_raw=True)
     if status_code != 200:
         return_error('Error from the API: ' + response.get('message',
@@ -1440,7 +1463,7 @@ def get_groups(client: Client) -> None:  # pragma: no cover
         'TC.Group(val.ID && val.ID === obj.ID)': contents
     }
 
-    return_outputs(
+    return_results(
         tableToMarkdown('ThreatConnect groups', contents, headers, removeNull=True),
         context,
         response
@@ -1448,6 +1471,9 @@ def get_groups(client: Client) -> None:  # pragma: no cover
 
 
 def get_group_tags(client: Client) -> None:  # pragma: no cover
+    '''
+    Command deprecated in v3 integration, replaced by list_groups
+    '''
     group_id = demisto.args().get('group_id')
     response, status_code = list_groups(client, return_raw=True, include_tags='true', group_id=group_id)
     if status_code != 200:
@@ -1471,7 +1497,7 @@ def get_group_tags(client: Client) -> None:  # pragma: no cover
         'TC.Group.Tag(val.GroupID && val.GroupID === obj.GroupID && val.Name && val.Name === obj.Name)': context_entries
     }
 
-    return_outputs(
+    return_results(
         tableToMarkdown('ThreatConnect Group Tags', contents, removeNull=True),
         context,
         response
@@ -1479,6 +1505,9 @@ def get_group_tags(client: Client) -> None:  # pragma: no cover
 
 
 def get_group_indicators(client: Client) -> None:  # pragma: no cover
+    '''
+    Command deprecated in v3 integration, replaced by list_groups
+    '''
     group_id = demisto.args().get('group_id')
     response, status_code = list_groups(client, return_raw=True, include_associated_indicators='true',
                                         group_id=group_id)
@@ -1508,7 +1537,7 @@ def get_group_indicators(client: Client) -> None:  # pragma: no cover
         'obj.IndicatorID)': contents
     }
 
-    return_outputs(
+    return_results(
         tableToMarkdown('ThreatConnect Group Indicators', contents, removeNull=True),
         context,
         response
@@ -1516,6 +1545,9 @@ def get_group_indicators(client: Client) -> None:  # pragma: no cover
 
 
 def get_group_attributes(client: Client) -> None:  # pragma: no cover
+    '''
+    Command deprecated in v3 integration, replaced by list_groups
+    '''
     group_id = demisto.args().get('group_id')
     response, status_code = list_groups(client, return_raw=True, include_attributes='true', group_id=group_id)
     if status_code != 200:
@@ -1541,7 +1573,7 @@ def get_group_attributes(client: Client) -> None:  # pragma: no cover
         ' obj.AttributeID)': contents
     }
 
-    return_outputs(
+    return_results(
         tableToMarkdown('ThreatConnect Group Attributes', contents, headers, removeNull=True),
         context,
         response
@@ -1549,6 +1581,9 @@ def get_group_attributes(client: Client) -> None:  # pragma: no cover
 
 
 def get_group_security_labels(client: Client) -> None:  # pragma: no cover
+    '''
+    Command deprecated in v3 integration, replaced by list_groups
+    '''
     group_id = demisto.args().get('group_id')
     response, status_code = list_groups(client, return_raw=True, include_security_labels='true', group_id=group_id)
     if status_code != 200:
@@ -1571,7 +1606,7 @@ def get_group_security_labels(client: Client) -> None:  # pragma: no cover
         'obj.Name)': contents
     }
 
-    return_outputs(
+    return_results(
         tableToMarkdown('ThreatConnect Group Security Labels', contents, headers, removeNull=True),
         context
     )
@@ -1581,7 +1616,7 @@ def add_group_tag(client: Client):  # pragma: no cover
     group_id = demisto.args().get('group_id')
     tags: str = demisto.args().get('tag_name')
     tc_update_group(client, raw_data=True, tags=tags, group_id=group_id)  # type: ignore
-    demisto.results(f'The tag {tags.split(",")} was added successfully to group {group_id}')
+    return_results(f'The tag {tags.split(",")} was added successfully to group {group_id}')
 
 
 COMMANDS = {

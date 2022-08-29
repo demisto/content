@@ -2174,7 +2174,7 @@ script:
     - contextPath: TC.Group.ID
       description: The ID of the group.
       type: string
-  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.23423
+  dockerimage: demisto/python3:3.10.5.33323
   runonce: false
   isfetch: true
   script: ''

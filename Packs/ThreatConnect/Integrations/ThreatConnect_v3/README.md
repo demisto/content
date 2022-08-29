@@ -1,6 +1,20 @@
 ThreatConnect's intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
 This integration was integrated and tested with version 3 of ThreatConnect v3 REST API
 
+## ThreatConnect Feed HMAC credentials
+1. On the top navigation bar, hover the cursor over the Settings icon and select Org Settings from the dropdown menu.
+2. Click the Create API User button on the Membership tab of the Organization Settings screen, and the API User Administration window will be displayed.
+3. Fill up the following parts of the form:
+    - First Name: Enter the API user’s first name.
+    - Last Name: Enter the API user’s last name.
+    - Organization Role: Use the dropdown menu to select an Organization role for the user.
+    - Include in Observations and False Positives: Check this box to allow data provided by the API user to be included in observation and false-positive counts.
+    - Disabled: Click the checkbox to disable an API user’s account in the event that the Administrator wishes to retain log integrity when the API user no longer requires ThreatConnect access.
+4. Record the Secret Key, as it will not be accessible after the window is closed.
+5. Click the SAVE button to create the API user account.
+
+For more information - click [here](https://training.threatconnect.com/learn/article/creating-user-accounts-kb-article) (Section - Creating an API User).
+
 ## Configure ThreatConnect v3 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,23 +22,22 @@ This integration was integrated and tested with version 3 of ThreatConnect v3 RE
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base Url |  | True |
-    | Access ID |  |  |
+    | -- | --- | --- |
+    | Base Url | The base URL for the API| True |
     | Access ID | The API credentials | True |
-    | Secret key |  | True |
-    | Default Organization |  | False |
+    | Secret key | The API secret key| True |
+    | Default Organization | | False |
     | Tags filter for the fetch | Free text box to add comma-separated tags to filter the fetched incidents by. | False |
     | Group Type filter for the fetch | The group type to filter the fetched incidents by. | False |
     | Status filter for the fetch | The status to filter the fetched incidents by \(if not field will fetch all statuses\). | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) |  | True |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | | True |
     | Incident Metadata | The metadata to collect. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Rating Threshold for Malicious Indicators (needed for reputation calculation) | Rating Threshold for Malicious Indicators, it is necessary to calculate reputation. | False |
     | Confidence Threshold for Malicious Indicators (needed for reputation calculation) | Confidence Threshold for Malicious Indicators, it is necessary to calculate reputation. | False |
     | Indicator Reputation Freshness in days (needed for reputation calculation) | Indicator Reputation Freshness, it is necessary to calculate reputation. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) | | False |
+    | Use system proxy settings | | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
