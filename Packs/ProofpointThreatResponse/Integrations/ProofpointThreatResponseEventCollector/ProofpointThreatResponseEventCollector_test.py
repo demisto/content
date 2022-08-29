@@ -6,13 +6,13 @@ from ProofpointThreatResponseEventCollector import fetch_events_command, TIME_FO
 def test_fetch_events_command(requests_mock):
     """
     Given:
-    - Message ID, Recipient and Delivery Time (Email recived time)
+    - fetch events command
 
     When:
-    - Running search-quarantine command
+    - Running fetch-events command
 
     Then:
-    - Ensure output is success message (at least one success).
+    - Ensure last-fetch id is 2
     """
     base_url = 'https://server_url/'
     with open('./test_data/raw_response.json', 'r') as f:
@@ -31,6 +31,16 @@ def test_fetch_events_command(requests_mock):
 
 
 def test_list_incidents_command(requests_mock):
+    """
+    Given:
+    - list_incidents_command
+
+    When:
+    - Want to list all existing incidents
+
+    Then:
+    - Ensure List Incidents Results in human-readable.
+    """
     base_url = 'https://server_url/'
     with open('./test_data/raw_response.json', 'r') as f:
         incidents = json.loads(f.read())

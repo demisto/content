@@ -17,11 +17,11 @@
     "team": "Unassigned",
     "hosts": {
       "attacker": [
-        "54.214.13.31",
-        "http://tapdemo.evilscheme.org/files/313532373336373133382e33.pdf"
+        "1.1.1.1",
+        "http://tapdemo.evilscheme.org/files/1234.pdf"
       ],
       "forensics": [
-        "http://tapdemo.evilscheme.org/files/313532373336373133382e33.pdf",
+        "http://tapdemo.evilscheme.org/files/1234.pdf",
         "tapdemo.evilscheme.org"
       ]
     },
@@ -98,18 +98,18 @@
     "team": "Unassigned",
     "hosts": {
       "attacker": [
-        "54.214.13.31",
-        "http://tapdemo.evilscheme.org/files/313532373837353631342e3137.pdf"
+        "1.1.1.1",
+        "http://tapdemo.evilscheme.org/files/123.pdf"
       ],
       "cnc": [
-        "54.214.13.31"
+        "1.1.1.1"
       ],
       "url": [
-        "http://tapdemo.evilscheme.org/files/313532373837353631342e3137.pdf",
+        "http://tapdemo.evilscheme.org/files/123.pdf",
         "https://urldefense.proofpoint.com/v2/url?"
       ],
       "forensics": [
-        "http://tapdemo.evilscheme.org/files/313532373837353631342e3137.pdf",
+        "http://tapdemo.evilscheme.org/files/123.pdf",
         "tapdemo.evilscheme.org"
       ]
     },
@@ -170,8 +170,8 @@
         "endTime": "2018-06-01T18:17:44.001Z",
         "status": "successful",
         "recipientType": "Search",
-        "recipient": "jsmith@company.com",
-        "messageId": "<20180601175356.GA30914@tapdemo.evilscheme.org>",
+        "recipient": "someone@company.com",
+        "messageId": "<123456@tapdemo.evilscheme.org>",
         "isRead": "true",
         "wasUndone": "true",
         "details": "Success"
