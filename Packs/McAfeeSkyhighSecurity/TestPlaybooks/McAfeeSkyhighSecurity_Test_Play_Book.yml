@@ -1,19 +1,19 @@
 id: McAfee Skyhigh Security Test Play Book
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: McAfee Skyhigh Security Test Play Book
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: efc3f7a9-5aee-4f77-8983-7c7374e3e4b9
+    taskid: 7dd80077-caa6-4010-866e-b369a23f3988
     type: start
     task:
-      id: efc3f7a9-5aee-4f77-8983-7c7374e3e4b9
+      id: 7dd80077-caa6-4010-866e-b369a23f3988
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 70743670-b323-45dc-8307-acff1a95055c
+    taskid: b32e0c4b-418f-447c-850f-9a60ab092dbb
     type: regular
     task:
-      id: 70743670-b323-45dc-8307-acff1a95055c
+      id: b32e0c4b-418f-447c-850f-9a60ab092dbb
       version: -1
       name: incident-query
       description: Retrieves a list of incidents in ascending time modified order.
@@ -68,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 16aaac87-c4c8-4060-8112-5bad2e699fcf
+    taskid: ae665565-0288-4f67-805b-00010953656d
     type: condition
     task:
-      id: 16aaac87-c4c8-4060-8112-5bad2e699fcf
+      id: ae665565-0288-4f67-805b-00010953656d
       version: -1
       name: Verify Outputs
       type: condition
@@ -107,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b96b10ce-1db6-474f-84df-eaa4872cc19e
+    taskid: 63402bf2-7f7e-417b-89ec-ac7614a927c5
     type: regular
     task:
-      id: b96b10ce-1db6-474f-84df-eaa4872cc19e
+      id: 63402bf2-7f7e-417b-89ec-ac7614a927c5
       version: -1
       name: incident-status-update
       description: |-
@@ -149,10 +149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 3a91f71e-88ad-4216-8864-045bf8b0b415
+    taskid: f9ba276a-5702-403e-8cde-574e935ea985
     type: regular
     task:
-      id: 3a91f71e-88ad-4216-8864-045bf8b0b415
+      id: f9ba276a-5702-403e-8cde-574e935ea985
       version: -1
       name: policy-dictionary-list
       description: List existing Policy Dictionaries.
@@ -183,10 +183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 2edd5c2b-c2a8-403b-8ff1-75cd006944cd
+    taskid: 5b524a60-e29d-48c0-865a-694cd4cec2cd
     type: condition
     task:
-      id: 2edd5c2b-c2a8-403b-8ff1-75cd006944cd
+      id: 5b524a60-e29d-48c0-865a-694cd4cec2cd
       version: -1
       name: Verify Outputs
       type: condition
@@ -222,10 +222,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d038476a-dfb5-42dd-860d-dc755e5a7413
+    taskid: db069fb6-aa9f-49da-8f48-dcd6a190fed0
     type: regular
     task:
-      id: d038476a-dfb5-42dd-860d-dc755e5a7413
+      id: db069fb6-aa9f-49da-8f48-dcd6a190fed0
       version: -1
       name: policy-dictionary-update
       description: Adds new content to an existing Policy Dictionaries.
@@ -235,7 +235,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "11"
     scriptarguments:
       content:
         simple: gmail.com, outlook.com
@@ -262,97 +262,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 8d09ef13-f041-4519-854b-e350356f0b6f
-    type: regular
-    task:
-      id: 8d09ef13-f041-4519-854b-e350356f0b6f
-      version: -1
-      name: anomaly-activity-list
-      description: Fetches activities for a given anomaly Id.
-      script: '|||skyhigh-security-anomaly-activity-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      anomaly_id:
-        complex:
-          root: inputs.anomaly_id
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: a45ade57-0168-4493-8c52-5e1b23be36e1
-    type: condition
-    task:
-      id: a45ade57-0168-4493-8c52-5e1b23be36e1
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: SkyhighSecurity
-                accessor: AnomalyActivity
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 5b818d89-567b-4278-8900-e1249e505db9
+    taskid: 16773869-5068-4bac-8990-f7b6403cc61f
     type: title
     task:
-      id: 5b818d89-567b-4278-8900-e1249e505db9
+      id: 16773869-5068-4bac-8990-f7b6403cc61f
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1480
         }
       }
     note: false
@@ -364,10 +291,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 994ffc7b-fb01-4b33-833b-73aab622d4b4
+    taskid: 7aafb71e-0ebc-453d-87dd-d63f91fc4a81
     type: regular
     task:
-      id: 994ffc7b-fb01-4b33-833b-73aab622d4b4
+      id: 7aafb71e-0ebc-453d-87dd-d63f91fc4a81
       version: -1
       name: Delete Context
       description: |-
@@ -406,7 +333,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 1495,
         "width": 380,
         "x": 50,
         "y": 50
@@ -419,6 +346,7 @@ inputs:
     simple: "1960"
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 fromversion: 6.5.0
+description: ''
