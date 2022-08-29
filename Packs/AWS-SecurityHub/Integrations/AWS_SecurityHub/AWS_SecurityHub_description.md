@@ -1,9 +1,6 @@
-Security Hub collects security data from across AWS accounts, services, and supported third-party partner products and helps you analyze your security trends and identify the highest priority security issues.
-
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
-#### Configure the AWS Guard Duty Integration on Cortex XSOAR
-- Name: a descriptive name for the integration instance.
+#### Configure the AWS Security Hub Integration on Cortex XSOAR
 - Role Arn: add Role Arn of the role created for this integration (such as: arn:aws:iam::<account-no>:role/xsoar-IAM.integration-Role).
 - Role Session Name: add a descriptive session name (such as: xsoar-IAM.integration-Role_SESSION).
 - AWS Default Region: the AWS default region
