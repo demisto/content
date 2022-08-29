@@ -999,12 +999,12 @@ class TestPanoramaEditRuleCommand:
 
     @staticmethod
     @pytest.fixture()
-    def rest_device_group():
+    def reset_device_group():
         import Panorama
         Panorama.DEVICE_GROUP = ''
 
     @staticmethod
-    def test_sanity(mocker, rest_device_group):
+    def test_sanity(mocker, reset_device_group):
         import Panorama
         args = {
             'rulename': 'TestRule',
@@ -1029,7 +1029,7 @@ class TestPanoramaEditRuleCommand:
         Panorama.panorama_edit_rule_command(args)
 
     @staticmethod
-    def test_add_to_element_on_uncommited_rule(mocker, rest_device_group):
+    def test_add_to_element_on_uncommited_rule(mocker, reset_device_group):
         import Panorama
         args = {
             'rulename': 'TestRule',
@@ -1064,7 +1064,7 @@ class TestPanoramaEditRuleCommand:
             Panorama.panorama_edit_rule_command(args)
 
     @staticmethod
-    def test_edit_rule_to_disabled_flow(mocker, rest_device_group):
+    def test_edit_rule_to_disabled_flow(mocker, reset_device_group):
         """
         Given -
             arguments to change a pre-rule to 'disabled'
