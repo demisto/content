@@ -253,27 +253,43 @@ class TestCollector(ABC):
 
         self._validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
         result += self._always_installed_packs
+        result += self._collect_test_dependencies(result.tests)
+        result.machines = Machine.get_suitable_machines(result.version_range)  # type:ignore[union-attr]
 
-        dependencies: list[CollectionResult] = []
+        return result
 
-        for test in result.tests:
-            test_object = self.conf.test_id_to_test[test]
+    def _collect_test_dependencies(self, test_ids: Iterable[str]) -> Optional[CollectionResult]:
+        result = []
+
+        for test_id in test_ids:
+            test_object = self.conf.get_test(test_id)
+
             for integration in test_object.integrations:
-                pack = self.id_set.id_to_integration[integration].pack_id
-                dependencies.append(
-                    CollectionResult(
-                        test=None,
-                        pack=pack,
-                        reason=CollectionReason.PACK_TEST_DEPENDS_ON,
-                        version_range=None,
-                        reason_description=f'{test} depends on {integration} from {pack}',
-                        conf=self.conf,
-                        id_set=self.id_set,
-                    )
+                result.append(
+                    self._collect_test_dependency(
+                        dependency=integration,
+                        test_id=test_id,
+                        pack_id=self.id_set.id_to_integration[integration].pack_id)
                 )
 
-        result.machines = Machine.get_suitable_machines(result.version_range)  # type:ignore[union-attr]
-        return result
+            for script in test_object.scripts:
+                result.append(
+                    self._collect_test_dependency(
+                        dependency=script,
+                        test_id=test_id,
+                        pack_id=self.id_set.id_to_script[script].pack_id)
+                )
+
+        return CollectionResult.union(tuple(result))
+
+    def _collect_test_dependency(self, dependency: str, test_id: str, pack_id: str):
+        return (
+            CollectionResult(
+                test=None, pack=pack_id, reason=CollectionReason.PACK_TEST_DEPENDS_ON,
+                version_range=None, reason_description=f'{test_id} depends on {dependency} from {pack_id}',
+                conf=self.conf, id_set=self.id_set,
+            )
+        )
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
         if not_found := (

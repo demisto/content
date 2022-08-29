@@ -77,6 +77,7 @@ class IdSet(DictFileBased):
         self.marketplace = marketplace
 
         self.id_to_integration: dict[str, IdSetItem] = self._parse_items('integrations')
+        self.id_to_script: dict[str, IdSetItem] = self._parse_items('scripts')
         self.id_to_test_playbook: dict[str, IdSetItem] = self._parse_items('TestPlaybooks')
 
         self.implemented_scripts_to_tests: dict[str, list] = defaultdict(list)

@@ -5,6 +5,28 @@ from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                to_tuple)
 
 
+class TestConfItem(DictBased):
+    def __init__(self, dict_: dict):
+        super().__init__(dict_)
+        self.playbook_id: str = self['playbookID']
+
+    @property
+    def integrations(self) -> tuple[str, ...]:
+        return to_tuple(self.get('integrations', (), warn_if_missing=False))
+
+    @property
+    def scripts(self) -> tuple[str, ...]:
+        return to_tuple(self.get('scripts', (), warn_if_missing=False))
+
+    @property
+    def classifier(self):
+        return self.get('instance_configuration', {}, warn_if_missing=False).get('classifier_id')
+
+    @property
+    def incoming_mapper(self):
+        return self.content.get('instance_configuration', {}).get('incoming_mapper_id')
+
+
 class TestConf(DictFileBased):
     __test__ = False  # prevents pytest from running it
 
@@ -39,20 +61,8 @@ class TestConf(DictFileBased):
                 result[integration].append(test)
         return dict(result)
 
-
-class TestConfItem(DictBased):
-    def __init__(self, dict_: dict):
-        super().__init__(dict_)
-        self.playbook_id: str = self['playbookID']
-
-    @property
-    def integrations(self) -> tuple[str]:
-        return to_tuple(self.get('integrations', (), warn_if_missing=False))
-
-    @property
-    def classifier(self):
-        return self.get('instance_configuration', {}, warn_if_missing=False).get('classifier_id')
-
-    @property
-    def incoming_mapper(self):
-        return self.content.get('instance_configuration', {}).get('incoming_mapper_id')
+    def get_test(self, test_id: str) -> TestConfItem:
+        try:
+            return self.test_id_to_test[test_id]
+        except KeyError:
+            raise ValueError(f'test {test_id} is missing from conf.json, under `tests`')
