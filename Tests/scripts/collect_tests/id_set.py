@@ -55,14 +55,14 @@ class IdSetItem(DictBased):
     @staticmethod
     def _calculate_pack_path(path: Optional[Path]) -> Optional[Path]:
         if not path:
-            return
+            return None
 
         try:
             return find_pack_folder(path)
 
         except NotUnderPackException:
             if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
-                return
+                return None
             else:
                 raise
 
