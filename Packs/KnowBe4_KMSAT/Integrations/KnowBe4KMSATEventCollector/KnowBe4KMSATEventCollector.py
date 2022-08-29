@@ -107,7 +107,7 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime
     events: List[Dict] = []
     if not last_run and first_fetch_time:
         last_run['latest_event_time'] = first_fetch_time
-    else:
+    elif type(last_run) == str:
         last_run['latest_event_time'] = parse_date_string(last_run.get('latest_event_time'))
     while True:
         response = client.get_events_request(params=query_params).json()
@@ -123,9 +123,9 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime
         else:
             events.extend(fetched_events)
             query_params['page'] = response.get('meta', {}).get('next_page', 1)
-    new_last_run: dict[str, date] = {'latest_event_time': events[0].get('occurred_date') if events else datetime.now()}
-    demisto.info(f'Done fetching {len(events)} events, Setting new_last_run = {new_last_run}.')
-    return events, new_last_run
+    new_last_run_obj: dict = {'latest_event_time': events[0].get('occurred_date') if events else datetime.now()}
+    demisto.info(f'Done fetching {len(events)} events, Setting new_last_run = {new_last_run_obj}.')
+    return events, new_last_run_obj
 
 
 def test_module(client: Client) -> str:
