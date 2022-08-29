@@ -14,7 +14,8 @@ from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     ALWAYS_INSTALLED_PACKS, DEFAULT_MARKETPLACE_WHEN_MISSING,
     DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, ONLY_INSTALL_PACK_FILE_TYPES,
-    SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES)
+    SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK,
+    XSOAR_SANITY_TEST_NAMES)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, InvalidTestException, NonDictException,
     NonXsoarSupportedPackException, NoTestsConfiguredException,
