@@ -60,7 +60,3 @@ Follow these steps for a self-deployed configuration:
  * Incident.ReadWrite.All - Application
 
 ----
-
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender)
