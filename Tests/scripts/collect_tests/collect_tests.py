@@ -109,11 +109,11 @@ class CollectionResult:
 
         if test:
             self.tests = {test}
-            logger.info(f'collected {test=}, {reason} ({reason_description})')
+            logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
             self.packs = {pack}
-            logger.info(f'collected {pack=}, {reason} ({reason_description})')
+            logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
     def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
@@ -261,12 +261,19 @@ class TestCollector(ABC):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
-    def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str) -> CollectionResult:
+    def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str,
+                      content_item_range: Optional[VersionRange] = None) -> CollectionResult:
+        pack = PACK_MANAGER[pack_name]
+
+        version_range = content_item_range \
+            if pack.version_range.is_default \
+            else (pack.version_range | content_item_range)
+
         return CollectionResult(
             test=None,
             pack=pack_name,
             reason=reason,
-            version_range=PACK_MANAGER[pack_name].version_range,
+            version_range=version_range,
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
@@ -425,6 +432,7 @@ class BranchTestCollector(TestCollector):
                 pack_name=find_pack_folder(path).name,
                 reason=CollectionReason.NON_CODE_FILE_CHANGED,
                 reason_description=reason_description,
+                content_item_range=content_item.version_range if content_item else None
             )
 
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
