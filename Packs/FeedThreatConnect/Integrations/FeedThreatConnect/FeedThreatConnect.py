@@ -283,7 +283,7 @@ def main():  # pragma: no cover
     insecure = not demisto.getParam('insecure')
     proxy = not demisto.getParam('proxy')
     credentials = demisto.params().get('api_access_id', {})
-    secret_key = credentials.get('password') or demisto.params().get('api_secret_key', {}).get('password')
+    secret_key = credentials.get('password') or demisto.params().get('api_secret_key')
     client = Client(credentials.get('identifier'), secret_key,
                     demisto.getParam('tc_api_path'), verify=insecure, proxy=proxy)
     command = demisto.command()

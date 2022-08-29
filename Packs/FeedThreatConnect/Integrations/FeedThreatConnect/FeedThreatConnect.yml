@@ -14,10 +14,11 @@ configuration:
   name: api_access_id
   required: true
   type: 9
-- name: api_secret_key
-  hiddenusername: true
-  hiddenpassword: true
-  type: 9
+- display: Secret Key
+  name: api_secret_key
+  required: false
+  type: 4
+  hidden: true
 - additionalinfo: A comma-separated list of tags to filter by.
   display: Tags to filter results by
   name: tags
