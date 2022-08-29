@@ -42,14 +42,13 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, auth=auth, proxy=proxy, verify=verify)
 
     def test_module(self) -> str:
-        repo = self.repository
-        #response = client.get_project...
-        if repo:
-            full_url = f'{self.serverUrl}/repositories/{self.workspace}/{repo}/refs/branches'
-        else:
-            full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/'
-        # TODO: update
-        return "ok"
+        full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/'
+        try:
+            self.get_project_list_request(limit=1, full_url=full_url)
+            return "ok"
+        except:
+            raise Exception('There was a problem in the authentication.')
+
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
 
