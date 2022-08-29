@@ -44,13 +44,17 @@ def login():
         'secretkey': PASSWORD,
         'ajax': 1
     }
-    session.post(SERVER + url_suffix, data=params, verify=USE_SSL)  # type: ignore
+    response = session.post(SERVER + url_suffix, data=params, verify=USE_SSL)  # type: ignore
     # check for the csrf token in cookies we got, add it to headers of session,
     # or else we can't perform HTTP request that is not get.
     for cookie in session.cookies:
         if cookie.name == 'ccsrftoken':  # type: ignore
             csrftoken = cookie.value[1:-1]  # type: ignore
             session.headers.update({'X-CSRFTOKEN': csrftoken})
+    if "logindisclaimer" in response.text:
+        params = {'confirm': '1'}
+        url_suffix = '/logindisclaimer'
+        session.post(SERVER + url_suffix, data=params, verify=USE_SSL)  # type: ignore
     return session
 
 
@@ -1149,6 +1153,105 @@ def delete_address_group_request(name):
     return response
 
 
+@logger
+def create_address_command():
+    contents = []
+    context = {}
+    address_context = []
+    args = demisto.args()
+    address_name = args.get('name', '')
+    address = args.get('address', '')
+    mask = args.get('mask', '')
+    fqdn = args.get('fqdn', '')
+
+    if fqdn and address:
+        return_error("Please provide only one of the two arguments: fqdn or address")
+
+    create_address_request(address_name, address, mask, fqdn)
+
+    if address:
+        address_dict = {
+            'Name': address_name,
+            'IPAddress': address
+        }
+        contents.append(address_dict)
+        address_context.append(address_dict)
+    elif fqdn:
+        fqdn_dict = {
+            'Name': address_name,
+            'FQDN': fqdn
+        }
+        contents.append(fqdn_dict)
+        address_context.append(fqdn_dict)
+
+    context['Fortigate.Address(val.Name && val.Name === obj.Name)'] = address_context
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('FortiGate address ' + address_name + ' created successfully', contents),
+        'EntryContext': context
+    })
+
+
+@logger
+def create_address_request(address_name, address, mask, fqdn):
+    uri_suffix = 'cmdb/firewall/address/'
+    if does_path_exist(uri_suffix + address_name):
+        return_error('Address already exists.')
+    if address:
+        subnet = address + " " + mask
+        payload = {
+            'name': address_name,
+            'subnet': subnet
+        }
+    elif fqdn:
+        payload = {
+            'name': address_name,
+            "type": "fqdn",
+            "fqdn": fqdn
+        }
+    result = http_request('POST', uri_suffix, {}, json.dumps(payload))
+    return result
+
+
+@logger
+def delete_address_command():
+    contents = []
+    context = {}
+    address_context = []
+    name = demisto.args().get('name', '')
+
+    delete_address_request(name)
+
+    address_dict = {
+        'Name': name,
+        'Deleted': True
+    }
+    contents.append(address_dict)
+    address_context.append(address_dict)
+
+    context['Fortigate.Address(val.Name && val.Name === obj.Name)'] = address_context
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('FortiGate address ' + name + ' deleted successfully', contents),
+        'EntryContext': context
+    })
+
+
+@logger
+def delete_address_request(name):
+    uri_suffix = 'cmdb/firewall/address/' + name
+    response = http_request('DELETE', uri_suffix)
+    return response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('command is %s' % (demisto.command(), ))
@@ -1194,6 +1297,10 @@ try:
         unban_ip_command()
     elif demisto.command() == 'fortigate-get-banned-ips':
         get_banned_ips_command()
+    elif demisto.command() == 'fortigate-create-address':
+        create_address_command()
+    elif demisto.command() == 'fortigate-delete-address':
+        delete_address_command()
 
 except Exception as e:
     LOG(e.message)
