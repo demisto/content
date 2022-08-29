@@ -114,10 +114,11 @@ class CrowdStrikeClient(BaseClient):
         """
         now = datetime.now()
         ctx = get_integration_context()
-        if not ctx or force_gen_new_token:
+        if not ctx or ctx.get('generation_time') is None or force_gen_new_token:
             # new token is needed
             auth_token = self._generate_token()
         else:
+            demisto.info(ctx.get('generation_time'))
             time_passed = now - dateparser.parse(ctx.get('generation_time'))
             if time_passed < TOKEN_LIFE_TIME:
                 # token hasn't expired
