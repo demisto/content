@@ -1,9 +1,5 @@
 {
-  "tests": [
-    {
-      "playbookID": "myTestPlaybook"
-    }
-  ],
+  "tests": [],
   "skipped_tests": {},
   "skipped_integrations": {},
   "unmockable_integrations": {},
