@@ -2,6 +2,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Iterable, Optional
 
+from Tests.scripts.collect_tests.constants import SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK
+from Tests.scripts.collect_tests.exceptions import NotUnderPackException
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 
 from Tests.scripts.collect_tests.logger import logger
@@ -25,7 +27,7 @@ class IdSetItem(DictBased):
 
         # None for packs, that have no id.
         self.pack_id: Optional[str] = self.get('pack', warning_comment=self.file_path_str) if id_ else None
-        self.pack_path: Optional[Path] = find_pack_folder(Path(self.file_path_str)) if self.file_path_str else None
+        self.pack_path: Optional[Path] = self._calculate_pack_path()
 
         if self.pack_path and self.pack_path.name != self.pack_id:
             logger.warning(f'{self.pack_path.name=}!={self.pack_id} for content item {self.id_=} {self.name=}')
@@ -116,3 +118,17 @@ class IdSet(DictFileBased):
 
                     result[id_] = item
         return result
+
+    @staticmethod
+    def _calculate_pack_path(path: Optional[Path]) -> Optional[Path]:
+        if not path:
+            return
+
+        try:
+            return find_pack_folder(path)
+
+        except NotUnderPackException:
+            if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
+                return
+            else:
+                raise
