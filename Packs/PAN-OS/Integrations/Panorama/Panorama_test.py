@@ -756,16 +756,16 @@ class TestPcap:
     @pytest.mark.parametrize(
         'api_response, expected_context, expected_markdown_table', [
             (
-                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                ['pcap', 'pcap_test'],
-                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
+                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                    '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                    ['pcap', 'pcap_test'],
+                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
             ),
             (
-                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                ['pcap_test'],
-                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
+                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                    '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                    ['pcap_test'],
+                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
             )
         ]
     )
@@ -985,7 +985,6 @@ class MockedResponse:
 
 
 class TestPanoramaCommitCommand:
-
     COMMIT_POLLING_ARGS = {
         'device-group': 'some_device',
         'admin_name': 'some_admin_name',
@@ -1004,7 +1003,6 @@ class TestPanoramaCommitCommand:
 
     @staticmethod
     def create_mock_responses(job_commit_status_count):
-
         mocked_responses = [  # panorama commit api response mock
             MockedResponse(
                 text='<response status="success" code="19"><result><msg>''<line>Commit job '
@@ -1103,7 +1101,7 @@ class TestPanoramaCommitCommand:
                                            {'Description': '', 'JobID': '19420', 'Status': 'Pending'}, id="no args")
                               ])
     def test_panorama_commit_command_without_polling(
-        self, mocker, args, expected_request_params, request_result, expected_demisto_result
+            self, mocker, args, expected_request_params, request_result, expected_demisto_result
     ):
         """
         Given:
@@ -1164,7 +1162,7 @@ class TestPanoramaCommitCommand:
         ]
     )
     def test_panorama_commit_command_with_polling(
-        self, mocker, args, expected_commit_request_url_params, api_response_queue
+            self, mocker, args, expected_commit_request_url_params, api_response_queue
     ):
         """
         Given:
@@ -2842,7 +2840,7 @@ class TestObjectFunctions:
                                      'cmd': '<show><system><info/></system></show>',
                                      'key': 'fakeAPIKEY!',
                                  },
-                                 None,),
+                                 None, ),
                          ])
 def test_add_target_arg(mocker, expected_request_params, target):
     """
@@ -2996,3 +2994,102 @@ def test_pan_os_get_merged_config(mocker):
     mocker.patch("Panorama.http_request", return_value=return_mock)
     created_file = pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
     assert created_file['File'] == 'merged_config'
+
+
+class TestPanOSListNatRulesCommand:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'false'},
+                {
+                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
+                    'key': 'thisisabogusAPIKEY!'
+                },
+                {
+                    'type': 'config', 'action': 'show', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']"
+                             "/device-group/entry[@name='Lab-Devices']/pre-rulebase/nat"
+                }
+            ),
+            pytest.param(
+                {'show_uncommitted': 'false'},
+                integration_params,
+                {
+                    'action': 'show',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']"
+                             "/vsys/entry[@name='vsys1']/rulebase/nat"
+                }
+            ),
+            pytest.param(
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'true', 'name': 'test'},
+                {
+                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
+                    'key': 'thisisabogusAPIKEY!'
+                },
+                {
+                    'action': 'get',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']"
+                     }
+            ),
+            pytest.param(
+                {'show_uncommitted': 'true', 'name': 'test'},
+                integration_params,
+                {
+                    'action': 'get',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
+                             "/rulebase/nat/rules/entry[@name='test']"
+                }
+            )
+        ]
+    )
+    def test_pan_os_list_rules_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given:
+         - Panorama instance configuration.
+         - Firewall instance configuration.
+         - Panorama instance configuration to get a specific nat-rule.
+         - Firewall instance configuration to get a specific nat-rule.
+
+        When:
+         - running the pan-os-list-nat-rules through the main flow.
+
+        Then:
+         - make sure the context output is parsed correctly.
+         - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        expected_context = [
+            {
+                'Name': 'test', 'Tags': 'test tag', 'SourceZone': '1.1.1.1', 'DestinationZone': '1.1.1.1',
+                'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
+                'Service': 'any', 'Description': None
+            },
+            {
+                'Name': 'test-2', 'Tags': None, 'SourceZone': '2.2.2.2', 'DestinationZone': '2.2.2.2',
+                'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
+                'Service': 'any', 'Description': None
+            }
+        ]
+
+        mock_request = mocker.patch(
+            "Panorama.http_request", return_value=load_json('test_data/list-nat-rules-response.json')
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-list-nat-rules')
+        result = mocker.patch('demistomock.results')
+
+        main()
+
+        assert list(result.call_args.args[0]['EntryContext'].values())[0] == expected_context
+        assert mock_request.call_args.kwargs['params'] == expected_url_params

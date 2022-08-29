@@ -7434,3 +7434,81 @@ There is no context output for this command.
 }
 ```
 
+### pan-os-list-nat-rules
+***
+Returns a list of nat-rules of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-nat-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the nat-rule to retrieve, if not mentioned will bring all the nat rules. | Optional | 
+| device_group | The device-group in which the nat-rules are part of. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of rules to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The size of nat-rules to return. Default is 50. | Optional | 
+| page | The page at which to start listing nat-rules, must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Nat.Name | String | The name of the rule. | 
+| Panorama.Nat.Location | String | The device group that the rule is part of. | 
+| Panorama.Nat.Tags | String | The tags in which the rule is part of. | 
+| Panorama.Nat.SourceZone | String | The source zone of the rule. | 
+| Panorama.Nat.DestinationZone | String | The destination zone of the rule. | 
+| Panorama.Nat.SourceAddress | String | The source address of the rule. | 
+| Panorama.Nat.DestinationAddress | String | The destination address of the rule. | 
+| Panorama.Nat.DestinationInterface | String | The destination interface of the rule. | 
+| Panorama.Nat.Service | String | The service in which the rule has. | 
+| Panorama.Nat.Description | String | The description of the rule. | 
+
+#### Command example
+```!pan-os-list-nat-rules pre_post=pre-rulebase show_uncommitted=true```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Nat": [
+            {
+                "Description": null,
+                "DestinationAddress": "any",
+                "DestinationInterface": "a2",
+                "DestinationZone": "1.1.1.1",
+                "Name": "test",
+                "Service": null,
+                "SourceAddress": "any",
+                "SourceZone": "3.3.3.3",
+                "Tags": "test tag"
+            },
+            {
+                "Description": null,
+                "DestinationAddress": "any",
+                "DestinationInterface": null,
+                "DestinationZone": "2.2.2.2",
+                "Name": "test-2",
+                "Service": "any",
+                "SourceAddress": "any",
+                "SourceZone": "2.2.2.2",
+                "Tags": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Nat Policy Rules
+>|DestinationAddress|DestinationInterface|DestinationZone|Name|Service|SourceAddress|SourceZone|Tags|
+>|---|---|---|---|---|---|---|---|
+>| any | a2 | 1.1.1.1 | test |  | any | 3.3.3.3 | test tag |
+>| any |  | 2.2.2.2 | test-2 | any | any | 2.2.2.2 |  |
+

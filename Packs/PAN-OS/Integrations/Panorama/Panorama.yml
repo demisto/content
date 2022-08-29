@@ -8073,6 +8073,74 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: String
+  - arguments:
+    - description: The name of the nat-rule to retrieve, if not mentioned will bring all the nat rules.
+      isArray: false
+      name: name
+      required: false
+    - description: The device-group in which the nat-rules are part of.
+      isArray: false
+      name: device_group
+      required: false
+    - auto: PREDEFINED
+      description: The pre rule or post rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - default: false
+      defaultValue: 'false'
+      description: Whether to show the un-committed rules or not. can be true or false.
+      isArray: false
+      name: show_uncommitted
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of rules to retrieve, will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The size of nat-rules to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing nat-rules, must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of nat-rules of either Panorama/firewall instance.
+    name: pan-os-list-nat-rules
+    outputs:
+    - contextPath: Panorama.Nat.Name
+      description: The name of the rule.
+      type: String
+    - contextPath: Panorama.Nat.Location
+      description: The device group that the rule is part of.
+      type: String
+    - contextPath: Panorama.Nat.Tags
+      description: The tags in which the rule is part of.
+      type: String
+    - contextPath: Panorama.Nat.SourceZone
+      description: The source zone of the rule.
+      type: String
+    - contextPath: Panorama.Nat.DestinationZone
+      description: The destination zone of the rule.
+      type: String
+    - contextPath: Panorama.Nat.SourceAddress
+      description: The source address of the rule.
+      type: String
+    - contextPath: Panorama.Nat.DestinationAddress
+      description: The destination address of the rule.
+      type: String
+    - contextPath: Panorama.Nat.DestinationInterface
+      description: The destination interface of the rule.
+      type: String
+    - contextPath: Panorama.Nat.Service
+      description: The service in which the rule has.
+      type: String
+    - contextPath: Panorama.Nat.Description
+      description: The description of the rule.
+      type: String
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false
   isfetch: false

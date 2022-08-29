@@ -11119,6 +11119,95 @@ def pan_os_get_merged_config(args: dict):
     return fileResult("merged_config", result)
 
 
+def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None):
+
+    def _build_xpath(_name, _pre_post):
+        _xpath = f"{XPATH_RULEBASE}{_pre_post}/nat"
+        if _name:
+            _xpath = f"{_xpath}/rules/entry[@name='{_name}']"
+        return _xpath
+
+    if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommited else 'show',
+        'key': API_KEY,
+        'xpath': _build_xpath(name, 'rulebase' if VSYS else pre_post)  # rulebase is for firewall instance.
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def parse_pan_os_list_nat_rules(entries: Union[List, Dict]) -> List[Dict]:
+
+    def extract_info_by_key(_entry, _key):
+
+        key_info = _entry.get(_key)  # api could not return the key
+        if not key_info:
+            return None
+
+        if isinstance(key_info, dict) and (_member := key_info.get('member')):
+            if isinstance(_member, dict):
+                return _member.get('#text')  # this is an item which was not committed yet.
+            elif isinstance(_member, list):
+                return [text.get('#text') for text in _member]
+            return _member
+        elif isinstance(key_info, str):
+            return key_info
+
+        return None
+
+    return [
+        {
+            'Name': entry.get('@name'),
+            'Tags': extract_info_by_key(entry, 'tag'),
+            'SourceZone': extract_info_by_key(entry, 'from'),
+            'DestinationZone': extract_info_by_key(entry, 'to'),
+            'SourceAddress': extract_info_by_key(entry, 'source'),
+            'DestinationAddress': extract_info_by_key(entry, 'destination'),
+            'DestinationInterface': extract_info_by_key(entry, 'to-interface'),
+            'Service': extract_info_by_key(entry, 'service'),
+            'Description': extract_info_by_key(entry, 'description')
+        } for entry in entries
+    ]
+
+
+def pan_os_list_nat_rules_command(args):
+    name = args.get('name')
+    pre_post = args.get('pre_post')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+
+    raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post, show_uncommited=show_uncommitted)
+    result = raw_response.get('response', {}).get('result', {})
+
+    # the 'entry' key could be a single dict as well.
+    entries = (result.get('nat', {}).get('rules', {}).get('entry')) or [result.get('entry')]
+
+    if not name:
+        # filter the nat-rules by limit - name means we get only a single entry anyway.
+        page = arg_to_number(args.get('page'))
+        if page is not None:
+            if page <= 0:
+                raise DemistoException(f'page {page} must be a positive number')
+            page_size = arg_to_number(args.get('page_size')) or 50
+            entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
+        else:
+            limit = arg_to_number(args.get('limit')) or 50
+            entries = entries[:limit]
+
+    nat_rules = parse_pan_os_list_nat_rules(entries)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=nat_rules,
+        readable_output=tableToMarkdown('Nat Policy Rules', nat_rules, removeNull=True),
+        outputs_prefix='Panorama.Nat',
+        outputs_key_field='Name'
+    )
+
+
 def main():
     try:
         args = demisto.args()
@@ -11769,6 +11858,8 @@ def main():
             return_results(pan_os_get_merged_config(args))
         elif command == 'pan-os-get-running-config':
             return_results(pan_os_get_running_config(args))
+        elif command == 'pan-os-list-nat-rules':
+            return_results(pan_os_list_nat_rules_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
