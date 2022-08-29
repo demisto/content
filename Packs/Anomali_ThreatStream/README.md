@@ -12,7 +12,6 @@
 - Returns filtered indicators or intelligence from ThreatStream.
 - Adds tags to intelligence to filter for related entities.
 - Creates or updates a threat model with the specified parameters.
-- Returns a list of supported platforms for a default or premium sandbox.
 
 
 This content pack includes 2 playbooks that:
