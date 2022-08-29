@@ -10,5 +10,13 @@ Depending on the authentication method that you use, the integration parameters 
 To allow us access to Microsoft Defender Advanced Threat Protection, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-defender-atp).
 After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields.
 
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-advanced-threat-protection)
+### Authentication Using the Authorization Code Flow
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. In the **ID** field, enter your Client/Application ID. 
+3. In the **Key** field, enter your Client Secret.
+4. In the **Token** field, enter your Tenant ID .
+5. Mark **Use a self-deployed Azure Application** as true.
+6. In the **Application redirect URI** field, enter your Application redirect URI.
+7. In the **Authorization code** field, enter your Authorization code.
+8. Save the instance.
