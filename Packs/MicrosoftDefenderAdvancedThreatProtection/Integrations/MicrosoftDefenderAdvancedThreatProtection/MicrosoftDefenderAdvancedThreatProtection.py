@@ -1110,9 +1110,7 @@ class MsClient:
                  auth_type, redirect_uri, auth_code,
                  is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         client_args = assign_params(
-            self_deployed=self_deployed,  # We always set the self_deployed key as True because when not using a self
-            # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
-            # flow and most of the same arguments should be set, as we're !not! using OProxy.
+            self_deployed=self_deployed,
             auth_id=auth_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if
             auth_type == 'Authorization Code' else None,
