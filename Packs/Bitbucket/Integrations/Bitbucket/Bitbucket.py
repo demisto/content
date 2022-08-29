@@ -101,7 +101,6 @@ class Client(BaseClient):
             results = self.get_paged_results(response, results, limit, params)
         return results
 
-
     def get_paged_results(self, response, results, limit, params=None) -> list:
         arr = response.get('values')
         isNext = response.get('next', None)
@@ -146,7 +145,7 @@ def project_list_command(client: Client, args) -> CommandResults:
     if not project_key:
         readable_name = f'List of the projects in {client.workspace}'
     else:
-        readable_name = f'The information about project {project_key}'
+        readable_name = f'The information about project {project_key.upper()}'
 
     human_readable = []
 

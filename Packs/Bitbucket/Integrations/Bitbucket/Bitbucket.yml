@@ -214,18 +214,16 @@ script:
           description: 'The message assigned to the last action in the branch.'
           type: String
         - contextPath: Bitbucket.Branch.target.links
-
+          description: 'The links associated with this command.'
+          type: String
         - contextPath: Bitbucket.Branch.target.parents.type
           description: 'The type of the parent who created the branch.'
           type: String
         - contextPath: Bitbucket.Branch.target.parents.hash
           description: 'The hash of the parent who created the branch.'
           type: String
-        - contextPath: Bitbucket.Branch.target.parents.links.self.href
-          description: 'A link to the parents repository'
-          type: String
-        - contextPath: Bitbucket.Branch.target.parents.links.html.href
-          description: 'A link to the parent commit'
+        - contextPath: Bitbucket.Branch.target.parents.links
+          description: 'The links associated with the parents of the command'
           type: String
         - contextPath: Bitbucket.Branch.target.repository.type
           description: 'The repository type.'
