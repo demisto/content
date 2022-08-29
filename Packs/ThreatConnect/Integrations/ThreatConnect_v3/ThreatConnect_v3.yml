@@ -10,10 +10,10 @@ configuration:
   type: 0
 - display: Access ID
   name: accessId
-  required: true
   type: 0
   hidden: true
 - additionalinfo: The API credentials
+  display: Client ID
   displaypassword: Secret key
   name: api_secret_key
   type: 9
