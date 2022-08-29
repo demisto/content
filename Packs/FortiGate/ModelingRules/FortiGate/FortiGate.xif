@@ -2,7 +2,7 @@
 // create timestamp field
 alter time_p1 = arrayindex( regextract(_time,"(\w+\s\d+)") ,0)
 | alter time_p2 = arrayindex( regextract(_time ,"(\d{4}\s\d+:\d+:\d+)") ,0)
-| alter timestamp = parse_timestamp("%b %d %Y %H:%M:%S", concat(time_p1, " ", time_p2 ) )
+| alter timestamp = parse_timestamp("%b %d %Y %H:%M:%S", concat(time_p1, " ", time_p2 ))
 // end timestamp field
 |alter XDM.Network.application_protocol	=	app,
 XDM.Network.application_protocol_category	=	FTNTFGTcat,
@@ -32,4 +32,4 @@ XDM.Network.Source.process.name	=	sproc,
 XDM.Network.Source.user.username	=	suser,
 XDM.Network.threat.category	=	FTNTFGTdtype,
 XDM.Network.threat.description	=	FTNTFGTref,
-XDM.Network.threat.severity	=	cefSeverity ;
+XDM.Network.threat.severity	=	cefSeverity;
