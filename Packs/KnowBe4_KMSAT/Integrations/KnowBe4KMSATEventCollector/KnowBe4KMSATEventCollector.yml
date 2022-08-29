@@ -25,6 +25,14 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- additionalinfo: The Fetch interval, it's recommended to set it to 5 hours 
+    as there're not much events for this api and there's a 10 call daily-limit for basic api key.
+  defaultvalue: 300
+  display: Events Fetch Interval
+  hidden: false
+  name: eventFetchInterval
+  required: false
+  type: 19
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -81,12 +89,12 @@ script:
     - contextPath: KMSat.Event.user.id
       description: The id of the user the event is targeted to.
       type: Number
-    # - contextPath: KMSat.Event.user.archived
-    #   description: 
-    #   type: Boolean
-    # - contextPath: KMSat.Event.external_id
-    #   description: 
-    #   type: String
+    - contextPath: KMSat.Event.user.archived
+      description: Whether the user is archived or not.
+      type: Boolean
+    - contextPath: KMSat.Event.external_id
+      description: The event's external id.
+      type: String
     - contextPath: KMSat.Event.source
       description: The source of the event.
       type: String

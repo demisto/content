@@ -45,13 +45,20 @@ class Client(BaseClient):
                                      url_suffix=url_suffix, resp_type=resp_type, ok_codes=ok_codes)  # type: ignore[misc]
 
     def get_events_request(self, params: dict = None):
-        return self.http_request(
-            method='GET',
-            url_suffix='/events',
-            resp_type='response',
-            ok_codes=[200, 204],
-            params=params
-        )
+        try:
+            return self.http_request(
+                method='GET',
+                url_suffix='/events',
+                resp_type='response',
+                ok_codes=[200, 204],
+                params=params
+            )
+        except Exception as e:
+            if 'Limit Exceeded' in str(e):
+                raise DemistoException("You've reached the daily api-call limit for your key.\n"
+                                       "Please wait for tomorrow to reset your calls limit or upgrade your key.")
+            else:
+                raise DemistoException(str(e))
 
 
 ''' HELPER FUNCTIONS '''
@@ -68,7 +75,7 @@ def eliminate_duplicated_events(fetched_events: list[dict], last_run: dict[str, 
     Returns:
         list: A list containing only events that occurred after the last run.
     """
-    last_run_time = last_run.get('latest_event_time', datetime.now())
+    last_run_time = last_run.get('latest_event_time')
     return [event for event in fetched_events if parse_date_string(event.get('occurred_date')) > last_run_time]
 
 
@@ -84,7 +91,7 @@ def check_if_last_run_reached(last_run: dict[str, date], earliest_fetched_event:
     Returns:
         list: A list containing only events that occurred after the last run.
     """
-    last_run_time = last_run.get('latest_event_time', datetime.now())
+    last_run_time = last_run.get('latest_event_time')
     return last_run_time >= parse_date_string(earliest_fetched_event.get('occurred_date'))
 
 
@@ -92,18 +99,21 @@ def check_if_last_run_reached(last_run: dict[str, date], earliest_fetched_event:
 
 
 def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime.now(),
-                 last_run: dict[str, date] = None) -> tuple[List[Dict], dict[str, date]]:
+                 last_run: dict[str, date] = {}) -> tuple[List[Dict], dict[str, date]]:
     """
     Fetches events from the KnowBe4_KMSAT queue.
     """
     query_params = {'page': 1, 'per_page': 100}
     events: List[Dict] = []
-    if not last_run:
-        last_run: dict[str, date] = {'latest_event_time': first_fetch_time}
-    #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
+    if not last_run and first_fetch_time:
+        last_run['latest_event_time'] = first_fetch_time
+    else:
+        last_run['latest_event_time'] = parse_date_string(last_run.get('latest_event_time'))
     while True:
         response = client.get_events_request(params=query_params).json()
         fetched_events = response.get('data') or []
+        if not fetched_events:
+            break
         demisto.info(f'fetched events length: ({len(fetched_events)})')
         demisto.debug(f'fetched events: ({fetched_events})')
         is_last_run_reached = check_if_last_run_reached(last_run, fetched_events[-1])
@@ -113,7 +123,7 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime
         else:
             events.extend(fetched_events)
             query_params['page'] = response.get('meta', {}).get('next_page', 1)
-    new_last_run: dict[str, date] = {'latest_event_time': events[0].get('occurred_date', datetime.now())}
+    new_last_run: dict[str, date] = {'latest_event_time': events[0].get('occurred_date') if events else datetime.now()}
     demisto.info(f'Done fetching {len(events)} events, Setting new_last_run = {new_last_run}.')
     return events, new_last_run
 
