@@ -59,6 +59,7 @@ For more details about the authentication used in this integration, see [Microso
     | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
     | First Fetch Timestamp | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
     | self-deployed | Use a self-deployed Azure Application. |  N/A |
+    | Using GCC | Whether a GCC edpoint is used. |  False |
 
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -340,6 +341,8 @@ Retrieves a collection of machines that have communicated with WDATP cloud in th
 | risk_score | The machine risk score. Possible values are: Low, Medium, High. | Optional | 
 | health_status | The machine health status. Possible values are: Active, Inactive. | Optional | 
 | os_platform | The machine's OS platform. Only a single platform can be added. | Optional | 
+| page_size | Number of machines to return in a page - must be lower or equal to 10,000. | Optional | 
+| page_num | The page number to retrieve. Default is 1. | Optional | 
 
 
 #### Context Output
