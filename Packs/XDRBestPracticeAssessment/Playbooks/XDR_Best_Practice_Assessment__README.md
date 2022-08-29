@@ -28,7 +28,3 @@ This playbook does not use any scripts.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![XDR Best Practice Assessment](../doc_files/XDR_Best_Practice_Assessment.png)
