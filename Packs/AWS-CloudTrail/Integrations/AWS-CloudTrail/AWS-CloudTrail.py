@@ -1,16 +1,10 @@
-from datetime import date, datetime
-
 import boto3
-import demistomock as demisto  # noqa: F401
-import urllib3.util
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
-from CommonServerPython import *  # noqa: F401
+import urllib3.util
+from datetime import datetime, date
 from dateparser import parse
 from pytz import utc
-
-register_module_line('AWS - CloudTrail', 'start', __line__())
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -158,7 +152,7 @@ def parse_resource_ids(resource_id):
     return resource_ids
 
 
-def create_trail(args):
+def create_trail(args: dict):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -220,7 +214,7 @@ def create_trail(args):
     return_outputs(human_readable, ec)
 
 
-def delete_trail(args):
+def delete_trail(args: dict):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -236,7 +230,7 @@ def delete_trail(args):
         demisto.results("The Trail {0} was deleted".format(args.get('name')))
 
 
-def describe_trails(args):
+def describe_trails(args: dict):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -272,7 +266,7 @@ def describe_trails(args):
     return_outputs(human_readable, ec)
 
 
-def update_trail(args):
+def update_trail(args: dict):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -335,7 +329,7 @@ def update_trail(args):
     return_outputs(human_readable, ec)
 
 
-def start_logging(args):
+def start_logging(args: dict):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -351,7 +345,7 @@ def start_logging(args):
         demisto.results("The Trail {0} started logging".format(args.get('name')))
 
 
-def stop_logging(args):
+def stop_logging(args: dict):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -391,6 +385,8 @@ def lookup_events(args):
 
     client.lookup_events(**kwargs)
     paginator = client.get_paginator('lookup_events')
+    demisto.log(**kwargs)
+    demisto.log("This is the end")
     for response in paginator.paginate(**kwargs):
         for i, event in enumerate(response['Events']):
             data.append({
@@ -418,7 +414,7 @@ def test_function():
 
 
 def calculate_fetch_start_time(last_fetch, first_fetch):
-    # if last_fetch is None:
+    #if last_fetch is None:
     if not last_fetch:
         if not first_fetch:
             first_fetch = '5 days'
@@ -428,23 +424,29 @@ def calculate_fetch_start_time(last_fetch, first_fetch):
     else:
         return float(last_fetch)
 
-
-def fetch_incidents(args):
+def fetch_incidents(args: dict, params: dict):
     client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+         region=args.get('region'),
+         roleArn=args.get('roleArn'),
+         roleSessionName=args.get('roleSessionName'),
+         roleSessionDuration=args.get('roleSessionDuration'),
     )
 
     last_fetch = demisto.getLastRun()
-    first_fetch = demisto.params().get('first_fetch')
-    attribute_key = demisto.params().get('AttributeKey')
+    demisto.debug(f"Last Run: {last_fetch}")
+    first_fetch = params.get('first_fetch')
+    attribute_key = params.get('AttributeKey')
     if not attribute_key:
         attribute_key = 'EventName'
-    attribute_value = demisto.params().get('AttributeValue')
+    attribute_value = params.get('AttributeValue')
+
+    fetch_limit = int(params.get('fetch_limit'))
+    if fetch_limit > 50 or fetch_limit <= 0:
+        fetch_limit = 50
 
     fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
+    demisto.debug("Fetch start time")
+    demisto.debug(str(fetch_start_time))
 
     incidents = []
     incident_created_time = fetch_start_time
@@ -456,10 +458,12 @@ def fetch_incidents(args):
     }
 
     kwargs.update({'StartTime': fetch_start_time})
+    #demisto.log("These are the arguments: ")
+    #demisto.log(str(kwargs))
 
     client.lookup_events(**kwargs)
     paginator = client.get_paginator('lookup_events')
-    for response in paginator.paginate(**kwargs):
+    for response in paginator.paginate(**kwargs, PaginationConfig={'MaxItems': fetch_limit}):
         for i, event in enumerate(response['Events']):
             incident = {
                 'EventId': event.get('EventId'),
@@ -469,8 +473,8 @@ def fetch_incidents(args):
                 'ResourceName': event.get('Resources')[0].get('ResourceName') if event.get('Resources') else None,
                 'ResourceType': event.get('Resources')[0].get('ResourceType') if event.get('Resources') else None,
                 'CloudTrailEvent': event.get('CloudTrailEvent'),
-                'Username': event.get('Username'),
-                'rawJSON': json.dumps(event, indent=4, sort_keys=True, default=str)
+                'Username' : event.get('Username'),
+                'rawJSON':json.dumps(event, indent=4, sort_keys=True, default=str)
             }
             incidents.append(incident)
             incident_created_time = (event.get('EventTime', '01-01-01T00:00:00') + timedelta(seconds=1)).timestamp()
@@ -478,37 +482,44 @@ def fetch_incidents(args):
     if incident_created_time > fetch_start_time:
         last_fetch = str(incident_created_time)
         demisto.setLastRun(last_fetch)
+    demisto.debug("Last fetch time")
+    demisto.debug(str(last_fetch))
 
     demisto.incidents(incidents)
 
 
 '''EXECUTION BLOCK'''
+
+
 try:
+    args = demisto.args()
+    params = demisto.params()
+
     if demisto.command() == 'test-module':
         test_function()
     if demisto.command() == 'fetch-incidents':
-        fetch_incidents(demisto.args())
+        fetch_incidents(args,params)
     if demisto.command() == 'aws-cloudtrail-create-trail':
-        create_trail(demisto.args())
+        create_trail(args)
     if demisto.command() == 'aws-cloudtrail-delete-trail':
-        delete_trail(demisto.args())
+        delete_trail(args)
     if demisto.command() == 'aws-cloudtrail-describe-trails':
-        describe_trails(demisto.args())
+        describe_trails(args)
     if demisto.command() == 'aws-cloudtrail-update-trail':
-        update_trail(demisto.args())
+        update_trail(args)
     if demisto.command() == 'aws-cloudtrail-start-logging':
-        start_logging(demisto.args())
+        start_logging(args)
     if demisto.command() == 'aws-cloudtrail-stop-logging':
-        stop_logging(demisto.args())
+        stop_logging(args)
     if demisto.command() == 'aws-cloudtrail-lookup-events':
-        lookup_events(demisto.args())
+        lookup_events(args)
 
 except ResponseParserError as e:
     return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
         error=type(e)))
+    demisto.error(traceback.format_exc())
 
 except Exception as e:
+    demisto.error(traceback.format_exc())
     return_error('Error has occurred in the AWS CloudTrail Integration: {code}\n {message}'.format(
         code=type(e), message=str(e)))
-
-register_module_line('AWS - CloudTrail', 'end', __line__())
