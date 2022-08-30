@@ -31,4 +31,4 @@ This playbook uses the following integration.
 
  
 
-<img width="858" alt="Exterro_FTK__Dump_Memory_using_FTK_Connect_Automation_Mon_Aug_22_2022_1" src="https://user-images.githubusercontent.com/32624966/185980484-e0a1235d-edc8-4aaa-a386-eaeb05803500.png">
+<img width="858" alt="Exterro_FTK__Dump_Memory_using_FTK_Connect_Automation_Mon_Aug_22_2022_1" src="https://user-images.githubusercontent.com/32624966/185980484-e0a1235d-edc8-4aaa-a386-eaeb05803500.png"/>
