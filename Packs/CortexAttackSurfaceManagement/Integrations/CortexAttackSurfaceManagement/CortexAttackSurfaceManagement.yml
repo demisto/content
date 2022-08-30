@@ -3,11 +3,6 @@ commonfields:
   id: Cortex Attack Surface Management
   version: -1
 configuration:
-- defaultvalue: https://www.example.com
-  display: Server URL
-  name: url
-  required: true
-  type: 0
 - defaultvalue: "false"
   display: Use system proxy
   name: proxy
@@ -18,10 +13,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: API Key
-  name: api_key
-  required: true
-  type: 4
 description: Integration to pull asset and other ASM related information
 display: Cortex Attack Surface Management
 name: Cortex Attack Surface Management
