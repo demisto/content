@@ -340,7 +340,7 @@ script:
     - contextPath: ASM.GetExternalService.details.details.ip_ranges.35.227.6.150.LAST_IP
       description: ""
       type: String
-  - arguments: []
+  - arguments:
     description: |-
       Create or update incident according to JSON structure.
       To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
@@ -380,97 +380,40 @@ script:
       description: ""
       type: String
   - arguments:
-    - name: range_id_list
-    description: |-
-      Create or update incident according to JSON structure.
-      To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
-      To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
-
-      Use the 'createInvestigation\: True' to start the investigation process automatically. (by running a playbook based on incident type.)
+    - description: An string represenng the range ID for which you want to get the details for.
+      name: range_id
+      required: true
+    description: Get external IP address range details according to the range IDs.
     name: asm-getexternalipaddressrange
     outputs:
-    - contextPath: ASM.GetExternalIpAddressRange.details.range_id
-      description: ""
+    - contextPath: ASM.GetExternalIpAddressRange.range_id
+      description: "External IP address range UUID"
       type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.first_ip
-      description: ""
+    - contextPath: ASM.GetExternalIpAddressRange.first_ip
+      description: "First IP address of external IP address range"
       type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.last_ip
-      description: ""
+    - contextPath: ASM.GetExternalIpAddressRange.last_ip
+      description: "Last IP address of external IP address range"
       type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.ips_count
-      description: ""
+    - contextPath: ASM.GetExternalIpAddressRange.ips_count
+      description: "Number of IP addresses of external IP address range"
       type: Number
-    - contextPath: ASM.GetExternalIpAddressRange.details.active_responsive_ips_count
-      description: ""
+    - contextPath: ASM.GetExternalIpAddressRange.active_responsive_ips_count
+      description: "How many IPs in external address range and actively responsive"
       type: Number
-    - contextPath: ASM.GetExternalIpAddressRange.details.date_added
-      description: ""
+    - contextPath: ASM.GetExternalIpAddressRange.date_added
+      description: "Date the external IP address range was added"
       type: Date
-    - contextPath: ASM.GetExternalIpAddressRange.details.business_units
-      description: ""
+    - contextPath: ASM.GetExternalIpAddressRange.business_units
+      description: "External IP address range associated business units"
       type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.organization_handles
-      description: ""
+    - contextPath: ASM.GetExternalIpAddressRange.organization_handles
+      description: "External IP address range associated organization handles"
       type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.handle
-      description: ""
+    - contextPath: ASM.GetExternalIpAddressRange.details
+      description: "Additional information"
       type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.firstIp
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.lastIp
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.name
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.whoIsServer
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.lastChanged
-      description: ""
-      type: Date
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.handle
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.dateAdded
-      description: ""
-      type: Date
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.address
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.email
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.phone
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.org
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.formattedName
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.kind
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.roles
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.lastChanged
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.firstRegistered
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.organizationRecords.remarks
-      description: ""
-      type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details.details.networkRecords.remarks
-      description: ""
-      type: String
-  - arguments: []
+  - arguments:
     description: |-
       Create or update incident according to JSON structure.
       To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
@@ -564,54 +507,53 @@ script:
       description: ""
       type: String
   - arguments:
-    - description: An string represenng the asset ID for which you want to get the details for
+    - description: An string representing the asset ID for which you want to get the details for
       name: asm_id
       required: true
-    description: |-
-      Get Internet exposure asset details according to the asset ID.
+    description: Get Internet exposure asset details according to the asset ID.
     name: asm-getassetinternetexposure
     outputs:
     - contextPath: ASM.GetAssetInternetExposure.asm_ids
-      description: "Attack Surface Managment UUID"
+      description: Attack surface managment UUID
       type: String
     - contextPath: ASM.GetAssetInternetExposure.name
-      description: "Name of the exposed asset"
+      description: Name of the exposed asset
       type: String
     - contextPath: ASM.GetAssetInternetExposure.type
-      description: "Type of the exposed asset"
+      description: Type of the exposed asset
       type: String
     - contextPath: ASM.GetAssetInternetExposure.last_observed
-      description: "Last time exposure was observed"
+      description: Last time exposure was observed
       type: Unknown
     - contextPath: ASM.GetAssetInternetExposure.first_observed
-      description: "First time exposure was observed"
+      description: First time exposure was observed
       type: Unknown
     - contextPath: ASM.GetAssetInternetExposure.created
-      description: "Date the ASM Issue was created"
+      description: Date the ASM Issue was created
       type: Date
     - contextPath: ASM.GetAssetInternetExposure.business_units
-      description: "Asset associated business units"
+      description: Asset associated business units
       type: String
     - contextPath: ASM.GetAssetInternetExposure.domain
-      description: "Asset associated domain"
+      description: Asset associated domain
       type: Unknown
     - contextPath: ASM.GetAssetInternetExposure.certificate_issuer
-      description: "Asset certificate issuer"
+      description: Asset certificate issuer
       type: String
     - contextPath: ASM.GetAssetInternetExposure.certificate_algorithm
-      description: "Asset certificate algorithm"
+      description: Asset certificate algorithm
       type: String
     - contextPath: ASM.GetAssetInternetExposure.certificate_classifications
-      description: "Asset certificate classifications"
+      description: Asset certificate classifications
       type: String
     - contextPath: ASM.GetAssetInternetExposure.resolves
-      description: "Does the asset have DNS resolution"
+      description: Does the asset have DNS resolution
       type: Boolean
     - contextPath: ASM.GetAssetInternetExposure.details
-      description: "Additional details"
+      description: Additional details
       type: Unknown
     - contextPath: ASM.GetAssetInternetExposure.externally_inferred_vulnerability_score
-      description: "Asset vulnerability score"
+      description: Asset vulnerability score
       type: Unknown
   dockerimage: demisto/python3:3.10.5.33323
   runonce: false

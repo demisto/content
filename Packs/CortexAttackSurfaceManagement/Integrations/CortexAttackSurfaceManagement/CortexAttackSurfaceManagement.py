@@ -34,7 +34,7 @@ class Client(BaseClient):
         return response
 
     def getexternalipaddressrange_request(self, range_id_list):
-        data = {"request_data": {"range_id_list": ["1093124c-ce26-33ba-8fb8-937fecb4c7b6"]}}
+        data = {"request_data": {"range_id_list": range_id_list}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_external_ip_address_range/',
@@ -52,8 +52,6 @@ class Client(BaseClient):
         return response
 
     def getassetinternetexposure_request(self, asm_id_list):
-        #DOESNTWORKdata = {"request_data":{"asm_id_list":["e06f15ce-9ab1-3460-8a31-000ac6d2d378"]}}
-        #data = {"request_data":{"asm_id_list":["e06f15ce-9ab1-3460-8a31-000ac6d2d37e"]}}
         data = {"request_data": {"asm_id_list": asm_id_list}}
         headers = self._headers
 
@@ -107,14 +105,20 @@ def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    range_id_list = args.get('range_id_list')
+    range_id = args.get('range_id')
+    range_id_list = range_id.split(",")
+    if len(range_id_list) > 1:
+        return_error("This command only supports one range_id at this time")
 
     response = client.getexternalipaddressrange_request(range_id_list)
+    parsed = response['reply']['details']
+    markdown = tableToMarkdown('External IP Address Range', parsed)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalIpAddressRange',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        outputs_key_field='range_id',
+        outputs=parsed,
+        raw_response=parsed,
+        readable_output=markdown
     )
 
     return command_results
