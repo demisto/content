@@ -44,32 +44,19 @@ class Client(BaseClient):
 
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
-    def get_project_list_request(self, project_key: str, limit: int, params:Dict) -> list:
+    def get_full_url(self, full_url: str, params: Dict) -> Dict:
+        return self._http_request(method='GET', full_url=full_url, params=params)
+
+    def get_project_list_request(self, project_key: str, params: Dict) -> Dict:
         if not project_key:
             full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/'
         else:
             project_key = project_key.upper()
             full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/{project_key}'
 
-        try:
-            response = self._http_request(method='GET', full_url=full_url, params=params)
-        except Exception as e:
-            s = e.message
-            m_arr = s.split('\n')
-            m_json = json.loads(m_arr[1])
-            message = m_json.get('error').get('message')
-            raise Exception(message)
+        return self._http_request(method='GET', full_url=full_url, params=params)
 
-        results = []
-
-        if full_url[-1] != '/':
-            results.append(response)
-            return results
-        else:
-            results = self.check_pagination(response, limit, params)
-        return results
-
-    def get_open_branch_list_request(self, repo: str, limit: int, params: Dict) -> list:
+    def get_open_branch_list_request(self, repo: str, params: Dict) -> Dict:
         if repo:
             full_url = f'{self.serverUrl}/repositories/{self.workspace}/{repo}/refs/branches'
         else:
@@ -77,47 +64,56 @@ class Client(BaseClient):
                 raise Exception("Please provide a repository name")
             full_url = f'{self.serverUrl}/repositories/{self.workspace}/{self.repository}/refs/branches'
 
-        response = self._http_request(method='GET', full_url=full_url, params=params)
-        results = self.check_pagination(response, limit, params)
-        return results
+        return self._http_request(method='GET', full_url=full_url, params=params)
 
-    # HELPER FUNCTIONS
 
-    def check_pagination(self, response:Dict, limit: int, params: Dict):
-        arr = response.get('values')
-        results_number = len(arr)
-        isNext = response.get('next', None)
-        results = []
-        if limit < results_number:
-            for res in arr:
-                if limit > 0:
-                    results.append(res)
-                    limit = limit - 1
-                else:
-                    break
-        elif limit == results_number or params.get('page', None) or (not isNext):
-            results = arr
-        else:
-            results = self.get_paged_results(response, results, limit, params)
-        return results
+''' HELPER FUNCTIONS '''
 
-    def get_paged_results(self, response, results, limit, params=None) -> list:
-        arr = response.get('values')
-        isNext = response.get('next', None)
-        while response:
-            for value in arr:
-                if limit > 0:
-                    results.append(value)
-                    limit = limit - 1
-                else:
-                    break
-            if limit > 0 and isNext:
-                response = self._http_request(method='GET', full_url=isNext)
-                isNext = response.get('next', None)
-                arr = response.get('values')
+
+def check_pagination(client, response: Dict, limit: int, params: Dict):
+    arr = response.get('values')
+    results_number = len(arr)
+    isNext = response.get('next', None)
+    results = []
+    if limit < results_number:
+        for res in arr:
+            if limit > 0:
+                results.append(res)
+                limit = limit - 1
             else:
-                response = None
-        return results
+                return results
+    elif limit == results_number or params.get('page', None) or (not isNext):
+        return arr
+    else:
+        return get_paged_results(client, response, results, limit)
+
+
+def get_paged_results(client, response, results, limit) -> list:
+    arr = response.get('values')
+    isNext = response.get('next', None)
+    while response:
+        for value in arr:
+            if limit > 0:
+                results.append(value)
+                limit = limit - 1
+            else:
+                break
+        if limit > 0 and isNext:
+            response = client.get_full_url(full_url=isNext)
+            isNext = response.get('next', None)
+            arr = response.get('values')
+        else:
+            response = None
+    return results
+
+
+def check_args(limit: int, page: int, page_size: int):
+    if limit and limit < 1:
+        raise Exception('The limit must be equal to 1 or bigger.')
+    if page and page < 1:
+        raise Exception('The page must be equal to 1 or bigger.')
+    if page_size and page_size < 1:
+        raise Exception('The page_size must be equal to 1 or bigger.')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -126,7 +122,7 @@ class Client(BaseClient):
 def test_module(client: Client) -> str:
     params = {'pagelen': 1}
     try:
-        client.get_project_list_request(None, 1, params)
+        client.get_project_list_request(None, params)
         return "ok"
     except:
         raise Exception('There was a problem in the authentication process.')
@@ -139,13 +135,16 @@ def project_list_command(client: Client, args) -> CommandResults:
               'pagelen': arg_to_number(args.get('page_size', 50))}
     limit = arg_to_number(args.get('limit', 50))
     project_key = args.get('project_key')
+    check_args(limit, params.get('page'), params.get('page_size'))
 
-    results = client.get_project_list_request(project_key, limit, params)
+    response = client.get_project_list_request(project_key, params)
 
-    if not project_key:
-        readable_name = f'List of the projects in {client.workspace}'
-    else:
+    if project_key:
+        results = [response]
         readable_name = f'The information about project {project_key.upper()}'
+    else:
+        results = check_pagination(client, response, limit, params)
+        readable_name = f'List of the projects in {client.workspace}'
 
     human_readable = []
 
@@ -177,17 +176,19 @@ def open_branch_list_command(client: Client, args) -> CommandResults:
               'pagelen': arg_to_number(args.get('page_size', 50))}
     limit = arg_to_number(args.get('limit', 50))
     repo = args.get('repo', None)
+    check_args(limit, params.get('page'), params.get('page_size'))
 
-    results = client.get_open_branch_list_request(repo, limit, params)
+    response = client.get_open_branch_list_request(repo, params)
+    results = check_pagination(client, response, limit, params)
 
     human_readable = []
-
     for value in results:
         d = {'Name': value.get('name'),
              'LastCommitHash': demisto.get(value, 'target.hash'),
              'LastCommitCreatedBy': demisto.get(value, 'target.author.user.display_name'),
              'LastCommitCreatedAt': demisto.get(value, 'target.date')}
         human_readable.append(d)
+
     headers = ['Name', 'LastCommitCreatedBy', 'LastCommitCreatedAt', 'LastCommitHash']
     readable_output = tableToMarkdown(
         name='The list of open branches',
@@ -206,7 +207,7 @@ def open_branch_list_command(client: Client, args) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
