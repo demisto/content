@@ -1,10 +1,5 @@
 from demisto_client.demisto_api.rest import ApiException
 
-import demisto_client.demisto_api as demisto_api
-from demisto_client.demisto_api import ApiClient
-
-
-
 from demisto_sdk.commands.download.downloader import Downloader
 from demisto_sdk.commands.format.format_module import format_manager
 from demisto_sdk.commands.generate_docs import generate_playbook_doc
@@ -61,6 +56,7 @@ def test_e2e_demisto_sdk_flow_playbook_testsuite(tmpdir, insecure: bool = False)
     print(f'Uploading updated playbook {tmpdir}/Packs/{pack_name}_testsuite/Playbooks/{playbook_name}.yml')
     Uploader(input=f'{tmpdir}/Packs/{pack_name}/Playbooks/{playbook_name}.yml', insecure=True).upload()
 
+
 def test_e2e_demisto_sdk_flow_playbook_client(tmpdir, insecure: bool = False):
     # TODO Remove the random
     pack_name = 'foo_' + str(random.randint(1, 1000))
@@ -71,31 +67,31 @@ def test_e2e_demisto_sdk_flow_playbook_client(tmpdir, insecure: bool = False):
         {
             "name": playbook_name,
             "propagationLabels": [
-                  "all"
+                "all"
             ],
             "tasks": {
-              "0": {
-                "id": "0",
-                "unqiueId": "0",
-                "type": "start",
-                "nextTasks": None,
-                "task": {}
-              }
+                "0": {
+                      "id": "0",
+                      "unqiueId": "0",
+                      "type": "start",
+                      "nextTasks": None,
+                      "task": {}
+                }
             }
         }
-      ]
+    ]
 
     header_params = {}
     header_params['Accept'] = 'application/json'  # noqa: E501
     header_params['Accept-Encoding'] = 'gzip, deflate, br'
     header_params['Content-Type'] = 'application/json'
-    header_params['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
+    # header_params['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
 
     try:
-      demisto_client.api_client.call_api(resource_path='/playbook/save', method='POST',
-                                        header_params=header_params,
-                                        body=body,
-                                        )
+        demisto_client.api_client.call_api(resource_path='/playbook/save', method='POST',
+                                           header_params=header_params,
+                                           body=body,
+                                           )
     except ApiException as ae:
         print(f'*** Failed to create playbook {playbook_name}, reason: {ae}')
         assert False
