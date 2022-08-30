@@ -1,7 +1,6 @@
 import asyncio
 import ipaddress
 import json
-import traceback
 
 import aiohttp
 import pytz
@@ -399,7 +398,8 @@ def ip_reputation_command(client, args, good_tag, bad_tag) -> List[CommandResult
             indicator_type=DBotScoreType.IP,
             integration_name='Synapse',
             score=score,
-            malicious_description=f'Synapse returned reputation tag: {reputation["tag"]}'
+            malicious_description=f'Synapse returned reputation tag: {reputation["tag"]}',
+            reliability=demisto.params().get('integrationReliability')
         )
 
         # Create the IP Standard Context structure using Common.IP and add
@@ -454,7 +454,8 @@ def domain_reputation_command(client, args, good_tag, bad_tag) -> List[CommandRe
             indicator_type=DBotScoreType.DOMAIN,
             integration_name='Synapse',
             score=score,
-            malicious_description=f'Synapse returned reputation tag: {reputation["tag"]}'
+            malicious_description=f'Synapse returned reputation tag: {reputation["tag"]}',
+            reliability=demisto.params().get('integrationReliability')
         )
 
         # Create the Domain Standard Context structure using Common.Domain and add
@@ -513,7 +514,8 @@ def url_reputation_command(client, args, good_tag, bad_tag) -> List[CommandResul
             indicator_type=DBotScoreType.URL,
             integration_name='Synapse',
             score=score,
-            malicious_description=f'Synapse returned reputation tag: {reputation["tag"]}'
+            malicious_description=f'Synapse returned reputation tag: {reputation["tag"]}',
+            reliability=demisto.params().get('integrationReliability')
         )
 
         # Create the URL Standard Context structure using Common.URL and add
@@ -566,7 +568,8 @@ def file_reputation_command(client, args, good_tag, bad_tag) -> List[CommandResu
             indicator_type=DBotScoreType.FILE,
             integration_name='Synapse',
             score=score,
-            malicious_description=f'Synapse returned reputation tag: {reputation["tag"]}'
+            malicious_description=f'Synapse returned reputation tag: {reputation["tag"]}',
+            reliability=demisto.params().get('integrationReliability')
         )
 
         # Create the File Standard Context structure using Common.File and add
@@ -899,7 +902,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

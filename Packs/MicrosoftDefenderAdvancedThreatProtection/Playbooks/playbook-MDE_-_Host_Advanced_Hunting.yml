@@ -1,8 +1,8 @@
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature based on the provided inputs.
+  contentitemfields: {}
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature based on the provided inputs.
 id: MDE - Host Advanced Hunting
 inputs:
 - description: A comma-separated list of file SHA1 hashes to hunt.
@@ -41,7 +41,59 @@ inputs:
   required: false
   value: {}
 name: MDE - Host Advanced Hunting
-outputs: []
+outputs:
+- contextPath: MicrosoftATP.HuntTampering
+  description: The query results for hunt tampering.
+  type: unknown
+- contextPath: MicrosoftATP.HuntTampering.Result
+  description: The query results.
+- contextPath: MicrosoftATP.HuntPrivilegeEscalation
+  description: The query results for hunt privilege escalation.
+  type: unknown
+- contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
+  description: The query results.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
+  description: The query results for hunt lateral movement evidence.
+  type: unknown
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting on network connections.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
+  description: Query Results from the Microsoft Defender For Endpoint Advanced Hunting on SMB connections.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting on credential dumping.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting on management connections.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for hunt lateral movement evidence.
+  type: unknown
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for hunt persistence evidence.
+  type: unknown
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for scheduled jobs.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for registry entries.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for startup folder changes.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for created new services.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.service_updated
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for updated services.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for replaced files.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_user
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for new users.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_group
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for new groups.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for changes in group users.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for changes in the local firewall.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for changes in the host file.
+- contextPath: MicrosoftATP.File
+  description: File information from Microsoft ATP.
+  type: unknown
 starttaskid: '0'
 tasks:
   '0':
@@ -52,11 +104,10 @@ tasks:
     nexttasks:
       '#none#':
       - '3'
-      - '9'
       - '17'
-      - '28'
       - '13'
       - '85'
+      - '90'
     note: false
     quietmode: 0
     separatecontext: false
@@ -74,7 +125,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -360,
+          "x": -320,
           "y": 60
         }
       }
@@ -136,7 +187,7 @@ tasks:
       {
         "position": {
           "x": -1010,
-          "y": 210
+          "y": 420
         }
       }
   '13':
@@ -226,7 +277,7 @@ tasks:
       {
         "position": {
           "x": -1220,
-          "y": 360
+          "y": 570
         }
       }
   '27':
@@ -256,7 +307,7 @@ tasks:
       {
         "position": {
           "x": -780,
-          "y": 360
+          "y": 570
         }
       }
   '28':
@@ -286,7 +337,7 @@ tasks:
       {
         "position": {
           "x": -1670,
-          "y": 210
+          "y": 420
         }
       }
   '29':
@@ -326,7 +377,7 @@ tasks:
       {
         "position": {
           "x": -1670,
-          "y": 505
+          "y": 715
         }
       }
   '37':
@@ -370,7 +421,7 @@ tasks:
       {
         "position": {
           "x": -780,
-          "y": 505
+          "y": 715
         }
       }
   '38':
@@ -414,7 +465,7 @@ tasks:
       {
         "position": {
           "x": -1220,
-          "y": 505
+          "y": 715
         }
       }
   '40':
@@ -440,8 +491,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 1130
+          "x": 560,
+          "y": 1280
         }
       }
   '49':
@@ -483,7 +534,7 @@ tasks:
       {
         "position": {
           "x": -1670,
-          "y": 705
+          "y": 915
         }
       }
   '50':
@@ -521,7 +572,7 @@ tasks:
       {
         "position": {
           "x": -1920,
-          "y": 890
+          "y": 1100
         }
       }
   '53':
@@ -557,7 +608,7 @@ tasks:
       {
         "position": {
           "x": -1450,
-          "y": 890
+          "y": 1100
         }
       }
   '54':
@@ -599,7 +650,7 @@ tasks:
       {
         "position": {
           "x": -1220,
-          "y": 705
+          "y": 915
         }
       }
   '80':
@@ -619,31 +670,52 @@ tasks:
     quietmode: 0
     scriptarguments:
       DeviceID:
-        simple: ${inputs.DeviceID}
+        complex:
+          root: inputs.DeviceID
+          transformers:
+          - operator: uniq
       DeviceName:
-        simple: ${inputs.DeviceName}
+        complex:
+          root: inputs.DeviceName
+          transformers:
+          - operator: uniq
       FileMd5:
-        simple: ${inputs.FileMd5}
+        complex:
+          root: inputs.FileMd5
+          transformers:
+          - operator: uniq
       FileName:
-        simple: ${inputs.FileName}
+        complex:
+          root: inputs.FileName
+          transformers:
+          - operator: uniq
       FileSha1:
-        simple: ${inputs.FileSha1}
+        complex:
+          root: inputs.FileSha1
+          transformers:
+          - operator: uniq
       FileSha256:
-        simple: ${inputs.FileSha256}
+        complex:
+          root: inputs.FileSha256
+          transformers:
+          - operator: uniq
       IP:
-        simple: ${inputs.IP}
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
     separatecontext: true
     skipunavailable: false
     task:
       brand: ''
-      id: 3a2ccd6d-24af-4fdc-8e90-d7f4098b8a00
+      id: e8cd08d7-1da1-4612-86b0-b219262d8398
       iscommand: false
       name: MDE - Host Advanced Hunting For Powershell Executions
-      playbookId: MDE - Host Advanced Hunting For Powershell Executions
       type: playbook
       version: -1
-      description: ''
-    taskid: 3a2ccd6d-24af-4fdc-8e90-d7f4098b8a00
+      description: 'This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host PowerShell executions.'
+      playbookName: MDE - Host Advanced Hunting For Powershell Executions
+    taskid: e8cd08d7-1da1-4612-86b0-b219262d8398
     timertriggers: []
     type: playbook
     view: |-
@@ -670,29 +742,52 @@ tasks:
     quietmode: 0
     scriptarguments:
       DeviceID:
-        simple: ${inputs.DeviceID}
+        complex:
+          root: inputs.DeviceID
+          transformers:
+          - operator: uniq
       DeviceName:
-        simple: ${inputs.DeviceName}
+        complex:
+          root: inputs.DeviceName
+          transformers:
+          - operator: uniq
       FileName:
-        simple: ${inputs.FileName}
+        complex:
+          root: inputs.FileName
+          transformers:
+          - operator: uniq
       FileSha1:
-        simple: ${inputs.FileSha1}
+        complex:
+          root: inputs.FileSha1
+          transformers:
+          - operator: uniq
       FileSha256:
-        simple: ${inputs.FileSha256}
+        complex:
+          root: inputs.FileSha256
+          transformers:
+          - operator: uniq
       IP:
-        simple: ${inputs.IP}
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      FileMd5:
+        complex:
+          root: inputs.FileMd5
+          transformers:
+          - operator: uniq
     separatecontext: true
     skipunavailable: false
     task:
       brand: ''
-      description: This playbook uses the Microsoft Defender for Endpoint Advanced Hunting feature and hunts for host persistence evidence.
-      id: 0ede68b1-a86f-444b-8e24-67554d08d6c9
+      description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host persistence evidence.
+      id: 1b17ebad-cdd4-4e5b-8c33-d009cc922a8d
       iscommand: false
       name: MDE - Host Advanced Hunting For Persistence
-      playbookId: MDE - Host Advanced Hunting For Persistence
       type: playbook
       version: -1
-    taskid: 0ede68b1-a86f-444b-8e24-67554d08d6c9
+      playbookName: MDE - Host Advanced Hunting For Persistence
+    taskid: 1b17ebad-cdd4-4e5b-8c33-d009cc922a8d
     timertriggers: []
     type: playbook
     view: |-
@@ -719,31 +814,52 @@ tasks:
     quietmode: 0
     scriptarguments:
       DeviceID:
-        simple: ${inputs.DeviceID}
+        complex:
+          root: inputs.DeviceID
+          transformers:
+          - operator: uniq
       DeviceName:
-        simple: ${inputs.DeviceName}
+        complex:
+          root: inputs.DeviceName
+          transformers:
+          - operator: uniq
       FileMd5:
-        simple: ${inputs.FileMd5}
+        complex:
+          root: inputs.FileMd5
+          transformers:
+          - operator: uniq
       FileName:
-        simple: ${inputs.FileName}
+        complex:
+          root: inputs.FileName
+          transformers:
+          - operator: uniq
       FileSha1:
-        simple: ${inputs.FileSha1}
+        complex:
+          root: inputs.FileSha1
+          transformers:
+          - operator: uniq
       FileSha256:
-        simple: ${inputs.FileSha256}
+        complex:
+          root: inputs.FileSha256
+          transformers:
+          - operator: uniq
       IP:
-        simple: ${inputs.IP}
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
     separatecontext: true
     skipunavailable: false
     task:
       brand: ''
-      id: f5d3ed39-0b68-4048-86d5-d10ff75bf493
+      id: 61945bd1-c7fd-4fd6-809a-bbfcd32b2f79
       iscommand: false
       name: MDE - Host Advanced Hunting For Network Activity
-      playbookId: MDE - Host Advanced Hunting For Network Activity
       type: playbook
       version: -1
-      description: ''
-    taskid: f5d3ed39-0b68-4048-86d5-d10ff75bf493
+      description: 'This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.'
+      playbookName: MDE - Host Advanced Hunting For Network Activity
+    taskid: 61945bd1-c7fd-4fd6-809a-bbfcd32b2f79
     timertriggers: []
     type: playbook
     view: |-
@@ -792,7 +908,7 @@ tasks:
       {
         "position": {
           "x": -780,
-          "y": 705
+          "y": 915
         }
       }
   '84':
@@ -828,7 +944,7 @@ tasks:
       {
         "position": {
           "x": -1000,
-          "y": 890
+          "y": 1100
         }
       }
   '85':
@@ -838,7 +954,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '86'
+      - '89'
     note: false
     quietmode: 0
     separatecontext: false
@@ -857,8 +973,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -360,
-          "y": 215
+          "x": -320,
+          "y": 210
         }
       }
   '86':
@@ -905,8 +1021,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -360,
-          "y": 505
+          "x": -320,
+          "y": 715
         }
       }
   '87':
@@ -947,8 +1063,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -360,
-          "y": 705
+          "x": -320,
+          "y": 915
         }
       }
   '88':
@@ -985,17 +1101,110 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -570,
-          "y": 890
+          "x": -90,
+          "y": 1090
         }
       }
+  '89':
+    id: '89'
+    taskid: 0a3ba1a2-67eb-4d83-8e17-962c519073d4
+    type: condition
+    task:
+      id: 0a3ba1a2-67eb-4d83-8e17-962c519073d4
+      version: -1
+      name: Is there a hash?
+      description: Is there a hash?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '40'
+      yes:
+      - '86'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FileSha1
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FileSha256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '90':
+    id: '90'
+    taskid: 87ffe3f4-08ba-45e7-8232-46393f0dfca2
+    type: condition
+    task:
+      id: 87ffe3f4-08ba-45e7-8232-46393f0dfca2
+      version: -1
+      name: Check if device information was provided
+      description: Check if device information was provided.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '40'
+      yes:
+      - '9'
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceName
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1135,
+        "height": 1285,
         "width": 3300,
         "x": -1920,
         "y": 60
@@ -1005,3 +1214,4 @@ view: |-
 tests:
 - Microsoft Defender Advanced Threat Protection - Test
 fromversion: 6.5.0
+system: true

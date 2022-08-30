@@ -1,0 +1,13 @@
+{
+    "ruleId": "ru_test-rule-id",
+    "versionId": "ru_test-rule-id@v_test_version_id",
+    "ruleName": "demoRuleCreatedFromAPI",
+    "metadata": {
+        "author": "testuser",
+        "description": "single event rule that should generate detections"
+    },
+    "ruleText": "rule demoRuleCreatedFromAPI {\n        meta:\n        author = \"testuser\"\n        description = \"single event rule that should generate detections\"\n\n        events:\n        $e.metadata.event_type = \"NETWORK_DNS\"\n\n        condition:\n        $e\n    }\n",
+    "versionCreateTime": "2022-05-24T07:12:00.267007Z",
+    "compilationState": "SUCCEEDED",
+    "ruleType": "SINGLE_EVENT"
+}

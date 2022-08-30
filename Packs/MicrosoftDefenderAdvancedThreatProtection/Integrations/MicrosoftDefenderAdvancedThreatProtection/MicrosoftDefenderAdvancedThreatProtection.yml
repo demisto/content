@@ -85,6 +85,11 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
+- defaultvalue: 'false'
+  display: Using Microsoft GCC?
+  name: is_gcc
+  required: false
+  type: 8
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false
@@ -261,6 +266,18 @@ script:
       description: The machine's OS platform. Only a single platform can be added.
       isArray: false
       name: os_platform
+      required: false
+      secret: false
+    - default: false
+      description: Number of machines to return in a page - must be lower or equal to 10,000.
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: The page number to retrieve.
+      defaultValue: '1'
+      name: page_num
       required: false
       secret: false
     deprecated: false
@@ -3016,7 +3033,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The action to apply if the indicator is matched from within the targetProduct security tool. 
+      description: The action to apply if the indicator is matched from within the targetProduct security tool.
       isArray: false
       name: action
       predefined:
@@ -3784,7 +3801,7 @@ script:
       - Url
     - default: false
       auto: PREDEFINED
-      description: The action taken if the indicator is discovered in the organization. 
+      description: The action taken if the indicator is discovered in the organization.
       isArray: false
       name: action
       required: true
@@ -5727,7 +5744,59 @@ script:
     - contextPath: MicrosoftATP.MachineAction.MachineID
       description: The machine ID on which the action was executed.
       type: String
-  dockerimage: demisto/crypto:1.0.0.31577
+  - arguments:
+    - default: true
+      description: A comma-separated list of machine IDs to be used for offboarding. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
+      isArray: true
+      name: machine_id
+      required: true
+    - description: A comment to associate with the action.
+      name: comment
+      required: true
+    description: Offboard a machine from defender.
+    execution: true
+    name: microsoft-atp-offboard-machine
+    outputs:
+    - contextPath: MicrosoftATP.OffboardMachine.ID
+      description: The machine action ID.
+      type: String
+    - contextPath: MicrosoftATP.OffboardMachine.Type
+      description: Type of the machine action.
+      type: String
+    - contextPath: MicrosoftATP.OffboardMachine.Scope
+      description: Scope of the action.
+      type: Unknown
+    - contextPath: MicrosoftATP.OffboardMachine.Requestor
+      description: The ID of the user that executed the action.
+      type: String
+    - contextPath: MicrosoftATP.OffboardMachine.RequestorComment
+      description: Comment that was written when issuing the action.
+      type: String
+    - contextPath: MicrosoftATP.OffboardMachine.Status
+      description: The current status of the command.
+      type: String
+    - contextPath: MicrosoftATP.OffboardMachine.MachineID
+      description: The machine ID on which the action was executed.
+      type: String
+    - contextPath: MicrosoftATP.OffboardMachine.ComputerDNSName
+      description: The machine DNS name on which the action was executed.
+      type: String
+    - contextPath: MicrosoftATP.OffboardMachine.CreationDateTimeUtc
+      description: The date and time when the action was created.
+      type: Date
+    - contextPath: MicrosoftATP.OffboardMachine.LastUpdateTimeUtc
+      description: The last date and time when the action status was updated.
+      type: Date
+    - contextPath: MicrosoftATP.OffboardMachine.cancellationDateTimeUtc
+      description: The date and time when the action was canceled.
+      type: Date
+    - contextPath: MicrosoftATP.OffboardMachine.RelatedFileInfo
+      description: The file info.
+      type: String
+    - contextPath: MicrosoftATP.OffboardMachine.troubleshootInfo
+      description: Troubleshooting information.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.31715
   feed: false
   isfetch: true
   longRunning: false
@@ -5740,3 +5809,4 @@ defaultmapperin: Microsoft Defender For Endpoint Mapper
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+

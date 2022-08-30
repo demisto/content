@@ -1,4 +1,5 @@
 import dateparser
+import requests_mock
 from _pytest.python_api import raises
 from freezegun import freeze_time
 
@@ -10,7 +11,7 @@ from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
     get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
-    get_machine_users_command, get_machine_alerts_command
+    get_machine_users_command, get_machine_alerts_command, SECURITY_GCC_RESOURCE, SECURITY_CENTER_RESOURCE
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 with open('test_data/expected_hunting_queries.json') as expected_json:
@@ -25,7 +26,7 @@ def mock_demisto(mocker):
 client_mocker = MsClient(
     tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url', verify='use_ssl',
     proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
-    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10')
+    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=False,)
 
 
 def atp_mocker(mocker, file_name):
@@ -129,6 +130,16 @@ def test_get_machine_investigation_package_command(mocker):
     mocker.patch.object(atp, 'get_machine_action_data', return_value=INVESTIGATION_ACTION_DATA)
     _, res, _ = get_machine_investigation_package_command(client_mocker, {'machine_id': '123', 'comment': 'test'})
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == INVESTIGATION_ACTION_DATA
+
+
+def test_offboard_machine_command(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import offboard_machine_command
+    mocker.patch.object(client_mocker, 'offboard_machine', return_value=MACHINE_OFFBOARD_API_RESPONSE)
+    args = {'machine_id': '9b898e79b0ed2173cc87577a158d1dba5f61d7a7', 'comment': 'Testing Offboarding'}
+    result = offboard_machine_command(client_mocker, args)
+    assert result.outputs[0]['ID'] == '947a677a-a11a-4240-ab6q-91277e2386b9'
+    assert result.outputs[0]['Status'] == 'Pending'
+    assert result.outputs[0]['Type'] == 'Offboard'
 
 
 def test_get_investigation_package_sas_uri_command(mocker):
@@ -804,6 +815,30 @@ MACHINE_ALERTS_OUTPUT = {
     "ThreatFamilyName": None,
     'ThreatName': None,
     "Title": "Network connection to a risky host",
+}
+
+MACHINE_OFFBOARD_API_RESPONSE = {
+    "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#MachineActions/$entity",
+    "id": "947a677a-a11a-4240-ab6q-91277e2386b9",
+    "type": "Offboard",
+    "title": None,
+    "requestor": "cbceb30b-f2b1-488e-893e-62907e4fe6d5",
+    "requestorComment": "Testing Offboarding",
+    "status": "Pending",
+    "machineId": None,
+    "computerDnsName": None,
+    "creationDateTimeUtc": "2022-07-12T14:39:19.6103056Z",
+    "lastUpdateDateTimeUtc": "2022-07-12T14:39:19.610309Z",
+    "cancellationRequestor": None,
+    "cancellationComment": None,
+    "cancellationDateTimeUtc": None,
+    "errorHResult": 0,
+    "scope": None,
+    "externalId": None,
+    "requestSource": "PublicApi",
+    "relatedFileInfo": None,
+    "commands": [],
+    "troubleshootInfo": None
 }
 
 
@@ -2281,3 +2316,49 @@ def test_get_machine_alerts_command(mocker):
     mocker.patch.object(client_mocker, 'get_machine_alerts', return_value=ALERTS_API_RESPONSE)
     results = get_machine_alerts_command(client_mocker, {'machine_id': "123abc"})
     assert results.outputs[0] == MACHINE_ALERTS_OUTPUT
+
+
+@pytest.mark.parametrize('is_gcc', (True, False))
+def test_gcc_resource(mocker, is_gcc: bool):
+    """
+    Given
+         an MsClient object
+    When
+        Making a http request
+    Then
+        Validate that the resource called matches the is_gcc attribute, so that GCC-based instance requests go through.
+    """
+    client = MsClient(
+        tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url',
+        verify='use_ssl',
+        proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
+        alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=is_gcc, )
+    # use requests_mock to catch a get to example.com
+    req = mocker.patch.object(client.ms_client, 'http_request')
+    with requests_mock.Mocker() as m:
+        m.get('https://example.com')
+    client.indicators_http_request('https://example.com', should_use_security_center=True)
+    assert req.call_args[1]['resource'] == {True: SECURITY_GCC_RESOURCE,
+                                            False: SECURITY_CENTER_RESOURCE}[is_gcc]
+
+
+@pytest.mark.parametrize('page_num, page_size, res',
+                         [('5', '10600', {'$filter': 'filter', '$skip': '40000', '$top': '10000'}),
+                          ('3', '50', {'$filter': 'filter', '$skip': '100', '$top': '50'}),
+                          ('1', '3', {'$filter': 'filter', '$skip': '0', '$top': '3'})
+                          ]
+                         )
+def test_get_machines(mocker, page_num, page_size, res):
+    """
+    Given:
+        - page_num, page_size, limit to the get_machines method
+
+    When:
+        - Before calling the API to get the machines
+
+    Then:
+        - verify that the page_num , page_size, limit are added to the params array correctly.
+    """
+    req = mocker.patch.object(client_mocker.ms_client, 'http_request', return_value='')
+    client_mocker.get_machines('filter', page_num=page_num, page_size=page_size)
+    assert res == req.call_args.kwargs.get('params')

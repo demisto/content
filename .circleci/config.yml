@@ -123,6 +123,12 @@ references:
       name: Prepare Environment
       when: always
       command: |
+        # Check if CircleCI's config file and poetry files files are up to date
+        # if poetry isn't up-to-date, checkout from origin/master.
+        ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
+        ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CIRCLE_BRANCH true
+        ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CIRCLE_BRANCH true
+
         echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
@@ -235,6 +241,8 @@ references:
       command: |
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
           demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+          echo "Adding unit tests coverage comment to the pr"
+          python3 ./Tests/scripts/add_pr_comment.py
         fi
 
   infrastructure_testing: &infrastructure_testing
@@ -355,13 +363,6 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - run:
-          name: Check if CircleCI's config file and requirements.txt files are up to date
-          when: always
-          command: |
-            ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CIRCLE_BRANCH
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
