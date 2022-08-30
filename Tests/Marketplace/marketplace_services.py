@@ -1715,7 +1715,12 @@ class Pack(object):
         #     return {}, True
 
         # Convert the RN dict to string
-        changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes).strip()
+
+        final_release_notes = construct_entities_block(filtered_release_notes).strip()
+        if not final_release_notes:
+            final_release_notes = f"Changes are not relevant for {'XSOAR' if marketplace == 'xsoar' else 'XSIAM'} marketplace."
+
+        changelog_entry[Changelog.RELEASE_NOTES] = final_release_notes
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
 
