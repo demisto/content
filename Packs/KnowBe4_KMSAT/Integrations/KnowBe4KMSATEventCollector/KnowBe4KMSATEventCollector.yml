@@ -17,16 +17,14 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- additionalinfo: The time range to consider for the initial data fetch. (<number>
-    <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 1 day.
+- additionalinfo: The time range to consider for the initial data fetch. (<number> <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 1 day.
   defaultvalue: 1 day
   display: First fetch time interval
   hidden: false
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The Fetch interval, it's recommended to set it to 5 hours 
-    as there're not much events for this api and there's a 10 call daily-limit for basic api key.
+- additionalinfo: The Fetch interval, it's recommended to set it to 5 hours as there're not much events for this api and there's a 10 call daily-limit for basic api key.
   defaultvalue: 300
   display: Events Fetch Interval
   hidden: false
@@ -51,23 +49,23 @@ script:
     execution: false
     name: kms-get-events
     arguments:
-      - name: occurred_date
-        description: Filter by Occurred Date (YYYY-MM-DD).
-      - name: risk_level
-        description: Filter by Risk Level by entering a value from -10 (low risk) to 10 (high risk).
-      - name: per_page
-        description: How many results to bring per page (the max & default is 100).
-      - name: page
-        description: Which results page to bring.
-      - auto: PREDEFINED
-        defaultValue: 'False'
-        description: Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*
-        isArray: false
-        name: should_push_events
-        predefined:
-          - 'True'
-          - 'False'
-        required: true
+    - name: occurred_date
+      description: Filter by Occurred Date (YYYY-MM-DD).
+    - name: risk_level
+      description: Filter by Risk Level by entering a value from -10 (low risk) to 10 (high risk).
+    - name: per_page
+      description: How many results to bring per page (the max & default is 100).
+    - name: page
+      description: Which results page to bring.
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
     outputs:
     - contextPath: KMSat.Event.id
       description: Event id.
