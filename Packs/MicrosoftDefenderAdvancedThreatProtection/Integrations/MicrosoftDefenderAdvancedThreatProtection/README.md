@@ -15,26 +15,33 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 
 ## Authentication
 ---
+There are two different authentication methods for self-deployed configuration: 
+- [Client Credentials flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
+- [Authorization Code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 **Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
 
+
+**Note**: When using the Authorization Code Flow, please make sure the user you authenticate with has the required role permissions. See [this](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/initiate-autoir-investigation?view=o365-worldwide#permissions) as an example.
+
 ### Required Permissions
-* AdvancedQuery.Read.All - Application
-* Alert.ReadWrite.All - Application
-* File.Read.All - Application
-* Ip.Read.All - Application
-* Machine.CollectForensics - Application
-* Machine.Isolate - Application
-* Machine.ReadWrite.All - Application
-* Machine.RestrictExecution - Application
-* Machine.Scan - Application
-* Machine.StopAndQuarantine - Application
-* ThreatIndicators.ReadWrite.OwnedBy - Application. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
-* Url.Read.All - Application
-* User.Read.All - Application
-* Ti.ReadWrite (Read and write IOCs belonging to the app) - Application
-* Vulnerability.Read.All - Application
+Please add the following permissions to the app registration. Choose application permissions for the Client Credentials flow, and delegated permissions for the Authorization Code flow.
+* AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
+* Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
+* File.Read.All - Application / Delegated
+* Ip.Read.All - Application / Delegated
+* Machine.CollectForensics - Application / Delegated
+* Machine.Isolate - Application / Delegated
+* Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
+* Machine.RestrictExecution - Application / Delegated
+* Machine.Scan - Application / Delegated
+* Machine.StopAndQuarantine - Application / Delegated
+* ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
+* Url.Read.All - Application / Delegated
+* User.Read.All - Application / Delegated
+* Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
+* Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
 
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 ---
