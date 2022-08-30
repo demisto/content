@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 50
         }
       }
@@ -55,7 +55,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 195
         }
       }
@@ -85,7 +85,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 370
         }
       }
@@ -125,7 +125,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 545
         }
       }
@@ -164,7 +164,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 720
         }
       }
@@ -177,21 +177,28 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 25309ebc-b793-4d1a-8ef2-8d73b7636de5
-    type: title
+    taskid: 520e9a13-2dc1-451b-80ad-db3c825e64c9
+    type: regular
     task:
-      id: 25309ebc-b793-4d1a-8ef2-8d73b7636de5
+      id: 520e9a13-2dc1-451b-80ad-db3c825e64c9
       version: -1
-      name: Success (Log in Error Occurred)
-      type: title
+      name: Retrieve Error Message from Previous Task
+      description: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries} to check the previous task entries. The automation will return an array of the error contents from those entries.
+      scriptName: GetErrorsFromEntry
+      type: regular
       iscommand: false
       brand: ""
-      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 895
         }
       }
@@ -210,20 +217,120 @@ tasks:
       id: da8d8e63-68e8-44de-8010-4a6f62b6e32d
       version: -1
       name: Error
-      description: "If the playbook has stopped here, that means that an unauthorized user (a user that doesn't exist in the LDAP server) was able to log in to the XSOAR server.\nFor unauthorized users, the command 'ad-authenticate-and-roles' (which was called in the previous task) should raise a suitable exception (error message - 'LDAP Authentication - user not found')."
+      description: "I the playbook has stopped here, that means that an unauthorized user (a user that doesn't exist in the LDAP server) was able to log in to the XSOAR server.\nFor unauthorized users, the command 'ad-authenticate-and-roles' (which was called in the previous task) should raise a suitable exception (error message - 'LDAP Authentication - Active Directory user not found'). "
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
       message:
-        simple: 'An unauthorized user was able to connect to XSOAR.'
+        simple: 'An unauthorized user was able to connect to XSOAR. '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 4eb996ef-99f2-412b-8360-35c7a611682b
+    type: condition
+    task:
+      id: 4eb996ef-99f2-412b-8360-35c7a611682b
+      version: -1
+      name: Verify Error message
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ErrorEntries
+            iscontext: true
+          right:
+            value:
+              simple: LDAP Authentication - LDAP user not found
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f34b4fb1-c8ae-41c8-862b-ed964f2a36df
+    type: title
+    task:
+      id: f34b4fb1-c8ae-41c8-862b-ed964f2a36df
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9872d534-3e2f-4d70-87de-4f716d9042ab
+    type: regular
+    task:
+      id: 9872d534-3e2f-4d70-87de-4f716d9042ab
+      version: -1
+      name: Wrong Error Message
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Expected error message wasn't received.
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -238,8 +345,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
-        "width": 810,
+        "height": 1290,
+        "width": 1025,
         "x": 50,
         "y": 50
       }

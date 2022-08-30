@@ -464,7 +464,7 @@ class LdapClient:
                                  attributes=attributes)
 
             if not ldap_conn.entries:
-                raise Exception(f"LDAP Authentication - {self.OPENLDAP} user not found")
+                raise Exception(f"LDAP Authentication - LDAP user not found")
             entry = ldap_conn.entries[0]
 
             if self.GROUPS_IDENTIFIER_ATTRIBUTE not in entry \
@@ -554,7 +554,7 @@ class LdapClient:
                                                                               password=password)
 
             if not entries:  # if the user not exist in AD the query returns no entries
-                raise Exception(f"LDAP Authentication - {self.ACTIVE_DIRECTORY} user not found")
+                raise Exception(f"LDAP Authentication - LDAP user not found")
 
         return {
             'Controls': [],
