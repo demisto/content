@@ -203,7 +203,7 @@ tasks:
           left:
             value:
               complex:
-                root: SkyhighSecurity.dictionaries
+                root: SkyhighSecurity.Dictionaries
                 accessor: ID
             iscontext: true
     view: |-
@@ -241,11 +241,11 @@ tasks:
         simple: gmail.com, outlook.com
       dictionary_id:
         complex:
-          root: SkyhighSecurity.dictionaries
+          root: SkyhighSecurity.Dictionaries
           accessor: ID
       name:
         complex:
-          root: SkyhighSecurity.dictionaries
+          root: SkyhighSecurity.Dictionaries
           accessor: Name
     separatecontext: false
     view: |-
