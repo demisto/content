@@ -31,7 +31,7 @@ configuration:
   name: private_key
   required: false
   type: 14
-- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
+- additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
   display: Authentication Type
   name: auth_type
   defaultvalue: Client Credentials
@@ -46,7 +46,7 @@ configuration:
 - display: Authorization code
   displaypassword: Authorization code
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed
-    Instructions (?) section
+    Instructions section
   hiddenusername: true
   name: auth_code
   required: false
