@@ -1,6 +1,7 @@
-Use this integration to detect and manage threats to your AWS system. We recommend that you use roles that have the following
-bulit-in AWS policies:
+Use AWS GuardDuty to detect and manage threats to your AWS environment by fetching newly created GuardDuty security findings. Each GuardDuty finding is a data set containing details relating to a unique security issue.
+Findings that are fetched are moved to the GuardDuty archive. Each integration instance fetches findings from a single AWS Region. Create a separate instance for each AWS Region used in your AWS environment.
 
+We recommend that you use roles that have the following built-in AWS policies:
 * _AmazonGuardDutyFullAccess_
 * _AmazonGuardDutyReadOnlyAccess_
 
@@ -8,10 +9,10 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 #### Configure the AWS Guard Duty Integration on Cortex XSOAR
 - Name: a descriptive name for the integration instance.
-- AWS Default Region: the AWS default region
-- Role Arn: add Role Arn of the role created for this integration (such as: arn:aws:iam::<account-no>:role/xsoar-IAM.integration-Role).
-- Role Session Name: add a descriptive session name (such as: xsoar-IAM.integration-Role_SESSION).
-- Role Session Duration: add a session duration (default is 900). The XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration.
-- Access Key: add the Access key that you saved when creating the IAM user.
-- Secret Key: add the Secret key that you saved when creating the IAM user
-- Guard Duty Severity level: you can set the severity level of the findings to be fetched. "Low", "Medium", "High"
+- AWS Default Region: The AWS Region for this instance of the integration. For example, us-west-2
+- Role Arn: The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required.
+- Role Session Name: A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION
+- Role Session Duration: The maximum length of each session in seconds. Default: 900 seconds. The XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration.
+- Access Key: The access key ID used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required.
+- Secret Key: The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required.
+- Guard Duty Severity level: The severity level or higher of findings to be fetched: Low, Medium, or High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched.
