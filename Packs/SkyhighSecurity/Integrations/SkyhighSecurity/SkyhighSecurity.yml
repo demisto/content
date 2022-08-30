@@ -45,8 +45,7 @@ name: Skyhigh Security
 script:
   commands:
   - arguments:
-    - default: true
-      defaultValue: '50'
+    - default: false
       description: Maximum number of items that will be returned within a single response. Maximum is 500. If the limit value exceeds the 500 maximum, it will not be flagged as an error but will also not increase results.
       isArray: false
       name: limit
