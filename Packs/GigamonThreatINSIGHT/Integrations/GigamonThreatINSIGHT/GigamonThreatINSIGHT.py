@@ -10,7 +10,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
-import re
 from datetime import datetime, timedelta
 
 TRAINING_ACC = 'f6f6f836-8bcd-4f5d-bd61-68d303c4f634'
@@ -27,9 +26,7 @@ class Client(BaseClient):
         rtype str
         """
         url: str = ''
-        if api == 'Events':
-            url = 'https://events.icebrg.io/v2/query/'
-        elif api == 'Detections':
+        if api == 'Detections':
             url = 'https://detections.icebrg.io/v1/'
         elif api == 'Sensors':
             url = 'https://sensor.icebrg.io/v1/'
@@ -59,11 +56,6 @@ class Client(BaseClient):
                     base_url=Client.getUrl(api),
                     headers=headers
                 )
-            case 'Events':
-                return EventClient(
-                    base_url=Client.getUrl(api),
-                    headers=headers
-                )
             case 'Sensors':
                 return SensorClient(
                     base_url=Client.getUrl(api),
@@ -76,54 +68,11 @@ class Client(BaseClient):
                 )
 
 
-class EventClient(Client):
-    """Client that makes HTTP requests to the Events API
-    """
-    def getSavedSearches(self) -> Dict[str, Any]:
-        """ Calls the GET /saved endpoint to retrieve the events' saved
-        searches
-            :return JSON response from /saved endpoint
-            :rtype Dict[str, Any]
-        """
-        demisto.debug('EventClient.getSavedSearches method has been called.')
-
-        return self._http_request(
-            method='GET',
-            url_suffix='saved'
-        )
-
-    def getHistory(self) -> Dict[str, Any]:
-        """ Calls the GET /history endpoint to retrieve the events' history
-            :return JSON response from /history endpoint
-            :rtype Dict[str, Any]
-        """
-        demisto.debug('EventClient.getHistory method has been called.')
-
-        return self._http_request(
-            method='GET',
-            url_suffix='history/'
-        )
-
-    def getEvents(self, args: str = '') -> Dict[str, Any]:
-        """ Calls the GET /events endpoint to retrieve the Events
-            :param str args: some filters to be passed in the request
-            :return JSON response from /events endpoint
-            :rtype Dict[str, Any]
-        """
-        demisto.debug('EventClient.getEvents method has been called.')
-
-        result = self._http_request(
-            method='GET',
-            url_suffix='events' + args
-        )
-
-        return result
-
-
 class SensorClient(Client):
     """Client that makes HTTP requests to the Sensor API
     """
-    def getSensors(self) -> Dict[str, Any]:
+
+    def getSensors(self, args: str = '') -> Dict[str, Any]:
         """ Calls the GET /sensors endpoint to retrieve the sensors
             :return JSON response from /sensors endpoint
             :rtype Dict[str, Any]
@@ -132,10 +81,10 @@ class SensorClient(Client):
 
         return self._http_request(
             method='GET',
-            url_suffix='sensors'
+            url_suffix='sensors' + args
         )
 
-    def getDevices(self) -> Dict[str, Any]:
+    def getDevices(self, args: str = '') -> Dict[str, Any]:
         """ Calls the GET /devices endpoint to retrieve the devices
             :return JSON response from /devices endpoint
             :rtype Dict[str, Any]
@@ -144,7 +93,7 @@ class SensorClient(Client):
 
         result = self._http_request(
             method='GET',
-            url_suffix='devices'
+            url_suffix='devices' + args
         )
 
         return result.get('devices')
@@ -161,14 +110,15 @@ class SensorClient(Client):
         if taskid != '':
             suffix += '/' + taskid
 
+        demisto.debug(f"URL SUFFIX= {suffix}")
         return self._http_request(
             method='GET',
             url_suffix=suffix
         )
 
-    def createTasks(self, sensor_ids=None) -> Dict[str, Any]:
+    def createTasks(self, data=None) -> Dict[str, Any]:
         """ Calls to the Sensors API to create a new PCAP task
-            :params sensor_ids sensors' id to be added to the task
+            :params data attributes to be added to the request's body
             :return JSON response from endpoint
             :rtype Dict[str, Any]
         """
@@ -177,7 +127,7 @@ class SensorClient(Client):
         return self._http_request(
             method='POST',
             url_suffix='pcaptasks',
-            data=sensor_ids
+            data=json.dumps(data)
         )
 
     def getTelemetry(self, telemetry: str, args: str) -> Dict[str, Any]:
@@ -214,7 +164,7 @@ class EntityClient(Client):
             url_suffix=entity + '/summary'
         )
 
-    def getEntityPdns(self, entity: str) -> Dict[str, Any]:
+    def getEntityPdns(self, entity: str, args: str) -> Dict[str, Any]:
         """ Calls the GET /{entity}/pdns endpoint to retrieve the
             entity's pdns
             :param str entity: the entity to retrieve the pdns from
@@ -225,10 +175,10 @@ class EntityClient(Client):
 
         return self._http_request(
             method='GET',
-            url_suffix=entity + "/pdns"
+            url_suffix=entity + "/pdns" + args
         )
 
-    def getEntityDhcp(self, entity: str) -> Dict[str, Any]:
+    def getEntityDhcp(self, entity: str, args: str) -> Dict[str, Any]:
         """ Calls the GET /{entity}/dhcp endpoint to retrieve the
             entity's summary
             :param str entity: the entity to retrieve the dhcp from
@@ -239,7 +189,7 @@ class EntityClient(Client):
 
         return self._http_request(
             method='GET',
-            url_suffix=entity + "/dhcp"
+            url_suffix=entity + "/dhcp" + args
         )
 
     def getEntityFile(self, entity: str) -> Dict[str, Any]:
@@ -279,7 +229,7 @@ class DetectionClient(Client):
             :return JSON response from /rules endpoint
             :rtype Dict[str, Any]
         """
-        demisto.debug('SensorClient.getDetectionRules method has been called.')
+        demisto.debug('DetectionClient.getDetectionRules method has been called.')
         return self._http_request(
             method='GET',
             url_suffix='/rules' + args
@@ -296,7 +246,7 @@ class DetectionClient(Client):
             :rtype Dict[str, Any]
         """
         demisto.debug(
-            'SensorClient.getDetectionRuleEvents method has been called.')
+            'DetectionClient.getDetectionRuleEvents method has been called.')
 
         return self._http_request(
             method='GET',
@@ -340,7 +290,7 @@ class DetectionClient(Client):
 # Helper Methods
 
 
-def encodeArgsToURL(args):
+def encodeArgsToURL(args, multiple_values: List = []):
     """ Create the query string with the provided arguments
         :parm Dict[str, Any] args: Arguments to be included in the query string
         :return The querystring
@@ -348,13 +298,21 @@ def encodeArgsToURL(args):
     """
     url = ''
     first = True
+
     for arg in args:
-        this_arg = str(arg) + "=" + str(args[arg])
-        if first:
-            url = url + "?" + this_arg
-            first = False
+        values: List[Any] = []
+        if arg in multiple_values:
+            values.extend(args[arg].split(','))
         else:
-            url = url + "&" + this_arg
+            values.append(args[arg])
+
+        for value in values:
+            this_arg = str(arg) + "=" + str(value).strip()
+            if first:
+                url = url + "?" + this_arg
+                first = False
+            else:
+                url = url + "&" + this_arg
     return url
 
 
@@ -414,6 +372,34 @@ def flattenDict(dt):
     return string
 
 
+def formatEvents(r_json):
+    """ Format the events in the response to be shown as a table.
+        :parm Any r_json: Received response
+        :return The formated response
+        :rtype list
+    """
+    columns = r_json['columns'] if 'columns' in r_json else []
+    data = r_json['data'] if 'data' in r_json else []
+
+    if not data:
+        return []
+
+    newData = []
+    f = 0
+
+    for row in data:
+        if len(columns) != len(row):
+            f += 1
+
+        newRow = {}
+        for i, field in enumerate(columns):
+            newRow[field] = row[i]
+        newData.append(newRow)
+
+    demisto.info(f"{f} events' size did not matched the headers' size and were ignored.")
+    return newData
+
+
 # Commands Methods
 
 
@@ -421,166 +407,65 @@ def commandTestModule(sensorClient: SensorClient):
     """ Test that the module is up and running.
     """
     try:
-        commandGetSensors(sensorClient)
-        return 'OK'
-    except Exception:
-        return 'FAILING'
-
-
-# Events API commands
-
-
-def formatEvents(r_json, response_type):
-    """ Format the event response according to the provided response type.
-        :parm Any r_json: Received response
-        :parm str response_type: Response type
-        :return The formated response
-        :rtype Any
-    """
-    if response_type == "metadata":
-        # If response type is 'metadata', only the metadata will be included
-
-        data: List[Any] = []
-        metadata: Dict[str, Any] = {}
-
-        for field in r_json:
-            if((field != "events") and (field != "aggregations")
-               and (field != "data")):
-                metadata[field] = r_json[field]
-
-        data.append(metadata)
-        r_json['data'] = data
-    elif response_type == "aggregations":
-        # If the response type is 'aggregations', only the group by fields
-        # from the aggregations will be included
-
-        for x in r_json['aggregations']:
-            group_by = x
-        fields = []
-        aggregations = []
-        for column in r_json['aggregations'][group_by]['columns']:
-            fields.append(column['field'])
-        for datum in r_json['aggregations'][group_by]['data']:
-            aggregation = {}
-            for i in range(0, len(fields)):
-                aggregation[fields[i]] = datum[i]
-            aggregations.append(aggregation)
-        r_json['data'] = aggregations
-    else:
-        # Otherwise, all the events will be included in a flat dictionary
-
-        for event in r_json['events']:
-            # flatten dict values, convert lists to string
-            new_fields = {}
-            for field in event:
-                if isinstance(event[field], list):
-                    event[field] = str(json.dumps(event[field]))
-                if isinstance(event[field], dict):
-                    new_fields.update(flattenFieldDict(field, event[field]))
-                    event[field] = "REMOVE"
-            event.update(new_fields)
-        # remove fields
-        for i in range(0, len(r_json['events'])):
-            r_json['events'][i] = {
-                k: v for k, v in r_json['events'][i].items() if v != "REMOVE"
-            }
-    return r_json
-
-
-def commandGetEventsHistory(eventClient: EventClient):
-    """ Get user's query history.
-    """
-    demisto.debug('CommandGetEventsHistory has been called.')
-
-    result: Dict[str, Any] = eventClient.getHistory()
-
-    return CommandResults(
-        outputs_prefix='Insight.UserQueryHistory',
-        outputs_key_field='history',
-        outputs=result.get('history')
-    )
-
-
-def commandGetEventsSavedSearches(eventClient: EventClient):
-    """ Get user's saved searches.
-    """
-    demisto.debug('CommandGetEventsSavedSearches has been called.')
-
-    result: Dict[str, Any] = eventClient.getSavedSearches()
-
-    return CommandResults(
-        outputs_prefix='Insight.SavedSearches',
-        outputs_key_field='saved_queries',
-        outputs=result.get('saved_queries')
-    )
-
-
-def commandGetEvents(eventClient: EventClient, args):
-    """ Perform a search for network events from Insight
-    """
-    demisto.debug('commandGetEvents has been called.')
-
-    pattern = r"^.*[Gg][Rr][Oo][Uu][Pp]\s+[Bb][Yy].*$"
-
-    # Get the response_type from the args
-    response_type = 'events'
-    if 'response_type' in args:
-        if (args['response_type'] == 'metadata'
-           or args['response_type'] == 'aggregations'):
-            response_type = args['response_type']
-        args.pop('response_type')
-
-    keyField = 'data' if (response_type in
-                          ("metadata", "aggregations")) else 'events'
-
-    # If the response_type is aggregation, check that a group by
-    # statement is included in the query
-    if (response_type == "aggregations"
-       and not re.search(pattern, args['query'])):
-        raise Exception(
-            '''No 'group by' statement in query.
-            Aggregation requires a 'group by' statement.'''
-        )
-
-    # Make the request and format the response
-    result: Dict[str, Any] = eventClient.getEvents(encodeArgsToURL(args))
-    formatEvents(result, response_type)
-
-    return CommandResults(
-        outputs_prefix='Insight.Events',
-        outputs_key_field=keyField,
-        outputs=result.get(keyField)
-    )
+        commandGetSensors(sensorClient, {})
+        return 'ok'
+    except Exception as e:
+        demisto.error(f'Module test failed: {e}')
+        raise e
 
 
 # Sensors API commands
 
 
-def commandGetSensors(sensorClient: SensorClient):
+def commandGetSensors(sensorClient: SensorClient, args):
     """ Get a list of all sensors.
     """
     demisto.debug('CommandGetSensors has been called.')
 
-    result: Dict[str, Any] = sensorClient.getSensors()
+    result: Dict[str, Any] = sensorClient.getSensors(encodeArgsToURL(args, ['include']))
+
+    prefix = 'Insight.Sensors'
+    key = 'sensors'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Sensors."
 
     return CommandResults(
-        outputs_prefix='Insight.Sensors',
-        outputs_key_field='sensors',
-        outputs=result.get('sensors')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
-def commandGetDevices(sensorClient: SensorClient):
+def commandGetDevices(sensorClient: SensorClient, args):
     """ Get the number of devices.
     """
     demisto.debug('CommandGetDevices has been called.')
 
-    result: Dict[str, Any] = sensorClient.getDevices()
+    result: Dict[str, Any] = sensorClient.getDevices(encodeArgsToURL(args))
+
+    prefix = 'Insight.Devices'
+    key = 'device_list'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Devices."
 
     return CommandResults(
-        outputs_prefix='Insight.Devices',
-        outputs_key_field='device_list',
-        outputs=result.get('device_list')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -590,14 +475,24 @@ def commandGetTasks(sensorClient: SensorClient, args):
     demisto.debug('commandGetTasks has been called.')
 
     taskid: str = args['task_uuid'] if 'task_uuid' in args else ''
-    keyField = 'pcap_task' if taskid != '' else 'pcaptasks'
-
     result: Dict[str, Any] = sensorClient.getTasks(taskid)
 
+    prefix = 'Insight.Tasks'
+    key = 'pcap_task' if taskid != '' else 'pcaptasks'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Tasks."
+
     return CommandResults(
-        outputs_prefix='Insight.Tasks',
-        outputs_key_field=keyField,
-        outputs=result.get(keyField)
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -606,32 +501,97 @@ def commandCreateTask(sensorClient: SensorClient, args):
     """
     demisto.debug('commandCreateTask has been called.')
 
-    sensor_ids = [args['sensor_ids']]
-    args.pop('sensor_ids')
+    sensor_ids = []
+    if 'sensor_ids' in args:
+        sensor_ids = args['sensor_ids'].split(',')
+        args.pop('sensor_ids')
+
     args['sensor_ids'] = sensor_ids
 
-    sensorClient.createTasks(args)
+    result: Dict[str, Any] = sensorClient.createTasks(args)
+    if 'pcaptask' in result:
+        return CommandResults(
+            readable_output='Task created successfully'
+        )
+    else:
+        raise Exception(f"Task creation failed with: {result}")
+
+
+def commandGetEventsTelemetry(sensorClient: SensorClient, args):
+    """ Get event telemetry data grouped by time
+    """
+    demisto.debug('commandGetEventsTelemetry has been called.')
+
+    result: Dict[str, Any] = sensorClient.getTelemetry('events', args)
+
+    prefix = 'Insight.Telemetry.Events'
+    key = 'data'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Event Telemetry."
 
     return CommandResults(
-        readable_output='Task created successfully'
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=formatEvents(result)
     )
 
 
-def commandGetTelemetry(sensorClient: SensorClient, telemetry: str, args):
-    """ Get the specific requested telemetry:
-            - 'events': Get event telemetry data grouped by time
-            - 'network': Get network telemetry data grouped by time
-            - 'packetstats':Get network metrics to a given sensor's interfaces
-        :parm str telemetry: The telemetry being requested
+def commandGetNetworkTelemetry(sensorClient: SensorClient, args):
+    """ Get network telemetry data grouped by time
     """
-    demisto.debug(f'commandGetTelemetry ({telemetry}) has been called.')
+    demisto.debug('commandGetNetworkTelemetry has been called.')
 
-    result: Dict[str, Any] = sensorClient.getTelemetry(telemetry, args)
+    result: Dict[str, Any] = sensorClient.getTelemetry('network_usage', args)
+
+    prefix = 'Insight.Telemetry.NetworkUsage'
+    key = 'network_usage'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Network Telemetry."
 
     return CommandResults(
-        outputs_prefix='Insight.Telemetry.' + telemetry,
-        outputs_key_field='data',
-        outputs=result.get('data')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
+    )
+
+
+def commandGetPacketstatsTelemetry(sensorClient: SensorClient, args):
+    """ Get packetstats telemetry data grouped by time.
+    """
+    demisto.debug('commandGetPacketstatsTelemetry has been called.')
+
+    result: Dict[str, Any] = sensorClient.getTelemetry('packetstats', args)
+
+    prefix = 'Insight.Telemetry.Packetstats'
+    key = 'data'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Packetstats Telemetry."
+
+    return CommandResults(
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -645,38 +605,82 @@ def commandGetEntitySummary(entityClient: EntityClient, entity: str):
 
     result: Dict[str, Any] = entityClient.getEntitySummary(entity)
 
+    prefix = 'Insight.Entity.Summary'
+    key = 'summary'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Entity Summary."
+
     return CommandResults(
-        outputs_prefix='Insight.Entity.Summary',
-        outputs_key_field='summary',
-        outputs=result.get('summary')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
-def commandGetEntityPdns(entityClient: EntityClient, entity: str):
+def commandGetEntityPdns(entityClient: EntityClient, args: Dict[str, Any]):
     """ Get passive DNS information about an IP or domain.
     """
     demisto.debug('commandGetEntityPdns has been called.')
 
-    result: Dict[str, Any] = entityClient.getEntityPdns(entity)
+    entity = args.pop('entity')
+    result: Dict[str, Any] = entityClient.getEntityPdns(entity, encodeArgsToURL(args, ['record_type', 'source', 'account_uuid']))
+
+    prefix = 'Insight.Entity.PDNS'
+    key = 'passivedns'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server({result})')
+
+    if 'result_count' in result and result.get('result_count') == 0:
+        return "We could not find any result for Get Entity PDNS."
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Entity PDNS."
 
     return CommandResults(
-        outputs_prefix='Insight.Entity.PDNS',
-        outputs_key_field='pasivedns',
-        outputs=result.get('pasivedns')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
-def commandGetEntityDhcp(entityClient: EntityClient, entity: str):
+def commandGetEntityDhcp(entityClient: EntityClient, args: Dict[str, Any]):
     """ Get DHCP information about an IP address.
     """
     demisto.debug('commandGetEntityDhcp has been called.')
 
-    result: Dict[str, Any] = entityClient.getEntityDhcp(entity)
+    entity = args.pop('entity')
+    result: Dict[str, Any] = entityClient.getEntityDhcp(entity, encodeArgsToURL(args, ['account_uuid']))
+
+    prefix = 'Insight.Entity.DHCP'
+    key = 'dhcp'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if 'result_count' in result and result.get('result_count') == 0:
+        return "We could not find any result for Get Entity DHCP."
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Entity DHCP."
 
     return CommandResults(
-        outputs_prefix='Insight.Entity.DHCP',
-        outputs_key_field='dhcp',
-        outputs=result.get('dhcp')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -687,10 +691,22 @@ def commandGetEntityFile(entityClient: EntityClient, hash: str):
 
     result: Dict[str, Any] = entityClient.getEntityFile(hash)
 
+    prefix = 'Insight.Entity.File'
+    key = 'file'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Entity File."
+
     return CommandResults(
-        outputs_prefix='Insight.Entity.File',
-        outputs_key_field='file',
-        outputs=result.get('file')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -813,7 +829,7 @@ def commandGetDetections(detectionClient: DetectionClient, args):
     demisto.debug('commandGetDetections has been called.')
 
     result: Dict[str, Any] = detectionClient.getDetections(
-        encodeArgsToURL(args)
+        encodeArgsToURL(args, ['include', 'status', 'rule_uuid'])
     )
 
     # if there are more detections to be retrieved, pull the
@@ -829,13 +845,25 @@ def commandGetDetections(detectionClient: DetectionClient, args):
     )
 
     # Include the rules if they need to be included
-    if 'include' in args and args['include'] == 'rules':
+    if 'include' in args and 'rules' in args['include'].split(','):
         result = addDetectionRules(result)
 
+    prefix = 'Insight.Detections'
+    key = 'detections'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Detections."
+
     return CommandResults(
-        outputs_prefix='Insight.Detections',
-        outputs_key_field='detections',
-        outputs=result.get('detections')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -845,13 +873,25 @@ def commandGetDetectionRules(detectionClient: DetectionClient, args):
     demisto.debug('CommandGetDetectionRules has been called.')
 
     result: Dict[str, Any] = detectionClient.getDetectionRules(
-        encodeArgsToURL(args)
+        encodeArgsToURL(args, ['confidence', 'severity', 'category'])
     )
 
+    prefix = 'Insight.Rules'
+    key = 'rules'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Detection Rules."
+
     return CommandResults(
-        outputs_prefix='Insight.Rules',
-        outputs_key_field='rules',
-        outputs=result.get('rules')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -867,10 +907,22 @@ def commandGetDetectionRuleEvents(detectionClient: DetectionClient, args):
         rule_uuid, encodeArgsToURL(args)
     )
 
+    prefix = 'Insight.Detections'
+    key = 'events'
+
+    if not result:
+        raise Exception(f'We receive an invalid response from the server ({result})')
+
+    if key not in result:
+        raise Exception(f'We receive an invalid response from the server (The response does not contains the key: {key})')
+
+    if not result.get(key):
+        return "We could not find any result for Get Detections Rule Events."
+
     return CommandResults(
-        outputs_prefix='Insight.Detections',
-        outputs_key_field='events',
-        outputs=result.get('events')
+        outputs_prefix=prefix,
+        outputs_key_field=key,
+        outputs=result.get(key)
     )
 
 
@@ -888,11 +940,13 @@ def commandCreateDetectionRule(detectionClient: DetectionClient, args):
     args['run_account_uuids'] = run_accts
     args['device_ip_fields'] = dev_ip_fields
 
-    detectionClient.createDetectionRule(args)
-
-    return CommandResults(
-        readable_output='Rule created successfully'
-    )
+    result: Dict[str, Any] = detectionClient.createDetectionRule(args)
+    if 'rule' in result:
+        return CommandResults(
+            readable_output='Rule created successfully'
+        )
+    else:
+        raise Exception(f"Rule creation failed with: {result}")
 
 
 def commandResolveDetection(detectionClient: DetectionClient, args):
@@ -900,17 +954,21 @@ def commandResolveDetection(detectionClient: DetectionClient, args):
     """
     demisto.debug('commandResolveDetection has been called.')
 
-    detection_uuid = args['detection_uuid']
-    data = {
-        "resolution": args['resolution'],
-        "resolution_comment": args['resolution_comment']
-    }
+    if 'detection_uuid' not in args:
+        raise Exception("Detection cannot be resolved: No detection_uuid has been provided.")
 
-    detectionClient.resolveDetection(detection_uuid, data)
+    if 'resolution' not in args:
+        raise Exception("Detection cannot be resolved: No resolution has been provided.")
 
-    return CommandResults(
-        readable_output='Detection resolved successfully'
-    )
+    detection_uuid = args.pop('detection_uuid')
+    result = detectionClient.resolveDetection(detection_uuid, args)
+
+    if not result:
+        return CommandResults(
+            readable_output='Detection resolved successfully'
+        )
+    else:
+        raise Exception(f"Detection resolution failed with: {result}")
 
 
 def main():
@@ -933,8 +991,6 @@ def main():
 
         sensorClient: SensorClient = Client.getClient('Sensors', api_key)
 
-        eventClient: EventClient = Client.getClient('Events', api_key)
-
         detectionClient: DetectionClient = Client.getClient(
             'Detections', api_key
         )
@@ -942,9 +998,17 @@ def main():
         if command == 'test-module':
             return_results(commandTestModule(sensorClient))
 
-        if command == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             # default first fetch to -7days
-            first_fetch_time = datetime.now() - timedelta(days=7)
+            delta = arg_to_number(
+                arg=params.get('first_fetch'),
+                arg_name='first_fetch',
+                required=False
+            )
+            if not delta:
+                delta = 7
+
+            first_fetch_time = datetime.now() - timedelta(days=delta)
             max_results = arg_to_number(
                 arg=params.get('max_fetch'),
                 arg_name='max_fetch',
@@ -958,26 +1022,38 @@ def main():
                 first_fetch_time=first_fetch_time
             )
 
-        elif command == 'insight-get-events':
-            return_results(commandGetEvents(eventClient, args))
-
-        elif command == 'insight-get-history':
-            return_results(commandGetEventsHistory(eventClient))
-
-        elif command == 'insight-get-saved-searches':
-            return_results(commandGetEventsSavedSearches(eventClient))
-
         elif command == 'insight-get-sensors':
-            return commandGetSensors(sensorClient)
+            return_results(commandGetSensors(sensorClient, args))
 
         elif command == 'insight-get-devices':
-            return_results(commandGetDevices(sensorClient))
+            return_results(commandGetDevices(sensorClient, args))
 
         elif command == 'insight-get-tasks':
             return_results(commandGetTasks(sensorClient, args))
 
         elif command == 'insight-create-task':
             return_results(commandCreateTask(sensorClient, args))
+
+        elif command == 'insight-get-telemetry-events':
+            return_results(
+                commandGetEventsTelemetry(
+                    sensorClient, encodeArgsToURL(args)
+                )
+            )
+
+        elif command == 'insight-get-telemetry-network':
+            return_results(
+                commandGetNetworkTelemetry(
+                    sensorClient, encodeArgsToURL(args)
+                )
+            )
+
+        elif command == 'insight-get-telemetry-packetstats':
+            return_results(
+                commandGetPacketstatsTelemetry(
+                    sensorClient, encodeArgsToURL(args)
+                )
+            )
 
         elif command == 'insight-get-detections':
             return_results(commandGetDetections(detectionClient, args))
@@ -1002,34 +1078,13 @@ def main():
             )
 
         elif command == 'insight-get-entity-pdns':
-            return_results(commandGetEntityPdns(entityClient, args['entity']))
+            return_results(commandGetEntityPdns(entityClient, args))
 
         elif command == 'insight-get-entity-dhcp':
-            return_results(commandGetEntityDhcp(entityClient, args['entity']))
+            return_results(commandGetEntityDhcp(entityClient, args))
 
         elif command == 'insight-get-entity-file':
             return_results(commandGetEntityFile(entityClient, args['hash']))
-
-        elif command == 'insight-get-telemetry-events':
-            return_results(
-                commandGetTelemetry(
-                    sensorClient, 'Events', encodeArgsToURL(args)
-                )
-            )
-
-        elif command == 'insight-get-telemetry-network':
-            return_results(
-                commandGetTelemetry(
-                    sensorClient, 'Network', encodeArgsToURL(args)
-                )
-            )
-
-        elif command == 'insight-get-telemetry-packetstats':
-            return_results(
-                commandGetTelemetry(
-                    sensorClient, 'Packetstats', encodeArgsToURL(args)
-                )
-            )
 
     # catch exceptions
     except Exception as e:
