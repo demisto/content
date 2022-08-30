@@ -2153,9 +2153,6 @@ script:
       name: ip
     - description: The endpoint hostname.
       name: hostname
-    - default: false
-      required: true
-      secret: false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
