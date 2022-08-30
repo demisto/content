@@ -7578,8 +7578,8 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
 
     # determine a vsys or a device-group
     VSYS = params.get('vsys', '')
-    DEVICE_GROUP_ARG_NAME = args.get('device-group')
-    DEVICE_GROUP_PARAM_NAME = params.get('device_group')
+    DEVICE_GROUP_ARG_NAME = args.get('device-group', '')
+    DEVICE_GROUP_PARAM_NAME = params.get('device_group', '')
 
     DEVICE_GROUP = DEVICE_GROUP_ARG_NAME or DEVICE_GROUP_PARAM_NAME
 
