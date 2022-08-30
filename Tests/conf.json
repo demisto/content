@@ -5176,8 +5176,8 @@
             "memory_threshold": 95
         },
         {
-            "integrations": "McAfee Skyhigh Security",
-            "playbookID": "McAfee Skyhigh Security Test Play Book",
+            "integrations": "Skyhigh Security",
+            "playbookID": "Skyhigh Security Test Play Book",
             "fromversion": "6.5.0"
         }
     ],
