@@ -93,16 +93,16 @@ def test_parse_rfc_not_valid(test_case: dict, func: Callable[[bytes], SyslogMess
 
 
 @pytest.mark.parametrize('samples', [({}), ([{'app_name': None, 'facility': 'security4', 'host_name': 'mymachine',
-                                              'msg': "su: 'su root' failed for lonvick on /dev/pts/8", 'msg_id': None,
+                                              'content': "su: 'su root' failed for lonvick on /dev/pts/8", 'msg_id': None,
                                               'process_id': None, 'sd': {}, 'severity': 'critical',
                                               'timestamp': '2021-10-11T22:14:15', 'version': None}]),
                                      [{'app_name': None, 'facility': 'security4', 'host_name': 'mymachine',
-                                       'msg': "su: 'su root' failed for lonvick on /dev/pts/8", 'msg_id': None,
+                                       'content': "su: 'su root' failed for lonvick on /dev/pts/8", 'msg_id': None,
                                        'process_id': None, 'sd': {}, 'severity': 'critical',
                                        'timestamp': '2021-10-11T22:14:15', 'version': None},
                                       {'app_name': 'evntslog', 'facility': 'local4',
                                        'host_name': 'mymachine.example.com',
-                                       'msg': 'BOMAn application event log entry', 'msg_id': 'ID47',
+                                       'content': 'BOMAn application event log entry', 'msg_id': 'ID47',
                                        'process_id': None,
                                        'sd': {'exampleSDID@32473': {'eventID': '1011', 'eventSource': 'Application',
                                                                     'iut': '3'}}, 'severity': 'notice',
@@ -128,7 +128,7 @@ def test_fetch_samples(samples: List[dict], mocker):
                              app_name='evntslog',
                              facility='local4',
                              host_name='mymachine.example.com',
-                             msg='BOMAn application event log entry',
+                             content='BOMAn application event log entry',
                              msg_id='ID47',
                              process_id=123,
                              sd={
@@ -145,7 +145,7 @@ def test_fetch_samples(samples: List[dict], mocker):
                            {'details': 'app_name: evntslog\n'
                                        'facility: local4\n'
                                        'host_name: mymachine.example.com\n'
-                                       'msg: BOMAn application event log entry\n'
+                                       'content: BOMAn application event log entry\n'
                                        'msg_id: ID47\n'
                                        'process_id: 123\n'
                                        "sd: {'exampleSDID@32473': {'eventID': '1011', 'eventSource': "
@@ -158,7 +158,7 @@ def test_fetch_samples(samples: List[dict], mocker):
                             'occurred': '2003-10-11T22:14:15.003Z',
                             'type': 'test',
                             'rawJSON': '{"app_name": "evntslog", "facility": "local4", "host_name": '
-                                       '"mymachine.example.com", "msg": "BOMAn application event log '
+                                       '"mymachine.example.com", "content": "BOMAn application event log '
                                        'entry", "msg_id": "ID47", "process_id": 123, "sd": '
                                        '{"exampleSDID@32473": {"eventID": "1011", "eventSource": '
                                        '"Application", "iut": "3"}}, "severity": "critical", "timestamp": '
@@ -168,7 +168,7 @@ def test_fetch_samples(samples: List[dict], mocker):
                                  app_name=None,
                                  facility='log_alert',
                                  host_name='mymachine.example.com',
-                                 msg="softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, "
+                                 content="softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, "
                                      "uid=375597002, installAuth=NO rights=(), transactions=0 ("
                                      "/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices"
                                      "/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com"
@@ -182,7 +182,7 @@ def test_fetch_samples(samples: List[dict], mocker):
                                  occurred=None),
                               {'details': 'facility: log_alert\n'
                                           'host_name: mymachine.example.com\n'
-                                          'msg: softwareupdated[288]: Removing client SUUpdateServiceClient '
+                                          'content: softwareupdated[288]: Removing client SUUpdateServiceClient '
                                           'pid=90550, uid=375597002, installAuth=NO rights=(), '
                                           'transactions=0 '
                                           '(/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents'
@@ -194,7 +194,7 @@ def test_fetch_samples(samples: List[dict], mocker):
                                'occurred': None,
                                'type': 'test',
                                'rawJSON': '{"app_name": null, "facility": "log_alert", "host_name": '
-                                          '"mymachine.example.com", "msg": "softwareupdated[288]: Removing '
+                                          '"mymachine.example.com", "content": "softwareupdated[288]: Removing '
                                           'client SUUpdateServiceClient pid=90550, uid=375597002, '
                                           'installAuth=NO rights=(), transactions=0 '
                                           '(/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents'
@@ -224,7 +224,7 @@ def test_create_incident_from_syslog_message(extracted_msg: SyslogMessageExtract
 INCIDENT_EXAMPLE = {'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',
                     'occurred': '2021-11-09T17:07:20',
                     'rawJSON': '{"app_name": null, "facility": "log_alert", "host_name": '
-                               '"mymachine.example.com", "msg": "softwareupdated[288]: Removing '
+                               '"mymachine.example.com", "content": "softwareupdated[288]: Removing '
                                'client SUUpdateServiceClient pid=90550, uid=375597002, '
                                'installAuth=NO rights=(), transactions=0 '
                                '(/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents'
@@ -236,7 +236,7 @@ INCIDENT_EXAMPLE = {'name': 'Syslog from [mymachine.example.com][2021-11-09T17:0
 INCIDENT_EXAMPLE2 = {'name': 'Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]',
                      'occurred': '2003-10-11T22:14:15.003Z',
                      'rawJSON': '{"app_name": "evntslog", "facility": "local4", "host_name": '
-                                '"mymachine.example.com", "msg": "BOMAn application event log '
+                                '"mymachine.example.com", "content": "BOMAn application event log '
                                 'entry", "msg_id": "ID47", "process_id": 123, "sd": '
                                 '{"exampleSDID@32473": {"eventID": "1011", "eventSource": '
                                 '"Application", "iut": "3"}}, "severity": "critical", "timestamp": '
@@ -245,7 +245,7 @@ INCIDENT_EXAMPLE2 = {'name': 'Syslog from [mymachine.example.com][2003-10-11T22:
 INCIDENT_EXAMPLE3 = {'name': 'Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]',
                      'occurred': '2003-10-11T22:14:15.003Z',
                      'rawJSON': '{"app_name": "evntslog", "facility": "local4", "host_name": '
-                                '"mymachine.example.com", "msg": "BOMAn application event log '
+                                '"mymachine.example.com", "content": "BOMAn application event log '
                                 'entry", "msg_id": "ID47", "process_id": 123, "sd": '
                                 '{"exampleSDID@32473": {"eventID": "1011", "eventSource": '
                                 '"Application", "iut": "3"}}, "severity": "critical", "timestamp": '
@@ -286,7 +286,7 @@ MESSAGE_EXTRACT_EXAMPLE = SyslogMessageExtract(
     app_name='evntslog',
     facility='local4',
     host_name='mymachine.example.com',
-    msg='BOMAn application event log entry',
+    content='BOMAn application event log entry',
     msg_id='ID47',
     process_id=123,
     sd={
@@ -453,7 +453,7 @@ def test_get_mapping_fields():
     assert get_mapping_fields() == {'app_name': 'Application Name',
                                     'facility': 'Facility',
                                     'host_name': 'Host Name',
-                                    'msg': 'Message',
+                                    'content': 'Message',
                                     'msg_id': 'Message ID',
                                     'occurred': 'Occurred Time',
                                     'process_id': 'Process ID',
@@ -484,7 +484,7 @@ def test_rfc_3164_long_message():
     assert parsed == SyslogMessageExtract(app_name=None,
                                           facility='user',
                                           host_name='%{host}',
-                                          msg=inline_msg,
+                                          content=inline_msg,
                                           msg_id=None,
                                           process_id=None,
                                           sd={},
@@ -515,7 +515,7 @@ def test_rfc_3164_short_message():
     assert parsed == SyslogMessageExtract(app_name=None,
                                           facility='user',
                                           host_name='%{host}',
-                                          msg=inline_msg,
+                                          content=inline_msg,
                                           msg_id=None,
                                           process_id=None,
                                           sd={},

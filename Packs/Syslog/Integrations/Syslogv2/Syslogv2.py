@@ -24,7 +24,7 @@ class SyslogMessageExtract:
     app_name: Optional[str]
     facility: str
     host_name: Optional[str]
-    msg: str
+    content: str
     msg_id: Optional[str]
     process_id: Optional[str]
     sd: dict
@@ -72,7 +72,7 @@ def parse_rfc_3164_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
         app_name=None,
         facility=syslog_message.facility.name,
         host_name=syslog_message.hostname,
-        msg=syslog_message.message.decode('utf-8'),
+        content=syslog_message.message.decode('utf-8'),
         msg_id=None,
         process_id=None,
         sd={},
@@ -102,7 +102,7 @@ def parse_rfc_5424_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
         app_name=syslog_message.appname,
         facility=syslog_message.facility.name,
         host_name=syslog_message.hostname,
-        msg=syslog_message.msg,
+        content=syslog_message.msg,
         msg_id=syslog_message.msgid,
         process_id=syslog_message.procid,
         sd=syslog_message.sd,
@@ -309,7 +309,7 @@ def get_mapping_fields() -> Dict[str, str]:
         'app_name': 'Application Name',
         'facility': 'Facility',
         'host_name': 'Host Name',
-        'msg': 'Message',
+        'content': 'Message',
         'msg_id': 'Message ID',
         'process_id': 'Process ID',
         'sd': 'Structured Data',
