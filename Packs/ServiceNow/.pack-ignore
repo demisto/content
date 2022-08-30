@@ -35,6 +35,7 @@ lookback
 InfoFile
 params
 README
+ampersand
 
 [file:classifier-ServiceNow.json]
 ignore=BA101

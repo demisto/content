@@ -1,6 +1,5 @@
 import shutil
 from typing import Callable, Dict, Iterable, List, Tuple
-from urllib import parse
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -909,7 +908,6 @@ class Client(BaseClient):
         sys_param_query: the query
         system_params: system parameters
         sysparm_fields: Comma-separated list of field names to return in the response.
-        parse_amp: when querying fields you may want not to parse &'s.
 
         Returns:
             Response from API.
