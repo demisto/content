@@ -894,7 +894,7 @@ class TestPanoramaListApplicationsCommand:
         from Panorama import main
 
         mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
-        mocker.patch.object(demisto, 'args', return_value={'predefined': 'false', 'device_group': 'new-device-group'})
+        mocker.patch.object(demisto, 'args', return_value={'predefined': 'false', 'device-group': 'new-device-group'})
         mocker.patch.object(demisto, 'command', return_value='pan-os-list-applications')
 
         request_mock = mocker.patch(
@@ -933,7 +933,7 @@ def test_get_security_profiles_command_main_flow(mocker):
     from Panorama import main
 
     mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
-    mocker.patch.object(demisto, 'args', return_value={'device_group': 'new-device-group'})
+    mocker.patch.object(demisto, 'args', return_value={'device-group': 'new-device-group'})
     mocker.patch.object(demisto, 'command', return_value='pan-os-get-security-profiles')
     expected_security_profile_response = load_json('test_data/get_security_profiles_response.json')
     request_mock = mocker.patch(
@@ -973,7 +973,7 @@ def test_apply_security_profiles_command_main_flow(mocker):
         demisto,
         'args',
         return_value={
-            'device_group': 'new-device-group',
+            'device-group': 'new-device-group',
             'profile_type': 'data-filtering',
             'profile_name': 'test-profile',
             'rule_name': 'rule-test'
@@ -1182,7 +1182,7 @@ def test_panorama_edit_address_group_command_main_flow(mocker):
     mocker.patch.object(
         demisto,
         'args',
-        return_value={'name': 'test', 'description': 'test', 'match': '1.1.1.1', 'device_group': 'new device group'}
+        return_value={'name': 'test', 'description': 'test', 'match': '1.1.1.1', 'device-group': 'new device group'}
     )
     mocker.patch.object(demisto, 'command', return_value='pan-os-edit-address-group')
     request_mock = mocker.patch(
@@ -1238,7 +1238,7 @@ def test_panorama_edit_custom_url_category_command_main_flow(mocker, action, exi
     mocker.patch.object(
         demisto,
         'args',
-        return_value={'name': 'test', 'action': action, 'categories': ['category1'], 'device_group': 'new device group'}
+        return_value={'name': 'test', 'action': action, 'categories': ['category1'], 'device-group': 'new device group'}
     )
     mocker.patch.object(demisto, 'command', return_value='pan-os-edit-custom-url-category')
     request_mock = mocker.patch(
@@ -1288,7 +1288,7 @@ def test_panorama_edit_edl_command_main_flow(mocker):
         'args',
         return_value={
             'name': 'test', 'element_to_change': 'description',
-            'element_value': 'edl1', 'device_group': 'new device group'
+            'element_value': 'edl1', 'device-group': 'new device group'
         }
     )
     mocker.patch.object(demisto, 'command', return_value='pan-os-edit-edl')
@@ -1334,7 +1334,7 @@ def test_panorama_edit_service_group_command_main_flow(mocker):
     mocker.patch.object(
         demisto,
         'args',
-        return_value={'name': 'test', 'tag': 'tag1', 'device_group': 'new device group'}
+        return_value={'name': 'test', 'tag': 'tag1', 'device-group': 'new device group'}
     )
     mocker.patch.object(demisto, 'command', return_value='pan-os-edit-service-group')
     request_mock = mocker.patch(
@@ -1378,7 +1378,7 @@ def test_panorama_edit_url_filter_command_main_flow(mocker):
     mocker.patch.object(
         demisto,
         'args',
-        return_value={'name': 'test', 'element_to_change': 'description', 'device_group': 'new device group'}
+        return_value={'name': 'test', 'element_to_change': 'description', 'device-group': 'new device group'}
     )
     mocker.patch.object(demisto, 'command', return_value='pan-os-edit-url-filter')
     request_mock = mocker.patch(

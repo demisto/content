@@ -3988,7 +3988,7 @@ script:
       isArray: true
       name: tags
     - description: The device group in which the address group belongs to.
-      name: device_group
+      name: device-group
       required: false
     description: Edits a static or dynamic address group.
     name: pan-os-edit-address-group
@@ -4234,7 +4234,7 @@ script:
       isArray: true
       name: tags
     - description: The device group in which the service group belongs to.
-      name: device_group
+      name: device-group
       required: false
     description: Edits a service group.
     name: pan-os-edit-service-group
@@ -4352,7 +4352,7 @@ script:
       isArray: true
       name: categories
     - description: The device group in which the URL category belongs to.
-      name: device_group
+      name: device-group
       required: false
     description: Adds or removes sites to and from a custom URL category.
     name: pan-os-edit-custom-url-category
@@ -4573,7 +4573,7 @@ script:
       - add
       - remove
     - description: The device group in which the URL-filter belongs to.
-      name: device_group
+      name: device-group
       required: false
     description: Edits a URL filtering rule.
     name: pan-os-edit-url-filter
@@ -4740,7 +4740,7 @@ script:
       name: element_value
       required: true
     - description: The device group in which the EDL belongs to.
-      name: device_group
+      name: device-group
       required: false
     description: Modifies an element of an external dynamic list.
     name: pan-os-edit-edl
@@ -5092,7 +5092,7 @@ script:
       - add
       - remove
     - description: The device group in which the rule belongs to.
-      name: device_group
+      name: device-group
       required: false
     description: Edits a policy rule.
     name: pan-os-edit-rule
@@ -5168,7 +5168,7 @@ script:
       - 'true'
       - 'false'
     - description: The device group for which to return applications.
-      name: device_group
+      name: device-group
       required: false
     description: Returns a list of applications.
     name: pan-os-list-applications
@@ -6270,7 +6270,7 @@ script:
       - vulnerability
       - wildfire-analysis
     - description: The device group for which to return security profiles.
-      name: device_group
+      name: device-group
       required: false
     description: Gets information for the specified security profile.
     name: pan-os-get-security-profiles
@@ -6430,7 +6430,7 @@ script:
       - pre-rulebase
       - post-rulebase
     - description: The device group for which to apply security profiles.
-      name: device_group
+      name: device-group
       required: false
     description: Applies a security profile to specific rules or rules with a specific tag.
     name: pan-os-apply-security-profile
