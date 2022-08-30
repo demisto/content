@@ -14,12 +14,14 @@ from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     ALWAYS_INSTALLED_PACKS, DEFAULT_MARKETPLACE_WHEN_MISSING,
     DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, ONLY_INSTALL_PACK_FILE_TYPES,
-    SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
+    SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK,
+    XSOAR_SANITY_TEST_NAMES)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, InvalidTestException, NonDictException,
-    NonXsoarSupportedPackException, NoTestsConfiguredException,
-    NothingToCollectException, NotUnderPackException, PrivateTestException,
-    SkippedPackException, SkippedTestException, TestMissingFromIdSetException)
+    NonXSIAMContentException, NonXsoarSupportedPackException,
+    NoTestsConfiguredException, NothingToCollectException,
+    NotUnderPackException, PrivateTestException, SkippedPackException,
+    SkippedTestException, TestMissingFromIdSetException)
 from Tests.scripts.collect_tests.id_set import IdSet
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
@@ -47,6 +49,8 @@ class CollectionReason(str, Enum):
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
+    PACK_TEST_DEPENDS_ON = 'packs under which integrations are stored, on which a test depends'
+
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
@@ -109,11 +113,11 @@ class CollectionResult:
 
         if test:
             self.tests = {test}
-            logger.info(f'collected {test=}, {reason} ({reason_description})')
+            logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
             self.packs = {pack}
-            logger.info(f'collected {pack=}, {reason} ({reason_description})')
+            logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
     def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
@@ -167,8 +171,10 @@ class CollectionResult:
             reason_description='', conf=None, id_set=None
         )
 
-    def __add__(self, other: 'CollectionResult') -> 'CollectionResult':
+    def __add__(self, other: Optional['CollectionResult']) -> 'CollectionResult':
         # initial object just to add others to
+        if not other:
+            return self
         result = self.__empty_result()
         result.tests = self.tests | other.tests  # type: ignore[operator]
         result.packs = self.packs | other.packs  # type: ignore[operator]
@@ -210,7 +216,7 @@ class TestCollector(ABC):
         ))
 
     @property
-    def _always_installed_packs(self):
+    def _always_installed_packs(self) -> Optional[CollectionResult]:
         return CollectionResult.union(tuple(
             CollectionResult(test=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
                              version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True)
@@ -250,9 +256,46 @@ class TestCollector(ABC):
                 return None
 
         self._validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
-        result += self._always_installed_packs
+        result += self._always_installed_packs  # type:ignore[operator]
+        result += self._collect_test_dependencies(result.tests if result else ())  # type:ignore[union-attr]
         result.machines = Machine.get_suitable_machines(result.version_range)  # type:ignore[union-attr]
+
         return result
+
+    def _collect_test_dependencies(self, test_ids: Iterable[str]) -> Optional[CollectionResult]:
+        result = []
+
+        for test_id in test_ids:
+            test_object = self.conf.get_test(test_id)
+
+            for integration in test_object.integrations:
+                result.append(
+                    self._collect_test_dependency(
+                        dependency=integration,
+                        test_id=test_id,
+                        pack_id=self.id_set.id_to_integration[integration].pack_id
+                    )
+                )
+
+            for script in test_object.scripts:
+                result.append(
+                    self._collect_test_dependency(
+                        dependency=script,
+                        test_id=test_id,
+                        pack_id=self.id_set.id_to_script[script].pack_id
+                    )
+                )
+
+        return CollectionResult.union(tuple(result))
+
+    def _collect_test_dependency(self, dependency: str, test_id: str, pack_id: str) -> CollectionResult:
+        return (
+            CollectionResult(
+                test=None, pack=pack_id, reason=CollectionReason.PACK_TEST_DEPENDS_ON,
+                version_range=None, reason_description=f'{test_id} depends on {dependency} from {pack_id}',
+                conf=self.conf, id_set=self.id_set,
+            )
+        )
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
         if not_found := (
@@ -261,12 +304,19 @@ class TestCollector(ABC):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
-    def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str) -> CollectionResult:
+    def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str,
+                      content_item_range: Optional[VersionRange] = None) -> CollectionResult:
+        pack = PACK_MANAGER[pack_name]
+
+        version_range = content_item_range \
+            if pack.version_range.is_default \
+            else (pack.version_range | content_item_range)
+
         return CollectionResult(
             test=None,
             pack=pack_name,
             reason=reason,
-            version_range=PACK_MANAGER[pack_name].version_range,
+            version_range=version_range,
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
@@ -310,33 +360,31 @@ class BranchTestCollector(TestCollector):
 
         return CollectionResult.union(tuple(result))
 
-    def _collect_yml(self, content_item_path: Path) -> CollectionResult:
+    def _collect_yml(self, content_item_path: Path) -> Optional[CollectionResult]:
         """
         collecting a yaml-based content item (including py-based, whose names match a yaml based one)
         """
-        result: Optional[CollectionResult] = None
         yml_path = content_item_path.with_suffix('.yml') if content_item_path.suffix != '.yml' else content_item_path
         try:
             yml = ContentItem(yml_path)
             if not yml.id_:
                 raise ValueError(f'id field of {yml_path} cannot be empty')
         except FileNotFoundError:
-            raise FileNotFoundError(
-                f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}'
-            )
-        if yml.id_ in self.conf.skipped_integrations:
-            raise NothingToCollectException(yml.path, 'integration is skipped')
+            raise FileNotFoundError(f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}')
+        self._validate_xsiam_compatibility(yml)
+        self._validate_skipped_integration(yml)
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
 
         match actual_content_type := find_yml_content_type(yml_path):
             case None:
                 path_description = f'{yml_path} (original item {content_item_path}' \
-                    if content_item_path != yml_path else yml_path
+                    if content_item_path != yml_path \
+                    else yml_path
                 raise ValueError(f'could not detect type for {path_description}')
 
             case FileType.TEST_PLAYBOOK:
-                if yml.id_ in self.conf.test_ids:
+                if yml.id_ in self.conf.test_id_to_test:
                     tests = yml.id_,
                     reason = CollectionReason.TEST_PLAYBOOK_CHANGED
                 else:
@@ -349,13 +397,20 @@ class BranchTestCollector(TestCollector):
                     tests = ()
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
-                    raise ValueError(
-                        f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is both '
-                        f'(1) missing from conf.json, and'
-                        ' (2) does not explicitly state `tests: no tests`. '
-                        'Please change one of these to allow test collection.'
-                    )
+                    if PACK_MANAGER.get_support_level(yml.pack_id) == 'xsoar':
+                        raise ValueError(
+                            f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is '
+                            f'(1) missing from conf.json, AND'
+                            ' (2) does not explicitly state `tests: no tests` AND'
+                            ' (3) has support level == xsoar. '
+                            'Please change at least one of these to allow test collection.'
+                        )
+                    else:
+                        logger.info(f'{yml.id_} has tests configured, but support level != xsoar. '
+                                    f'The {yml.pack_id} pack will be installed, but no tests will be collected.')
+                        tests = ()
                 else:
+                    # integration to test mapping available, and support level == xsoar (so - we run the tests)
                     tests = tuple(self.conf.integrations_to_tests[yml.id_])
                 reason = CollectionReason.INTEGRATION_CHANGED
 
@@ -381,7 +436,7 @@ class BranchTestCollector(TestCollector):
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
         # creating an object for each, as CollectedTests require #packs==#tests
         if tests:
-            result = CollectionResult.union(tuple(
+            return CollectionResult.union(tuple(
                 CollectionResult(
                     test=test,
                     pack=yml.pack_id,
@@ -391,30 +446,45 @@ class BranchTestCollector(TestCollector):
                     conf=self.conf,
                     id_set=self.id_set
                 ) for test in tests))
-        if result:
-            return result
         else:
-            raise NothingToCollectException(yml.path, 'no tests were found')
+            return self._collect_pack(yml.pack_id, reason, 'collecting pack only', yml.version_range)
+
+    def _validate_skipped_integration(self, yml: ContentItem):
+        if yml.id_ in self.conf.skipped_integrations:
+            raise NothingToCollectException(yml.path, 'integration is skipped')
+
+    def _validate_xsiam_compatibility(self, content_item: ContentItem):
+        if self.marketplace == MarketplaceVersions.MarketplaceV2:
+            # tests should be collected only for items whose only marketplace is marketplacev2
+            if content_item.marketplaces != (self.marketplace,):
+                raise NonXSIAMContentException(content_item.path)
+
+    def _validate_triggering_sanity_test(self, path):
+        if path in PATHS.files_triggering_sanity_tests:
+            self.trigger_sanity_tests = True
+            raise NothingToCollectException(path, 'not under a pack (triggering sanity tests)')
+
+    @staticmethod
+    def _validate_not_ignored(path: Path):
+        if path in PATHS.files_to_ignore:
+            raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
 
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         if not path.exists():
             raise FileNotFoundError(path)
 
-        if path in PATHS.files_to_ignore:
-            raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
-
-        if path in PATHS.files_triggering_sanity_tests:
-            self.trigger_sanity_tests = True
-            raise NothingToCollectException(path, 'not under a pack (triggering sanity tests)')
+        self._validate_not_ignored(path)
+        self._validate_triggering_sanity_test(path)
 
         reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
         file_type = find_type(str(path))
 
         try:
             content_item = ContentItem(path)
+            self._validate_xsiam_compatibility(content_item)
         except NonDictException:
             # for `.py`, `.md`, etc., that are not dictionary-based
-            # Suitable logic follows, see collect_yml
+            # Suitable logic follows, see collect_yml (which validates xsiam compatibility as well)
             content_item = None
 
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
@@ -423,11 +493,12 @@ class BranchTestCollector(TestCollector):
                 pack_name=find_pack_folder(path).name,
                 reason=CollectionReason.NON_CODE_FILE_CHANGED,
                 reason_description=reason_description,
+                content_item_range=content_item.version_range if content_item else None
             )
 
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
-                raise NothingToCollectException(path, 'unit tests changed')
+                raise NothingToCollectException(path, 'changing unit tests does not trigger collection')
             return self._collect_yml(path)
 
         elif file_type == FileType.REPUTATION:
@@ -638,7 +709,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     )
 
                 except NotUnderPackException:
-                    if path.name in SKIPPED_CONTENT_ITEMS:
+                    if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
                         logger.info(f'skipping unsupported content item: {str(path)}, not under a pack')
                         continue
         return CollectionResult.union(tuple(result))

@@ -1,8 +1,13 @@
 {
   "tests": [
     {
-      "integrations": "myIntegration",
+      "integrations": [
+        "myIntegration"
+      ],
       "playbookID": "myOtherTestPlaybook"
+    },
+    {
+      "playbookID": "myTestPlaybook"
     }
   ],
   "skipped_tests": {},
