@@ -8,27 +8,27 @@ category: Forensics & Malware Analysis
 description: Use the Exterro FTK integration to protect against and provide additional visibility into phishing and other malicious email attacks.
 configuration:
 - display: Web Protocol
-  name: PROTOCOL
+  name: protocol
   defaultvalue: http
   type: 0
   required: true
 - display: Service URL (FQDN or IP Address.)
-  name: SERVER
+  name: server
   defaultvalue: localhost
   type: 0
   required: true
 - display: Service Listening Port
-  name: PORT
+  name: port
   defaultvalue: 4443
   type: 0
   required: true
 - display: "The API authentication key. http://support.accessdata.com/hc/en-us/articles/360053994573-Generating-API-Keys"
-  name: APIKEY
+  name: apikey
   type: 4
   required: true
   additionalinfo: The API authentication key has the following format `00000000-abcd-1234-5678-000000000000`
 - display: "The path to the public certificate required to authenticate."
-  name: PUBLIC_CERT
+  name: public_cert
   type: 0
   required: false
   
@@ -73,4 +73,4 @@ script:
 tests:
 - No test
 
-fromversion: 6.0.0
+fromversion: 6.2.0

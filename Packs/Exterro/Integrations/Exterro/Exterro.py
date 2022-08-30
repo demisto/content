@@ -1,22 +1,5 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 # python 3.9 imports
-from functools import wraps
-from json import dumps, loads, JSONDecodeError
+from json import JSONDecodeError
 from traceback import format_exc
 
 # accessdata imports
@@ -25,51 +8,29 @@ from accessdata.client import Client
 # xsoar imports
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
-""" decorator wrapping demisto commands """
-
-_run_functions = {}
+from CommonServerUserPython import *
 
 
-def wrap_demisto_command(command):
-    def _func(func):
-        @wraps(func)
-        def _inside(*args, **kwargs):
-            return func(*args, **kwargs)
-
-        _run_functions[command] = func
-        return _inside
-
-    return _func
-
-
-""" register demisto commands """
-
-@wrap_demisto_command("exterro-ftk-trigger-workflow")
 def _trigger_workflow(client, **kwargs):
     result = client.connect.trigger(**kwargs)
-    if result["Status"]!=True:
-        raise ValueError("Failed to trigger automation workflow.",result["Status"])
+    if result.get("Status") is not True:
+        raise ValueError("Failed to trigger automation workflow.", result.get("Status"))
 
-    return CommandResults(outputs_prefix='ExterroFTK.Workflow',
-            outputs_key_field='Status',
-            outputs=result)
+    return CommandResults(outputs_prefix='Accessdata.Workflow',
+                          outputs_key_field='Status',
+                          outputs=result)
 
-@wrap_demisto_command("test-module")
+
 def _test_module(client):
     # test the client can reach the case list
     try:
         client.cases
     except JSONDecodeError as exc:
-        raise RuntimeError('False API key provided to FTK Connect.')
+        raise RuntimeError('False API key provided to FTK Connect.', exc)
     except DemistoException as exc:
-        raise RuntimeError('Authentication with FTK Connect failed.')
+        raise RuntimeError('Authentication with FTK Connect failed.', exc)
 
     return "ok"
-
-
-""" define entry """  #
 
 
 def main():
@@ -77,11 +38,11 @@ def main():
     params = demisto.params()
 
     # generate client arguments
-    protocol = params.get("PROTOCOL", "http")
-    port = params.get("PORT", "4443")
-    address = params.get("SERVER", "localhost")
+    protocol = params.get("protocol", "http")
+    port = params.get("port", "4443")
+    address = params.get("server", "localhost")
     url = f"{protocol}://{address}:{port}/"
-    apikey = params.get("APIKEY", "")
+    apikey = params.get("apikey", "")
     # check if using ssl
     is_secure = protocol[-1] == 's'
 
@@ -89,17 +50,19 @@ def main():
     client = Client(url, apikey, validate=not is_secure)
     # if using ssl, gather certs and apply
     if is_secure:
-        public_certificate = params.get("PUBLIC_CERT", None)
+        public_certificate = params.get("public_cert", None)
         client.session.cert = public_certificate
 
     try:
         # call function with supplied args
         command = demisto.command()
-        func = _run_functions[command]
         args = demisto.args()
+        if command == "exterro-ftk-trigger-workflow":
+            return_values = _trigger_workflow(client, **args)
+        if command == "test-module":
+            return_values = _test_module(client)
 
         # return value from called function
-        return_values = func(client, **args)
         return_results(return_values)
     except Exception as exception:
         demisto.error(format_exc())  # print the traceback

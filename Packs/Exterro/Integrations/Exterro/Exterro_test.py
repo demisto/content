@@ -1,18 +1,11 @@
 from requests_mock import Mocker
-from json import dumps
-
 from accessdata.client import Client
-from accessdata.api.extensions import (
-    status_check_ext,
-    trigger_workflow_ext
-)
+from accessdata.api.extensions import status_check_ext, trigger_workflow_ext
+from Exterro import _trigger_workflow
 
-from Exterro import (
-    _trigger_workflow
-)
-
-API_URL = "http://randomurl.com/"
+API_URL = "http://localhost:443/"
 API_KEY = "API-TEST-KEY"
+
 
 def generate_mock_client():
     """Creates a mock client using falsified
@@ -42,22 +35,23 @@ def test_mock_client():
     #     "EnterpriseApiKey": API_KEY
     # }
 
+
 def test_mock_trigger_workflow():
     """Tests the FTK Connect workflow trigger."""
 
     client = generate_mock_client()
     with Mocker() as mocker:
-        mocker.post(API_URL + trigger_workflow_ext[1].format(workflowid="1"),json=True)
+        mocker.post(API_URL + trigger_workflow_ext[1].format(workflowid="1"), json=True)
 
         workflow_params = {
-            "Automation ID":"1",
-            "Case IDs":"1",
-            "Evidence Path":"\\\\localhost\\Evidence",
-            "SearchandTag Path":"\\\\localhost\\ScanAndTag",
-            "Export Path":"\\\\localhost\\Exports",
+            "Automation ID": "1",
+            "Case IDs": "1",
+            "Evidence Path": "\\\\localhost\\Evidence",
+            "SearchandTag Path": "\\\\localhost\\ScanAndTag",
+            "Export Path": "\\\\localhost\\Exports",
             "Target IPs": "127.0.0.1"
         }
-        result = _trigger_workflow(client,**workflow_params)
+        result = _trigger_workflow(client, **workflow_params)
         outputs = result.outputs
 
-        assert outputs["Status"]==True
+        assert outputs["Status"] is True
