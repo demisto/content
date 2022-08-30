@@ -6,8 +6,8 @@ This integration was integrated and tested with version 0.1 of PAN-OS Policy Opt
 2. Search for PAN-OS Policy Optimizer.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                              | **Required** |
---------------------------------------------| --- | --- |
+    | **Parameter** | **Required** |
+    | --- | --- |
     | Server URL (e.g., https://192.168.0.1:443) | True |
     | Username                                   | True |
     | Vsys - Firewall instances only             | False |
