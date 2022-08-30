@@ -205,7 +205,7 @@ Get a list of all devices.
 | Insight.Devices.sensor_id | string | ID code of the sensor | 
 
 #### Command example
-```!insight-get-devices cidr=10.10.0.0/16```
+```!insight-get-devices cidr=21.5.0.0/16```
 #### Context Example
 ```json
 {
@@ -215,19 +215,19 @@ Get a list of all devices.
                 "date": null,
                 "external": true,
                 "internal": true,
-                "ip_address": "10.10.31.1"
+                "ip_address": "21.5.31.1"
             },
             {
                 "date": null,
                 "external": true,
                 "internal": true,
-                "ip_address": "10.10.31.5"
+                "ip_address": "21.5.31.5"
             },
             {
                 "date": null,
                 "external": true,
                 "internal": true,
-                "ip_address": "10.10.31.101"
+                "ip_address": "21.5.31.101"
             }
         ]
     }
@@ -239,9 +239,9 @@ Get a list of all devices.
 >### Results
 >|date|external|internal|ip_address|
 >|---|---|---|---|
->|  | true | true | 10.10.31.1 |
->|  | true | true | 10.10.31.5 |
->|  | true | true | 10.10.31.101 |
+>|  | true | true | 21.5.31.1 |
+>|  | true | true | 21.5.31.5 |
+>|  | true | true | 21.5.31.101 |
 
 
 ### insight-get-tasks
@@ -295,7 +295,7 @@ Get a list of all the PCAP tasks.
             "actual_start_time": "2022-08-25T02:32:00.000Z",
             "bpf": "dst www.discovery.com",
             "created": "2022-08-24T17:46:28.457Z",
-            "created_email": "eduardo.mesabarrameda+demo@gigamon.com",
+            "created_email": "myemail@mycompany.com",
             "created_uuid": "88f034f1-b922-4a41-8e54-9bac90a42517",
             "description": "Test Description",
             "files": [],
@@ -319,7 +319,7 @@ Get a list of all the PCAP tasks.
 >### Results
 >|account_code|actual_end_time|actual_start_time|bpf|created|created_email|created_uuid|description|files|has_files|name|requested_end_time|requested_start_time|sensor_ids|status|task_uuid|updated|updated_email|updated_uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| gdm | 2022-08-26T07:59:00.000Z | 2022-08-25T02:32:00.000Z | dst www.discovery.com | 2022-08-24T17:46:28.457Z | eduardo.mesabarrameda+demo@gigamon.com | 88f034f1-b922-4a41-8e54-9bac90a42517 | Test Description |  | false | test Task1 | 2022-08-26T07:59:00.000Z | 2022-08-25T02:32:00.000Z |  | active | 373c9861-16cd-44cb-b768-e53ce3a9fcd4 | 2022-08-24T17:46:28.457Z |  |  |
+>| gdm | 2022-08-26T07:59:00.000Z | 2022-08-25T02:32:00.000Z | dst www.discovery.com | 2022-08-24T17:46:28.457Z | myemail@mycompany.com | 88f034f1-b922-4a41-8e54-9bac90a42517 | Test Description |  | false | test Task1 | 2022-08-26T07:59:00.000Z | 2022-08-25T02:32:00.000Z |  | active | 373c9861-16cd-44cb-b768-e53ce3a9fcd4 | 2022-08-24T17:46:28.457Z |  |  |
 
 
 ### insight-create-task
@@ -693,7 +693,7 @@ Get passive DNS information about an IP or domain.
                     "first_seen": "2022-04-06T00:00:00.000Z",
                     "last_seen": "2022-08-24T00:00:00.000Z",
                     "record_type": "a",
-                    "resolved": "172.217.12.206",
+                    "resolved": "132.215.12.206",
                     "sensor_id": "gdm2",
                     "source": "icebrg_dns"
                 },
@@ -702,7 +702,7 @@ Get passive DNS information about an IP or domain.
                     "first_seen": "2022-04-03T00:00:00.000Z",
                     "last_seen": "2022-08-21T00:00:00.000Z",
                     "record_type": "a",
-                    "resolved": "172.217.5.238",
+                    "resolved": "132.215.5.238",
                     "sensor_id": "gdm2",
                     "source": "icebrg_dns"
                 },
@@ -711,7 +711,7 @@ Get passive DNS information about an IP or domain.
                     "first_seen": "2022-03-30T00:00:00.000Z",
                     "last_seen": "2022-08-24T00:00:00.000Z",
                     "record_type": "a",
-                    "resolved": "172.217.7.238",
+                    "resolved": "132.215.7.238",
                     "sensor_id": "gdm2",
                     "source": "icebrg_dns"
                 }
@@ -726,9 +726,9 @@ Get passive DNS information about an IP or domain.
 >### Results
 >|account_uuid|first_seen|last_seen|record_type|resolved|sensor_id|source|
 >|---|---|---|---|---|---|---|
->| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-04-06T00:00:00.000Z | 2022-08-24T00:00:00.000Z | a | 172.217.12.206 | gdm2 | icebrg_dns |
->| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-04-03T00:00:00.000Z | 2022-08-21T00:00:00.000Z | a | 172.217.5.238 | gdm2 | icebrg_dns |
->| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-03-30T00:00:00.000Z | 2022-08-24T00:00:00.000Z | a | 172.217.7.238 | gdm2 | icebrg_dns |
+>| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-04-06T00:00:00.000Z | 2022-08-24T00:00:00.000Z | a | 132.215.12.206 | gdm2 | icebrg_dns |
+>| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-04-03T00:00:00.000Z | 2022-08-21T00:00:00.000Z | a | 132.215.5.238 | gdm2 | icebrg_dns |
+>| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-03-30T00:00:00.000Z | 2022-08-24T00:00:00.000Z | a | 132.215.7.238 | gdm2 | icebrg_dns |
 
 
 ### insight-get-entity-dhcp
@@ -763,7 +763,7 @@ Get DHCP information about an IP address.
 | Insight.Entity.DHCP.start_lease_as_long | number | Start Date as a long value | 
 
 #### Command example
-```!insight-get-entity-dhcp entity=10.1.70.100 start_date=2021-01-01T00:00:00.000Z```
+```!insight-get-entity-dhcp entity=21.1.70.100 start_date=2021-01-01T00:00:00.000Z```
 #### Context Example
 ```json
 {
@@ -774,7 +774,7 @@ Get DHCP information about an IP address.
                 "hostnames": [
                     "FinanceWks008"
                 ],
-                "ip": "10.1.70.100",
+                "ip": "21.1.70.100",
                 "lease_end": null,
                 "lease_start": "2021-12-18T09:02:24.104Z",
                 "mac": "00:15:5d:00:04:0e",
@@ -791,7 +791,7 @@ Get DHCP information about an IP address.
 >### Results
 >|customer_id|hostnames|ip|lease_end|lease_start|mac|sensor_id|start_lease_as_long|
 >|---|---|---|---|---|---|---|---|
->| gdm | FinanceWks008 | 10.1.70.100 |  | 2021-12-18T09:02:24.104Z | 00:15:5d:00:04:0e |  | 1639818144104 |
+>| gdm | FinanceWks008 | 21.1.70.100 |  | 2021-12-18T09:02:24.104Z | 00:15:5d:00:04:0e |  | 1639818144104 |
 
 
 ### insight-get-entity-file
@@ -899,7 +899,7 @@ Get a list of detections.
             {
                 "account_uuid": "dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8",
                 "created": "2022-08-24T21:20:19.801089Z",
-                "device_ip": "192.168.0.100",
+                "device_ip": "156.112.0.100",
                 "event_count": 1,
                 "first_seen": "2022-08-24T08:04:36.535000Z",
                 "hostname": null,
@@ -930,7 +930,7 @@ Get a list of detections.
             {
                 "account_uuid": "dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8",
                 "created": "2022-08-24T09:03:14.430538Z",
-                "device_ip": "192.168.0.100",
+                "device_ip": "156.112.0.100",
                 "event_count": 9,
                 "first_seen": "2022-08-24T08:03:31.755000Z",
                 "hostname": null,
@@ -968,8 +968,8 @@ Get a list of detections.
 >### Results
 >|account_uuid|created|device_ip|event_count|first_seen|hostname|indicators|last_seen|muted|muted_comment|muted_device_uuid|muted_rule|muted_timestamp|muted_user_uuid|resolution|resolution_comment|resolution_timestamp|resolution_user_uuid|rule_category|rule_confidence|rule_description|rule_name|rule_severity|rule_uuid|sensor_id|status|updated|username|uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-08-24T21:20:19.801089Z | 192.168.0.100 | 1 | 2022-08-24T08:04:36.535000Z |  |  | 2022-08-24T08:04:36.535000Z | false |  |  | false |  |  |  |  |  |  | Attack:Discovery | moderate | This rule is designed to use the TCP Device Enumeration Observation event generated from a DMZ host that is not a scanner.  This would indicate a potentially compromised DMZ host scanning for other assets within the environment.  <br/> | TCP Device Enumeration from DMZ host | moderate | 2d719a2b-4efb-4ba6-8555-0cd0f9636729 | gdm2 | active | 2022-08-24T21:20:19.801089Z |  | bb65c150-46be-4ba8-870d-b5feee01f06e |
->| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-08-24T09:03:14.430538Z | 192.168.0.100 | 9 | 2022-08-24T08:03:31.755000Z |  |  | 2022-08-24T08:06:14.965000Z | false |  |  | false |  |  |  |  |  |  | Attack:Command and Control | moderate | This detection is intended to detect the CKnife Java client interacting with a CKnife Webshell backdoor. CKnife Webshell is commonly used by attackers to establish backdoors on external-facing web servers with unpatched vulnerabilities. CKnife is typically inserted as a PHP or ASPX page on the impacted asset, and accessed via a Java client.<br/><br/>Gigamon ATR considers this detection high severity, as it is indicative of successful malicious code execution on an external-facing server. This detection is considered moderate confidence, as it may coincidentally match similar traffic from uncommon devices or scanners.<br/><br/>### Next Steps<br/>1. Determine if this detection is a true positive by:<br/>   1. Validating that the webpage in the detection exists, is unauthorized, and contains webshell functionality.<br/>   2. Validating that the external entity interacting with the device is unknown or unauthorized.<br/>   3. Inspecting traffic or logs to see if interaction with this webpage is uncommon and recent.<br/>3. Quarantine the impacted device.<br/>4. Begin incident response procedures on the impacted device.<br/>5. Block traffic from attacker infrastructure.<br/>6. Search traffic or logs from the infected web server to identify potential lateral movement by the attackers. | CKnife Webshell Activity | high | e9008859-c038-4bd5-a805-21efffd58355 | gdm2 | active | 2022-08-24T09:03:14.430538Z |  | 6d0d7c2d-33a1-458d-a5e5-461fe7b03409 |
+>| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-08-24T21:20:19.801089Z | 156.112.0.100 | 1 | 2022-08-24T08:04:36.535000Z |  |  | 2022-08-24T08:04:36.535000Z | false |  |  | false |  |  |  |  |  |  | Attack:Discovery | moderate | This rule is designed to use the TCP Device Enumeration Observation event generated from a DMZ host that is not a scanner.  This would indicate a potentially compromised DMZ host scanning for other assets within the environment.  <br/> | TCP Device Enumeration from DMZ host | moderate | 2d719a2b-4efb-4ba6-8555-0cd0f9636729 | gdm2 | active | 2022-08-24T21:20:19.801089Z |  | bb65c150-46be-4ba8-870d-b5feee01f06e |
+>| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-08-24T09:03:14.430538Z | 156.112.0.100 | 9 | 2022-08-24T08:03:31.755000Z |  |  | 2022-08-24T08:06:14.965000Z | false |  |  | false |  |  |  |  |  |  | Attack:Command and Control | moderate | This detection is intended to detect the CKnife Java client interacting with a CKnife Webshell backdoor. CKnife Webshell is commonly used by attackers to establish backdoors on external-facing web servers with unpatched vulnerabilities. CKnife is typically inserted as a PHP or ASPX page on the impacted asset, and accessed via a Java client.<br/><br/>Gigamon ATR considers this detection high severity, as it is indicative of successful malicious code execution on an external-facing server. This detection is considered moderate confidence, as it may coincidentally match similar traffic from uncommon devices or scanners.<br/><br/>### Next Steps<br/>1. Determine if this detection is a true positive by:<br/>   1. Validating that the webpage in the detection exists, is unauthorized, and contains webshell functionality.<br/>   2. Validating that the external entity interacting with the device is unknown or unauthorized.<br/>   3. Inspecting traffic or logs to see if interaction with this webpage is uncommon and recent.<br/>3. Quarantine the impacted device.<br/>4. Begin incident response procedures on the impacted device.<br/>5. Block traffic from attacker infrastructure.<br/>6. Search traffic or logs from the infected web server to identify potential lateral movement by the attackers. | CKnife Webshell Activity | high | e9008859-c038-4bd5-a805-21efffd58355 | gdm2 | active | 2022-08-24T09:03:14.430538Z |  | 6d0d7c2d-33a1-458d-a5e5-461fe7b03409 |
 
 
 ### insight-get-detection-rules
@@ -1269,7 +1269,7 @@ Get a list of the events that matched on a specific rule.
                         "subdivision": "TX"
                     },
                     "internal": false,
-                    "ip": "107.181.175.118",
+                    "ip": "101.25.175.118",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 80
@@ -1316,7 +1316,7 @@ Get a list of the events that matched on a specific rule.
                         "subdivision": "TX"
                     },
                     "internal": false,
-                    "ip": "107.181.175.118",
+                    "ip": "101.25.175.118",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": null
@@ -1340,7 +1340,7 @@ Get a list of the events that matched on a specific rule.
                     "asn": null,
                     "geo": null,
                     "internal": true,
-                    "ip": "10.10.31.5",
+                    "ip": "21.5.31.5",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 51520
@@ -1381,7 +1381,7 @@ Get a list of the events that matched on a specific rule.
                         "subdivision": "TX"
                     },
                     "internal": false,
-                    "ip": "107.181.175.118",
+                    "ip": "101.25.175.118",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 80
@@ -1428,7 +1428,7 @@ Get a list of the events that matched on a specific rule.
                         "subdivision": "TX"
                     },
                     "internal": false,
-                    "ip": "107.181.175.118",
+                    "ip": "101.25.175.118",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": null
@@ -1452,7 +1452,7 @@ Get a list of the events that matched on a specific rule.
                     "asn": null,
                     "geo": null,
                     "internal": true,
-                    "ip": "10.10.31.5",
+                    "ip": "21.5.31.5",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 51520
@@ -1493,7 +1493,7 @@ Get a list of the events that matched on a specific rule.
                         "subdivision": "TX"
                     },
                     "internal": false,
-                    "ip": "107.181.175.118",
+                    "ip": "101.25.175.118",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 80
@@ -1540,7 +1540,7 @@ Get a list of the events that matched on a specific rule.
                         "subdivision": "TX"
                     },
                     "internal": false,
-                    "ip": "107.181.175.118",
+                    "ip": "101.25.175.118",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": null
@@ -1564,7 +1564,7 @@ Get a list of the events that matched on a specific rule.
                     "asn": null,
                     "geo": null,
                     "internal": true,
-                    "ip": "10.10.31.101",
+                    "ip": "21.5.31.101",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 58761
@@ -1596,9 +1596,9 @@ Get a list of the events that matched on a specific rule.
 >### Results
 >|customer_id|dst|event_type|files|flow_id|geo_distance|headers|host|info_msg|intel|method|proxied|referrer|request_len|request_mime|request_mimes|response_len|response_mime|response_mimes|sensor_id|source|src|status_code|status_msg|timestamp|trans_depth|uri|user_agent|username|uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| gdm | ip: 107.181.175.118<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false | http | {'name': None, 'md5': '725d4b987107aa0f797f2aad4daaf8cd', 'sha1': '44b8b2a5a79ed223dadb612728661824430fe793', 'sha256': 'c9075805b3d43e3d0231216662068850cbde533bc7f0f4c7486f5a89224c524c', 'bytes': 503808, 'mime_type': None} | C8fsbW3SBCuWYNaUse |  | accept: null<br/>content_md5: null<br/>content_type: image/png<br/>cookie_length: null<br/>location: null<br/>origin: null<br/>proxied_client_ips: null<br/>refresh: null<br/>server: nginx/1.10.3<br/>x_powered_by: null | ip: 107.181.175.118<br/>port: null<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false |  |  | GET |  |  | 0 |  |  | 503808 | application/x-dosexec | application/x-dosexec | gdm2 | Zeek | ip: 10.10.31.5<br/>port: 51520<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 200 | OK | 2022-08-22T08:09:10.243Z | 2 | uri: /scrimet.png<br/>scheme: null<br/>host: null<br/>port: -1<br/>path: /scrimet.png<br/>query: null<br/>fragment: null | WinHTTP loader/1.0 |  | 343c26aa-21f3-11ed-9d7b-0a1766ad1b93 |
->| gdm | ip: 107.181.175.118<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false | http | {'name': None, 'md5': None, 'sha1': None, 'sha256': None, 'bytes': 472706, 'mime_type': None} | C8fsbW3SBCuWYNaUse |  | accept: null<br/>content_md5: null<br/>content_type: image/png<br/>cookie_length: null<br/>location: null<br/>origin: null<br/>proxied_client_ips: null<br/>refresh: null<br/>server: nginx/1.10.3<br/>x_powered_by: null | ip: 107.181.175.118<br/>port: null<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false |  |  | GET |  |  | 0 |  |  | 472706 | application/x-dosexec | application/x-dosexec | gdm2 | Zeek | ip: 10.10.31.5<br/>port: 51520<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 200 | OK | 2022-08-22T08:09:04.693Z | 1 | uri: /tablone.png<br/>scheme: null<br/>host: null<br/>port: -1<br/>path: /tablone.png<br/>query: null<br/>fragment: null | WinHTTP loader/1.0 |  | 3439dbfc-21f3-11ed-9d7b-0a1766ad1b93 |
->| gdm | ip: 107.181.175.118<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false | http | {'name': None, 'md5': '725d4b987107aa0f797f2aad4daaf8cd', 'sha1': '44b8b2a5a79ed223dadb612728661824430fe793', 'sha256': 'c9075805b3d43e3d0231216662068850cbde533bc7f0f4c7486f5a89224c524c', 'bytes': 503808, 'mime_type': None} | CRcO6G4eqlWvo7gjia |  | accept: null<br/>content_md5: null<br/>content_type: image/png<br/>cookie_length: null<br/>location: null<br/>origin: null<br/>proxied_client_ips: null<br/>refresh: null<br/>server: nginx/1.10.3<br/>x_powered_by: null | ip: 107.181.175.118<br/>port: null<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false |  |  | GET |  |  | 0 |  |  | 503808 | application/x-dosexec | application/x-dosexec | gdm2 | Zeek | ip: 10.10.31.101<br/>port: 58761<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 200 | OK | 2022-08-22T08:06:40.603Z | 2 | uri: /scrimet.png<br/>scheme: null<br/>host: null<br/>port: -1<br/>path: /scrimet.png<br/>query: null<br/>fragment: null | WinHTTP loader/1.0 |  | 343177d6-21f3-11ed-9d7b-0a1766ad1b93 |
+>| gdm | ip: 101.25.175.118<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false | http | {'name': None, 'md5': '725d4b987107aa0f797f2aad4daaf8cd', 'sha1': '44b8b2a5a79ed223dadb612728661824430fe793', 'sha256': 'c9075805b3d43e3d0231216662068850cbde533bc7f0f4c7486f5a89224c524c', 'bytes': 503808, 'mime_type': None} | C8fsbW3SBCuWYNaUse |  | accept: null<br/>content_md5: null<br/>content_type: image/png<br/>cookie_length: null<br/>location: null<br/>origin: null<br/>proxied_client_ips: null<br/>refresh: null<br/>server: nginx/1.10.3<br/>x_powered_by: null | ip: 101.25.175.118<br/>port: null<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false |  |  | GET |  |  | 0 |  |  | 503808 | application/x-dosexec | application/x-dosexec | gdm2 | Zeek | ip: 21.5.31.5<br/>port: 51520<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 200 | OK | 2022-08-22T08:09:10.243Z | 2 | uri: /scrimet.png<br/>scheme: null<br/>host: null<br/>port: -1<br/>path: /scrimet.png<br/>query: null<br/>fragment: null | WinHTTP loader/1.0 |  | 343c26aa-21f3-11ed-9d7b-0a1766ad1b93 |
+>| gdm | ip: 101.25.175.118<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false | http | {'name': None, 'md5': None, 'sha1': None, 'sha256': None, 'bytes': 472706, 'mime_type': None} | C8fsbW3SBCuWYNaUse |  | accept: null<br/>content_md5: null<br/>content_type: image/png<br/>cookie_length: null<br/>location: null<br/>origin: null<br/>proxied_client_ips: null<br/>refresh: null<br/>server: nginx/1.10.3<br/>x_powered_by: null | ip: 101.25.175.118<br/>port: null<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false |  |  | GET |  |  | 0 |  |  | 472706 | application/x-dosexec | application/x-dosexec | gdm2 | Zeek | ip: 21.5.31.5<br/>port: 51520<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 200 | OK | 2022-08-22T08:09:04.693Z | 1 | uri: /tablone.png<br/>scheme: null<br/>host: null<br/>port: -1<br/>path: /tablone.png<br/>query: null<br/>fragment: null | WinHTTP loader/1.0 |  | 3439dbfc-21f3-11ed-9d7b-0a1766ad1b93 |
+>| gdm | ip: 101.25.175.118<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false | http | {'name': None, 'md5': '725d4b987107aa0f797f2aad4daaf8cd', 'sha1': '44b8b2a5a79ed223dadb612728661824430fe793', 'sha256': 'c9075805b3d43e3d0231216662068850cbde533bc7f0f4c7486f5a89224c524c', 'bytes': 503808, 'mime_type': None} | CRcO6G4eqlWvo7gjia |  | accept: null<br/>content_md5: null<br/>content_type: image/png<br/>cookie_length: null<br/>location: null<br/>origin: null<br/>proxied_client_ips: null<br/>refresh: null<br/>server: nginx/1.10.3<br/>x_powered_by: null | ip: 101.25.175.118<br/>port: null<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false |  |  | GET |  |  | 0 |  |  | 503808 | application/x-dosexec | application/x-dosexec | gdm2 | Zeek | ip: 21.5.31.101<br/>port: 58761<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 200 | OK | 2022-08-22T08:06:40.603Z | 2 | uri: /scrimet.png<br/>scheme: null<br/>host: null<br/>port: -1<br/>path: /scrimet.png<br/>query: null<br/>fragment: null | WinHTTP loader/1.0 |  | 343177d6-21f3-11ed-9d7b-0a1766ad1b93 |
 
 
 ### insight-create-detection-rule

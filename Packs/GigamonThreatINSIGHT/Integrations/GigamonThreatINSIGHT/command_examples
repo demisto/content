@@ -1,6 +1,6 @@
 !insight-get-sensors
 !insight-get-sensors account_code=gdm
-!insight-get-devices cidr=10.10.0.0/16
+!insight-get-devices cidr=21.5.0.0/16
 !insight-get-telemetry-events start_date=2022-08-22T23:00:00.000Z end_date=2022-08-23T01:00:00.000Z
 !insight-get-telemetry-network start_date=2022-08-21T00:00:00.000Z end_date=2022-08-23T01:00:00.000Z interval=day
 !insight-get-telemetry-packetstats start_date=2022-08-22T23:00:00.000Z end_date=2022-08-23T01:00:00.000Z
@@ -8,7 +8,7 @@
 
 !insight-get-entity-summary entity=8.8.8.8
 !insight-get-entity-pdns entity=google.com limit=3
-!insight-get-entity-dhcp entity=10.1.70.100 start_date=2021-01-01T00:00:00.000Z
+!insight-get-entity-dhcp entity=21.1.70.100 start_date=2021-01-01T00:00:00.000Z
 !insight-get-entity-file hash=2b7a609371b2a844181c2f79f1b45cf7
 
 !insight-get-detections status=active include=rules created_or_shared_start_date=2022-08-23T22:00:00.000Z created_or_shared_end_date=2022-08-24T22:00:00.000Z
