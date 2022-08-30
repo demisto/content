@@ -761,25 +761,25 @@ Checks the reputation of an IP address.
                 },
                 "last_https_certificate": {
                     "cert_signature": {
-                        "signature": "306402301152a6a4c90ca1c95c6f9c9cf0cb2dc63f1f4230a411ca43c33fa921f1d2d4515b5b8ae684681a20c30c762e0f1b4a1b023049a1f9ab8b7256fb377e6011a1bddf5667f2d60ab9de4b4a621650c06170af9ab4eb965f8b841107d395aa245bb71e1a",
-                        "signature_algorithm": "SHA384ECDSA"
+                        "signature": "3064023024c2cf6cbdf6aed1c9d51f4a742e3c3dd1c03edcd71bd394715bfea5861626820122d30a6efc98b5d2e2b9e5076977960230457b6f82a67db662c33185d5b5355d4f4c8488ac1a003d0c8440dcb0a7ca1c1327151e37f946c3aed9fdf9b9238b7f2a",
+                        "signature_algorithm": "1.2.840.10045.4.3.3"
                     },
                     "extensions": {
-                        "1.3.6.1.4.1.11129.2.4.2": "0482016a01680077002979bef09e393921f056739f63a577e5be577d9c600af8",
+                        "**exten**": "0481f200f00076002979bef09e393921f056739f63a577e5be577d9c600af8f9",
                         "CA": true,
                         "authority_key_identifier": {
                             "keyid": "0abc0829178ca5396d7a0ece33c72eb3edfbc37a"
                         },
                         "ca_information_access": {
-                            "CA Issuers": "http://cacerts.digicert.com/DigiCertTLSHybridECCSHA3842020CA1-1.crt",
-                            "OCSP": "http://ocsp.digicert.com"
+                            "CA Issuers": "http://cacerts.example.com/exampleTLSHybridECCSHA3842020CA1.crt",
+                            "OCSP": "http://ocsp.example.com"
                         },
                         "certificate_policies": [
-                            "2.23.140.1.2.2"
+                            "**policy**"
                         ],
                         "crl_distribution_points": [
-                            "http://crl3.digicert.com/DigiCertTLSHybridECCSHA3842020CA1-1.crl",
-                            "http://crl4.digicert.com/DigiCertTLSHybridECCSHA3842020CA1-1.crl"
+                            "http://crl3.example.com/exampleTLSHybridECCSHA3842020CA1.crl",
+                            "http://crl4.example.com/exampleTLSHybridECCSHA3842020CA1.crl"
                         ],
                         "extended_key_usage": [
                             "serverAuth",
@@ -792,33 +792,33 @@ Checks the reputation of an IP address.
                             "cloudflare-dns.com",
                             "*.cloudflare-dns.com",
                             "one.one.one.one",
-                            "1.1.1.1",
-                            "1.0.0.1",
-                            "162.159.36.1",
-                            "162.159.46.1",
-                            "2606:4700:4700:0:0:0:0:1111",
-                            "2606:4700:4700:0:0:0:0:1001",
-                            "2606:4700:4700:0:0:0:0:64",
-                            "2606:4700:4700:0:0:0:0:6400"
+                            "\u0001\u0001\u0001\u0001",
+                            "\u0001\u0001",
+                            "\\xa2\\x9f$\\x01",
+                            "\\xa2\\x9f.\\x01",
+                            "&\u0006GG\u0011\u0011",
+                            "&\u0006GG\u0010\u0001",
+                            "GGd",
+                            "GGd"
                         ],
                         "subject_key_identifier": "19451b2318f874da2214cb466be213b360158240",
                         "tags": []
                     },
                     "issuer": {
                         "C": "US",
-                        "CN": "DigiCert TLS Hybrid ECC SHA384 2020 CA1",
-                        "O": "DigiCert Inc"
+                        "CN": "example TLS Hybrid ECC SHA384 2020 CA1",
+                        "O": "example Inc"
                     },
                     "public_key": {
                         "algorithm": "EC",
                         "ec": {
                             "oid": "secp256r1",
-                            "pub": "04fb2944f2983fd8bd8256d32cbd8e099f312b98269e22968d7b4bfcdac57b7b29aa8e356c9c0a48056c8973ed200ecd4621f0ec4db3a5e9af1b3899e5f4daf184"
+                            "pub": "0417ad1fe835af70d38d9c9e64fd471e5b970c0ad110a826321136664d1299c3e131bbf5216373dda5c1c1a0f06da4c45ee1c2dbdaf90d34801af7b9e03af2d574"
                         }
                     },
-                    "serial_number": "0f75a36d32c16b03c7ca5f5f714a0370",
-                    "signature_algorithm": "SHA384ECDSA",
-                    "size": 1533,
+                    "serial_number": "5076f66d11b692256ccacd546ffec53",
+                    "signature_algorithm": "1.2.840.10045.4.3.3",
+                    "size": 1418,
                     "subject": {
                         "C": "US",
                         "CN": "cloudflare-dns.com",
@@ -827,16 +827,16 @@ Checks the reputation of an IP address.
                         "ST": "California"
                     },
                     "tags": [],
-                    "thumbprint": "099d03214d1414a5325db61090e73ddb94f37d72",
-                    "thumbprint_sha256": "c93386adf01223e637a3aca7c68988bb8240c4afd5d204c206bc35d7a4358dd1",
+                    "thumbprint": "f1b38143b992645497cf452f8c1ac84249794282",
+                    "thumbprint_sha256": "fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426",
                     "validity": {
                         "not_after": "2022-10-25 23:59:59",
                         "not_before": "2021-10-25 00:00:00"
                     },
                     "version": "V3"
                 },
-                "last_https_certificate_date": 1661780817,
-                "last_modification_date": 1661786141,
+                "last_https_certificate_date": 1617041198,
+                "last_modification_date": 1617083545,
                 "network": "1.1.1.0/24",
                 "reputation": 134,
                 "tags": [],

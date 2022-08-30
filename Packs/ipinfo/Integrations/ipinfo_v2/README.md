@@ -152,7 +152,7 @@ Check IP reputation (when information is available, returns a JSON with details)
                 "Abuse": {
                     "Address": "PO Box 3646, South Brisbane, QLD 4101, Australia",
                     "Country": "AU",
-                    "Email": "helpdesk@apnic.net",
+                    "Email": "test",
                     "Name": "APNIC RESEARCH",
                     "Network": "1.1.1.0/24",
                     "Phone": "+61-7-3858-3188"
@@ -168,7 +168,8 @@ Check IP reputation (when information is available, returns a JSON with details)
 
 #### Human Readable Output
 
->### IPinfo results for 1.1.1.1
->|abuse|anycast|asn|city|company|country|domains|hostname|ip|lat|lng|loc|postal|privacy|region|timezone|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| address: PO Box 3646, South Brisbane, QLD 4101, Australia<br/>country: AU<br/>email: helpdesk@apnic.net<br/>name: APNIC RESEARCH<br/>network: 1.1.1.0/24<br/>phone: +61-7-3858-3188 | true | asn: AS13335<br/>name: Cloudflare, Inc.<br/>domain: cloudflare.com<br/>route: 1.1.1.0/24<br/>type: hosting | Los Angeles | name: APNIC and Cloudflare DNS Resolver project<br/>domain: cloudflare.com<br/>type: hosting | US | ip: 1.1.1.1<br/>total: 28410<br/>domains: yinclub.club,<br/>rapidplex.com,<br/>gfxdomain.net,<br/>kpgpay.net,<br/>authrock.com | one.one.one.one | 1.1.1.1 | 34.0522 | -118.2437 | 34.0522,-118.2437 | 90076 | vpn: false<br/>proxy: false<br/>tor: false<br/>relay: false<br/>hosting: true<br/>service:  | California | America/Los_Angeles |
+### IPinfo results for 1.1.1.1
+
+|anycast|city|country|hostname|ip|loc|org|postal|readme|region|timezone|
+|---|---|---|---|---|---|---|---|---|---|---|
+| true | Miami | US | one.one.one.one | 1.1.1.1 | 25.7867,-80.1800 | AS13335 Cloudflare, Inc. | 33132 | https
