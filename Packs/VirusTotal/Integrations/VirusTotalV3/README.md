@@ -401,109 +401,385 @@ Checks the reputation of an IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address to check. | Required |
-| extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional |
+| ip | IP address to check. | Required | 
+| extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | unknown | Bad IP address. |
-| IP.Relationships.EntityA | String | The source of the relationship. |
-| IP.Relationships.EntityB | String | The destination of the relationship. |
-| IP.Relationships.Relationship | String | The name of the relationship. |
-| IP.Relationships.EntityAType | String | The type of the source of the relationship. |
-| IP.Relationships.EntityBType | String | The type of the destination of the relationship. |
-| IP.ASN | unknown | Bad IP ASN. |
-| IP.Geo.Country | unknown | Bad IP country. |
-| IP.Malicious.Vendor | unknown | For malicious IPs, the vendor that made the decision. |
-| IP.Malicious.Description | unknown | For malicious IPs, the reason that the vendor made the decision. |
-| DBotScore.Indicator | unknown | The indicator that was tested. |
-| DBotScore.Type | unknown | The indicator type. |
-| DBotScore.Vendor | unknown | The vendor used to calculate the DBot score. |
-| DBotScore.Score | unknown | The actual score. |
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
-| VirusTotal.IP.attributes.regional_internet_registry | String | Regional internet registry \(RIR\). |
-| VirusTotal.IP.attributes.jarm | String | JARM data. |
-| VirusTotal.IP.attributes.network | String | Network data. |
-| VirusTotal.IP.attributes.country | String | The country where the IP is located. |
-| VirusTotal.IP.attributes.as_owner | String | IP owner. |
-| VirusTotal.IP.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. |
-| VirusTotal.IP.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. |
-| VirusTotal.IP.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. |
-| VirusTotal.IP.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. |
-| VirusTotal.IP.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. |
-| VirusTotal.IP.attributes.asn | Number | ASN data. |
-| VirusTotal.IP.attributes.whois_date | Number | Date of the last update of the whois record. |
-| VirusTotal.IP.attributes.reputation | Number | IP reputation. |
-| VirusTotal.IP.attributes.last_modification_date | Number | Last modification date in epoch format. |
-| VirusTotal.IP.attributes.total_votes.harmless | Number | Total number of harmless votes. |
-| VirusTotal.IP.attributes.total_votes.malicious | Number | Total number of malicious votes. |
-| VirusTotal.IP.attributes.continent | String | The continent where the IP is located. |
-| VirusTotal.IP.attributes.whois | String | whois data. |
-| VirusTotal.IP.type | String | Indicator IP type. |
-| VirusTotal.IP.id | String | ID of the IP. |
+| IP.Address | unknown | Bad IP address. | 
+| IP.ASN | unknown | Bad IP ASN. | 
+| IP.Geo.Country | unknown | Bad IP country. | 
+| IP.Relationships.EntityA | string | The source of the relationship. | 
+| IP.Relationships.EntityB | string | The destination of the relationship. | 
+| IP.Relationships.Relationship | string | The name of the relationship. | 
+| IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
+| IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| IP.Malicious.Vendor | unknown | For malicious IPs, the vendor that made the decision. | 
+| IP.Malicious.Description | unknown | For malicious IPs, the reason that the vendor made the decision. | 
+| IP.ASOwner | String | The autonomous system owner of the IP. | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the DBot score. | 
+| DBotScore.Score | unknown | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| VirusTotal.IP.attributes.regional_internet_registry | String | Regional internet registry \(RIR\). | 
+| VirusTotal.IP.attributes.jarm | String | JARM data. | 
+| VirusTotal.IP.attributes.network | String | Network data. | 
+| VirusTotal.IP.attributes.country | String | The country where the IP is located. | 
+| VirusTotal.IP.attributes.as_owner | String | IP owner. | 
+| VirusTotal.IP.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. | 
+| VirusTotal.IP.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
+| VirusTotal.IP.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
+| VirusTotal.IP.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
+| VirusTotal.IP.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
+| VirusTotal.IP.attributes.asn | Number | ASN data. | 
+| VirusTotal.IP.attributes.whois_date | Number | Date of the last update of the whois record. | 
+| VirusTotal.IP.attributes.reputation | Number | IP reputation. | 
+| VirusTotal.IP.attributes.last_modification_date | Number | Last modification date in epoch format. | 
+| VirusTotal.IP.attributes.total_votes.harmless | Number | Total number of harmless votes. | 
+| VirusTotal.IP.attributes.total_votes.malicious | Number | Total number of malicious votes. | 
+| VirusTotal.IP.attributes.continent | String | The continent where the IP is located. | 
+| VirusTotal.IP.attributes.whois | String | whois data. | 
+| VirusTotal.IP.type | String | Indicator IP type. | 
+| VirusTotal.IP.id | String | ID of the IP. | 
 
-#### Command Example
-
+#### Command example
 ```!ip ip=1.1.1.1```
-
 #### Context Example
-
 ```json
 {
     "DBotScore": {
         "Indicator": "1.1.1.1",
-        "Reliability": "A - Completely reliable",
+        "Reliability": "C - Fairly reliable",
         "Score": 1,
         "Type": "ip",
-        "Vendor": "VirusTotal"
+        "Vendor": "VirusTotal (API v3)"
     },
     "IP": {
         "ASN": 13335,
+        "ASOwner": "CLOUDFLARENET",
         "Address": "1.1.1.1",
-        "DetectionEngines": 82,
-        "Geo": {
-            "Country": "AU"
-        },
-        "PositiveDetections": 1
+        "DetectionEngines": 94,
+        "PositiveDetections": 4,
+        "Relationships": [
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "00000cd773f456da710fa334507f8303e87ee228a0c42e365b0250a9a267e734",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0000703e66fe64992425a5a6231671c08a6c3382a28d0efacc7efd3fb289a143",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "000072ab42d3e0c9a0bf981e912f44fe3262591d92ce21f1e9fbaeb3698c23f5",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0000b9bb7013295fa04b15b5b18c332876583dc4af14b8dee88825f7ba4388b7",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0001239932b14b494eed822d7fa079b384cf7e4c2ae50b60cbc99f5f4c02c46e",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "00014a1f6746844613160ffe5ea71b7c13d5a23e9f6c4f0bac5520ff9ef843aa",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "00014fb059d53b1ac5f6df473db1d330edf88c4ae2a1d57cba21a34a62b1323b",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "00016af0690359b2e432528960f190ee417b5a40c588cf5e36a6322b237c1773",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0001715a5e9df2385cea555460b3a4860af89a2ab3b568db286e89bf47270ed7",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0001ec51337348453bf3bb01889dd72595fccc25b1744576971245b12f077823",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0001f6c1b69984f7d261370dc2194e1ff3b5d2ba8e9ce0aaa34edd7198719908",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "00029600f018b78cddab57edff20152d6caaa44b3cb972f8f7bb4ddcbd71e597",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "00029eabf79287d03f25b3e5db825dc5f39a58063f30306928817e8bf915f8d1",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0002b317188a6f1229ecffb6be6249149ff12928d6b8f1bf60fe1a74db6cc5f0",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0002baf82802121ad9ceef8a7a00fec3617617f3c605e25fdd8fde4b46ad1ca5",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0002f32f8f9f1ff7584cc7be04a183b195a177a9f5fec6fff5176f97127e6f9b",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "000333b004b4f81731904759da9a89e554e677790d6d56d499360ad0dda03b3f",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "00033e3570fceaa2edd2e9d23553d03abb80e45c191a7a4f41e11ed11ee7c50a",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0003b31d6d22f7efdc0ebe6c9be92181e6044844c8d513604aa5a3b339460aea",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0003e43b7166a2bb60e13c6e57c35e045c1d5debd73bea322f7f419cac1da675",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "5d4c6801a5d1c9e4d3f8317242723e17eefc7fbdfcf1b0a99fbc5b92b4b83631",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "e0d60d71b9ceaf6fb672cd78668e02eb5dcfd0c1d46137ed363f42f024ef6e83",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "bd2b5c2e6b5eefe79db3ecba3e873f26394faed1c5001a8021dae7bc863e83fb",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "304762ea166dbf35cb68e9558bc56b458cf04ffa202923c32a8be53354a62fa2",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "075d22adac19f4b49c46c6a31bdbece8fd680f2d854565f51c2795a26938e8e3",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "15cb8fa41986b42fe3d8dcf9bb55be327c16fa52f36ed6feb6e36f005980899d",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "ee42128ca60b3e82eba925b49f195ed6f3d4de2b7d21454d4b98c6e17bf0a1e8",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "2bf7bce8109698cde6c84fd4cfd4efe063426ecf82a1278a3a847908460c55d7",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "7d10881f146e0d4659948a3555b1eee33950647a3c830978d26f2c8e88d2a90a",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "1ca495bb4325c873cbfd665b51d512bad4d720698b1b9ea45a13bd20102caba1",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "704119901667c4ab3b52321016ba8fb1edc9ead8c76bbfdc23916d5b166e16d4",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "ada3469a82252cb82ae0879f68e519b3b0d0004ad4bbf88408b8848438539367",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "01894eaadae10c5523da55b92297767d4548f8467a097ae6e4ba689273aa23fc",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "90d3edb3f55d5769357f37f2ec038beb76e053a2f70bb5a7f6817586635e83a4",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "5b502b7f69571a41f7c2f41c72f1f856d5cca2a1020f3d780952f67f27f2b16d",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "be5cf198a738cf95525ac3202b24352f37bee2ad0568616eae71b49b97c78f7f",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "6c44e20377cc3811c93312153f7fee67aebde8387d43bf9d6506d0b29489a49b",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "e3e54731b8fd86d8974cb03a9b5d24dd37a1be045656ae5c540f142c6369f825",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "39627ac1f436210ef8a22bae73141f5107b322fd52b72a04d309b0d706aa90b0",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "c7479c30ad4e05a01f76fc8ea599e71cc1f43a0bda80d1a414ea488f074dc035",
+                "EntityBType": "File",
+                "Relationship": "related-to"
+            }
+        ]
     },
     "VirusTotal": {
         "IP": {
             "attributes": {
                 "as_owner": "CLOUDFLARENET",
                 "asn": 13335,
-                "continent": "OC",
-                "country": "AU",
                 "jarm": "27d3ed3ed0003ed1dc42d43d00041d6183ff1bfae51ebd88d70384363d525c",
                 "last_analysis_stats": {
-                    "harmless": 73,
-                    "malicious": 1,
-                    "suspicious": 1,
+                    "harmless": 80,
+                    "malicious": 4,
+                    "suspicious": 0,
                     "timeout": 0,
-                    "undetected": 7
+                    "undetected": 10
                 },
                 "last_https_certificate": {
                     "cert_signature": {
-                        "signature": "3064023024c2cf6cbdf6aed1c9d51f4a742e3c3dd1c03edcd71bd394715bfea5861626820122d30a6efc98b5d2e2b9e5076977960230457b6f82a67db662c33185d5b5355d4f4c8488ac1a003d0c8440dcb0a7ca1c1327151e37f946c3aed9fdf9b9238b7f2a",
-                        "signature_algorithm": "1.2.840.10045.4.3.3"
+                        "signature": "306402301152a6a4c90ca1c95c6f9c9cf0cb2dc63f1f4230a411ca43c33fa921f1d2d4515b5b8ae684681a20c30c762e0f1b4a1b023049a1f9ab8b7256fb377e6011a1bddf5667f2d60ab9de4b4a621650c06170af9ab4eb965f8b841107d395aa245bb71e1a",
+                        "signature_algorithm": "SHA384ECDSA"
                     },
                     "extensions": {
-                        "**exten**": "0481f200f00076002979bef09e393921f056739f63a577e5be577d9c600af8f9",
+                        "1.3.6.1.4.1.11129.2.4.2": "0482016a01680077002979bef09e393921f056739f63a577e5be577d9c600af8",
                         "CA": true,
                         "authority_key_identifier": {
                             "keyid": "0abc0829178ca5396d7a0ece33c72eb3edfbc37a"
                         },
                         "ca_information_access": {
-                            "CA Issuers": "http://cacerts.example.com/exampleTLSHybridECCSHA3842020CA1.crt",
-                            "OCSP": "http://ocsp.example.com"
+                            "CA Issuers": "http://cacerts.digicert.com/DigiCertTLSHybridECCSHA3842020CA1-1.crt",
+                            "OCSP": "http://ocsp.digicert.com"
                         },
                         "certificate_policies": [
-                            "**policy**"
+                            "2.23.140.1.2.2"
                         ],
                         "crl_distribution_points": [
-                            "http://crl3.example.com/exampleTLSHybridECCSHA3842020CA1.crl",
-                            "http://crl4.example.com/exampleTLSHybridECCSHA3842020CA1.crl"
+                            "http://crl3.digicert.com/DigiCertTLSHybridECCSHA3842020CA1-1.crl",
+                            "http://crl4.digicert.com/DigiCertTLSHybridECCSHA3842020CA1-1.crl"
                         ],
                         "extended_key_usage": [
                             "serverAuth",
@@ -516,33 +792,33 @@ Checks the reputation of an IP address.
                             "cloudflare-dns.com",
                             "*.cloudflare-dns.com",
                             "one.one.one.one",
-                            "\u0001\u0001\u0001\u0001",
-                            "\u0001\u0001",
-                            "\\xa2\\x9f$\\x01",
-                            "\\xa2\\x9f.\\x01",
-                            "&\u0006GG\u0011\u0011",
-                            "&\u0006GG\u0010\u0001",
-                            "GGd",
-                            "GGd"
+                            "1.1.1.1",
+                            "1.0.0.1",
+                            "162.159.36.1",
+                            "162.159.46.1",
+                            "2606:4700:4700:0:0:0:0:1111",
+                            "2606:4700:4700:0:0:0:0:1001",
+                            "2606:4700:4700:0:0:0:0:64",
+                            "2606:4700:4700:0:0:0:0:6400"
                         ],
-                        "subject_key_identifier": "e1b6fc06f9b98b05f4c1e2489b02b90bc1b53d79",
+                        "subject_key_identifier": "19451b2318f874da2214cb466be213b360158240",
                         "tags": []
                     },
                     "issuer": {
                         "C": "US",
-                        "CN": "example TLS Hybrid ECC SHA384 2020 CA1",
-                        "O": "example Inc"
+                        "CN": "DigiCert TLS Hybrid ECC SHA384 2020 CA1",
+                        "O": "DigiCert Inc"
                     },
                     "public_key": {
                         "algorithm": "EC",
                         "ec": {
                             "oid": "secp256r1",
-                            "pub": "0417ad1fe835af70d38d9c9e64fd471e5b970c0ad110a826321136664d1299c3e131bbf5216373dda5c1c1a0f06da4c45ee1c2dbdaf90d34801af7b9e03af2d574"
+                            "pub": "04fb2944f2983fd8bd8256d32cbd8e099f312b98269e22968d7b4bfcdac57b7b29aa8e356c9c0a48056c8973ed200ecd4621f0ec4db3a5e9af1b3899e5f4daf184"
                         }
                     },
-                    "serial_number": "5076f66d11b692256ccacd546ffec53",
-                    "signature_algorithm": "1.2.840.10045.4.3.3",
-                    "size": 1418,
+                    "serial_number": "0f75a36d32c16b03c7ca5f5f714a0370",
+                    "signature_algorithm": "SHA384ECDSA",
+                    "size": 1533,
                     "subject": {
                         "C": "US",
                         "CN": "cloudflare-dns.com",
@@ -551,30 +827,215 @@ Checks the reputation of an IP address.
                         "ST": "California"
                     },
                     "tags": [],
-                    "thumbprint": "f1b38143b992645497cf452f8c1ac84249794282",
-                    "thumbprint_sha256": "fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426",
+                    "thumbprint": "099d03214d1414a5325db61090e73ddb94f37d72",
+                    "thumbprint_sha256": "c93386adf01223e637a3aca7c68988bb8240c4afd5d204c206bc35d7a4358dd1",
                     "validity": {
-                        "not_after": "2022-01-18 23:59:59",
-                        "not_before": "2021-01-11 00:00:00"
+                        "not_after": "2022-10-25 23:59:59",
+                        "not_before": "2021-10-25 00:00:00"
                     },
                     "version": "V3"
                 },
-                "last_https_certificate_date": 1617041198,
-                "last_modification_date": 1617083545,
+                "last_https_certificate_date": 1661780817,
+                "last_modification_date": 1661786141,
                 "network": "1.1.1.0/24",
-                "regional_internet_registry": "APNIC",
-                "reputation": 33,
+                "reputation": 134,
                 "tags": [],
                 "total_votes": {
-                    "harmless": 22,
-                    "malicious": 6
-                 },
+                    "harmless": 63,
+                    "malicious": 8
+                },
                 "whois": "**whois string**",
-                "whois_date": 1615771527
+                "whois_date": 1631599972
             },
             "id": "1.1.1.1",
             "links": {
                 "self": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1"
+            },
+            "relationships": {
+                "communicating_files": {
+                    "data": [
+                        {
+                            "id": "00000cd773f456da710fa334507f8303e87ee228a0c42e365b0250a9a267e734",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0000703e66fe64992425a5a6231671c08a6c3382a28d0efacc7efd3fb289a143",
+                            "type": "file"
+                        },
+                        {
+                            "id": "000072ab42d3e0c9a0bf981e912f44fe3262591d92ce21f1e9fbaeb3698c23f5",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0000b9bb7013295fa04b15b5b18c332876583dc4af14b8dee88825f7ba4388b7",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0001239932b14b494eed822d7fa079b384cf7e4c2ae50b60cbc99f5f4c02c46e",
+                            "type": "file"
+                        },
+                        {
+                            "id": "00014a1f6746844613160ffe5ea71b7c13d5a23e9f6c4f0bac5520ff9ef843aa",
+                            "type": "file"
+                        },
+                        {
+                            "id": "00014fb059d53b1ac5f6df473db1d330edf88c4ae2a1d57cba21a34a62b1323b",
+                            "type": "file"
+                        },
+                        {
+                            "id": "00016af0690359b2e432528960f190ee417b5a40c588cf5e36a6322b237c1773",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0001715a5e9df2385cea555460b3a4860af89a2ab3b568db286e89bf47270ed7",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0001ec51337348453bf3bb01889dd72595fccc25b1744576971245b12f077823",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0001f6c1b69984f7d261370dc2194e1ff3b5d2ba8e9ce0aaa34edd7198719908",
+                            "type": "file"
+                        },
+                        {
+                            "id": "00029600f018b78cddab57edff20152d6caaa44b3cb972f8f7bb4ddcbd71e597",
+                            "type": "file"
+                        },
+                        {
+                            "id": "00029eabf79287d03f25b3e5db825dc5f39a58063f30306928817e8bf915f8d1",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0002b317188a6f1229ecffb6be6249149ff12928d6b8f1bf60fe1a74db6cc5f0",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0002baf82802121ad9ceef8a7a00fec3617617f3c605e25fdd8fde4b46ad1ca5",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0002f32f8f9f1ff7584cc7be04a183b195a177a9f5fec6fff5176f97127e6f9b",
+                            "type": "file"
+                        },
+                        {
+                            "id": "000333b004b4f81731904759da9a89e554e677790d6d56d499360ad0dda03b3f",
+                            "type": "file"
+                        },
+                        {
+                            "id": "00033e3570fceaa2edd2e9d23553d03abb80e45c191a7a4f41e11ed11ee7c50a",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0003b31d6d22f7efdc0ebe6c9be92181e6044844c8d513604aa5a3b339460aea",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0003e43b7166a2bb60e13c6e57c35e045c1d5debd73bea322f7f419cac1da675",
+                            "type": "file"
+                        }
+                    ],
+                    "links": {
+                        "next": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/relationships/communicating_files?cursor=eyJsaW1pdCI6IDIwLCAib2Zmc2V0IjogMjB9&limit=20",
+                        "related": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/communicating_files",
+                        "self": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/relationships/communicating_files?limit=20"
+                    },
+                    "meta": {
+                        "cursor": "eyJsaW1pdCI6IDIwLCAib2Zmc2V0IjogMjB9"
+                    }
+                },
+                "referrer_files": {
+                    "data": [
+                        {
+                            "id": "5d4c6801a5d1c9e4d3f8317242723e17eefc7fbdfcf1b0a99fbc5b92b4b83631",
+                            "type": "file"
+                        },
+                        {
+                            "id": "e0d60d71b9ceaf6fb672cd78668e02eb5dcfd0c1d46137ed363f42f024ef6e83",
+                            "type": "file"
+                        },
+                        {
+                            "id": "bd2b5c2e6b5eefe79db3ecba3e873f26394faed1c5001a8021dae7bc863e83fb",
+                            "type": "file"
+                        },
+                        {
+                            "id": "304762ea166dbf35cb68e9558bc56b458cf04ffa202923c32a8be53354a62fa2",
+                            "type": "file"
+                        },
+                        {
+                            "id": "075d22adac19f4b49c46c6a31bdbece8fd680f2d854565f51c2795a26938e8e3",
+                            "type": "file"
+                        },
+                        {
+                            "id": "15cb8fa41986b42fe3d8dcf9bb55be327c16fa52f36ed6feb6e36f005980899d",
+                            "type": "file"
+                        },
+                        {
+                            "id": "ee42128ca60b3e82eba925b49f195ed6f3d4de2b7d21454d4b98c6e17bf0a1e8",
+                            "type": "file"
+                        },
+                        {
+                            "id": "2bf7bce8109698cde6c84fd4cfd4efe063426ecf82a1278a3a847908460c55d7",
+                            "type": "file"
+                        },
+                        {
+                            "id": "7d10881f146e0d4659948a3555b1eee33950647a3c830978d26f2c8e88d2a90a",
+                            "type": "file"
+                        },
+                        {
+                            "id": "1ca495bb4325c873cbfd665b51d512bad4d720698b1b9ea45a13bd20102caba1",
+                            "type": "file"
+                        },
+                        {
+                            "id": "704119901667c4ab3b52321016ba8fb1edc9ead8c76bbfdc23916d5b166e16d4",
+                            "type": "file"
+                        },
+                        {
+                            "id": "ada3469a82252cb82ae0879f68e519b3b0d0004ad4bbf88408b8848438539367",
+                            "type": "file"
+                        },
+                        {
+                            "id": "01894eaadae10c5523da55b92297767d4548f8467a097ae6e4ba689273aa23fc",
+                            "type": "file"
+                        },
+                        {
+                            "id": "90d3edb3f55d5769357f37f2ec038beb76e053a2f70bb5a7f6817586635e83a4",
+                            "type": "file"
+                        },
+                        {
+                            "id": "5b502b7f69571a41f7c2f41c72f1f856d5cca2a1020f3d780952f67f27f2b16d",
+                            "type": "file"
+                        },
+                        {
+                            "id": "be5cf198a738cf95525ac3202b24352f37bee2ad0568616eae71b49b97c78f7f",
+                            "type": "file"
+                        },
+                        {
+                            "id": "6c44e20377cc3811c93312153f7fee67aebde8387d43bf9d6506d0b29489a49b",
+                            "type": "file"
+                        },
+                        {
+                            "id": "e3e54731b8fd86d8974cb03a9b5d24dd37a1be045656ae5c540f142c6369f825",
+                            "type": "file"
+                        },
+                        {
+                            "id": "39627ac1f436210ef8a22bae73141f5107b322fd52b72a04d309b0d706aa90b0",
+                            "type": "file"
+                        },
+                        {
+                            "id": "c7479c30ad4e05a01f76fc8ea599e71cc1f43a0bda80d1a414ea488f074dc035",
+                            "type": "file"
+                        }
+                    ],
+                    "links": {
+                        "next": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/relationships/referrer_files?cursor=STIwCi4%3D&limit=20",
+                        "related": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/referrer_files",
+                        "self": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/relationships/referrer_files?limit=20"
+                    },
+                    "meta": {
+                        "cursor": "STIwCi4="
+                    }
+                }
             },
             "type": "ip_address"
         }
@@ -586,9 +1047,9 @@ Checks the reputation of an IP address.
 
 >### IP reputation of 1.1.1.1
 >
->|Id|Network|Country|LastModified|Reputation|Positives|
->|---|---|---|---|---|---|
->| 1.1.1.1 | 1.1.1.0/24 | AU | 2021-03-30 05:52:25Z | 33 | 1/82 |
+>|Id|Network|Country|AsOwner|LastModified| Reputation |Positives|
+>|---|---|---|---|---|---|---|
+>| 1.1.1.1 | 1.1.1.0/24 |  | CLOUDFLARENET | 2022-08-29 15:15:41Z | 134        | 4/94 |
 
 ### url
 
