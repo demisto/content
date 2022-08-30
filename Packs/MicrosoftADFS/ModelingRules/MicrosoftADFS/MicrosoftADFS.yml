@@ -3,20 +3,4 @@ id: microsoft_adfs_collection
 fromversion: 6.8.0
 tags: Microsoft Windows Active Directory Federation Services ADFS Event Colletion
 rules: ""
-schema: |-
-  {
-    "msft_adfs_raw": {
-      "EVENT": {
-          "type": "string",
-          "is_array": false
-      },
-      "winlog": {
-          "type": "string",
-          "is_array": false
-      },
-      "MESSAGE": {
-          "type": "string",
-          "is_array": false
-      }
-    }
-  }
+schema: ""

@@ -1,52 +1,54 @@
 Send messages and notifications to your Slack team.
 This integration was integrated and tested with Slack.
 ## Configure SlackV3 on Cortex XSOAR
+Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket) to enable the integration to communicate directly with Slack for mirroring. This requires a dedicated Slack app to be created for the Cortex XSOAR integration. See [Creating a Custom App](#creating-a-custom-app) on how to create your App in Slack.
 
-Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket) to enable the integration to communicate directly with Slack for mirroring. This requires a dedicated Slack app to be created for the XSOAR integration. See [Creating a Custom App](#creating-a-custom-app) on how to create your App in Slack.
-
-Please refer to the video tutorial [found here](https://live.paloaltonetworks.com/t5/cortex-xsoar-how-to-videos/cortex-xsoar-how-to-video-slack-v3-configuration/ta-p/445226) to learn about configuring SlackV3 using the app manifest.
+Refer to the [video tutorial](https://live.paloaltonetworks.com/t5/cortex-xsoar-how-to-videos/cortex-xsoar-how-to-video-slack-v3-configuration/ta-p/445226) to learn about configuring SlackV3 using the app manifest.
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for SlackV3.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | `bot_token` | Slack API bot token. | False |
-    | `app_token` | Slack API app token. | False |
-    | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications. | False |
-    | `min_severity` | Minimum incident severity to send messages to Slack by. | False |
-    | `incidentType` | Type of incidents created in Slack. | False |
-    | `allow_incidents` | Allow external users to create incidents via direct messages. | False |
-    | `proxy` | Use system proxy settings. | False |
-    | `unsecure` | Trust any certificate (not secure). | False |
-    | `longRunning` | Long running instance. Required for investigation mirroring and direct messages. | False |
-    | `bot_name` | Bot display name in Slack (Cortex XSOAR by default). | False |
-    | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default). | False |
-    | `max_limit_time` | Maximum time to wait for a rate limiting call in seconds. | False |
-    | `paginated_count` | Number of objects to return in each paginated call. | False |
-    | `proxy_url` | Proxy URL to use in Slack API calls. | False |
-    | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
-    | `permitted_notifications` | Types of notifications to send (to individual users and to the dedicated Slack channel, if specified). | False |
-    | `common_channels` | For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID. | False |
+    | **Parameter** | **Description**                                                                                                                                                                                                                                                                       | **Required** |
+    |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |
+    | `bot_token` | Slack API bot token.                                                                                                                                                                                                                                                                  | False |
+    | `app_token` | Slack API app token.                                                                                                                                                                                                                                                                  | False |
+    | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications.                                                                                                                                                                                                                                     | False |
+    | `min_severity` | Minimum incident severity by which to send messages to Slack.                                                                                                                                                                                                                               | False |
+    | `incidentType` | Type of incidents created in Slack.                                                                                                                                                                                                                                                   | False |
+    | `allow_incidents` | Allow external users to create incidents via direct messages.                                                                                                                                                                                                                         | False |
+    | `proxy` | Use system proxy settings.                                                                                                                                                                                                                                                            | False |
+    | `unsecure` | Trust any certificate (not secure).                                                                                                                                                                                                                                                   | False |
+    | `longRunning` | Long running instance. Required for investigation mirroring and direct messages.                                                                                                                                                                                                      | False |
+    | `bot_name` | Bot display name in Slack (Cortex XSOAR by default).                                                                                                                                                                                                                                  | False |
+    | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default).                                                                                                                                                                                                                         | False |
+    | `max_limit_time` | Maximum time to wait for a rate limiting call in seconds.                                                                                                                                                                                                                             | False |
+    | `paginated_count` | Number of objects to return in each paginated call.                                                                                                                                                                                                                                   | False |
+    | `proxy_url` | Proxy URL to use in Slack API calls.                                                                                                                                                                                                                                                  | False |
+    | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from Cortex XSOAR. Only supported in Cortex XSOAR V6.1 and above.                                                                                                                                                          | False |
+    | `permitted_notifications` | Types of notifications to send (to individual users and to the dedicated Slack channel, if specified).                                                                                                                                                                                | False |
+    | `common_channels` | For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID.                                                                                                                                                | False |
     | `disable_caching` | When configured, Disable Caching will prevent the integration from paginating to search for Users or Conversations. Additionally, it will prevent excess data from being stored to the integration context. If this parameter is disabled, the instance may create high memory usage. | False |
-    | `mirroring` | Enable Incident Mirroring. | False |
+    | `mirroring` | Enable Incident Mirroring.                                                                                                                                                                                                                                                            | False |
+    | `ignore_event_retries` | In some cases, events may not be processed fast enough. If you wish to attempt to retry the event, select `false`. Note that this can result in some responses being double-posted. Default is `True`.                                                                             | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
+5. Click **Test** to validate the URLs, token, and connection.
 
 ### Caching
 
 When the `Disable Caching of Users and Channels` parameter is configured, there are no pagination calls made to Slack. This is to avoid rate limiting which can occur in workspaces where there are excessive amounts of channels or users. If there were no timeout issues with running commands on your environment prior to pack version 2.3.0, there is no direct need to enable this mode.
 
-Additionally. with the `Common Channels` parameter configured, channels, and their ID's found in this parameter will be accessible to the integration to use while caching is disabled.
+Additionally. with the `Common Channels` parameter configured, channels and their IDs found in this parameter will be accessible to the integration to use while caching is disabled.
 
 #### Finding a Channel ID
-`Common Channels` follows the format, `First ChannelName:FirstChannelID, Second ChannelName:SecondChannelID`. To find the channel ID for the channels that are frequently used, please refer to the following steps:
-1. Navigate to the channel you wish to retrieve an ID for.
+`Common Channels` follows the format, `First ChannelName:FirstChannelID, Second ChannelName:SecondChannelID`. To find the channel ID for the channels that are frequently used:
+1. Navigate to the channel you want to retrieve an ID for.
 2. Click the name of the channel.
-3. On the bottom of the presented menu, the channel ID can be found.
 
-Channel IDs typically follow the format `C` + Alphanumeric string.
+   On the bottom of the presented menu, the channel ID can be found.
+
+Channel IDs typically follow the format `C` + an alphanumeric string.
 
 ![locate-channel-id](../../doc_files/SlackDocs_channel_id.png)
 
@@ -60,64 +62,66 @@ Channel IDs typically follow the format `C` + Alphanumeric string.
 
 ![create-app-2](../../doc_files/SlackDocs_create_app2.png)
 
-4. Next pick the workspace you would like the app to reside in and click ***Next***.
+4. Pick the workspace you would like the app to reside in and click **Next**.
 
 ![create-app-3](../../doc_files/SlackDocs_create_app3.png)
 
-5. Next copy the text in the file found [here](https://raw.githubusercontent.com/demisto/content/master/Packs/Slack/doc_files/SlackV3_app_manifest.yml). The text is a manifset template with the recommended configuration for your app. 
-6. Paste the copied text into the field "YAML" and click ***Next***.
+5. Copy the text in the file found [here](https://raw.githubusercontent.com/demisto/content/master/Packs/Slack/doc_files/SlackV3_app_manifest.yml). The text is a manifest template with the recommended configuration for your app. 
+6. Paste the copied text into the field "YAML" and click **Next**.
 
 ![create-app-4](../../doc_files/SlackDocs_create_app4.png)
 
-7. The next step is a summary of the app we created. Click ***Create*** to proceed.
+7. The next step is a summary of the app we created. Click **Create** to proceed.
 
 ![create-app-5](../../doc_files/SlackDocs_create_app5.png)
 
  
  ### Installing the App to Your Workspace
 1. After creating your app, you will be redirected to the *Basic Information* page of your app settings.
-  First, click ***Install to Workspace***
+
+   Click **Install to Workspace**
 
  ![install-app-1](../../doc_files/SlackDocs_install_workspace1.png)
  
-2. This will bring up a page which confirms that you are installing the app to your workspace.
+This will bring up a page which confirms that you are installing the app to your workspace.
+
  **If you do not see this step, you must request access from your Slack admin in order to proceed.**
 
 ![install-app-2](../../doc_files/SlackDocs_install_workspace2.png)
 
-3. Once the app has been installed you will be redirected to the ***General*** page for your app. Scroll down to the section called ***App-Level Tokens*** and click ***Generate Token and Scopes***
+2. Once the app has been installed you will be redirected to the **General** page for your app. Scroll down to the section called **App-Level Tokens** and click **Generate Token and Scopes**
 
 ![install-app-3](../../doc_files/SlackDocs_install_workspace3.png) 
 
-4. Enter a name for the Token and click ***Add Scope***. Select the `connections:write` scope from the list.
+3. Enter a name for the Token and click **Add Scope**. Select the `connections:write` scope from the list.
 
 ![install-app-4](../../doc_files/SlackDocs_install_workspace4.png) 
 
-5. Click ***Generate***.
-6. After click ***Generate*** you will be redirected to a page which will display your app token. This token begins with `xapp`. Copy this token.
+4. Click **Generate**.
+5. You will be redirected to a page which will display your app token. This token begins with `xapp`. Copy this token.
  
 ![install-app-5](../../doc_files/SlackDocs_install_workspace5.png)
 
-7. In your XSOAR SlackV3 intance configuration page. Paste the token in the parameter *App Token*. You may also configure the *App Token* as a credential.
+6. In your Cortex XSOAR SlackV3 instance configuration page, paste the token in the *App Token* parameter. You may also configure the *App Token* as a credential.
 
 ![install-app-6](../../doc_files/SlackDocs_install_workspace6.png)
 
-8. Navigate back to the Slack App configuration page and select ***OAuth & Permissions***. If this screen does not look like the following image, you may need assistance from your Slack admin.
+7. Navigate back to the Slack App configuration page and select **OAuth & Permissions**. If this screen does not look like the following image, you may need assistance from your Slack admin.
 
 ![install-app-7](../../doc_files/SlackDocs_install_workspace7.png)
 
-9. Copy the ***Bot User OAuth Token***.
-10. In your XSOAR SlackV3 intance configuration page. Paste the token in the parameter *Bot Token*. You may also configure the *Bot Token* as a credential.
+8. Copy the ***Bot User OAuth Token***.
+9. In your Cortex XSOAR SlackV3 instance configuration page, paste the token in the  parameter. You may also configure the *Bot Token* as a credential.
 
 ![install-app-8](../../doc_files/SlackDocs_install_workspace8.png)
 
 ### Testing the Bot
-1. Once you have configured the ***Dedicated Slack channel to receive notifications*** parameter, open Slack and invite your new app to the channel you have configured.
-2. Navigate to your Instance Settings page in XSOAR and click ***Test***. A message should appear in the channel from your app.
+1. Once you have configured the *Dedicated Slack channel to receive notifications* parameter, open Slack and invite your new app to the channel you have configured.
+2. Navigate to your Instance Settings page in Cortex XSOAR and click **Test**. A message should appear in the channel from your app.
  
   
 ## Backwards Compatibility with Slack V2
-Slack V3 currently contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This version is intended to provide customers with more granular control over the Slack integration by enabling the Bring-Your-Own-App model and customizable scope-based authentication.
+Slack V3 contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This version is intended to provide customers with more granular control over the Slack integration by enabling the Bring-Your-Own-App model and customizable scope-based authentication.
 
 All commands are fully compatible with Slack V2 playbooks as their inputs and outputs have remained the same. As a customer, you should notice no significant change in the behavior of the Slack integration with your existing playbooks.
 
@@ -499,7 +503,7 @@ Edit an existing Slack message.
 | --- | --- | --- |
 | channel | The channel the message is posted in. | Optional |
 | channel_id | The ID of the channel the message is posted in. | Optional |
-| threadID | The ID of the thread of which to edit - can be retrieved from a previous send-notification command. | Required | 
+| threadID | The ID of the thread of which to edit. Can be retrieved from a previous send-notification command. | Required | 
 | message | The updated message. | Optional | 
 | blocks | A JSON string of the block to send. | Optional | 
 | ignore_add_url | Whether to include a URL to the relevant component in XSOAR. Can be "true" or "false". Default value is "false". | Optional | 
@@ -549,7 +553,7 @@ Pins a selected message to the given channel.
 | --- | --- | --- |
 | channel | The channel the message is posted in. | Optional |
 | channel_id | The ID of the channel the message is posted in. | Optional |
-| threadID | The ID of the thread of which to pin - can be retrieved from a previous send-notification command. | Required | 
+| threadID | The ID of the thread of which to pin. Can be retrieved from a previous send-notification command. | Required | 
 
 
 #### Context Output
@@ -567,10 +571,10 @@ There is no context output for this command.
 ### Known Limitations
 - All commands which use `channel` as a parameter, it is now advised to use `channel-id` using the channel ID found in the incident's context under the `Slack.Channels.ID` value. Using `channel-id` as opposed to `channel` will improve the performance of the integration.
 - SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
-Because of this, you may have some users in Slack who are not users in XSOAR. This will occasionally cause the module 
+Because of this, you may have some users in Slack who are not users in Cortex XSOAR. This will occasionally cause the module 
 health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error is expected and is purely cosmetic in nature.
 - In some cases when mirroring an investigation, kicking the admin will cause no further actions to be able to be performed by the bot. Any subsequent actions taken on the channel (such as mirror out) will result in a "not in channel" error.
-- Please note: If a dedicated channel is configured, however there are no notifications being sent, please verify that the **Types of Notifications** to send parameter is populated.
+- Note: If a dedicated channel is configured, however there are no notifications being sent, verify that the *Types of Notifications* to send parameter is populated.
 ### slack-get-integration-context
 ***
 Returns the integration context as a file. Use this command for debug purposes only.

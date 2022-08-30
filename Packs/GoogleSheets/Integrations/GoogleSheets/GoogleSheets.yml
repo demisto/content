@@ -869,7 +869,7 @@ script:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title
       description: Sheet title.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.32233
+  dockerimage: demisto/googleapi-python3:1.0.0.33018
   feed: false
   isfetch: false
   longRunning: false

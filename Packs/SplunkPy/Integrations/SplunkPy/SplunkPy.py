@@ -570,6 +570,7 @@ class Notable:
         if demisto.get(notable_data, 'security_domain'):
             labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
         incident['labels'] = labels
+        incident['dbotMirrorId'] = notable_data.get(EVENT_ID)
 
         return incident
 
@@ -907,9 +908,9 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
         if searchable_query:
             status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
             if status:
-                if "latest" not in searchable_query:
+                if "latest=" not in searchable_query:
                     searchable_query = "latest={} ".format(latest_offset) + searchable_query
-                if "earliest" not in searchable_query:
+                if "earliest=" not in searchable_query:
                     searchable_query = "earliest={} ".format(earliest_offset) + searchable_query
                 kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
                 query = build_search_query({"query": searchable_query})
@@ -1155,7 +1156,9 @@ def run_enrichment_mechanism(service, integration_context, mapper):
     except Exception as e:
         err = 'Caught an exception while executing the enriching fetch mechanism. Additional Info: {}'.format(str(e))
         demisto.error(err)
-        raise e
+        # we throw excpetion only if there is no incident to create
+        if not incidents:
+            raise e
 
     finally:
         store_incidents_for_mapping(incidents, integration_context)
@@ -1345,7 +1348,7 @@ def update_remote_system_command(args, params, service, auth_token, mapper):
             demisto.debug('Sending update request to Splunk for notable {}, data: {}'.format(notable_id, changed_data))
             base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
             try:
-                session_key = service.token if not auth_token else None
+                session_key = get_auth_session_key(service) if not auth_token else None
                 response_info = update_notable_events(
                     baseurl=base_url, comment=changed_data['comment'], status=changed_data['status'],
                     urgency=changed_data['urgency'], owner=changed_data['owner'], eventIDs=[notable_id],
@@ -2559,6 +2562,13 @@ def get_kv_store_config(kv_store):
     return '\n'.join(readable)
 
 
+def get_auth_session_key(service):
+    """
+    Get the session key or token for POST request based on whether the Splunk basic auth are true or not
+    """
+    return service and service.basic and service._auth_headers[0][1] or service.token
+
+
 def extract_indicator(indicator_path, _dict_objects):
     indicators = []
     indicator_paths = indicator_path.split('.')
@@ -2666,7 +2676,8 @@ def main():
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service)
     elif command == 'splunk-notable-event-edit':
-        splunk_edit_notable_event_command(base_url, service and service.token, auth_token, demisto.args())
+        token = get_auth_session_key(service)
+        splunk_edit_notable_event_command(base_url, token, auth_token, demisto.args())
     elif command == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     elif command == 'splunk-job-status':
