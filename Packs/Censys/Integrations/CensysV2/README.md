@@ -186,7 +186,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
                 "postal_code": "",
                 "registered_country": "United States",
                 "registered_country_code": "US",
-                "timezone": "America/Chicago"
+                "timezone": "America/LA"
             },
             "location_updated_at": "2022-08-24T19:21:03.836386Z",
             "services": [
@@ -213,7 +213,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
                         "questions": [
                             {
                                 "name": "ip.parrotdns.com.",
-                                "response": ";ip.parrotdns.com.	IN	 A",
+                                "response": ";ip.parrotdns.com.\tIN\t A",
                                 "type": "A"
                             }
                         ],
