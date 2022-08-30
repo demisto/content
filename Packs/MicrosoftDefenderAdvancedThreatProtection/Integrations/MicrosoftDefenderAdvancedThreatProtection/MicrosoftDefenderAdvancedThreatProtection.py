@@ -4231,7 +4231,6 @@ def cover_up_command(client, args):  # pragma: no cover
 
 def test_module(client: MsClient):
     client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
-    demisto.results('ok')
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
@@ -4891,7 +4890,16 @@ def main():  # pragma: no cover
             is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri
         )
         if command == 'test-module':
+            if auth_type == 'Authorization Code':
+                raise Exception('Test-module is not available when using Authentication-code auth flow. '
+                                'Please use `!microsoft-atp-test` command to test the connection')
+            else:
+                test_module(client)
+                demisto.results('ok')
+
+        elif command == 'microsoft-atp-test':
             test_module(client)
+            return_results('✅ Success!')
 
         elif command == 'fetch-incidents':
             incidents, last_run = fetch_incidents(client, last_run, fetch_evidence)

@@ -130,6 +130,10 @@ display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
+  - deprecated: false
+    description: Tests connectivity to Microsoft Defender for Endpoint.
+    execution: false
+    name: microsoft-atp-test
   - arguments:
     - default: true
       description: A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.

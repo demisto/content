@@ -6018,3 +6018,18 @@ Collect and download an investigation package as a gz file.
 >| 1f3098e20464 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef | desktop-s2455r8 |
 >| 6d39a3da0744 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef8f06606 | desktop-s2455r9 |
 
+### microsoft-atp-test
+***
+Tests connectivity to Microsoft Defender for Endpoint.
+
+
+#### Base Command
+
+`microsoft-atp-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
