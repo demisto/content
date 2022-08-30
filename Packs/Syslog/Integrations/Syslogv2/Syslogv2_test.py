@@ -169,10 +169,10 @@ def test_fetch_samples(samples: List[dict], mocker):
                                  facility='log_alert',
                                  host_name='mymachine.example.com',
                                  content="softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, "
-                                     "uid=375597002, installAuth=NO rights=(), transactions=0 ("
-                                     "/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices"
-                                     "/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com"
-                                     ".apple.preferences.softwareupdate.remoteservice)",
+                                         "uid=375597002, installAuth=NO rights=(), transactions=0 ("
+                                         "/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices"
+                                         "/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com"
+                                         ".apple.preferences.softwareupdate.remoteservice)",
                                  msg_id=None,
                                  process_id=None,
                                  sd={},
