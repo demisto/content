@@ -71,11 +71,11 @@ def test_e2e_demisto_sdk_flow_playbook_client(tmpdir, insecure: bool = False):
             ],
             "tasks": {
                 "0": {
-                      "id": "0",
-                      "unqiueId": "0",
-                      "type": "start",
-                      "nextTasks": None,
-                      "task": {}
+                    "id": "0",
+                    "unqiueId": "0",
+                    "type": "start",
+                    "nextTasks": None,
+                    "task": {}
                 }
             }
         }
