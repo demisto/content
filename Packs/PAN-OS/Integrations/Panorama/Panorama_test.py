@@ -1938,6 +1938,7 @@ def mock_single_device_topology(mock_panorama):
 class TestTopology:
     """Tests the Topology class and all of it's methods"""
     SHOW_HA_STATE_ENABLED_XML = "test_data/show_ha_state_enabled.xml"
+    SHOW_HA_STATE_PANORAMA_ENABLED = "test_data/show_ha_state_panorama_enabled.xml"
     SHOW_HA_STATE_DISABLED_XML = "test_data/show_ha_state_disabled.xml"
     SHOW_DEVICES_ALL_XML = "test_data/panorama_show_devices_all.xml"
 
@@ -1963,6 +1964,22 @@ class TestTopology:
         """
         from Panorama import Topology
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_DISABLED_XML)
+        topology = Topology()
+        topology.add_device_object(mock_panorama)
+
+        assert MOCK_PANORAMA_SERIAL in topology.panorama_objects
+        assert MOCK_PANORAMA_SERIAL in topology.ha_active_devices
+        assert MOCK_PANORAMA_SERIAL not in topology.firewall_objects
+
+    @patch("Panorama.Topology.get_all_child_firewalls")
+    @patch("Panorama.run_op_command")
+    def test_add_panorama_device_object_with_ha(self, patched_run_op_command, _, mock_panorama):
+        """
+        Given the output of show_ha_state with no entries, assert that the Panorama device has been added to the topolog
+        as a panorama type device.
+        """
+        from Panorama import Topology
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_PANORAMA_ENABLED)
         topology = Topology()
         topology.add_device_object(mock_panorama)
 
