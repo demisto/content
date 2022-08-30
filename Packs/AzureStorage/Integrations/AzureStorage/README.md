@@ -59,7 +59,6 @@ The application must have *user_impersonation* permission and must allow public 
     | Authentication Type | Type of authentication - could be Authorization Code flow \(recommended\) or Device Code flow. | True |
     | Tenant ID (for user-auth mode) |  | False |
     | Client Secret (for user-auth mode) |  | False |
-    | Client Secret (for user-auth mode) |  | False |
     | Application redirect URI (for user-auth mode) |  | False |
     | Authorization code | For user-auth mode - received from the authorization step. See Detailed Instructions \(?\) section. | False |
 

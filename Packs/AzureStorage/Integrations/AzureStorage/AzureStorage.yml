@@ -61,7 +61,7 @@ configuration:
   required: false
   defaultvalue:
   type: 9
-  additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section.
+  additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions section.
   displaypassword: Authorization code
   hiddenusername: true
 description: Deploy and manage storage accounts and blob services.
