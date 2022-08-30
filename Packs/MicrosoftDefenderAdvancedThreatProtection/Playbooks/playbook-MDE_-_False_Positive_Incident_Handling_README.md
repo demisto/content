@@ -33,7 +33,7 @@ SearchIncidentsV2
 | CloseDuplicate | Whether the duplicate incidents should be closed as well in the Microsoft Defender for Endpoint instance.<br/>The playbook looks for the world "Close" in this input.. |  | Optional |
 | HostID | The ID of the host for running an un-isolation process. | ${incident.deviceid} | Optional |
 | FileSha256 | Enter the File SHA256 you would like to block. | ${incident.filesha256} | Optional |
-
+| GenerateAlert | Whether an alert should be created for future occurrences of the indicator. | False | Optional |
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.

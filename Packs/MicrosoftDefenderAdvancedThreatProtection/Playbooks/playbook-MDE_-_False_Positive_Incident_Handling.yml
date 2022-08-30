@@ -751,6 +751,8 @@ tasks:
         simple: ${Indicators to Allow.Answers.0}
       severity:
         simple: Informational
+      generate_alert:
+        simple: ${inputs.GenerateAlert}
     separatecontext: false
     skipunavailable: false
     task:
