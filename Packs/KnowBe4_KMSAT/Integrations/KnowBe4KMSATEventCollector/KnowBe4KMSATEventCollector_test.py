@@ -2,7 +2,7 @@ import datetime
 import pytest
 import json
 import io
-from CommonServerPython import CommandResults
+from CommonServerPython import CommandResults, parse_date_string
 from KnowBe4KMSATEventCollector import Client
 
 
@@ -35,16 +35,22 @@ def test_test_module(requests_mock):
 
 @pytest.mark.parametrize('last_run, mock_item, expected_last_run, expected_fetched_events', [
     ({'latest_event_time': "2022-08-05T10:05:03.000Z"}, MOCK_ENTRY,
+     {'latest_event_time': "2022-08-09T10:05:13.890Z"}, MOCK_ENTRY.get('data', [])[0:-1]),
+    ({'latest_event_time': parse_date_string("2022-08-05T10:05:03.000Z")}, MOCK_ENTRY,
      {'latest_event_time': "2022-08-09T10:05:13.890Z"}, MOCK_ENTRY.get('data', [])[0:-1])])
 def test_fetch_events(requests_mock, last_run, mock_item, expected_last_run, expected_fetched_events):
     """
     Given:
         - last_run marker and a mock with 2 events that occurred after the last run and 1 that occurred before.
+        - case 1: The last run object is a string (an example of last run that was fetched from previous interval).
+        - case 2: The last run object is a datetime object (an example of last run that was created by a default datetime.now()
+                  in the previous interval due to no fetched events).
     When:
         - Calling fetch events.
     Then:
         - Make sure 2 events returned.
         - Verify the new lastRun is calculated correctly.
+        - Verify that the function handle the different last_run types correctly.
     """
     from KnowBe4KMSATEventCollector import fetch_events
 
@@ -120,11 +126,15 @@ def test_check_if_last_run_reached(last_run, events, expected_results):
 def test_get_events(requests_mock, mock_item, expected_results, expected_length):
     """
     Given:
-        - sta-get-events call
+        - a mock response.
+        - Case 1: A mock response with 3 events.
+        - Case 2: Empty mock response.
     When:
-        - Running the command with since, until and marker parameters
+        - Running the kms-get-events command.
     Then:
         - Make sure all of the events are returned as part of the CommandResult.
+        - Case 1: Ensure the same 3 events were found.
+        - Case 2: Should print that no events we found.
     """
     from KnowBe4KMSATEventCollector import get_events_command
 
