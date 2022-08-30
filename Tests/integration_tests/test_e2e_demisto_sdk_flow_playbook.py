@@ -85,7 +85,6 @@ def test_e2e_demisto_sdk_flow_playbook_client(tmpdir, insecure: bool = False):
     header_params['Accept'] = 'application/json'  # noqa: E501
     header_params['Accept-Encoding'] = 'gzip, deflate, br'
     header_params['Content-Type'] = 'application/json'
-    # header_params['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
 
     try:
         demisto_client.api_client.call_api(resource_path='/playbook/save', method='POST',
