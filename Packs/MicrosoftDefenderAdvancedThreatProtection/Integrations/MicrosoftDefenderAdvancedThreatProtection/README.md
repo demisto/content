@@ -59,10 +59,11 @@ For more details about the authentication used in this integration, see [Microso
     | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
     | First Fetch Timestamp | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
     | self-deployed | Use a self-deployed Azure Application. |  N/A |
-    | Using GCC | Whether a GCC edpoint is used. |  False 
-    | Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\) or Device Code Flow | False |
-    | Application redirect URI (for Authorization Code mode) |  | False |
-    | Authorization code | for Authorization Code mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
+    | Using GCC | Whether a GCC edpoint is used. |  False |
+    | Authentication Type | Type of authentication - either Authorization Code \(recommended\) or Client Credentials. |  |
+    | Application redirect URI (for authorization code mode) |  | False |
+    | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions section | False |
+
 
 
 4. Click **Test** to validate the URLs, token, and connection.
