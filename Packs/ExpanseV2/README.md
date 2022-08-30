@@ -1,22 +1,22 @@
-Your attack surface spans on-premise, cloud, and your supply chain; it is constantly changing as internet-connected assets are created, moved, or configurations changed.
+Your attack surface spans on-premise, cloud, and your supply chain; it is constantly changing as Internet-connected assets are created, moved, or configurations changed.
 
-Cortex® Xpanse™ by Palo Alto Networks protects the world's largest organizations by discovering and monitoring every asset you have connected to the internet and provides complete visibility into everything you own
+Cortex® Xpanse™ by Palo Alto Networks protects the world's largest organizations by discovering and monitoring every asset you have connected to the Internet and provides complete visibility into everything you own.
 
-The Cortex Xpanse pack for Cortex XSOAR allows you to automate attack surface management to identify Internet assets and quickly remediate misconfigurations and exposures
+The Cortex Xpanse pack for Cortex XSOAR allows you to automate attack surface management to identify Internet assets and quickly remediate misconfigurations and exposures.
  
 The integrations included in the pack enable fetching and mirroring of Xpanse Issues into Cortex XSOAR incidents, and ingestion of indicators (IPs, domains, and certificates) referring to the corporate network perimeter as discovered by Xpanse.
 
 Through a powerful set of playbooks, analysts can correlate the discovered information with data provided from internal security systems (Palo Alto Networks Cortex Data Lake, Prisma Cloud, and Panorama, Active Directory, Splunk SIEM, etc.) to pinpoint asset owners and automate remediation.
 
-Note: This Pack, as well as its previously named Expanse v2 Integration, were renamed to Cortex Xpanse. All other content items are still named the same.
+Note: This pack, as well as its previously named Expanse v2 integration, were renamed to Cortex Xpanse. The names of all other content items remain the same.
 
 
 ##### What does this pack do?
-- Provides the Cortex Xpanse integration, which allows XSOAR to collect Xpanse Issues and bi-directionally mirror them. Several commands are available to search, tag, and update issues and assets in Xpanse. The integration also supports the services API.
+- Provides the Cortex Xpanse integration, which allows Cortex XSOAR to collect Xpanse Issues and bi-directionally mirror them. Several commands are available to search, tag, and update issues and assets in Xpanse. The integration also supports the services API.
 - Provides a feed integration named Xpanse Expander Feed, which is compatible with the Cortex XSOAR Threat Intel Management capabilities to retrieve and store discovered assets (IPs, IP ranges, domains, certificates) in Cortex XSOAR for analysis and correlation.
 - Provides an Xpanse Issue incident type with dedicated fields and layouts.
 - Provides a rich set of playbooks and sub-playbooks that handle the investigation and remediation of Xpanse Issues.
-- Provides dashboards that display the network perimeter as discovered by Xpanse and the status of Expanse Issues.
+- Provides dashboards that display the network perimeter as discovered by Xpanse and the status of Xpanse Issues.
 
 ##### How to use this pack?
 - Configure the Xpanse integration to ingest Xpanse issues and data.
