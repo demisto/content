@@ -143,507 +143,27 @@ Returns detailed information for an IP address or SHA256 within the specified in
             "autonomous_system_updated_at": "2022-08-19T04:12:34.865059Z",
             "dns": {
                 "names": [
-                    "unforgivable.com",
-                    "alucitra.com",
-                    "www.mollypops.com",
-                    "mail.dpai.ma",
-                    "www.muzz.ltd",
-                    "ibukito.hjk.jp",
-                    "storagevymuqdzkickslrx.club",
-                    "prod.rialtic.app",
-                    "yourserverpromo.de",
-                    "lookgood.synology.me",
-                    "owa.leadershipnigeria.com",
-                    "hotelslosangelesca.com",
-                    "optelcloud.com",
-                    "21vek-api-447.21vek-dev.by",
-                    "ha.home.smjukebox.uk",
-                    "twitsh.net",
-                    "ioh.me",
-                    "cloudnet.ml",
-                    "www.monikas-dorfladen.at",
-                    "new.leadershipnigeria.com",
-                    "uk-voip.ly",
-                    "www.issaunagoodforyou.com",
-                    "www.understandingcongress.com",
-                    "shwu.me",
-                    "shop.leadershipnigeria.com",
-                    "sigmainternacional.com",
-                    "comistan.synology.me",
-                    "gt.je",
-                    "360193637.xyz",
-                    "code.r4b2.de",
-                    "mnfst.me",
-                    "test.leadershipnigeria.com",
-                    "fdc.nextadv.it",
-                    "www.investmentfraudinsurance.com",
-                    "21vek-717.21vek-dev.by",
-                    "63632k.com",
-                    "www.forthebestprice.com",
-                    "bcele.top",
-                    "www.saint-mary.com",
-                    "hh5.puyitou22.com",
-                    "webmail.mimiscaffe.bg",
-                    "mws-dev.taiceredigion.org.uk",
-                    "upadmini.people.aws.dev",
-                    "kvvkk.com",
-                    "owa.mikanetwork.com",
-                    "0310.fun",
-                    "store.leadershipnigeria.com",
-                    "mejunje.duckdns.org",
-                    "healthlocation.info",
-                    "zuloaga.myds.me",
-                    "bits-hyderabad.ac.in",
-                    "test.getgala.com",
-                    "wiki.leadershipnigeria.com",
-                    "prelude.kz",
-                    "nilografica.es",
-                    "jz.ok2211.fun",
-                    "mnara.ma",
-                    "chikhmoulayali.com",
-                    "www.21vek-1540.21vek-dev.by",
-                    "smartmove.vn",
-                    "www.cdnteste.advendns.org",
-                    "charlestest.cdnaaa.net",
-                    "windblade.keylinksolutions.com",
-                    "www.coloradotimeshares.com",
-                    "scm.appservice-onprem-arc-5.k4apps-test.io",
-                    "homeassistant.workstations.dev",
-                    "ezip.com.co",
-                    "spbp.myds.me",
-                    "21vek-1200.21vek-dev.by",
-                    "www.successnetwork.in",
-                    "frequencyextort.info",
-                    "m.21vek-04b7e7cf.21vek-dev.by",
-                    "verypsychic.com",
-                    "dev.rialtic.dev",
-                    "webmail.leadershipnigeria.com",
-                    "cn.leadershipnigeria.com",
-                    "dnslog.io",
-                    "help.leadershipnigeria.com",
-                    "webcee.xyz",
-                    "wydip.com",
-                    "razgriz.tk",
-                    "www.gelfilters.com",
-                    "shawyxu.gq",
-                    "livepsychichotline.com",
-                    "210000.io",
-                    "hound.keylinksolutions.com",
-                    "arbeitskrafte-polen.com",
-                    "fabio.nextadv.it",
-                    "cdnssl.imaage.win",
-                    "cepbahisgiris.org",
-                    "www.jghj88.com",
-                    "www.dominicana.digital",
-                    "fdd528.com",
-                    "auth.rd.miruho.com",
-                    "vitrinbet149.com",
-                    "imap.gododdy.art",
-                    "chooftv.ma",
-                    "caopingzxc.ml",
-                    "mail.exbaba.it",
-                    "paces-test.dhcs.ca.gov"
+                    "test.com.",
+                    "uuu.mkppy.site.",
+                    "hisports.club.",
+                    "domain.com.",
+                    "roidgames.de.",
+                    "svhasso.duckdns.org.",
+                    "albertogozzi.it.",
+                    "prod.rialtic.app."
                 ],
                 "records": {
-                    "0310.fun": {
+                    "1508cleveland.duckdns.org": {
                         "record_type": "A",
-                        "resolved_at": "2022-08-25T15:52:53.686551902Z"
+                        "resolved_at": "2021-10-02T06:16:39.231714247Z"
                     },
-                    "210000.io": {
+                    "albertogozzi.it": {
                         "record_type": "A",
-                        "resolved_at": "2022-08-22T16:12:15.487897618Z"
+                        "resolved_at": "2021-10-02T01:15:04.162523844Z"
                     },
-                    "21vek-1200.21vek-dev.by": {
-                        "record_type": "CNAME",
-                        "resolved_at": "2022-08-08T12:43:14.256822633Z"
-                    },
-                    "21vek-717.21vek-dev.by": {
-                        "record_type": "CNAME",
-                        "resolved_at": "2022-08-09T12:48:33.142366390Z"
-                    },
-                    "21vek-api-447.21vek-dev.by": {
-                        "record_type": "CNAME",
-                        "resolved_at": "2022-08-20T12:47:05.493559729Z"
-                    },
-                    "360193637.xyz": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-27T20:15:20.152235987Z"
-                    },
-                    "63632k.com": {
-                        "record_type": "CNAME",
-                        "resolved_at": "2022-08-06T13:15:41.142306257Z"
-                    },
-                    "alucitra.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-10T13:26:48.516701230Z"
-                    },
-                    "arbeitskrafte-polen.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-01T13:45:04.274356596Z"
-                    },
-                    "auth.rd.miruho.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-21T14:33:25.444330853Z"
-                    },
-                    "bcele.top": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-26T18:38:10.405773076Z"
-                    },
-                    "bits-hyderabad.ac.in": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-20T08:05:23.112143568Z"
-                    },
-                    "caopingzxc.ml": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-29T12:43:38.854056668Z"
-                    },
-                    "cdnssl.imaage.win": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-28T21:09:26.422190049Z"
-                    },
-                    "cepbahisgiris.org": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-06T20:58:42.513717745Z"
-                    },
-                    "charlestest.cdnaaa.net": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-16T20:14:26.414073959Z"
-                    },
-                    "chikhmoulayali.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-27T14:02:21.882579890Z"
-                    },
-                    "chooftv.ma": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-16T19:27:40.550107765Z"
-                    },
-                    "cloudnet.ml": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-23T16:32:26.996874419Z"
-                    },
-                    "cn.leadershipnigeria.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-24T14:52:58.979128559Z"
-                    },
-                    "code.r4b2.de": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-10T16:53:56.139402376Z"
-                    },
-                    "comistan.synology.me": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-15T16:52:19.601934502Z"
-                    },
-                    "dev.rialtic.dev": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-24T17:00:41.114696998Z"
-                    },
-                    "dnslog.io": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-19T17:02:34.865081022Z"
-                    },
-                    "ezip.com.co": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-24T13:04:24.730596015Z"
-                    },
-                    "fabio.nextadv.it": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-20T17:17:40.669933508Z"
-                    },
-                    "fdc.nextadv.it": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-19T17:07:37.551461311Z"
-                    },
-                    "fdd528.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-19T14:30:42.436287332Z"
-                    },
-                    "frequencyextort.info": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-23T15:57:35.024451928Z"
-                    },
-                    "gt.je": {
-                        "record_type": "A",
-                        "resolved_at": "2022-07-30T17:42:58.739479464Z"
-                    },
-                    "ha.home.smjukebox.uk": {
-                        "record_type": "CNAME",
-                        "resolved_at": "2022-08-13T22:26:09.743955470Z"
-                    },
-                    "healthlocation.info": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-02T17:20:39.806738371Z"
-                    },
-                    "help.leadershipnigeria.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-10T15:10:40.661599879Z"
-                    },
-                    "hh5.puyitou22.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-08T15:00:36.009474695Z"
-                    },
-                    "homeassistant.workstations.dev": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-07T16:02:08.470602201Z"
-                    },
-                    "hotelslosangelesca.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-25T13:56:18.258929067Z"
-                    },
-                    "hound.keylinksolutions.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-21T14:24:12.021794642Z"
-                    },
-                    "ibukito.hjk.jp": {
-                        "record_type": "A",
-                        "resolved_at": "2022-07-31T16:40:01.923732236Z"
-                    },
-                    "imap.gododdy.art": {
-                        "record_type": "CNAME",
-                        "resolved_at": "2022-08-25T12:13:25.836432020Z"
-                    },
-                    "ioh.me": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-16T19:30:26.873859897Z"
-                    },
-                    "jz.ok2211.fun": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-12T16:14:29.813590802Z"
-                    },
-                    "kvvkk.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-14T14:33:53.555139724Z"
-                    },
-                    "livepsychichotline.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-05T15:55:27.730776547Z"
-                    },
-                    "lookgood.synology.me": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-07T06:50:53.465563574Z"
-                    },
-                    "m.21vek-04b7e7cf.21vek-dev.by": {
-                        "record_type": "CNAME",
-                        "resolved_at": "2022-08-24T12:46:05.622857713Z"
-                    },
-                    "mail.dpai.ma": {
-                        "record_type": "CNAME",
-                        "resolved_at": "2022-08-13T18:42:14.726495036Z"
-                    },
-                    "mail.exbaba.it": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-06T17:12:41.124639909Z"
-                    },
-                    "mejunje.duckdns.org": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-09T19:51:10.303321405Z"
-                    },
-                    "mnara.ma": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-28T17:51:37.992286854Z"
-                    },
-                    "mnfst.me": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-27T17:27:07.276609296Z"
-                    },
-                    "mws-dev.taiceredigion.org.uk": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-22T19:42:19.576312037Z"
-                    },
-                    "new.leadershipnigeria.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-20T14:40:14.239841412Z"
-                    },
-                    "nilografica.es": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-16T17:59:01.245412947Z"
-                    },
-                    "optelcloud.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-24T15:24:27.577129652Z"
-                    },
-                    "owa.leadershipnigeria.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-24T14:52:59.113600261Z"
-                    },
-                    "owa.mikanetwork.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-28T14:46:36.761947433Z"
-                    },
-                    "paces-test.dhcs.ca.gov": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-12T11:25:21.872931788Z"
-                    },
-                    "prelude.kz": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-06T17:46:20.724450217Z"
-                    },
-                    "prod.rialtic.app": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-14T12:26:14.718876936Z"
-                    },
-                    "razgriz.tk": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-18T21:20:06.457481125Z"
-                    },
-                    "scm.appservice-onprem-arc-5.k4apps-test.io": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-15T16:16:57.014457474Z"
-                    },
-                    "shawyxu.gq": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-02T17:07:29.519557612Z"
-                    },
-                    "shop.leadershipnigeria.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-25T14:05:02.142889526Z"
-                    },
-                    "shwu.me": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-13T18:45:29.071685279Z"
-                    },
-                    "sigmainternacional.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-24T15:50:55.348079730Z"
-                    },
-                    "smartmove.vn": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-22T19:45:28.195715722Z"
-                    },
-                    "spbp.myds.me": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-10T19:02:37.896742559Z"
-                    },
-                    "storagevymuqdzkickslrx.club": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-25T12:57:26.709682571Z"
-                    },
-                    "store.leadershipnigeria.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-24T14:52:59.246423220Z"
-                    },
-                    "test.getgala.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-20T14:20:31.437001993Z"
-                    },
-                    "test.leadershipnigeria.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-07-29T19:59:54.310059007Z"
-                    },
-                    "twitsh.net": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-25T18:16:34.893362688Z"
-                    },
-                    "uk-voip.ly": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-19T17:38:58.081818829Z"
-                    },
-                    "unforgivable.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-21T15:26:45.486551560Z"
-                    },
-                    "upadmini.people.aws.dev": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-21T15:59:33.770559036Z"
-                    },
-                    "verypsychic.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-20T15:51:03.358034740Z"
-                    },
-                    "vitrinbet149.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-09T13:33:35.599546575Z"
-                    },
-                    "webcee.xyz": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-10T22:33:26.377520136Z"
-                    },
-                    "webmail.leadershipnigeria.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-27T14:35:55.154613390Z"
-                    },
-                    "webmail.mimiscaffe.bg": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-20T12:27:37.025751092Z"
-                    },
-                    "wiki.leadershipnigeria.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-08T14:31:23.696139939Z"
-                    },
-                    "windblade.keylinksolutions.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-15T14:12:57.029959333Z"
-                    },
-                    "www.21vek-1540.21vek-dev.by": {
-                        "record_type": "CNAME",
-                        "resolved_at": "2022-08-06T19:21:36.012311868Z"
-                    },
-                    "www.cdnteste.advendns.org": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-22T19:01:09.742017217Z"
-                    },
-                    "www.coloradotimeshares.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-20T14:04:14.801537637Z"
-                    },
-                    "www.dominicana.digital": {
-                        "record_type": "CNAME",
-                        "resolved_at": "2022-08-02T16:44:27.426160780Z"
-                    },
-                    "www.forthebestprice.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-22T13:53:06.780062453Z"
-                    },
-                    "www.gelfilters.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-09T14:16:49.428878601Z"
-                    },
-                    "www.investmentfraudinsurance.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-20T14:34:51.840740126Z"
-                    },
-                    "www.issaunagoodforyou.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-23T13:59:20.537255146Z"
-                    },
-                    "www.jghj88.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-07-23T14:05:30.828781563Z"
-                    },
-                    "www.mollypops.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-04T14:17:39.920076806Z"
-                    },
-                    "www.monikas-dorfladen.at": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-05T12:28:55.985753505Z"
-                    },
-                    "www.muzz.ltd": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-20T17:53:40.404527982Z"
-                    },
-                    "www.saint-mary.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-21T15:05:37.677247728Z"
-                    },
-                    "www.successnetwork.in": {
-                        "record_type": "CNAME",
-                        "resolved_at": "2022-08-16T18:38:09.525907873Z"
-                    },
-                    "www.understandingcongress.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-07-29T15:48:19.880642293Z"
-                    },
-                    "wydip.com": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-29T07:01:03.134138230Z"
-                    },
-                    "yourserverpromo.de": {
-                        "record_type": "A",
-                        "resolved_at": "2022-08-13T16:59:27.068374811Z"
-                    },
-                    "zuloaga.myds.me": {
+                    "alpha.lab.toshokan.fr": {
                         "record_type": "A",
-                        "resolved_at": "2022-08-16T19:30:46.933022152Z"
+                        "resolved_at": "2021-10-03T14:18:01.127044067Z"
                     }
                 },
                 "reverse_dns": {
@@ -676,12 +196,12 @@ Returns detailed information for an IP address or SHA256 within the specified in
                         "answers": [
                             {
                                 "name": "ip.parrotdns.com.",
-                                "response": "172.253.218.204",
+                                "response": "1.2.3.4",
                                 "type": "A"
                             },
                             {
                                 "name": "ip.parrotdns.com.",
-                                "response": "35.202.119.40",
+                                "response": "5.6.7.8",
                                 "type": "A"
                             }
                         ],
@@ -706,7 +226,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
                     "perspective_id": "PERSPECTIVE_TATA",
                     "port": 53,
                     "service_name": "DNS",
-                    "source_ip": "167.94.138.117",
+                    "source_ip": "1.2.3.4",
                     "transport_protocol": "UDP",
                     "truncated": false
                 },
@@ -745,7 +265,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
                                 "html_tags": "DISPLAY_UTF8",
                                 "html_title": "DISPLAY_UTF8"
                             },
-                            "body": "<HTML><HEAD><meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n<TITLE>302 Moved</TITLE></HEAD><BODY>\n<H1>302 Moved</H1>\nThe document has moved\n<A HREF=\"https://dns.google/\">here</A>.\r\n</BODY></HTML>\r\n",
+                            "body": "test",
                             "body_hash": "sha1:1fd84b37b709256752fe1f865f86b5bec0512345",
                             "body_size": 216,
                             "headers": {
@@ -807,7 +327,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
                     "perspective_id": "PERSPECTIVE_NTT",
                     "port": 443,
                     "service_name": "HTTP",
-                    "source_ip": "167.248.133.61",
+                    "source_ip": "1.2.3.4",
                     "tls": {
                         "_encoding": {
                             "ja3s": "DISPLAY_HEX"
@@ -868,7 +388,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
                                         },
                                         "exponent": "AAEAAQ==",
                                         "length": 256,
-                                        "modulus": "z1wTIN/+aWYsNkD3KyxORLI2CtNauTIhizROY5NTwA8sGy67LylHpbPOHg8pX2TZKjkDssn1bnOMkYyoqXe4RZs9StCjtWeWizdj2A+lC536KwrERNZ9PVY+u5VdfnYKI0d16TRxFDxOLZBzzEHwRUPlvRKiiiP6zCBQYmPvcSCa/2SF0js6mmaG5Ct08MKa2jfokfcymoB3u5brieK0AyNQ3aZ8TnD5qZJ58KlEc+CR4rrNPuMXU5S8Y1FDT9bRU5UlHGU/G30OsOQBPbucjpjiXjXYNsUZby4BtSefNOixtMmJ+7MMkrFawQUNtoBfmK2+wHkXOPKnocVGRArpjQ=="
+                                        "modulus": "modulus"
                                     }
                                 },
                                 "signature": {
@@ -885,124 +405,17 @@ Returns detailed information for an IP address or SHA256 within the specified in
                             },
                             "leaf_fp_sha_256": "5c2d6869e805696c328d7ba5acd7d347b46e1e03d7ed65886bf2df55f41d01fd"
                         },
-                        "cipher_selected": "TLS_CHACHA20_POLY1305_SHA256",
-                        "ja3s": "d75f9129bb5d05492a65ff78e081bcb2",
-                        "version_selected": "TLSv1_3"
-                    },
-                    "transport_protocol": "TCP",
-                    "truncated": false
-                },
-                {
-                    "_decoded": "banner_grab",
-                    "_encoding": {
-                        "banner": "DISPLAY_UTF8",
-                        "certificate": "DISPLAY_HEX"
-                    },
-                    "banner": "",
-                    "banner_grab": {
-                        "transport": "TCP"
-                    },
-                    "certificate": "5c2d6869e805696c328d7ba5acd7d347b46e1e03d7ed65886bf2df55f41d01fd",
-                    "extended_service_name": "UNKNOWN",
-                    "jarm": {
-                        "_encoding": {
-                            "cipher_and_version_fingerprint": "DISPLAY_HEX",
-                            "fingerprint": "DISPLAY_HEX",
-                            "tls_extensions_sha256": "DISPLAY_HEX"
+                        "cipher_selected": "SELECTED_CIPHER",
+                        "server_key_exchange": {
+                            "ec_params": {
+                                "named_curve": 23
+                            }
                         },
-                        "cipher_and_version_fingerprint": "29d3fd00029d29d00042d43d00041d",
-                        "fingerprint": "29d3fd00029d29d00042d43d00041df6ab62833359bd21fbf27287504787f8",
-                        "observed_at": "2022-08-26T15:45:25.401667248Z",
-                        "tls_extensions_sha256": "f6ab62833359bd21fbf27287504787f8"
-                    },
-                    "observed_at": "2022-08-29T07:35:17.028828953Z",
-                    "perspective_id": "PERSPECTIVE_TATA",
-                    "port": 853,
-                    "service_name": "UNKNOWN",
-                    "source_ip": "167.94.138.120",
-                    "tls": {
-                        "_encoding": {
-                            "ja3s": "DISPLAY_HEX"
+                        "session_ticket": {
+                            "length": 221,
+                            "lifetime_hint": 100800
                         },
-                        "certificates": {
-                            "_encoding": {
-                                "chain_fps_sha_256": "DISPLAY_HEX",
-                                "leaf_fp_sha_256": "DISPLAY_HEX"
-                            },
-                            "chain": [
-                                {
-                                    "fingerprint": "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522",
-                                    "issuer_dn": "C=US, O=Google Trust Services LLC, CN=GTS Root R1",
-                                    "subject_dn": "C=US, O=Google Trust Services LLC, CN=GTS CA 1C3"
-                                },
-                                {
-                                    "fingerprint": "3ee0278df71fa3c125c4cd487f01d774694e6fc57e0cd94c24efd769133918e5",
-                                    "issuer_dn": "C=BE, O=GlobalSign nv-sa, OU=Root CA, CN=GlobalSign Root CA",
-                                    "subject_dn": "C=US, O=Google Trust Services LLC, CN=GTS Root R1"
-                                }
-                            ],
-                            "chain_fps_sha_256": [
-                                "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522",
-                                "3ee0278df71fa3c125c4cd487f01d774694e6fc57e0cd94c24efd769133918e5"
-                            ],
-                            "leaf_data": {
-                                "fingerprint": "5c2d6869e805696c328d7ba5acd7d347b46e1e03d7ed65886bf2df55f41d01fd",
-                                "issuer": {
-                                    "common_name": [
-                                        "GTS CA 1C3"
-                                    ],
-                                    "country": [
-                                        "US"
-                                    ],
-                                    "organization": [
-                                        "Google Trust Services LLC"
-                                    ]
-                                },
-                                "issuer_dn": "C=US, O=Google Trust Services LLC, CN=GTS CA 1C3",
-                                "names": [
-                                    "*.dns.google.com",
-                                    "8.8.4.4",
-                                    "8.8.8.8",
-                                    "8888.google",
-                                    "dns.google",
-                                    "dns.google.com",
-                                    "dns64.dns.google"
-                                ],
-                                "pubkey_algorithm": "RSA",
-                                "pubkey_bit_size": 2048,
-                                "public_key": {
-                                    "fingerprint": "32aadd47f0a4b82e0937afda8e6bbff0d42cf50b9c022539d733ec557c215d3f",
-                                    "key_algorithm": "RSA",
-                                    "rsa": {
-                                        "_encoding": {
-                                            "exponent": "DISPLAY_BASE64",
-                                            "modulus": "DISPLAY_BASE64"
-                                        },
-                                        "exponent": "AAEAAQ==",
-                                        "length": 256,
-                                        "modulus": "z1wTIN/+aWYsNkD3KyxORLI2CtNauTIhizROY5NTwA8sGy67LylHpbPOHg8pX2TZKjkDssn1bnOMkYyoqXe4RZs9StCjtWeWizdj2A+lC536KwrERNZ9PVY+u5VdfnYKI0d16TRxFDxOLZBzzEHwRUPlvRKiiiP6zCBQYmPvcSCa/2SF0js6mmaG5Ct08MKa2jfokfcymoB3u5brieK0AyNQ3aZ8TnD5qZJ58KlEc+CR4rrNPuMXU5S8Y1FDT9bRU5UlHGU/G30OsOQBPbucjpjiXjXYNsUZby4BtSefNOixtMmJ+7MMkrFawQUNtoBfmK2+wHkXOPKnocVGRArpjQ=="
-                                    }
-                                },
-                                "signature": {
-                                    "self_signed": false,
-                                    "signature_algorithm": "SHA256-RSA"
-                                },
-                                "subject": {
-                                    "common_name": [
-                                        "dns.google"
-                                    ]
-                                },
-                                "subject_dn": "CN=dns.google",
-                                "tbs_fingerprint": "35b1bccf3f09b949fd27c9d004bcaef9375956d42f59d17f5c076e18d4910645"
-                            },
-                            "leaf_fp_sha_256": "5c2d6869e805696c328d7ba5acd7d347b46e1e03d7ed65886bf2df55f41d01fd"
-                        },
-                        "cipher_selected": "TLS_CHACHA20_POLY1305_SHA256",
-                        "ja3s": "d75f9129bb5d05492a65ff78e081bcb2",
-                        "version_selected": "TLSv1_3"
-                    },
-                    "transport_fingerprint": {
-                        "raw": "65535,128,false,MSTNW,1430,false,false"
+                        "version_selected": "TLSv1_2"
                     },
                     "transport_protocol": "TCP",
                     "truncated": false
