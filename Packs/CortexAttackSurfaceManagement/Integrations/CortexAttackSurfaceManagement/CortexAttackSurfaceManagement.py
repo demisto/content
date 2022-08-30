@@ -52,7 +52,9 @@ class Client(BaseClient):
         return response
 
     def getassetinternetexposure_request(self, asm_id_list):
-        data = {"request_data": {"asm_id_list": ["e06f15ce-9ab1-3460-8a31-000ac6d2d37e"]}}
+        #DOESNTWORKdata = {"request_data":{"asm_id_list":["e06f15ce-9ab1-3460-8a31-000ac6d2d378"]}}
+        #data = {"request_data":{"asm_id_list":["e06f15ce-9ab1-3460-8a31-000ac6d2d37e"]}}
+        data = {"request_data": {"asm_id_list": asm_id_list}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_asset_internet_exposure/',
@@ -132,21 +134,33 @@ def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> C
 
 
 def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    asm_id_list = args.get('asm_id_list')
+    asm_id = args.get('asm_id')
+    asm_id_list = asm_id.split(",")
+    if len(asm_id_list) > 1:
+        return_error("This command only supports one asm_id at this time")
 
     response = client.getassetinternetexposure_request(asm_id_list)
+    parsed = response['reply']['details']
+    markdown = tableToMarkdown('Asset Internet Exposure', parsed)
     command_results = CommandResults(
         outputs_prefix='ASM.GetAssetInternetExposure',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        outputs_key_field='asm_ids',
+        outputs=parsed,
+        raw_response=parsed,
+        readable_output=markdown
     )
 
     return command_results
 
 
 def test_module(client: Client) -> None:
-    # Test functions here
+    try:
+        response = client.getexternalservices_request(None, None, None)
+    except DemistoException as e:
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
     return_results('ok')
 
 
