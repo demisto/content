@@ -137,9 +137,9 @@ create-instances:
     # - demisto-sdk find-dependencies -idp ./Tests/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
     # - section_end "Calculate Packs Dependencies"
 
-    # - section_start "Prepare Content Packs for Testing"
-    # - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
-    # - section_end "Prepare Content Packs for Testing"
+    - section_start "Prepare Content Packs for Testing"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
+    - section_end "Prepare Content Packs for Testing"
 
     - section_start "Create Instances"
     - |
@@ -208,9 +208,9 @@ prepare-testing-bucket-mpv2:
     #   python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
     # - section_end "Collect Tests and Content Packs"
 
-    # - section_start "Prepare Content Packs for Testing"
-    # - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
-    # - section_end "Prepare Content Packs for Testing"
+    - section_start "Prepare Content Packs for Testing"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
+    - section_end "Prepare Content Packs for Testing"
 
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
