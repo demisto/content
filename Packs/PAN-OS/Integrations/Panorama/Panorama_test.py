@@ -1140,7 +1140,7 @@ class TestPanoramaEditRuleCommand:
                 "element_value": "no",
                 "behaviour": "replace",
                 "pre_post": "pre-rulebase",
-                "device_group": "new device group"
+                "device-group": "new device group"
             }
         )
         mocker.patch.object(demisto, 'command', return_value='pan-os-edit-rule')
