@@ -564,179 +564,54 @@ script:
       description: ""
       type: String
   - arguments:
-    - name: asm_id_list
+    - description: An string represenng the asset ID for which you want to get the details for
+      name: asm_id
+      required: true
     description: |-
-      Create or update incident according to JSON structure.
-      To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
-      To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
-
-      Use the 'createInvestigation\: True' to start the investigation process automatically. (by running a playbook based on incident type.)
+      Get Internet exposure asset details according to the asset ID.
     name: asm-getassetinternetexposure
     outputs:
-    - contextPath: ASM.GetAssetInternetExposure.details.asm_ids
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.asm_ids
+      description: "Attack Surface Managment UUID"
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.name
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.name
+      description: "Name of the exposed asset"
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.type
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.type
+      description: "Type of the exposed asset"
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.last_observed
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.last_observed
+      description: "Last time exposure was observed"
       type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.first_observed
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.first_observed
+      description: "First time exposure was observed"
       type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.created
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.created
+      description: "Date the ASM Issue was created"
       type: Date
-    - contextPath: ASM.GetAssetInternetExposure.details.business_units
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.business_units
+      description: "Asset associated business units"
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.domain
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.domain
+      description: "Asset associated domain"
       type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.certificate_issuer
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.certificate_issuer
+      description: "Asset certificate issuer"
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.certificate_algorithm
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.certificate_algorithm
+      description: "Asset certificate algorithm"
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.certificate_classifications
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.certificate_classifications
+      description: "Asset certificate classifications"
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.resolves
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.resolves
+      description: "Does the asset have DNS resolution"
       type: Boolean
-    - contextPath: ASM.GetAssetInternetExposure.details.details.domain
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.details
+      description: "Additional details"
       type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.topLevelAssetMapperDomain
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.domainAssetType
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.isPaidLevelDomain
-      description: ""
-      type: Boolean
-    - contextPath: ASM.GetAssetInternetExposure.details.details.domainDetails
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.dnsZone
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.latestSampledIp
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.subdomainMetadata
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.businessUnits.name
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuer
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerAlternativeNames
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerCountry
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerEmail
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerLocality
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerName
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerOrg
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.formattedIssuerOrg
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerOrgUnit
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.issuerState
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKey
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyAlgorithm
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyRsaExponent
-      description: ""
-      type: Number
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.signatureAlgorithm
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subject
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectAlternativeNames
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectCountry
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectEmail
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectLocality
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectName
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectOrg
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectOrgUnit
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.subjectState
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.serialNumber
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.validNotBefore
-      description: ""
-      type: Date
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.validNotAfter
-      description: ""
-      type: Date
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.version
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyBits
-      description: ""
-      type: Number
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeyModulus
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.publicKeySpki
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.sha1Fingerprint
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.sha256Fingerprint
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.details.certificateDetails.md5Fingerprint
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetInternetExposure.details.externally_inferred_vulnerability_score
-      description: ""
+    - contextPath: ASM.GetAssetInternetExposure.externally_inferred_vulnerability_score
+      description: "Asset vulnerability score"
       type: Unknown
   dockerimage: demisto/python3:3.10.5.33323
   runonce: false
