@@ -16,7 +16,7 @@ class Client(BaseClient):
         return response
 
     def getexternalservice_request(self, service_id_list):
-        data = {"request_data": {"service_id_list": ["94232f8a-f001-3292-aa65-63fa9d981427"]}}
+        data = {"request_data": {"service_id_list": service_id_list}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_external_service',
@@ -78,14 +78,20 @@ def getexternalservices_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    service_id_list = args.get('service_id_list')
+    service_id = args.get('service_id')
+    service_id_list = service_id.split(",")
+    if len(service_id_list) > 1:
+        return_error("This command only supports one service_id at this time")
 
     response = client.getexternalservice_request(service_id_list)
+    parsed = response['reply']['details']
+    markdown = tableToMarkdown('External Service', parsed)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalService',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        outputs_key_field='service_id',
+        outputs=parsed,
+        raw_response=parsed,
+        readable_output=markdown
     )
 
     return command_results
@@ -184,8 +190,6 @@ def main() -> None:
 
     try:
         requests.packages.urllib3.disable_warnings()
-        #client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
-        # ADDED
         headers = {
             "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
             demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
@@ -193,7 +197,6 @@ def main() -> None:
         }
         url_suffix = "/public_api/v1"
         url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-        #url = "https://api-" + demisto.getLicenseCustomField("Core.ApiHostName")
         add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
         base_url = urljoin(url, url_suffix)
         client = Client(
