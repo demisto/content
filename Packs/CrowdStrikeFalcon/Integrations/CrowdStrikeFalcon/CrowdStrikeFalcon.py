@@ -1,5 +1,3 @@
-register_module_line('CrowdstrikeFalcon', 'start', __line__())
-
 ''' IMPORTS '''
 import base64
 import email
