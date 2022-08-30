@@ -5,7 +5,7 @@ from unittest.mock import call
 from typing import Optional
 
 from AWSGuardDutyEventCollector import get_events
-from test_data.finding import FINDING, MOST_GENERAL_FINDING, MOST_GENERAL_FINDING_STR
+from test_data.finding_for_test import FINDING, MOST_GENERAL_FINDING, MOST_GENERAL_FINDING_STR
 
 
 LIST_DETECTORS_RESPONSE = {

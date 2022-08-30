@@ -168,7 +168,7 @@ def get_events(aws_client: boto3.client, collect_from: dict, collect_from_defaul
     return events, new_last_ids, new_collect_from
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
@@ -257,5 +257,5 @@ def main():
         return_error(f'Failed to execute {demisto.command()} command in AWSGuardDutyEventCollector.\nError:\n{str(e)}')
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
