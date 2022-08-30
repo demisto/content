@@ -119,7 +119,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Whether to include the URL bar in the returned screenshot.
+      description: Whether to include the URL bar in the returned screenshot. (Only for WebDriver mode. Ignored in Headless CLI mode)
       isArray: false
       name: include_url
       predefined:
