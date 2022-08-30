@@ -44,7 +44,7 @@ class Client(BaseClient):
 
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
-    def get_full_url(self, full_url: str, params: Dict) -> Dict:
+    def get_full_url(self, full_url: str, params: Dict = None) -> Dict:
         return self._http_request(method='GET', full_url=full_url, params=params)
 
     def get_project_list_request(self, project_key: str, params: Dict) -> Dict:
@@ -108,12 +108,12 @@ def get_paged_results(client, response, results, limit) -> list:
 
 
 def check_args(limit: int, page: int, page_size: int):
-    if limit and limit < 1:
-        raise Exception('The limit must be equal to 1 or bigger.')
-    if page and page < 1:
-        raise Exception('The page must be equal to 1 or bigger.')
-    if page_size and page_size < 1:
-        raise Exception('The page_size must be equal to 1 or bigger.')
+    if limit is not None and limit < 1:
+        raise Exception('The limit value must be equal to 1 or bigger.')
+    if page is not None and page < 1:
+        raise Exception('The page value must be equal to 1 or bigger.')
+    if page_size is not None and page_size < 1:
+        raise Exception('The page_size value must be equal to 1 or bigger.')
 
 
 ''' COMMAND FUNCTIONS '''
