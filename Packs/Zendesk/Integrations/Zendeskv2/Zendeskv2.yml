@@ -1307,6 +1307,6 @@ script:
   isremotesyncout: true
   isFetchSamples: true
 defaultmapperin: Zendesk - Incoming Mapper
-fromversion: 6.5.0
+fromversion: 6.6.0
 tests:
 - Zendesk V2 TEST
