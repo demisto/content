@@ -39,7 +39,7 @@ metadata_collector = YMLMetadataCollector(integration_name="KeeperSecretsManager
                                           default_classifier=None,
                                           default_mapper_in=None,
                                           deprecated=None,
-                                          docker_image="demisto/keeper-ksm:latest",
+                                          docker_image="demisto/keeper-ksm:1.0.0.33394",
                                           fromversion="6.5.0",
                                           is_runonce=False,
                                           integration_subtype="python3",
