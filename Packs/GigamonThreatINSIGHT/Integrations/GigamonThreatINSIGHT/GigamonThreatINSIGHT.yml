@@ -419,7 +419,7 @@ script:
       type: string
     description: Get passive DNS information about an IP or domain.
   - name: insight-get-entity-dhcp
-    arguments:    
+    arguments:
     - name: entity
       required: true
       description: IP to get DHCP data for.
@@ -890,8 +890,8 @@ script:
       - x509:san_ip.ip
       description: List of event fields to check for impacted devices
     description: Create a new detection rule.
-  
-  dockerimage: demisto/python3:3.10.5.31928
+
+  dockerimage: demisto/python3:3.10.6.33415
   isfetch: true
   runonce: false
   subtype: python3
