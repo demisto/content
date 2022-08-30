@@ -1,32 +1,33 @@
-[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]
-This integration was integrated and tested with version xx of KnowBe4 KMSAT Event Collector
+Allows you to push and pull your external data to and from the KnowBe4 console.
 
 ## Configure KnowBe4 KMSAT Event Collector on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for KnowBe4 KMSAT Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
-
+	@@ -9,21 +10,13 @@ Allows you to push and pull your external data to and from the KnowBe4 console.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Your server URL |  | True |
-    | API Key | The API Key to use for connection | True |
+    | API Key | The API Key to use for connection - for more information about how to generate API-Key please refer to https://support.knowbe4.com/hc/en-us/articles/360024863474-User-Event-API| True |
     | First fetch time interval | The time range to consider for the initial data fetch. \(&amp;lt;number&amp;gt; &amp;lt;unit&amp;gt;, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years\). Default is 1 day. | False |
     | Events Fetch Interval | The Fetch interval, it's recommended to set it to 5 hours as there're not much events for this api and there's a 10 call daily-limit for basic api key. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | The vendor corresponding to the integration that produced the events. |  |  |
+    | The product corresponding to the integration that produced the events. |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+**Important Notes**
+The API-Key has a daily limit of 10 calls per seat.
+Therefore, the default and adviced **Events Fetch Interval** is 5 hours and 
+**First fetch time interval** is 1 day.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### kms-get-events
-***
 Manual command to fetch events and display them.
-
-
 #### Base Command
-
 `kms-get-events`
 #### Input
 
@@ -37,7 +38,6 @@ Manual command to fetch events and display them.
 | per_page | How many results to bring per page (the max &amp; default is 100). | Optional | 
 | page | Which results page to bring. | Optional | 
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*. Possible values are: True, False. Default is False. | Required | 
-
 
 #### Context Output
 
@@ -60,6 +60,7 @@ Manual command to fetch events and display them.
 
 #### Command example
 ```!kms-get-events should_push_events=false```
+
 #### Context Example
 ```json
 {
@@ -102,4 +103,3 @@ Manual command to fetch events and display them.
 >| 52306 | My description lkjhy khl lgf | id: 420899085<br/>name: event_type_55<br/>description: null | 786a515c-1cbd-4a8c-a94a-61ad877c893c | 2022-08-09T10:05:13.890Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@paloaltonetworks.com<br/>id: 38651943<br/>archived: false |
 >| 52306 | My description lkjhy khl lgf | id: 420894024<br/>name: event_type_2<br/>description: null | c3081dfc-1bf9-4c56-b6ff-f364f0c13d39 | 2022-08-09T10:01:45.862Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@paloaltonetworks.com<br/>id: 38651943<br/>archived: false |
 >| 52306 | My description | id: 418927900<br/>name: my_custom_event<br/>description: null | 2b265035-1a12-4e76-bcb1-6c681b86333e | 2022-08-04T14:14:50.917Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@paloaltonetworks.com<br/>id: 38651943<br/>archived: false |
-
