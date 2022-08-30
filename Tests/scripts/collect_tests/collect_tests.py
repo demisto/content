@@ -14,12 +14,14 @@ from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     ALWAYS_INSTALLED_PACKS, DEFAULT_MARKETPLACE_WHEN_MISSING,
     DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, ONLY_INSTALL_PACK_FILE_TYPES,
-    SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES)
+    SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK,
+    XSOAR_SANITY_TEST_NAMES)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, InvalidTestException, NonDictException,
-    NonXsoarSupportedPackException, NoTestsConfiguredException,
-    NothingToCollectException, NotUnderPackException, PrivateTestException,
-    SkippedPackException, SkippedTestException, TestMissingFromIdSetException)
+    NonXSIAMContentException, NonXsoarSupportedPackException,
+    NoTestsConfiguredException, NothingToCollectException,
+    NotUnderPackException, PrivateTestException, SkippedPackException,
+    SkippedTestException, TestMissingFromIdSetException)
 from Tests.scripts.collect_tests.id_set import IdSet
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
@@ -327,18 +329,17 @@ class BranchTestCollector(TestCollector):
             if not yml.id_:
                 raise ValueError(f'id field of {yml_path} cannot be empty')
         except FileNotFoundError:
-            raise FileNotFoundError(
-                f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}'
-            )
-        if yml.id_ in self.conf.skipped_integrations:
-            raise NothingToCollectException(yml.path, 'integration is skipped')
+            raise FileNotFoundError(f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}')
+        self._validate_xsiam_compatibility(yml)
+        self._validate_skipped_integration(yml)
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
 
         match actual_content_type := find_yml_content_type(yml_path):
             case None:
                 path_description = f'{yml_path} (original item {content_item_path}' \
-                    if content_item_path != yml_path else yml_path
+                    if content_item_path != yml_path \
+                    else yml_path
                 raise ValueError(f'could not detect type for {path_description}')
 
             case FileType.TEST_PLAYBOOK:
@@ -407,25 +408,42 @@ class BranchTestCollector(TestCollector):
         else:
             return self._collect_pack(yml.pack_id, reason, 'collecting pack only', yml.version_range)
 
+    def _validate_skipped_integration(self, yml: ContentItem):
+        if yml.id_ in self.conf.skipped_integrations:
+            raise NothingToCollectException(yml.path, 'integration is skipped')
+
+    def _validate_xsiam_compatibility(self, content_item: ContentItem):
+        if self.marketplace == MarketplaceVersions.MarketplaceV2:
+            # tests should be collected only for items whose only marketplace is marketplacev2
+            if content_item.marketplaces != (self.marketplace,):
+                raise NonXSIAMContentException(content_item.path)
+
+    def _validate_triggering_sanity_test(self, path):
+        if path in PATHS.files_triggering_sanity_tests:
+            self.trigger_sanity_tests = True
+            raise NothingToCollectException(path, 'not under a pack (triggering sanity tests)')
+
+    @staticmethod
+    def _validate_not_ignored(path: Path):
+        if path in PATHS.files_to_ignore:
+            raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
+
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         if not path.exists():
             raise FileNotFoundError(path)
 
-        if path in PATHS.files_to_ignore:
-            raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
-
-        if path in PATHS.files_triggering_sanity_tests:
-            self.trigger_sanity_tests = True
-            raise NothingToCollectException(path, 'not under a pack (triggering sanity tests)')
+        self._validate_not_ignored(path)
+        self._validate_triggering_sanity_test(path)
 
         reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
         file_type = find_type(str(path))
 
         try:
             content_item = ContentItem(path)
+            self._validate_xsiam_compatibility(content_item)
         except NonDictException:
             # for `.py`, `.md`, etc., that are not dictionary-based
-            # Suitable logic follows, see collect_yml
+            # Suitable logic follows, see collect_yml (which validates xsiam compatibility as well)
             content_item = None
 
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
@@ -439,7 +457,7 @@ class BranchTestCollector(TestCollector):
 
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
-                raise NothingToCollectException(path, 'unit tests changed')
+                raise NothingToCollectException(path, 'changing unit tests does not trigger collection')
             return self._collect_yml(path)
 
         elif file_type == FileType.REPUTATION:
