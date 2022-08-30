@@ -74,6 +74,11 @@ class NothingToCollectException(Exception):
         return self.message
 
 
+class NonXSIAMContentException(NothingToCollectException):
+    def __init__(self, content_path: Path):
+        super().__init__(content_path, 'does not have a single marketplace value == marketplacev2')
+
+
 class InvalidTestException(Exception):
     def __init__(self, test_name: str, reason: str):
         self.message = f'invalid test {test_name}: {reason}'
