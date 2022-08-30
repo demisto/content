@@ -207,7 +207,7 @@ def log_message_passes_filter(log_message: SyslogMessageExtract, message_regex: 
     if not message_regex:
         return True
     regexp = re.compile(message_regex)
-    return True if regexp.search(log_message.msg) else False
+    return True if regexp.search(log_message.content) else False
 
 
 def perform_long_running_loop(socket_data: bytes):
