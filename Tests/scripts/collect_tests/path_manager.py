@@ -5,8 +5,6 @@ from typing import Iterable, Union
 
 from git import InvalidGitRepositoryError, Repo
 
-from Tests.scripts.collect_tests.logger import logger
-
 _SANITY_FILES_FOR_GLOB = (
     # if any of the files under this list (or descendants) is changed, and no other files are changed,
     # sanity test will be run. All other files NOT under /Packs are ignored.
