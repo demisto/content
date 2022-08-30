@@ -9,12 +9,12 @@ This integration was integrated and tested with version 0.1 of PAN-OS Policy Opt
     | **Parameter** | **Required** |
     | --- | --- |
     | Server URL (e.g., https://192.168.0.1:443) | True |
-    | Username                                   | True |
-    | Vsys - Firewall instances only             | False |
-    | Device Group - Panorama instances only     | False |
-    | PAN-OS Version(e.g. 8, 9, 10)              | False |
-    | Trust any certificate (not secure)         | False |
-    | Use system proxy settings                  | False |
+    | Username | True |
+    | Vsys - Firewall instances only | False |
+    | Device Group - Panorama instances only | False |
+    | PAN-OS Version(e.g. 8, 9, 10) | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
