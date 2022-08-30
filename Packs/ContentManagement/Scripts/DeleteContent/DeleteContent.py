@@ -100,7 +100,7 @@ class ListAPI(EntityAPI):
 
 
 class InstalledPackAPI(EntityAPI):
-    name = 'Installed Pack'
+    name = 'Pack'
 
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-get',
@@ -187,7 +187,7 @@ def search_for_all_entities(entity_api: EntityAPI) -> list:
     return entity_ids
 
 
-def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: List = [], included_ids: List = [],
+def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], included_ids: list = [],
                             dry_run: bool = True) -> Tuple[list, list]:
     """Search and delete entities with provided EntityAPI.
 
@@ -204,7 +204,7 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: List = [], incl
     not_deleted = []
 
     if included_ids and excluded_ids:
-        return [], []
+        raise ValueError(f'Choose to either include ids or exclude ids for {entity_api.name}.')
 
     if included_ids:
         for included_id in included_ids:
@@ -230,12 +230,57 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: List = [], incl
     return succesfully_deleted, not_deleted
 
 
+def get_deletion_status(excluded: list, included: list, deleted: list, undeleted: list) -> bool:
+    if excluded:
+        if undeleted == excluded:
+            return True
+        else:
+            for excluded_id in excluded:
+                if excluded_id in deleted:
+                    return False
+            return True
+
+    elif included:
+        if set(deleted) == set(included):
+            return True
+    # Nothing excluded
+    elif not undeleted:
+        return True
+    return False
+
+
+def handle_content_enitity(entity_api: EntityAPI, args: dict, dry_run: bool, delete_unspecified: bool) -> Tuple[bool, dict, dict]:
+    exclude_ids = argToList(args.get(f'exclude_{entity_api.name.lower()}_ids', '[]'))
+    include_ids = argToList(args.get(f'include_{entity_api.name.lower()}_ids', '[]'))
+
+    if entity_api.name == 'Pack' and exclude_ids:
+        exclude_ids += ALWAYS_EXCLUDED
+
+    deleted_ids: list = []
+    undeleted_ids: list = []
+    deletion_status = True
+    if exclude_ids or include_ids or delete_unspecified:
+        deleted_ids, undeleted_ids = get_and_delete_entities(entity_api=entity_api,
+                                                             excluded_ids=exclude_ids,
+                                                             included_ids=include_ids,
+                                                             dry_run=dry_run)
+
+        deletion_status = get_deletion_status(excluded=exclude_ids, included=include_ids,
+                                              deleted=deleted_ids, undeleted=undeleted_ids)
+
+    return deletion_status, {entity_api.name: deleted_ids}, {entity_api.name: undeleted_ids}
+
+
 def get_and_delete_needed_ids(args: dict) -> CommandResults:
     """Search and delete provided ids to delete.
 
     Args:
-        args[exclude_ids] (str(list)): List of ids to exclude. Will delete all the rest of the found ids.
-        args[include_ids] (str(list)): List of ids to include. Will only delete these ids if not empty.
+        args[exclude_job_ids] (str(list)): List of job ids to exclude. Will delete all the rest of the found ids.
+        args[include_job_ids] (str(list)): List of job ids to include. Will only delete these ids if not empty.
+        args[exclude_list_ids] (str(list)): List of list ids to exclude. Will delete all the rest of the found ids.
+        args[include_list_ids] (str(list)): List of list ids to include. Will only delete these ids if not empty.
+        args[exclude_pack_ids] (str(list)): List of pack ids to exclude. Will delete all the rest of the found ids.
+        args[include_pack_ids] (str(list)): List of pack ids to include. Will only delete these ids if not empty.
         args[dry_run] (str(bool)): If True, will only collect items for deletion and will not delete them.
 
     Raise:
@@ -247,60 +292,32 @@ def get_and_delete_needed_ids(args: dict) -> CommandResults:
             not_deleted: list of content ids gathered not to delete.
             status: Deletion status (Failed/Completed/Dry run, nothing really deleted.)
     """
-    excluded_ids = argToList(args.get('exclude_ids', '[]'))
-    included_ids = argToList(args.get('include_ids', '[]'))
     dry_run = True if args.get('dry_run', 'true') == 'true' else False
+    delete_unspecified = True if args.get('delete_unspecified', 'true') == 'true' else False
+    entities_to_delete = [JobAPI(), ListAPI(), InstalledPackAPI()]
+
+    all_deleted: dict = dict()
+    all_not_deleted: dict = dict()
+    all_deletion_statuses: list = []
+    for entity in entities_to_delete:
+        entity_deletion_status, deleted, undeleted = handle_content_enitity(entity, args, dry_run, delete_unspecified)
+        all_deleted.update(deleted)
+        all_not_deleted.update(undeleted)
+        all_deletion_statuses.append(entity_deletion_status)
+
     deletion_status = 'Failed'
-
-    if included_ids and excluded_ids:
-        raise ValueError('Choose to either include ids or exclude ids.')
-
-    if excluded_ids:
-        excluded_ids += ALWAYS_EXCLUDED
-
-    deleted_jobs, undeleted_jobs = get_and_delete_entities(entity_api=JobAPI(), excluded_ids=excluded_ids,
-                                                           included_ids=included_ids, dry_run=dry_run)
-
-    # get all lists
-    # delete them if not excluded
-    deleted_lists, undeleted_lists = get_and_delete_entities(entity_api=ListAPI(), excluded_ids=excluded_ids,
-                                                             included_ids=included_ids, dry_run=dry_run)
-
-    # get all custom packs
-    # delete them if not excluded
-    deleted_packs, undeleted_packs = get_and_delete_entities(entity_api=InstalledPackAPI(), excluded_ids=excluded_ids,
-                                                             included_ids=included_ids, dry_run=dry_run)
-
-    # Add integrations, scripts, playbooks.
-
-    deletion_success = set(deleted_jobs + deleted_lists + deleted_packs)
-    deletion_failed = set(undeleted_jobs + undeleted_lists + undeleted_packs).difference(deletion_success)
     if dry_run:
         deletion_status = 'Dry run, nothing really deleted.'
     else:
-        if excluded_ids:
-            if deletion_failed == excluded_ids:
-                deletion_status = 'Completed'
-            else:
-                deletion_status = 'Completed'
-                for excluded_id in excluded_ids:
-                    if excluded_id in deletion_success:
-                        deletion_status = 'Failed'
-                        break
-
-        elif included_ids:
-            if deletion_success == set(included_ids):
-                deletion_status = 'Completed'
-        # Nothing excluded
-        elif not deletion_failed:
+        if all(all_deletion_statuses):
             deletion_status = 'Completed'
 
     return CommandResults(
         outputs_prefix='ConfigurationSetup.Deletion',
         outputs_key_field='name',
         outputs={
-            'successfully_deleted': list(deletion_success),
-            'not_deleted': list(deletion_failed),
+            'successfully_deleted': all_deleted,
+            'not_deleted': all_not_deleted,
             'status': deletion_status,
         },
     )

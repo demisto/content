@@ -56,34 +56,42 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
 
 @pytest.mark.parametrize('args, xsoar_ids_state, expected_outputs', [
     pytest.param(
-        {'dry_run': 'false'}, XSOAR_IDS_FULL_STATE, {
-            'not_deleted': [],
-            'successfully_deleted': ['job1', 'job2', 'list1', 'list2', 'installed_pack_id1', 'installed_pack_id2'],
+        {'dry_run': 'false', 'delete_unspecified': 'true'}, XSOAR_IDS_FULL_STATE, {
+            'not_deleted': {'Job': [], 'List': [], 'Pack': []},
+            'successfully_deleted': {'Job': ['job1', 'job2'], 'List': ['list1', 'list2'],
+                                     'Pack': ['installed_pack_id1', 'installed_pack_id2']},
             'status': 'Completed'}, id='delete everything.'),
     pytest.param(
-        {'dry_run': 'false', 'include_ids': 'job1, list2, installed_pack_id1'}, XSOAR_IDS_FULL_STATE, {
-            'not_deleted': [],
-            'successfully_deleted': ['job1', 'list2', 'installed_pack_id1'],
+        {'dry_run': 'false', 'include_job_ids': 'job1',
+         'include_list_ids': 'list2',
+         'include_pack_ids': 'installed_pack_id1',
+         'delete_unspecified': 'false'}, XSOAR_IDS_FULL_STATE, {
+            'not_deleted': {'Job': [], 'List': [], 'Pack': []},
+            'successfully_deleted': {'Job': ['job1'], 'List': ['list2'], 'Pack': ['installed_pack_id1']},
             'status': 'Completed'}, id='delete only included ids.'),
     pytest.param(
-        {'dry_run': 'false', 'exclude_ids': 'job1, list2, installed_pack_id1'}, XSOAR_IDS_FULL_STATE, {
-            'not_deleted': ['job1', 'list2', 'installed_pack_id1'],
-            'successfully_deleted': ['job2', 'list1', 'installed_pack_id2'],
+        {'dry_run': 'false', 'exclude_job_ids': 'job1',
+         'exclude_list_ids': 'list2',
+         'exclude_pack_ids': 'installed_pack_id1',
+         'delete_unspecified': 'false'}, XSOAR_IDS_FULL_STATE, {
+            'not_deleted': {'Job': ['job1'], 'List': ['list2'], 'Pack': ['installed_pack_id1']},
+            'successfully_deleted': {'Job': ['job2'], 'List': ['list1'], 'Pack': ['installed_pack_id2']},
             'status': 'Completed'}, id='dont delete excluded ids.'),
     pytest.param(
-        {'dry_run': 'false', 'exclude_ids': 'job3'}, XSOAR_IDS_FULL_STATE, {
-            'not_deleted': [],
-            'successfully_deleted': ['job1', 'list2', 'installed_pack_id1', 'job2', 'list1', 'installed_pack_id2'],
+        {'dry_run': 'false', 'exclude_job_ids': 'job3', 'delete_unspecified': 'true'}, XSOAR_IDS_FULL_STATE, {
+            'not_deleted': {'Job': [], 'List': [], 'Pack': []},
+            'successfully_deleted': {'Job': ['job1', 'job2'], 'List': ['list1', 'list2'],
+                                     'Pack': ['installed_pack_id1', 'installed_pack_id2']},
             'status': 'Completed'}, id='exclude unfound id'),
     pytest.param(
-        {'dry_run': 'false', 'include_ids': 'job3'}, XSOAR_IDS_FULL_STATE, {
-            'not_deleted': ['job3'],
-            'successfully_deleted': [],
+        {'dry_run': 'false', 'include_job_ids': 'job3', 'delete_unspecified': 'false'}, XSOAR_IDS_FULL_STATE, {
+            'not_deleted': {'Job': ['job3'], 'List': [], 'Pack': []},
+            'successfully_deleted': {'Job': [], 'List': [], 'Pack': []},
             'status': 'Failed'}, id='include unfound id'),
     pytest.param(
-        {'dry_run': 'false', 'include_ids': 'Base'}, XSOAR_IDS_FULL_STATE, {
-            'not_deleted': ['Base'],
-            'successfully_deleted': [],
+        {'dry_run': 'false', 'include_pack_ids': 'Base', 'delete_unspecified': 'false'}, XSOAR_IDS_FULL_STATE, {
+            'not_deleted': {'Job': [], 'List': [], 'Pack': ['Base']},
+            'successfully_deleted': {'Job': [], 'List': [], 'Pack': []},
             'status': 'Failed'}, id='try deleting always excluded ids')
 ])
 def test_get_and_delete_needed_ids(mocker, args, xsoar_ids_state, expected_outputs):
@@ -105,21 +113,23 @@ def test_get_and_delete_needed_ids(mocker, args, xsoar_ids_state, expected_outpu
     mocker.patch("DeleteContent.execute_command", side_effect=execute_command_mock)
 
     result = get_and_delete_needed_ids(args)
-    assert set(result.outputs.get('not_deleted')) == set(expected_outputs.get('not_deleted'))
-    assert set(result.outputs.get('successfully_deleted')) == set(expected_outputs.get('successfully_deleted'))
+    assert result.outputs.get('not_deleted') == expected_outputs.get('not_deleted')
+    assert result.outputs.get('successfully_deleted') == expected_outputs.get('successfully_deleted')
     assert result.outputs.get('status') == expected_outputs.get('status')
 
 
 @pytest.mark.parametrize('args, xsoar_ids_state, expected_outputs, call_count', [
     pytest.param(
         {'dry_run': 'true'}, XSOAR_IDS_FULL_STATE, {
-            'not_deleted': [],
-            'successfully_deleted': ['job1', 'job2', 'list1', 'list2', 'installed_pack_id1', 'installed_pack_id2'],
+            'not_deleted': {'Job': [], 'List': [], 'Pack': []},
+            'successfully_deleted': {'Job': ['job1', 'job2'], 'List': ['list1', 'list2'],
+                                     'Pack': ['installed_pack_id1', 'installed_pack_id2']},
             'status': 'Dry run, nothing really deleted.'}, 9, id='dry run, delete everything.'),
     pytest.param(
         {'dry_run': 'false'}, XSOAR_IDS_FULL_STATE, {
-            'not_deleted': [],
-            'successfully_deleted': ['job1', 'job2', 'list1', 'list2', 'installed_pack_id1', 'installed_pack_id2'],
+            'not_deleted': {'Job': [], 'List': [], 'Pack': []},
+            'successfully_deleted': {'Job': ['job1', 'job2'], 'List': ['list1', 'list2'],
+                                     'Pack': ['installed_pack_id1', 'installed_pack_id2']},
             'status': 'Completed'}, 15, id='dry run, delete everything.')
 ])
 def test_dry_run_delete(mocker, args, xsoar_ids_state, expected_outputs, call_count):
@@ -142,7 +152,7 @@ def test_dry_run_delete(mocker, args, xsoar_ids_state, expected_outputs, call_co
     execute_mock = mocker.patch("DeleteContent.execute_command", side_effect=execute_command_mock)
 
     result = get_and_delete_needed_ids(args)
-    assert set(result.outputs.get('not_deleted')) == set(expected_outputs.get('not_deleted'))
-    assert set(result.outputs.get('successfully_deleted')) == set(expected_outputs.get('successfully_deleted'))
+    assert result.outputs.get('not_deleted') == expected_outputs.get('not_deleted')
+    assert result.outputs.get('successfully_deleted') == expected_outputs.get('successfully_deleted')
     assert result.outputs.get('status') == expected_outputs.get('status')
     assert execute_mock.call_count == call_count

@@ -1,14 +1,38 @@
 args:
 - default: false
-  description: The ids to deleting. If set, delete only these ids.
+  description: The job ids to deleting. If set, delete only these jobs.
   isArray: true
-  name: include_ids
+  name: include_job_ids
   required: false
   secret: false
 - default: false
-  description: The ids to exclude from deleting. If set, will delete everything else.
+  description: The job ids to exclude from deleting. If set, will delete all other jobs.
   isArray: true
-  name: exclude_ids
+  name: exclude_job_ids
+  required: false
+  secret: false
+- default: false
+  description: The list ids to deleting. If set, delete only these lists.
+  isArray: true
+  name: include_list_ids
+  required: false
+  secret: false
+- default: false
+  description: The list ids to exclude from deleting. If set, will delete all other lists.
+  isArray: true
+  name: exclude_list_ids
+  required: false
+  secret: false
+- default: false
+  description: The installed pack ids to deleting. If set, delete only lists with these ids.
+  isArray: true
+  name: include_pack_ids
+  required: false
+  secret: false
+- default: false
+  description: The installed pack ids to exclude from deleting. If set, will delete all other installed packs.
+  isArray: true
+  name: exclude_pack_ids
   required: false
   secret: false
 - auto: PREDEFINED
@@ -18,6 +42,16 @@ args:
   required: true
   secret: false
   defaultValue: 'true'
+  predefined:
+    - 'true'
+    - 'false'
+- auto: PREDEFINED
+  description: If no entity ids were specified (either to include or exclude) and is set to true, will delete all found ids.
+  isArray: false
+  name: delete_unspecified
+  required: true
+  secret: false
+  defaultValue: 'false'
   predefined:
     - 'true'
     - 'false'
@@ -45,7 +79,7 @@ tags:
 timeout: 3600
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
