@@ -20,10 +20,6 @@ _SANITY_FILES_FOR_GLOB = (
 )
 
 
-def log_files(title: str, files: Iterable[Union[str, Path]]):
-    logger.debug(f'{title}:' + '\n'.join(sorted(map(str, files))))
-
-
 class PathManager:
     """
     Used for getting paths of various files and folders during the test collection process.
@@ -42,19 +38,15 @@ class PathManager:
 
         self.packs_path = self.content_path / 'Packs'
         self.files_triggering_sanity_tests = self._glob(_SANITY_FILES_FOR_GLOB)
-        log_files('files triggering sanity tests', self.files_triggering_sanity_tests)
 
         content_root_files = set(filter(lambda f: f.is_file(), self.content_path.iterdir()))
         non_content_files = self._glob(
             filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))  # type: ignore[union-attr]
         non_content = non_content_files | content_root_files
-        log_files('non-content files (not collected)', non_content_files)
 
         infrastructure_test_data = self._glob(('Tests/scripts/infrastructure_tests/tests_data',))
-        log_files('infrastructure test data (not collected)', infrastructure_test_data)
 
         self.files_to_ignore = (non_content | infrastructure_test_data) - self.files_triggering_sanity_tests
-        log_files('all ignored files', self.files_to_ignore)
 
         self.id_set_path = PathManager.ARTIFACTS_PATH / 'id_set.json'
         self.conf_path = PathManager.ARTIFACTS_PATH / 'conf.json'
