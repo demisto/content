@@ -23,17 +23,21 @@ class ASClient:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        client_args = assign_params({
-            "self_deployed": True,
-            "auth_id": app_id,
-            "token_retrieval_url": 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            "grant_type": GRANT_BY_CONNECTION[connection_type],
-            "base_url": f'https://management.azure.com/subscriptions/{subscription_id}',
-            "verify": verify,
-            "proxy": proxy,
-            "resource": 'https://management.core.windows.net',
-            "scope": SCOPE_BY_CONNECTION[connection_type]
-        })
+        client_args = assign_params(
+            self_deployed=True,
+            auth_id=app_id,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            grant_type=GRANT_BY_CONNECTION[connection_type],
+            base_url=f'https://management.azure.com/subscriptions/{subscription_id}',
+            verify=verify,
+            proxy=proxy,
+            resource='https://management.core.windows.net' if 'Device' in connection_type else None,
+            scope=SCOPE_BY_CONNECTION[connection_type],
+            tenant_id=tenant_id,
+            enc_key=enc_key,
+            auth_code=auth_code,
+            redirect_uri=redirect_uri
+        )
         self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
