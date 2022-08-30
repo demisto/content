@@ -1502,12 +1502,12 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
     limit, offset = parse_limit_and_offset_values(limit=args.pop("limit", "50"), offset=args.pop("offset", "0"))
     cves = argToList(arg=args.get("cve", []))
 
-    context_output, raw_response = [], []
+    context_output, raw_response = [], {}
     final_impacted_resources = {"images": [], "registryImages": [], "hosts": [], "functions": []}
     for cve in cves:
         # api does not support offset/limit
         if cve_impacted_resources := client.get_impacted_resources(cve=cve):
-            raw_response.append(cve_impacted_resources)
+            raw_response[cve] = cve_impacted_resources
             for resources in ["images", "registryImages", "hosts", "functions"]:
                 if resources in cve_impacted_resources and cve_impacted_resources.get(resources) is not None:
                     cve_impacted_resources[resources] = filter_api_response(
