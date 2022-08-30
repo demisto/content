@@ -12,95 +12,6 @@ from typing import Tuple
 # Local packages
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-TC_INDICATOR_TO_XSOAR_INDICATOR = {
-    #indicator_type: {Raw Field: XSOAR Indicator Field}
-    'IP': {'dateAdded': 'firstseenbysource',
-           'lastModified': 'updateddate',
-           'threatAssessRating': 'verdict',
-           'threatAssessconfidence': 'confidence',
-           'description': 'description',
-           'summary': 'shortdescription',
-           'ip': 'address'},
-    'CIDR': {'dateAdded': 'firstseenbysource',
-             'lastModified': 'updateddate',
-             'threatAssessRating': 'verdict',
-             'threatAssessconfidence': 'confidence',
-             'summary': 'name',
-             'threatAssessScore': 'sourceoriginalseverity'},
-    'Email': {'dateAdded': 'firstseenbysource',
-              'lastModified': 'updateddate',
-              'threatAssessRating': 'verdict',
-              'threatAssessconfidence': 'confidence',
-              'description': 'description',
-              'summary': 'name',
-              'adress': 'emailaddress'},
-    'File': {'dateAdded': 'firstseenbysource',
-             'lastModified': 'updateddate',
-             'threatAssessconfidence': 'confidence',
-             'description': 'description',
-             'summary': 'name',
-             'sha256': 'sha256'},
-    'Host': {'dateAdded': 'firstseenbysource',
-             'lastModified': 'updateddate',
-             'threatAssessconfidence': 'confidence',
-             'description': 'description',
-             'summary': 'name',
-             'hostname': 'hostname'},
-    'Mutex': {'dateAdded': 'firstseenbysource',
-              'threatAssessRating': 'verdict',
-              'description': 'description',
-              'threatAssessconfidence': 'confidence',
-              'summary': 'name',
-              'mutex': 'mutex'},
-    'Registry Key': {'dateAdded': 'firstseenbysource',
-                     'lastModified': 'updateddate',
-                     'threatAssessRating': 'verdict',
-                     'threatAssessconfidence': 'confidence',
-                     'description': 'description',
-                     'summary': 'name'},
-    'URL': {'dateAdded': 'firstseenbysource',
-            'lastModified': 'updateddate',
-            'threatAssessRating': 'verdict',
-            'threatAssessconfidence': 'confidence',
-            'description': 'description',
-            'summary': 'name',
-            'text': 'Address'},
-    'ASN': {'dateAdded': 'firstseenbysource',
-            'lastModified': 'updateddate',
-            'threatAssessRating': 'verdict',
-            'threatAssessconfidence': 'confidence',
-            'ASNumber': 'Value'},
-    'Attack Pattern': {'dateAdded': 'firstseenbysource',
-                     'lastModified': 'updateddate',
-                     'description': 'description',
-                     'name': 'name'},
-    'Campaign': {'firstSeen': 'firstseenbysource',
-                 'lastModified': 'updateddate',
-                 'name': 'name'},
-    'Course of Action': {'dateAdded': 'firstseenbysource',
-                         'lastModified': 'updateddate',
-                         'name': 'name'},
-    'Intrusion Set': {'dateAdded': 'firstseenbysource',
-                      'lastModified': 'updateddate',
-                      'name': 'name'},
-    'Malware': {'dateAdded': 'firstseenbysource',
-                'lastModified': 'updateddate',
-                'name': 'name'},
-    'Report': {'dateAdded': 'firstseenbysource',
-               'lastModified': 'updateddate',
-               'name': 'name',
-               'publishDate': 'published'},
-    'Tool': {'dateAdded': 'firstseenbysource',
-                'lastModified': 'updateddate',
-                'name': 'name'},
-    'CVE': {'dateAdded': 'firstseenbysource',
-            'lastModified': 'updateddate',
-            'name': 'name',
-            'publishDate': 'published'}
-}
-
-MAPPING_RELATIONSHIP_TYPES = {'yay': 'IP'}
-
 #########
 # Notes #
 #########
@@ -121,21 +32,11 @@ INTEGRATION_CONTEXT_NAME = 'ThreatConnect'
 COMMAND_OUTPUT = Tuple[str, Union[Dict[str, Any], List[Any]], Union[Dict[str, Any], List[Any]]]
 INDICATOR_MAPPING_NAMES = {
     'Address': FeedIndicatorType.IP,
-    'CIDR': FeedIndicatorType.CIDR,
+    'Host': FeedIndicatorType.Host,
     'EmailAddress': FeedIndicatorType.Email,
     'File': FeedIndicatorType.File,
-    'Host': FeedIndicatorType.Host,
-    'Mutex': 'Mutex',
-    'Registry Key': FeedIndicatorType.Registry,
     'URL': FeedIndicatorType.URL,
-    'Attack Pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-    'Campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
-    'Course of Action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
-    'Intrusion Set': ThreatIntel.ObjectsNames.INTRUSION_SET,
-    'Malware': ThreatIntel.ObjectsNames.MALWARE,
-    'Report': ThreatIntel.ObjectsNames.REPORT,
-    'Tool': ThreatIntel.ObjectsNames.TOOL,
-    'Vulnerability': FeedIndicatorType.CVE,
+    'CIDR': FeedIndicatorType.CIDR,
 }
 
 
@@ -153,103 +54,56 @@ def suppress_stdout():
     sys.stdout = original_stdout
 
 
+def set_fields_query(fields: list) -> str:
+    fields_str = ''
+    for field in fields:
+        fields_str += f'&fields={field}'
+    return fields_str
+
+
 def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) -> int:
-    """ Calculate dbot score by ThreatConnect assess score (0-500) to range of 0-3:
+    """ Calculate dbot score by ThreatConnect assess score (0-1000) to range of 0-3:
         1. feed dev docs:https://xsoar.pan.dev/docs/integrations/feeds
-        2. For more info - https://threatconnect.com/blog/quickly-assess-maliciousness-suspicious-activity-analyze/
+        2. For more info - https://training.threatconnect.com/learn/article/threatassess-and-cal-kb-article
 
     Args:
-        threat_assess_score: score between 0-500.
+        threat_assess_score: score between 0-1000.
 
     Returns:
         int: Calculated DbotScore (range 0-3).
     """
     score = 0
     if isinstance(threat_assess_score, int):
-        score = ceil(threat_assess_score / (500 / 3))
+        score = ceil(threat_assess_score / (1000 / 3))
 
     return score
 
 
 def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     """ Parsing indicator by indicators demisto convension.
+
     Args:
         indicator: Indicator as raw response.
+
     Returns:
         dict: Parsed indicator.
     """
-    indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
-    fields = add_indicator_fields(indicator, indicator_type)
     indicator_obj = {
         "value": indicator.get('summary'),
-        "type": indicator_type,
+        "type": INDICATOR_MAPPING_NAMES.get(indicator.get('type', '')),
         "rawJSON": indicator,
         "score": calculate_dbot_score(indicator.get("threatAssessScore")),
-        "fields": fields
+        "fields": {
+            "tags": argToList(demisto.getParam("feedTags")),
+        },
     }
 
     tlp_color = demisto.getParam('tlp_color')
     if tlp_color:
         indicator_obj['fields']['trafficlightprotocol'] = tlp_color  # type: ignore
 
-    if demisto.getParam('retrieveRelationships'):
-        relationships = create_indicator_relationships(indicator_obj)
-        if relationships:
-            indicator_obj['fields']['relationships'] = relationships
     return indicator_obj
 
-def add_indicator_fields(indicator, indicator_types):
-    indicator_fields = TC_INDICATOR_TO_XSOAR_INDICATOR[indicator_types]
-    fields: dict = {}
-    for indicator_key, xsoar_indicator_key in indicator_fields.items():
-        fields[xsoar_indicator_key] = indicator[indicator_key]
-
-    raw_tags = indicator.get('tags',{}).get('data')
-    tags = ', '.join([tag.get('name','') for tag in raw_tags])
-    fields['tags'] = tags
-    fields['reportedby'] = indicator.get('ownerName','') or indicator.get('source','')
-
-    fields['feedrelatedindicators'] = indicator.get("associatedIndicators", {}).get('data') or []
-    fields['feedrelatedindicators'].extend(indicator.get("associatedGroups", {}).get('data') or [])
-
-    fields['description'] = indicator.get('attributes', {}).get('description','')
-    fields['action'] = indicator.get('attributes', {}).get('action','')
-
-    return fields
-
-def create_indicator_relationships(indicators_list):
-    relationships_list: List[EntityRelationship] = []
-    for indicator in indicators_list:
-        entities_b = indicator.get('fields', {}).get('feedrelatedindicators',[])
-        for entity_b in entities_b:
-
-            relationships_list.extend(create_relationships(indicator.get('value'), indicator.get('type'), 
-                                                           entity_b.get('summary') or entity_b.get('data'), entity_b.get('type')))
-    
-    return relationships_list
-
-def create_relationships(entity_a: str, entity_a_type: str, entity_b: str, entity_b_type: str):
-    """
-    Create a list of entityRelationship object from the api result
-    entity_a: (str) - source of the relationship
-    entity_a_type: (str) - type of the source of the relationship
-    relationships_response: (dict) - the relationship response from the api
-    reliability: The reliability of the source.
-
-    Returns a list of EntityRelationship objects.
-    """
-    relationships_list: List[EntityRelationship] = []
-
-    if entity_b and entity_b_type and name:
-
-        relationships_list.append(
-            EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type, name=EntityRelationship.Relationships.RELATED_TO,
-                                entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=demisto.getParam('feedReliability'),
-                                brand=INTEGRATION_NAME))
-    else:
-        demisto.info(
-            f"WARNING: Relationships will not be created to entity A {entity_a} with relationship name {EntityRelationship.Relationships.RELATED_TO}")
-    return relationships_list
 
 ##########
 # Client #
@@ -267,22 +121,24 @@ class Method(str, Enum):
     DELETE = 'DELETE'
 
 
-class Client:
-    def __init__(self, api_id: str, api_secret: str, base_url: str, verify: bool = False):
+class Client(BaseClient):
+    def __init__(self, api_id: str, api_secret: str, base_url: str, verify: bool = False, proxy: bool = False):
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         self.api_id = api_id
         self.api_secret = api_secret
-        self.base_url = base_url
-        self.verify = verify
 
     def make_request(self, method: Method, url_suffix: str, payload: dict = {}, params: dict = {},
-                     parse_json=True):  # pragma: no cover  # noqa
+                     parse_json=True, get_next=False):  # pragma: no cover  # noqa
         headers = self.create_header(url_suffix, method)
 
-        url = urljoin(self.base_url, url_suffix)
-        response = requests.request(method=method, url=url, headers=headers, data=payload, params=params,
-                                    verify=self.verify)
+        response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type='json',
+                                      params=params,
+                                      headers=headers)
+
+        if get_next:
+            return response.get('data'), response.get('status'), response.get('next')
         if parse_json:
-            return json.loads(response.text), response.status_code
+            return response.get('data'), response.get('status')
         return response
 
     def create_header(self, url_suffix: str, method: Method) -> dict:
@@ -299,7 +155,17 @@ class Client:
 ######################
 
 
-def module_test_command(client: Client):
+def create_or_query(param_name: str, delimiter_str: str) -> str:
+    if not delimiter_str:
+        return ''
+    arr = delimiter_str.split(',')
+    query = ''
+    for item in arr:
+        query += f'{param_name}="{item}" OR '
+    return query[:len(query) - 3]
+
+
+def module_test_command(client: Client):  # pragma: no cover
     """ Test module - Get 4 indicators from ThreatConnect.
 
     Args:
@@ -310,9 +176,9 @@ def module_test_command(client: Client):
         dict: Operation entry context - Empty.
         dict: Operation raw response - Empty.
     """
-    url = '/api/v3/groups?resultLimit=4'
-    response, status_code = client.make_request(Method.GET, url)
-    if status_code == 200:
+    url = '/api/v3/groups?resultLimit=2'
+    response, status = client.make_request(Method.GET, url)
+    if status == 'Success':
         return "ok", {}, {}
     else:
         return_error('Error from the API: ' + response.get('message',
@@ -320,14 +186,7 @@ def module_test_command(client: Client):
                                                            'local help desk'))
 
 
-def set_fields_query(fields: list) -> str:
-    fields_str = ''
-    for field in fields:
-        fields_str += f'&fields={field}'
-    return fields_str
-
-
-def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no cover
+def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no cover
     """ Fetch indicators from ThreatConnect
 
     Args:
@@ -336,53 +195,41 @@ def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no 
     Returns:
         list: indicator to populate in demisto server.
     """
-    owners = f'AND ({create_or_query(demisto.getParam("owners"), "ownerName")}) '
-    tags = f'AND ({create_or_query(demisto.getParam("tags"), "tags")}) '
-    status = f'AND ({create_or_query(demisto.getParam("status"), "status")}) '
+    owners = f'AND ({create_or_query("ownerName", demisto.getParam("owners"))}) '
+    tags = f'AND ({create_or_query("tags", demisto.getParam("tags"))}) '
+    status = f'AND ({create_or_query("status", demisto.getParam("status"))}) '
     fields = set_fields_query(argToList(demisto.getParam("fields")))
-    group_type = f'AND ({create_or_query(demisto.params().get("group_type", "Incident"), "typeName")}) '
-    first_fetch_time = demisto.getParam("first_fetch_time")
+    last_run = demisto.getLastRun()
+    last_run = last_run.get('from_date')
+    demisto.debug('last run get: ' + str(last_run))
     from_date = ''
-    if first_fetch_time:
-        first_fetch_time = dateparser.parse(demisto.getParam('first_fetch_time').strip()).strftime("%Y-%m-%d")  # type: ignore # noqa
-        from_date = f'AND (dateAdded > "{first_fetch_time}") '
-    page = 0
-    tql = f'{owners if owners != "AND () " else ""}{tags if tags != "AND () " else ""}' \
-          f'{group_type if group_type != "AND () " else ""}{status if status != "AND () " else ""}' \
-          f'{from_date if from_date != "AND () " else ""}'.replace('AND', '', 1)
+    if last_run:
+        from_date = f'AND (dateAdded > "{last_run}") '
+    tql = f'{owners if owners != "AND () " else ""}' \
+          f'{tags if tags != "AND () " else ""}' \
+          f'{from_date if from_date != "AND () " else ""}' \
+          f'{status if status != "AND () " else ""}'.replace('AND', '', 1)
     if tql:
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
         tql = f'?tql={tql}'
     else:
         tql = ''
-        if fields:
-            fields = fields.replace('&', '?', 1)  # type: ignore
-    url = f'/api/v3/groups{tql}{fields}&resultStart={page}&resultLimit=500'
+    url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=200&sorting=dateAdded%20ASC'
+    if '?' not in url:
+        url = url.replace('&', '?', 1)  # type: ignore
     indicators = []
     while True:
-        response, status_code = client.make_request(Method.GET, url)
-        if status_code == 200:
-            indicators.extend(response.get('data', {}))
-            if 'next' in response:
-                url = response.get('next').replace(demisto.getParam('tc_api_path'), '')
+        demisto.debug('URL: ' + url)
+        response, status, next = client.make_request(Method.GET, url, get_next=True)
+        if status == 'Success':
+            indicators.extend(response)
+            # Limit the number of results to not get an error from the API
+            if len(indicators) < 15000 and next:
+                url = next.replace(demisto.getParam('tc_api_path'), '')
             else:
                 break
-        else:
-            return_error('Error from the API: ' + response.get('message',
-                                                               'An error has occurred if it persist please contact '
-                                                               'your local help desk'))
 
-    return [parse_indicator(indicator) for indicator in indicators]
-
-
-def create_or_query(delimiter_str: str, param_name: str) -> str:
-    if not delimiter_str:
-        return ''
-    arr = delimiter_str.split(',')
-    query = ''
-    for item in arr:
-        query += f'{param_name}="{item}" OR '
-    return query[:len(query) - 3]
+    return indicators
 
 
 def get_indicators_command(client: Client):  # pragma: no cover
@@ -401,18 +248,15 @@ def get_indicators_command(client: Client):  # pragma: no cover
     owners = demisto.getArg('owners') or demisto.getParam('owners')
     owners = create_or_query(owners, "ownerName")
     owners = urllib.parse.quote(owners.encode('utf8'))  # type: ignore
-    
     url = f'/api/v3/indicators?tql={owners}&resultStart={offset}&resultLimit={limit}'
-    response, status_code = client.make_request(Method.GET, url)
-    if status_code == 200:
-        readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
-                                               t=[parse_indicator(indicator) for indicator in response.get('data')])  # type: ignore # noqa
 
-        return readable_output, {}, list(response.get('data'))
-    else:
-        return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your '
-                                                           'local help desk'))
+    response, status = client.make_request(Method.GET, url)
+    if status == 'Success':
+        readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
+                                               t=[parse_indicator(indicator) for indicator in
+                                                  response])  # type: ignore # noqa
+
+        return readable_output, {}, list(response)
 
 
 def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
@@ -427,25 +271,24 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
         dict: Operation raw response.
     """
     url = '/api/v3/security/owners?resultLimit=500'
+    response, status = client.make_request(Method.GET, url)
 
-    response, status_code = client.make_request(Method.GET, url)
-    if status_code != 200:
-        return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your '
-                                                           'local help desk'))
-    raw_response = response.get('data')
     readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Owners",
-                                           t=list(raw_response))
+                                           t=list(response))
 
-    return readable_output, {}, list(raw_response)
+    return readable_output, {}, list(response)
 
 
 def main():  # pragma: no cover
     insecure = not demisto.getParam('insecure')
-    client = Client(demisto.getParam('api_access_id'), demisto.getParam('api_secret_key').get('password'),
-                    demisto.getParam('tc_api_path'), insecure)
+    proxy = not demisto.getParam('proxy')
+    credentials = demisto.params().get('api_credentials', {})
+    access_id = credentials.get('identifier') or demisto.params().get('api_access_id')
+    secret_key = credentials.get('password') or demisto.params().get('api_secret_key')
+    client = Client(access_id, secret_key,
+                    demisto.getParam('tc_api_path'), verify=insecure, proxy=proxy)
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': module_test_command,
         f'{INTEGRATION_COMMAND_NAME}-get-indicators': get_indicators_command,
@@ -453,13 +296,17 @@ def main():  # pragma: no cover
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_groups_command(client)
+            indicators = fetch_indicators_command(client)
+            if indicators:
+                demisto.info('Last run set:' + str(indicators[-1].get('dateAdded')))
+                demisto.setLastRun({'from_date': indicators[-1].get('dateAdded')})
+            indicators = [parse_indicator(indicator) for indicator in indicators]
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
+
         else:
             readable_output, outputs, raw_response = commands[command](client)
             return_outputs(readable_output, outputs, raw_response)
-
     except Exception as e:
         return_error(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')
 

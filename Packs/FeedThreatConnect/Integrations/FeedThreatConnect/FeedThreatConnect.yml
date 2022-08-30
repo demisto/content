@@ -8,32 +8,38 @@ configuration:
   name: tc_api_path
   required: true
   type: 1
-- additionalinfo: The API ID key
+- displaypassword: Secret key
+  additionalinfo: The API ID key
   display: Access ID
-  name: api_access_id
-  required: true
-  type: 0
-- additionalinfo: The secrete key for the API
-  name: api_secret_key
+  name: api_credentials
   required: true
   type: 9
+- additionalinfo: API - Access ID
+  display: Access ID
+  name: api_access_id
+  type: 4
+  hidden: true
+- additionalinfo: API - Secret key
+  display: Secret key
+  name: api_secret_key
+  type: 4
+  hidden: true
 - additionalinfo: A comma-separated list of tags to filter by.
   display: Tags to filter results by
   name: tags
   required: false
   type: 0
-- additionalinfo: A comma-separated list of owners to fetch indicators from.
-  display: Owners
+- display: Owners
   name: owners
   required: false
   type: 0
+  additionalinfo: A comma-separated list of owners to fetch indicators from.
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: None
   display: Indicator Reputation
   name: feedReputation
@@ -45,7 +51,6 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
   options:
@@ -57,9 +62,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed.
-  display: Traffic Light Protocol Color
+  defaultvalue: F - Reliability cannot be judged
+- display: Traffic Light Protocol Color
   name: tlp_color
   options:
   - RED
@@ -68,109 +72,39 @@ configuration:
   - WHITE
   required: false
   type: 15
-- name: feedExpirationPolicy
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+- display: ''
+  name: feedExpirationPolicy
+  required: false
+  type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  required: false
-  type: 17
-- name: feedExpirationInterval
+- display: ''
+  name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '240'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
+  defaultvalue: '240'
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
-- additionalinfo: Supports CSV values.
-  display: Tags
+- display: Tags
+  required: false
+  type: 0
+  additionalinfo: Supports CSV values.
   name: feedTags
-  required: false
-  type: 0
-- additionalinfo: Fetch specific ThreatConnect indicator types. Default value is "All".
-  defaultvalue: All
-  display: Indicator types
-  hidden: false
-  name: indicatorType
-  options:
-  - All
-  - Email Address
-  - File
-  - Host
-  - URL
-  - ASN
-  - CIDR
-  - Email Subject
-  - Hashtag
-  - Mutex
-  - Registry Key
-  - User Agent
-  - Address
-  required: false
-  type: 16
-- additionalinfo: Fetch specific ThreatConnect group types. Default value is "All".
-  defaultvalue: All
-  display: Group type
-  hidden: false
-  name: groupType
-  options:
-  - All
-  - Attack Pattern
-  - Campaign
-  - Course of Action
-  - Intrusion Set
-  - Malware.Report
-  - Tool
-  - Vulnerability
-  required: false
-  type: 16
-- additionalinfo: Fetch active only indicators when true. Default is "True".
-  defaultvalue: 'true'
-  display: Active Indicators Only
-  hidden: false
-  name: activeOnly
-  required: false
-  type: 8
-- additionalinfo: Fetch related indicators. Default is "False".
-  defaultvalue: 'false'
-  display: Retrieve Relationships
-  hidden: false
-  name: retrieveRelationships
-  required: false
-  type: 8
-- additionalinfo: For more information, use the link https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
-  display: Indicator Query
-  hidden: false
-  name: indicatorQuery
-  required: false
-  type: 12
-- additionalinfo: Require an integer that will determine the threshold. i.e. “55”
-    - Greater than 55. Relevant for ThreatConnect Indicators only.
-  display: Confidence Threshold
-  hidden: false
-  name: confidence
-  required: false
-  type: 0
-- additionalinfo: Require an an integer that will determine the threshold. i.e. “250”
-    - Greater than 250. Relevant for ThreatConnect Indicators only.
-  display: Threat Assess Score Threshold
-  hidden: false
-  name: threatAssessScore
-  required: false
-  type: 0
 description: This integration fetches indicators from ThreatConnect.
 display: ThreatConnect Feed
 name: ThreatConnect Feed
@@ -179,7 +113,8 @@ script:
   - arguments:
     - default: false
       description: |
-        Comma-separated list of owners to fetch indicators from. (If not specified, will retrieve only indicators owned by the account. If you supply this argument, it overwrites the "Owners" parameter.)
+        Comma-separated list of owners to fetch indicators from. (If
+        not specified will retrieve only indicators owned by the account. If you supply this argument, it overwrites the "Owners" parameter.)
       isArray: false
       name: owners
       required: false
@@ -200,53 +135,6 @@ script:
       - ''
       required: false
       secret: false
-    - default: false
-      description: For more information, use the link https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
-      isArray: false
-      name: tql_query
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Multi-select list that will allow filtering of the retrieved indicators.
-        Comma-seperated list.
-      isArray: false
-      name: indicator_type
-      predefined:
-      - address
-      - asn
-      - cidr
-      - email_address.file
-      - host
-      - mutex
-      - registry_key
-      - url
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Fetch active only indicators when true
-      isArray: false
-      name: active_only
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Require an input of an integer, this will fetch indicators with
-        confidence of “greater than” the input
-      isArray: false
-      name: confidence
-      required: false
-      secret: false
-    - default: false
-      description: Require an an integer that will determine the threshold
-      isArray: false
-      name: threat_asses_score
-      required: false
-      secret: false
     deprecated: false
     description: Gets indicators from ThreatConnect.
     execution: false
@@ -255,7 +143,7 @@ script:
     description: Get available indicators owners.
     execution: false
     name: tc-get-owners
-  dockerimage: demisto/threatconnect-tcex:1.0.0.26622
+  dockerimage: demisto/python3:3.10.5.31928
   feed: true
   isfetch: false
   longRunning: false
