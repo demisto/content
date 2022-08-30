@@ -220,7 +220,7 @@ def get_indicators(client: Client, args_type: str, type_name: str, args: dict) -
     url = f'/api/v3/indicators?tql={tql}&resultStart=0&resultLimit=1000'
 
     response = client.make_request(Method.GET, url)
-    
+
     indicators = response
 
     ec, indicators = create_context(indicators, include_dbot_score=True)
@@ -334,7 +334,7 @@ def tc_get_indicators_command(client: Client, args: dict, confidence_threshold: 
     if not tql_prefix:
         url = url.replace('&', '?', 1)
     response = client.make_request(Method.GET, url)
-    
+
     if return_raw:
         return response
     indicators = response
@@ -353,7 +353,7 @@ def tc_get_owners_command(client: Client, args: dict) -> Any:  # pragma: no cove
     url = '/api/v3/security/owners'
 
     response = client.make_request(Method.GET, url)
-   
+
     raw_owners = response
     owners = []
     for owner in raw_owners:
@@ -396,9 +396,9 @@ def tc_get_indicator_owners(client: Client, args: dict) -> Any:  # pragma: no co
 def get_group_associated_groups(client: Client, args: dict) -> Any:  # pragma: no cover
     group_id = args.get('group_id')
     response = list_groups(client, args, include_associated_groups='true', return_raw=True,
-                                        group_id=group_id)
+                           group_id=group_id)
     headers = ['GroupID', 'Name', 'Type', 'OwnerName', 'DateAdded']
-    
+
     data = response.get('data', [])
     contents = []
     if response.get('status') == 'Success':
@@ -432,7 +432,6 @@ def test_integration(client: Client, args: dict) -> None:  # pragma: no cover
     url = '/api/v3/groups?resultLimit=1'
     client.make_request(Method.GET, url)
     return_results('ok')
-    
 
 
 def get_last_run_time(groups: list) -> str:
@@ -458,9 +457,9 @@ def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
         last_run = dateparser.parse(last_run)
 
     response = list_groups(client, {}, group_type=group_type[0], include_tags='true',
-                                        include_attributes='true',
-                                        return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run)
-    
+                           include_attributes='true',
+                           return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run)
+
     demisto.incidents(response)
     demisto.setLastRun({'last': get_last_run_time(response)})
 
@@ -471,8 +470,8 @@ def tc_fetch_incidents_command(client: Client, args: dict) -> None:  # pragma: n
     '''
     id = args.get('incidentId')
     response = list_groups(client, args, group_type='Incident', include_tags='true', include_attributes='true',
-                                        return_raw=True, group_id=id)
-    
+                           return_raw=True, group_id=id)
+
     groups = (response)
 
     return_results({
@@ -491,8 +490,8 @@ def tc_fetch_incidents_command(client: Client, args: dict) -> None:  # pragma: n
 def tc_get_incident_associate_indicators_command(client: Client, args: dict) -> None:  # pragma: no cover
     incident_id = args.get('incidentId')
     response = list_groups(client, args, group_type='Incident', include_associated_indicators='true',
-                                        return_raw=True, group_id=incident_id)
-    
+                           return_raw=True, group_id=incident_id)
+
     groups = (response)
     if not groups:
         return_error('No incident groups were found for the given arguments')
@@ -510,7 +509,7 @@ def tc_get_incident_associate_indicators_command(client: Client, args: dict) -> 
 
 def tc_get_events(client: Client, args: dict) -> None:  # pragma: no cover
     response = list_groups(client, args, group_type='Event', return_raw=True)
-    
+
     content = []
     headers = ['ID', 'Name', 'OwnerName', 'EventDate', 'DateAdded', 'Status', 'Tags', 'AssociatedIndicators',
                'AssociatedGroups']
@@ -668,7 +667,7 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
         url = url.replace('&', '?', 1)
 
     response = client.make_request(Method.GET, url)
-    
+
     if return_raw:
         return response
     content = []
@@ -709,7 +708,7 @@ def tc_get_tags_command(client: Client, args: dict) -> None:  # pragma: no cover
 
     url = f'/api/v3/tags?{name}resultStart={page}&resultLimit={limit}'
     response = client.make_request(Method.GET, url)
-    
+
     tags = [t['name'] for t in response]
 
     return_results({
@@ -726,7 +725,7 @@ def tc_get_indicator_types(client: Client, args: dict) -> None:  # pragma: no co
     url = '/api/v2/types/indicatorTypes'
     content = []
     response = client.make_request(Method.GET, url)
-    
+
     headers = ['Name', 'Custom', 'Parsable', 'ApiBranch', 'CasePreference', 'value1Label', 'Value1Type']
 
     for indicator_type in response.get('data', {}).get('indicatorType', []):
@@ -858,7 +857,7 @@ def tc_delete_indicator_command(client: Client, args: dict) -> None:  # pragma: 
     indicator_id = args.get('indicator')
     url = f'/api/v3/indicators/{indicator_id}'
     response = client.make_request(Method.DELETE, url)
-    
+
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
@@ -951,7 +950,7 @@ def tc_create_incident_command(client: Client, args: dict) -> None:  # pragma: n
     tags = args.get('tag')
     security_labels = args.get('securityLabels')
     response = create_group(client, args, group_type='Incident', tags=tags, name=name,
-                                         security_labels=security_labels)
+                            security_labels=security_labels)
 
     ec = {
         'ID': response.get('data', {}).get('id'),
@@ -1018,7 +1017,7 @@ def create_group(client: Client, args: dict, name: str = '', event_date: str = '
             payload['password'] = password
     url = '/api/v3/groups'
     response = client.make_request(Method.POST, url, payload=json.dumps(payload))  # type: ignore
-    
+
     return response
 
 
@@ -1061,7 +1060,7 @@ def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indi
 
     url = '/api/v3/indicators'
     response = client.make_request(Method.POST, url, payload=json.dumps(payload))  # type: ignore
-    
+
     ec, indicators = create_context([response])
     return_results({
         'Type': entryTypes['note'],
@@ -1074,7 +1073,8 @@ def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indi
     })
 
 
-def tc_update_indicator_command(client: Client, args: dict, rating: str = None, indicator: str = None, confidence: str = None,
+def tc_update_indicator_command(client: Client, args: dict, rating: str = None, indicator: str = None,
+                                confidence: str = None,
                                 dns_active: str = None, tags: str = None,
                                 security_labels: str = None, return_raw: bool = False, whois_active: str = None,
                                 mode: str = 'append', incident_id: str = None) -> Any:  # pragma: no cover
@@ -1100,9 +1100,9 @@ def tc_update_indicator_command(client: Client, args: dict, rating: str = None, 
         payload['associatedGroups'] = {'data': [{'id': args.get('incidentId', incident_id)}], 'mode': mode}
     url = f'/api/v3/indicators/{indicator}'
     response, = client.make_request(Method.PUT, url, payload=json.dumps(payload))  # type: ignore
-    
+
     if return_raw:
-        return response, 
+        return response,
     ec, indicators = create_context([response])
 
     return_results({
@@ -1138,7 +1138,7 @@ def tc_delete_indicator_tag_command(client: Client, args: dict) -> None:  # prag
     tag = args.get('tag')
     indicator_id = args.get('indicator')
     response = tc_update_indicator_command(client, args, mode='delete', return_raw=True, tags=tag,
-                                                        indicator=indicator_id)
+                                           indicator=indicator_id)
     ec, indicators = create_context([response])
 
     return_results({
@@ -1159,7 +1159,7 @@ def tc_incident_associate_indicator_command(client: Client, args: dict) -> None:
     group_id = args.get('incidentId')
     indicator = args.get('indicator')
     response = tc_update_group(client, args, mode='append', raw_data=True, group_id=group_id,
-                                            associated_indicator_id=indicator)
+                               associated_indicator_id=indicator)
     ec, indicators = create_context([response])
 
     return_results({
@@ -1175,7 +1175,8 @@ def tc_incident_associate_indicator_command(client: Client, args: dict) -> None:
     })
 
 
-def tc_update_group(client: Client, args: dict, attribute_value: str = '', attribute_type: str = '', custom_field: str = '',
+def tc_update_group(client: Client, args: dict, attribute_value: str = '', attribute_type: str = '',
+                    custom_field: str = '',
                     associated_indicator_id: str = None,
                     associated_group_id: str = '', security_labels: list = [], tags: list = [],
                     mode: str = 'append', raw_data=False, group_id=None) -> Any:  # pragma: no cover
@@ -1211,7 +1212,7 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
         group_id = args.get("id")
     url = f'/api/v3/groups/{group_id}'
     response = client.make_request(Method.PUT, url, payload=json.dumps(payload))  # type: ignore
-    
+
     if raw_data:
         return response
     ec = {
@@ -1339,7 +1340,7 @@ def get_group(client: Client, args: dict) -> None:  # pragma: no cover
     '''
     group_id = args.get('group_id')
     response = list_groups(client, args, return_raw=True, group_id=group_id)
-    
+
     group = response[0]
 
     contents = {
@@ -1367,7 +1368,7 @@ def get_groups(client: Client, args: dict) -> None:  # pragma: no cover
     Command deprecated in v3 integration, replaced by list_groups
     '''
     response = list_groups(client, args, return_raw=True)
-    
+
     groups = response
     contents = []
     for group in groups:
@@ -1399,7 +1400,7 @@ def get_group_tags(client: Client, args: dict) -> None:  # pragma: no cover
     '''
     group_id = args.get('group_id')
     response = list_groups(client, args, return_raw=True, include_tags='true', group_id=group_id)
-    
+
     tags = response[0].get('tags', {}).get('data', [])
     contents = []
     context_entries = []
@@ -1430,8 +1431,8 @@ def get_group_indicators(client: Client, args: dict) -> None:  # pragma: no cove
     '''
     group_id = args.get('group_id')
     response = list_groups(client, args, return_raw=True, include_associated_indicators='true',
-                                        group_id=group_id)
-    
+                           group_id=group_id)
+
     indicators = response[0].get('associatedIndicators', {}).get('data', [])
     contents = []
     for indicator in indicators:
@@ -1467,7 +1468,7 @@ def get_group_attributes(client: Client, args: dict) -> None:  # pragma: no cove
     '''
     group_id = args.get('group_id')
     response = list_groups(client, args, return_raw=True, include_attributes='true', group_id=group_id)
-    
+
     attributes = response[0].get('attributes', {}).get('data', [])
     contents = []
     headers = ['AttributeID', 'Type', 'Value', 'DateAdded', 'LastModified', 'Displayed']
@@ -1500,7 +1501,7 @@ def get_group_security_labels(client: Client, args: dict) -> None:  # pragma: no
     '''
     group_id = args.get('group_id')
     response = list_groups(client, args, return_raw=True, include_security_labels='true', group_id=group_id)
-    
+
     security_labels = response[0].get('securityLabels', {}).get('data', [])
     contents = []
     headers = ['Name', 'Description', 'DateAdded']
