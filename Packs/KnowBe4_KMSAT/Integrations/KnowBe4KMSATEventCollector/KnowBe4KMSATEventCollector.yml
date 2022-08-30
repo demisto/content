@@ -41,17 +41,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: The vendor corresponding to the integration that produced the events.
-  name: vendor
-  type: 0
-  defaultvalue: knowbe4
-  hidden: true
-- display: The product corresponding to the integration that produced the events.
-  name: product
-  type: 0
-  defaultvalue: kmsat
-  hidden: true
-  required: false
 description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
 display: 'KnowBe4 KMSAT Event Collector'
 name: KnowBe4 KMSAT Event Collector

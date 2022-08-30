@@ -14,6 +14,8 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 MAX_EVENTS_PER_REQUEST = 100
+VENDOR = 'knowbe4'
+PRODUCT = 'kmsat'
 
 ''' CLIENT CLASS '''
 
@@ -107,7 +109,7 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime
     events: List[Dict] = []
     if not last_run and first_fetch_time:
         last_run['latest_event_time'] = first_fetch_time
-    elif type(last_run) == str:
+    elif type(last_run.get('latest_event_time')) == str:
         last_run['latest_event_time'] = parse_date_string(last_run.get('latest_event_time'))
     while True:
         response = client.get_events_request(params=query_params).json()
@@ -181,7 +183,8 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     first_fetch_time = arg_to_datetime(params.get('first_fetch', '1 day'))
     proxy = demisto.params().get('proxy', False)
-    vendor, product = params.get('vendor'), params.get('product')
+    vendor = VENDOR
+    product = PRODUCT
     headers = {'Authorization': f'Bearer {api_key}'}
 
     demisto.debug(f'Command being called is {command}')
