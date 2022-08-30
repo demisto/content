@@ -67,7 +67,22 @@
                     "simple": "subject"
                 },
                 "severity": {
-                    "simple": "priority"
+                    "simple": "severity"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorId": {
+                    "simple": "mirror_id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorLastSync": {
+                    "simple": "mirror_last_sync"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
                 }
             }
         }
