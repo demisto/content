@@ -564,7 +564,9 @@ You can send the message `help` in order to see the supported commands:
 
        - Note: The webserver supports only POST method queries.
 
-    If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`
+    If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`.
+
+    if you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
 
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
@@ -575,7 +577,7 @@ You can send the message `help` in order to see the supported commands:
 
    <img height="75" src="./doc_files/cache.png" />
 
-   Make sure to remove the bot from the team before clearing the integration cache, and add it back after done.
+   Make sure to remove the bot from the team (only via the Teams app) before clearing the integration cache, and add it back after done.
 
 ## Download Demisto Bot
 
