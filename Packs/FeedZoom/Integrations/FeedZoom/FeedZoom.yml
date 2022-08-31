@@ -87,11 +87,11 @@ configuration:
   defaultvalue: "20160"
   type: 1
   required: false
-- defaultvalue: '240'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
+  defaultvalue: '240'
   type: 19
+  required: false
   additionalinfo: Setting a more frequent fetch interval may cause errors from the vendor.
 - display: Tags
   name: feedTags
@@ -123,7 +123,7 @@ script:
       description: The maximum number of results to return. The default value is 10.
       defaultValue: "10"
     description: Gets indicators from the feed.
-  dockerimage: demisto/btfl-soup:1.0.1.33113
+  dockerimage: demisto/btfl-soup:1.0.1.33372
   feed: true
   runonce: false
   subtype: python3
