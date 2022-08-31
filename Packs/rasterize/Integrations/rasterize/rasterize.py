@@ -142,7 +142,7 @@ def init_driver_and_display(width: int, height: int, offline_mode=False, include
         height: desired snapshot height in pixels
         offline_mode: when set to True, will block any outgoing communication
         include_url: when set to True, will include the URL bar in the image result
-    
+
     Returns:
         The driver and display sessions.
     """
@@ -252,7 +252,8 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
         for i, r_func in enumerate(rasterize_funcs):  # type: ignore[var-annotated]
             try:
                 return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,  # type: ignore[misc]
-                              offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen, include_url=include_url)
+                              offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen,
+                              include_url=include_url)
             except Exception as ex:
                 if i < (len(rasterize_funcs) - 1):
                     demisto.info(f'Failed rasterize preferred option trying second option. Exception: {ex}')
@@ -274,7 +275,8 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
 
 
 def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
-                        offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False, include_url: bool = False):
+                        offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False,
+                        include_url: bool = False):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver if include_url is set to False,
     otherwise, it uses a virtual Display to display the screen of the linux machine.
@@ -317,7 +319,8 @@ def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeTyp
 
 
 def rasterize_headless_cmd(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
-                           offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False, include_url: bool = False):
+                           offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False,
+                           include_url: bool = False):
     if include_url:
         demisto.info('include_url options is ignored in headless cmd mode. Image will not include the url bar.')
 
@@ -416,15 +419,15 @@ def get_image_screenshot(driver, include_url):
         driver: The driver session.
         include_url: when set to True, will take the screenshot of the linux machine's display using the ImageMagick's import tool
                      to include the url bar in the image.
-    
+
     Returns:
         The readed .png file of the image.
     """
 
     if include_url:
         try:
-            process = subprocess.Popen('import -window root screenshot.png'.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                       universal_newlines=True)
+            process = subprocess.Popen('import -window root screenshot.png'.split(' '), stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE, universal_newlines=True)
             stdout, _ = process.communicate()
             demisto.debug(f"Finished taking the screenshot. Stdout: {stdout}")
 
@@ -435,7 +438,7 @@ def get_image_screenshot(driver, include_url):
         try:
             with open('screenshot.png', 'rb') as f:
                 image = f.read()
-        except:
+        except Exception:
             demisto.error('Failed to read the screenshot.png image.')
             raise
         finally:

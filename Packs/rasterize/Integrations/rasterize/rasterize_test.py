@@ -252,15 +252,15 @@ def test_rasterize_include_url(mocker, include_url):
 
         def __init__(self) -> None:
             self.options = []
-        
+
         def add_argument(self, arg):
             self.options.append(arg)
-    
+
     class MockChrome:
-        
+
         def __init__(self, options, service_args) -> None:
             self.options = options.options
-    
+
     from selenium import webdriver
     import pyvirtualdisplay
 
