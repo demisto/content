@@ -39,7 +39,7 @@ class CollectionReason(str, Enum):
     ID_SET_MARKETPLACE_VERSION = 'id_set marketplace version'
     PACK_MARKETPLACE_VERSION_VALUE = 'marketplace version of pack'
     CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE = 'marketplace version of contained item'
-    SANITY_TESTS = 'sanity tests by marketplace value'
+    SANITY_TESTS = 'sanity tests'
     NON_CODE_FILE_CHANGED = 'non-code pack file changed'
     INTEGRATION_CHANGED = 'integration changed, collecting all conf.json tests using it'
     SCRIPT_PLAYBOOK_CHANGED = 'file changed, taking tests from `tests` section in script yml'
@@ -207,7 +207,8 @@ class TestCollector(ABC):
                 test=test,
                 pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
                 reason=CollectionReason.SANITY_TESTS,
-                version_range=None, reason_description=str(self.marketplace.value),
+                version_range=None,
+                reason_description=f'by marketplace version {self.marketplace}',
                 conf=self.conf,
                 id_set=self.id_set,
                 is_sanity=True
@@ -722,6 +723,19 @@ class NightlyTestCollector(TestCollector, ABC):
 class XSIAMNightlyTestCollector(NightlyTestCollector):
     def __init__(self):
         super().__init__(MarketplaceVersions.MarketplaceV2)
+        self.trigger_sanity_tests = True
+
+    @property
+    def sanity_tests(self) -> Optional[CollectionResult]:
+        return CollectionResult(
+            test='Sanity Test - Playbook with Unmockable Whois Integration',
+            pack='Whois',
+            reason=CollectionReason.SANITY_TESTS,
+            reason_description='XSIAM Nightly sanity',
+            version_range=None,
+            conf=self.conf,
+            id_set=self.id_set
+        )
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
