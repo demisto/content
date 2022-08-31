@@ -23,23 +23,25 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for AWS - Security Hub.
 3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __Fetch incidents__
-    * __First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year)__
-    * __Incident type__
-    * __Role Arn__
-    * __Role Session Name__
-    * __AWS Default Region__
-    * __Role Session Duration__
-    * __Access Key__
-    * __Secret Key__
-    * __Timeout__
-    * __Retries__
-    * __Trust any certificate (not secure)__
-    * __Use system proxy settings__
-    * __Security Hub Severity level__ Severity level of fetched incidents
-    * __Additional Filters__ Additional filters for fetched incidents
-    * __Change findings workflow to 'NOTIFIED'__
+   | Parameter | Description | Required |
+   | --- | --- | --- |
+   | Name | A meaningful name for the integration instance. | True |
+   | Fetch incidents | | False |  
+   | First fetch time | First fetch timestamp (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
+   | Incident type | | False |
+   | Role Arn | The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required. (such as: arn:aws:iam::<account-no>:role/xsoar-IAM.integration-Role). | False |
+   | Role Session Name | A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION. | False |
+   | AWS Default Region | The AWS Region for this instance of the integration. For example, us-west-2 | False |
+   | Role Session Duration | The maximum length of each session in seconds. Default: 900 seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration. | False |
+   | Access Key | The access key ID used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
+   | Secret Key | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
+   | Timeout | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
+   | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+   | Trust any certificate (not secure) |  | False |
+   | Use system proxy settings |  | False | 
+   | Security Hub Severity level | Severity level of fetched incidents. Could be Low, Medium and High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched. | False |
+   | Additional Filters | A comma-separated list of additional incident filters in the form 'name=name1,value=value1,comparison=comparison1 | False |
+   | Change findings workflow to 'NOTIFIED' | Notify the resource owner about the security issue. You can use this status when you are not the resource owner, and you need intervention from the resource owner in order to resolve a security issue. | False |
 4. Click __Test__ to validate the URLs, token, and connection.
 
 
