@@ -101,7 +101,7 @@ create-instances-with-graph:
     - !reference [.create-release-notes-and-common-docs]
     - section_start "Create content graph"
     - neo4j-admin --version
-    - demisto-sdk create-content-graph --no-use-docker --should-dump
+    - demisto-sdk create-content-graph --should-dump
     - cp ./neo4j/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
@@ -308,7 +308,7 @@ prepare-testing-bucket-mpv2-with-graph:
     - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Create content graph"
-    - demisto-sdk create-content-graph --no-use-docker --should-dump
+    - demisto-sdk create-content-graph --should-dump
     - cp ./neo4j/content-graph.dump $ARTIFACTS_FOLDER/content-graph.dump
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
