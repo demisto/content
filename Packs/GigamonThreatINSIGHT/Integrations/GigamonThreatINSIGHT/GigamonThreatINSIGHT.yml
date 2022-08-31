@@ -10,7 +10,7 @@ configuration:
   name: api_key
   type: 4
   required: true
-- display: First Fetch Time (Amount of day before current date)
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 7
   type: 0
