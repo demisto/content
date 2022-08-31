@@ -6,8 +6,8 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, headers, auth):
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def getexternalservices_request(self, field, operator, value):
-        data = {"request_data": {"search_to": 100}}
+    def getexternalservices_request(self, search_params):
+        data = {"request_data": {"filters": search_params, "search_to": 100}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_external_services/',
@@ -62,16 +62,29 @@ class Client(BaseClient):
 
 
 def getexternalservices_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    field = args.get('field')
-    operator = args.get('operator')
-    value = args.get('value')
+    ip_address = args.get('ip_address')
+    domain = args.get('domain')
+    is_active = args.get('is_active')
+    discovery_type = args.get('discovery_type')
+    search_params = []
+    if ip_address:
+        search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
+    if domain:
+        search_params.append({"field": "domain", "operator": "contains", "value": domain})
+    if is_active:
+        search_params.append({"field": "is_active", "operator": "in", "value": [is_active]})
+    if discovery_type:
+        search_params.append({"field": "discovery_type", "operator": "in", "value": [discovery_type]})
 
-    response = client.getexternalservices_request(field, operator, value)
+    response = client.getexternalservices_request(search_params)
+    parsed = response['reply']['external_services']
+    markdown = tableToMarkdown('External Services', parsed)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalServices',
-        outputs_key_field='range_id',
-        outputs=response,
-        raw_response=response
+        outputs_key_field='service_id',
+        outputs=parsed,
+        raw_response=parsed,
+        readable_output=markdown
     )
 
     return command_results
