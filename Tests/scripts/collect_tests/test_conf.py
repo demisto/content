@@ -3,6 +3,7 @@ from pathlib import Path
 
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                to_tuple)
+from Tests.scripts.collect_tests.logger import logger
 
 
 class TestConfItem(DictBased):
@@ -38,6 +39,7 @@ class TestConf(DictFileBased):
         self.tests_to_integrations: dict[str, tuple[str, ...]] = {
             test.playbook_id: test.integrations for test in self.tests if test.integrations
         }
+        logger.debug(f'tests_to_integrations:\n{self.tests_to_integrations}\n')
         self.integrations_to_tests: dict[str, list[str]] = self._calculate_integration_to_tests()
 
         # Attributes
@@ -59,6 +61,7 @@ class TestConf(DictFileBased):
         for test, integrations in self.tests_to_integrations.items():
             for integration in integrations:
                 result[integration].append(test)
+        logger.info(f'integration_to_tests:\n{result}\n')
         return dict(result)
 
     def get_test(self, test_id: str) -> TestConfItem:
