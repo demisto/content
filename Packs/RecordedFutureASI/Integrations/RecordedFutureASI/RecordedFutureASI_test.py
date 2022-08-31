@@ -1,7 +1,7 @@
 import json
 import io
 from CommonServerPython import IncidentSeverity
-from RecordedFutureASI import Client, test_module, fetch_incidents
+from RecordedFutureASI import Client, fetch_incidents
 import pytest
 
 TEST_PROJECT_ID = 'fakeprojectid'
@@ -16,7 +16,7 @@ def util_load_json(path):
 def client():
     client = Client(base_url='https://api.securitytrails.com/v1/asi',
                     project_id=TEST_PROJECT_ID,
-                    verify=False,
+                    verify=True,
                     headers={'APIKEY': 'key'})
     return client
 
@@ -25,6 +25,7 @@ def test_test_module_valid(requests_mock, client):
     """
     Tests that the test command correctly attempts to send a request
     """
+    from RecordedFutureASI import test_module
     requests_mock.get(url=f'https://api.securitytrails.com/v1/asi/rules/{TEST_PROJECT_ID}/recent/issues',
                       status_code=200, json="{}")
 
