@@ -416,7 +416,6 @@ class BranchTestCollector(TestCollector):
                 else:
                     # integration to test mapping available, and support level == xsoar (so - we run the tests)
                     tests = tuple(self.conf.integrations_to_tests[yml.id_])
-                    logger.debug(f'Found {len(tests)} tests in the json for {yml.id_}: {tests}')
                 reason = CollectionReason.INTEGRATION_CHANGED
 
             case FileType.SCRIPT | FileType.PLAYBOOK:
