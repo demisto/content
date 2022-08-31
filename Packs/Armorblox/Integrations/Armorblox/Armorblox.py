@@ -167,7 +167,7 @@ def fetch_incidents_command(client):
     return incidents
 
 
-def main():
+def main():  # pragma: no coverage
     ''' EXECUTION '''
     demisto.info(f'Command being called is {demisto.command()}')
     try:
