@@ -1168,13 +1168,10 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     if last_fetched_alert_create_time := last_run.get('last_fetched_alert_create_time'):
         last_run.update({'time': last_fetched_alert_create_time})
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
-    if not last_run.get('time'):
-        last_run.update({'time': parse_date_range(fetch_time, date_format=DATE_FORMAT)[0]})
-    # latest_alert_create_date = last_fetched_alert_create_time
     latest_alert_id = last_fetched_alert_id
 
     fetch_start_time, fetch_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=fetch_time,
-                                                                look_back=look_back, date_format=DATE_FORMAT)
+                                                                look_back=look_back, date_format=DATE_FORMAT) 
     demisto.debug(f'{fetch_start_time=}, {fetch_end_time=}')
 
     incidents = []
@@ -1184,13 +1181,17 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         sort_order='ASC',
         create_time=assign_params(
             start=fetch_start_time,
-            end=datetime.now().strftime(DATE_FORMAT)
+            end=fetch_end_time
         ),
         limit=fetch_limit,
     )
     alerts = response.get('results', [])
 
-    for alert in alerts:
+    alerts_to_incident = filter_incidents_by_duplicates_and_limit(
+        incidents_res=alerts, last_run=last_run, fetch_limit=fetch_limit, id_field='id'
+    )
+
+    for alert in alerts_to_incident:
         alert_id = alert.get('id')
         if alert_id == last_fetched_alert_id:
             # got an alert we already fetched, skipping it
@@ -1203,15 +1204,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        # parsed_date = dateparser.parse(alert_create_date)
-        # assert parsed_date is not None, f'failed parsing {alert_create_date}'
-        # latest_alert_create_date = datetime.strftime(parsed_date + timedelta(seconds=1),
-        #                                              DATE_FORMAT)
         latest_alert_id = alert_id
-
-    alerts_to_incident = filter_incidents_by_duplicates_and_limit(
-        incidents_res=alerts, last_run=last_run, fetch_limit=fetch_limit, id_field='id'
-    )
 
     last_run = update_last_run_object(
         last_run=last_run,
@@ -1225,7 +1218,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         date_format=DATE_FORMAT,
         increase_last_run_time=True
     )
-    last_run.update({'last_fetched_alert_id': latest_alert_id})  ## change key name `last_fetched_alert_create_time` in last_run
+    last_run.update({'last_fetched_alert_id': latest_alert_id})
     return incidents, last_run
 
 
