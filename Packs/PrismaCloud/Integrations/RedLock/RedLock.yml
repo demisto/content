@@ -42,6 +42,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: true
+  display: fetch updates
+  name: updates
+  required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false

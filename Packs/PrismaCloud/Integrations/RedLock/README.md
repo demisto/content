@@ -5,7 +5,7 @@
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
+| -- | --- | --- |
 | url | Server API URL. See [here](https://api.docs.prismacloud.io/api/cloud/api-urls) for the relevant API URL for your tenant. | True |
 | username | API Access Key | True |
 | password | API Secret | True |
@@ -18,6 +18,8 @@
 | policySeverity | Fetch only incidents with this severity | False |
 | proxy | Use system proxy settings | False |
 | unsecure | Trust any certificate \(not secure\) | False |
+| fetch updates | Weather or not to acknowledge alerts updates | True |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
