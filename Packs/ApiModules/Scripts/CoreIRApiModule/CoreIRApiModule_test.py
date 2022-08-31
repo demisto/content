@@ -9,6 +9,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace
 from CoreIRApiModule import CoreClient
+from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -2959,3 +2960,87 @@ class TestPollingCommands:
             ]
         }
         assert command_result[0].outputs_prefix == 'PaloAltoNetworksXDR.ScriptResult'
+
+
+@pytest.mark.parametrize(
+    'args, expected_filters, func, url_suffix, expected_human_readable',
+    [
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test'},
+            [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
+            add_tag_to_endpoints_command,
+            '/tags/agents/assign/',
+            "Successfully added tag test to endpoint(s) ['1', '2']"
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'status': 'disconnected'},
+            [{'field': 'endpoint_status', 'operator': 'IN', 'value': ['disconnected']}],
+            add_tag_to_endpoints_command,
+            '/tags/agents/assign/',
+            "Successfully added tag test to endpoint(s) ['1', '2']"
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'hostname': 'hostname', 'group_name': 'test_group'},
+            [
+                {'field': 'group_name', 'operator': 'in', 'value': ['test_group']},
+                {'field': 'hostname', 'operator': 'in', 'value': ['hostname']}
+            ],
+            add_tag_to_endpoints_command,
+            '/tags/agents/assign/',
+            "Successfully added tag test to endpoint(s) ['1', '2']"
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test'},
+            [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
+            remove_tag_from_endpoints_command,
+            '/tags/agents/remove/',
+            "Successfully removed tag test from endpoint(s) ['1', '2']"
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'platform': 'linux'},
+            [{'field': 'platform', 'operator': 'in', 'value': ['linux']}],
+            remove_tag_from_endpoints_command,
+            '/tags/agents/remove/',
+            "Successfully removed tag test from endpoint(s) ['1', '2']"
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'isolate': 'isolated', 'alias_name': 'alias_name'},
+            [
+                {'field': 'alias', 'operator': 'in', 'value': ['alias_name']},
+                {'field': 'isolate', 'operator': 'in', 'value': ['isolated']}
+            ],
+            remove_tag_from_endpoints_command,
+            '/tags/agents/remove/',
+            "Successfully removed tag test from endpoint(s) ['1', '2']"
+        )
+    ]
+)
+def test_add_or_remove_tag_endpoint_command(
+    requests_mock, args, expected_filters, func, url_suffix, expected_human_readable
+):
+    """
+    Given:
+      - command arguments
+      - expected filters as a body request
+
+    When:
+      - executing the core-add-tag-endpoint command
+
+    Then:
+      - make sure the body request was sent as expected to the api request and that human readable is valid.
+    """
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    add_tag_mock = requests_mock.post(f'{Core_URL}/public_api/v1{url_suffix}', json={})
+
+    result = func(client=client, args=args)
+
+    assert result.readable_output == expected_human_readable
+    assert add_tag_mock.last_request.json() == {
+        'context': {
+            'lcaas_id': ['1', '2'],
+        },
+        'request_data': {
+            'filters': expected_filters,
+            'tag': 'test'
+        }
+    }

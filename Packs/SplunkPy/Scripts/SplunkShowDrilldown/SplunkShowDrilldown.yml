@@ -1,21 +1,22 @@
+comment: Automation to display drilldown search results from Splunk.
 commonfields:
   id: SplunkShowDrilldown
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: SplunkShowDrilldown
-runas: DBotWeakRole
-runonce: false
-script: ''
-scripttarget: 0
+script: '-'
 subtype: python3
+system: false
 tags:
 - dynamic-section
+timeout: '0'
 type: python
-fromversion: 6.0.0
-comment: Automation to display drilldown search results from Splunk. 
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.5.31928
+runas: DBotWeakRole
+runonce: false
 tests:
 - SplunkShowEnrichment
+fromversion: 6.0.0
