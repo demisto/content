@@ -16,7 +16,7 @@ def util_load_json(path):
 def client():
     client = Client(base_url='https://api.securitytrails.com/v1/asi',
                     project_id=TEST_PROJECT_ID,
-                    verify=True,
+                    verify=False,
                     headers={'APIKEY': 'key'})
     return client
 
