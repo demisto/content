@@ -354,9 +354,13 @@ class BranchTestCollector(TestCollector):
         paths = self._get_private_pack_files() if self.private_pack_path else self._get_changed_files()
         for path in paths:
             try:
+                logger.debug(f'Collecting tests for {path}')
                 result.append(self._collect_single(PATHS.content_path / path))
             except NothingToCollectException as e:
                 logger.warning(e.message)
+            except Exception as e:
+                logger.exception(f'Error while collecting tests for {path}', exc_info=True, stack_info=True)
+                raise e
 
         return CollectionResult.union(tuple(result))
 
