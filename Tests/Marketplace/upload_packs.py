@@ -1025,12 +1025,7 @@ def main():
     install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
     option = option_handler()
     packs_artifacts_path = option.packs_artifacts_path
-    id_set = None
-    use_graph = None
-    try:
-        id_set = open_id_set_file(option.id_set_path)
-    except IOError:
-        use_graph = True
+    id_set = open_id_set_file(option.id_set_path)
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
