@@ -1165,8 +1165,8 @@ def get_file_path_command(client: Client, args: Dict) -> CommandResults:
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict, look_back: int) -> Tuple[List, Dict]:
-    last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time') or last_run.get('time')
-    last_run.update({'time': last_fetched_alert_create_time})
+    if last_fetched_alert_create_time := last_run.get('last_fetched_alert_create_time'):
+        last_run.update({'time': last_fetched_alert_create_time})
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     if not last_run.get('time'):
         last_run.update({'time': parse_date_range(fetch_time, date_format=DATE_FORMAT)[0]})
