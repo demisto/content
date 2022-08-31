@@ -827,9 +827,12 @@ def fetch_incidents():
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
-    update = demisto.params().get('updates')
+    update = demisto.params().get('updates', False)
+    skipped_alerts = []
     for alert in response:
         if not update and alert.get('firstSeen') < last_run:
+            demisto.debug(f"Skipping alert - {alert.get('id')} - Ingest updated alerts is {update}")
+            skipped_alerts.append(alert.get('id'))
             continue
         incidents.append({
             'name': alert.get('policy.name', 'No policy') + ' - ' + alert.get('id'),
@@ -837,7 +840,10 @@ def fetch_incidents():
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
         })
-
+    demisto.debug(f"\nCompleted fetch of - {len(incidents)}"
+                  f"\nLast Run is set to {now}"
+                  f"\nTotal of skipped alerts were - {len(skipped_alerts)}"
+                  f"\nIDs of skipped alerts are - {skipped_alerts}")
     return incidents, now
 
 
