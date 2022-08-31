@@ -157,7 +157,7 @@ def init_driver_and_display(width: int, height: int, offline_mode=False, include
         chrome_options = webdriver.ChromeOptions()
         for opt in merge_options(DEFAULT_CHROME_OPTIONS, USER_CHROME_OPTIONS):
             chrome_options.add_argument(opt)
-        
+
         if not include_url:
             chrome_options.add_argument('--headless')
 

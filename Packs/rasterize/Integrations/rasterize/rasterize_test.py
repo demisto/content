@@ -1,5 +1,5 @@
 from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
-                       RasterizeMode, RasterizeType)
+                       RasterizeMode, RasterizeType, init_driver_and_display)
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
@@ -238,7 +238,7 @@ def test_check_width_and_height(width, height, expected_width, expected_height):
 
 
 @pytest.mark.parametrize('include_url', [False, True])
-def test_sanity_rasterize_include_url(include_url):
+def test_rasterize_include_url(mocker, include_url):
     """
         Given:
             - A parameter that mention whether to include the URL bar in the screenshot.
@@ -248,7 +248,26 @@ def test_sanity_rasterize_include_url(include_url):
             - Verify that it runs as expected.
     """
 
-    image = rasterize('http://google.com', width=800, height=800, r_type=RasterizeType.PNG, max_page_load_time=5,
-                      r_mode=RasterizeMode.WEBDRIVER_ONLY, include_url=include_url)
+    class MockChromeOptions:
+
+        def __init__(self) -> None:
+            self.options = []
+        
+        def add_argument(self, arg):
+            self.options.append(arg)
     
-    assert image
+    class MockChrome:
+        
+        def __init__(self, options, service_args) -> None:
+            self.options = options.options
+    
+    from selenium import webdriver
+    import pyvirtualdisplay
+
+    mocker.patch.object(pyvirtualdisplay, 'Display', return_value=None)
+    mocker.patch.object(webdriver, 'Chrome', side_effect=MockChrome)
+    mocker.patch.object(webdriver, 'ChromeOptions', side_effect=MockChromeOptions)
+
+    driver, dis = init_driver_and_display(width=250, height=250, include_url=include_url)
+
+    assert not ('--headless' in driver.options) == include_url
