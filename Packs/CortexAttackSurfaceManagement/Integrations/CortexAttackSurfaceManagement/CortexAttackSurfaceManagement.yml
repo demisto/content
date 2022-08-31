@@ -19,64 +19,67 @@ name: Cortex Attack Surface Management
 script:
   commands:
   - arguments:
-    - name: field
-    - name: operator
-    - name: value
-    description: |-
-      Create or update incident according to JSON structure.
-      To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
-      To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
-
-      Use the 'createInvestigation\: True' to start the investigation process automatically. (by running a playbook based on incident type.)
+    - description: IP Address to search on
+      name: ip_address
+    - description: Domain to search on
+      name: domain
+    - auto: PREDEFINED
+      description: is the service active or not
+      name: is_active
+      predefined:
+      - "yes"
+      - "no"
+    - auto: PREDEFINED
+      description: how service was discovered
+      name: discovery_type
+      predefined:
+      - colocated_on_ip
+      - directly_discovery
+      - unknown
+    description: Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, acve classificaons, inacve classificaons, service name, service type, protocol, IP address, is acve, and discovery type. Maximum result limit is 100 assets.
     name: asm-getexternalservices
     outputs:
-    - contextPath: ASM.GetExternalServices.total_count
-      description: ""
-      type: Number
-    - contextPath: ASM.GetExternalServices.result_count
-      description: ""
-      type: Number
-    - contextPath: ASM.GetExternalServices.external_services.service_id
-      description: ""
+    - contextPath: ASM.GetExternalServices.service_id
+      description: External service UUID
       type: String
-    - contextPath: ASM.GetExternalServices.external_services.service_name
-      description: ""
+    - contextPath: ASM.GetExternalServices.service_name
+      description: Name of the external service
       type: String
-    - contextPath: ASM.GetExternalServices.external_services.service_type
-      description: ""
+    - contextPath: ASM.GetExternalServices.service_type
+      description: Type of external service
       type: String
-    - contextPath: ASM.GetExternalServices.external_services.ip_address
-      description: ""
+    - contextPath: ASM.GetExternalServices.ip_address
+      description: IP address of external service
       type: String
-    - contextPath: ASM.GetExternalServices.external_services.externally_detected_providers
-      description: ""
+    - contextPath: ASM.GetExternalServices.externally_detected_providers
+      description: Providers of external service
       type: String
-    - contextPath: ASM.GetExternalServices.external_services.is_active
-      description: ""
+    - contextPath: ASM.GetExternalServices.is_active
+      description: Is external service active or not
       type: String
-    - contextPath: ASM.GetExternalServices.external_services.first_observed
-      description: ""
+    - contextPath: ASM.GetExternalServices.first_observed
+      description: Date of first observation of external service
       type: Date
-    - contextPath: ASM.GetExternalServices.external_services.last_observed
-      description: ""
+    - contextPath: ASM.GetExternalServices.last_observed
+      description: Date of last observation of external service
       type: Date
-    - contextPath: ASM.GetExternalServices.external_services.port
-      description: ""
+    - contextPath: ASM.GetExternalServices.port
+      description: Port number of external service
       type: Number
-    - contextPath: ASM.GetExternalServices.external_services.protocol
-      description: ""
+    - contextPath: ASM.GetExternalServices.protocol
+      description: Protocol number of external service
       type: String
-    - contextPath: ASM.GetExternalServices.external_services.inactive_classifications
-      description: ""
+    - contextPath: ASM.GetExternalServices.inactive_classifications
+      description: External service classifications that are no longer active
       type: String
-    - contextPath: ASM.GetExternalServices.external_services.discovery_type
-      description: ""
+    - contextPath: ASM.GetExternalServices.discovery_type
+      description: How external service was discovered
       type: String
-    - contextPath: ASM.GetExternalServices.external_services.business_units
-      description: ""
+    - contextPath: ASM.GetExternalServices.business_units
+      description: External service associated business units
       type: String
-    - contextPath: ASM.GetExternalServices.external_services.externally_inferred_vulnerability_score
-      description: ""
+    - contextPath: ASM.GetExternalServices.externally_inferred_vulnerability_score
+      description: External service vulnerability score
       type: Unknown
   - arguments:
     - description: An string represenng the service ID you want get details for.
@@ -95,7 +98,7 @@ script:
       description: Type of external service
       type: String
     - contextPath: ASM.GetExternalService.ip_address
-      description: Ip address of external service
+      description: IP address of external service
       type: String
     - contextPath: ASM.GetExternalService.externally_detected_providers
       description: Providers of external service
@@ -130,7 +133,7 @@ script:
     - contextPath: ASM.GetExternalService.details
       description: Additional details
       type: String
-  - arguments:
+  - arguments: []
     description: Get a list of all your Internet exposure filtered by business units and organization handles. Maximum result limit is 100 ranges.
     name: asm-getexternalipaddressranges
     outputs:
@@ -193,12 +196,7 @@ script:
       description: Additional information
       type: String
   - arguments: []
-    description: |-
-      Create or update incident according to JSON structure.
-      To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
-      To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
-
-      Use the 'createInvestigation\: True' to start the investigation process automatically. (by running a playbook based on incident type.)
+    description: CHANGEME
     name: asm-getassetsinternetexposure
     outputs:
     - contextPath: ASM.GetAssetsInternetExposure.total_count
