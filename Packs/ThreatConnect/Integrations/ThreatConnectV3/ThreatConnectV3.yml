@@ -28,12 +28,12 @@ configuration:
   required: false
   type: 0
 - additionalinfo: The group type to filter the fetched incidents by.
+  defaultvalue: Incident
   display: Group Type filter for the fetch
   name: group_type
   options:
   - Incident
   - Event
-  defaultValue: Incident
   required: false
   type: 16
 - additionalinfo: The status to filter the fetched incidents by (if not field will fetch all statuses).
@@ -55,12 +55,12 @@ configuration:
   - Needs Review
   required: false
   type: 16
-- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
     3 months, 1 year)
   name: first_fetch_time
   type: 0
   required: true
-  defaultvalue: 3 days
 - additionalinfo: The metadata to collect.
   display: Incident Metadata
   name: fields
@@ -123,7 +123,7 @@ script:
       description: A comma-separated list of IPv4 or IPv6 address.
       name: ip
       required: true
-      isArray: false
+      isArray: true
     - description: A comma-separated list of a client's organizations, sources, or
         communities to which a user has permissions. For example, users with admin
         permissions can search for indicators belonging to all owners.
@@ -199,7 +199,7 @@ script:
       description: A comma-separated list of URLs for which to search. For example, "www.demisto.com".
       name: url
       required: true
-      isArray: false
+      isArray: true
     - description: A comma-separated list of a client's organizations, sources, or
         communities to which a client’s API user has been granted permission. For
         example, "owner1", "owner2", or "owner3".
@@ -275,7 +275,7 @@ script:
       description: A comma-separated list of the hash of the files. Can be "MD5", "SHA-1", or "SHA-256".
       name: file
       required: true
-      isArray: false
+      isArray: true
     - description: A comma-separated list of a client's organizations, sources, or
         communities to which a user has permissions. For example, users with admin
         permissions can search for indicators belonging to all owners.
@@ -1039,7 +1039,7 @@ script:
       description: A comma-separated list of names of the domain.
       name: domain
       required: true
-      isArray: false
+      isArray: true
     - description: A comma-separated list of a client's organizations, sources, or
         communities to which a user has permissions. For example, users with admin
         permissions can search for indicators belonging to all owners.
@@ -2147,7 +2147,7 @@ script:
       name: associated_indicator_id
     - auto: PREDEFINED
       description: The type of update to the group metadata(associated indicators, attributes,tags etc...).
-      name: security_label
+      name: mode
       predefined:
       - append
       - delete
@@ -2174,7 +2174,7 @@ script:
     - contextPath: TC.Group.ID
       description: The ID of the group.
       type: string
-  dockerimage: demisto/python3:3.10.5.33323
+  dockerimage: demisto/python3:3.10.6.33415
   runonce: false
   isfetch: true
   script: ''

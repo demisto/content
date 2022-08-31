@@ -1144,10 +1144,6 @@ Updates a group.
 | TC.Group.SecurityLevel | string | The security label of the group. | 
 | TC.Group.ID | string | The ID of the group. | 
 
-## Breaking changes from the previous version of this integration - ThreatConnect v3
-%%FILL HERE%%
-The following sections list the changes in this version.
-
 
 ### Arguments
 #### The following arguments were removed in this version:

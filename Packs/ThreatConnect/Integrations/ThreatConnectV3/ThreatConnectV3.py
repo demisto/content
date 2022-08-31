@@ -4,7 +4,6 @@ import hmac
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from enum import Enum
-import requests
 import urllib.parse
 
 TC_INDICATOR_PATH = 'TC.Indicator(val.ID && val.ID === obj.ID)'
@@ -349,7 +348,7 @@ def tc_get_indicators_command(client: Client, args: dict, confidence_threshold: 
     })
 
 
-def tc_get_owners_command(client: Client, args: dict) -> Any:  # pragma: no cover
+def tc_get_owners_command(client: Client, args: dict) -> Any:  # pragma: no cover # type: ignore # noqa
     url = '/api/v3/security/owners'
 
     response = client.make_request(Method.GET, url)
@@ -603,7 +602,7 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
                 include_attributes: str = '',
                 include_tags: str = '', include_associated_groups: str = '', include_associated_indicators: str = '',
                 include_all_metadata: str = '', status: str = '', owner: str = '',
-                return_raw=False) -> Any:  # pragma: no cover
+                return_raw=False) -> Any:
     # FIELDS PARAMS
     include_all_metadata = args.get('include_all_metadata', include_all_metadata)
     include_associated_indicators = args.get('include_associated_indicators', include_associated_indicators)
@@ -641,7 +640,6 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
         tql_prefix = '?tql='
         include_security_labels = 'True'
     if tag:
-        tag = ''
         tags = tag.split(',')
         for tag_to_find in tags:
             tag += f' AND tag like "%{tag_to_find}%"'
@@ -856,7 +854,7 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
 def tc_delete_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
     indicator_id = args.get('indicator')
     url = f'/api/v3/indicators/{indicator_id}'
-    response = client.make_request(Method.DELETE, url)
+    client.make_request(Method.DELETE, url)
 
     return_results({
         'Type': entryTypes['note'],
@@ -866,6 +864,7 @@ def tc_delete_indicator_command(client: Client, args: dict) -> None:  # pragma: 
 
 
 def create_document_group(client: Client, args: dict) -> None:  # pragma: no cover
+    name = args.get('name')
     security_label = args.get('security_label')
     description = args.get('description', '')
     response, status = create_group(client, args, security_labels=security_label, name=name, group_type='Document',
@@ -1284,9 +1283,9 @@ def add_group_attribute(client: Client, args: dict):  # pragma: no cover
 
 
 def add_group_security_label(client: Client, args: dict):  # pragma: no cover
-    '''
+    """
     Command deprecated in v3 integration, replaced by tc_update_group
-    '''
+    """
     group_id = args.get('group_id')
     security_label_name = args.get("security_label_name")
     tc_update_group(client, args, raw_data=True, mode='appends', group_id=group_id, security_labels=security_label_name)
@@ -1295,9 +1294,9 @@ def add_group_security_label(client: Client, args: dict):  # pragma: no cover
 
 
 def associate_group_to_group(client: Client, args: dict):  # pragma: no cover
-    '''
+    """
     Command deprecated in v3 integration, replaced by tc_update_group
-    '''
+    """
     group_id = args.get('group_id')
     updated_group = tc_update_group(client, args, raw_data=True, group_id=group_id)
     context_entries = {
@@ -1314,9 +1313,9 @@ def associate_group_to_group(client: Client, args: dict):  # pragma: no cover
 
 
 def associate_indicator_to_group(client: Client, args: dict):  # pragma: no cover
-    '''
+    """
     Command deprecated in v3 integration, replaced by tc_update_group
-    '''
+    """
     group_id = args.get('group_id')
     associated_indicator_id = args.get('indicator')
     updated_group = tc_update_group(client, args, raw_data=True, group_id=group_id,
@@ -1586,7 +1585,7 @@ def main(params):  # pragma: no cover
         credentials = demisto.params().get('api_secret_key', {})
         access_id = credentials.get('identifier') or demisto.params().get('accessId')
         client = Client(access_id, credentials.get('password'),
-                        demisto.getParam('baseUrl'), verify=insecure)
+                        demisto.getParam('baseUrl'), verify=insecure, proxy=proxy)
         args = demisto.args()
         command = demisto.command()
         if command in COMMANDS.keys():
