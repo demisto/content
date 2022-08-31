@@ -804,7 +804,9 @@ def fetch_incidents():
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+    demisto.info('now time: ' + str(now))
     last_run = demisto.getLastRun().get('time')
+    demisto.info('last run: ' + str(last_run))
     if not last_run:  # first time fetch
         last_run = parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
 
@@ -826,6 +828,7 @@ def fetch_incidents():
                                    'value': demisto.getParam('policyName')})
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
     response = req('POST', 'alert', payload, {'detailed': 'true'})
+    demisto.info('the response length: ' + str(len(response)))
     incidents = []
     for alert in response:
         incidents.append({
