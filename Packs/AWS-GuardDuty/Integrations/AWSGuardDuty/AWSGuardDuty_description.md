@@ -7,8 +7,7 @@ We recommend that you use roles that have the following built-in AWS policies:
 
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
-#### Configure the AWS Guard Duty Integration on Cortex XSOAR
-- Name: a descriptive name for the integration instance.
+#### Configure the AWS Guard Duty Integration
 - AWS Default Region: The AWS Region for this instance of the integration. For example, us-west-2
 - Role Arn: The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required.
 - Role Session Name: A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION
