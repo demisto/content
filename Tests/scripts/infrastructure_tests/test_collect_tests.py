@@ -344,6 +344,24 @@ def test_only_collect_and_ignore_lists_are_disjoint():
     assert ONLY_INSTALL_PACK_FILE_TYPES.isdisjoint(IGNORED_FILE_TYPES)
 
 
+def test_file_types_with_specific_collection_logic_are_not_ignored():
+    """
+    the files listed have a specific logic under _collect_single,
+    hence they must not be ignored or cause only a pack-installation
+    """
+    from Tests.scripts.collect_tests.constants import (
+        IGNORED_FILE_TYPES, ONLY_INSTALL_PACK_FILE_TYPES)
+
+    assert {
+        FileType.PYTHON_FILE,
+        FileType.POWERSHELL_FILE,
+        FileType.JAVASCRIPT_FILE,
+        FileType.REPUTATION,
+        FileType.MAPPER,
+        FileType.CLASSIFIER
+    }.isdisjoint(IGNORED_FILE_TYPES | ONLY_INSTALL_PACK_FILE_TYPES)
+
+
 @pytest.mark.parametrize('file_type', ONLY_COLLECT_PACK_TYPES)
 def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileType):
     """
