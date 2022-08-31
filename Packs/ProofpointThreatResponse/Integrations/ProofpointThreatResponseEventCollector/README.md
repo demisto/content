@@ -1,6 +1,6 @@
 Use the Proofpoint Threat Response integration to orchestrate and automate incident response.
 
-## Configure Proofpoint Threat Response Event Collector on Cortex XSOAR
+## Configure Proofpoint Threat Response Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Proofpoint Threat Response Event Collector.

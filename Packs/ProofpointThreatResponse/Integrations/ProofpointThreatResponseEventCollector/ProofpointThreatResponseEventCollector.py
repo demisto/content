@@ -11,7 +11,7 @@ VENDOR = 'proofpoint'
 
 class Client(BaseClient):
     """
-    Client will implement the service API, and should not contain any Demisto logic.
+    Client will implement the service API, and should not contain any logic.
     Should only do requests and return data.
     """
 
@@ -257,7 +257,7 @@ def get_incidents_batch_by_time_request(client, params):
         new_incidents = get_new_incidents(client, request_params, last_fetched_id)
         incidents_list.extend(new_incidents)
 
-        demisto.info(
+        demisto.debug(
             f"Finished the last batch, with fetch_limit {fetch_limit} and events list:"
             f" {[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)}")
 
@@ -305,7 +305,7 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
         'last_fetched_incident_id': last_fetched_id
     }
 
-    demisto.info(f'extracted {len(incidents)} events')
+    demisto.debug(f'Fetched {len(incidents)} events')
 
     return incidents, last_run
 
