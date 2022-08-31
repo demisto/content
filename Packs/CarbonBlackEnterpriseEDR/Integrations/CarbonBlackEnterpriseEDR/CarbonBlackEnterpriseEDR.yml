@@ -50,6 +50,13 @@ configuration:
     name: fetch_limit
     required: false
     type: 0
+  - defaultvalue: 0
+    display: 'Advanced: Time in minutes to look back when fetching emails'
+    additionalinfo: Use this parameter to determine how long backward to look in the search for incidents
+      that were created before the last run time and did not match the query when they were created.
+    name: look_back
+    required: false
+    type: 0
 description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter)
   is an advanced threat hunting and incident response solution delivering continuous
   visibility for top security operations centers (SOCs) and incident response (IR)
