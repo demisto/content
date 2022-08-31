@@ -160,18 +160,16 @@ def get_tlp_from_indicator(sources):
     for source in sources:
         try:
             tlp = int(source.get('TLP')) if int(source.get('TLP')) > tlp else tlp
-            demisto.debug(f'TLP FOR {source.get("NAME")} AND {source.get("ID")} -> {source.get("TLP")}')
-        except:
-            demisto.debug(f'TLP FOR {source.get("NAME")} AND {source.get("ID")} -> {source.get("TLP")}')
+        except Exception as e:
+            demisto.debug(str(e))
             continue
 
     return TABLE_TLP.get(tlp)
 
 
 def get_generic_context(indicator, generic_context=None):
-    demisto.debug(f'GENERIC CONTEXT FOR THE INDICATOR -> ID={indicator.get("ID")} TYPE={indicator.get("Type")} VALUE={indicator.get("Value")}')
+
     tlp = get_tlp_from_indicator(indicator.get('Source'))
-    demisto.debug(f'TLP FOR THE INDICATOR -> {tlp}')
     if tlp:
         if generic_context:
             generic_context['TrafficLightProtocol'] = tlp
