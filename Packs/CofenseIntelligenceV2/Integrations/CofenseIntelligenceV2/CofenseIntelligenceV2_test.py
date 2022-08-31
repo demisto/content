@@ -20,11 +20,15 @@ headers: Dict = {
 }
 DOMAIN_RELATIONSHIP = [
     {'brand': 'Cofense Intelligence', 'entityA': 'domain', 'entityAFamily': 'Indicator', 'entityAType': 'Domain',
-     'entityB': 'stun2.l.google.com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {},
-     'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+     'entityB': 'domain', 'entityBFamily': 'Indicator', 'entityBType': None, 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
     {'brand': 'Cofense Intelligence', 'entityA': 'domain', 'entityAFamily': 'Indicator', 'entityAType': 'Domain',
-     'entityB': '506b0267b19d58dc7354a0386d3d6f15', 'entityBFamily': 'Indicator', 'entityBType': 'File',
-     'fields': {}, 'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}]
+     'entityB': 'domain2', 'entityBFamily': 'Indicator', 'entityBType': None, 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': 'domain', 'entityAFamily': 'Indicator', 'entityAType': 'Domain',
+     'entityB': '8e1a7d8b88096693a52173618b7b709e', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {},
+     'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}
+]
 
 FILE_RELATIONSHIP = [
     {'brand': 'Cofense Intelligence', 'entityA': 'file', 'entityAFamily': 'Indicator', 'entityAType': 'File',
@@ -52,15 +56,16 @@ EMAIL_RELATIONSHIP = [
 
 URL_RELATIONSHIP = [
     {'brand': 'Cofense Intelligence', 'entityA': 'url', 'entityAFamily': 'Indicator', 'entityAType': 'URL',
-     'entityB': 'dummy.com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
+     'entityB': 'url', 'entityBFamily': 'Indicator', 'entityBType': None, 'fields': {}, 'name': 'related-to',
      'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
     {'brand': 'Cofense Intelligence', 'entityA': 'url', 'entityAFamily': 'Indicator', 'entityAType': 'URL',
-     'entityB': 'dummy.com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
+     'entityB': 'url2', 'entityBFamily': 'Indicator', 'entityBType': None, 'fields': {}, 'name': 'related-to',
      'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'url',
-     'entityAFamily': 'Indicator', 'entityAType': 'URL', 'entityB': '127.0.0.1', 'entityBFamily': 'Indicator',
-     'entityBType': 'IP', 'fields': {}, 'name': 'related-to', 'reverseName': 'related-to',
-     'type': 'IndicatorToIndicator'}]
+    {'brand': 'Cofense Intelligence', 'entityA': 'url', 'entityAFamily': 'Indicator',
+     'entityAType': 'URL', 'entityB': 'f23e89543e8627182579f68c5916fd05', 'entityBFamily': 'Indicator',
+     'entityBType': 'File', 'fields': {}, 'name': 'related-to', 'reverseName': 'related-to',
+     'type': 'IndicatorToIndicator'}
+]
 
 IP_RELATIONSHIP = [
     {'brand': 'Cofense Intelligence', 'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
@@ -255,9 +260,9 @@ def test_check_domain_command(mocker):
     mock_outputs = test_data.get('mock_output')
     mock_readable_outputs = test_data.get('mock_readable')
     assert mock_outputs == str(response[0].outputs)
-    assert mock_readable_outputs == response[0].readable_output
     assert response[0].indicator.domain == "domain"
     assert DOMAIN_RELATIONSHIP == (response[0].to_context())['Relationships']
+    assert mock_readable_outputs == response[0].readable_output
 
 
 def test_when_domain_not_specified():

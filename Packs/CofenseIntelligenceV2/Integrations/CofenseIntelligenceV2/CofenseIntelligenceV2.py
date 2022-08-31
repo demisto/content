@@ -1,11 +1,11 @@
 import base64
+import traceback
+from typing import Any, Dict, List
+
+import requests
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
-import requests
-import traceback
-from typing import Dict, Any, List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -185,7 +185,7 @@ def threats_analysis(severity_score: dict, threats: List, indicator: str, thresh
     """
 
     threshold_score = severity_score.get(threshold)
-    if threshold_score is None:
+    if not threshold_score:
         raise Exception(
             f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
 
@@ -215,6 +215,53 @@ def threats_analysis(severity_score: dict, threats: List, indicator: str, thresh
     return md_data, dbot_score
 
 
+def domain_and_url_threats_analysis(severity_score: dict, threats: List, indicator: str, threshold: str, command: str):
+    """ process raw response data and generate dbot score and human readable results
+            Args:
+                - severity_score(dict): severity score mapping
+                - threats (list): threats data from cofense raw response
+                - indicator (string): threat severity level for dbot score calculation
+                - threshold (string): threshold for threat's severity
+                - command (string): name of the command
+            return:
+             Dict: represents human readable markdown table
+             int: dbot score
+    """
+
+    threshold_score = severity_score.get(threshold)
+    if not threshold_score:
+        raise Exception(
+            f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
+
+    md_data: list[dict] = []
+    dbot_score = 0
+    for threat in threats:
+        indicator_found = False
+        dbot_score = severity_level = 0
+
+        for block in threat.get('blockSet'):
+            if command == 'domain' and (
+                    isinstance(block.get('data_1'), dict) and block.get('data_1').get('domain') == indicator):
+                indicator_found = True
+                threat_score = severity_score.get(block.get('impact'), 0)
+                adjusted_score = 3 if threshold_score <= threat_score else threat_score
+                severity_level = max(severity_level, adjusted_score)
+
+            elif command == 'url' and (block.get('data') == indicator):
+                indicator_found = True
+                threat_score = severity_score.get(block.get('impact'), 0)
+                adjusted_score = 3 if threshold_score <= threat_score else threat_score
+                severity_level = max(severity_level, adjusted_score)
+
+        if not indicator_found:
+            return md_data, 0
+
+        dbot_score = severity_level
+        md_data.append(create_threat_md_row(threat, dbot_score))
+
+    return md_data, dbot_score
+
+
 def ip_threats_analysis(severity_score, threats: List, ip: str, threshold: str, dbot_score_obj):
     """ process raw response data and generate dbot score ,human readable results, ip indicator object
             Args:
@@ -227,7 +274,7 @@ def ip_threats_analysis(severity_score, threats: List, ip: str, threshold: str, 
              ip indicator : indicator object with the data collected from the threats
     """
     threshold_score = severity_score.get(threshold)
-    if threshold_score is None:
+    if not threshold_score:
         raise Exception(
             f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
 
@@ -276,7 +323,7 @@ def file_threats_analysis(severity_score, threats: List, file: str, threshold: s
     """
 
     threshold_score = severity_score.get(threshold)
-    if threshold_score is None:
+    if not threshold_score:
         raise Exception(
             f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
 
@@ -348,7 +395,7 @@ def create_relationship(client: Client, indicator: str, threats: List, entity_a_
     relationships = []
     if client.create_relationships:
         for threat in threats:
-            for block in threat.get('blockSet'):
+            for block in threat.get('blockSet', {}):
                 relationships.append(
                     EntityRelationship(name='related-to',
                                        entity_a=indicator,
@@ -356,7 +403,7 @@ def create_relationship(client: Client, indicator: str, threats: List, entity_a_
                                        entity_b=block.get('data'),
                                        entity_b_type=check_indicator_type(block.get('data')),
                                        brand=BRAND))
-            for exec_set in threat.get('executableSet'):
+            for exec_set in threat.get('executableSet', {}):
                 relationships.append(
                     EntityRelationship(name='related-to',
                                        entity_a=indicator,
@@ -419,8 +466,8 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> List[Com
         threats = result.get('data', {}).get('threats', [])
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': url, 'Threats': threats}
-        md_data, dbot_score = threats_analysis(client.severity_score, threats, indicator=url,
-                                               threshold=params.get('url_threshold'))
+        md_data, dbot_score = domain_and_url_threats_analysis(client.severity_score, threats, indicator=url,
+                                                              threshold=params.get('url_threshold'), command='url')
 
         dbot_score_obj = Common.DBotScore(indicator=url, indicator_type=DBotScoreType.URL,
                                           integration_name=INTEGRATION_NAME, score=dbot_score,
@@ -665,8 +712,9 @@ def check_domain_command(client: Client, args: Dict[str, Any], params) -> List[C
         threats = result.get('data', {}).get('threats', [])
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': domain, 'Threats': threats}
-        md_data, dbot_score = threats_analysis(client.severity_score, threats, indicator=domain,
-                                               threshold=params.get('domain_threshold'))
+        md_data, dbot_score = domain_and_url_threats_analysis(client.severity_score, threats, indicator=domain,
+                                                              threshold=params.get('domain_threshold'),
+                                                              command='domain')
         dbot_score_obj = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME, score=dbot_score,
                                           reliability=params.get(RELIABILITY))
