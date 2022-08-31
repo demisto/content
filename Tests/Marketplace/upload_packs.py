@@ -12,7 +12,7 @@ from google.cloud.storage import Bucket
 from pathlib import Path
 
 from zipfile import ZipFile
-from typing import Any, Tuple, Union, Optional
+from typing import Any, List, Tuple, Union, Optional
 
 from requests import Response
 
@@ -201,7 +201,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
 
 
 def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
-                             storage_base_path: str, id_set: dict, marketplace: str = 'xsoar') -> bool:
+                             storage_base_path: str, pack_list: List[Pack], marketplace: str = 'xsoar') -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -223,16 +223,14 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
             (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
-
+    valid_pack_names = {p.name for p in pack_list}
     if marketplace == 'xsoar':
-        public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
         private_packs_names = {p.get('id', '') for p in private_packs}
-        valid_packs_names = public_packs_names.union(private_packs_names)
+        valid_packs_names = valid_pack_names.union(private_packs_names)
         # search for invalid packs folder inside index
         invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
                                entry.name not in valid_packs_names and entry.is_dir()}
     else:
-        valid_packs_names = set(id_set.get('Packs', {}).keys())
         # search for invalid packs folder inside index
         invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
                                entry.name not in valid_packs_names and entry.is_dir()}
@@ -1027,7 +1025,12 @@ def main():
     install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
     option = option_handler()
     packs_artifacts_path = option.packs_artifacts_path
-    id_set = open_id_set_file(option.id_set_path)
+    id_set = None
+    use_graph = None
+    try:
+        id_set = open_id_set_file(option.id_set_path)
+    except IOError:
+        use_graph = True
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
@@ -1083,7 +1086,7 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, id_set, marketplace)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, packs_list, marketplace)
 
     # packs that depends on new packs that are not in the previous index.zip
     packs_with_missing_dependencies = []
@@ -1115,6 +1118,7 @@ def main():
     # 2. even if the pack is not updated, we still keep some fields in it's metadata updated, such as download count,
     # changelog, etc.
     for pack in list(packs_for_current_marketplace_dict.values()):
+        pack: Pack
         task_status = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name

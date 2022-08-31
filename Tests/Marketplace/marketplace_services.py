@@ -16,6 +16,7 @@ from packaging.version import Version
 from pathlib import Path
 from typing import Tuple, Any, Union, List, Dict, Optional
 from zipfile import ZipFile, ZIP_DEFLATED
+from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 
 import git
 import google.auth
@@ -1081,7 +1082,6 @@ class Pack(object):
             bool: whether the operation succeeded and changes are relevant for marketplace.
             dict: data from id set for the modified files.
         """
-
         logging.debug(f"Starting to filter modified files of pack {self._pack_name} by the id set")
 
         task_status = False
@@ -1090,9 +1090,14 @@ class Pack(object):
         for pack_folder, modified_file_paths in self._modified_files.items():
             modified_entities = []
             for path in modified_file_paths:
-                if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
-                    logging.debug(f"The entity with the path {path} is present in the id set")
-                    modified_entities.append(id_set_entity)
+                if id_set:
+                    if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
+                        logging.debug(f"The entity with the path {path} is present in the id set")
+                        modified_entities.append(id_set_entity)
+                else:
+                    if entity := get_graph_entity_by_path(Path(path)):
+                        logging.debug(f"The entity with the path {path} is present in the content graph")
+                        modified_entities.append(entity)
 
             if modified_entities:
                 modified_files_data[pack_folder] = modified_entities
@@ -3732,6 +3737,11 @@ def get_last_commit_from_index(service_account):
     index_string = index_blob.download_as_string()
     index_json = json.loads(index_string)
     return index_json.get('commit')
+
+
+def get_graph_entity_by_path(entity_path: Path):
+    with Neo4jContentGraphInterface() as content_graph_interface:
+        return content_graph_interface.get_node_by_path(entity_path)
 
 
 def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict):
