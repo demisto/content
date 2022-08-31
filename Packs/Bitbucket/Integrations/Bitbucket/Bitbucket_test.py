@@ -20,35 +20,6 @@ def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
-
-
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
-
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
-
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-    assert response.outputs == mock_response
-
-
-# TODO: ADD HERE unit tests for every command
-
 
 ARGS_CASES = [
     (-1, None, None, 'The limit value must be equal to 1 or bigger.'),
@@ -80,10 +51,10 @@ def test_check_args(limit, page, page_size, expected_results):
 def test_get_paged_results(mocker):
     """
         Given:
-            - A http response
+            - A http response and a limit to the list
 
         When:
-            - running a command with pagination
+            - running a command with pagination needed
 
         Then:
             - return a list with all the results after pagination
@@ -103,3 +74,33 @@ def test_get_paged_results(mocker):
     results = get_paged_results(client, response1, 10)
     assert len(results) == 2
     assert results == res
+
+
+def test_check_pagination():
+    """
+        Given:
+            - A http response and a limit to the list
+
+        When:
+            - running a command with optional pagination, and checking if it is needed
+
+        Then:
+            - return a list with all the results after pagination
+
+        """
+    from Bitbucket import check_pagination, Client
+    client = Client(workspace='workspace',
+                    server_url='server_url',
+                    auth=(),
+                    proxy=False,
+                    verify=False,
+                    repository='repository')
+    response = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('response')
+    res = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('result')
+    response2 = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('response1')
+    results10 = check_pagination(client, response, 10, {})
+    results1 = check_pagination(client, response, 1, {})
+    results2 = check_pagination(client, response2, 1, {})
+    assert results10 == res
+    assert results1 == res
+    assert results2 == res

@@ -13,9 +13,7 @@ This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
 """
-import json
 
-import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -47,7 +45,7 @@ class Client(BaseClient):
     def get_full_url(self, full_url: str, params: Dict = None) -> Dict:
         return self._http_request(method='GET', full_url=full_url, params=params)
 
-    def get_project_list_request(self, project_key: str, params: Dict) -> Dict:
+    def get_project_list_request(self, params: Dict, project_key: str = None) -> Dict:
         if not project_key:
             full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/'
         else:
@@ -70,8 +68,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def check_pagination(client, response: Dict, limit: int, params: Dict):
-    arr = response.get('values')
+def check_pagination(client: Client, response: Dict, limit: int, params: Dict) -> List:
+    arr: List[Dict] = response.get('values', [])
     results_number = len(arr)
     isNext = response.get('next', None)
     results = []
@@ -86,11 +84,12 @@ def check_pagination(client, response: Dict, limit: int, params: Dict):
         return arr
     else:
         return get_paged_results(client, response, limit)
+    return results
 
 
-def get_paged_results(client, response, limit) -> list:
+def get_paged_results(client: Client, response: Dict, limit: int) -> List:
     results = []
-    arr = response.get('values')
+    arr: List[Dict] = response.get('values', [])
     isNext = response.get('next', None)
     while response:
         for value in arr:
@@ -102,9 +101,9 @@ def get_paged_results(client, response, limit) -> list:
         if limit > 0 and isNext:
             response = client.get_full_url(full_url=isNext)
             isNext = response.get('next', None)
-            arr = response.get('values')
+            arr = response.get('values', [])
         else:
-            response = None
+            return results
     return results
 
 
@@ -123,23 +122,25 @@ def check_args(limit: int, page: int, page_size: int):
 def test_module(client: Client) -> str:
     params = {'pagelen': 1}
     try:
-        client.get_project_list_request(None, params)
+        client.get_project_list_request(params=params)
         return "ok"
-    except:
+    except Exception as e:
         raise Exception('There was a problem in the authentication process.')
 
 
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
-def project_list_command(client: Client, args) -> CommandResults:
+def project_list_command(client: Client, args: Dict) -> CommandResults:
     params = {'page': arg_to_number(args.get('page')),
               'pagelen': arg_to_number(args.get('page_size', 50))}
-    limit = arg_to_number(args.get('limit', 50))
+    limit: int = arg_to_number(args.get('limit', 50))
     project_key = args.get('project_key')
-    check_args(limit, params.get('page'), params.get('page_size'))
+    page: int = params.get('page', None)
+    page_size: int = params.get('page_size', None)
+    check_args(limit, page, page_size)
 
-    response = client.get_project_list_request(project_key, params)
-    print(response)
+    response = client.get_project_list_request(params, project_key)
+
     if project_key:
         results = [response]
         readable_name = f'The information about project {project_key.upper()}'
@@ -172,12 +173,14 @@ def project_list_command(client: Client, args) -> CommandResults:
     )
 
 
-def open_branch_list_command(client: Client, args) -> CommandResults:
+def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
     params = {'page': arg_to_number(args.get('page')),
               'pagelen': arg_to_number(args.get('page_size', 50))}
     limit = arg_to_number(args.get('limit', 50))
     repo = args.get('repo', None)
-    check_args(limit, params.get('page'), params.get('page_size'))
+    page: int = params.get('page', None)
+    page_size: int = params.get('page_size', None)
+    check_args(limit, page, page_size)
 
     response = client.get_open_branch_list_request(repo, params)
     results = check_pagination(client, response, limit, params)
@@ -244,9 +247,11 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'bitbucket-open-branch-list':
             result = open_branch_list_command(client, demisto.args())
             return_results(result)
-        #elif demisto.command() == 'bitbucket-branch-get':
+        # elif demisto.command() == 'bitbucket-branch-get':
          #   result = branch_get_command(client, demisto.args())
           #  return_results(result)
+        else:
+            raise NotImplementedError('This command is not implemented yet.')
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
