@@ -3971,5 +3971,3 @@ def main():
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
     main()
-
-register_module_line('CrowdstrikeFalcon', 'end', __line__())
