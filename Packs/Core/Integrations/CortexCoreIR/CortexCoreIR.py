@@ -120,7 +120,7 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
         'args': args_list
     }
     res = client.get_prevalence(request_body).get('results', [])
-    for item in res:  #remove 'args' scope
+    for item in res:  # remove 'args' scope
         name = item.pop('args', {})
         item.update(name)
     command_type = PREVALENCE_COMMANDS[command]
