@@ -65,27 +65,27 @@ def censys_view_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             'Last Updated': result.get('last_updated_at')
         }
 
-        city = result.get('location', {}).get('city')
-        province = result.get('location', {}).get('province')
-        postal = result.get('location', {}).get('postal_code')
-        country_code = result.get('location', {}).get('country_code')
-        country = result.get('location', {}).get('country')
+        city = demisto.get(result, 'location.city')
+        province = demisto.get(result, 'location.province')
+        postal = demisto.get(result, 'location.postal_code')
+        country_code = demisto.get(result, 'location.country_code')
+        country = demisto.get(result, 'location.country')
 
         description = ', '.join(filter(None, [city, province, postal, country_code]))
-        lat = result.get('location', {}).get('coordinates', {}).get('latitude')
-        lon = result.get('location', {}).get('coordinates', {}).get('longitude')
+        lat = demisto.get(result, 'location.coordinates.latitude')
+        lon = demisto.get(result, 'location.coordinates.longitude')
 
         indicator = Common.IP(
             ip=query,
             dbot_score=Common.DBotScore(indicator=query,
                                         indicator_type=DBotScoreType.IP,
                                         score=Common.DBotScore.NONE),
-            asn=result.get('autonomous_system', {}).get('asn'),
+            asn=demisto.get(result, 'autonomous_system.asn'),
             geo_latitude=str(lat) if lat else None,
             geo_longitude=str(lon) if lon else None,
             geo_description=description or None,
             geo_country=country,
-            as_owner=result.get('autonomous_system', {}).get('name'))
+            as_owner=demisto.get(result, 'autonomous_system.name'))
 
         human_readable = tableToMarkdown(f'Information for IP {query}', content)
         return CommandResults(
