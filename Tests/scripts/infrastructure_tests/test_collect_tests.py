@@ -23,7 +23,7 @@ Test Collection Unit-Test cases
 - `A` has a single pack with an integration and two test playbooks.
 - `B` has a single pack, with only test playbooks. (they should be collected)
 - `C` has a pack supported by both marketplaces, and one only for marketplacev2 and one only for XSOAR.
-- `D` has a single pack with from_version == to_version == 6.5, for testing the version range.
+- `D` has a single pack & test-playbook with from_version == to_version == 6.5, for testing the version range.
 - `E` has a single pack with a script tested using myTestPlaybook, and a Playbook used in myOtherTestPlaybook.
 - `F` has a single pack with a script set up as `no tests`, and a conf where myTestPlaybook is set as the script's test.
 - `G` has objects that trigger collection of the pack (without tests).
@@ -31,6 +31,9 @@ Test Collection Unit-Test cases
 - `I` has a single pack with two test playbooks, one of which is ignored in .pack_ignore.
 - `J` has a single pack with two integrations, with mySkippedIntegration being skipped in conf.json.
 - `K` has a single pack with two integrations, with mySkippedIntegration's TPB skipped in conf.json.
+- `L` has a single pack with a Wizard content item.
+- `M1` has a pack with support level == xsoar, and tests missing from conf.json -- should raise an error.
+- `M2` has a pack with support level != xsoar, and tests missing from conf.json -- should collect pack but not tests.
 """
 
 
@@ -82,6 +85,9 @@ class MockerCases:
     I_xsoar = CollectTestsMocker(TEST_DATA / 'I_xsoar')
     J = CollectTestsMocker(TEST_DATA / 'J')
     K = CollectTestsMocker(TEST_DATA / 'K')
+    L = CollectTestsMocker(TEST_DATA / 'L_XSIAM')
+    M1 = CollectTestsMocker(TEST_DATA / 'M1')
+    M2 = CollectTestsMocker(TEST_DATA / 'M2')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -220,6 +226,9 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',
                           'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
 
+     (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_5, Machine.MASTER,), XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',)),
+
      (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
 
@@ -242,22 +251,39 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
 
      # Integration is changed but its test playbook is skipped - pack should be collected, test should not.
      (MockerCases.K, (), ('myPack',), None, XSOAR_BRANCH_ARGS,
-      ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',))
+      ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',)),
+
+     # Testing version ranges
+     (MockerCases.L, None, ('myXSIAMOnlyPack',), (Machine.MASTER, Machine.V6_9), XSIAM_BRANCH_ARGS,
+      ('Packs/myXSIAMOnlyPack/Wizards/harry.json',)),
+
+     (MockerCases.M2, None, ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',)),
+
      ))
 def test_branch(
         monkeypatch,
         mocker,
         case_mocker,
         expected_tests: set[str],
-        expected_packs: tuple[str],
-        expected_machines: Optional[tuple[Machine]],
-        collector_class_args: tuple[str],
-        mocked_changed_files: tuple[str]
+        expected_packs: tuple[str, ...],
+        expected_machines: Optional[tuple[Machine, ...]],
+        collector_class_args: tuple[str, ...],
+        mocked_changed_files: tuple[str, ...]
 ):
     mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=mocked_changed_files)
     _test(monkeypatch, case_mocker, collector_class=BranchTestCollector,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_machines=expected_machines,
           collector_class_args=collector_class_args)
+
+
+def test_branch_non_xsoar_support_level(mocker, monkeypatch):
+    # # Integration with support level != xsoar - should raise an exception
+    mocker.patch.object(BranchTestCollector, '_get_changed_files',
+                        return_value=('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',))
+    with pytest.raises(ValueError) as e:
+        _test(monkeypatch, MockerCases.M1, BranchTestCollector, (), (), (), XSOAR_BRANCH_ARGS)
+    assert 'is (1) missing from conf.json' in str(e.value)  # checking it's the right error
 
 
 ONLY_COLLECT_PACK_TYPES = {
@@ -280,7 +306,6 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
     FileType.XSIAM_REPORT,
-    FileType.REPORT,
     FileType.GENERIC_TYPE,
     FileType.GENERIC_FIELD,
     FileType.GENERIC_MODULE,
