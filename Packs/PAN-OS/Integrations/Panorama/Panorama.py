@@ -11119,13 +11119,14 @@ def pan_os_get_merged_config(args: dict):
     return fileResult("merged_config", result)
 
 
-def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None):
+def build_nat_xpath(name: str, pre_post: str):
+    _xpath = f"{XPATH_RULEBASE}{pre_post}/nat"
+    if name:
+        _xpath = f"{_xpath}/rules/entry[@name='{name}']"
+    return _xpath
 
-    def _build_xpath(_name, _pre_post):
-        _xpath = f"{XPATH_RULEBASE}{_pre_post}/nat"
-        if _name:
-            _xpath = f"{_xpath}/rules/entry[@name='{_name}']"
-        return _xpath
+
+def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None):
 
     if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
         raise DemistoException(f'The pre_post argument must be provided for panorama instance')
@@ -11134,7 +11135,7 @@ def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_
         'type': 'config',
         'action': 'get' if show_uncommited else 'show',
         'key': API_KEY,
-        'xpath': _build_xpath(name, 'rulebase' if VSYS else pre_post)  # rulebase is for firewall instance.
+        'xpath': build_nat_xpath(name, 'rulebase' if VSYS else pre_post)  # rulebase is for firewall instance.
     }
 
     return http_request(URL, 'POST', params=params)
@@ -11205,6 +11206,152 @@ def pan_os_list_nat_rules_command(args):
         readable_output=tableToMarkdown('Nat Policy Rules', nat_rules, removeNull=True),
         outputs_prefix='Panorama.Nat',
         outputs_key_field='Name'
+    )
+
+
+def json_to_xml(_json):
+    return re.sub('<\/*xml2json>', '', json2xml({'xml2json': _json}).decode('utf-8'))
+
+
+def create_nat_rule(args):
+    def get_element_as_xml():
+        def get_destination_translation_info_by_type(_type):
+            data = {}
+            if destination_translated_port := args.get('destination_translated_port'):
+                data['translated-port'] = destination_translated_port
+            if destination_translated_address := args.get('destination_translated_address'):
+                data['translated-address'] = destination_translated_address
+            if _type == 'static_ip':
+                if destination_dns_rewrite_direction := args.get('destination_dns_rewrite_direction'):
+                    data['dns-rewrite'] = {
+                        'direction': destination_dns_rewrite_direction
+                    }
+            else:  # dynamic-ip
+                if method := args.get('destination_translation_distribution_method'):
+                    element_as_json['distribution'] = method
+            return data
+
+        element_as_json = {}
+        if source_translation_type := args.get('source_translation_type'):
+            if source_translation_type != 'none':
+                source_translated_address_type = args.get('source_translated_address_type')
+                if source_translated_address_type == 'translated-address':
+                    source_translated_address = args.get('source_translated_address')
+                    if source_translated_address:
+                        if source_translation_type == 'static-ip':
+                            element_as_json['source-translation'] = {
+                                'static-ip': {
+                                    'translated-address': source_translated_address
+                                }
+                            }
+                        else:  # dynamic-ip or dynamic-ip-and-port
+                            element_as_json['source-translation'] = {
+                                source_translation_type: {
+                                    'translated-address': {
+                                        'member': argToList(source_translated_address)
+                                    }
+                                }
+                            }
+                    else:
+                        raise DemistoException(
+                            'source_translated_address must be provided '
+                            'if source_translated_address_type == translated-address'
+                        )
+                else:  # interface-address
+                    source_translated_interface = args.get('source_translated_interface')
+                    if source_translated_interface:
+                        if source_translation_type == 'dynamic-ip-and-port':
+                            element_as_json['source-translation'] = {
+                                'dynamic-ip-and-port': {
+                                    'interface-address': {
+                                        'interface': source_translated_interface
+                                    }
+                                }
+                            }
+                        else:
+                            raise DemistoException(
+                                'interface-address can only be set for source_translation_type == dynamic-ip-and-port'
+                            )
+                    else:
+                        raise DemistoException(
+                            'source_translated_interface must be '
+                            'provided if source_translation_type == interface-address'
+                        )
+
+        destination_translation_type = args.get('destination_translation_type')
+
+        if destination_translation_type != 'none':
+            if destination_translation_type == 'static_ip':
+                element_as_json['destination-translation'] = get_destination_translation_info_by_type('static_ip')
+
+            if destination_translation_type == 'dynamic_ip':
+                element_as_json['dynamic-destination-translation'] = get_destination_translation_info_by_type(
+                    'dynamic_ip'
+                )
+
+        if destination_zone := args.get('destination_zone'):
+            element_as_json['to'] = {
+                'member': argToList(destination_zone)
+            }
+
+        if source_zone := args.get('source_zone'):
+            element_as_json['from'] = {
+                'member': argToList(source_zone)
+            }
+
+        if source_address := args.get('source_address'):
+            element_as_json['source'] = {
+                'member': argToList(source_address)
+            }
+
+        if destination_address := args.get('destination_address'):
+            element_as_json['destination'] = {
+                'member': argToList(destination_address)
+            }
+
+        if tags := args.get('tags'):
+            element_as_json['tag'] = {
+                'member': argToList(tags)
+            }
+
+        if service := args.get('service'):
+            element_as_json['service'] = service
+
+        if description := args.get('description'):
+            element_as_json['description'] = description
+
+        if nat_type := args.get('nat_type'):
+            element_as_json['nat-type'] = nat_type
+
+        if destination_interface := args.get('destination_interface'):
+            element_as_json['to-interface'] = destination_interface
+
+        if negate_destination := args.get('negate_destination'):
+            element_as_json['target'] = {
+                'negate': negate_destination
+            }
+        return json_to_xml(element_as_json)
+
+    if DEVICE_GROUP and not args.get('pre_post'):
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'xpath': build_nat_xpath(name=args.get('rulename'), pre_post='rulebase' if VSYS else args.get('pre_post')),
+        'element': get_element_as_xml(),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_nat_rule_command(args):
+    rule_name = args.get('rulename')
+    raw_response = create_nat_rule(args)
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Nat rule {rule_name} was created successfully.'
     )
 
 
@@ -11860,6 +12007,8 @@ def main():
             return_results(pan_os_get_running_config(args))
         elif command == 'pan-os-list-nat-rules':
             return_results(pan_os_list_nat_rules_command(args))
+        elif command == 'pan-os-create-nat-rule':
+            return_results(pan_os_create_nat_rule_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

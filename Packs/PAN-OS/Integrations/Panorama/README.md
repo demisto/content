@@ -7512,3 +7512,46 @@ Returns a list of nat-rules of either Panorama/firewall instance.
 >| any | a2 | 1.1.1.1 | test |  | any | 3.3.3.3 | test tag |
 >| any |  | 2.2.2.2 | test-2 | any | any | 2.2.2.2 |  |
 
+### pan-os-create-nat-rule
+***
+Returns a list of nat-rules of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-create-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the nat-rule to create. | Required | 
+| description | The description that the new nat-rule should have. | Optional | 
+| device-group | The device-group in which the new rule should be created. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| nat_type | The nat-type in which the rule will be created with. Possible values are: ipv4, nat64, nptv6. Default is ipv4. | Optional | 
+| source_zone | A comma-separated list of source zones. Default is any. | Optional | 
+| destination_zone | A comma-separated list of destination zones. | Optional | 
+| destination_interface | The page at which to start listing nat-rules, must be a positive number. Default is any. | Optional | 
+| service | The service in which the rule will be created with. Default is any. | Optional | 
+| source_address | A comma-separated list of address object names, address group object names, or EDL object names. Default is any. | Optional | 
+| destination_address | A comma-separated list of address object names, address group object names, or EDL object names. Default is any. | Optional | 
+| source_translation_type | The source translation type in which the rule will be created with. Possible values are: static-ip, dynamic-ip, dynamic-ip-and-port, none. Default is none. | Optional | 
+| source_translated_address_type | The source translation address type in which the rule will be created with. Possible values are: translated-address, interface-address. Default is translated-address. | Optional | 
+| source_translated_address | A comma-separated list of source translation addresses, only if source_translation_type == static_ip, must be a single value. | Optional | 
+| source_translated_interface | The source translation interface. | Optional | 
+| destination_translation_type | The destination translation type. Possible values are: static_ip, dynamic_ip, none. Default is none. | Optional | 
+| destination_translated_address | A comma-separated list of destination translated addresses. | Optional | 
+| destination_translated_port | the destination translated port. | Optional | 
+| destination_translation_distribution_method | the destination translation distribution method. Possible values are: round-robin, source-ip-hash, ip-modulo, ip-hash, least-sessions. | Optional | 
+| negate_destination | Whether to use negate destination. Possible values are: yes, no. | Optional | 
+| destination_dns_rewrite_direction | the type in which the dns rewrite direction should be. Possible values are: forward, reverse. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-nat-rule rulename=test pre_post="pre-rulebase" source_translated_address_type="interface-address" source_translated_interface=a2 source_translation_type="dynamic-ip-and-port" destination_translation_type=dynamic_ip destination_translated_address=1.1.1.1```
+#### Human Readable Output
+
+>Nat rule test was created successfully.

@@ -3093,3 +3093,130 @@ class TestPanOSListNatRulesCommand:
 
         assert list(result.call_args.args[0]['EntryContext'].values())[0] == expected_context
         assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestCreatePanOSNatRuleCommand:
+    CREATE_NAT_RULE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'pre_post': 'pre-rulebase',
+                    'source_translation_type': 'static-ip',
+                    'source_translated_address': '1.1.1.1',
+                    'source_translated_address_type': 'translated-address'
+                },
+                {
+                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
+                    'key': 'thisisabogusAPIKEY!'
+                },
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group"
+                             "/entry[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']",
+                    'element': '<source-translation><static-ip><translated-address>1.1.1.1<'
+                               '/translated-address></static-ip></source-translation><description>test</description>',
+                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'source_translation_type': 'static-ip',
+                    'source_translated_address': '1.1.1.1',
+                    'source_translated_address_type': 'translated-address'
+                },
+                integration_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/"
+                             "entry[@name='vsys1']/rulebase/nat/rules/entry[@name='test']",
+                    'element': '<source-translation><static-ip><translated-address>1.1.1.1<'
+                               '/translated-address></static-ip></source-translation><description>test</description>',
+                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'destination_zone': '1.1.1.1',
+                    'source_zone': '2.2.2.2',
+                    'pre_post': 'pre-rulebase',
+                    'source_address': '1.1.1.1,2.2.2.2',
+                    'source_translation_type': 'dynamic-ip',
+                    'source_translated_address_type': 'translated-address',
+                    'source_translated_address': '1.1.1.1,2.2.2.2',
+                },
+                {
+                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
+                    'key': 'thisisabogusAPIKEY!'
+                },
+                {
+                    'action': 'set',
+                    'element': '<source-translation><dynamic-ip><translated-address><member>1.1.1.1</member>'
+                               '<member>2.2.2.2</member></translated-address></dynamic-ip></source-translation><to>'
+                               '<member>1.1.1.1</member></to><from><member>2.2.2.2</member></from><source><member>'
+                               '1.1.1.1</member><member>2.2.2.2</member></source><description>test</description>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'destination_zone': '1.1.1.1',
+                    'source_zone': '2.2.2.2',
+                    'source_address': '1.1.1.1,2.2.2.2',
+                    'source_translation_type': 'dynamic-ip',
+                    'source_translated_address_type': 'translated-address',
+                    'source_translated_address': '1.1.1.1,2.2.2.2'
+                },
+                integration_params,
+                {
+                    'action': 'set',
+                    'element': '<source-translation><dynamic-ip><translated-address><member>1.1.1.1</member>'
+                               '<member>2.2.2.2</member></translated-address></dynamic-ip></source-translation><to>'
+                               '<member>1.1.1.1</member></to><from><member>2.2.2.2</member></from><source>'
+                               '<member>1.1.1.1</member><member>2.2.2.2</'
+                               'member></source><description>test</description>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/"
+                             "entry[@name='vsys1']/rulebase/nat/rules/entry[@name='test']"
+                }
+            ),
+        ]
+    )
+    def test_create_pan_os_command_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given:
+         - Panorama instance configuration with source_translation_type, source_translated_address and source_translated_address_type
+         - Firewall instance configuration with source_translation_type, source_translated_address and source_translated_address_type
+         - Panorama instance configuration with basic parameter configurations along with dynamic-ip
+         - firewall instance configuration with basic parameter configurations along with dynamic-ip
+
+        When:
+         - running the pan-os-create-nat-rule through the main flow.
+
+        Then:
+         - make sure the xpath/element and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-create-nat-rule')
+
+        main()
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
