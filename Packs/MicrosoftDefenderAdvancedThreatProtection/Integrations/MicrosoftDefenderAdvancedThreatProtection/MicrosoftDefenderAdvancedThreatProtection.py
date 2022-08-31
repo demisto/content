@@ -3875,7 +3875,7 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
     indicator_application = args.get('indicator_application', '')
     recommended_actions = args.get('recommended_actions', '')
     rbac_group_names = argToList(args.get('rbac_group_names', []))
-    generate_alert = args.get('generate_alert', True)
+    generate_alert = argToBoolean(args.get('generate_alert', True))
 
     indicator = client.create_update_indicator_security_center_api(
         indicator_value=indicator_value, expiration_date_time=expiration_time,
