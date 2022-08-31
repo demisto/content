@@ -1,3 +1,5 @@
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from armorblox.client import Client as AbxBaseClient
 from CommonServerPython import *  # noqa: F401
@@ -127,17 +129,17 @@ def fetch_incidents_command(client):
     start_time: Any
     # pageToken fetched from demisto lastRun
     pageToken = int()
-    response = {}
     incidents = []
     if 'start_time' not in last_run.keys():
         pageToken = -1
         response, next_page_token = client.get_incidents(pageSize=1, pageToken=pageToken, first_fetch=FIRST_FETCH)
         if response:
-            start_time = response[0]['date']
+            response = response[0]
+            start_time = response.get('date')
             start_time = dateparser.parse(start_time)
-            message_ids = get_incident_message_ids(client, response[0]['id'])
-            response[0]['message_ids'] = message_ids
-            curr_incident = {'rawJSON': json.dumps(response[0]), 'details': json.dumps(response[0])}
+            message_ids = get_incident_message_ids(client, response.get('id'))
+            response['message_ids'] = message_ids
+            curr_incident = {'rawJSON': json.dumps(response), 'details': json.dumps(response)}
             incidents.append(curr_incident)
 
     if last_run and 'pageToken' in last_run.keys():
@@ -151,7 +153,7 @@ def fetch_incidents_command(client):
     last_time = start_time
 
     for incident in incidents_data:
-        dt = incident['date']
+        dt = incident.get('date')
         parsed_date = dateparser.parse(dt)
         assert parsed_date is not None, f'failed parsing {dt}'
         dt = int(parsed_date.timestamp())
