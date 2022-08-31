@@ -29,7 +29,7 @@ TRUST_LEVELS = {
     '100': 'KNOWN_TRUSTED_INSTALLER'
 }
 
-POVIDER = {
+PROVIDER = {
     '1': 'Global Threat Intelligence (GTI)',
     '3': 'Enterprise reputation',
     '5': 'Advanced Threat Defense (ATD)',
@@ -85,7 +85,7 @@ def get_client_config(dxl_config_files: DXLConfigFiles):
 
 def get_provider(provider_id):
     provider_id_str = str(provider_id)
-    return POVIDER.get(provider_id_str, provider_id_str)
+    return PROVIDER.get(provider_id_str, provider_id_str)
 
 
 def parse_reputation(rep):
@@ -183,11 +183,10 @@ def get_trust_level_and_score(reputations):
 
 def test_module(dxl_config_files: DXLConfigFiles):
     """Tests if there is a connection with DxlClient(which is used for connection with McAfee TIE, instead of the Client class)"""
-    #print('Hello')
     config = get_client_config(dxl_config_files)
     with DxlClient(config) as client:
         client.connect()
-        client.disconnect()
+        # client.disconnect()
         return 'ok'
 
 
@@ -196,7 +195,7 @@ def safe_get_file_reputation(tie_client, api_input):
         res = tie_client.get_file_reputation(api_input)
     except Exception as e:
         print(str(e))
-        demisto.info("McAfee failed to get file reputation with error: " + str(e))
+        demisto.info(f'McAfee failed to get file reputation with error: {str(e)}')
         return None
     return res
 
@@ -208,6 +207,7 @@ def file(hashes: List[str], dxl_config_files: DXLConfigFiles) -> List[CommandRes
     dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(demisto.params().get('integrationReliability',
                                                                                                      'C - Fairly reliable'))
     with DxlClient(config) as client:
+        # TODO Add meaningful error message when you get an error in the connection or configuration phase
         client.connect()
         # Create the McAfee Threat Intelligence Exchange (TIE) client
         tie_client = TieClient(client)
@@ -215,6 +215,7 @@ def file(hashes: List[str], dxl_config_files: DXLConfigFiles) -> List[CommandRes
             hash_type = get_hash_type(file_hash)
             hash_type_key = HASH_TYPE_KEYS.get(hash_type)
             if not hash_type_key:
+                # TODO Check if I should raise Exception or DemistoException
                 raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
 
             # Use the following to output data using the old way to Context Data
@@ -249,7 +250,7 @@ def file(hashes: List[str], dxl_config_files: DXLConfigFiles) -> List[CommandRes
                 file['Vendor'] = VENDOR_NAME
             else:
                 reputations = raw_result.values()
-
+                
                 tl_score = get_trust_level_and_score(reputations)
                 trust_level = tl_score['trust_level']
                 vendor = tl_score['vendor']
@@ -301,8 +302,8 @@ def file(hashes: List[str], dxl_config_files: DXLConfigFiles) -> List[CommandRes
     return command_results
 
 
-def file_references(hash):
-    config = get_client_config()
+def file_references(hash: str, dxl_config_files: DXLConfigFiles):
+    config = get_client_config(dxl_config_files)
     with DxlClient(config) as client:
         client.connect()
         # Create the McAfee Threat Intelligence Exchange (TIE) client
@@ -311,13 +312,14 @@ def file_references(hash):
         hash_type = get_hash_type(hash)
         hash_type_key = HASH_TYPE_KEYS.get(hash_type)
         if not hash_type_key:
-            return create_error_entry(
-                'file argument must be sha1(40 charecters) or sha256(64 charecters) or md5(32 charecters)')
+            # return create_error_entry(
+            #     'file argument must be sha1(40 charecters) or sha256(64 charecters) or md5(32 charecters)')
+            raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
 
-        hash_param = {}
-        hash_param[hash_type_key] = hash
+        api_input = {}
+        api_input[hash_type_key] = hash
 
-        references = tie_client.get_file_first_references(hash_param)
+        references = tie_client.get_file_first_references(api_input)
 
         table = references_to_table(references)
 
@@ -339,37 +341,44 @@ def file_references(hash):
         }
 
 
-def set_file_reputation(hash, trust_level, filename, comment):
-    config = get_client_config()
+def set_file_reputation(hashes: List[str], dxl_config_files: DXLConfigFiles, trust_level: str, filename: str, comment: str):
+    config = get_client_config(dxl_config_files)
 
     # find trust_level key
     trust_level_key = None
-    for k, v in TRUST_LEVELS.iteritems():
+    for k, v in TRUST_LEVELS.items():
         if v == trust_level:
             trust_level_key = k
+            break
 
     if not trust_level_key:
-        return create_error_entry(
-            'illigale argument trust_level %s. Choose value from predefined values' % (trust_level,))
+        # TODO Maybe print the acceptable trust levels?
+        raise Exception(f'Illegal argument trust_level {trust_level}. Choose value from predefined values')
+        # return create_error_entry(
+        #     'Illigale argument trust_level %s. Choose value from predefined values' % (trust_level,))
 
     with DxlClient(config) as client:
         client.connect()
         tie_client = TieClient(client)
+        for hash in hashes:
+            hash_type = get_hash_type(hash)
+            hash_type_key = HASH_TYPE_KEYS.get(hash_type)
+            if not hash_type_key:
+                raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
 
-        hash_type = get_hash_type(hash)
-        hash_type_key = HASH_TYPE_KEYS.get(hash_type)
-        if not hash_type_key:
-            return create_error_entry(
-                'file argument must be sha1(40 charecters) or sha256(64 charecters) or md5(32 charecters)')
+            api_input = {}
+            api_input[hash_type_key] = hash
 
-        hash_param = {}
-        hash_param[hash_type_key] = hash
-
-        try:
-            tie_client.set_file_reputation(trust_level_key, hash_param, filename, comment)
-            return 'Successfully set file repuation'
-        except Exception as ex:
-            return create_error_entry(str(ex))
+            try:
+                tie_client.set_file_reputation(trust_level=trust_level_key,
+                                               hashes=api_input,
+                                               filename=filename,
+                                               comment=comment)
+                # return 'Successfully set file repuation'
+            except Exception as ex:
+                # return create_error_entry(str(ex))
+                raise Exception(str(ex))
+    return 'Successfully set files repuation'
 
 
 def set_up():
@@ -404,20 +413,23 @@ def main(dxl_config_files: DXLConfigFiles):
             return_results(test_module(dxl_config_files))
 
         elif command == 'file':
-            return_results(file(argToList(args.get('file')), dxl_config_files))
+            return_results(file(hashes=argToList(args.get('file')),
+                                dxl_config_files=dxl_config_files,
+                                ))
 
         elif command == 'tie-file-references':
-            results = file_references(args.get('file'))
-            return_results(results)
+            return_results(file_references(hash=args.get('file'),
+                                           dxl_config_files=dxl_config_files,
+                                           ))
       
         elif command == 'tie-set-file-reputation':
-            results = set_file_reputation(
-                args.get('file'),
-                args.get('trust_level'),
-                args.get('filename'),
-                args.get('comment')
-            )
-            return_results(results)
+            return_results(set_file_reputation(
+                           hashes=argToList(args.get('file')),
+                           dxl_config_files=dxl_config_files,
+                           trust_level=args.get('trust_level'),
+                           filename=args.get('filename'),
+                           comment=args.get('comment'),
+                           ))
 
         else:
             raise NotImplementedError(f'Command {command} is not supported.')
