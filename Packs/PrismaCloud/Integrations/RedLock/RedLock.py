@@ -828,8 +828,6 @@ def fetch_incidents():
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
     for alert in response:
-        if alert.get('firstSeen') < last_run:
-            continue
         incidents.append({
             'name': alert.get('policy.name', 'No policy') + ' - ' + alert.get('id'),
             'occurred': convert_unix_to_demisto(alert.get('alertTime')),
