@@ -167,7 +167,7 @@ def init_driver_and_display(width: int, height: int, offline_mode=False, include
         if offline_mode:
             driver.set_network_conditions(offline=True, latency=5, throughput=500 * 1024)
     except Exception as ex:
-        return_error(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
+        raise DemistoException(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
 
     demisto.debug('Creating chrome driver - COMPLETED')
     return driver, display

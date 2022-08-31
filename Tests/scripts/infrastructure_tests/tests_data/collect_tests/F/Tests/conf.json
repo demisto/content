@@ -1,8 +1,10 @@
 {
   "tests": [
     {
-      "integrations": "myScript",
+      "scripts": "myScript",
       "playbookID": "myTestPlaybook"
+    },{
+        "playbookID": "myOtherTestPlaybook"
     }
   ],
   "skipped_tests": {},

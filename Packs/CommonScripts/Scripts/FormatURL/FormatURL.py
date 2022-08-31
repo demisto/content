@@ -1,13 +1,14 @@
 from html import unescape
 from typing import Tuple
 from urllib.parse import urlparse, parse_qs, ParseResult, unquote
+import ipaddress
 
 from CommonServerPython import *
 
 ATP_REGEX = re.compile(r'(https://\w*|\w*)\.safelinks\.protection\.outlook\.com/.*\?url=')
 FIREEYE_REGEX = re.compile(r'(https:\/\/\w*|\w*)\.fireeye\.com\/.*\/url\?k=')
 PROOF_POINT_URL_REG = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
-FIRST_TLD = re.compile(r"([.(?!.)][a-zA-Z]?(?:\/|$))|([.(?!.)][a-zA-Z0-9]{2,}[\/])")
+FIRST_TLD = re.compile(r"([(?!.)][a-zA-Z]?(?:/|$))|([(?!.)][a-zA-Z\d]{2,}[.]?/)")
 
 HTTP = 'http'
 PREFIX_TO_NORMALIZE = {
@@ -104,16 +105,64 @@ def replace_protocol(url_: str) -> str:
     return url_
 
 
-def remove_brackets_from_end_of_url(url_: str) -> str:
+def remove_special_chars_from_start_and_end_of_url(url_: str) -> str:
     """
-    Removes square brackets from the end of URL if there are any.
+    Removes brackets and quotes characters from the beginning and the end of the URL if there are any.
     Args:
-        url_ (str): URL to remove the brackets from.
-
+        url_ (str): URL to remove the special characters from.
     Returns:
-        (str): URL with removed brackets, if needed to remove, else the URL itself.
+        (str): URL with characters brackets, if needed to remove, else the URL itself.
     """
-    return url_[:-1] if url_[-1] in ['[', ']'] else url_
+
+    def is_ipv6(url: str) -> bool:
+        try:
+            # IPv6 should have square brackets around them, no need to remove
+            ipaddress.IPv6Address(re.findall(r"\[(.*?)]", url)[0])
+            return True
+
+        except (ipaddress.AddressValueError, IndexError):
+            return False
+
+    delimiters = {
+        "[": "]",
+        "(": ")",
+        "{": "}",
+        "'": "'",
+        '"': '"'
+    }
+
+    while url_[0] in delimiters and not is_ipv6(url_):
+        if delimiters.get(url_[0]) == url_[-1]:
+            url_ = url_[1:-1]
+        else:
+            url_ = url_[1:]
+
+    if is_ipv6(f'[{url_.split("//")[-1]}]'):
+        # In case we have an IPv6 without brackets, it's "invalid" but we will return it
+        return url_
+
+    if url_.count("/") < 3 and not is_ipv6(url_):
+        # If url has no path only letters are allowed in tld or port
+
+        while not url_[-1].isalpha() and not url_[-1].isnumeric():
+            url_ = url_[:-1]
+
+        last_part = url_.split('.')[-1]  # Get last part of the url
+
+        if ":" in last_part:
+            # Checks for port in URL to handle it as a special case
+            tld, port = last_part.split(":", 1)
+
+            if not port.isnumeric() or (not tld.isalpha() and not 1 <= int(tld) <= 255):
+                # Not the correct format, removing all characters but tld
+                url_ = url_.replace(f":{port}", "")
+
+        elif not last_part.isnumeric() and "#" not in last_part:
+            # No fragment section and no port, cleans all non letter chars from tld
+            while not url_[-1].isalpha():
+                url_ = url_[:-1]
+
+    return url_
 
 
 def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult) -> Optional[str]:
@@ -193,7 +242,7 @@ def format_single_url(non_formatted_url: str) -> List[str]:
     # Common handling for unescape and normalizing
     non_formatted_url = unquote(unescape(non_formatted_url.replace('[.]', '.')))
     formatted_url = replace_protocol(non_formatted_url)
-    formatted_url = remove_brackets_from_end_of_url(formatted_url)
+    formatted_url = remove_special_chars_from_start_and_end_of_url(formatted_url)
     if remove_single_letter_tld_url(formatted_url):
         return []
 
