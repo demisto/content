@@ -215,7 +215,7 @@ script:
     - name: vm_id
       description: vm cloud provider id
       required: true
-  dockerimage: demisto/python3:3.10.5.33323
+  dockerimage: demisto/python3:3.10.6.33415
   feed: false
   isfetch: true
   longRunning: false
