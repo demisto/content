@@ -304,9 +304,9 @@ class TestCollector(ABC):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
-    def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str,
+    def _collect_pack(self, pack_id: str, reason: CollectionReason, reason_description: str,
                       content_item_range: Optional[VersionRange] = None) -> CollectionResult:
-        pack = PACK_MANAGER[pack_name]
+        pack = PACK_MANAGER[pack_id]
 
         version_range = content_item_range \
             if pack.version_range.is_default \
@@ -314,7 +314,7 @@ class TestCollector(ABC):
 
         return CollectionResult(
             test=None,
-            pack=pack_name,
+            pack=pack_id,
             reason=reason,
             version_range=version_range,
             reason_description=reason_description,
@@ -438,7 +438,6 @@ class BranchTestCollector(TestCollector):
             case _:
                 raise RuntimeError(f'Unexpected content type {actual_content_type.value} for {content_item_path}'
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
-        # creating an object for each, as CollectedTests require #packs==#tests
         if tests:
             return CollectionResult.union(tuple(
                 CollectionResult(
@@ -486,15 +485,20 @@ class BranchTestCollector(TestCollector):
         try:
             content_item = ContentItem(path)
             self._validate_xsiam_compatibility(content_item)
+
         except NonDictException:
-            # for `.py`, `.md`, etc., that are not dictionary-based
-            # Suitable logic follows, see collect_yml (which validates xsiam compatibility as well)
+            # for `.py`, `.md`, etc: anything not dictionary-based. Suitable logic follows, see collect_yml.
             content_item = None
 
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             # install pack without collecting tests.
+            pack_id = find_pack_folder(path).name
+
+            if not content_item:
+                self._validate_xsiam_compatibility(PACK_MANAGER[pack_id])  # checks marketplaces under pack_metadata
+
             return self._collect_pack(
-                pack_name=find_pack_folder(path).name,
+                pack_id=pack_id,
                 reason=CollectionReason.NON_CODE_FILE_CHANGED,
                 reason_description=reason_description,
                 content_item_range=content_item.version_range if content_item else None
@@ -764,8 +768,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20220824')
-    logger.info('CONTRIB_BRANCH=' + os.getenv('CONTRIB_BRANCH', ''))
+    logger.info('TestCollector v20220831')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
@@ -777,6 +780,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
     logger.debug(f'parsed args:\n{args_string}')
+    logger.debug('CONTRIB_BRANCH=' + os.getenv('CONTRIB_BRANCH', '<undefined>'))
     branch_name = PATHS.content_repo.active_branch.name
 
     marketplace = MarketplaceVersions(args.marketplace)
