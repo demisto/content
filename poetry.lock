@@ -507,8 +507,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "5fccc813e1e756bb848e3a911dabf1498a26fa07"
-resolved_reference = "5fccc813e1e756bb848e3a911dabf1498a26fa07"
+reference = "e279d7d851412e3326890e7bf633f40c9c3cea6f"
+resolved_reference = "e279d7d851412e3326890e7bf633f40c9c3cea6f"
 
 [[package]]
 name = "deprecated"
@@ -1976,7 +1976,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-paramiko"
-version = "2.11.3"
+version = "2.11.4"
 description = "Typing stubs for paramiko"
 category = "main"
 optional = false
@@ -2236,7 +2236,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "b21a8a76bd084dd604181201fc62f20173cff38cbd3230ef03abc7d260d06665"
+content-hash = "64d1f495283af9be9007a23ed1f5d7a4b41922e819ac54cc0f791c4f2c820037"
 
 [metadata.files]
 aiohttp = [
@@ -3704,8 +3704,8 @@ types-markdown = [
     {file = "types_Markdown-3.4.1-py3-none-any.whl", hash = "sha256:2d1e5bfff192c78d6644bc3820fea9c7c7cb42dc87558020728ec5b728448ce2"},
 ]
 types-paramiko = [
-    {file = "types-paramiko-2.11.3.tar.gz", hash = "sha256:23af5366aa3f9bf3f76beb379bc2efd71ffd02a701a32fe8e822e3ee8b8d5787"},
-    {file = "types_paramiko-2.11.3-py3-none-any.whl", hash = "sha256:33ec5f1c28a5558267860d1567a440dad73a77063669c226ee956e905c45541e"},
+    {file = "types-paramiko-2.11.4.tar.gz", hash = "sha256:580bf561ee0b34be19e821d191114e5253670ae4bbf42852df83e2ab79d90455"},
+    {file = "types_paramiko-2.11.4-py3-none-any.whl", hash = "sha256:6690cf3cbaf6c1fa4ae12ef99f3c2052dc4d399db5e5de6819db2afea589fdf5"},
 ]
 types-protobuf = [
     {file = "types-protobuf-3.20.1.tar.gz", hash = "sha256:36e3426476e373da6f2bb8a81a1194478cd1f33813a4e254849146d28c450e00"},
