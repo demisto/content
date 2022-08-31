@@ -5,15 +5,37 @@ from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                to_tuple)
 
 
+class TestConfItem(DictBased):
+    def __init__(self, dict_: dict):
+        super().__init__(dict_)
+        self.playbook_id: str = self['playbookID']
+
+    @property
+    def integrations(self) -> tuple[str, ...]:
+        return to_tuple(self.get('integrations', (), warn_if_missing=False))
+
+    @property
+    def scripts(self) -> tuple[str, ...]:
+        return to_tuple(self.get('scripts', (), warn_if_missing=False))
+
+    @property
+    def classifier(self):
+        return self.get('instance_configuration', {}, warn_if_missing=False).get('classifier_id')
+
+    @property
+    def incoming_mapper(self):
+        return self.content.get('instance_configuration', {}).get('incoming_mapper_id')
+
+
 class TestConf(DictFileBased):
     __test__ = False  # prevents pytest from running it
 
     def __init__(self, conf_path: Path):
         super().__init__(conf_path, is_infrastructure=True)
         self.tests = tuple(TestConfItem(value) for value in self['tests'])
-        self.test_ids = {test.playbook_id for test in self.tests}
+        self.test_id_to_test = {test.playbook_id: test for test in self.tests}
 
-        self.tests_to_integrations: dict[str, tuple[str]] = {
+        self.tests_to_integrations: dict[str, tuple[str, ...]] = {
             test.playbook_id: test.integrations for test in self.tests if test.integrations
         }
         self.integrations_to_tests: dict[str, list[str]] = self._calculate_integration_to_tests()
@@ -39,20 +61,8 @@ class TestConf(DictFileBased):
                 result[integration].append(test)
         return dict(result)
 
-
-class TestConfItem(DictBased):
-    def __init__(self, dict_: dict):
-        super().__init__(dict_)
-        self.playbook_id: str = self['playbookID']
-
-    @property
-    def integrations(self) -> tuple[str]:
-        return to_tuple(self.get('integrations', (), warn_if_missing=False))
-
-    @property
-    def classifier(self):
-        return self.get('instance_configuration', {}, warn_if_missing=False).get('classifier_id')
-
-    @property
-    def incoming_mapper(self):
-        return self.content.get('instance_configuration', {}).get('incoming_mapper_id')
+    def get_test(self, test_id: str) -> TestConfItem:
+        try:
+            return self.test_id_to_test[test_id]
+        except KeyError:
+            raise ValueError(f'test {test_id} is missing from conf.json, under `tests`')

@@ -1,10 +1,10 @@
 import ast
-import json
 import argparse
 import os
 import sys
 
 import demisto_client
+from Tests.configure_and_test_integration_instances import XSIAMBuild
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.search_and_install_packs import install_packs
@@ -173,31 +173,11 @@ def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
     parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
     parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
+    parser.add_argument('--xsiam_servers_api_keys', help='Path to the file with XSIAM Servers api keys.')
 
     options = parser.parse_args()
 
     return options
-
-
-def get_json_file(path):
-    """
-
-    Args:
-        path: path to retrieve file from.
-
-    Returns: json object loaded from the path.
-
-    """
-    with open(path, 'r') as json_file:
-        return json.loads(json_file.read())
-
-
-def get_xsiam_configuration(xsiam_machine, xsiam_servers):
-    """
-        Parses conf params from servers list.
-    """
-    conf = xsiam_servers.get(xsiam_machine)
-    return conf.get('api_key'), conf.get('base_url'), conf.get('x-xdr-auth-id')
 
 
 def main():
@@ -208,8 +188,9 @@ def main():
 
     options = options_handler()
     host = options.xsiam_machine
-    xsiam_servers = get_json_file(options.xsiam_servers_path)
-    api_key, base_url, xdr_auth_id = get_xsiam_configuration(options.xsiam_machine, xsiam_servers)
+    api_key, _, base_url, xdr_auth_id = XSIAMBuild.get_xsiam_configuration(options.xsiam_machine,
+                                                                           options.xsiam_servers_path,
+                                                                           options.xsiam_servers_api_keys)
     logging.info(f'Starting cleanup for XSIAM server {host}')
 
     client = demisto_client.configure(base_url=base_url,
