@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from MicrosoftApiModule import *  # noqa: E402
 
 import urllib3
 import traceback
@@ -14,14 +15,17 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2020-05-01'
-
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
+SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_impersonation offline_access user.read",
+                       'Authorization Code': "https://management.azure.com/.default"}
 ''' CLIENT CLASS '''
 
 
 class AzureNSGClient:
     @logger
-    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy,
-                 azure_ad_endpoint='https://login.microsoftonline.com'):
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, connection_type: str,
+                 azure_ad_endpoint='https://login.microsoftonline.com', tenant_id: str = None, enc_key: str = None,
+                 auth_code: str = None, redirect_uri: str = None):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -29,22 +33,28 @@ class AzureNSGClient:
             set_integration_context(integration_context)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
             f'resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups'
-        client_args = {
-            'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
-                                    # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
-                                    # flow and most of the same arguments should be set, as we're !not! using OProxy.
-            'auth_id': app_id,
-            'token_retrieval_url': 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            'grant_type': DEVICE_CODE,  # disable-secrets-detection
-            'base_url': base_url,
-            'verify': verify,
-            'proxy': proxy,
-            'resource': 'https://management.core.windows.net',   # disable-secrets-detection
-            'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
-            'ok_codes': (200, 201, 202, 204),
-            'azure_ad_endpoint': azure_ad_endpoint
-        }
+        client_args = assign_params(
+            self_deployed=True,  # We always set the self_deployed key as True because when not using a self
+                                 # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+                                 # flow and most of the same arguments should be set, as we're !not! using OProxy.
+            auth_id=app_id,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            grant_type=GRANT_BY_CONNECTION[connection_type],  # disable-secrets-detection
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            resource='https://management.core.windows.net' if 'Device' in connection_type
+            else None,   # disable-secrets-detection
+            scope=SCOPE_BY_CONNECTION[connection_type],
+            ok_codes=(200, 201, 202, 204),
+            azure_ad_endpoint=azure_ad_endpoint,
+            tenant_id=tenant_id,
+            enc_key=enc_key,
+            auth_code=auth_code,
+            redirect_uri=redirect_uri
+        )
         self.ms_client = MicrosoftClient(**client_args)
+        self.connection_type = connection_type
 
     @logger
     def http_request(self, method: str, url_suffix: str = None, full_url: str = None, params: dict = None,
@@ -338,6 +348,29 @@ def reset_auth(client: AzureNSGClient):
                                           '**!azure-nsg-auth-start** and **!azure-nsg-auth-complete**.')
 
 
+def test_module(client: AzureNSGClient) -> str:
+    """Tests API connectivity and authentication'
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+    :type AzureNSGClient: ``Client``
+    :param Client: client to use
+    :return: 'ok' if test passed.
+    :rtype: ``str``
+    """
+    # This  should validate all the inputs given in the integration configuration panel,
+    # either manually or by using an API that uses them.
+    if "Device" in client.connection_type:
+        raise DemistoException("Please enable the integration and run `!azure-nsg-auth-start`"
+                               "and `!azure-nsg-auth-complete` to log in."
+                               "You can validate the connection by running `!azure-nsg-auth-test`\n"
+                               "For more details press the (?) button.")
+
+    else:
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !azure-nsg-auth-test command in order to test it")
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -354,8 +387,13 @@ def main() -> None:
             resource_group_name=params.get('resource_group_name', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
+            connection_type=params.get('auth_type', 'Device Code'),
             azure_ad_endpoint=params.get('azure_ad_endpoint',
-                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
+            tenant_id=params.get('tenant_id'),
+            enc_key=params.get('credentials', {}).get('password', ''),
+            auth_code=(params.get('auth_code', {})).get('password'),
+            redirect_uri=params.get('redirect_uri')
         )
         commands = {
             'azure-nsg-security-groups-list': list_groups_command,
@@ -369,8 +407,7 @@ def main() -> None:
             'azure-nsg-auth-reset': reset_auth,
         }
         if command == 'test-module':
-            return_error("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."
-                         " For more details press the (?) button.")
+            return_results(test_module(client))
 
         if command == 'azure-nsg-auth-test':
             return_results(test_connection(client, params))
@@ -382,8 +419,6 @@ def main() -> None:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 ''' ENTRY POINT '''
 
