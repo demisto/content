@@ -49,6 +49,8 @@ class CollectionReason(str, Enum):
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
+    PACK_TEST_DEPENDS_ON = 'packs under which integrations are stored, on which a test depends'
+
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
@@ -169,8 +171,10 @@ class CollectionResult:
             reason_description='', conf=None, id_set=None
         )
 
-    def __add__(self, other: 'CollectionResult') -> 'CollectionResult':
+    def __add__(self, other: Optional['CollectionResult']) -> 'CollectionResult':
         # initial object just to add others to
+        if not other:
+            return self
         result = self.__empty_result()
         result.tests = self.tests | other.tests  # type: ignore[operator]
         result.packs = self.packs | other.packs  # type: ignore[operator]
@@ -212,7 +216,7 @@ class TestCollector(ABC):
         ))
 
     @property
-    def _always_installed_packs(self):
+    def _always_installed_packs(self) -> Optional[CollectionResult]:
         return CollectionResult.union(tuple(
             CollectionResult(test=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
                              version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True)
@@ -252,9 +256,46 @@ class TestCollector(ABC):
                 return None
 
         self._validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
-        result += self._always_installed_packs
+        result += self._always_installed_packs  # type:ignore[operator]
+        result += self._collect_test_dependencies(result.tests if result else ())  # type:ignore[union-attr]
         result.machines = Machine.get_suitable_machines(result.version_range)  # type:ignore[union-attr]
+
         return result
+
+    def _collect_test_dependencies(self, test_ids: Iterable[str]) -> Optional[CollectionResult]:
+        result = []
+
+        for test_id in test_ids:
+            test_object = self.conf.get_test(test_id)
+
+            for integration in test_object.integrations:
+                result.append(
+                    self._collect_test_dependency(
+                        dependency=integration,
+                        test_id=test_id,
+                        pack_id=self.id_set.id_to_integration[integration].pack_id
+                    )
+                )
+
+            for script in test_object.scripts:
+                result.append(
+                    self._collect_test_dependency(
+                        dependency=script,
+                        test_id=test_id,
+                        pack_id=self.id_set.id_to_script[script].pack_id
+                    )
+                )
+
+        return CollectionResult.union(tuple(result))
+
+    def _collect_test_dependency(self, dependency: str, test_id: str, pack_id: str) -> CollectionResult:
+        return (
+            CollectionResult(
+                test=None, pack=pack_id, reason=CollectionReason.PACK_TEST_DEPENDS_ON,
+                version_range=None, reason_description=f'{test_id} depends on {dependency} from {pack_id}',
+                conf=self.conf, id_set=self.id_set,
+            )
+        )
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
         if not_found := (
@@ -343,7 +384,7 @@ class BranchTestCollector(TestCollector):
                 raise ValueError(f'could not detect type for {path_description}')
 
             case FileType.TEST_PLAYBOOK:
-                if yml.id_ in self.conf.test_ids:
+                if yml.id_ in self.conf.test_id_to_test:
                     tests = yml.id_,
                     reason = CollectionReason.TEST_PLAYBOOK_CHANGED
                 else:
