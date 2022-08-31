@@ -212,6 +212,11 @@ def main():
 
         if stringify and not isinstance(value, str):
             value = json.dumps(value)
+        elif not stringify and isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except json.JSONDecodeError:
+                pass
 
         if value or force:
             readable_output = f'Key {key} set'

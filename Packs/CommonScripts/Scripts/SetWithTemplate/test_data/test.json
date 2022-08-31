@@ -269,5 +269,35 @@
     "entry_context": {
       "Output": "aaa value1 bbb  ccc"
     }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "123",
+      "append": false,
+      "stringify": false,
+      "force": false,
+      "context": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": 123
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "123",
+      "append": false,
+      "stringify": true,
+      "force": false,
+      "context": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": "123"
+    }
   }
 ]
