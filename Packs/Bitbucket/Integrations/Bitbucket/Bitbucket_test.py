@@ -20,6 +20,10 @@ def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
 
 # TODO: REMOVE the following dummy unit test function
 def test_baseintegration_dummy():
@@ -41,6 +45,8 @@ def test_baseintegration_dummy():
     mock_response = util_load_json('test_data/baseintegration-dummy.json')
 
     assert response.outputs == mock_response
+
+
 # TODO: ADD HERE unit tests for every command
 
 
@@ -69,3 +75,31 @@ def test_check_args(limit, page, page_size, expected_results):
     with pytest.raises(Exception) as e:
         check_args(limit, page, page_size)
     assert e.value.args[0] == expected_results
+
+
+def test_get_paged_results(mocker):
+    """
+        Given:
+            - A http response
+
+        When:
+            - running a command with pagination
+
+        Then:
+            - return a list with all the results after pagination
+
+        """
+    from Bitbucket import get_paged_results, Client
+    client = Client(workspace='workspace',
+                    server_url='server_url',
+                    auth=(),
+                    proxy=False,
+                    verify=False,
+                    repository='repository')
+    response1 = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('response1')
+    response2 = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('response2')
+    res = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('results')
+    mocker.patch.object(Client, 'get_full_url', return_value=response2)
+    results = get_paged_results(client, response1, 10)
+    assert len(results) == 2
+    assert results == res
