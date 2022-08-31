@@ -163,9 +163,9 @@ NIGHTLY_TESTS: tuple = (
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
      (Machine.V6_5, Machine.MASTER)),
 
-    (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
+    (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack', 'Whois'},
      None),
-    (MockerCases.E, XSIAMNightlyTestCollector, {}, {}, None),
+    (MockerCases.E, XSIAMNightlyTestCollector, ALWAYS_INSTALLED_PACKS + ('Whois',), {}, None),
 
     (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
      None),

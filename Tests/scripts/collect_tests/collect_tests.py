@@ -299,9 +299,7 @@ class TestCollector(ABC):
         )
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
-        if not_found := (
-                (set(tests) - set(self._sanity_test_names)).difference(self.id_set.id_to_test_playbook.keys())
-        ):
+        if not_found := set(tests).difference(self.id_set.id_to_test_playbook.keys()):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
@@ -734,7 +732,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
             reason_description='XSIAM Nightly sanity',
             version_range=None,
             conf=self.conf,
-            id_set=self.id_set
+            id_set=self.id_set,
+            is_sanity=True,
         )
 
     def _collect(self) -> Optional[CollectionResult]:
