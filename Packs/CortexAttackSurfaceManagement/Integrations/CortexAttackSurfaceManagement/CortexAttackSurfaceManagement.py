@@ -7,7 +7,7 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
     def getexternalservices_request(self, field, operator, value):
-        data = {"request_data": {}}
+        data = {"request_data": {"search_to": 100}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_external_services/',
@@ -25,7 +25,7 @@ class Client(BaseClient):
         return response
 
     def getexternalipaddressranges_request(self):
-        data = {"request_data": {}}
+        data = {"request_data": {"search_to": 100}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_external_ip_address_ranges/',
@@ -43,7 +43,7 @@ class Client(BaseClient):
         return response
 
     def getassetsinternetexposure_request(self):
-        data = {"request_data": {}}
+        data = {"request_data": {"search_to": 100}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_assets_internet_exposure/',
@@ -69,7 +69,7 @@ def getexternalservices_command(client: Client, args: Dict[str, Any]) -> Command
     response = client.getexternalservices_request(field, operator, value)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalServices',
-        outputs_key_field='',
+        outputs_key_field='range_id',
         outputs=response,
         raw_response=response
     )
@@ -100,11 +100,14 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
 def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.getexternalipaddressranges_request()
+    parsed = response['reply']['external_ip_address_ranges']
+    markdown = tableToMarkdown('External IP Address Ranges', parsed)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalIpAddressRanges',
         outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        outputs=parsed,
+        raw_response=parsed,
+        readable_output=markdown
     )
 
     return command_results
