@@ -61,3 +61,7 @@ def test_create_context():  # type: ignore # noqa
              'Type': 'URL',
              'WebLink': 'https://partnerstage.threatconnect.com/auth/indicators/details/url.xhtml?orgid=40435508'}])
     assert create_context(indicators) == res
+
+
+def test_list_groups(mocker):
+    mocker.patch.object(client, 'get_results_request', return_value=GET_RESULTS_RESPONSE)
