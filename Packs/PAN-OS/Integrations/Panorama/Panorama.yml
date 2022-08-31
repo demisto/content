@@ -58,6 +58,35 @@ configuration:
   type: 4
   hidden: true
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 description: Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -3633,8 +3662,28 @@ script:
       name: description
     - description: The serial number for a virtual system commit. If provided, the commit will be a virtual system commit.
       name: serial_number
-    description: Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.
+    - auto: PREDEFINED
+      description: Whether to use polling.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: push job ID to use in polling commands. (automatically filled by polling).
+      name: push_job_id
+      deprecated: true
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+      defaultValue: '120'
+    - description: The interval (in seconds) when polling.
+      name: interval_in_seconds
+      defaultValue: '10'
+    - description: whether to hide the polling result (automatically filled by polling).
+      name: hide_polling_output
+      deprecated: true
+    description: Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID. Validates if a push has been successful if polling="true".
     name: pan-os-push-to-device-group
+    polling: true
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
       description: The device group in which the policies were pushed.
@@ -3650,6 +3699,9 @@ script:
       type: String
     - contextPath: Panorama.Push.Errors
       description: The push errors.
+      type: String
+    - contextPath: Panorama.Push.Details
+      description: The job ID details.
       type: String
   - arguments:
     - description: The device group for which to return addresses (Panorama instances).

@@ -194,8 +194,12 @@ lookback
 subclass
 pagination
 XDM
-<<<<<<< HEAD
 Fortinet
-=======
 ADFS
->>>>>>> master
+Webhook
+VM
+WSUS
+yml
+Jira
+args
+refactored

@@ -23,13 +23,9 @@
 /Tests/scripts/collect_tests_and_content_packs.py @dorschw
 
 # PANW Products
-/Packs/PaloAltoNetworksIoT/Integrations/ @bakatzir
-/Packs/PaloAltoNetworksIoT3rdParty/Integrations/ @bakatzir
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
 /Packs/PAN-OS/Integrations/ @GuyAfik
-/Packs/PrismaAccess/Integrations/ @bakatzir
 /Packs/PrismaCloudCompute/Integrations/ @GuyAfik
-/Packs/PrismaCloud/Integrations/ @bakatzir
 /Packs/PrismaSaasSecurity/Integrations/ @yaakovpraisler
 
 # Important Integrations
@@ -77,3 +73,6 @@ poetry.lock @ilaner
 
 # Devcontainers
 .devcontainer/* @ilaner
+
+# Demisto Class
+Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @daryakoval

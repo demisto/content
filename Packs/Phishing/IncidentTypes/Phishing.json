@@ -16,7 +16,7 @@
  "system": false,
  "readonly": false,
  "default": false,
- "autorun": false,
+ "autorun": true,
  "disabled": false,
  "reputationCalc": 2,
  "onChangeRepAlg": 2,
