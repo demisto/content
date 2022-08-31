@@ -186,6 +186,7 @@ def get_email_context(email_data):
 
     raw = dict(email_data)
     raw['Body'] = context['Body']
+    raw = {key.lower(): value for key, value in raw.items()}
     context['RawData'] = raw
     return context, headers
 

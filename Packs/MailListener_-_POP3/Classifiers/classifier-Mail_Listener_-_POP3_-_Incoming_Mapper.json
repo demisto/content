@@ -40,7 +40,7 @@
                 "Email BCC": {
                     "complex": {
                         "filters": [],
-                        "root": "Bcc",
+                        "root": "bcc",
                         "transformers": [
                             {
                                 "args": {
@@ -58,14 +58,14 @@
                 "Email Body": {
                     "complex": {
                         "filters": [],
-                        "root": "Body",
+                        "root": "body",
                         "transformers": []
                     }
                 },
                 "Email CC": {
                     "complex": {
                         "filters": [],
-                        "root": "Cc",
+                        "root": "cc",
                         "transformers": [
                             {
                                 "args": {
@@ -83,14 +83,14 @@
                 "Email From": {
                     "complex": {
                         "filters": [],
-                        "root": "From",
+                        "root": "from",
                         "transformers": []
                     }
                 },
                 "Email In Reply To": {
                     "complex": {
                         "filters": [],
-                        "root": "In-Reply-To",
+                        "root": "in-reply-to",
                         "transformers": [
                             {
                                 "args": {
@@ -108,21 +108,28 @@
                 "Email Message ID": {
                     "complex": {
                         "filters": [],
-                        "root": "Message-ID",
+                        "root": "message-id",
+                        "transformers": []
+                    }
+                },
+                "Email Return Path": {
+                    "complex": {
+                        "filters": [],
+                        "root": "return-path",
                         "transformers": []
                     }
                 },
                 "Email Subject": {
                     "complex": {
                         "filters": [],
-                        "root": "Subject",
+                        "root": "subject",
                         "transformers": []
                     }
                 },
                 "Email To": {
                     "complex": {
                         "filters": [],
-                        "root": "To",
+                        "root": "to",
                         "transformers": [
                             {
                                 "args": {
@@ -140,7 +147,7 @@
                 "Email To Count": {
                     "complex": {
                         "filters": [],
-                        "root": "To",
+                        "root": "to",
                         "transformers": [
                             {
                                 "args": {
