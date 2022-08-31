@@ -182,7 +182,7 @@ var fetchIncidents = function(query, test_module=false) {
         url += '?q=' + encodeURIComponent(query);
     }
     if (test_module) {
-        url += '?limit=1'
+        url += '?limit=1&q=Submitter="' + params.credentials.identifier + '"';
     }
     var token = login();
     var res = sendRequest(url, token);
