@@ -23,7 +23,6 @@ from typing import Dict, Any, Tuple
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -63,6 +62,16 @@ class Client(BaseClient):
             full_url = f'{self.serverUrl}/repositories/{self.workspace}/{self.repository}/refs/branches'
 
         return self._http_request(method='GET', full_url=full_url, params=params)
+
+    def get_branch_request(self, branch_name: str, repo: str = None) -> Dict:
+        if repo:
+            url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            url_suffix = f'/repositories/{self.workspace}/{self.repository}/refs/branches/{branch_name}'
+
+        return self._http_request(method='GET', url_suffix=url_suffix)
 
 
 ''' HELPER FUNCTIONS '''
@@ -208,6 +217,29 @@ def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
+def branch_get_command(client: Client, args: Dict) -> CommandResults:
+    repo = args.get('repo', None)
+    branch_name = args.get('branch_name', None)
+    response = client.get_branch_request(branch_name, repo)
+    human_readable = {'Name': response.get('name'),
+                      'LastCommitHash': demisto.get(response, 'target.hash'),
+                      'LastCommitCreatedBy': demisto.get(response, 'target.author.user.display_name'),
+                      'LastCommitCreatedAt': demisto.get(response, 'target.date')}
+    headers = ['Name', 'LastCommitCreatedBy', 'LastCommitCreatedAt', 'LastCommitHash']
+    readable_output = tableToMarkdown(
+        name=f'Information about the branch {branch_name}',
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Bitbucket.Branch',
+        outputs=response,
+        raw_response=response
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -247,9 +279,9 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'bitbucket-open-branch-list':
             result = open_branch_list_command(client, demisto.args())
             return_results(result)
-        # elif demisto.command() == 'bitbucket-branch-get':
-         #   result = branch_get_command(client, demisto.args())
-          #  return_results(result)
+        elif demisto.command() == 'bitbucket-branch-get':
+            result = branch_get_command(client, demisto.args())
+            return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
         # TODO: ADD command cases for the commands you will implement
@@ -260,7 +292,6 @@ def main() -> None:  # pragma: no cover
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
