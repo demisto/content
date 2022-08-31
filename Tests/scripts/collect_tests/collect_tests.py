@@ -780,7 +780,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
     logger.debug(f'parsed args:\n{args_string}')
-    logger.debug('CONTRIB_BRANCH=' + (os.getenv('CONTRIB_BRANCH') or '<undefined>'))
+    logger.debug('CONTRIB_BRANCH=' + os.getenv('CONTRIB_BRANCH', '<undefined>'))
     branch_name = PATHS.content_repo.active_branch.name
 
     marketplace = MarketplaceVersions(args.marketplace)
