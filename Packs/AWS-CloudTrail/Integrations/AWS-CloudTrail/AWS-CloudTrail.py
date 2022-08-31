@@ -462,8 +462,6 @@ def fetch_incidents(args: dict, params: dict):
     }
 
     kwargs.update({'StartTime': fetch_start_time})
-    #demisto.log("These are the arguments: ")
-    #demisto.log(str(kwargs))
 
     client.lookup_events(**kwargs)
     paginator = client.get_paginator('lookup_events')
