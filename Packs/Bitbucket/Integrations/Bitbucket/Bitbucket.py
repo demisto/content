@@ -85,10 +85,11 @@ def check_pagination(client, response: Dict, limit: int, params: Dict):
     elif limit == results_number or params.get('page', None) or (not isNext):
         return arr
     else:
-        return get_paged_results(client, response, results, limit)
+        return get_paged_results(client, response, limit)
 
 
-def get_paged_results(client, response, results, limit) -> list:
+def get_paged_results(client, response, limit) -> list:
+    results = []
     arr = response.get('values')
     isNext = response.get('next', None)
     while response:
@@ -138,7 +139,7 @@ def project_list_command(client: Client, args) -> CommandResults:
     check_args(limit, params.get('page'), params.get('page_size'))
 
     response = client.get_project_list_request(project_key, params)
-
+    print(response)
     if project_key:
         results = [response]
         readable_name = f'The information about project {project_key.upper()}'

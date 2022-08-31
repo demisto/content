@@ -13,6 +13,8 @@ you are implementing with your integration
 import json
 import io
 
+import pytest
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -40,3 +42,30 @@ def test_baseintegration_dummy():
 
     assert response.outputs == mock_response
 # TODO: ADD HERE unit tests for every command
+
+
+ARGS_CASES = [
+    (-1, None, None, 'The limit value must be equal to 1 or bigger.'),
+    (1, 0, None, 'The page value must be equal to 1 or bigger.'),
+    (None, 2, -1, 'The page_size value must be equal to 1 or bigger.')
+]
+
+
+@pytest.mark.parametrize('limit, page, page_size, expected_results', ARGS_CASES)
+def test_check_args(limit, page, page_size, expected_results):
+    """
+        Given:
+            - A command's arguments
+
+        When:
+            - running commands that has pagination
+
+        Then:
+            - checking that if the parameters < 1 , exception is thrown
+
+        """
+    from Bitbucket import check_args
+
+    with pytest.raises(Exception) as e:
+        check_args(limit, page, page_size)
+    assert e.value.args[0] == expected_results
