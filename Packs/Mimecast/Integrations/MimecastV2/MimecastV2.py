@@ -28,14 +28,17 @@ APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds',
 USE_SSL = None  # assigned in determine_ssl_usage
 PROXY = True if demisto.params().get('proxy') else False
 # Flags to control which type of incidents are being fetched
-FETCH_URL = demisto.params().get('fetchURL')
-FETCH_ATTACHMENTS = demisto.params().get('fetchAttachments')
-FETCH_IMPERSONATIONS = demisto.params().get('fetchImpersonations')
-FETCH_HELD_MESSAGES = demisto.params().get('fetchHeld')
+FETCH_PARAMS = argToList(demisto.params().get('incidentsToFetch'))
+FETCH_ALL = 'All' in FETCH_PARAMS
+FETCH_URL = 'Url' in FETCH_PARAMS or FETCH_ALL
+FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
+FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
+FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
 # Used to refresh token / discover available auth types / login
 EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
 PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+
 
 LOG("command is {}".format(demisto.command()))
 
@@ -549,7 +552,7 @@ def build_delivered_message(delivered_messgae: Dict, to: List):
 
 
     """
-    markdown_per_recipient = ''
+    markdown_per_recipient = '### Delivered Message Info\n'
     for to_mail in to:
         delivered = delivered_messgae.get(to_mail, {})
         message_info = delivered.get('messageInfo', {})
@@ -669,7 +672,9 @@ def build_get_message_info_for_specific_id(id, show_recipient_info, show_deliver
     spam_info = response_data.get('spamInfo', {})
     to_list = recipient_info.get('messageInfo', {}).get('to', [])
 
-    total_markdown += tableToMarkdown('Status', t={'Status': response_data.get('status', '')})
+    outputs.update({'status': response_data.get('status', '')})
+    outputs.update({'id': response_data.get('id', '')})
+    total_markdown += tableToMarkdown('Message Information', t=outputs)
     if show_recipient_info:
         total_markdown += build_recipient_info(recipient_info)
         outputs.update({'recipientInfo': recipient_info})
@@ -687,6 +692,7 @@ def build_get_message_info_for_specific_id(id, show_recipient_info, show_deliver
 
     return CommandResults(
         outputs_prefix='Mimecast.MessageInfo',
+        outputs_key_field='id',
         readable_output=total_markdown,
         outputs=outputs,
         raw_response=response
@@ -2842,7 +2848,7 @@ def list_held_messages_command(args):
                                           header) if header in headers.keys() else header.capitalize(),
                                       removeNull=True, json_transform_mapping=table_json_transformer,
                                       headers=['id', 'dateReceived', 'from', 'fromHeader', 'hasAttachments',
-                                               'policyInfo', 'dateReceived', 'reason', 'reasonCode', 'reasonId',
+                                               'policyInfo', 'reason', 'reasonCode', 'reasonId',
                                                'route', 'size', 'subject', 'to'],
                                       metadata=f'Showing page number {args.get("page", "1")}')
 

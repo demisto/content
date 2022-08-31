@@ -61,18 +61,30 @@ configuration:
   name: fetchURL
   required: false
   type: 8
+  hidden: true
 - display: Fetch attachment incidents
   name: fetchAttachments
   required: false
   type: 8
+  hidden: true
 - display: Fetch impersonation incidents
   name: fetchImpersonations
   required: false
   type: 8
-- display: Fetch held messages
-  name: fetchHeld
+  hidden: true
+- additionalinfo: Fetch specific incident types. Default value is "All".
+  defaultvalue: All
+  display: Fetch incident types
+  hidden: false
+  name: incidentsToFetch
+  options:
+  - All
+  - Impersonation
+  - Attachments
+  - Url
+  - Held Messages
   required: false
-  type: 8
+  type: 16
 - display: Incident type
   name: incidentType
   required: false
@@ -214,7 +226,7 @@ script:
       description: The maximum number of results to return.
       required: false
       isArray: false
-      defaultValue: "100"
+      defaultValue: "20"
       predefined:
       - ""
     - name: page
@@ -490,7 +502,7 @@ script:
       description: The maximum number of results to return.
       required: false
       isArray: false
-      defaultValue: "100"
+      defaultValue: "20"
       predefined:
       - ""
     - name: page
