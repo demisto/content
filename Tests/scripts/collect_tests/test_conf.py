@@ -34,10 +34,13 @@ class TestConf(DictFileBased):
     def __init__(self, conf_path: Path):
         super().__init__(conf_path, is_infrastructure=True)
         self.tests = tuple(TestConfItem(value) for value in self['tests'])
-        self.test_id_to_test = {test.playbook_id: test for test in self.tests}
+        self.test_id_to_test = {test.playbook_id: test
+                                for test in self.tests}
 
         self.tests_to_integrations: dict[str, tuple[str, ...]] = {
-            test.playbook_id: test.integrations for test in self.tests if test.integrations
+            test.playbook_id: test.integrations
+            for test in self.tests
+            if test.integrations
         }
         logger.debug(f'tests_to_integrations:\n{self.tests_to_integrations}\n')
         self.integrations_to_tests: dict[str, list[str]] = self._calculate_integration_to_tests()
