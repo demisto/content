@@ -650,9 +650,7 @@ class NightlyTestCollector(TestCollector, ABC):
         """
         default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
         postfix = ' (only where this is the only marketplace value)' if only_value else ''
-        logger.info(
-            f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {self.marketplace.value}'
-            f'{postfix}')
+        logger.info(f'collecting packs by their marketplace field, searching for {self.marketplace.value}{postfix}')
         packs = []
 
         for pack in PACK_MANAGER:

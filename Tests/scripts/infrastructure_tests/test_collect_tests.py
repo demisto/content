@@ -163,9 +163,14 @@ NIGHTLY_TESTS: tuple = (
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
      (Machine.V6_5, Machine.MASTER)),
 
-    (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack', 'Whois'},
+    (MockerCases.E, XSOARNightlyTestCollector,
+     {'myTestPlaybook', 'myOtherTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
+     {'myPack', 'Whois'}, None),
+
+    (MockerCases.E, XSIAMNightlyTestCollector,
+     {'Sanity Test - Playbook with Unmockable Whois Integration'},
+     ALWAYS_INSTALLED_PACKS + ('Whois',),
      None),
-    (MockerCases.E, XSIAMNightlyTestCollector, ALWAYS_INSTALLED_PACKS + ('Whois',), {}, None),
 
     (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
      None),
