@@ -31,6 +31,26 @@ configuration:
   name: private_key
   required: false
   type: 14
+- additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
+  display: Authentication Type
+  name: auth_type
+  defaultvalue: Client Credentials
+  options:
+  - Authorization Code
+  - Client Credentials
+  type: 15
+- display: Application redirect URI (for authorization code mode)
+  name: redirect_uri
+  required: false
+  type: 0
+- display: Authorization code
+  displaypassword: Authorization code
+  additionalinfo: for user-auth mode - received from the authorization step. see Detailed
+    Instructions section
+  hiddenusername: true
+  name: auth_code
+  required: false
+  type: 9
 - display: Fetch incidents
   name: isFetch
   defaultvalue: 'true'
@@ -85,6 +105,11 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
+- defaultvalue: 'false'
+  display: Using Microsoft GCC?
+  name: is_gcc
+  required: false
+  type: 8
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false
@@ -105,6 +130,10 @@ display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
+  - deprecated: false
+    description: Tests connectivity to Microsoft Defender for Endpoint.
+    execution: false
+    name: microsoft-atp-test
   - arguments:
     - default: true
       description: A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
@@ -261,6 +290,18 @@ script:
       description: The machine's OS platform. Only a single platform can be added.
       isArray: false
       name: os_platform
+      required: false
+      secret: false
+    - default: false
+      description: Number of machines to return in a page - must be lower or equal to 10,000.
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: The page number to retrieve.
+      defaultValue: '1'
+      name: page_num
       required: false
       secret: false
     deprecated: false
@@ -3016,7 +3057,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The action to apply if the indicator is matched from within the targetProduct security tool. 
+      description: The action to apply if the indicator is matched from within the targetProduct security tool.
       isArray: false
       name: action
       predefined:
@@ -3784,7 +3825,7 @@ script:
       - Url
     - default: false
       auto: PREDEFINED
-      description: The action taken if the indicator is discovered in the organization. 
+      description: The action taken if the indicator is discovered in the organization.
       isArray: false
       name: action
       required: true
