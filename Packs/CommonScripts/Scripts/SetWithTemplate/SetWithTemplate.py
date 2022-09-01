@@ -223,10 +223,8 @@ def main():
 
         if stringify is None or stringify == '':
             stringify = 'noop'
-        elif stringify == False:
-            stringify = 'false'
-        elif stringify == True:
-            stringify = 'true'
+        elif isinstance(stringify, bool):
+            stringify = 'true' if stringify else 'false'
 
         if not variable_markers or not variable_markers[0]:
             raise ValueError('variable_markers must have a start marker.')
