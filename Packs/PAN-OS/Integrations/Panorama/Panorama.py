@@ -46,8 +46,8 @@ UNICODE_PASS = u'\U00002714\U0000FE0F'
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
-DEVICE_GROUP_PARAM_NAME = ''
-DEVICE_GROUP_ARG_NAME = ''
+DEVICE_GROUP_PARAM_NAME = 'device_group'
+DEVICE_GROUP_ARG_NAME = 'device-group'
 
 XPATH_OBJECTS = ''
 
@@ -7565,7 +7565,7 @@ def list_configured_user_id_agents_command(args: dict):
 
 def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
     global URL, API_KEY, USE_SSL, USE_URL_FILTERING, VSYS, DEVICE_GROUP, XPATH_SECURITY_RULES, XPATH_OBJECTS, \
-        XPATH_RULEBASE, TEMPLATE, PRE_POST, DEVICE_GROUP_ARG_NAME, DEVICE_GROUP_PARAM_NAME
+        XPATH_RULEBASE, TEMPLATE, PRE_POST
     if not params.get('port'):
         raise DemistoException('Set a port for the instance')
 
@@ -7578,10 +7578,8 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
 
     # determine a vsys or a device-group
     VSYS = params.get('vsys', '')
-    DEVICE_GROUP_ARG_NAME = args.get('device-group', '')
-    DEVICE_GROUP_PARAM_NAME = params.get('device_group', '')
 
-    DEVICE_GROUP = DEVICE_GROUP_ARG_NAME or DEVICE_GROUP_PARAM_NAME
+    DEVICE_GROUP = args.get(DEVICE_GROUP_ARG_NAME) or params.get(DEVICE_GROUP_PARAM_NAME)
 
     if args and args.get('template'):
         TEMPLATE = args.get('template')  # type: ignore[assignment]
