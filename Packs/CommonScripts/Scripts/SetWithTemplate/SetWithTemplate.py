@@ -180,16 +180,54 @@ def extract_dt(dtstr: str, dx: Optional[ContextData]) -> Any:
         return None
 
 
+def normalize_value(value: Any, stringify: str) -> Any:
+    if stringify == 'noop':
+        return value
+    elif stringify == 'all':
+        if isinstance(value, dict):
+            # key should be str for the context
+            return {
+                k if isinstance(k, str) else json.dumps(k): normalize_value(v, stringify)
+                for k, v in value.items()}
+        elif isinstance(value, list):
+            return [normalize_value(v, stringify) for v in value]
+        elif isinstance(value, str):
+            return value
+        else:
+            return json.dumps(value)
+    else:
+        if isinstance(value, str):
+            if not argToBoolean(stringify):
+                try:
+                    return json.loads(value)
+                except json.JSONDecodeError:
+                    return value
+        else:
+            if argToBoolean(stringify):
+                return json.dumps(value)
+            else:
+                return value
+    return value
+
+
 def main():
     try:
         args = demisto.args()
         key = args.get('key')
         template = args.get('template')
         append = argToBoolean(args.get('append') or False)
-        stringify = argToBoolean(args.get('stringify') or False)
+        stringify = args.get('stringify')
         force = argToBoolean(args.get('force') or False)
         keep_symbol_to_null = argToBoolean(args.get('keep_symbol_to_null') or False)
         variable_markers = argToList(args.get('variable_markers') or '${,}')
+
+        if stringify is None or stringify == '':
+            stringify = 'noop'
+        elif stringify == False:
+            stringify = 'false'
+        elif stringify == True:
+            stringify = 'true'
+
         if not variable_markers or not variable_markers[0]:
             raise ValueError('variable_markers must have a start marker.')
         elif len(variable_markers) >= 3:
@@ -210,13 +248,7 @@ def main():
         else:
             value = ''
 
-        if stringify and not isinstance(value, str):
-            value = json.dumps(value)
-        elif not stringify and isinstance(value, str):
-            try:
-                value = json.loads(value)
-            except json.JSONDecodeError:
-                pass
+        value = normalize_value(value, stringify)
 
         if value or force:
             readable_output = f'Key {key} set'

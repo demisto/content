@@ -23,10 +23,12 @@ args:
 - name: stringify
   auto: PREDEFINED
   predefined:
+  - "none"
+  - "all"
   - "true"
   - "false"
-  description: Whether to save the argument as a string. The default value is "false".
-  defaultValue: "false"
+  description: Whether to save the argument as a string. The default value is "none".
+  defaultValue: "none"
 - name: force
   auto: PREDEFINED
   predefined:
