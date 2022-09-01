@@ -397,7 +397,13 @@ class BranchTestCollector(TestCollector):
             case FileType.INTEGRATION:
 
                 if yml.explicitly_no_tests():
-                    logger.debug(f'{yml.id_} explicitly states `tests: no tests`')
+                    suffix = ''
+
+                    if tests_from_conf := self.conf.integrations_to_tests.get(yml.id_, ()):
+                        tests_str = ', '.join(sorted(tests_from_conf))
+                        suffix = f'. NOTE: NOT COLLECTING tests from conf.json={tests_str}'
+
+                    logger.warning(f'{yml.id_} explicitly states `no tests`: only collecting pack {suffix}')
                     tests = ()
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
