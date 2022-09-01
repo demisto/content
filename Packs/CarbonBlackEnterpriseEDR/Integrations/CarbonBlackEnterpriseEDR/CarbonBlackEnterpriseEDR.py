@@ -1170,6 +1170,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     latest_alert_id = last_fetched_alert_id
 
+    if last_run.get('time') and last_run['time'][-1] == 'Z':
+        last_run['time'] = last_run['time'][:-1]
     fetch_start_time, fetch_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=fetch_time,
                                                                 look_back=look_back, date_format=DATE_FORMAT) 
     demisto.debug(f'{fetch_start_time=}, {fetch_end_time=}')

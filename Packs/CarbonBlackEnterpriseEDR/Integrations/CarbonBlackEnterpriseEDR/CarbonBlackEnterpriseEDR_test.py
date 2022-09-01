@@ -2,6 +2,7 @@ import pytest
 import CarbonBlackEnterpriseEDR as cbe
 import demistomock as demisto
 from freezegun import freeze_time
+from datetime import datetime, timedelta
 
 PROCESS_CASES = [
     (
@@ -171,3 +172,48 @@ def test_event_by_process_failing(mocker, requests_mock, demisto_args, expected_
     with pytest.raises(Exception) as e:
         client.create_search_event_by_process_request(**demisto_args)
     assert str(e.value) == expected_error_msg
+
+
+TESTS_FOR_FETCH_INCIDENT = [
+    ({'results': [
+        {'id': 101, 'create_time': (datetime.utcnow() - timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+        {'id': 102, 'create_time': (datetime.utcnow() - timedelta(minutes=2)).strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+        {'id': 103, 'create_time': (datetime.utcnow() - timedelta(minutes=3)).strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+        {'id': 104, 'create_time': (datetime.utcnow() - timedelta(minutes=4)).strftime('%Y-%m-%dT%H:%M:%S.000Z')}]},
+     ['101', '102', '103', '104'], 0, {'time': (datetime.utcnow() - timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%M:%S.000Z')}),
+    ({'results': [
+        {'id': 101, 'create_time': (datetime.utcnow() - timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+        {'id': 102, 'create_time': (datetime.utcnow() - timedelta(minutes=2)).strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+        {'id': 103, 'create_time': (datetime.utcnow() - timedelta(minutes=3)).strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+        {'id': 104, 'create_time': (datetime.utcnow() - timedelta(minutes=20)).strftime('%Y-%m-%dT%H:%M:%S.000Z')}]},
+        ['101', '102', '103', '104'], 10, {'time': (datetime.utcnow() - timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%M:%S.000Z')}),
+    ({'results': [
+        {'id': 101, 'create_time': (datetime.utcnow() - timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+        {'id': 102, 'create_time': (datetime.utcnow() - timedelta(minutes=2)).strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+        {'id': 103, 'create_time': (datetime.utcnow() - timedelta(minutes=3)).strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+        {'id': 104, 'create_time': (datetime.utcnow() - timedelta(minutes=9)).strftime('%Y-%m-%dT%H:%M:%S.000Z')}]},
+        ['104'], 10,
+        {'time': (datetime.utcnow() - timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%M:%S.000Z'),
+         'limit': 10,
+         'found_incident_ids': {101: 1662010329, 102: 1662010329, 103: 1662010329}})
+]
+
+
+@pytest.mark.parametrize('incidents, expected_result, look_back, last_run', TESTS_FOR_FETCH_INCIDENT)
+def test_fetch_incident(mocker, incidents, expected_result, look_back, last_run):
+
+    client = cbe.Client(
+        base_url='https://server_url.com',
+        use_ssl=False,
+        use_proxy=False,
+        token=None,
+        cb_org_key="123")
+    mocker.patch.object(client, 'search_alerts_request', return_value=incidents)
+    results, last_run = cbe.fetch_incidents(client,
+                                            fetch_time='3 days',
+                                            fetch_limit=10,
+                                            last_run=last_run,
+                                            look_back=look_back)
+
+    for i in range(len(results)):
+        assert expected_result[i] in results[i]['name']
