@@ -86,13 +86,13 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: Rating Threshold for Malicious Indicators, it is necessary to calculate reputation.
+- additionalinfo: Rating Threshold for Malicious Indicators. This is necessary to calculate reputation.
   defaultvalue: '3'
   display: Rating Threshold for Malicious Indicators (needed for reputation calculation)
   name: rating
   required: false
   type: 0
-- additionalinfo: Confidence Threshold for Malicious Indicators, it is necessary to calculate reputation.
+- additionalinfo: Confidence Threshold for Malicious Indicators. This is necessary to calculate reputation.
   defaultvalue: '50'
   display: Confidence Threshold for Malicious Indicators (needed for reputation calculation)
   name: confidence
@@ -112,7 +112,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: ThreatConnect's intelligence-driven security operations solution with
+description: ThreatConnect's integration is a intelligence-driven security operations solution with
   intelligence, automation, analytics, and workflows.
 display: ThreatConnect v3
 name: ThreatConnect v3
@@ -120,7 +120,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: A comma-separated list of IPv4 or IPv6 address.
+      description: A comma-separated list of IPv4 or IPv6 addresses.
       name: ip
       required: true
       isArray: true
@@ -156,10 +156,10 @@ script:
       description: The owner of the indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the indicator was created.
+      description: The date the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the indicator was last modified.
+      description: The date the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -232,10 +232,10 @@ script:
       description: The owner of the indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the indicator was created.
+      description: The date the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the indicator was last modified.
+      description: The date the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -272,7 +272,7 @@ script:
       type: string
   - arguments:
     - default: true
-      description: A comma-separated list of the hash of the files. Can be "MD5", "SHA-1", or "SHA-256".
+      description: A comma-separated list of the hashes of the files. Can be "MD5", "SHA-1", or "SHA-256".
       name: file
       required: true
       isArray: true
@@ -308,10 +308,10 @@ script:
       description: The owner of the indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the indicator was created.
+      description: The date the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the indicator was last modified.
+      description: The date the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -401,10 +401,10 @@ script:
       description: The owner of the indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the indicator was created.
+      description: The date the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the indicator was last modified.
+      description: The date the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -530,10 +530,10 @@ script:
       description: The owner of the indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the indicator was created.
+      description: The date the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the indicator was last modified.
+      description: The date the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -554,7 +554,7 @@ script:
       description: The SHA256 hash of the indicator of the file.
       type: string
     - contextPath: TC.Indicator.IndicatorAttributes.dateAdded
-      description: The SHA256 hash of the indicator of the file.
+      description: The date the indicator attribute was added.
       type: date
     - contextPath: TC.Indicator.IndicatorAttributes.displayed
       description: Whether to display the indicator attributes on ThreatConnect.
@@ -563,7 +563,7 @@ script:
       description: The ID of the attribute.
       type: number
     - contextPath: TC.Indicator.IndicatorAttributes.lastModified
-      description: The date on which the indicator attribute was last modified.
+      description: The date the indicator attribute was last modified.
       type: date
     - contextPath: TC.Indicator.IndicatorAttributes.type
       description: The name of the attribute.
@@ -661,10 +661,10 @@ script:
       description: The owner of the tagged indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the tagged indicator was created.
+      description: The date the tagged indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the tagged indicator was last modified.
+      description: The date the tagged indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the tagged indicator.
@@ -805,10 +805,10 @@ script:
       description: The owner of the indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the added indicator was created.
+      description: The date the added indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the added indicator was last modified.
+      description: The date the added indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -966,10 +966,10 @@ script:
       description: The owner of the indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the associated indicator was created.
+      description: The date the associated indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the associated indicator was last modified.
+      description: The date the associated indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -1072,10 +1072,10 @@ script:
       description: The owner of the domain.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the indicator of the domain was created.
+      description: The date the indicator of the domain was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the indicator of the domain was last modified.
+      description: The date the indicator of the domain was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the domain.
@@ -1137,10 +1137,10 @@ script:
       description: The owner of the returned indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the returned indicator was created.
+      description: The date the returned indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the returned indicator was last modified.
+      description: The date the returned indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the returned indicator.
@@ -1274,10 +1274,10 @@ script:
       description: The owner of the indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the indicator was created.
+      description: The date the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the indicator was last modified.
+      description: The date the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -1368,10 +1368,10 @@ script:
       description: The owner of the indicator.
       type: string
     - contextPath: TC.Indicator.CreateDate
-      description: The date on which the indicator was created.
+      description: The date the indicator was created.
       type: date
     - contextPath: TC.Indicator.LastModified
-      description: The date on which the indicator was last modified.
+      description: The date the indicator was last modified.
       type: date
     - contextPath: TC.Indicator.Rating
       description: The threat rating of the indicator.
@@ -1446,7 +1446,7 @@ script:
     - description: The name of the campaign group.
       name: name
       required: true
-    - description: The date on which the campaign was first seen.
+    - description: The date the campaign was first seen.
       name: firstSeen
     - description: The description of the campaign.
       name: description
@@ -1470,7 +1470,7 @@ script:
       description: The owner of the campaign.
       type: string
     - contextPath: TC.Campaign.FirstSeen
-      description: The date on which the campaign was first seen.
+      description: The date the campaign was first seen.
       type: date
     - contextPath: TC.Campaign.Tag
       description: The tag of the campaign.
@@ -1485,7 +1485,7 @@ script:
     - description: The name of the event group.
       name: name
       required: true
-    - description: The date on which the event occurred. If the date is not specified,
+    - description: The date the event occurred. If the date is not specified,
         the current date is used.
       name: eventDate
     - auto: PREDEFINED
@@ -1498,7 +1498,7 @@ script:
       - Escalated
     - description: The description of the event.
       name: description
-    - description: A comma-separated list of a The tags of the event.
+    - description: A comma-separated list of the tags of the event.
       name: tag
     description: Creates a group based on the Event type.
     name: tc-create-event
@@ -1529,10 +1529,10 @@ script:
       description: The name of the threat group.
       name: name
       required: true
-    - description: The creation time of an threat in the "2017-03-21T00:00:00Z"
+    - description: The creation time of a threat in the "2017-03-21T00:00:00Z"
         format.
       name: eventDate
-    - description: A comma-separated list of The tags applied to the threat.
+    - description: A comma-separated list of the tags applied to the threat.
       name: tags
     - auto: PREDEFINED
       description: The security label applied to the threat. 
@@ -1576,10 +1576,10 @@ script:
     name: tc-add-group-attribute
     outputs:
     - contextPath: TC.Group.DateAdded
-      description: The date on which the attribute was added.
+      description: The date the attribute was added.
       type: Date
     - contextPath: TC.Group.LastModified
-      description: The date on which the added attribute was last modified.
+      description: The date the added attribute was last modified.
       type: Date
     - contextPath: TC.Group.Type
       description: The type of the group to which the attribute was added.
@@ -1591,7 +1591,7 @@ script:
       description: The group ID to which the attribute was added.
       type: Number
   - arguments:
-    - description: The date to retrieve groups from in the yyyy-mm-dd, e.g. 1111-11-11 format.
+    - description: The date to retrieve groups from in the yyyy-mm-dd format, e.g., 1111-11-11.
       name: fromDate
       type: string
     - description: The tag to retrieve groups by.
@@ -1606,17 +1606,17 @@ script:
     - description: A comma-separated list of IDs to filter the groups by.
       name: id
       type: string
-    - description: A free text TQL filter (refer to the readme for a basic TQL guide).
+    - description: A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
       name: filter
       type: string
     description: Returns a list of events.
     name: tc-get-events
     outputs:
     - contextPath: TC.Event.DateAdded
-      description: The date on which the event was added.
+      description: The date the event was added.
       type: Date
     - contextPath: TC.Event.EventDate
-      description: The date on which the event occurred.
+      description: The date the event occurred.
       type: Date
     - contextPath: TC.Event.ID
       description: The ID of the event.
@@ -1663,10 +1663,10 @@ script:
     name: tc-get-groups
     outputs:
     - contextPath: TC.Group.DateAdded
-      description: The date on which the group was added.
+      description: The date the group was added.
       type: Date
     - contextPath: TC.Group.EventDate
-      description: The date on which the event occurred.
+      description: The date the event occurred.
       type: Date
     - contextPath: TC.Group.Name
       description: The name of the group.
@@ -1702,7 +1702,7 @@ script:
       - Threat
       - Tool
       - Vulnerability
-    - description: The date to retrieve groups from in the yyyy-mm-dd format, e.g. 1111-11-11 format
+    - description: The date to retrieve groups from in the yyyy-mm-dd format, e.g., 1111-11-11.
       name: fromDate
       type: string
     - description: The tag to retrieve groups by.
@@ -1717,7 +1717,7 @@ script:
     - description: A comma-separated list of IDs to filter the groups by.
       name: id
       type: string
-    - description: A free text TQL filter (refer to the readme for a basic TQL guide).
+    - description: A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
       name: filter
       type: string
     - description: Add group tags metadata to the results.
@@ -1742,10 +1742,10 @@ script:
     name: tc-list-groups
     outputs:
     - contextPath: TC.Group.DateAdded
-      description: The date on which the group was added.
+      description: The date the group was added.
       type: Date
     - contextPath: TC.Group.EventDate
-      description: The date on which the event occurred.
+      description: The date the event occurred.
       type: Date
     - contextPath: TC.Group.Name
       description: The name of the group.
@@ -1807,7 +1807,7 @@ script:
       description: Whether the indicator can be parsed.
       type: Boolean
     - contextPath: TC.IndicatorType.Value1Type
-      description: The name of the indicator.
+      description: The value type of the indicator.
       type: String
     - contextPath: TC.IndicatorType.Value1Label
       description: The value label of the indicator.
@@ -1857,7 +1857,7 @@ script:
       - TLP:WHITE
     - description: A description of the group.
       name: description
-    - description: The file of the ID of the entry, as displayed in the War Room.
+    - description: The ID of the entry, as displayed in the War Room.
       name: entry_id
       required: true
     description: Creates a document group.
@@ -1870,7 +1870,7 @@ script:
       description: The owner of the group.
       type: String
     - contextPath: TC.Group.EventDate
-      description: The date on which the group was created.
+      description: The date the group was created.
       type: Date
     - contextPath: TC.Group.Description
       description: The description of the group.
@@ -1891,10 +1891,10 @@ script:
     name: tc-get-group
     outputs:
     - contextPath: TC.Group.DateAdded
-      description: The date on which the group was added.
+      description: The date the group was added.
       type: Date
     - contextPath: TC.Group.EventDate
-      description: The date on which the event occurred.
+      description: The date the event occurred.
       type: Date
     - contextPath: TC.Group.Name
       description: The name of the group.
@@ -1921,7 +1921,7 @@ script:
     name: tc-get-group-attributes
     outputs:
     - contextPath: TC.Group.Attribute.DateAdded
-      description: The date on which the group was added.
+      description: The date the group was added.
       type: Date
     - contextPath: TC.Group.Attribute.Displayed
       description: Whether the attribute is displayed on the UI.
@@ -1930,7 +1930,7 @@ script:
       description: The ID of the attribute.
       type: Number
     - contextPath: TC.Group.Attribute.LastModified
-      description: The date on which the attribute was last modified.
+      description: The date the attribute was last modified.
       type: Date
     - contextPath: TC.Group.Attribute.Type
       description: The type of the attribute.
@@ -1954,7 +1954,7 @@ script:
       description: The description of the security label.
       type: String
     - contextPath: TC.Group.SecurityLabel.DateAdded
-      description: The date on which the security label was added.
+      description: The date the security label was added.
       type: Date
   - arguments:
     - description: The ID of the group for which to return the tags. To get the ID,
@@ -2024,7 +2024,7 @@ script:
       description: The ID of the indicator.
       type: Number
     - contextPath: TC.Group.Indicator.DateAdded
-      description: The date on which the indicator was added.
+      description: The date the indicator was added.
       type: Date
     - contextPath: TC.Group.Indicator.Type
       description: The type of the indicator.
@@ -2049,7 +2049,7 @@ script:
     name: tc-get-associated-groups
     outputs:
     - contextPath: TC.Group.AssociatedGroup.DateAdded
-      description: The date on which group was added.
+      description: The date the group was added.
       type: Date
     - contextPath: TC.Group.AssociatedGroup.GroupID
       description: The ID of the group.
@@ -2082,10 +2082,10 @@ script:
       description: The ID of the group to associate to.
       type: Number
   - arguments:
-    - description: Indicator ID
+    - description: Indicator ID.
       name: indicator
       required: true
-    description: Get Owner for Indicator
+    description: Get the owner for an indicator.
     name: tc-get-indicator-owners
   - arguments:
     - description: The ID of the group.
@@ -2146,7 +2146,7 @@ script:
     - description: An ID to associate an indicator by.
       name: associated_indicator_id
     - auto: PREDEFINED
-      description: The type of update to the group metadata(associated indicators, attributes,tags etc...).
+      description: The type of update to the group metadata(associated indicators, attributes,tags etc.).
       name: mode
       predefined:
       - append
