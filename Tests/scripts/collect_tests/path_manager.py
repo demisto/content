@@ -49,6 +49,7 @@ class PathManager:
         self.id_set_path = PathManager.ARTIFACTS_PATH / 'id_set.json'
         self.conf_path = PathManager.ARTIFACTS_PATH / 'conf.json'
         self.output_tests_file = PathManager.ARTIFACTS_PATH / 'filter_file.txt'
+        self.output_mrs_to_test_file = PathManager.ARTIFACTS_PATH / 'mrs_to_test.txt'
         self.output_packs_file = PathManager.ARTIFACTS_PATH / 'content_packs_to_install.txt'
         self.output_machines_file = PathManager.ARTIFACTS_PATH / 'filter_envs.json'
 
