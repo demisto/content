@@ -762,7 +762,8 @@
         },
         {
             "integrations": "Server Message Block (SMB) v2",
-            "playbookID": "SMB_v2-Test"
+            "playbookID": "SMB_v2-Test",
+            "non_api": true
         },
         {
             "playbookID": "ConvertFile-Test",
@@ -982,37 +983,43 @@
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "mysql instance",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "non_api": true
         },
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "postgreSQL instance",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "non_api": true
         },
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL instance",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "non_api": true
         },
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL Server - MS ODBC Driver",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "non_api": true
         },
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql-oracle",
             "instance_names": "Oracle instance",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "non_api": true
         },
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql-mssql-encrypted-connection",
             "instance_names": "Microsoft SQL instance using encrypted connection",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "non_api": true
         },
         {
             "integrations": "Panorama",
@@ -1219,7 +1226,8 @@
         },
         {
             "integrations": "dnstwist",
-            "playbookID": "dnstwistTest"
+            "playbookID": "dnstwistTest",
+            "non_api": true
         },
         {
             "integrations": "BitDam",
@@ -2363,13 +2371,15 @@
         {
             "playbookID": "Active Directory Test",
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja"
+            "instance_names": "active_directory_ninja",
+            "non_api": true
         },
         {
             "playbookID": "AD v2 - debug-mode - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "non_api": true
         },
         {
             "playbookID": "Docker Hardening Test",
@@ -2379,26 +2389,31 @@
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
-            "playbookID": "Active Directory Query V2 configuration with port"
+            "playbookID": "Active Directory Query V2 configuration with port",
+            "non_api": true
         },
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
-            "playbookID": "Active Directory - ad-get-user limit check"
+            "playbookID": "Active Directory - ad-get-user limit check",
+            "non_api": true
         },
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
-            "playbookID": "active directory search user with parentheses test"
+            "playbookID": "active directory search user with parentheses test",
+            "non_api": true
         },
         {
             "integrations": "mysql",
-            "playbookID": "MySQL Test"
+            "playbookID": "MySQL Test",
+            "non_api": true
         },
         {
             "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja"
+            "instance_names": "active_directory_ninja",
+            "non_api": true
         },
         {
             "integrations": "Cofense Intelligence",
@@ -2474,7 +2489,8 @@
             "playbookID": "Active Directory - Get User Manager Details - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_80k",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "non_api": true
         },
         {
             "integrations": "Kafka V2",
@@ -2625,7 +2641,8 @@
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja"
+            "instance_names": "active_directory_ninja",
+            "non_api": true
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -2659,7 +2676,8 @@
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
-            "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
+            "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)",
+            "non_api": true
         },
         {
             "integrations": "MITRE ATT&CK v2",
@@ -3423,7 +3441,8 @@
         {
             "integrations": "Generic Webhook",
             "playbookID": "Generic Webhook - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "non_api": true
         },
         {
             "integrations": "Palo Alto Networks Enterprise DLP",
