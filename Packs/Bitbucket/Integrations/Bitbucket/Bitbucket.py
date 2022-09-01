@@ -88,6 +88,22 @@ class Client(BaseClient):
         }
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
+    def branch_delete_request(self, branch_name: str, repo: str = None) -> str:
+        if repo:
+            url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            url_suffix = f'/repositories/{self.workspace}/{self.repository}/refs/branches/{branch_name}'
+
+        try:
+            self._http_request(method='DELETE', url_suffix=url_suffix)
+        except DemistoException as e:
+            status_code = e.res.status_code
+            if status_code == 204:
+                return str(204)
+            else:
+                return e.message
 
 
 
@@ -263,11 +279,21 @@ def branch_create_command(client: Client, args: Dict) -> CommandResults:
     target_branch = args.get('target_branch', None)
     response = client.branch_create_request(name, target_branch, repo)
     return CommandResults(
-        readable_output='The branch was created successfully.',
+        readable_output=f'The branch {name} was created successfully.',
         outputs_prefix='Bitbucket.Branch',
         outputs=response,
         raw_response=response
     )
+
+
+def branch_delete_command(client: Client, args: Dict) -> CommandResults:
+    repo = args.get('repo', None)
+    branch_name = args.get('branch_name', None)
+    response = client.branch_delete_request(branch_name, repo)
+    if response == '204':
+        return CommandResults(readable_output=f'The branch {branch_name} was deleted successfully.')
+    else:
+        return CommandResults(readable_output=response)
 
 
 ''' MAIN FUNCTION '''
@@ -314,6 +340,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-branch-create':
             result = branch_create_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-branch-delete':
+            result = branch_delete_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')

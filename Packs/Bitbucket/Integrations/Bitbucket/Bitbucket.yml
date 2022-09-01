@@ -446,6 +446,16 @@ script:
         - contextPath: Bitbucket.Branch.default_merge_strategy
           description: 'The default merge strategy in the new branch.'
           type: String
+    - name: bitbucket-branch-delete
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: branch_name
+          required: true
+          description: The name of the branch to delete.
+          isArray: false
   isfetch: false
   runonce: false
   script: "-"
