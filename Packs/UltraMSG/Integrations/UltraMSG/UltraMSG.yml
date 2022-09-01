@@ -1,0 +1,35 @@
+category: Utilities
+commonfields:
+  id: UltraMSG
+  version: -1
+configuration:
+- display: Token
+  name: token
+  required: true
+  type: 0
+- additionalinfo: 'Example: instance12345'
+  display: Instance
+  name: instance
+  required: true
+  type: 0
+description: This is theUltraMSG integration for getting started made by Trustnet
+display: UltraMSG
+name: UltraMSG
+script:
+  commands:
+  - arguments:
+    - description: Phone Number (With Country Code) or Group Id
+      name: id
+      required: true
+    - description: Free text
+      name: text
+      required: true
+    name: send-whatapp
+  dockerimage: demisto/python3:3.10.6.33415
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
