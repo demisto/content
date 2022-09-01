@@ -31,7 +31,6 @@ configuration:
   name: public_cert
   type: 0
   required: false
-  
 script:
   commands:    
   - name: exterro-ftk-trigger-workflow
