@@ -1,0 +1,4724 @@
+commonfields:
+  id: MitreCaldera
+  version: -1
+name: MitreCaldera
+display: MitreCaldera
+category: IT Services
+description: Mitre Caldera can be used to test endpoint security solutions and assess a network's security posture against the common post-compromise adversarial techniques contained in the ATT&CK model. CALDERA leverages the ATT&CK model to identify and replicate adversary behaviors as if a real intrusion is occurring.
+configuration:
+- name: url
+  display: Server URL (e.g. https://www.example.com:8888)
+  defaultvalue: https://www.example.com:8888
+  type: 0
+  required: true
+- name: api_key
+  display: API Key
+  defaultvalue: ''
+  hiddenusername: true
+  displaypassword: API Key
+  type: 9
+  required: true
+- name: insecure
+  display: Trust any certificate (not secure)
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.5.31928
+  isfetch: false
+  commands:
+  - name: caldera-create-fact
+    description: Create a Fact
+    arguments:
+    - name: fact_name
+      description: Fact name
+      required: false
+      isArray: false
+    - name: fact_links
+      description: Fact links (CSV of IDs)
+      required: false
+      isArray: true
+    - name: fact_relationships
+      description: Fact relationships (CSV of IDs)
+      required: false
+      isArray: true
+    - name: fact_origin_type
+      description: Fact origin type
+      required: false
+      isArray: false
+    - name: fact_limit_count
+      description: Fact limit count
+      required: false
+      isArray: false
+    - name: fact_technique_id
+      description: Fact technique ID
+      required: false
+      isArray: false
+    - name: fact_trait
+      description: Fact trait
+      required: true
+      isArray: false
+    - name: fact_source
+      description: Fact source
+      required: false
+      isArray: false
+    - name: fact_score
+      description: Fact score
+      required: false
+      isArray: false
+    - name: fact_value
+      description: Fact value
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Facts.score
+      description: ''
+  - name: caldera-create-fact-source
+    description: Create a Fact Source.
+    arguments:
+    - name: name
+      description: Name
+      required: false
+      isArray: false
+    - name: adjustments
+      description: Adjustments (array of adjustment objects)
+      required: false
+      isArray: true
+    - name: relationships
+      description: Relationships (array of relationship objects)
+      required: false
+      isArray: true
+    - name: rules
+      description: Rules (array of rule objects)
+      required: false
+      isArray: true
+    - name: facts
+      description: Facts (array of fact objects)
+      required: false
+      isArray: true
+    - name: plugin
+      description: Plugin
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Sources.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.adjustments.ability_id
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.adjustments.offset
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.adjustments.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.adjustments.value
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.rules.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.rules.match
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.plugin
+      description: ''
+  - name: caldera-create-adversary
+    description: Create a new adversary
+    arguments:
+    - name: name
+      description: Adversary name
+      required: false
+      isArray: false
+    - name: tags
+      description: Tags (CSV of tag names)
+      required: false
+      isArray: true
+    - name: objective
+      description: Objective
+      required: false
+      isArray: false
+    - name: atomic_ordering
+      description: Atomic ordering (CSV of ability IDs)
+      required: false
+      isArray: true
+    - name: plugin
+      description: Plugin
+      required: false
+      isArray: false
+    - name: description
+      description: Description
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Adversaries.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.objective
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.adversary_id
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Adversaries.has_repeatable_abilities
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.plugin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.description
+      description: ''
+  - name: caldera-create-agent
+    description: Create a new agent
+    arguments:
+    - name: watchdog
+      description: Watchdog timer
+      required: false
+      isArray: false
+    - name: deadman_enabled
+      description: Deadman enabled (true or false)
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      defaultValue: 'false'
+      required: false
+      isArray: false
+    - name: ppid
+      description: PPID
+      required: false
+      isArray: false
+    - name: pid
+      description: PID
+      required: false
+      isArray: false
+    - name: proxy_receivers
+      description: Proxy Receivers (JSON dict)
+      required: false
+      isArray: false
+    - name: origin_link_id
+      description: Origin link ID
+      required: false
+      isArray: false
+    - name: available_contacts
+      description: Available contacts (CSV of contact IDs)
+      required: false
+      isArray: true
+    - name: platform
+      description: Platform
+      required: false
+      isArray: false
+    - name: host
+      description: Host
+      required: false
+      isArray: false
+    - name: group
+      description: Group
+      required: false
+      isArray: false
+    - name: location
+      description: Location
+      required: false
+      isArray: false
+    - name: display_name
+      description: Display name
+      required: false
+      isArray: false
+    - name: upstream_dest
+      description: Upstream destination
+      required: false
+      isArray: false
+    - name: host_ip_addrs
+      description: Host IP addresses (CSV of IP addresses)
+      required: false
+      isArray: true
+    - name: sleep_max
+      description: Sleep maximum
+      required: false
+      isArray: false
+    - name: architecture
+      description: Architecture
+      required: false
+      isArray: false
+    - name: sleep_min
+      description: Sleep minimum
+      required: false
+      isArray: false
+    - name: server
+      description: Server
+      required: false
+      isArray: false
+    - name: contact
+      description: Contact
+      required: false
+      isArray: false
+    - name: exeutors
+      description: Executors (CSV of executor IDs)
+      required: false
+      isArray: true
+    - name: privilege
+      description: Privilege
+      required: false
+      isArray: false
+    - name: username
+      description: Username
+      required: false
+      isArray: false
+    - name: trusted
+      description: Trusted
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      defaultValue: 'true'
+      required: false
+      isArray: false
+    - name: proxy_chain
+      description: Proxy chain (array of proxy arrays)
+      required: false
+      isArray: true
+    - name: paw
+      description: Agent PAW
+      required: false
+      isArray: false
+    - name: exe_name
+      description: EXE name
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: MitreCaldera.Agents.watchdog
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.collect
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.finish
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.pin
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.agent_reported_time
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Agents.links.deadman
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.used.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.used.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.host
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.status
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.unique
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.cleanup
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.decide
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.output
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Agents.deadman_enabled
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.ppid
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.created
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.origin_link_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.last_seen
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.platform
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.pending_contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.host
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.group
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.location
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.display_name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.upstream_dest
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.sleep_max
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.architecture
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.sleep_min
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.server
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.privilege
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.username
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Agents.trusted
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.proxy_chain
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.exe_name
+      description: ''
+  - name: caldera-create-operation
+    description: Create a new CALDERA operation record
+    arguments:
+    - name: name
+      description: Operation name
+      required: true
+      isArray: false
+    - name: autonomous
+      description: Autonomous (autonomous or manual)
+      auto: PREDEFINED
+      predefined:
+      - autonomous
+      - manual
+      defaultValue: autonomous
+      required: false
+      isArray: false
+    - name: objective_id
+      description: Objective ID
+      required: false
+      isArray: false
+    - name: visibility
+      description: How visible should the operation be to the defense (1-100), default is 51
+      required: false
+      isArray: false
+    - name: state
+      description: State
+      auto: PREDEFINED
+      predefined:
+      - running
+      - paused
+      - run_one_link
+      defaultValue: running
+      required: false
+      isArray: false
+    - name: group
+      description: Group
+      required: false
+      isArray: false
+    - name: host_group
+      description: Host group
+      required: false
+      isArray: true
+    - name: planner_id
+      description: Planner ID
+      required: true
+      isArray: false
+    - name: obfuscator
+      description: Obfuscator
+      auto: PREDEFINED
+      predefined:
+      - base64
+      - base64jumble
+      - base64noPadding
+      - caesar cipher
+      - plain-text
+      - steganography
+      defaultValue: plain-text
+      required: false
+      isArray: false
+    - name: use_learning_parsers
+      description: Use learning parsers
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      defaultValue: 'false'
+      required: false
+      isArray: false
+    - name: source_id
+      description: Source ID
+      required: true
+      isArray: false
+    - name: jitter
+      description: Jitter is defined as a fraction (default is "2/8")
+      required: false
+      isArray: false
+    - name: adversary_id
+      description: adversary id
+      required: true
+      isArray: false
+    - name: auto_close
+      description: Auto close
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      defaultValue: 'false'
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Operations.name
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.autonomous
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.id
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.visibility
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.state
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.group
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.watchdog
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.collect
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.finish
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.pin
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.agent_reported_time
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.host_group.links.deadman
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.used.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.used.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.host
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.status
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.unique
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.cleanup
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.decide
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.output
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.host_group.deadman_enabled
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.ppid
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.created
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.origin_link_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.last_seen
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.platform
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.pending_contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.host
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.group
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.location
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.display_name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.upstream_dest
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.sleep_max
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.architecture
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.sleep_min
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.server
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.privilege
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.username
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.host_group.trusted
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.proxy_chain
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.exe_name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.obfuscator
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.use_learning_parsers
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.start
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.auto_close
+      description: ''
+  - name: caldera-create-objective
+    description: Create a new objective
+    arguments:
+    - name: name
+      description: Objective name
+      required: false
+      isArray: false
+    - name: goals
+      description: Goals (array of objective objects)
+      required: false
+      isArray: true
+    - name: description
+      description: Description
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Objectives.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.id
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Objectives.percentage
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Objectives.goals.count
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Objectives.goals.achieved
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.goals.operator
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.goals.value
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.goals.target
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.description
+      description: ''
+  - name: caldera-create-relationship
+    description: Create a Relationship
+    arguments:
+    - name: relationship_unique
+      description: ''
+      required: false
+      isArray: false
+    - name: relationship_origin
+      description: ''
+      required: false
+      isArray: false
+    - name: relationship_edge
+      description: ''
+      required: false
+      isArray: false
+    - name: relationship_source_unique
+      description: relationship_source unique
+      required: false
+      isArray: false
+    - name: relationship_source_name
+      description: relationship_source name
+      required: false
+      isArray: false
+    - name: relationship_source_links
+      description: relationship_source links
+      required: false
+      isArray: false
+    - name: relationship_source_relationships
+      description: relationship_source relationships
+      required: false
+      isArray: false
+    - name: relationship_source_origin_type
+      description: relationship_source origin_type
+      required: false
+      isArray: false
+    - name: relationship_source_created
+      description: relationship_source created
+      required: false
+      isArray: false
+    - name: relationship_source_limit_count
+      description: relationship_source limit_count
+      required: false
+      isArray: false
+    - name: relationship_source_technique_id
+      description: relationship_source technique_id
+      required: false
+      isArray: false
+    - name: relationship_source_trait
+      description: relationship_source trait
+      required: true
+      isArray: false
+    - name: relationship_source_source
+      description: relationship_source source
+      required: false
+      isArray: false
+    - name: relationship_source_score
+      description: relationship_source score
+      required: false
+      isArray: false
+    - name: relationship_source_value
+      description: relationship_source value
+      required: false
+      isArray: false
+    - name: relationship_source_collected_by
+      description: relationship_source collected_by
+      required: false
+      isArray: false
+    - name: relationship_score
+      description: ''
+      required: false
+      isArray: false
+    - name: relationship_target
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Relationship.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Relationship.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Relationship.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Relationship.score
+      description: ''
+  - name: caldera-create-ability
+    description: Creates a new ability.
+    arguments:
+    - name: ability_ability_id
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_name
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_buckets
+      description: ''
+      required: false
+      isArray: true
+    - name: ability_technique_id
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_delete_payload
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_executors
+      description: ''
+      required: false
+      isArray: true
+    - name: ability_privilege
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_requirements
+      description: ''
+      required: false
+      isArray: true
+    - name: ability_plugin
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_access
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_tactic
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_additional_info
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_singleton
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_technique_name
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_repeatable
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_description
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Abilities.ability_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.technique_id
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.delete_payload
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.platform
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.language
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.variations.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.variations.description
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.build_target
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Abilities.executors.timeout
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.module
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.edge
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.source
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.target
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.code
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.privilege
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.requirements.module
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.plugin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.tactic
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.singleton
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.technique_name
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.repeatable
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.description
+      description: ''
+  - name: caldera-create-potential-link
+    description: Creates a potential Link
+    arguments:
+    - name: operation_id
+      description: UUID of the operation object for the link to be created on.
+      required: true
+      isArray: false
+    - name: link_relationships
+      description: ''
+      required: false
+      isArray: true
+    - name: link_id
+      description: ''
+      required: false
+      isArray: false
+    - name: link_collect
+      description: ''
+      required: false
+      isArray: false
+    - name: link_pid
+      description: ''
+      required: false
+      isArray: false
+    - name: link_visibility_adjustments
+      description: link_visibility adjustments
+      required: false
+      isArray: false
+    - name: link_visibility_score
+      description: link_visibility score
+      required: false
+      isArray: false
+    - name: link_finish
+      description: ''
+      required: false
+      isArray: false
+    - name: link_pin
+      description: ''
+      required: false
+      isArray: false
+    - name: link_jitter
+      description: ''
+      required: false
+      isArray: false
+    - name: link_agent_reported_time
+      description: ''
+      required: false
+      isArray: false
+    - name: link_deadman
+      description: ''
+      required: false
+      isArray: false
+    - name: link_used
+      description: ''
+      required: false
+      isArray: true
+    - name: link_host
+      description: ''
+      required: false
+      isArray: false
+    - name: link_ability_ability_id
+      description: link_ability ability_id
+      required: false
+      isArray: false
+    - name: link_ability_name
+      description: link_ability name
+      required: false
+      isArray: false
+    - name: link_ability_buckets
+      description: link_ability buckets
+      required: false
+      isArray: false
+    - name: link_ability_technique_id
+      description: link_ability technique_id
+      required: false
+      isArray: false
+    - name: link_ability_delete_payload
+      description: link_ability delete_payload
+      required: false
+      isArray: false
+    - name: link_ability_executors
+      description: link_ability executors
+      required: false
+      isArray: false
+    - name: link_ability_privilege
+      description: link_ability privilege
+      required: false
+      isArray: false
+    - name: link_ability_requirements
+      description: link_ability requirements
+      required: false
+      isArray: false
+    - name: link_ability_plugin
+      description: link_ability plugin
+      required: false
+      isArray: false
+    - name: link_ability_access
+      description: link_ability access
+      required: false
+      isArray: false
+    - name: link_ability_tactic
+      description: link_ability tactic
+      required: false
+      isArray: false
+    - name: link_ability_additional_info
+      description: link_ability additional_info
+      required: false
+      isArray: false
+    - name: link_ability_singleton
+      description: link_ability singleton
+      required: false
+      isArray: false
+    - name: link_ability_technique_name
+      description: link_ability technique_name
+      required: false
+      isArray: false
+    - name: link_ability_repeatable
+      description: link_ability repeatable
+      required: false
+      isArray: false
+    - name: link_ability_description
+      description: link_ability description
+      required: false
+      isArray: false
+    - name: link_status
+      description: ''
+      required: false
+      isArray: false
+    - name: link_score
+      description: ''
+      required: false
+      isArray: false
+    - name: link_command
+      description: ''
+      required: false
+      isArray: false
+    - name: link_unique
+      description: ''
+      required: false
+      isArray: false
+    - name: link_cleanup
+      description: ''
+      required: false
+      isArray: false
+    - name: link_decide
+      description: ''
+      required: false
+      isArray: false
+    - name: link_facts
+      description: ''
+      required: false
+      isArray: true
+    - name: link_executor_name
+      description: link_executor name
+      required: false
+      isArray: false
+    - name: link_executor_cleanup
+      description: link_executor cleanup
+      required: false
+      isArray: false
+    - name: link_executor_platform
+      description: link_executor platform
+      required: false
+      isArray: false
+    - name: link_executor_language
+      description: link_executor language
+      required: false
+      isArray: false
+    - name: link_executor_uploads
+      description: link_executor uploads
+      required: false
+      isArray: false
+    - name: link_executor_variations
+      description: link_executor variations
+      required: false
+      isArray: false
+    - name: link_executor_build_target
+      description: link_executor build_target
+      required: false
+      isArray: false
+    - name: link_executor_payloads
+      description: link_executor payloads
+      required: false
+      isArray: false
+    - name: link_executor_timeout
+      description: link_executor timeout
+      required: false
+      isArray: false
+    - name: link_executor_parsers
+      description: link_executor parsers
+      required: false
+      isArray: false
+    - name: link_executor_command
+      description: link_executor command
+      required: false
+      isArray: false
+    - name: link_executor_additional_info
+      description: link_executor additional_info
+      required: false
+      isArray: false
+    - name: link_executor_code
+      description: link_executor code
+      required: false
+      isArray: false
+    - name: link_paw
+      description: ''
+      required: false
+      isArray: false
+    - name: link_output
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Links.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.collect
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.finish
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.pin
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.agent_reported_time
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Links.deadman
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.used.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.used.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.host
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.status
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.unique
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.cleanup
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.decide
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.output
+      description: ''
+  - name: caldera-create-schedule
+    description: Create Schedule
+    arguments:
+    - name: schedule_schedule
+      description: ''
+      required: true
+      isArray: false
+    - name: schedule_task_name
+      description: schedule_task name
+      required: false
+      isArray: false
+    - name: schedule_task_autonomous
+      description: schedule_task autonomous
+      required: false
+      isArray: false
+    - name: schedule_task_id
+      description: schedule_task id
+      required: false
+      isArray: false
+    - name: schedule_task_objective
+      description: schedule_task objective
+      required: false
+      isArray: false
+    - name: schedule_task_visibility
+      description: schedule_task visibility
+      required: false
+      isArray: false
+    - name: schedule_task_state
+      description: schedule_task state
+      required: false
+      isArray: false
+    - name: schedule_task_group
+      description: schedule_task group
+      required: false
+      isArray: false
+    - name: schedule_task_host_group
+      description: schedule_task host_group
+      required: false
+      isArray: false
+    - name: schedule_task_planner
+      description: schedule_task planner
+      required: false
+      isArray: false
+    - name: schedule_task_obfuscator
+      description: schedule_task obfuscator
+      required: false
+      isArray: false
+    - name: schedule_task_chain
+      description: schedule_task chain
+      required: false
+      isArray: false
+    - name: schedule_task_use_learning_parsers
+      description: schedule_task use_learning_parsers
+      required: false
+      isArray: false
+    - name: schedule_task_source
+      description: schedule_task source
+      required: false
+      isArray: false
+    - name: schedule_task_jitter
+      description: schedule_task jitter
+      required: false
+      isArray: false
+    - name: schedule_task_start
+      description: schedule_task start
+      required: false
+      isArray: false
+    - name: schedule_task_adversary
+      description: schedule_task adversary
+      required: false
+      isArray: false
+    - name: schedule_task_auto_close
+      description: schedule_task auto_close
+      required: false
+      isArray: false
+    - name: schedule_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Schedule.schedule
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Schedule.id
+      description: ''
+  - name: caldera-delete-agent
+    description: Delete an Agent
+    arguments:
+    - name: paw
+      description: paw of the Agent to be deleted
+      required: true
+      isArray: false
+  - name: caldera-delete-fact-source
+    description: Delete an existing Fact Source.
+    arguments:
+    - name: fact_source_id
+      description: The id of the Fact Source to be deleted.
+      required: true
+      isArray: false
+  - name: caldera-delete-operation
+    description: Delete an operation by operation id
+    arguments:
+    - name: operation_id
+      description: UUID of the Operation object to be retrieved.
+      required: true
+      isArray: false
+  - name: caldera-delete-facts
+    description: Delete One or More Facts
+    arguments:
+    - name: fact_unique
+      description: ''
+      required: false
+      isArray: false
+    - name: fact_name
+      description: ''
+      required: false
+      isArray: false
+    - name: fact_links
+      description: ''
+      required: false
+      isArray: true
+    - name: fact_relationships
+      description: ''
+      required: false
+      isArray: true
+    - name: fact_origin_type
+      description: ''
+      required: false
+      isArray: false
+    - name: fact_created
+      description: ''
+      required: false
+      isArray: false
+    - name: fact_limit_count
+      description: ''
+      required: false
+      isArray: false
+    - name: fact_technique_id
+      description: ''
+      required: false
+      isArray: false
+    - name: fact_trait
+      description: ''
+      required: false
+      isArray: false
+    - name: fact_source
+      description: ''
+      required: false
+      isArray: false
+    - name: fact_score
+      description: ''
+      required: false
+      isArray: false
+    - name: fact_value
+      description: ''
+      required: false
+      isArray: false
+    - name: fact_collected_by
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Facts.score
+      description: ''
+  - name: caldera-delete-relationships
+    description: Delete One or More Relationships
+    arguments:
+    - name: relationship_unique
+      description: ''
+      required: false
+      isArray: false
+    - name: relationship_origin
+      description: ''
+      required: false
+      isArray: false
+    - name: relationship_edge
+      description: ''
+      required: false
+      isArray: false
+    - name: relationship_source_unique
+      description: relationship_source unique
+      required: false
+      isArray: false
+    - name: relationship_source_name
+      description: relationship_source name
+      required: false
+      isArray: false
+    - name: relationship_source_links
+      description: relationship_source links
+      required: false
+      isArray: false
+    - name: relationship_source_relationships
+      description: relationship_source relationships
+      required: false
+      isArray: false
+    - name: relationship_source_origin_type
+      description: relationship_source origin_type
+      required: false
+      isArray: false
+    - name: relationship_source_created
+      description: relationship_source created
+      required: false
+      isArray: false
+    - name: relationship_source_limit_count
+      description: relationship_source limit_count
+      required: false
+      isArray: false
+    - name: relationship_source_technique_id
+      description: relationship_source technique_id
+      required: false
+      isArray: false
+    - name: relationship_source_trait
+      description: relationship_source trait
+      required: false
+      isArray: false
+    - name: relationship_source_source
+      description: relationship_source source
+      required: false
+      isArray: false
+    - name: relationship_source_score
+      description: relationship_source score
+      required: false
+      isArray: false
+    - name: relationship_source_value
+      description: relationship_source value
+      required: false
+      isArray: false
+    - name: relationship_source_collected_by
+      description: relationship_source collected_by
+      required: false
+      isArray: false
+    - name: relationship_score
+      description: ''
+      required: false
+      isArray: false
+    - name: relationship_target
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Relationship.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Relationship.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Relationship.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Relationship.score
+      description: ''
+  - name: caldera-delete-ability
+    description: Deletes an ability.
+    arguments:
+    - name: ability_id
+      description: UUID of the Ability to be deleted.
+      required: true
+      isArray: false
+  - name: caldera-delete-adversary
+    description: Deletes an adversary.
+    arguments:
+    - name: adversary_id
+      description: UUID of the adversary to be deleted.
+      required: true
+      isArray: false
+  - name: caldera-delete-schedule
+    description: Delete Schedule
+    arguments:
+    - name: schedule_id
+      description: UUID of the Schedule to be deleted.
+      required: true
+      isArray: false
+  - name: caldera-get-abilities
+    description: Get all Abilities with optional ability ID.
+    arguments:
+    - name: ability_id
+      description: Optional UUID of the Ability to be retrieved
+      required: false
+      isArray: false
+    - name: sort
+      description: Results are sorted if no Ability ID is provided.
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Abilities.ability_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.technique_id
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.delete_payload
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.platform
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.language
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.variations.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.variations.description
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.build_target
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Abilities.executors.timeout
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.module
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.edge
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.source
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.target
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.code
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.privilege
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.requirements.module
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.plugin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.tactic
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.singleton
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.technique_name
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.repeatable
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.description
+      description: ''
+  - name: caldera-get-adversaries
+    description: Get all Adversaries with optional Adversary ID
+    arguments:
+    - name: adversary_id
+      description: Optional UUID of the adversary to be retrieved
+      required: false
+      isArray: false
+    - name: sort
+      description: Results are sorted if no Adversary ID is provided.
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Adversaries.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.objective
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.adversary_id
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Adversaries.has_repeatable_abilities
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.plugin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.description
+      description: ''
+  - name: caldera-get-agents
+    description: Retrieves all agents with optional Agent PAW
+    arguments:
+    - name: paw
+      description: Optioanl PAW ID of the Agent to retrieve information about
+      required: false
+      isArray: false
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: Number
+      contextPath: MitreCaldera.Agents.watchdog
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.collect
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.finish
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.pin
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.agent_reported_time
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Agents.links.deadman
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.used.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.used.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.host
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.status
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.unique
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.cleanup
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.decide
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.output
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Agents.deadman_enabled
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.ppid
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.created
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.origin_link_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.last_seen
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.platform
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.pending_contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.host
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.group
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.location
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.display_name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.upstream_dest
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.sleep_max
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.architecture
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.sleep_min
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.server
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.privilege
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.username
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Agents.trusted
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.proxy_chain
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.exe_name
+      description: ''
+  - name: caldera-get-config
+    description: Retrieve Config
+    arguments:
+    - name: name
+      description: 'Name of the configuration file to be retrieved (example: main)'
+      required: true
+      isArray: false
+      defaultValue: main
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Name
+      description: Config name
+    - type: Unknown
+      contextPath: MitreCaldera.Config
+      description: Config settings
+  - name: caldera-get-contacts
+    description: Retrieve a List of all available Contact reports
+    arguments:
+    - name: name
+      description: Optional name of the contact to get beacons for, e.g. HTTP, TCP, et cetera.
+      required: false
+      isArray: false
+    outputs:
+    - type: Unknnown
+      contextPath: MitreCaldera.Contacts
+      description: List of contacts
+  - name: caldera-get-deploy-commands
+    description: Retrieve deploy commands with optional Ability ID
+    arguments:
+    - name: ability_id
+      description: ID of the ability to retrieve deploy commands for
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.DeployCommands.command
+      description: Command
+    - type: String
+      contextPath: MitreCaldera.DeployCommands.description
+      description: Description
+    - type: String
+      contextPath: MitreCaldera.DeployCommands.executor
+      description: Executor
+    - type: String
+      contextPath: MitreCaldera.DeployCommands.name
+      description: Name
+    - type: String
+      contextPath: MitreCaldera.DeployCommands.platform
+      description: Platform
+    - type: String
+      contextPath: MitreCaldera.DeployCommands.variations.command
+      description: Command
+    - type: String
+      contextPath: MitreCaldera.DeployCommands.variations.description
+      description: Description
+  - name: caldera-get-facts
+    description: Retrieve Facts with optional Operation ID
+    arguments:
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    - name: operation_id
+      description: Optional Operation ID
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Facts.score
+      description: ''
+  - name: caldera-get-health
+    description: Health endpoints returns the status of CALDERA
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.CalderaInfo.application
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.CalderaInfo.version
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.CalderaInfo.plugins.name
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.CalderaInfo.plugins.enabled
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.CalderaInfo.plugins.description
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.CalderaInfo.plugins.address
+      description: ''
+  - name: caldera-get-obfuscators
+    description: Retrieve obfuscators with optional name
+    arguments:
+    - name: name
+      description: Name of the Obfuscator
+      required: false
+      isArray: false
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Obfuscators.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Obfuscators.module
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Obfuscators.description
+      description: ''
+  - name: caldera-get-objectives
+    description: Retrieve objectives with optional Objective ID
+    arguments:
+    - name: id
+      description: Optional UUID of the objective to be retrieved
+      required: false
+      isArray: false
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Objectives.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.id
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Objectives.percentage
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Objectives.goals.count
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Objectives.goals.achieved
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.goals.operator
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.goals.value
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.goals.target
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.description
+      description: ''
+  - name: caldera-get-operations
+    description: Retrieve operations
+    arguments:
+    - name: id
+      description: Optional UUID of the Operation object to be retrieved.
+      required: false
+      isArray: false
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Operations.name
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.autonomous
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.id
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.visibility
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.state
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.group
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.watchdog
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.collect
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.finish
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.pin
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.agent_reported_time
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.host_group.links.deadman
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.used.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.used.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.host
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.status
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.unique
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.cleanup
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.decide
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.output
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.host_group.deadman_enabled
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.ppid
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.created
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.origin_link_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.last_seen
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.platform
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.pending_contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.host
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.group
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.location
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.display_name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.upstream_dest
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.sleep_max
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.architecture
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.sleep_min
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.server
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.privilege
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.username
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.host_group.trusted
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.proxy_chain
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.exe_name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.obfuscator
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.use_learning_parsers
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.start
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.auto_close
+      description: ''
+  - name: caldera-get-operation-links
+    description: Get Links from Operation with optional Link ID
+    arguments:
+    - name: operation_id
+      description: ''
+      required: true
+      isArray: false
+    - name: link_id
+      description: Optional UUID of the Link with the operation.
+      required: false
+      isArray: false
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.collect
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.finish
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.pin
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.agent_reported_time
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.OperationLinks.deadman
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.used.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.used.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.host
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.status
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.unique
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.cleanup
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.decide
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.output
+      description: ''
+  - name: caldera-get-operation-links-result
+    description: Retrieve the result of a link
+    arguments:
+    - name: operation_id
+      description: UUID of the operation object to be retrieved.
+      required: true
+      isArray: false
+    - name: link_id
+      description: UUID of the link object to retrieve results of.
+      required: true
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.collect
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.finish
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.pin
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.agent_reported_time
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.OperationLinks.deadman
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.used.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.used.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.host
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.status
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.unique
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.cleanup
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.decide
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.output
+      description: ''
+  - name: caldera-get-operations-potential-links
+    description: Retrieve potential links for an operation with optional PAW.
+    arguments:
+    - name: operation_id
+      description: UUID of the operation object to retrieve links for.
+      required: true
+      isArray: false
+    - name: paw
+      description: Optional Agent paw for the specified operation.
+      required: false
+      isArray: false
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.collect
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.finish
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.pin
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.agent_reported_time
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.OperationLinks.deadman
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.used.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.used.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.used.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.host
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.status
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.unique
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.cleanup
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.decide
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.OperationLinks.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.OperationLinks.output
+      description: ''
+  - name: caldera-get-planners
+    description: Retrieve planners with optional Planner ID
+    arguments:
+    - name: planner_id
+      description: UUID of the Planner object to be retrieved.
+      required: false
+      isArray: false
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Planners.name
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Planners.allow_repeatable_abilities
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Planners.stopping_conditions.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Planners.stopping_conditions.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Planners.stopping_conditions.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Planners.stopping_conditions.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Planners.stopping_conditions.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Planners.stopping_conditions.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Planners.stopping_conditions.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Planners.stopping_conditions.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Planners.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Planners.plugin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Planners.module
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Planners.description
+      description: ''
+  - name: caldera-get-plugins
+    description: Retrieve plugins with optional Name
+    arguments:
+    - name: name
+      description: The name of the plugin
+      required: false
+      isArray: false
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Plugins.name
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Plugins.enabled
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Plugins.address
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Plugins.access
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Plugins.data_dir
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Plugins.description
+      description: ''
+  - name: caldera-get-relationships
+    description: Retrieve Relationships with optional Operation ID
+    arguments:
+    - name: operation_id
+      description: ''
+      required: false
+      isArray: false
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Relationships.score
+      description: ''
+  - name: caldera-get-schedules
+    description: Retrieve Schedules with optional Schedule ID
+    arguments:
+    - name: schedule_id
+      description: Optional UUID of the Schedule to be retrieved.
+      required: false
+      isArray: false
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Schedules.schedule
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Schedules.id
+      description: ''
+  - name: caldera-get-sources
+    description: Retrieve all Fact Sources with optional Fact Source ID
+    arguments:
+    - name: source_id
+      description: The id of the Fact Source
+      required: false
+      isArray: false
+    - name: sort
+      description: ''
+      required: false
+      isArray: false
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Sources.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.adjustments.ability_id
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.adjustments.offset
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.adjustments.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.adjustments.value
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.rules.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.rules.match
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.plugin
+      description: ''
+  - name: caldera-get-operation-event-logs
+    description: Get Operation Event Logs
+    arguments:
+    - name: operation_id
+      description: ''
+      required: true
+      isArray: false
+    - name: enable_agent_output
+      description: Whether to enable the agent output.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      defaultValue: 'false'
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Operations.EventLogs.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.EventLogs.collected_timestamp
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Operations.EventLogs.ability_metadata
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Operations.EventLogs.attack_metadata
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Operations.EventLogs.operation_metadata
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.EventLogs.finished_timestamp
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Operations.EventLogs.agent_metadata
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.EventLogs.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.EventLogs.command
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.EventLogs.status
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.EventLogs.platform
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.EventLogs.executor
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.EventLogs.delegated_timestamp
+      description: ''
+  - name: caldera-get-operation-report
+    description: Get Operation Report
+    arguments:
+    - name: operation_id
+      description: ''
+      required: true
+      isArray: false
+    - name: enable_agent_output
+      description: Whether to enable the agent output.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      defaultValue: 'false'
+    - name: include
+      description: ''
+      required: false
+      isArray: true
+    - name: exclude
+      description: ''
+      required: false
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Operations.OperationReport.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.OperationReport.start
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Operations.OperationReport.steps
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Operations.OperationReport.facts
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Operations.OperationReport.host_group
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.OperationReport.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.OperationReport.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.OperationReport.planner
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.OperationReport.finish
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Operations.OperationReport.adversary
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Operations.OperationReport.skipped_abilities
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Operations.OperationReport.objectives
+      description: ''
+  - name: caldera-replace-ability
+    description: Replaces an existing ability.
+    arguments:
+    - name: ability_id
+      description: UUID of the Ability to be retrieved
+      required: true
+      isArray: false
+    - name: ability_name
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_buckets
+      description: ''
+      required: false
+      isArray: true
+    - name: ability_technique_id
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_delete_payload
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_executors
+      description: ''
+      required: false
+      isArray: true
+    - name: ability_privilege
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_requirements
+      description: ''
+      required: false
+      isArray: true
+    - name: ability_plugin
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_access
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_tactic
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_additional_info
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_singleton
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_technique_name
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_repeatable
+      description: ''
+      required: false
+      isArray: false
+    - name: ability_description
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Abilities.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.technique_id
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.delete_payload
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.platform
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.language
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.variations.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.variations.description
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.build_target
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Abilities.executors.timeout
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.module
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.edge
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.source
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.target
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.code
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.privilege
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.requirements.module
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.plugin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.tactic
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.singleton
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.technique_name
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.repeatable
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.description
+      description: ''
+  - name: caldera-replace-schedule
+    description: Replace Schedule
+    arguments:
+    - name: schedule_id
+      description: UUID of the Schedule to be replaced.
+      required: true
+      isArray: false
+    - name: partial_schedule_schedule
+      description: ''
+      required: false
+      isArray: false
+    - name: partial_schedule_task_name
+      description: partial_schedule_task name
+      required: false
+      isArray: false
+    - name: partial_schedule_task_autonomous
+      description: partial_schedule_task autonomous
+      required: false
+      isArray: false
+    - name: partial_schedule_task_id
+      description: partial_schedule_task id
+      required: false
+      isArray: false
+    - name: partial_schedule_task_objective
+      description: partial_schedule_task objective
+      required: false
+      isArray: false
+    - name: partial_schedule_task_visibility
+      description: partial_schedule_task visibility
+      required: false
+      isArray: false
+    - name: partial_schedule_task_state
+      description: partial_schedule_task state
+      required: false
+      isArray: false
+    - name: partial_schedule_task_group
+      description: partial_schedule_task group
+      required: false
+      isArray: false
+    - name: partial_schedule_task_host_group
+      description: partial_schedule_task host_group
+      required: false
+      isArray: false
+    - name: partial_schedule_task_planner
+      description: partial_schedule_task planner
+      required: false
+      isArray: false
+    - name: partial_schedule_task_obfuscator
+      description: partial_schedule_task obfuscator
+      required: false
+      isArray: false
+    - name: partial_schedule_task_chain
+      description: partial_schedule_task chain
+      required: false
+      isArray: false
+    - name: partial_schedule_task_use_learning_parsers
+      description: partial_schedule_task use_learning_parsers
+      required: false
+      isArray: false
+    - name: partial_schedule_task_source
+      description: partial_schedule_task source
+      required: false
+      isArray: false
+    - name: partial_schedule_task_jitter
+      description: partial_schedule_task jitter
+      required: false
+      isArray: false
+    - name: partial_schedule_task_start
+      description: partial_schedule_task start
+      required: false
+      isArray: false
+    - name: partial_schedule_task_adversary
+      description: partial_schedule_task adversary
+      required: false
+      isArray: false
+    - name: partial_schedule_task_auto_close
+      description: partial_schedule_task auto_close
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Schedules.schedule
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Schedules.id
+      description: ''
+  - name: caldera-update-agent-config
+    description: Update Agent Config
+    arguments:
+    - name: watchdog
+      description: ''
+      required: false
+      isArray: false
+    - name: sleep_min
+      description: ''
+      required: false
+      isArray: false
+    - name: deployments
+      description: ''
+      required: false
+      isArray: true
+    - name: deadman_abilities
+      description: ''
+      required: false
+      isArray: true
+    - name: untrusted_timer
+      description: ''
+      required: false
+      isArray: false
+    - name: bootstrap_abilities
+      description: ''
+      required: false
+      isArray: true
+    - name: sleep_max
+      description: ''
+      required: false
+      isArray: false
+    - name: implant_name
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: MitreCaldera.AgentConfig.watchdog
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.AgentConfig.sleep_min
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.AgentConfig.untrusted_timer
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.AgentConfig.sleep_max
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.AgentConfig.implant_name
+      description: ''
+  - name: caldera-update-adversary
+    description: Update an adversary
+    arguments:
+    - name: adversary_id
+      description: UUID of the adversary to be updated
+      required: true
+      isArray: false
+    - name: adversaryname
+      description: ''
+      required: false
+      isArray: false
+    - name: adversarytags
+      description: ''
+      required: false
+      isArray: true
+    - name: adversaryobjective
+      description: ''
+      required: false
+      isArray: false
+    - name: adversaryhas_repeatable_abilities
+      description: ''
+      required: false
+      isArray: false
+    - name: adversaryatomic_ordering
+      description: ''
+      required: false
+      isArray: true
+    - name: adversaryplugin
+      description: ''
+      required: false
+      isArray: false
+    - name: adversarydescription
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Adversaries.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.objective
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.adversary_id
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Adversaries.has_repeatable_abilities
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.plugin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Adversaries.description
+      description: ''
+  - name: caldera-update-agent
+    description: Update an Agent
+    arguments:
+    - name: paw
+      description: ID of the Agent to update
+      required: true
+      isArray: false
+    - name: watchdog
+      description: ''
+      required: false
+      isArray: false
+    - name: sleep_min
+      description: ''
+      required: false
+      isArray: false
+    - name: trusted
+      description: ''
+      required: false
+      isArray: false
+    - name: sleep_max
+      description: ''
+      required: false
+      isArray: false
+    - name: pending_contact
+      description: ''
+      required: false
+      isArray: false
+    - name: group
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: MitreCaldera.Agents.watchdog
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.collect
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.finish
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.pin
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.agent_reported_time
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Agents.links.deadman
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.used.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.used.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.used.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.host
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.status
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.unique
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.cleanup
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.decide
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.links.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.links.output
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Agents.deadman_enabled
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.ppid
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.created
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.origin_link_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.last_seen
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.platform
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.pending_contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.host
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.group
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.location
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.display_name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.upstream_dest
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.sleep_max
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.architecture
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Agents.sleep_min
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.server
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.privilege
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.username
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Agents.trusted
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.proxy_chain
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Agents.exe_name
+      description: ''
+  - name: caldera-update-fact-source
+    description: Update an existing Fact Source.
+    arguments:
+    - name: fact_source_id
+      description: The id of the Fact Source.
+      required: true
+      isArray: false
+    - name: source_name
+      description: ''
+      required: false
+      isArray: false
+    - name: source_adjustments
+      description: ''
+      required: false
+      isArray: true
+    - name: source_relationships
+      description: ''
+      required: false
+      isArray: true
+    - name: source_id
+      description: ''
+      required: false
+      isArray: false
+    - name: source_rules
+      description: ''
+      required: false
+      isArray: true
+    - name: source_facts
+      description: ''
+      required: false
+      isArray: true
+    - name: source_plugin
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Sources.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.adjustments.ability_id
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.adjustments.offset
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.adjustments.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.adjustments.value
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.rules.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.rules.match
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Sources.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Sources.plugin
+      description: ''
+  - name: caldera-update-objective
+    description: Update an objective
+    arguments:
+    - name: objective_id
+      description: UUID of the Objective to be updated
+      required: true
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: goals
+      description: ''
+      required: false
+      isArray: true
+    - name: description
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Objectives.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.id
+      description: ''
+    - type: Unknown
+      contextPath: MitreCaldera.Objectives.percentage
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Objectives.goals.count
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Objectives.goals.achieved
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.goals.operator
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.goals.value
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.goals.target
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Objectives.description
+      description: ''
+  - name: caldera-update-operation-fields
+    description: Update fields within an operation
+    arguments:
+    - name: operation_id
+      description: UUID of the Operation object to be retrieved.
+      required: true
+      isArray: false
+    - name: obfuscator
+      description: ''
+      required: false
+      isArray: false
+    - name: autonomous
+      description: ''
+      required: false
+      isArray: false
+    - name: state
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Operations.name
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.autonomous
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.id
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.visibility
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.state
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.group
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.watchdog
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.collect
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.finish
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.pin
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.agent_reported_time
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.host_group.links.deadman
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.used.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.used.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.used.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.host
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.status
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.unique
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.cleanup
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.decide
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.links.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.links.output
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.host_group.deadman_enabled
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.ppid
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.created
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.origin_link_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.last_seen
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.platform
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.pending_contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.host
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.group
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.location
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.display_name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.upstream_dest
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.sleep_max
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.architecture
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Operations.host_group.sleep_min
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.server
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.contact
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.privilege
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.username
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.host_group.trusted
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.proxy_chain
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.host_group.exe_name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.obfuscator
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.use_learning_parsers
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Operations.start
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Operations.auto_close
+      description: ''
+  - name: caldera-update-main-config
+    description: Update Main Config
+    arguments:
+    - name: property
+      description: ''
+      required: true
+      isArray: false
+    - name: value
+      description: ''
+      required: true
+      isArray: false
+  - name: caldera-update-facts
+    description: Update One or More Facts
+    arguments:
+    - name: unique
+      description: partial_factupdaterequest_updates unique
+      required: false
+      isArray: false
+    - name: name
+      description: partial_factupdaterequest_updates name
+      required: false
+      isArray: false
+    - name: links
+      description: partial_factupdaterequest_updates links
+      required: false
+      isArray: false
+    - name: relationships
+      description: partial_factupdaterequest_updates relationships
+      required: false
+      isArray: false
+    - name: origin_type
+      description: partial_factupdaterequest_updates origin_type
+      required: false
+      isArray: false
+    - name: created
+      description: partial_factupdaterequest_updates created
+      required: false
+      isArray: false
+    - name: limit_count
+      description: partial_factupdaterequest_updates limit_count
+      required: false
+      isArray: false
+    - name: technique_id
+      description: partial_factupdaterequest_updates technique_id
+      required: false
+      isArray: false
+    - name: trait
+      description: partial_factupdaterequest_updates trait
+      required: false
+      isArray: false
+    - name: source
+      description: partial_factupdaterequest_updates source
+      required: false
+      isArray: false
+    - name: score
+      description: partial_factupdaterequest_updates score
+      required: false
+      isArray: false
+    - name: value
+      description: partial_factupdaterequest_updates value
+      required: false
+      isArray: false
+    - name: collected_by
+      description: partial_factupdaterequest_updates collected_by
+      required: false
+      isArray: false
+    - name: criteria_unique
+      description: partial_factupdaterequest_criteria unique
+      required: false
+      isArray: false
+    - name: criteria_name
+      description: partial_factupdaterequest_criteria name
+      required: false
+      isArray: false
+    - name: criteria_links
+      description: partial_factupdaterequest_criteria links
+      required: false
+      isArray: false
+    - name: criteria_relationships
+      description: partial_factupdaterequest_criteria relationships
+      required: false
+      isArray: false
+    - name: criteria_origin_type
+      description: partial_factupdaterequest_criteria origin_type
+      required: false
+      isArray: false
+    - name: criteria_created
+      description: partial_factupdaterequest_criteria created
+      required: false
+      isArray: false
+    - name: criteria_limit_count
+      description: partial_factupdaterequest_criteria limit_count
+      required: false
+      isArray: false
+    - name: criteria_technique_id
+      description: partial_factupdaterequest_criteria technique_id
+      required: false
+      isArray: false
+    - name: criteria_trait
+      description: partial_factupdaterequest_criteria trait
+      required: false
+      isArray: false
+    - name: criteria_source
+      description: partial_factupdaterequest_criteria source
+      required: false
+      isArray: false
+    - name: criteria_score
+      description: partial_factupdaterequest_criteria score
+      required: false
+      isArray: false
+    - name: criteria_value
+      description: partial_factupdaterequest_criteria value
+      required: false
+      isArray: false
+    - name: criteria_collected_by
+      description: partial_factupdaterequest_criteria collected_by
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Facts.score
+      description: ''
+  - name: caldera-update-relationships
+    description: Update One or More Relationships
+    arguments:
+    - name: unique
+      description: partial_relationshipupdate_updates unique
+      required: false
+      isArray: false
+    - name: origin
+      description: partial_relationshipupdate_updates origin
+      required: false
+      isArray: false
+    - name: edge
+      description: partial_relationshipupdate_updates edge
+      required: false
+      isArray: false
+    - name: source
+      description: partial_relationshipupdate_updates source
+      required: false
+      isArray: false
+    - name: score
+      description: partial_relationshipupdate_updates score
+      required: false
+      isArray: false
+    - name: target
+      description: partial_relationshipupdate_updates target
+      required: false
+      isArray: false
+    - name: criteria_unique
+      description: partial_relationshipupdate_criteria unique
+      required: false
+      isArray: false
+    - name: criteria_origin
+      description: partial_relationshipupdate_criteria origin
+      required: false
+      isArray: false
+    - name: criteria_edge
+      description: partial_relationshipupdate_criteria edge
+      required: false
+      isArray: false
+    - name: criteria_source
+      description: partial_relationshipupdate_criteria source
+      required: false
+      isArray: false
+    - name: criteria_score
+      description: partial_relationshipupdate_criteria score
+      required: false
+      isArray: false
+    - name: criteria_target
+      description: partial_relationshipupdate_criteria target
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Relationships.score
+      description: ''
+  - name: caldera-update-ability
+    description: Updates an existing ability.
+    arguments:
+    - name: ability_id
+      description: UUID of the Ability to be retrieved
+      required: true
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: buckets
+      description: ''
+      required: false
+      isArray: true
+    - name: technique_id
+      description: ''
+      required: false
+      isArray: false
+    - name: delete_payload
+      description: ''
+      required: false
+      isArray: false
+    - name: executors
+      description: ''
+      required: false
+      isArray: true
+    - name: privilege
+      description: ''
+      required: false
+      isArray: false
+    - name: technique_name
+      description: ''
+      required: false
+      isArray: false
+    - name: tactic
+      description: ''
+      required: false
+      isArray: false
+    - name: singleton
+      description: ''
+      required: false
+      isArray: false
+    - name: plugin
+      description: ''
+      required: false
+      isArray: false
+    - name: repeatable
+      description: ''
+      required: false
+      isArray: false
+    - name: description
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Abilities.ability_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.technique_id
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.delete_payload
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.platform
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.language
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.variations.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.variations.description
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.build_target
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Abilities.executors.timeout
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.module
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.edge
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.source
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.parsers.parserconfigs.target
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.executors.code
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.privilege
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.requirements.module
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.plugin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.tactic
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.singleton
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.technique_name
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Abilities.repeatable
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Abilities.description
+      description: ''
+  - name: caldera-update-schedule
+    description: Update Schedule
+    arguments:
+    - name: schedule_id
+      description: UUID of the Schedule to be updated.
+      required: true
+      isArray: false
+    - name: schedule
+      description: ''
+      required: false
+      isArray: false
+    - name: task_obfuscator
+      description: task obfuscator
+      required: false
+      isArray: false
+    - name: task_autonomous
+      description: task autonomous
+      required: false
+      isArray: false
+    - name: task_state
+      description: task state
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Schedules.schedule
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Schedules.id
+      description: ''
+  - name: caldera-update-operation-link
+    description: Update the specified link within an operation
+    arguments:
+    - name: operation_id
+      description: String UUID of the Operation containing desired link.
+      required: true
+      isArray: false
+    - name: link_id
+      description: String UUID of the Link with the above operation.
+      required: true
+      isArray: false
+    - name: command
+      description: ''
+      required: false
+      isArray: false
+    - name: status
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: MitreCaldera.Links.relationships.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.relationships.origin
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.relationships.edge
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.relationships.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.collect
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.pid
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.finish
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.pin
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.jitter
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.agent_reported_time
+      description: ''
+    - type: Boolean
+      contextPath: MitreCaldera.Links.deadman
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.used.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.used.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.used.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.host
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.status
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.command
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.unique
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.cleanup
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.decide
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.unique
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.name
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.created
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.facts.limit_count
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.technique_id
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.trait
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.facts.source
+      description: ''
+    - type: Number
+      contextPath: MitreCaldera.Links.facts.score
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.paw
+      description: ''
+    - type: String
+      contextPath: MitreCaldera.Links.output
+      description: ''
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

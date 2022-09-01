@@ -8,7 +8,8 @@ from CyberArkPAS import Client, add_user_command, get_users_command, \
 from test_data.context import ADD_USER_CONTEXT, GET_USERS_CONTEXT, \
     UPDATE_USER_CONTEXT, UPDATE_SAFE_CONTEXT, GET_LIST_SAFES_CONTEXT, GET_SAFE_BY_NAME_CONTEXT, ADD_SAFE_CONTEXT, \
     ADD_SAFE_MEMBER_CONTEXT, UPDATE_SAFE_MEMBER_CONTEXT, LIST_SAFE_MEMBER_CONTEXT, ADD_ACCOUNT_CONTEXT, \
-    UPDATE_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT, INCIDENTS, INCIDENTS_AFTER_FETCH, \
+    UPDATE_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT, INCIDENTS, \
+    INCIDENTS_AFTER_FETCH, \
     INCIDENTS_LIMITED_BY_MAX_SIZE, INCIDENTS_FILTERED_BY_SCORE, GET_ACCOUNT_CONTEXT
 from test_data.http_resonses import ADD_USER_RAW_RESPONSE, \
     UPDATE_USER_RAW_RESPONSE, GET_USERS_RAW_RESPONSE, ADD_SAFE_RAW_RESPONSE, UPDATE_SAFE_RAW_RESPONSE, \
@@ -17,7 +18,6 @@ from test_data.http_resonses import ADD_USER_RAW_RESPONSE, \
     UPDATE_ACCOUNT_RAW_RESPONSE, GET_LIST_ACCOUNT_RAW_RESPONSE, GET_LIST_ACCOUNT_ACTIVITIES_RAW_RESPONSE, \
     GET_SECURITY_EVENTS_RAW_RESPONSE, GET_SECURITY_EVENTS_WITH_UNNECESSARY_INCIDENT_RAW_RESPONSE, \
     GET_SECURITY_EVENTS_WITH_15_INCIDENT_RAW_RESPONSE, GET_ACCOUNT_RAW_RESPONSE
-
 
 ADD_USER_ARGS = {
     "change_password_on_the_next_logon": "true",
@@ -70,7 +70,8 @@ GET_SAFE_BY_NAME_ARGS = {
 ADD_SAFE_MEMBER_ARGS = {
     "member_name": "TestUser",
     "requests_authorization_level": "0",
-    "safe_name": "TestSafe"
+    "safe_name": "TestSafe",
+    'permissions': ['ManageSafeMembers']
 }
 
 UPDATE_SAFE_MEMBER_ARGS = {
@@ -190,7 +191,8 @@ def test_fetch_incidents_with_an_incident_that_was_shown_before(mocker):
     client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, max_fetch=50)
 
-    mocker.patch.object(Client, '_http_request', return_value=GET_SECURITY_EVENTS_WITH_UNNECESSARY_INCIDENT_RAW_RESPONSE)
+    mocker.patch.object(Client, '_http_request',
+                        return_value=GET_SECURITY_EVENTS_WITH_UNNECESSARY_INCIDENT_RAW_RESPONSE)
     # the last run dict is the same we would have got if we run the prev test before
     last_run = {'time': 1594573600000, 'last_event_ids': '["5f0b3064e4b0ba4baf5c1113", "5f0b4320e4b0ba4baf5c2b05"]'}
     _, incidents = fetch_incidents(client, last_run, "3 days", "0", "1")
@@ -237,3 +239,27 @@ def test_fetch_incidents_with_specific_score(mocker):
     _, incidents = fetch_incidents(client, {}, "3 days", score="50", max_fetch="10")
     assert len(incidents) == 3
     assert incidents == INCIDENTS_FILTERED_BY_SCORE
+
+
+@pytest.mark.parametrize('permission_exist', [True, False])
+def test_add_safe_member_permissions_validate(mocker, permission_exist):
+    """
+    Given
+    - Permissions.
+    When
+    - calling *add_safe_member* method.
+    Then
+    - Validate ManageSafeMembers was set in http body permission list.
+    """
+    args = ADD_SAFE_MEMBER_ARGS
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False, max_fetch=50)
+    mock = mocker.patch.object(Client, '_http_request')
+    if not permission_exist:
+        args.get('permissions').remove('ManageSafeMembers')
+    add_safe_member_command(client, **args)
+    permissions = mock.call_args[1].get('json_data').get('member').get('Permissions')
+    for permission in permissions:
+        if 'ManageSafeMembers' in permission.get('Key'):
+            assert permission.get('Value') == permission_exist

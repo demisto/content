@@ -7,6 +7,7 @@ class Client:
     """
     Client to use in the APN-OS Policy Optimizer integration.
     """
+
     def __init__(self, url: str, username: str, password: str, vsys: str, device_group: str, verify: bool, tid: int):
         # The TID is used to track individual commands send to the firewall/Panorama during a PHP session, and
         # is also used to generate the security token (Data String) that is used to validate each command.
@@ -62,6 +63,10 @@ class Client:
             raise Exception(f'Failed to login. Please double-check the credentials and the server URL. {str(err)}')
         # Use RegEx to parse the ServerToken string from the JavaScript variable
         match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', response.text)
+        # Fix to login validation from version 9
+        if int(demisto.params().get('version', 8)) > 8:
+            if 'window.Pan.staticMOTD' not in response.text:
+                match = None
         # The JavaScript calls the ServerToken a "cookie" so we will use that variable name
         # The "data" field is the MD5 calculation of "cookie" + "TID"
         if not match:
@@ -77,7 +82,8 @@ class Client:
         :return: hash token
         """
         data_code = f'{self.session_metadata["cookie"]}{str(self.session_metadata["tid"])}'
-        data_hash = hashlib.md5(data_code.encode())  # Use the hashlib library function to calculate the MD5
+        # Use the hashlib library function to calculate the MD5
+        data_hash = hashlib.md5(data_code.encode())  # nosec
         data_string = data_hash.hexdigest()  # Convert the hash to a proper hex string
         return data_string
 

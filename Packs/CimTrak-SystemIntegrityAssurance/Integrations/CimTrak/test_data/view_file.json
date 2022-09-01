@@ -1,0 +1,30 @@
+{
+    "name": "view_file",
+    "execute": "response_raw = CimTrak.view_file_command(client,{'objectDetailId': 2})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.viewFile",
+            "reply": {
+                "results": [
+                    {
+                        "contents": "c2Rmc2Rmc2RoZWxsbw=="
+                    }
+                ],
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": []
+            }
+        }
+    ],
+    "response": {
+        "results": [
+            {
+                "contents": "c2Rmc2Rmc2RoZWxsbw=="
+            }
+        ],
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": ""
+    }
+}

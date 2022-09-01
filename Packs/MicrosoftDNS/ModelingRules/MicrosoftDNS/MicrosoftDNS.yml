@@ -1,0 +1,6 @@
+name: Microsoft DNS
+id: Microsoft_DNS
+fromversion: 6.8.0
+tags: MicrosoftDNS
+rules: ''
+schema: ''

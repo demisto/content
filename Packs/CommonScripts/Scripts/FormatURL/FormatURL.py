@@ -1,12 +1,15 @@
 from html import unescape
 from typing import Tuple
 from urllib.parse import urlparse, parse_qs, ParseResult, unquote
+import ipaddress
 
 from CommonServerPython import *
 
 ATP_REGEX = re.compile(r'(https://\w*|\w*)\.safelinks\.protection\.outlook\.com/.*\?url=')
 FIREEYE_REGEX = re.compile(r'(https:\/\/\w*|\w*)\.fireeye\.com\/.*\/url\?k=')
 PROOF_POINT_URL_REG = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
+FIRST_TLD = re.compile(r"([(?!.)][a-zA-Z]?(?:/|$))|([(?!.)][a-zA-Z\d]{2,}[.]?/)")
+
 HTTP = 'http'
 PREFIX_TO_NORMALIZE = {
     'hxxp',
@@ -102,16 +105,64 @@ def replace_protocol(url_: str) -> str:
     return url_
 
 
-def remove_brackets_from_end_of_url(url_: str) -> str:
+def remove_special_chars_from_start_and_end_of_url(url_: str) -> str:
     """
-    Removes square brackets from the end of URL if there are any.
+    Removes brackets and quotes characters from the beginning and the end of the URL if there are any.
     Args:
-        url_ (str): URL to remove the brackets from.
-
+        url_ (str): URL to remove the special characters from.
     Returns:
-        (str): URL with removed brackets, if needed to remove, else the URL itself.
+        (str): URL with characters brackets, if needed to remove, else the URL itself.
     """
-    return url_[:-1] if url_[-1] in ['[', ']'] else url_
+
+    def is_ipv6(url: str) -> bool:
+        try:
+            # IPv6 should have square brackets around them, no need to remove
+            ipaddress.IPv6Address(re.findall(r"\[(.*?)]", url)[0])
+            return True
+
+        except (ipaddress.AddressValueError, IndexError):
+            return False
+
+    delimiters = {
+        "[": "]",
+        "(": ")",
+        "{": "}",
+        "'": "'",
+        '"': '"'
+    }
+
+    while url_[0] in delimiters and not is_ipv6(url_):
+        if delimiters.get(url_[0]) == url_[-1]:
+            url_ = url_[1:-1]
+        else:
+            url_ = url_[1:]
+
+    if is_ipv6(f'[{url_.split("//")[-1]}]'):
+        # In case we have an IPv6 without brackets, it's "invalid" but we will return it
+        return url_
+
+    if url_.count("/") < 3 and not is_ipv6(url_):
+        # If url has no path only letters are allowed in tld or port
+
+        while not url_[-1].isalpha() and not url_[-1].isnumeric():
+            url_ = url_[:-1]
+
+        last_part = url_.split('.')[-1]  # Get last part of the url
+
+        if ":" in last_part:
+            # Checks for port in URL to handle it as a special case
+            tld, port = last_part.split(":", 1)
+
+            if not port.isnumeric() or (not tld.isalpha() and not 1 <= int(tld) <= 255):
+                # Not the correct format, removing all characters but tld
+                url_ = url_.replace(f":{port}", "")
+
+        elif not last_part.isnumeric() and "#" not in last_part:
+            # No fragment section and no port, cleans all non letter chars from tld
+            while not url_[-1].isalpha():
+                url_ = url_[:-1]
+
+    return url_
 
 
 def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult) -> Optional[str]:
@@ -150,6 +201,54 @@ def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult)
     return None
 
 
+def remove_single_letter_tld_url(url: str):
+    """
+    Args:
+        url (str): url
+    Return:
+         True if the first occurrence of a tld is 0-1 letters.
+         False otherwise.
+    """
+    m = FIRST_TLD.search(url)
+
+    if not m:
+        return False
+    elif not m.group(1):
+        return False
+    return True
+
+
+def format_single_url(non_formatted_url: str) -> List[str]:
+    demisto.debug(f"Starting to format URL {non_formatted_url}")
+    parse_results: ParseResult = urlparse(non_formatted_url)
+    additional_redirect_url: Optional[str] = None
+    if re.match(ATP_REGEX, non_formatted_url):
+        non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
+    elif re.match(FIREEYE_REGEX, non_formatted_url):
+        if '&amp;' in non_formatted_url:
+            non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'amp;u')
+        else:
+            non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
+    elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
+        proof_point_ver: str = match.group(2)
+        if proof_point_ver == 'v3':
+            non_formatted_url = get_redirect_url_proof_point_v3(non_formatted_url)
+        elif proof_point_ver == 'v2':
+            non_formatted_url = get_redirect_url_proof_point_v2(non_formatted_url, parse_results)
+        else:
+            non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
+    else:
+        additional_redirect_url = search_for_redirect_url_in_first_query_parameter(parse_results)
+    # Common handling for unescape and normalizing
+    non_formatted_url = unquote(unescape(non_formatted_url.replace('[.]', '.')))
+    formatted_url = replace_protocol(non_formatted_url)
+    formatted_url = remove_special_chars_from_start_and_end_of_url(formatted_url)
+    if remove_single_letter_tld_url(formatted_url):
+        return []
+
+    return [formatted_url, additional_redirect_url] if additional_redirect_url else [formatted_url]
+
+
 def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
     """
     Formats a single URL.
@@ -160,34 +259,13 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
         (Set[str]): Formatted URL, with its expanded URL if such exists.
     """
 
-    def format_single_url(non_formatted_url: str) -> List[str]:
-        demisto.debug(f"Starting to format URL {non_formatted_url}")
-        parse_results: ParseResult = urlparse(non_formatted_url)
-        additional_redirect_url: Optional[str] = None
-        if re.match(ATP_REGEX, non_formatted_url):
-            non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
-        elif re.match(FIREEYE_REGEX, non_formatted_url):
-            if '&amp;' in non_formatted_url:
-                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'amp;u')
-            else:
-                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
-        elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
-            proof_point_ver: str = match.group(2)
-            if proof_point_ver == 'v3':
-                non_formatted_url = get_redirect_url_proof_point_v3(non_formatted_url)
-            elif proof_point_ver == 'v2':
-                non_formatted_url = get_redirect_url_proof_point_v2(non_formatted_url, parse_results)
-            else:
-                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
-        else:
-            additional_redirect_url = search_for_redirect_url_in_first_query_parameter(parse_results)
-        # Common handling for unescape and normalizing
-        non_formatted_url = unquote(unescape(non_formatted_url.replace('[.]', '.')))
-        formatted_url = replace_protocol(non_formatted_url)
-        formatted_url = remove_brackets_from_end_of_url(formatted_url)
-        return [formatted_url, additional_redirect_url] if additional_redirect_url else [formatted_url]
-
-    formatted_urls_groups = [format_single_url(url_) for url_ in non_formatted_urls]
+    formatted_urls_groups: List[Union[str, List[str]]] = []
+    for url_ in non_formatted_urls:
+        try:
+            formatted_urls_groups.append(format_single_url(url_))
+        except Exception as e:
+            demisto.error(str(e))
+            formatted_urls_groups.append('')
     return [{
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -197,13 +275,14 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
 
 
 def main():
+    non_formmated_urls = argToList(demisto.args().get('input'))
     try:
-        formatted_urls_groups: List[Dict] = format_urls(argToList(demisto.args().get('input')))
+        formatted_urls_groups: List[Dict] = format_urls(non_formmated_urls)
         for formatted_urls_group in formatted_urls_groups:
             demisto.results(formatted_urls_group)
     except Exception as e:  # pragma: no cover
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute FormatURL. Error: {str(e)}')
+        demisto.error(traceback.format_exc() + str(e))  # print the traceback
+        return [''] * len(non_formmated_urls)
 
 
 ''' ENTRY POINT '''

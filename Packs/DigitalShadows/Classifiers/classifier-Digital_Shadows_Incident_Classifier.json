@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "Digital Shadows Intelligence Incident",
+    "description": "Classifier for Digital Shadows Incidents",
+    "feed": false,
+    "id": "Digital Shadows Incident Classifier",
+    "keyTypeMap": {
+        "GLOBAL": "Digital Shadows Intelligence Incident",
+        "ORGANIZATION": "Digital Shadows Client Incident"
+    },
+    "name": "Digital Shadows Incident Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "scope"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

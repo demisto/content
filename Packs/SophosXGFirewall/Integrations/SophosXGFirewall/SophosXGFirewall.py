@@ -958,8 +958,7 @@ def prepare_builder_params(client: Client, keys: dict, is_for_update: bool, name
         params[key] = locals_copy.get(key)
 
     # making the params a list
-    for param in params:
-        params[param] = argToList(params[param])
+    params = {key: argToList(item) for key, item in params.items()}
 
     # update the params with the previous information of the object if the desired action is update
     if is_for_update:

@@ -44,6 +44,10 @@
                     "complex": null,
                     "simple": "trigger.product_detail.status_display"
                 },
+                "ZTAP Alert Link": {
+                    "complex": null,
+                    "simple": "url"
+                },
                 "dbotMirrorId": {
                     "complex": null,
                     "simple": "xsoar_mirror_id"

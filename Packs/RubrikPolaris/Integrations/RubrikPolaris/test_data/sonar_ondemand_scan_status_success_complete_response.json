@@ -1,0 +1,107 @@
+{
+    "data": {
+        "crawl": {
+            "id": "bb4eedc0-594b-4566-b06d-24de0bf752ca",
+            "crawlObjConnection": {
+                "nodes": [
+                    {
+                        "crawlId": "bb4eedc0-594b-4566-b06d-24de0bf752ca",
+                        "error": "",
+                        "snappable": {
+                            "id": "6e307121-e5dc-5e6a-9a6b-37e1c9afd6b1",
+                            "name": "AllTheThings",
+                            "objectType": "LinuxFileset"
+                        },
+                        "snapshotTime": 1632414676000,
+                        "status": "COMPLETE",
+                        "progress": 1,
+                        "totalHits": 9,
+                        "analyzerGroupResults": [
+                            {
+                                "analyzerGroup": {
+                                    "groupType": "CUSTOM",
+                                    "id": "16190947-9d53-419e-bd0a-203779690d50",
+                                    "name": "custom_analyzer"
+                                },
+                                "analyzerResults": [
+                                    {
+                                        "hits": {
+                                            "totalHits": 9,
+                                            "violations": 9,
+                                            "permittedHits": 0
+                                        },
+                                        "analyzer": {
+                                            "id": "10ab1c38-1659-4637-90c8-3f256492b73b",
+                                            "name": "custom_analyzer",
+                                            "analyzerType": "KEYWORD"
+                                        }
+                                    }
+                                ],
+                                "hits": {
+                                    "totalHits": 9,
+                                    "violations": 9,
+                                    "permittedHits": 0,
+                                    "violationsDelta": 0,
+                                    "totalHitsDelta": 0
+                                }
+                            }
+                        ],
+                        "cluster": {
+                            "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+                            "name": "sand1-rbk01",
+                            "type": "OnPrem"
+                        }
+                    },
+                    {
+                        "crawlId": "bb4eedc0-594b-4566-b06d-24de0bf752ca",
+                        "error": "",
+                        "snappable": {
+                            "id": "a82e888c-2440-5af9-8c2a-447a97f6746c",
+                            "name": "/tmp",
+                            "objectType": "LinuxFileset"
+                        },
+                        "snapshotTime": 1632424201000,
+                        "status": "COMPLETE",
+                        "progress": 1,
+                        "totalHits": 21,
+                        "analyzerGroupResults": [
+                            {
+                                "analyzerGroup": {
+                                    "groupType": "CUSTOM",
+                                    "id": "16190947-9d53-419e-bd0a-203779690d50",
+                                    "name": "custom_analyzer"
+                                },
+                                "analyzerResults": [
+                                    {
+                                        "hits": {
+                                            "totalHits": 21,
+                                            "violations": 21,
+                                            "permittedHits": 0
+                                        },
+                                        "analyzer": {
+                                            "id": "10ab1c38-1659-4637-90c8-3f256492b73b",
+                                            "name": "custom_analyzer",
+                                            "analyzerType": "KEYWORD"
+                                        }
+                                    }
+                                ],
+                                "hits": {
+                                    "totalHits": 21,
+                                    "violations": 21,
+                                    "permittedHits": 0,
+                                    "violationsDelta": 0,
+                                    "totalHitsDelta": 0
+                                }
+                            }
+                        ],
+                        "cluster": {
+                            "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+                            "name": "sand1-rbk01",
+                            "type": "OnPrem"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

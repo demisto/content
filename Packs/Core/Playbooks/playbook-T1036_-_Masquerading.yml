@@ -242,7 +242,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "90"
+      - "93"
       "yes":
       - "42"
     separatecontext: false
@@ -353,7 +353,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "90"
+      - "93"
     scriptarguments:
       AutoContainment:
         complex:
@@ -473,10 +473,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "90"
+      - "93"
     scriptarguments:
       AutoEradicate:
-        simple: "False"
+        complex:
+          root: inputs.AutoEradication
       EndpointID:
         complex:
           root: alert
@@ -986,7 +987,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "88"
+      - "90"
       "yes":
       - "92"
     separatecontext: false
@@ -1007,7 +1008,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3995
+          "y": 3655
         }
       }
     note: false
@@ -1033,7 +1034,7 @@ tasks:
       '#default#':
       - "91"
       "yes":
-      - "93"
+      - "88"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1052,7 +1053,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3530
+          "y": 4000
         }
       }
     note: false
@@ -1076,13 +1077,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "93"
+      - "88"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 880,
-          "y": 3700
+          "y": 4170
         }
       }
     note: false
@@ -1113,7 +1114,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "88"
+      - "90"
     scriptarguments:
       endpointID:
         complex:
@@ -1133,7 +1134,7 @@ tasks:
       {
         "position": {
           "x": 880,
-          "y": 4170
+          "y": 3830
         }
       }
     note: false
@@ -1163,7 +1164,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3870
+          "y": 3530
         }
       }
     note: false
@@ -1226,8 +1227,8 @@ tasks:
           root: alert
           accessor: agentid
       timeRange:
-        simple: 24 hours ago
-    separatecontext: false
+        simple: 2 hours ago
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -1252,13 +1253,15 @@ view: |-
     "linkLabelsPosition": {
       "28_14_Yes": 0.2,
       "28_7_#default#": 0.3,
-      "37_42_yes": 0.33,
-      "37_90_#default#": 0.2,
+      "37_42_yes": 0.55,
+      "37_93_#default#": 0.24,
       "72_28_Possible False Positive": 0.72,
       "72_33_True Positive": 0.56,
       "72_7_False Positive": 0.57,
-      "89_88_#default#": 0.5,
-      "90_93_yes": 0.48
+      "89_90_#default#": 0.51,
+      "89_92_yes": 0.6,
+      "90_88_yes": 0.49,
+      "90_91_#default#": 0.61
     },
     "paper": {
       "dimensions": {
@@ -1278,13 +1281,13 @@ inputs:
   playbookInputQuery:
 - key: AutoCloseAlert
   value:
-    simple: "false"
+    simple: "False"
   required: false
   description: Whether to close the alert automatically or manually, after an analyst's review.
   playbookInputQuery:
 - key: AutoRecovery
   value:
-    simple: "false"
+    simple: "False"
   required: false
   description: Whether to execute the Recovery playbook.
   playbookInputQuery:
@@ -1292,16 +1295,22 @@ inputs:
   value: {}
   required: false
   description: |-
+    Setting this input will impact both Containment Plan sub-playbooks. Without setting this input, the default values are True for the first occurrence and False for the second.
     Whether to execute automatically or manually the containment plan tasks:
+    * Isolate endpoint
     * Block indicators
     * Quarantine file
     * Disable user
   playbookInputQuery:
-- key: HostAutoContainment
+- key: AutoEradication
   value:
-    simple: "true"
+    simple: "False"
   required: false
-  description: Whether to execute endpoint isolation automatically or manually based on the Endpoint Investigation findings.
+  description: |-
+    Whether to execute automatically or manually the eradication plan tasks:
+    * Terminate process
+    * Delete file
+    * Reset the user's password
   playbookInputQuery:
 outputs: []
 tests:

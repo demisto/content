@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<devices>
+    <device>
+        <organization id="1" name="Super"/>
+        <accessIp>2.2.2.2</accessIp>
+        <name>DEVICE_2</name>
+        <naturalId>DEVICE_2</naturalId>
+        <approved>true</approved>
+        <unmanaged>false</unmanaged>
+        <deviceType>
+            <vendor>Fortinet</vendor>
+            <model>FortiSIEM</model>
+            <version>ANY</version>
+        </deviceType>
+    </device>
+</devices>

@@ -1,0 +1,8 @@
+{
+  "tomcat_logs_access": {
+    "_raw_log": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

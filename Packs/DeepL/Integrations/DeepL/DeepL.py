@@ -15,10 +15,10 @@ def run_command(client, data: Dict[str, str], endpoint: str, file=None, resp_typ
     return response
 
 
-def create_output(results: Dict[str, str], endpoint: str):
+def create_output(results: Dict[str, str], endpoint: str, keyfield=''):
     output = CommandResults(
         outputs_prefix=f'DeepL.{endpoint}',
-        outputs_key_field='',
+        outputs_key_field=keyfield,
         outputs=results
     )
     return output
@@ -68,13 +68,13 @@ def main():
             data = {'document_key': args.get('document_key')}
             document_id = args.get('document_id')
             results = run_command(client, data, f'/document/{document_id}')
-            return_results(create_output(results, 'DocumentStatus'))
+            return_results(create_output(results, 'DocumentStatus', 'document_id'))
         elif demisto.command() == 'deepl-get-document':
             data = {'document_key': args.get('document_key')}
             document_id = args.get('document_id')
             filename = args.get('filename')
             results = run_command(client, data, f'/document/{document_id}/result', resp_type='content')
-            demisto.results(fileResult(filename, results))
+            return_results(fileResult(filename, results, file_type=EntryType.ENTRY_INFO_FILE))
 
     # Log exceptions
     except Exception as e:

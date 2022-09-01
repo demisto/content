@@ -240,7 +240,8 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
         data: Dict = {}
         dbotscore = {
             'Vendor': 'Lastline',
-            'Score': 0
+            'Score': 0,
+            'Reliability': demisto.params().get('integrationReliability')
         }
         dbotscore_list = []
         if 'score' in result['data']:
@@ -311,7 +312,7 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
 
 def file_hash(path: str) -> str:
     block_size = 65536
-    file_hasher = hashlib.md5()
+    file_hasher = hashlib.md5()  # nosec
     with open(path, 'rb') as file_obj:
         buf = file_obj.read(block_size)
         while len(buf) > 0:

@@ -1,0 +1,694 @@
+id: AWS IAM User Access Investigation - Remediation
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: AWS IAM User Access Investigation - Remediation
+description: "Respond to Cortex XDR Cloud alerts where an AWS IAM user`s access key\
+  \ is used suspiciously to access the cloud environment. \nThe following alerts are\
+  \ supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration\
+  \ testing tool activity\n- Suspicious API call from a Tor exit node\n This is a\
+  \ beta playbook, which lets you implement and test pre-release software. Although\
+  \ AWS is supported, we are working towards multi-cloud support. As the playbook\
+  \ is beta, it might contain bugs. Updates to the playbook during the beta phase\
+  \ might include non-backward compatible features. We encourage your feedback on\
+  \ the quality and usability of the content to help us identify and fix issues,\
+  \ so we can continually improve the content.\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 84f6f072-180e-47db-8fe0-ee5bb5acdd41
+    type: start
+    task:
+      id: 84f6f072-180e-47db-8fe0-ee5bb5acdd41
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+      - "44"
+      - "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a8aef032-bec2-424e-8bfc-bc21ca561c73
+    type: regular
+    task:
+      id: a8aef032-bec2-424e-8bfc-bc21ca561c73
+      version: -1
+      name: Set compromised IAM access key as inactive
+      description: Changes the status of the specified access key from Active to Inactive,
+        or vice versa. This operation can be used to disable a user's key as part
+        of a key rotation workflow.
+      script: '|||aws-iam-update-access-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      accessKeyId:
+        complex:
+          root: inputs.accessKeyId
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: inputs.accessKeyId
+                iscontext: true
+              right:
+                value:
+                  simple: AKIA
+          transformers:
+          - operator: uniq
+      status:
+        simple: Inactive
+      userName:
+        complex:
+          root: AWS.IAM.Users.AccessKeys
+          accessor: UserName
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 30e0980e-0afa-4f55-8975-5ed40cdf922a
+    type: regular
+    task:
+      id: 30e0980e-0afa-4f55-8975-5ed40cdf922a
+      version: -1
+      name: Delete user login profile to AWS console
+      description: Deletes the password for the specified IAM user, which terminates
+        the user's ability to access AWS services through the AWS Management Console.
+      script: '|||aws-iam-delete-login-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      userName:
+        complex:
+          root: inputs.userName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 2625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 74f4159d-9adc-4f86-8c48-e225a0594549
+    type: condition
+    task:
+      id: 74f4159d-9adc-4f86-8c48-e225a0594549
+      version: -1
+      name: Is it a Tor IP?
+      description: Is it a Tor IP?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      - "38"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious API call from a Tor exit node
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9fa21b96-265c-49ac-893d-8b0e6b9dba62
+    type: title
+    task:
+      id: 9fa21b96-265c-49ac-893d-8b0e6b9dba62
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 5a2c2e61-0d88-498f-8dad-13e34ec2fdf9
+    type: condition
+    task:
+      id: 5a2c2e61-0d88-498f-8dad-13e34ec2fdf9
+      version: -1
+      name: Check for AWS user login profile
+      description: "Check the user AWS login profile configuration.\nIf a login profile\
+        \ is configured, it needs to be deleted. \n\nThe user login profile configuration\
+        \ can be found under https://console.aws.amazon.com/iam/home#/users/[username]\
+        \ under the security credentials tab."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      Delete profile:
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: Delete profile
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.IAM.Users.LoginProfile
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 2275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: beaa19aa-4406-4952-894b-692cd748f995
+    type: regular
+    task:
+      id: beaa19aa-4406-4952-894b-692cd748f995
+      version: -1
+      name: 'Tag indicators for EDL '
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: inputs.IP
+      tags:
+        complex:
+          root: inputs.IndicatorTag
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.IndicatorTag
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: d59025a2-7aae-4025-8767-5789cd562b9c
+    type: condition
+    task:
+      id: d59025a2-7aae-4025-8767-5789cd562b9c
+      version: -1
+      name: Automatically block IP?
+      description: ''''''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoBlockIP
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: e9376eaa-766f-4fe9-8601-4a9c0b0ab6fd
+    type: regular
+    task:
+      id: e9376eaa-766f-4fe9-8601-4a9c0b0ab6fd
+      version: -1
+      name: 'Manual - Block IP '
+      description: Block IP address according to IP enrichment and reputation results.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 3d72057b-f65c-4e75-872d-d54e076c97af
+    type: title
+    task:
+      id: 3d72057b-f65c-4e75-872d-d54e076c97af
+      version: -1
+      name: Set compromised IAM access key as inactive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 8beeeaf8-6a1c-45f9-8f8f-27cca7e19cb5
+    type: title
+    task:
+      id: 8beeeaf8-6a1c-45f9-8f8f-27cca7e19cb5
+      version: -1
+      name: Handle user login profile
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: d811738c-257e-4e67-80cf-3e5460868279
+    type: title
+    task:
+      id: d811738c-257e-4e67-80cf-3e5460868279
+      version: -1
+      name: Handle Tor IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 5443f14c-a792-4c17-80f0-fcaa0fd5318e
+    type: regular
+    task:
+      id: 5443f14c-a792-4c17-80f0-fcaa0fd5318e
+      version: -1
+      name: AWS IAM - Get user profile
+      description: Retrieves the user login profile information for AWS management
+        console.
+      script: '|||aws-iam-get-user-login-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      userName:
+        complex:
+          root: inputs.userName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 8a94ae35-9772-4ab3-889a-b7e026c9ca3b
+    type: condition
+    task:
+      id: 8a94ae35-9772-4ab3-889a-b7e026c9ca3b
+      version: -1
+      name: Automatically delete user login profile?
+      description: "Whether to automatically delete a user login profile."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoDeleteProfile
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: a7d78a6c-2ab2-4484-8c8d-7ae2caf9146b
+    type: regular
+    task:
+      id: a7d78a6c-2ab2-4484-8c8d-7ae2caf9146b
+      version: -1
+      name: Delete user login profile - Manual
+      description: "Manually delete a user login profile."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1110,
+          "y": 2625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 5fa155b5-8ecc-44c1-8dd2-f41ee7263a08
+    type: playbook
+    task:
+      id: 5fa155b5-8ecc-44c1-8dd2-f41ee7263a08
+      version: -1
+      name: Block Indicators - Generic v2
+      description: |+
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: inputs.IP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_19_yes": 0.1,
+      "17_37_#default#": 0.43,
+      "17_38_#default#": 0.61,
+      "38_39_#default#": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1035,
+        "width": 3280,
+        "x": -1110,
+        "y": 1830
+      }
+    }
+  }
+inputs:
+- key: userName
+  value: {}
+  required: false
+  description: The name of the user whose key you want to update.
+  playbookInputQuery:
+- key: accessKeyId
+  value: {}
+  required: false
+  description: The access key ID of the secret access key you want to update.
+  playbookInputQuery:
+- key: AutoDeleteProfile
+  value: {}
+  required: false
+  description: Whether to automatically delete the user login profile, if it exists (True/False).
+  playbookInputQuery:
+- key: IP
+  value: {}
+  required: false
+  description: The IP address to block using the playbook.
+  playbookInputQuery:
+- key: AutoBlockIP
+  value:
+    simple: "False"
+  required: false
+  description: 'Whether to initiate the block IP playbook automatically (True/False).'
+  playbookInputQuery:
+- key: IndicatorTag
+  value: {}
+  required: false
+  description: |-
+    The Tag name for bad reputation IP addresses investigated in the incident.
+    Use it when the EDL service is configured to add indicators to block in PANW PAN-OS.
+    If indicator verdict (Malicious/Bad) is used to add indicators to Cortex XSIAM EDL, you don't need to use the tag. Indicators are set as malicious, automatically in the incident.
+  playbookInputQuery:
+- key: DAG
+  value: {}
+  required: false
+  description: |-
+    Determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
+    Specify the Dynamic Address Group tag name for IP handling.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0

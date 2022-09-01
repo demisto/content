@@ -1,18 +1,19 @@
 This integration is for fetching information about assets in Axonius.
 This integration was integrated and tested with version 3.9 of Axonius
+
 ## Configure Axonius on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Axonius.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| ax_url | Server URL \(e.g. https://example.net\) | True |
-| ax_key | Axonius API Key | True |
-| ax_secret | Axonius API Secret | True |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Server URL (e.g. https://example.net) | True |
+    | Axonius API Key | True |
+    | Axonius API Secret | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -30,25 +31,24 @@ Gather device info by saved query
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| saved_query_name | The name of the devices saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-devices | Required |
-| max_results | The maximum number of results to return. | Optional |
+| saved_query_name | The name of the devices saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-devices. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
-
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Devices.adapters | String | The specific adapter names with asset information | 
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Devices.hostname | String | The hostnames of the assset | 
+| Axonius.Devices.name | String | The names of the asset | 
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset | 
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset | 
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) | 
+| Axonius.Devices.labels | String | Tags assigned to the asset | 
 
 #### Command Example
 ```!axonius-get-devices-by-savedquery saved_query_name=example_query```
@@ -107,7 +107,6 @@ Gather device info by saved query
 >|---|---|---|---|---|---|---|---|---|
 >| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 2020-09-08T06:44:31+00:00 | Windows%20Server%202012%20r2%20dc4.TestDomain.test%20(Avidor),<br/>DC4,<br/>Windows Server 2012 R2,<br/>Windows Server - 2012 - R2 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | Windows | d530db3cfef6a2220b315d54fa1901b2 |
 
-
 ### axonius-get-users-by-savedquery
 ***
 Gather user info by saved query
@@ -120,22 +119,22 @@ Gather user info by saved query
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| saved_query_name | The name of the users saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-users | Required |
-| max_results | The maximum number of results to return. | Optional |
+| saved_query_name | The name of the users saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-users. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Users.adapters | String | The specific adapter names with asset information |
-| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Users.username | String | Username of the asset |
-| Axonius.Users.mail | String | Email address of the asset |
-| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
-| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Users.labels | String | Tags assigned to the asset |
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Users.adapters | String | The specific adapter names with asset information | 
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Users.username | String | Username of the asset | 
+| Axonius.Users.mail | String | Email address of the asset | 
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges | 
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Users.labels | String | Tags assigned to the asset | 
 
 
 #### Command Example
@@ -167,7 +166,6 @@ Gather user info by saved query
 >|---|---|---|---|---|---|---|
 >| 1 | active_directory_adapter | TestDomain.test | false | 2018-11-01T14:48:59+00:00 | test_ldap_login_user | 4d5f47f067388e8ffc53b6bbe8a10800 |
 
-
 ### axonius-get-users-by-mail
 ***
 Gather user info by email address
@@ -180,24 +178,23 @@ Gather user info by email address
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | The user email address to search for within Axonius. | Required |
-| max_results | The maximum number of results to return. | Optional |
-| fields | Comma separated list of Axonius fields to return. | Optional |
+| value | The user email address to search for within Axonius. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
+| fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Users.adapters | String | The specific adapter names with asset information |
-| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Users.username | String | Username of the asset |
-| Axonius.Users.mail | String | Email address of the asset |
-| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
-| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Users.labels | String | Tags assigned to the asset |
-
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Users.adapters | String | The specific adapter names with asset information | 
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Users.username | String | Username of the asset | 
+| Axonius.Users.mail | String | Email address of the asset | 
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges | 
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Users.labels | String | Tags assigned to the asset | 
 
 #### Command Example
 ```!axonius-get-users-by-mail value=Administrator@testdomain.test```
@@ -230,10 +227,9 @@ Gather user info by email address
 >|---|---|---|---|---|
 >| 1 | active_directory_adapter | Administrator@testdomain.test | Administrator | a6f0d051a30d401b7f73416fbc90a3cf |
 
-
 ### axonius-get-users-by-mail-regex
 ***
-Gather user info by email address. The supplied value is used in a fuzzy regular expression.
+Gather user info by email address using regex
 
 
 #### Base Command
@@ -243,23 +239,23 @@ Gather user info by email address. The supplied value is used in a fuzzy regular
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | The value to be used inside a fuzzy regular expression to search for user email addresses within Axonius. | Required |
-| max_results | The maximum number of results to return. | Optional |
-| fields | Comma separated list of Axonius fields to return. | Optional |
+| value | The user email address to search for within Axonius. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
+| fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Users.adapters | String | The specific adapter names with asset information |
-| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Users.username | String | Username of the asset |
-| Axonius.Users.mail | String | Email address of the asset |
-| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
-| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Users.labels | String | Tags assigned to the asset |
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Users.adapters | String | The specific adapter names with asset information | 
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Users.username | String | Username of the asset | 
+| Axonius.Users.mail | String | Email address of the asset | 
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges | 
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Users.labels | String | Tags assigned to the asset | 
 
 
 #### Command Example
@@ -306,23 +302,23 @@ Gather user info by username
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | The username to search for within Axonius. | Required |
-| max_results | The maximum number of results to return. | Optional |
-| fields | Comma separated list of Axonius fields to return. | Optional |
+| value | The username to search for within Axonius. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
+| fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Users.adapters | String | The specific adapter names with asset information |
-| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Users.username | String | Username of the asset |
-| Axonius.Users.mail | String | Email address of the asset |
-| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
-| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Users.labels | String | Tags assigned to the asset |
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Users.adapters | String | The specific adapter names with asset information | 
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Users.username | String | Username of the asset | 
+| Axonius.Users.mail | String | Email address of the asset | 
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges | 
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Users.labels | String | Tags assigned to the asset | 
 
 
 #### Command Example
@@ -351,10 +347,9 @@ Gather user info by username
 >|---|---|---|---|
 >| 1 | active_directory_adapter | test_ldap_login_user | 4d5f47f067388e8ffc53b6bbe8a10800 |
 
-
 ### axonius-get-users-by-username-regex
 ***
-Gather user info by username. The supplied value is used in a fuzzy regular expression.
+Gather user info by username using regex
 
 
 #### Base Command
@@ -364,24 +359,23 @@ Gather user info by username. The supplied value is used in a fuzzy regular expr
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | The value to be used inside a fuzzy regular expression to search for users by username within Axonius. | Required |
-| max_results | The maximum number of results to return. | Optional |
-| fields | Comma separated list of Axonius fields to return. | Optional |
+| value | The username to search for within Axonius. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
+| fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Users.adapters | String | The specific adapter names with asset information |
-| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Users.username | String | Username of the asset |
-| Axonius.Users.mail | String | Email address of the asset |
-| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
-| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Users.labels | String | Tags assigned to the asset |
-
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Users.adapters | String | The specific adapter names with asset information | 
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Users.username | String | Username of the asset | 
+| Axonius.Users.mail | String | Email address of the asset | 
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges | 
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Users.labels | String | Tags assigned to the asset | 
 
 #### Command Example
 ```!axonius-get-users-by-username-regex value=test```
@@ -409,7 +403,6 @@ Gather user info by username. The supplied value is used in a fuzzy regular expr
 >|---|---|---|---|
 >| 1 | active_directory_adapter | test_ldap_login_user | 4d5f47f067388e8ffc53b6bbe8a10800 |
 
-
 ### axonius-get-devices-by-hostname
 ***
 Gather device info by hostname
@@ -422,26 +415,25 @@ Gather device info by hostname
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | The hostname to search for within Axonius. | Required |
-| max_results | The maximum number of results to return. | Optional |
-| fields | Comma separated list of Axonius fields to return. | Optional |
+| value | The hostname to search for within Axonius. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
+| fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
-
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Devices.adapters | String | The specific adapter names with asset information | 
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Devices.hostname | String | The hostnames of the assset | 
+| Axonius.Devices.name | String | The names of the asset | 
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset | 
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset | 
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) | 
+| Axonius.Devices.labels | String | Tags assigned to the asset | 
 
 #### Command Example
 ```!axonius-get-devices-by-hostname value=DC4```
@@ -493,10 +485,9 @@ Gather device info by hostname
 >|---|---|---|---|---|---|---|
 >| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
 
-
 ### axonius-get-devices-by-hostname-regex
 ***
-Gather device info by hostname. The supplied value is used in a fuzzy regular expression.
+Gather device info by hostname using regex
 
 
 #### Base Command
@@ -506,25 +497,25 @@ Gather device info by hostname. The supplied value is used in a fuzzy regular ex
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | The value to be used inside a fuzzy regular expression to search for devices by hostname within Axonius. | Required |
-| max_results | The maximum number of results to return. | Optional |
-| fields | Comma separated list of Axonius fields to return. | Optional |
+| value | The hostname to search for within Axonius using regex. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
+| fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Devices.adapters | String | The specific adapter names with asset information | 
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Devices.hostname | String | The hostnames of the assset | 
+| Axonius.Devices.name | String | The names of the asset | 
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset | 
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset | 
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) | 
+| Axonius.Devices.labels | String | Tags assigned to the asset | 
 
 
 #### Command Example
@@ -578,7 +569,6 @@ Gather device info by hostname. The supplied value is used in a fuzzy regular ex
 >| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
 
 
-
 ### axonius-get-devices-by-ip
 ***
 Gather device info by IP address
@@ -591,25 +581,25 @@ Gather device info by IP address
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | The IP address to search for within Axonius. | Required |
-| max_results | The maximum number of results to return. | Optional |
-| fields | Comma separated list of Axonius fields to return. | Optional |
+| value | The IP address to search for within Axonius. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
+| fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Devices.adapters | String | The specific adapter names with asset information | 
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Devices.hostname | String | The hostnames of the assset | 
+| Axonius.Devices.name | String | The names of the asset | 
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset | 
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset | 
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) | 
+| Axonius.Devices.labels | String | Tags assigned to the asset | 
 
 
 #### Command Example
@@ -662,10 +652,9 @@ Gather device info by IP address
 >|---|---|---|---|---|---|---|
 >| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
 
-
 ### axonius-get-devices-by-ip-regex
 ***
-Gather device info by IP address. The supplied value is used in a fuzzy regular expression.
+Gather device info by IP address using regex
 
 
 #### Base Command
@@ -675,25 +664,25 @@ Gather device info by IP address. The supplied value is used in a fuzzy regular 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | The value to be used inside a fuzzy regular expression to search for devices by IP address within Axonius. | Required |
-| max_results | The maximum number of results to return. | Optional |
-| fields | Comma separated list of Axonius fields to return. | Optional |
+| value | The IP address to search for within Axonius. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
+| fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Devices.adapters | String | The specific adapter names with asset information | 
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Devices.hostname | String | The hostnames of the assset | 
+| Axonius.Devices.name | String | The names of the asset | 
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset | 
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset | 
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) | 
+| Axonius.Devices.labels | String | Tags assigned to the asset | 
 
 
 #### Command Example
@@ -746,8 +735,6 @@ Gather device info by IP address. The supplied value is used in a fuzzy regular 
 >|---|---|---|---|---|---|---|
 >| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
 
-
-
 ### axonius-get-devices-by-mac
 ***
 Gather device info by MAC address
@@ -760,25 +747,25 @@ Gather device info by MAC address
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | The MAC address to search for within Axonius. | Required |
-| max_results | The maximum number of results to return. | Optional |
-| fields | Comma separated list of Axonius fields to return. | Optional |
+| value | The MAC address to search for within Axonius. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
+| fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Devices.adapters | String | The specific adapter names with asset information | 
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Devices.hostname | String | The hostnames of the assset | 
+| Axonius.Devices.name | String | The names of the asset | 
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset | 
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset | 
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) | 
+| Axonius.Devices.labels | String | Tags assigned to the asset | 
 
 
 #### Command Example
@@ -831,10 +818,9 @@ Gather device info by MAC address
 >|---|---|---|---|---|---|---|
 >| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
 
-
 ### axonius-get-devices-by-mac-regex
 ***
-Gather device info by MAC address. The supplied value is used in a fuzzy regular expression.
+Gather device info by MAC address using regex
 
 
 #### Base Command
@@ -844,25 +830,25 @@ Gather device info by MAC address. The supplied value is used in a fuzzy regular
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | The value to be used inside a fuzzy regular expression to search for devices by MAC address within Axonius. | Required |
-| max_results | The maximum number of results to return. | Optional |
-| fields | Comma separated list of Axonius fields to return. | Optional |
+| value | The MAC address to search for within Axonius. | Required | 
+| max_results | The maximum number of results to return. | Optional | 
+| fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset | 
+| Axonius.Devices.adapters | String | The specific adapter names with asset information | 
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset | 
+| Axonius.Devices.hostname | String | The hostnames of the assset | 
+| Axonius.Devices.name | String | The names of the asset | 
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset | 
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset | 
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset | 
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) | 
+| Axonius.Devices.labels | String | Tags assigned to the asset | 
 
 
 #### Command Example
@@ -915,3 +901,92 @@ Gather device info by MAC address. The supplied value is used in a fuzzy regular
 >|---|---|---|---|---|---|---|
 >| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
 
+
+### axonius-add-tag
+***
+Add tag to assets
+
+
+#### Base Command
+
+`axonius-add-tag`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_name | Name of tag to add. | Required | 
+| ids | IDs of assets. | Required | 
+| type | Type of Asset. Device or User. Possible values are: devices, users. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.assets.updates | Number | Number of assets updated | 
+
+### axonius-remove-tag
+***
+Remove tag from assets
+
+
+#### Base Command
+
+`axonius-remove-tag`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_name | Name of tag to remove. | Required | 
+| ids | IDs of assets. | Required | 
+| type | Type of Asset. Devices or Users. Possible values are: devices, users. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.asset.updates | Number | Number of assets updated | 
+
+### axonius-get-saved-queries
+***
+Get all saved query of a given asset type.
+
+
+#### Base Command
+
+`axonius-get-saved-queries`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | Type of Asset. Device or User. Possible values are: devices, users. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Devices.saved_queries | Unknown | Saved queries | 
+| Axonius.Users.saved_queries | Unknown | Saved queries | 
+
+### axonius-get-tags
+***
+Get all tags of a given asset type.
+
+
+#### Base Command
+
+`axonius-get-tags`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | Type of Asset. Device or User. Possible values are: devices, users. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.tags | Unknown | Axonius Tags | 

@@ -1,0 +1,12 @@
+{
+    "result": [
+        {
+            "id": "filter_id",
+            "paused": false,
+            "expression": "(ip.src eq 120.2.2.8)"
+        }
+    ],
+    "success": true,
+    "errors": [],
+    "messages": []
+}

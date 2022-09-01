@@ -58,7 +58,7 @@ outputs:
   description: The list of items not in the list.
   type: Unknown
 script: '-'
-subtype: python2
+subtype: python3
 system: false
 tags:
 - whitelist
@@ -69,4 +69,4 @@ runonce: false
 tests:
 - FilterByList - Test
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24398
+dockerimage: demisto/python3:3.10.4.29342

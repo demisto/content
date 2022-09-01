@@ -1,0 +1,6 @@
+name: Fortinet FortiGate Modeling Rule
+id: Fortinet_FortiGate_modeling_rule
+fromversion: 6.8.0
+tags: FortinetFortiGate
+rules: ""
+schema: ""

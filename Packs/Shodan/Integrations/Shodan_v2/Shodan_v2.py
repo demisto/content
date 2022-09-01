@@ -203,6 +203,7 @@ def ip_command():
             'Type': 'ip',
             'Vendor': 'Shodan_v2',
             'Score': 0,
+            'Reliability': demisto.params().get('integrationReliability')
         }
 
         shodan_ip_details = {
@@ -332,8 +333,9 @@ def shodan_scan_status_command():
 def shodan_create_network_alert_command():
     alert_name = demisto.args()['alertName']
     ip = demisto.args()['ip']
+    expires = demisto.args().get('expires', 0)
     try:
-        expires = int(demisto.args().get('expires', 0))
+        expires = int(expires)
     except ValueError:
         return_error(f'Expires must be a number, not {expires}')
 

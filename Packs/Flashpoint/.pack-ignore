@@ -1,8 +1,2 @@
 [file:README.md]
 ignore=RM102,RM104
-
-[file:Flashpoint.yml]
-ignore=IN145
-
-[file:Flashpoint_image.png]
-ignore=IM111

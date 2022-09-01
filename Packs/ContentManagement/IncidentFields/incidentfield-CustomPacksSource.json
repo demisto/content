@@ -15,7 +15,8 @@
         "Attachments",
         "Google Cloud Storage",
         "AWS S3",
-        "HTTP request"
+        "HTTP request",
+        "No Custom Packs"
     ],
     "useAsKpi": false,
     "locked": false,

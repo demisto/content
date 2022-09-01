@@ -1,16 +1,15 @@
 id: DBotPredictURLPhishing_test
 version: -1
-fromversion: 6.0.0
 vcShouldKeepItemLegacyProdMachine: false
 name: DBotPredictURLPhishing_test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d6b34d0c-0812-401f-85c2-d2e9cb186903
+    taskid: c7143abe-93da-4780-8dd0-7dd93fb8167c
     type: start
     task:
-      id: d6b34d0c-0812-401f-85c2-d2e9cb186903
+      id: c7143abe-93da-4780-8dd0-7dd93fb8167c
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: bbca0c05-aecb-4bbb-865f-d4475a079cc9
+    taskid: 167bfca2-852e-4995-82a1-dc31fc5dc7dc
     type: regular
     task:
-      id: bbca0c05-aecb-4bbb-865f-d4475a079cc9
+      id: 167bfca2-852e-4995-82a1-dc31fc5dc7dc
       version: -1
       name: Apply URL Phishing model google.com
       description: Predict phishing URLs using pre-trained model.
@@ -73,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 45de2422-f199-4aa0-8166-9563cedfea91
+    taskid: 1ee40632-1012-4af2-8480-da0ee1181f30
     type: condition
     task:
-      id: 45de2422-f199-4aa0-8166-9563cedfea91
+      id: 1ee40632-1012-4af2-8480-da0ee1181f30
       version: -1
       name: Verify prediction
       type: condition
@@ -105,14 +104,6 @@ tasks:
           right:
             value:
               simple: "True"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotPredictURLPhishing.URL
-            iscontext: true
-          right:
-            value:
-              simple: http://google.com
     view: |-
       {
         "position": {
@@ -129,10 +120,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4e19f199-3399-4fc6-8076-5198cbd4fcee
+    taskid: b8a8d11c-94d6-4867-804b-57b139248051
     type: title
     task:
-      id: 4e19f199-3399-4fc6-8076-5198cbd4fcee
+      id: b8a8d11c-94d6-4867-804b-57b139248051
       version: -1
       name: Done
       type: title
@@ -155,10 +146,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a9f4d8ba-82e6-473c-8bb1-eb98634c8927
+    taskid: 7ae16202-f1d5-43e2-866d-a91e3bd3fff8
     type: regular
     task:
-      id: a9f4d8ba-82e6-473c-8bb1-eb98634c8927
+      id: 7ae16202-f1d5-43e2-866d-a91e3bd3fff8
       version: -1
       name: Apply URL Phishing Error
       description: Predict phishing URLs using pre-trained model.
@@ -189,10 +180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: c2544e71-5a68-4207-86b5-0e70e08de4ed
+    taskid: 95416276-a087-46cf-8811-f081d226ef9f
     type: regular
     task:
-      id: c2544e71-5a68-4207-86b5-0e70e08de4ed
+      id: 95416276-a087-46cf-8811-f081d226ef9f
       version: -1
       name: Delete context
       description: |-
@@ -228,10 +219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 3f780088-c26a-4682-8b57-dce5b66c60a1
+    taskid: 311743a9-9ad1-49fc-8e02-4b32743484c9
     type: regular
     task:
-      id: 3f780088-c26a-4682-8b57-dce5b66c60a1
+      id: 311743a9-9ad1-49fc-8e02-4b32743484c9
       version: -1
       name: Delete Contect
       description: |-
@@ -267,10 +258,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a81d8c55-70c6-43e9-8f19-54eef1ce1c0d
+    taskid: 5224b56d-99dd-4b49-885b-f0eeaa1e0ae2
     type: regular
     task:
-      id: a81d8c55-70c6-43e9-8f19-54eef1ce1c0d
+      id: 5224b56d-99dd-4b49-885b-f0eeaa1e0ae2
       version: -1
       name: Apply URL Phishing savey.co.il
       description: Predict phishing URLs using pre-trained model.
@@ -301,10 +292,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 306af32e-caf2-44dd-8eff-1fd66d371f4a
+    taskid: b0e36751-a33a-4ee6-8b00-8b246edaec89
     type: condition
     task:
-      id: 306af32e-caf2-44dd-8eff-1fd66d371f4a
+      id: b0e36751-a33a-4ee6-8b00-8b246edaec89
       version: -1
       name: Verify prediction savey.co.il
       type: condition
@@ -349,14 +340,6 @@ tasks:
           right:
             value:
               simple: "0.5"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotPredictURLPhishing.URL
-            iscontext: true
-          right:
-            value:
-              simple: http://savey.co.il
     view: |-
       {
         "position": {
@@ -373,10 +356,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: ffed880a-627c-40de-8748-ac43a9ca0432
+    taskid: c52c8e75-4087-4d3f-8299-eb43de2781f0
     type: regular
     task:
-      id: ffed880a-627c-40de-8748-ac43a9ca0432
+      id: c52c8e75-4087-4d3f-8299-eb43de2781f0
       version: -1
       name: Delete context
       description: |-
@@ -424,3 +407,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

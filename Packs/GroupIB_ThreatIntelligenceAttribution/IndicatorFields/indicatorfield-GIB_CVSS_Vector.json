@@ -1,4 +1,7 @@
 {
+    "associatedTypes": [
+        "CVE"
+    ],
     "associatedToAll": false,
     "caseInsensitive": true,
     "cliName": "gibcvssvector",

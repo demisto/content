@@ -1,0 +1,25 @@
+{
+    "result": [
+        {
+            "id": "list_id_1",
+            "name": "d",
+            "kind": "ip",
+            "num_items": 0,
+            "num_referencing_filters": 0,
+            "created_on": "2022-04-26T11:42:55Z",
+            "modified_on": "2022-04-26T11:42:55Z"
+        },
+        {
+            "id": "list_id_2",
+            "name": "my_first_list",
+            "kind": "ip",
+            "num_items": 10,
+            "num_referencing_filters": 1,
+            "created_on": "2022-03-29T14:53:15Z",
+            "modified_on": "2022-04-25T12:43:35Z"
+        }
+    ],
+    "success": true,
+    "errors": [],
+    "messages": []
+}

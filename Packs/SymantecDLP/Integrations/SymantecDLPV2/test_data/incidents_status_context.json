@@ -1,0 +1,30 @@
+[
+    {
+        "name": "incident.status.New",
+        "id": 1
+    },
+    {
+        "name": "Escalated",
+        "id": 42
+    },
+    {
+        "name": "In Process",
+        "id": 21
+    },
+    {
+        "name": "False Positive",
+        "id": 43
+    },
+    {
+        "name": "Configuration Error",
+        "id": 44
+    },
+    {
+        "name": "Resolved",
+        "id": 45
+    },
+    {
+        "name": "Custom status",
+        "id": 61
+    }
+]

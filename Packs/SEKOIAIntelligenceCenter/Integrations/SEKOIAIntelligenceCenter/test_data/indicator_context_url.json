@@ -1,0 +1,224 @@
+{
+    "has_more": false,
+    "items": [
+        {
+            "type": "bundle",
+            "id": "bundle--ec5e0fd4-643e-4b1f-b193-0c907528a8cc",
+            "objects": [
+                {
+                    "pattern_type": "stix",
+                    "valid_until": "2022-10-03T00:00:00Z",
+                    "type": "indicator",
+                    "kill_chain_phases": [
+                        {
+                            "phase_name": "command-and-control",
+                            "kill_chain_name": "lockheed-martin-cyber-kill-chain"
+                        },
+                        {
+                            "phase_name": "command-and-control",
+                            "kill_chain_name": "mitre-attack"
+                        }
+                    ],
+                    "id": "indicator--aef1dd76-dc26-4cfd-aed9-f3a4f11e32db",
+                    "x_ic_is_in_flint": false,
+                    "object_marking_refs": [
+                        "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+                    ],
+                    "created": "2022-06-19T01:16:25.189626Z",
+                    "created_by_ref": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "confidence": 70,
+                    "x_inthreat_sources_refs": [
+                        "identity--15242053-3fe7-45db-84a2-13b77f58ebe8"
+                    ],
+                    "x_ic_deprecated": false,
+                    "pattern": "[url:value = 'http://177.22.84.44:49467/.i']",
+                    "name": "http://177.22.84.44:49467/.i",
+                    "x_ic_observable_types": [
+                        "url"
+                    ],
+                    "lang": "en",
+                    "revoked": false,
+                    "modified": "2022-07-04T15:51:19.199887Z",
+                    "valid_from": "2022-06-19T00:00:00Z",
+                    "indicator_types": [
+                        "malicious-activity"
+                    ],
+                    "spec_version": "2.1",
+                    "x_ic_external_refs": [
+                        "indicator--b20fe9cd-b7e2-4554-a700-8e486cc76007"
+                    ]
+                },
+                {
+                    "type": "malware",
+                    "kill_chain_phases": [
+                        {
+                            "phase_name": "actions-on-objectives",
+                            "kill_chain_name": "lockheed-martin-cyber-kill-chain"
+                        },
+                        {
+                            "phase_name": "impact",
+                            "kill_chain_name": "mitre-attack"
+                        }
+                    ],
+                    "aliases": [
+                        "Hajime"
+                    ],
+                    "id": "malware--73f27bad-afc4-4ac9-a8d7-bfa1c93fb51c",
+                    "x_ic_is_in_flint": false,
+                    "object_marking_refs": [
+                        "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+                    ],
+                    "created": "2020-12-21T08:20:40.112947Z",
+                    "created_by_ref": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "confidence": 90,
+                    "x_inthreat_sources_refs": [
+                        "identity--357447d7-9229-4ce1-b7fa-f1b83587048e"
+                    ],
+                    "x_ic_deprecated": false,
+                    "is_family": true,
+                    "name": "Hajime",
+                    "external_references": [
+                        {
+                            "description": "",
+                            "source_name": "Measurement and Analysis of Hajime, a Peer-to-peer IoT Botnet",
+                            "url": "https://par.nsf.gov/servlets/purl/10096257"
+                        },
+                        {
+                            "description": "",
+                            "source_name": "Measurement and Analysis of Hajime, a Peer-to-peer IoT Botnet",
+                            "url": ""
+                        }
+                    ],
+                    "first_seen": "2016-01-01T00:00:00.000Z",
+                    "lang": "en",
+                    "description": "**Hajime** is a contemporary of Mirai, early versions of Hajime emulated many of Mirai’s infections, but it is distinguished in three key ways. \n\nFirst, rather than use a centralized command-and-control (C&C), Hajime uses a popular peer-to-peer (P2P) distributed hash table(DHT) to disseminate software updates to its bots. \n\nSecond,Hajime supports a far wider set of access methods than Mirai did—including updates from the recent Vault7 leak. Third, Hajime uses a custom protocol for disseminating files, which includes exchanging a public key, thereby allowing us to measure the botnet by long-lived keys rather than ephemeral IP addresses.\n\nSource: https://par.nsf.gov/servlets/purl/10096257",
+                    "revoked": false,
+                    "modified": "2020-12-21T13:23:57.021012Z",
+                    "spec_version": "2.1",
+                    "malware_types": [
+                        "bot",
+                        "worm"
+                    ]
+                },
+                {
+                    "source_ref": "indicator--aef1dd76-dc26-4cfd-aed9-f3a4f11e32db",
+                    "type": "relationship",
+                    "stop_time": "2022-10-03T00:00:00Z",
+                    "id": "relationship--c6d83c45-31f9-4bf4-a467-c37ac728c4fc",
+                    "x_ic_is_in_flint": false,
+                    "object_marking_refs": [
+                        "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+                    ],
+                    "created": "2022-06-19T01:16:28.184928Z",
+                    "created_by_ref": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "start_time": "2022-06-19T00:00:00Z",
+                    "x_inthreat_sources_refs": [
+                        "identity--15242053-3fe7-45db-84a2-13b77f58ebe8"
+                    ],
+                    "x_ic_deprecated": false,
+                    "target_ref": "malware--73f27bad-afc4-4ac9-a8d7-bfa1c93fb51c",
+                    "lang": "en",
+                    "revoked": false,
+                    "modified": "2022-07-04T15:51:20.613235Z",
+                    "relationship_type": "indicates",
+                    "spec_version": "2.1",
+                    "x_ic_external_refs": [
+                        "relationship--75251282-666f-40ff-94c7-a47bfd7f37b2"
+                    ]
+                },
+                {
+                    "roles": [
+                        "Sharing malicious URLs that are being used for malware distribution"
+                    ],
+                    "type": "identity",
+                    "identity_class": "organization",
+                    "x_ic_is_source": true,
+                    "id": "identity--15242053-3fe7-45db-84a2-13b77f58ebe8",
+                    "x_ic_is_in_flint": false,
+                    "object_marking_refs": [
+                        "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+                    ],
+                    "created": "2019-11-28T14:26:52.644698Z",
+                    "created_by_ref": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "confidence": 83,
+                    "contact_information": "https://urlhaus.abuse.ch/",
+                    "x_ic_deprecated": false,
+                    "name": "URLhaus",
+                    "x_ic_is_sector": false,
+                    "external_references": [
+                        {
+                            "source_name": "urlhaus.abuse.ch",
+                            "url": "https://urlhaus.abuse.ch/"
+                        }
+                    ],
+                    "lang": "en",
+                    "description": "URLhaus is a project from abuse.ch with the goal of sharing malicious URLs that are being used for malware distribution.\n\n\nURLs from known malware are automatically imported in Intelligence Center by playbook.\n",
+                    "revoked": false,
+                    "modified": "2022-04-06T14:35:29.712402Z",
+                    "spec_version": "2.1"
+                },
+                {
+                    "type": "identity",
+                    "identity_class": "organization",
+                    "x_ic_is_source": true,
+                    "id": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "x_ic_is_in_flint": true,
+                    "object_marking_refs": [
+                        "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+                    ],
+                    "created": "2008-01-01T00:00:00Z",
+                    "created_by_ref": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "confidence": 95,
+                    "contact_information": "threatintel@sekoia.fr",
+                    "x_ic_deprecated": false,
+                    "name": "SEKOIA",
+                    "x_ic_is_sector": false,
+                    "external_references": [
+                        {
+                            "source_name": "SEKOIA website",
+                            "url": "https://www.sekoia.fr"
+                        }
+                    ],
+                    "sectors": [
+                        "technology"
+                    ],
+                    "lang": "en",
+                    "description": "SEKOIA is a French company which applies intelligence-driven cybersecurity",
+                    "revoked": false,
+                    "modified": "2019-09-30T07:54:40.149166Z",
+                    "spec_version": "2.1"
+                },
+                {
+                    "id": "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da",
+                    "object_marking_refs": [
+                        "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+                    ],
+                    "definition_type": "tlp",
+                    "created": "2019-10-09T16:10:07.239899Z",
+                    "type": "marking-definition",
+                    "name": "TLP:GREEN",
+                    "definition": {
+                        "tlp": "green"
+                    },
+                    "spec_version": "2.1",
+                    "x_ic_deprecated": false
+                },
+                {
+                    "id": "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9",
+                    "object_marking_refs": [
+                        "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+                    ],
+                    "definition_type": "tlp",
+                    "created": "2019-10-31T16:57:02.018068Z",
+                    "type": "marking-definition",
+                    "name": "TLP:WHITE",
+                    "definition": {
+                        "tlp": "white"
+                    },
+                    "spec_version": "2.1",
+                    "x_ic_deprecated": false
+                }
+            ]
+        }
+    ]
+}

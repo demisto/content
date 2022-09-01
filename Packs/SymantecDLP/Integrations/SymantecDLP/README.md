@@ -2,6 +2,9 @@
 Symantec Data Loss Prevention let's you discover, monitor and protect your sensitive corporate information.
 </p>
 <p>
+This integration is now deprecated. Please use the <b>Symantec DLP v2</b> integration instead.
+</p>
+<p>
 This integration was integrated and tested with Symantec DLP version 15.5. The integration uses the SOAP-based Incident Reporting and Update API. 
 </p>
 <p>

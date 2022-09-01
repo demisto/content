@@ -1,0 +1,20 @@
+{
+  "roles": [
+    {
+      "name": "projects/xsoar-project-5/roles/testRolePoc",
+      "title": "my-title-1",
+      "description": "my-description-1",
+      "etag": "BwXTkXGrD3I="
+    },
+    {
+      "name": "projects/xsoar-project-5/roles/test_xsoar_role",
+      "title": "test xsoar platform",
+      "description": "my first role",
+      "includedPermissions": [
+        "accessapproval.requests.approve",
+        "aiplatform.artifacts.get"
+      ],
+      "etag": "BwXTkYuXAVQ="
+    }
+  ]
+}

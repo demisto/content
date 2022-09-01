@@ -1,0 +1,2 @@
+{"breakingChanges": true, 
+ "breakingChangesNotes": "Reformatted the *Location* key for the IP indicator. The location key will now be in the format of `latitude:longitude` instead of `latitude,longitude`."}

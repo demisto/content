@@ -1,6 +1,5 @@
 import asyncio
 import concurrent
-import json
 import ssl
 import threading
 from distutils.util import strtobool
@@ -87,6 +86,10 @@ CACHED_INTEGRATION_CONTEXT: dict
 CACHE_EXPIRY: float
 MIRRORING_ENABLED: bool
 LONG_RUNNING_ENABLED: bool
+DEMISTO_API_KEY: str
+DEMISTO_URL: str
+IGNORE_RETRIES: bool
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -776,14 +779,14 @@ def mirror_investigation():
     demisto.results(f'Investigation mirrored successfully, channel: {conversation_name}')
 
 
-async def long_running_loop():
+def long_running_loop():
     while True:
         error = ''
         try:
             if MIRRORING_ENABLED:
                 check_for_mirrors()
             check_for_unanswered_questions()
-            await asyncio.sleep(15)
+            time.sleep(15)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
         except Exception as e:
@@ -829,6 +832,7 @@ def answer_question(text: str, question: dict, email: str = ''):
     except Exception as e:
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
     question['remove'] = True
+    return incident_id
 
 
 def check_for_unanswered_questions():
@@ -847,7 +851,7 @@ def check_for_unanswered_questions():
                 # and remove it
                 expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
                 if expiry < now:
-                    answer_question(question.get('default_response'), question, email='')
+                    _ = answer_question(question.get('default_response'), question, email='')
                     updated_questions.append(question)
                     continue
             # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
@@ -1055,8 +1059,10 @@ async def start_listening():
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
     try:
-        tasks = [asyncio.ensure_future(slack_loop()), asyncio.ensure_future(long_running_loop())]
-        await asyncio.gather(*tasks)
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        loop = asyncio.get_running_loop()
+        loop.run_in_executor(executor, long_running_loop)
+        await slack_loop()
     except Exception as e:
         demisto.error(f"An error has occurred while gathering the loop tasks. {e}")
 
@@ -1416,9 +1422,12 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         response = SocketModeResponse(envelope_id=req.envelope_id)
         await client.send_socket_mode_response(response)
     if req.retry_attempt:
-        if req.retry_attempt > 0:
+        if req.retry_attempt > 0 and IGNORE_RETRIES:
             demisto.debug("Slack is resending the message. To prevent double posts, the retry is ignored.")
             return
+        else:
+            demisto.debug(f"Slack is resending the message. Ignore retries is - {IGNORE_RETRIES} and the "
+                          f"retry attempt is - {req.retry_attempt}. Continuing to process the event.")
     data_type: str = req.type
     payload: dict = req.payload
     if data_type == 'error':
@@ -1441,6 +1450,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         action_text = ''
         message_ts = message.get('ts', '')
         actions = data.get('actions', [])
+        state = data.get('state', {})
 
         # Check if slash command received. If so, ignore for now.
         if data.get('command', None):
@@ -1480,7 +1490,37 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             entitlement_string = json.loads(entitlement_json)
             entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
             action_text = actions[0].get('text').get('text')
-            answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
+            incident_id = answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
+            if state and DEMISTO_API_KEY:
+                string_safe_state = json.dumps(state)
+                body = {
+                    "data": "!Set",
+                    "args": {
+                        "value": {
+                            "simple": string_safe_state
+                        },
+                        "key": {
+                            "simple": "SlackBlockState"
+                        }
+                    },
+                    "investigationId": str(incident_id)
+                }
+                headers = {
+                    'Authorization': f'{DEMISTO_API_KEY}',
+                    'Content-Type': 'application/json',
+                    'accept': 'application/json'
+                }
+
+                _body = json.dumps(body)
+                try:
+                    response = requests.request("POST", f"{DEMISTO_URL}/entry/execute/sync", headers=headers, data=_body,
+                                                verify=VERIFY_CERT)
+                    response.raise_for_status()
+                except requests.exceptions.ConnectionError as err:
+                    err_message = f'Error submitting context command to server. Check your API Key: {err}'
+                    demisto.updateModuleHealth(err_message)
+            if state and not DEMISTO_API_KEY:
+                demisto.debug("A state was found in the message, but no API key was configured.")
 
         # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
         # are not mirrored
@@ -2209,22 +2249,21 @@ def close_channel():
     channel = demisto.args().get('channel')
     channel_id = demisto.args().get('channel_id', '')
 
-    if not channel:
-        mirror = find_mirror_by_investigation()
-        if mirror:
-            channel_id = mirror.get('channel_id', '')
-            # We need to update the topic in the mirror
-            integration_context = get_integration_context(SYNC_CONTEXT)
-            mirrors = json.loads(integration_context['mirrors'])
-            channel_id = mirror['channel_id']
-            # Check for mirrors on the archived channel
-            channel_mirrors = list(filter(lambda m: channel_id == m['channel_id'], mirrors))
-            for mirror in channel_mirrors:
-                mirror['remove'] = True
-                demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
-                                            mirror['auto_close'])
+    mirror = find_mirror_by_investigation()
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    if mirror:
+        channel_id = mirror.get('channel_id', '')
+        # We need to update the topic in the mirror
+        mirrors = json.loads(integration_context['mirrors'])
+        channel_id = mirror['channel_id']
+        # Check for mirrors on the archived channel
+        channel_mirrors = list(filter(lambda m: channel_id == m['channel_id'], mirrors))
+        for mirror in channel_mirrors:
+            mirror['remove'] = True
+            demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
+                                        mirror['auto_close'])
 
-            set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     if channel and not channel_id:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id') if not channel_id else channel_id
@@ -2235,8 +2274,22 @@ def close_channel():
         'channel': channel_id
     }
     send_slack_request_sync(CLIENT, 'conversations.archive', body=body)
-
+    remove_channel_from_context(channel_id=channel_id, integration_context=integration_context)
     demisto.results('Channel successfully archived.')
+
+
+def remove_channel_from_context(channel_id: str, integration_context: dict):
+    """
+    :param channel_id: The channel_id to remove.
+    :param integration_context: The integration_context object.
+    Removes a channel from the integration context
+    """
+    if 'conversations' in integration_context:
+        conversations = json.loads(integration_context['conversations'])
+        updated_conversations = [conversation for conversation in conversations if conversation.get('id') != channel_id]
+        set_to_integration_context_with_retries({'conversations': updated_conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        demisto.debug('Channel successfully removed from context.')
+    demisto.debug('Channel was not stored in the context. No need to delete.')
 
 
 def create_channel():
@@ -2498,7 +2551,8 @@ def init_globals(command_name: str = ''):
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
-    global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED
+    global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED, DEMISTO_API_KEY, DEMISTO_URL
+    global IGNORE_RETRIES
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2529,6 +2583,10 @@ def init_globals(command_name: str = ''):
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
     LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
+    DEMISTO_API_KEY = demisto.params().get('demisto_api_key', {}).get('password', '')
+    demisto_urls = demisto.demistoUrls()
+    DEMISTO_URL = demisto_urls.get('server')
+    IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     common_channels = demisto.params().get('common_channels', None)
     if common_channels:
         COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
@@ -2549,14 +2607,14 @@ def init_globals(command_name: str = ''):
                      ' to find the channel.'
     CHANNEL_NOT_FOUND_ERROR_MSG = error_str
 
-    # Handle Long-Running Specific Globals
-    if command_name == 'long-running-execution':
-        # Start event loop for long running
+    if command_name != 'long-running-execution':
         loop = asyncio.get_event_loop()
         if not loop._default_executor:  # type: ignore[attr-defined]
             demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
             loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
 
+    # Handle Long-Running Specific Globals
+    if command_name == 'long-running-execution':
         # Bot identification
         integration_context = get_integration_context(SYNC_CONTEXT)
         if integration_context.get('bot_user_id'):
@@ -2581,9 +2639,8 @@ def print_thread_dump():
         demisto.info(f'{threadId} stack: {stack_str}')
 
 
-def loop_info(loop: asyncio.AbstractEventLoop):
-    if not loop:
-        return "loop is None"
+def loop_info():
+    loop = asyncio.get_event_loop()
     info = f'loop: {loop}. id: {id(loop)}.'
     info += f'executor: {loop._default_executor} id: {id(loop._default_executor)}'  # type: ignore[attr-defined]
     if loop._default_executor:  # type: ignore[attr-defined]
@@ -2593,7 +2650,35 @@ def loop_info(loop: asyncio.AbstractEventLoop):
 
 
 def slack_get_integration_context():
+    context_statistics = {}
     integration_context = get_integration_context()
+    # Mirrors Data
+    if integration_context.get('mirrors'):
+        mirrors = json.loads(integration_context.get('mirrors'))
+        context_statistics['Mirrors Count'] = len(mirrors)
+        context_statistics['Mirror Size In Bytes'] = sys.getsizeof(integration_context.get('mirrors', []))
+    # Conversations Data
+    if integration_context.get('conversations'):
+        conversations = json.loads(integration_context.get('conversations'))
+        context_statistics['Conversations Count'] = len(conversations)
+        context_statistics['Conversations Size In Bytes'] = sys.getsizeof(integration_context.get('conversations', []))
+    # Users Data
+    if integration_context.get('users'):
+        users = json.loads(integration_context.get('users'))
+        context_statistics['Users Count'] = len(users)
+        context_statistics['Users Size In Bytes'] = sys.getsizeof(integration_context.get('users', []))
+    # Questions Data
+    if integration_context.get('questions'):
+        questions = json.loads(integration_context.get('questions'))
+        context_statistics['Questions Count'] = len(questions)
+        context_statistics['Questions Size In Bytes'] = sys.getsizeof(integration_context.get('questions', []))
+    readable_stats = tableToMarkdown(name='Long Running Context Statistics', t=context_statistics)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'HumanReadable': readable_stats,
+        'ContentsFormat': EntryFormat.MARKDOWN,
+        'Contents': readable_stats,
+    })
     return_results(fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
 
 
@@ -2635,8 +2720,9 @@ def main() -> None:
         LOG(e)
         return_error(str(e))
     finally:
-        demisto.info(
-            f'{command_name} completed.')
+        demisto.info(f'{command_name} completed. loop: {loop_info()}')  # type: ignore
+        if is_debug_mode():
+            print_thread_dump()
 
 
 ''' ENTRY POINT '''

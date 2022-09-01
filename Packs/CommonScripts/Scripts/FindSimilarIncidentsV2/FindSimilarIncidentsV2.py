@@ -2,7 +2,7 @@
 
 from CommonServerPython import *
 import collections
-from dateutil import parser
+from dateutil import parser  # type: ignore[import]
 
 EXACT_MATCH = 0
 CONTAINS = '*'
@@ -156,7 +156,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
     min_date = incident_time - timedelta(hours=hours_back)
     query = build_incident_query(similar_keys_query, ignore_closed, incident_id, extra_query)
 
-    demisto.log("Find similar incidents based on initial query: %s" % query)
+    demisto.debug("Find similar incidents based on initial query: %s" % query)
 
     get_incidents_argument = {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % time_field}
 
@@ -282,7 +282,7 @@ def build_incident_query(similar_keys_query, ignore_closed, incident_id, extra_q
         query += " and -status:Closed" if query else "-status:Closed"
 
     if incident_id:
-        query = "(-id:%s) and (%s)" % (incident_id, query) if query else "(-id:%s)' % (incident_id)"
+        query = "(-id:%s) and (%s)" % (incident_id, query) if query else "(-id:%s)" % (incident_id)
 
     if extra_query:
         query += " and (%s)" % extra_query if query else extra_query
@@ -339,13 +339,13 @@ def main():
     log_message = 'Incident fields with exact match: %s' % exact_match_incident_fields
     if len(exact_match_incident_fields) > 1:
         log_message += ', applied with %s condition' % INCIDENT_FIELDS_APPLIED_CONDITION
-    demisto.log(log_message)
+    demisto.debug(log_message)
     if len(similar_incident_fields) > 0:
-        demisto.log('Similar incident fields (not exact match): %s' % similar_incident_fields)
+        demisto.debug('Similar incident fields (not exact match): %s' % similar_incident_fields)
     if len(incident_similar_labels) > 0:
-        demisto.log('Similar labels: %s' % incident_similar_labels)
+        demisto.debug('Similar labels: %s' % incident_similar_labels)
     if len(incident_similar_context) > 0:
-        demisto.log('Similar context keys: %s' % original_context_map)
+        demisto.debug('Similar context keys: %s' % original_context_map)
 
     if len(exact_match_incident_fields) == 0 and len(similar_incident_fields) == 0 and len(
             incident_similar_labels) == 0 and len(original_context_map) == 0:

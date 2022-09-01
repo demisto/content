@@ -62,6 +62,18 @@ def emails_data():
         return mocked_emails
 
 
+@pytest.fixture()
+def emails_data_full_body():
+    with open('test_data/emails_data_full_body') as emails_json:
+        return json.load(emails_json)
+
+
+@pytest.fixture()
+def expected_incident_full_body():
+    with open('test_data/expected_incident_full_body') as incident:
+        return json.load(incident)
+
+
 @pytest.fixture
 def last_run_data():
     last_run = {
@@ -229,3 +241,175 @@ def test_reply_mail_command(client, mocker):
     assert reply_message.outputs['subject'] == 'Re: ' + args['subject']
     assert reply_message.outputs['toRecipients'] == args['to']
     assert reply_message.outputs['bodyPreview'] == args['body']
+
+
+def test_list_emails(mocker):
+    from MicrosoftGraphListener import list_mails_command
+    RAW_RESPONSE = [
+        {
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('mailbox%40company.com')/messages",
+            "value":
+                [
+                    {
+                        "@odata.etag": "W/\"ABCDEF/iABCDEF\"",
+                        "bccRecipients": [],
+                        "body": {
+                            "content": "test",
+                            "contentType": "text"
+                        },
+                        "bodyPreview": "test",
+                        "categories": [],
+                        "ccRecipients": [],
+                        "changeKey": "ABCDEF/iABCDEF",
+                        "conversationId": "asdasdasd",
+                        "conversationIndex": "adqweqwe",
+                        "createdDateTime": "2021-01-01T10:18:41Z",
+                        "flag": {
+                            "flagStatus": "notFlagged"
+                        },
+                        "from": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "hasAttachments": True,
+                        "id": "qwe",
+                        "importance": "normal",
+                        "inferenceClassification": "focused",
+                        "internetMessageId": "\u003cqwe@qwe.eurprd05.prod.outlook.com\u003e",
+                        "isDeliveryReceiptRequested": None,
+                        "isDraft": False,
+                        "isRead": False,
+                        "isReadReceiptRequested": False,
+                        "lastModifiedDateTime": "2021-01-01T10:18:41Z",
+                        "parentFolderId": "PARENT==",
+                        "receivedDateTime": "2021-01-01T10:18:41Z",
+                        "replyTo": [],
+                        "sender": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "sentDateTime": "2021-08-20T10:18:40Z",
+                        "subject": "Test",
+                        "toRecipients": [
+                            {
+                                "emailAddress": {
+                                    "address": "mailbox@company.com",
+                                    "name": "My mailbox"
+                                }
+                            }
+                        ],
+                        "webLink": "https://outlook.office365.com/owa/?ItemID=ABCDEF"
+                    }
+                ]
+        }]
+    client = self_deployed_client()
+    mocker.patch.object(client, 'list_mails', return_value=RAW_RESPONSE)
+
+    list_mails_command_results = list_mails_command(client, {})
+    assert 'Total of 1 mails received' in list_mails_command_results.readable_output
+    assert 'john.doe@company.com' in list_mails_command_results.readable_output
+    assert 'qwe' in list_mails_command_results.readable_output
+
+
+def test_list_attachments(mocker):
+    from MicrosoftGraphListener import list_attachments_command
+    RAW_RESPONSE = {
+        "@odata.context":
+            "",
+        "value": [
+            {
+                "@odata.mediaContentType": "text/plain",
+                "@odata.type": "#microsoft.graph.fileAttachment",
+                "contentId": None,
+                "contentLocation": None,
+                "contentType": "text/plain",
+                "id": "id=",
+                "isInline": False,
+                "lastModifiedDateTime": "2022-07-18T12:34:29Z",
+                "name": "Attachment.txt",
+                "size": 3843
+            }
+        ]}
+    client = self_deployed_client()
+    mocker.patch.object(client, 'list_attachments', return_value=RAW_RESPONSE)
+    list_attachments_command_results = list_attachments_command(client, {})
+    assert 'Total of 1 attachments found' in list_attachments_command_results.readable_output
+    assert 'Attachment.txt' in list_attachments_command_results.readable_output
+
+
+def test_get_email_as_eml(mocker):
+    from MicrosoftGraphListener import get_email_as_eml_command
+    RAW_RESPONSE = {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('my@company.com')/messages/$entity",
+        "@odata.etag": "W/\"SOMEID\"",
+        "id": "MSGID-MSGID_B-MSGID_C-MSGID_D=",
+        "createdDateTime": "2022-07-18T12:34:29Z",
+        "lastModifiedDateTime": "2022-07-18T12:34:29Z",
+        "changeKey": "SOMEID",
+        "categories": [],
+        "receivedDateTime": "2022-07-18T12:34:29Z",
+        "sentDateTime": "2022-07-18T12:34:28Z",
+        "hasAttachments": True,
+        "internetMessageId": "<imsgid@host.eurprd05.prod.outlook.com>",
+        "subject": "Test",
+        "bodyPreview": "Test",
+        "importance": "normal",
+        "parentFolderId": "parentfolderid==",
+        "conversationId": "conversationid=",
+        "conversationIndex": "conversationindex==",
+        "isDeliveryReceiptRequested": False,
+        "isReadReceiptRequested": False,
+        "isRead": True,
+        "isDraft": False,
+        "webLink": "",
+        "inferenceClassification": "focused",
+        "body": {
+            "contentType": "html",
+            "content":
+                "<html><head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><m"
+                "eta name=\"Generator\" content=\"Microsoft Word 15 (filtered medium)\"><style>\r\n<!--\r\n@fo"
+                "nt-face\r\n\t{font-family:\"Cambria Math\"}\r\n@font-face\r\n\t{font-family:Calibri}\r\n@font-"
+                "face\r\n\t{font-family:Verdana}\r\np.MsoNormal, li.MsoNormal, div.MsoNormal\r\n\t{margin:0"
+                "in;\r\n\tfont-size:11.0pt;\r\n\tfont-family:\"Calibri\",sans-serif}\r\nspan.EmailStyle1"
+                "8\r\n\t{font-family:\"Calibri\",sans-serif;\r\n\tcolor:windowtext}\r\n.MsoChpDefault\r\n\t{font"
+                "-family:\"Calibri\",sans-serif}\r\n@page WordSection1\r\n\t{margin:1.0in 1.0in 1.0in 1.0in}\r\ndiv.Wor"
+                "dSection1\r\n\t{}\r\n-->\r\n</style></head><body lang=\"EN-US\" link=\"#0563C1\" vlink=\"#954F72\" sty"
+                "le=\"word-wrap:break-word\"><div class=\"WordSection1\"><div><p class=\"MsoNormal\" style=\"\">Test<s"
+                "pan style=\"font-size:7.5pt; font-family:&quot;Verdana&quot;,sans-serif; color:black\"> </span></p>"
+                "</div></div></body></html>"
+        },
+        "sender": {
+            "emailAddress": {
+                "name": "Jon Doe",
+                "address": "you@company.com"
+            }
+        },
+        "from": {
+            "emailAddress": {
+                "name": "Jon Doe",
+                "address": "you@company.com"
+            }
+        },
+        "toRecipients": [
+            {
+                "emailAddress": {
+                    "name": "My",
+                    "address": "my@company.com"
+                }
+            }
+        ],
+        "ccRecipients": [],
+        "bccRecipients": [],
+        "replyTo": [],
+        "flag": {
+            "flagStatus": "notFlagged"
+        }
+    }
+    client = self_deployed_client()
+    mocker.patch.object(client, 'get_email_as_eml', return_value=RAW_RESPONSE['body']['content'])
+    get_email_as_eml_command_results = get_email_as_eml_command(client, {'message_id': 'id'})
+    assert get_email_as_eml_command_results['File'] == 'id.eml'
