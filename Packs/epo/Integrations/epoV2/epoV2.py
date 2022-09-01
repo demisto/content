@@ -1761,8 +1761,7 @@ def main() -> None:
             headers=headers,
             proxy=proxy,
             auth=(demisto.params().get('authentication', {}).get('identifier', ''),
-                  demisto.params().get('authentication', {}).get('password', '')),
-            timeout=timeout
+                  demisto.params().get('authentication', {}).get('password', ''))
         )
 
         args = demisto.args()
