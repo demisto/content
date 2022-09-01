@@ -215,7 +215,6 @@ script:
       predefined:
       - "yes"
       - "no"
-      - unknown
     description: Get a list of all your Internet exposure filtered by ip address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
     name: asm-getassetsinternetexposure
     outputs:
