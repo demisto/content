@@ -115,14 +115,14 @@ def test_list_analysis_command(mocker):
     mocker.patch.object(client, 'analysis_info_list', return_value=result)
 
     response = list_analysis_command(client, {})
-    for index, indicator in enumerate(response.indicators):
-        assert indicator.dbot_score.indicator == excepted.get('DBotScore')[index].get('Indicator')
-        assert indicator.dbot_score.score == excepted.get('DBotScore')[index].get('Score')
-        if isinstance(indicator, Common.File):
-            assert indicator.sha1 == excepted.get('File')[index].get('SHA1')
+    for index, command_res in enumerate(response[:-1]):
+        assert command_res.indicator.dbot_score.indicator == excepted.get('DBotScore')[index].get('Indicator')
+        assert command_res.indicator.dbot_score.score == excepted.get('DBotScore')[index].get('Score')
+        if isinstance(command_res.indicator, Common.File):
+            assert command_res.indicator.sha1 == excepted.get('File')[index].get('SHA1')
         else:
-            assert indicator.url == excepted.get('URL').get('Data')
-    assert response.outputs == excepted.get('Joe').get('Analysis')
+            assert command_res.indicator.url == excepted.get('URL').get('Data')
+    assert response[-1].outputs == excepted.get('Joe').get('Analysis')
 
 
 @pytest.mark.parametrize('web_id,file_type', [('1', 'html'), ('2', 'json'), ('3', 'pcap')])
@@ -177,7 +177,7 @@ def test_search_command(mocker):
     client = mock_client()
 
     mocker.patch.object(client, 'analysis_search', return_value=[])
-    response = search_command(client, {'query': 'test.com'})
+    response = search_command(client, {'query': 'test.com'})[0]
     assert response.readable_output == 'No Results were found.'
 
 
@@ -199,11 +199,11 @@ def test_file_command(mocker):
     mocker.patch.object(client, 'analysis_search', return_value=result)
 
     response = file_command(client, {'file': '1.pdf,test_2.jbs,test_3.jbs'})
-    for index, indicator in enumerate(response.indicators):
-        assert indicator.dbot_score.indicator == excepted.get('DBotScore')[index].get('Indicator')
-        assert indicator.dbot_score.score == excepted.get('DBotScore')[index].get('Score')
-        if isinstance(indicator, Common.File):
-            assert indicator.sha1 == excepted.get('File')[index].get('SHA1')
+    for index, command_res in enumerate(response):
+        assert command_res.indicator.dbot_score.indicator == excepted.get('DBotScore')[index].get('Indicator')
+        assert command_res.indicator.dbot_score.score == excepted.get('DBotScore')[index].get('Score')
+        if isinstance(command_res.indicator, Common.File):
+            assert command_res.indicator.sha1 == excepted.get('File')[index].get('SHA1')
 
 
 def test_url_command(mocker):
@@ -222,8 +222,8 @@ def test_url_command(mocker):
 
     client = mock_client()
     mocker.patch.object(client, 'analysis_search', return_value=[result])
-    res = url_command(client, {'url': 'http://www.test_url.com'})
+    command_res = url_command(client, {'url': 'http://www.test_url.com'})[0]
 
-    assert res.indicators[0].dbot_score.indicator == excepted.get('DBotScore')[-1].get('Indicator')
-    assert res.indicators[0].dbot_score.score == excepted.get('DBotScore')[-1].get('Score')
-    assert res.indicators[0].url == excepted.get('URL').get('Data')
+    assert command_res.indicator.dbot_score.indicator == excepted.get('DBotScore')[-1].get('Indicator')
+    assert command_res.indicator.dbot_score.score == excepted.get('DBotScore')[-1].get('Score')
+    assert command_res.indicator.url == excepted.get('URL').get('Data')
