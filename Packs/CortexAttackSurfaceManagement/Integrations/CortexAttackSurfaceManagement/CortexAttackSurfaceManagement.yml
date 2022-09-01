@@ -195,93 +195,107 @@ script:
     - contextPath: ASM.GetExternalIpAddressRange.details
       description: Additional information
       type: String
-  - arguments: []
-    description: CHANGEME
+  - arguments:
+    - description: IP Address to search on
+      name: ip_address
+    - description: Domain to search on
+      name: domain
+    - auto: PREDEFINED
+      description: type of external service
+      name: type
+      predefined:
+      - certificate
+      - cloud_compute_instance
+      - on_prem
+      - domain
+      - unassociated_responsive_ip
+    - auto: PREDEFINED
+      description: does the internet exposure have an active external service
+      name: has_active_external_services
+      predefined:
+      - "yes"
+      - "no"
+      - unknown
+    description: Get a list of all your Internet exposure filtered by ip address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
     name: asm-getassetsinternetexposure
     outputs:
-    - contextPath: ASM.GetAssetsInternetExposure.total_count
-      description: ""
-      type: Number
-    - contextPath: ASM.GetAssetsInternetExposure.result_count
-      description: ""
-      type: Number
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.asm_ids
+    - contextPath: ASM.GetAssetsInternetExposure.asm_ids
+      description: Attack surface managment UUID
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.name
+      description: Name of the exposed asset
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.asset_type
+      description: Type of the exposed asset
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.cloud_provider
+      description: The cloud provider used to collect these cloud assets as either GCP, AWS, or Azure
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.region
+      description: Displays the region as provided by the Cloud provider
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.business_units
       description: ""
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.name
+    - contextPath: ASM.GetAssetsInternetExposure.iot_model
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.iot_category
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.iot_profile
+      description: ""
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.sensor
       description: ""
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.asset_type
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.cloud_provider
-      description: ""
+    - contextPath: ASM.GetAssetsInternetExposure.last_observed
+      description: Last time exposure was observed
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.region
-      description: ""
+    - contextPath: ASM.GetAssetsInternetExposure.first_observed
+      description: First time exposure was observed
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.business_units
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.iot_model
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.iot_category
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.iot_profile
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.sensor
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.last_observed
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.first_observed
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.has_active_externally_services
-      description: ""
+    - contextPath: ASM.GetAssetsInternetExposure.has_active_externally_services
+      description: If the internet exposure is associated with active external service(s)
       type: Boolean
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.has_xdr_agent
+    - contextPath: ASM.GetAssetsInternetExposure.has_xdr_agent
+      description: If the internet exposure asset has an XDR agent
+      type: String
+    - contextPath: ASM.GetAssetsInternetExposure.certificate_classifications
       description: ""
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.certificate_classifications
+    - contextPath: ASM.GetAssetsInternetExposure.certificate_issuer
       description: ""
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.certificate_issuer
+    - contextPath: ASM.GetAssetsInternetExposure.certificate_algorithm
       description: ""
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.certificate_algorithm
-      description: ""
-      type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.cloud_id
-      description: ""
+    - contextPath: ASM.GetAssetsInternetExposure.cloud_id
+      description: Displays the Resource ID as provided from the cloud provider
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.domain_resolves
-      description: ""
+    - contextPath: ASM.GetAssetsInternetExposure.domain_resolves
+      description: is the asset domain resolvable
       type: Boolean
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.operation_system
+    - contextPath: ASM.GetAssetsInternetExposure.operation_system
+      description: The operang system reported by the source for this asset
+      type: Unknown
+    - contextPath: ASM.GetAssetsInternetExposure.asm_va_score
       description: ""
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.asm_va_score
-      description: ""
+    - contextPath: ASM.GetAssetsInternetExposure.agent_id
+      description: If there is an endpoint installed on this asset, this is the endpoint ID
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.agent_id
-      description: ""
-      type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.externally_detected_providers
-      description: ""
+    - contextPath: ASM.GetAssetsInternetExposure.externally_detected_providers
+      description: The provider of the asset as determined by an external assessment
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.service_type
-      description: ""
+    - contextPath: ASM.GetAssetsInternetExposure.service_type
+      description: Type of asset
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.externally_inferred_cves
-      description: ""
+    - contextPath: ASM.GetAssetsInternetExposure.externally_inferred_cves
+      description: If the internet exposure has associated CVEs
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.assets_internet_exposure.ips
-      description: ""
+    - contextPath: ASM.GetAssetsInternetExposure.ips
+      description: IP addresses associated wih the internet exposure
       type: String
   - arguments:
     - description: An string representing the asset ID for which you want to get the details for
