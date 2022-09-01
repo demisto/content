@@ -1,5 +1,18 @@
 {
-  "tests": [],
+  "tests": [
+    {
+      "playbookID": "myOtherTestPlaybook"
+    },
+    {
+      "playbookID": "myTestPlaybook"
+    },
+    {
+      "playbookID": "myXSOAROnlyTestPlaybook"
+    },
+    {
+      "playbookID": "myXSIAMOnlyTestPlaybook"
+    }
+  ],
   "skipped_tests": {},
   "skipped_integrations": {},
   "unmockable_integrations": {},
