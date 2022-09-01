@@ -569,13 +569,13 @@ def get_intelligence_information(client: Client, indicator, ioc_type, intelligen
     for intelligence in intelligences:
         intelligence_name = intelligence.get('name')
         if intelligence_name:
-            intelligence_type = INTELLIGENCE_TYPE_TO_ENTITY_TYPE[intelligence_type]
+            entity_type = INTELLIGENCE_TYPE_TO_ENTITY_TYPE[intelligence_type]
             relationship = create_intelligence_relationship(
                 client,
                 indicator,
                 ioc_type,
                 intelligence_name,
-                intelligence_type)
+                entity_type)
 
         relationships.append(relationship)
 
