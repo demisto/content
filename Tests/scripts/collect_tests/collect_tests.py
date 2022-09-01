@@ -504,6 +504,9 @@ class BranchTestCollector(TestCollector):
                 content_item_range=content_item.version_range if content_item else None
             )
 
+        elif file_type in IGNORED_FILE_TYPES:
+            raise NothingToCollectException(path, f'ignored type {file_type}')
+
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
                 raise NothingToCollectException(path, 'changing unit tests does not trigger collection')
@@ -524,9 +527,6 @@ class BranchTestCollector(TestCollector):
 
         elif path.suffix == '.yml':  # file_type is often None in these cases
             return self._collect_yml(path)  # checks for containing folder (content item type)
-
-        elif file_type in IGNORED_FILE_TYPES:
-            raise NothingToCollectException(path, f'ignored type {file_type}')
 
         elif file_type is None:
             raise NothingToCollectException(path, 'unknown file type')
